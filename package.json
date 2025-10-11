@@ -1,0 +1,34 @@
+{
+    "name": "ats-resume-generator",
+    "version": "1.0.0",
+    "description": "AI-powered ATS Resume Rebuilder with MERN Stack + Gemini AI",
+    "scripts": {
+        "setup": "bash setup.sh",
+        "install-all": "npm install --prefix server && npm install --prefix client",
+        "dev": "concurrently \"npm run server\" \"npm run client\"",
+        "server": "cd server && npm run dev",
+        "client": "cd client && npm run dev",
+        "build": "cd client && npm run build",
+        "test": "echo 'Run tests: npm test --prefix server && npm test --prefix client'"
+    },
+    "keywords": [
+        "resume",
+        "ats",
+        "ai",
+        "gemini",
+        "mern",
+        "react",
+        "express",
+        "mongodb",
+        "tailwind"
+    ],
+    "author": "",
+    "license": "MIT",
+    "devDependencies": {
+        "concurrently": "^9.1.2"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/yourusername/ats-resume-generator.git"
+    }
+}
