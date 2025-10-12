@@ -660,7 +660,7 @@ const CreativeTemplate = forwardRef(({resumeData}, ref) => {
               letterSpacing: "1px",
             }}
           >
-            {resumeData.personalInfo?.fullName || "Your Name"}
+            {resumeData.name || "Your Name"}
           </h1>
           <div
             style={{
@@ -671,23 +671,23 @@ const CreativeTemplate = forwardRef(({resumeData}, ref) => {
               opacity: 0.95,
             }}
           >
-            {resumeData.personalInfo?.email && (
-              <span>✉️ {resumeData.personalInfo.email}</span>
+            {resumeData.contact?.email && (
+              <span>✉️ {resumeData.contact.email}</span>
             )}
-            {resumeData.personalInfo?.phone && (
-              <span>📞 {resumeData.personalInfo.phone}</span>
+            {resumeData.contact?.phone && (
+              <span>📞 {resumeData.contact.phone}</span>
             )}
-            {resumeData.personalInfo?.location && (
-              <span>📍 {resumeData.personalInfo.location}</span>
+            {resumeData.contact?.location && (
+              <span>📍 {resumeData.contact.location}</span>
             )}
-            {resumeData.personalInfo?.linkedin && (
-              <span>💼 {resumeData.personalInfo.linkedin}</span>
+            {resumeData.contact?.linkedin && (
+              <span>💼 {resumeData.contact.linkedin}</span>
             )}
-            {resumeData.personalInfo?.portfolio && (
-              <span>🎨 {resumeData.personalInfo.portfolio}</span>
+            {resumeData.contact?.portfolio && (
+              <span>🎨 {resumeData.contact.portfolio}</span>
             )}
-            {resumeData.personalInfo?.website && (
-              <span>🌐 {resumeData.personalInfo.website}</span>
+            {resumeData.contact?.website && (
+              <span>🌐 {resumeData.contact.website}</span>
             )}
           </div>
         </div>

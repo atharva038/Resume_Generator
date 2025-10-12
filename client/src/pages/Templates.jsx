@@ -9,34 +9,55 @@ import TechTemplate from "../components/templates/TechTemplate";
 import CreativeTemplate from "../components/templates/CreativeTemplate";
 import AcademicTemplate from "../components/templates/AcademicTemplate";
 
-// Sample resume data for preview
+// Sample resume data for preview - matches template structure
 const sampleResumeData = {
-  personalInfo: {
-    fullName: "John Doe",
+  name: "John Doe",
+  contact: {
     email: "john.doe@email.com",
-    phone: "+1 234-567-8900",
+    phone: "+1 (234) 567-8900",
     location: "San Francisco, CA",
-    linkedin: "linkedin.com/in/johndoe",
+    linkedin: "https://linkedin.com/in/johndoe",
+    github: "https://github.com/johndoe",
   },
   summary:
-    "Experienced professional with 5+ years in the field, dedicated to excellence and innovation.",
+    "Experienced professional with 5+ years in the field, dedicated to excellence and innovation. Proven track record of delivering high-quality solutions and leading successful teams.",
   skills: [
-    {category: "Technical", items: ["JavaScript", "React", "Node.js"]},
+    {
+      category: "Technical Skills",
+      items: ["JavaScript", "React", "Node.js", "Python", "AWS"],
+    },
     {
       category: "Soft Skills",
-      items: ["Leadership", "Communication", "Problem Solving"],
+      items: [
+        "Leadership",
+        "Communication",
+        "Problem Solving",
+        "Team Collaboration",
+      ],
     },
   ],
   experience: [
     {
-      position: "Senior Developer",
+      position: "Senior Software Engineer",
       company: "Tech Corp",
       location: "San Francisco, CA",
       startDate: "Jan 2020",
       endDate: "Present",
-      achievements: [
-        "Led team of 5 developers in building scalable applications",
-        "Improved system performance by 40%",
+      bullets: [
+        "Led team of 5 developers in building scalable web applications serving 100K+ users",
+        "Improved system performance by 40% through code optimization and architecture redesign",
+        "Mentored junior developers and conducted technical interviews",
+      ],
+    },
+    {
+      position: "Software Engineer",
+      company: "StartupXYZ",
+      location: "Remote",
+      startDate: "Jun 2018",
+      endDate: "Dec 2019",
+      bullets: [
+        "Developed RESTful APIs and microservices using Node.js and Express",
+        "Collaborated with cross-functional teams to deliver features on time",
       ],
     },
   ],
@@ -46,22 +67,34 @@ const sampleResumeData = {
       field: "Computer Science",
       institution: "University of California",
       location: "Berkeley, CA",
-      graduationDate: "2019",
+      graduationDate: "2018",
       gpa: "3.8/4.0",
+      bullets: ["Dean's List", "CS Club President"],
     },
   ],
   projects: [
     {
       name: "E-commerce Platform",
-      description: "Built a full-stack e-commerce solution",
-      technologies: "React, Node.js, MongoDB",
+      description:
+        "Built a full-stack e-commerce solution with payment integration",
+      technologies: ["React", "Node.js", "MongoDB", "Stripe"],
       date: "2023",
+      url: "https://github.com/johndoe/ecommerce",
     },
   ],
   certifications: [
-    {name: "AWS Certified Developer", issuer: "Amazon", date: "2022"},
+    {
+      name: "AWS Certified Developer - Associate",
+      issuer: "Amazon Web Services",
+      date: "2022",
+    },
+    {name: "React Professional Certification", issuer: "Meta", date: "2023"},
   ],
-  achievements: ["Employee of the Year 2022", "Published 3 technical articles"],
+  achievements: [
+    "Employee of the Year 2022 - Tech Corp",
+    "Published 3 technical articles with 10K+ views",
+    "Speaker at React Conference 2023",
+  ],
 };
 
 const templates = [
@@ -220,13 +253,17 @@ const Templates = () => {
               onClick={() => setSelectedTemplate(template)}
             >
               {/* Template Preview */}
-              <div className="relative h-72 overflow-hidden bg-gray-100 dark:bg-gray-700">
+              <div
+                className="relative bg-gray-100 dark:bg-gray-700 rounded-t-xl overflow-hidden"
+                style={{height: "420px"}}
+              >
                 <div
-                  className="absolute inset-0 scale-[0.28] origin-top-left pointer-events-none"
+                  className="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none"
                   style={{
-                    transformOrigin: "top left",
                     width: "210mm",
                     height: "297mm",
+                    transform: "translateX(-50%) scale(0.35)",
+                    transformOrigin: "top center",
                   }}
                 >
                   <template.component resumeData={sampleResumeData} />

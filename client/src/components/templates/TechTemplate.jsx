@@ -479,10 +479,10 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
       ref={ref}
       className="resume-preview"
       style={{
-        width: "210mm",
-        minHeight: "297mm",
+        width: "8.5in",
+        minHeight: "11in",
         backgroundColor: "white",
-        padding: "18mm 16mm",
+        padding: "0.5in",
         fontFamily: "'Arial', 'Helvetica', sans-serif",
         color: "#1e293b",
         boxShadow: "0 0 10px rgba(0,0,0,0.1)",
@@ -494,63 +494,60 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
           marginBottom: "18px",
           backgroundColor: "#0f172a",
           color: "white",
-          padding: "16px",
+          padding: "20px",
           borderRadius: "6px",
-          margin: "-18mm -16mm 18px -16mm",
         }}
       >
-        <div style={{padding: "0 16mm"}}>
-          <h1
+        <h1
+          style={{
+            fontSize: "22pt",
+            fontWeight: "bold",
+            marginBottom: "6px",
+            fontFamily: "'Courier New', monospace",
+            letterSpacing: "1px",
+          }}
+        >
+          {resumeData.name || "Your Name"}
+        </h1>
+        {resumeData.summary && (
+          <p
             style={{
-              fontSize: "22pt",
-              fontWeight: "bold",
-              marginBottom: "6px",
-              fontFamily: "'Courier New', monospace",
-              letterSpacing: "1px",
+              fontSize: "10pt",
+              marginBottom: "10px",
+              color: "#cbd5e1",
+              lineHeight: "1.5",
             }}
           >
-            {resumeData.personalInfo?.fullName || "Your Name"}
-          </h1>
-          {resumeData.summary && (
-            <p
-              style={{
-                fontSize: "10pt",
-                marginBottom: "10px",
-                color: "#cbd5e1",
-                lineHeight: "1.5",
-              }}
-            >
-              {resumeData.summary}
-            </p>
+            {resumeData.summary}
+          </p>
+        )}
+        <div
+          style={{
+            fontSize: "9.5pt",
+            color: "#94a3b8",
+            display: "flex",
+            gap: "12px",
+            flexWrap: "wrap",
+          }}
+        >
+          {resumeData.contact?.email && (
+            <span>✉️ {resumeData.contact.email}</span>
           )}
-          <div
-            style={{
-              fontSize: "9.5pt",
-              color: "#94a3b8",
-              display: "flex",
-              gap: "12px",
-              flexWrap: "wrap",
-            }}
-          >
-            {resumeData.personalInfo?.email && (
-              <span>✉️ {resumeData.personalInfo.email}</span>
-            )}
-            {resumeData.personalInfo?.phone && (
-              <span>📱 {resumeData.personalInfo.phone}</span>
-            )}
-            {resumeData.personalInfo?.location && (
-              <span>📍 {resumeData.personalInfo.location}</span>
-            )}
-            {resumeData.personalInfo?.linkedin && (
-              <span>🔗 {resumeData.personalInfo.linkedin}</span>
-            )}
-            {resumeData.personalInfo?.github && (
-              <span>💻 {resumeData.personalInfo.github}</span>
-            )}
-            {resumeData.personalInfo?.website && (
-              <span>🌐 {resumeData.personalInfo.website}</span>
-            )}
-          </div>
+          {resumeData.contact?.phone && (
+            <span>📱 {resumeData.contact.phone}</span>
+          )}
+          {resumeData.contact?.location && (
+            <span>📍 {resumeData.contact.location}</span>
+          )}
+          {resumeData.contact?.linkedin && (
+            <span>🔗 {resumeData.contact.linkedin}</span>
+          )}
+          {resumeData.contact?.github && (
+            <span>💻 {resumeData.contact.github}</span>
+          )}
+          {resumeData.contact?.website && (
+            <span>🌐 {resumeData.contact.website}</span>
+          )}
         </div>
       </header>
 

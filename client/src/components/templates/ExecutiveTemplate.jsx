@@ -444,7 +444,7 @@ const ExecutiveTemplate = forwardRef(({resumeData}, ref) => {
             textTransform: "uppercase",
           }}
         >
-          {resumeData.personalInfo?.fullName || "Your Name"}
+          {resumeData.name || "Your Name"}
         </h1>
         <div
           style={{
@@ -457,17 +457,17 @@ const ExecutiveTemplate = forwardRef(({resumeData}, ref) => {
             flexWrap: "wrap",
           }}
         >
-          {resumeData.personalInfo?.email && (
-            <span>📧 {resumeData.personalInfo.email}</span>
+          {resumeData.contact?.email && (
+            <span>📧 {resumeData.contact.email}</span>
           )}
-          {resumeData.personalInfo?.phone && (
-            <span>📞 {resumeData.personalInfo.phone}</span>
+          {resumeData.contact?.phone && (
+            <span>📞 {resumeData.contact.phone}</span>
           )}
-          {resumeData.personalInfo?.location && (
-            <span>📍 {resumeData.personalInfo.location}</span>
+          {resumeData.contact?.location && (
+            <span>📍 {resumeData.contact.location}</span>
           )}
-          {resumeData.personalInfo?.linkedin && (
-            <span>💼 {resumeData.personalInfo.linkedin}</span>
+          {resumeData.contact?.linkedin && (
+            <span>💼 {resumeData.contact.linkedin}</span>
           )}
         </div>
       </header>

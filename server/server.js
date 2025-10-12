@@ -21,17 +21,34 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
-// MongoDB Connection
+// MongoDB Connection with better error handling
 mongoose
   .connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 10000,
+    socketTimeoutMS: 45000,
+    family: 4, // Use IPv4, skip trying IPv6
   })
-  .then(() => console.log("✅ MongoDB connected successfully"))
+  .then(() => {
+    console.log("✅ MongoDB connected successfully");
+    console.log("📊 Connected to database:", mongoose.connection.name);
+  })
   .catch((err) => {
     console.error("❌ MongoDB connection error:", err.message);
+    console.error("💡 Possible fixes:");
+    console.error("   1. Check if your IP is whitelisted in MongoDB Atlas");
+    console.error("   2. Verify your MongoDB connection string");
+    console.error("   3. Check your network/firewall settings");
     process.exit(1);
   });
+
+// Handle mongoose connection events
+mongoose.connection.on("error", (err) => {
+  console.error("MongoDB connection error:", err);
+});
+
+mongoose.connection.on("disconnected", () => {
+  console.warn("⚠️  MongoDB disconnected");
+});
 
 // Routes
 app.use("/api/auth", authRoutes);

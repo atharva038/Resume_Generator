@@ -144,6 +144,18 @@ const Editor = () => {
     if (!data.targetJobRole) {
       data.targetJobRole = "software-engineer";
     }
+    // Initialize sectionTitles if it doesn't exist (for custom section names)
+    if (!data.sectionTitles) {
+      data.sectionTitles = {
+        summary: "Professional Summary",
+        skills: "Skills",
+        experience: "Experience",
+        education: "Education",
+        projects: "Projects",
+        certifications: "Certifications",
+        achievements: "Achievements",
+      };
+    }
     setResumeData(data);
   }, [location, navigate]);
 

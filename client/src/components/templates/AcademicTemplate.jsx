@@ -597,9 +597,9 @@ const AcademicTemplate = forwardRef(({resumeData}, ref) => {
             color: "#1a202c",
           }}
         >
-          {resumeData.personalInfo?.fullName || "Your Name"}
+          {resumeData.name || "Your Name"}
         </h1>
-        {resumeData.personalInfo?.title && (
+        {resumeData.contact?.title && (
           <div
             style={{
               fontSize: "11pt",
@@ -608,7 +608,7 @@ const AcademicTemplate = forwardRef(({resumeData}, ref) => {
               marginBottom: "8px",
             }}
           >
-            {resumeData.personalInfo.title}
+            {resumeData.contact.title}
           </div>
         )}
         <div
@@ -621,20 +621,15 @@ const AcademicTemplate = forwardRef(({resumeData}, ref) => {
             flexWrap: "wrap",
           }}
         >
-          {resumeData.personalInfo?.email && (
-            <span>{resumeData.personalInfo.email}</span>
-          )}
-          {resumeData.personalInfo?.phone && <span>•</span>}
-          {resumeData.personalInfo?.phone && (
-            <span>{resumeData.personalInfo.phone}</span>
-          )}
-          {resumeData.personalInfo?.location && <span>•</span>}
-          {resumeData.personalInfo?.location && (
-            <span>{resumeData.personalInfo.location}</span>
+          {resumeData.contact?.email && <span>{resumeData.contact.email}</span>}
+          {resumeData.contact?.phone && <span>•</span>}
+          {resumeData.contact?.phone && <span>{resumeData.contact.phone}</span>}
+          {resumeData.contact?.location && <span>•</span>}
+          {resumeData.contact?.location && (
+            <span>{resumeData.contact.location}</span>
           )}
         </div>
-        {(resumeData.personalInfo?.linkedin ||
-          resumeData.personalInfo?.website) && (
+        {(resumeData.contact?.linkedin || resumeData.contact?.website) && (
           <div
             style={{
               fontSize: "9pt",
@@ -646,12 +641,12 @@ const AcademicTemplate = forwardRef(({resumeData}, ref) => {
               flexWrap: "wrap",
             }}
           >
-            {resumeData.personalInfo?.linkedin && (
-              <span>LinkedIn: {resumeData.personalInfo.linkedin}</span>
+            {resumeData.contact?.linkedin && (
+              <span>LinkedIn: {resumeData.contact.linkedin}</span>
             )}
-            {resumeData.personalInfo?.website && <span>•</span>}
-            {resumeData.personalInfo?.website && (
-              <span>Website: {resumeData.personalInfo.website}</span>
+            {resumeData.contact?.website && <span>•</span>}
+            {resumeData.contact?.website && (
+              <span>Website: {resumeData.contact.website}</span>
             )}
           </div>
         )}
