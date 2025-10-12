@@ -14,9 +14,11 @@ const MinimalTemplate = forwardRef(({resumeData}, ref) => {
   ];
 
   const sectionOrder =
-    resumeData.sectionOrder?.filter(
-      (id) => !["score", "personal", "recommendations"].includes(id)
-    ) || DEFAULT_SECTION_ORDER;
+    resumeData.sectionOrder && resumeData.sectionOrder.length > 0
+      ? resumeData.sectionOrder.filter(
+          (id) => !["score", "personal", "recommendations"].includes(id)
+        )
+      : DEFAULT_SECTION_ORDER;
 
   // Get custom section titles or use defaults
   const getSectionTitle = (sectionId) => {

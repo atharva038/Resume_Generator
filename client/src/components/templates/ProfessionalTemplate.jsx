@@ -14,9 +14,11 @@ const ProfessionalTemplate = forwardRef(({resumeData}, ref) => {
   ];
 
   const sectionOrder =
-    resumeData.sectionOrder?.filter(
-      (id) => !["score", "personal", "recommendations"].includes(id)
-    ) || DEFAULT_SECTION_ORDER;
+    resumeData.sectionOrder && resumeData.sectionOrder.length > 0
+      ? resumeData.sectionOrder.filter(
+          (id) => !["score", "personal", "recommendations"].includes(id)
+        )
+      : DEFAULT_SECTION_ORDER;
 
   // Get custom section titles or use defaults
   const getSectionTitle = (sectionId) => {
@@ -30,7 +32,11 @@ const ProfessionalTemplate = forwardRef(({resumeData}, ref) => {
       certifications: "Certifications",
       achievements: "Achievements",
     };
-    return (customTitles[sectionId] || defaultTitles[sectionId] || sectionId).toUpperCase();
+    return (
+      customTitles[sectionId] ||
+      defaultTitles[sectionId] ||
+      sectionId
+    ).toUpperCase();
   };
 
   // Render section helper function
@@ -276,106 +282,109 @@ const ProfessionalTemplate = forwardRef(({resumeData}, ref) => {
         </section>
       ),
 
-      certifications: resumeData.certifications && resumeData.certifications.length > 0 && (
-        <section key="certifications" style={{marginBottom: "12px"}}>
-          <h2
-            className="font-bold uppercase"
-            style={{
-              fontSize: "11pt",
-              color: "#1e40af",
-              marginBottom: "6px",
-              paddingBottom: "3px",
-              borderBottom: "2px solid #93c5fd",
-            }}
-          >
-            {getSectionTitle("certifications")}
-          </h2>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: "6px",
-            }}
-          >
-            {resumeData.certifications.map((cert, index) => (
-              <div key={index} style={{fontSize: "10pt"}}>
-                <span className="font-semibold">{cert.name}</span>
-                {cert.issuer && (
-                  <div style={{fontSize: "9pt", color: "#6b7280"}}>
-                    {cert.issuer} {cert.date && `(${cert.date})`}
-                  </div>
-                )}
-              </div>
-            ))}
+      certifications: resumeData.certifications &&
+        resumeData.certifications.length > 0 && (
+          <section key="certifications" style={{marginBottom: "12px"}}>
+            <h2
+              className="font-bold uppercase"
+              style={{
+                fontSize: "11pt",
+                color: "#1e40af",
+                marginBottom: "6px",
+                paddingBottom: "3px",
+                borderBottom: "2px solid #93c5fd",
+              }}
+            >
+              {getSectionTitle("certifications")}
+            </h2>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "6px",
+              }}
+            >
+              {resumeData.certifications.map((cert, index) => (
+                <div key={index} style={{fontSize: "10pt"}}>
+                  <span className="font-semibold">{cert.name}</span>
+                  {cert.issuer && (
+                    <div style={{fontSize: "9pt", color: "#6b7280"}}>
+                      {cert.issuer} {cert.date && `(${cert.date})`}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        ),
+
+      achievements: resumeData.achievements &&
+        resumeData.achievements.length > 0 && (
+          <section key="achievements" style={{marginBottom: "12px"}}>
+            <h2
+              className="font-bold uppercase"
+              style={{
+                fontSize: "11pt",
+                color: "#1e40af",
+                marginBottom: "6px",
+                paddingBottom: "3px",
+                borderBottom: "2px solid #93c5fd",
+              }}
+            >
+              {getSectionTitle("achievements")}
+            </h2>
+            <ul
+              className="list-disc list-outside ml-5"
+              style={{marginTop: "4px"}}
+            >
+              {resumeData.achievements.map((achievement, index) => (
+                <li key={index} style={{fontSize: "10pt", marginBottom: "3px"}}>
+                  {achievement}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ),
+
+      customSections: resumeData.customSections &&
+        resumeData.customSections.length > 0 && (
+          <div key="customSections">
+            {resumeData.customSections.map((section, sectionIndex) => {
+              if (section.title && section.items && section.items.length > 0) {
+                return (
+                  <section key={sectionIndex} style={{marginBottom: "12px"}}>
+                    <h2
+                      className="font-bold uppercase"
+                      style={{
+                        fontSize: "11pt",
+                        color: "#1e40af",
+                        marginBottom: "6px",
+                        paddingBottom: "3px",
+                        borderBottom: "2px solid #93c5fd",
+                      }}
+                    >
+                      {section.title}
+                    </h2>
+                    <ul
+                      className="list-disc list-outside ml-5"
+                      style={{marginTop: "4px"}}
+                    >
+                      {section.items.map((item, itemIndex) => (
+                        <li
+                          key={itemIndex}
+                          style={{fontSize: "10pt", marginBottom: "3px"}}
+                        >
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                );
+              }
+              return null;
+            })}
           </div>
-        </section>
-      ),
-
-      achievements: resumeData.achievements && resumeData.achievements.length > 0 && (
-        <section key="achievements" style={{marginBottom: "12px"}}>
-          <h2
-            className="font-bold uppercase"
-            style={{
-              fontSize: "11pt",
-              color: "#1e40af",
-              marginBottom: "6px",
-              paddingBottom: "3px",
-              borderBottom: "2px solid #93c5fd",
-            }}
-          >
-            {getSectionTitle("achievements")}
-          </h2>
-          <ul
-            className="list-disc list-outside ml-5"
-            style={{marginTop: "4px"}}
-          >
-            {resumeData.achievements.map((achievement, index) => (
-              <li key={index} style={{fontSize: "10pt", marginBottom: "3px"}}>
-                {achievement}
-              </li>
-            ))}
-          </ul>
-        </section>
-      ),
-
-      customSections: resumeData.customSections && resumeData.customSections.length > 0 && (
-        <div key="customSections">
-          {resumeData.customSections.map((section, sectionIndex) => {
-            if (section.title && section.items && section.items.length > 0) {
-              return (
-                <section key={sectionIndex} style={{marginBottom: "12px"}}>
-                  <h2
-                    className="font-bold uppercase"
-                    style={{
-                      fontSize: "11pt",
-                      color: "#1e40af",
-                      marginBottom: "6px",
-                      paddingBottom: "3px",
-                      borderBottom: "2px solid #93c5fd",
-                    }}
-                  >
-                    {section.title}
-                  </h2>
-                  <ul
-                    className="list-disc list-outside ml-5"
-                    style={{marginTop: "4px"}}
-                  >
-                    {section.items.map((item, itemIndex) => (
-                      <li
-                        key={itemIndex}
-                        style={{fontSize: "10pt", marginBottom: "3px"}}
-                      >
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-              );
-            }
-            return null;
-          })}
-        </div>
-      ),
+        ),
     };
 
     return sections[sectionId] || null;

@@ -45,7 +45,7 @@ const Dashboard = () => {
   const handleLoad = async (id) => {
     try {
       const response = await resumeAPI.getById(id);
-      navigate("/editor", {state: {resumeData: response.data.resume}});
+      navigate("/editor", {state: {resumeData: response.data}});
     } catch (err) {
       alert("Failed to load resume");
       console.error(err);

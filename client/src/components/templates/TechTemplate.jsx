@@ -13,9 +13,12 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
   ];
 
   const sectionOrder =
-    resumeData.sectionOrder?.filter(
-      (id) => !["score", "personal", "recommendations", "summary"].includes(id)
-    ) || DEFAULT_SECTION_ORDER;
+    resumeData.sectionOrder && resumeData.sectionOrder.length > 0
+      ? resumeData.sectionOrder.filter(
+          (id) =>
+            !["score", "personal", "recommendations", "summary"].includes(id)
+        )
+      : DEFAULT_SECTION_ORDER;
 
   // Render section helper function
   const renderSection = (sectionId) => {

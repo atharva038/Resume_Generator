@@ -134,30 +134,88 @@ const Editor = () => {
     );
   }, [isAnalysisExpanded]);
 
+  // Load resume data on mount
   useEffect(() => {
-    const data = location.state?.resumeData;
-    if (!data) {
-      navigate("/upload");
-      return;
-    }
-    // Initialize targetJobRole if it doesn't exist
-    if (!data.targetJobRole) {
-      data.targetJobRole = "software-engineer";
-    }
-    // Initialize sectionTitles if it doesn't exist (for custom section names)
-    if (!data.sectionTitles) {
-      data.sectionTitles = {
-        summary: "Professional Summary",
-        skills: "Skills",
-        experience: "Experience",
-        education: "Education",
-        projects: "Projects",
-        certifications: "Certifications",
-        achievements: "Achievements",
-      };
-    }
-    setResumeData(data);
-  }, [location, navigate]);
+    const loadResumeData = async () => {
+      // First, try to get data from location state (when navigating from upload)
+      const stateData = location.state?.resumeData;
+
+      if (stateData) {
+        // Initialize data from location state
+        initializeResumeData(stateData);
+
+        // If it has an ID, store it for future refreshes
+        if (stateData._id) {
+          localStorage.setItem("currentResumeId", stateData._id);
+        }
+        return;
+      }
+
+      // If no state data, check if we have a saved resume ID
+      const savedResumeId = localStorage.getItem("currentResumeId");
+
+      if (savedResumeId && user) {
+        // Fetch the resume from the database
+        try {
+          const response = await resumeAPI.getById(savedResumeId);
+          const loadedData = response.data;
+          initializeResumeData(loadedData);
+        } catch (err) {
+          console.error("Error loading resume:", err);
+          // If error loading, clear the saved ID and redirect to upload
+          localStorage.removeItem("currentResumeId");
+          navigate("/upload");
+        }
+      } else {
+        // No data available, redirect to upload
+        navigate("/upload");
+      }
+    };
+
+    const initializeResumeData = (data) => {
+      // Initialize targetJobRole if it doesn't exist
+      if (!data.targetJobRole) {
+        data.targetJobRole = "software-engineer";
+      }
+      // Ensure contact object exists with all fields
+      if (!data.contact || typeof data.contact !== "object") {
+        data.contact = {
+          email: "",
+          phone: "",
+          location: "",
+          linkedin: "",
+          github: "",
+          portfolio: "",
+        };
+      } else {
+        // Merge with defaults to ensure all fields exist
+        data.contact = {
+          email: data.contact.email || "",
+          phone: data.contact.phone || "",
+          location: data.contact.location || "",
+          linkedin: data.contact.linkedin || "",
+          github: data.contact.github || "",
+          portfolio: data.contact.portfolio || "",
+        };
+      }
+
+      // Initialize sectionTitles if it doesn't exist (for custom section names)
+      if (!data.sectionTitles) {
+        data.sectionTitles = {
+          summary: "Professional Summary",
+          skills: "Skills",
+          experience: "Experience",
+          education: "Education",
+          projects: "Projects",
+          certifications: "Certifications",
+          achievements: "Achievements",
+        };
+      }
+      setResumeData(data);
+    };
+
+    loadResumeData();
+  }, [location, navigate, user]);
 
   const handleSave = async () => {
     if (!user) {
@@ -168,15 +226,23 @@ const Editor = () => {
 
     setSaving(true);
     try {
-      console.log("Saving resumeData:", resumeData);
-      console.log("Achievements being saved:", resumeData.achievements);
-
+      let savedResume;
       if (resumeData._id) {
-        await resumeAPI.update(resumeData._id, resumeData);
+        // Update existing resume
+        const response = await resumeAPI.update(resumeData._id, resumeData);
+        savedResume = response.data;
         alert("Resume updated successfully!");
       } else {
-        await resumeAPI.save(resumeData);
+        // Save new resume
+        const response = await resumeAPI.save(resumeData);
+        savedResume = response.data;
         alert("Resume saved successfully!");
+      }
+
+      // Update the resumeData with the saved version (includes _id if it's new)
+      if (savedResume && savedResume._id) {
+        setResumeData(savedResume);
+        localStorage.setItem("currentResumeId", savedResume._id);
       }
     } catch (err) {
       console.error("Save error:", err);
@@ -189,7 +255,6 @@ const Editor = () => {
   };
 
   const updateField = (field, value, skipTracking = false) => {
-    console.log(`Updating field: ${field}`, value);
     setResumeData((prev) => ({...prev, [field]: value}));
   };
 
@@ -947,10 +1012,7 @@ const Editor = () => {
 
           {/* Preview Panel */}
           {showPreview && (
-            <div
-              className="lg:sticky lg:top-4"
-              style={{height: "calc(100vh - 6rem)"}}
-            >
+            <div className="lg:sticky lg:top-4 lg:h-[calc(100vh-8rem)] lg:overflow-hidden">
               <ResumePreview
                 ref={resumePreviewRef}
                 resumeData={resumeData}
