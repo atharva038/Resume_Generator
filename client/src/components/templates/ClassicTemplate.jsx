@@ -9,6 +9,8 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
     "education",
     "projects",
     "certifications",
+    "achievements",
+    "customSections",
   ];
 
   const sectionOrder =
@@ -285,46 +287,48 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
           </section>
         ),
 
-      // Custom Sections
-      ...(resumeData.customSections || []).reduce(
-        (acc, section, sectionIndex) => {
-          if (section.title && section.items && section.items.length > 0) {
-            acc[`customSection_${sectionIndex}`] = (
-              <section
-                key={`customSection_${sectionIndex}`}
-                style={{marginBottom: "12px"}}
-              >
-                <h2
-                  className="font-bold uppercase"
-                  style={{
-                    fontSize: "11pt",
-                    borderBottom: "1px solid black",
-                    paddingBottom: "3px",
-                    marginBottom: "6px",
-                  }}
-                >
-                  {section.title}
-                </h2>
-                <ul
-                  className="list-disc list-outside ml-5"
-                  style={{marginTop: "4px"}}
-                >
-                  {section.items.map((item, itemIndex) => (
-                    <li
-                      key={itemIndex}
-                      style={{fontSize: "10pt", marginBottom: "3px"}}
+      // Custom Sections - render all custom sections when "customSections" is in sectionOrder
+      customSections: resumeData.customSections &&
+        resumeData.customSections.length > 0 && (
+          <>
+            {resumeData.customSections.map((section, sectionIndex) => {
+              if (section.title && section.items && section.items.length > 0) {
+                return (
+                  <section
+                    key={`customSection_${sectionIndex}`}
+                    style={{marginBottom: "12px"}}
+                  >
+                    <h2
+                      className="font-bold uppercase"
+                      style={{
+                        fontSize: "11pt",
+                        borderBottom: "1px solid black",
+                        paddingBottom: "3px",
+                        marginBottom: "6px",
+                      }}
                     >
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            );
-          }
-          return acc;
-        },
-        {}
-      ),
+                      {section.title}
+                    </h2>
+                    <ul
+                      className="list-disc list-outside ml-5"
+                      style={{marginTop: "4px"}}
+                    >
+                      {section.items.map((item, itemIndex) => (
+                        <li
+                          key={itemIndex}
+                          style={{fontSize: "10pt", marginBottom: "3px"}}
+                        >
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                );
+              }
+              return null;
+            })}
+          </>
+        ),
     };
 
     return sections[sectionId] || null;
