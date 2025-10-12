@@ -10,7 +10,7 @@ const Layout = () => {
       </main>
       <footer className="bg-gray-800 text-white py-6 no-print">
         <div className="container mx-auto px-4 text-center">
-          <p>&copy; 2024 AI Resume Rebuilder. Powered by Gemini AI.</p>
+          <p>&copy; 2025 AI Resume Rebuilder. Powered by Gemini AI.</p>
         </div>
       </footer>
     </div>

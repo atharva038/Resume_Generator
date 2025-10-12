@@ -24,6 +24,13 @@ const Navbar = () => {
 
           <div className="flex items-center space-x-4">
             <Link
+              to="/templates"
+              className="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors font-medium"
+            >
+              📄 Templates
+            </Link>
+
+            <Link
               to="/upload"
               className="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
             >

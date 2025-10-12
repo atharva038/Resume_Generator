@@ -6,6 +6,7 @@ import Editor from "./pages/Editor";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import Templates from "./pages/Templates";
 import {DarkModeProvider} from "./context/DarkModeContext";
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
           <Route index element={<Home />} />
           <Route path="upload" element={<Upload />} />
           <Route path="editor" element={<Editor />} />
+          <Route path="templates" element={<Templates />} />
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
           <Route path="dashboard" element={<Dashboard />} />

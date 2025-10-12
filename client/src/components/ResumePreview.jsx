@@ -1,11 +1,15 @@
-import {useRef} from "react";
+import {useRef, forwardRef, useImperativeHandle} from "react";
 import {useReactToPrint} from "react-to-print";
 import ClassicTemplate from "./templates/ClassicTemplate";
 import ModernTemplate from "./templates/ModernTemplate";
 import MinimalTemplate from "./templates/MinimalTemplate";
 import ProfessionalTemplate from "./templates/ProfessionalTemplate";
+import ExecutiveTemplate from "./templates/ExecutiveTemplate";
+import TechTemplate from "./templates/TechTemplate";
+import CreativeTemplate from "./templates/CreativeTemplate";
+import AcademicTemplate from "./templates/AcademicTemplate";
 
-const ResumePreview = ({resumeData, template = "classic"}) => {
+const ResumePreview = forwardRef(({resumeData, template = "classic"}, ref) => {
   const componentRef = useRef();
 
   const templates = {
@@ -13,6 +17,10 @@ const ResumePreview = ({resumeData, template = "classic"}) => {
     modern: ModernTemplate,
     minimal: MinimalTemplate,
     professional: ProfessionalTemplate,
+    executive: ExecutiveTemplate,
+    tech: TechTemplate,
+    creative: CreativeTemplate,
+    academic: AcademicTemplate,
   };
 
   const SelectedTemplate = templates[template] || ClassicTemplate;
@@ -34,10 +42,15 @@ const ResumePreview = ({resumeData, template = "classic"}) => {
     `,
   });
 
+  // Expose handlePrint to parent component
+  useImperativeHandle(ref, () => ({
+    downloadPDF: handlePrint,
+  }));
+
   if (!resumeData) return null;
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col resume-preview">
       <div className="mb-3 no-print flex-shrink-0">
         <button onClick={handlePrint} className="w-full btn-primary">
           📥 Download PDF
@@ -53,6 +66,7 @@ const ResumePreview = ({resumeData, template = "classic"}) => {
       </div>
     </div>
   );
-};
+});
 
 export default ResumePreview;
+  

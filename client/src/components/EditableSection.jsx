@@ -137,6 +137,7 @@ const EditableSection = ({
               onChange={(e) => onUpdateExperience("company", e.target.value)}
               placeholder="Company Name"
               className="input-field"
+              autoComplete="off"
             />
             <input
               type="text"
@@ -144,6 +145,7 @@ const EditableSection = ({
               onChange={(e) => onUpdateExperience("title", e.target.value)}
               placeholder="Job Title"
               className="input-field"
+              autoComplete="off"
             />
           </div>
           <div className="grid grid-cols-3 gap-2">
@@ -153,6 +155,7 @@ const EditableSection = ({
               onChange={(e) => onUpdateExperience("location", e.target.value)}
               placeholder="Location"
               className="input-field"
+              autoComplete="off"
             />
             <input
               type="text"
@@ -160,6 +163,7 @@ const EditableSection = ({
               onChange={(e) => onUpdateExperience("startDate", e.target.value)}
               placeholder="Start Date"
               className="input-field"
+              autoComplete="off"
             />
             <input
               type="text"
@@ -167,6 +171,8 @@ const EditableSection = ({
               onChange={(e) => onUpdateExperience("endDate", e.target.value)}
               placeholder={experienceData.current ? "Present" : "End Date"}
               className="input-field"
+              autoComplete="off"
+              disabled={experienceData.current}
             />
           </div>
           <label className="flex items-center gap-2">
@@ -192,18 +198,26 @@ const EditableSection = ({
             onChange={(e) => onUpdateProject("name", e.target.value)}
             placeholder="Project Name"
             className="input-field font-medium"
+            autoComplete="off"
           />
           <input
             type="text"
-            value={projectData.technologies?.join(", ") || ""}
-            onChange={(e) =>
-              onUpdateProject(
-                "technologies",
-                e.target.value.split(",").map((s) => s.trim())
-              )
+            value={
+              Array.isArray(projectData.technologies)
+                ? projectData.technologies.join(", ")
+                : projectData.technologies || ""
             }
+            onChange={(e) => {
+              const value = e.target.value;
+              const techArray = value
+                .split(",")
+                .map((s) => s.trim())
+                .filter((s) => s.length > 0);
+              onUpdateProject("technologies", techArray);
+            }}
             placeholder="Technologies (comma-separated)"
             className="input-field"
+            autoComplete="off"
           />
           <input
             type="url"
@@ -211,6 +225,7 @@ const EditableSection = ({
             onChange={(e) => onUpdateProject("link", e.target.value)}
             placeholder="Project Link (optional)"
             className="input-field"
+            autoComplete="off"
           />
         </div>
       )}

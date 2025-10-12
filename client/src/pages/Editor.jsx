@@ -1,4 +1,4 @@
-import {useState, useEffect} from "react";
+import {useState, useEffect, useRef} from "react";
 import {useLocation, useNavigate} from "react-router-dom";
 import {useAuth} from "../context/AuthContext";
 import {resumeAPI} from "../services/api";
@@ -10,6 +10,14 @@ import RecommendationsPanel from "../components/RecommendationsPanel";
 import CollapsibleSection from "../components/CollapsibleSection";
 import * as EditorSections from "../components/EditorSections";
 import {getJobCategories, getJobsByCategory} from "../utils/jobProfiles";
+import ClassicTemplate from "../components/templates/ClassicTemplate";
+import ModernTemplate from "../components/templates/ModernTemplate";
+import MinimalTemplate from "../components/templates/MinimalTemplate";
+import ProfessionalTemplate from "../components/templates/ProfessionalTemplate";
+import ExecutiveTemplate from "../components/templates/ExecutiveTemplate";
+import TechTemplate from "../components/templates/TechTemplate";
+import CreativeTemplate from "../components/templates/CreativeTemplate";
+import AcademicTemplate from "../components/templates/AcademicTemplate";
 
 // Default section order (only editable resume sections)
 const DEFAULT_SECTION_ORDER = [
@@ -24,14 +32,88 @@ const DEFAULT_SECTION_ORDER = [
   "customSections",
 ];
 
+// Template configurations
+const TEMPLATES = [
+  {
+    id: "classic",
+    name: "Classic",
+    component: ClassicTemplate,
+    category: "Professional",
+    emoji: "📋",
+    atsScore: 95,
+  },
+  {
+    id: "modern",
+    name: "Modern",
+    component: ModernTemplate,
+    category: "Professional",
+    emoji: "🎨",
+    atsScore: 92,
+  },
+  {
+    id: "minimal",
+    name: "Minimal",
+    component: MinimalTemplate,
+    category: "Professional",
+    emoji: "✨",
+    atsScore: 98,
+  },
+  {
+    id: "professional",
+    name: "Professional",
+    component: ProfessionalTemplate,
+    category: "Professional",
+    emoji: "💼",
+    atsScore: 94,
+  },
+  {
+    id: "executive",
+    name: "Executive",
+    component: ExecutiveTemplate,
+    category: "Leadership",
+    emoji: "👔",
+    atsScore: 96,
+  },
+  {
+    id: "tech",
+    name: "Tech Developer",
+    component: TechTemplate,
+    category: "Tech",
+    emoji: "💻",
+    atsScore: 93,
+  },
+  {
+    id: "creative",
+    name: "Creative Designer",
+    component: CreativeTemplate,
+    category: "Creative",
+    emoji: "🎨",
+    atsScore: 88,
+  },
+  {
+    id: "academic",
+    name: "Academic Research",
+    component: AcademicTemplate,
+    category: "Academic",
+    emoji: "🎓",
+    atsScore: 97,
+  },
+];
+
 const Editor = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const {user} = useAuth();
+  const resumePreviewRef = useRef(null);
   const [resumeData, setResumeData] = useState(null);
   const [saving, setSaving] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState("classic");
+  const [selectedTemplate, setSelectedTemplate] = useState(() => {
+    // Load template from localStorage (set by Templates page) or default to "classic"
+    const savedTemplate = localStorage.getItem("selectedTemplate");
+    return savedTemplate || "classic";
+  });
+  const [showTemplateSelector, setShowTemplateSelector] = useState(false);
   const [sectionOrder, setSectionOrder] = useState(() => {
     // Load section order from localStorage or use default
     const saved = localStorage.getItem("resumeSectionOrder");
@@ -74,6 +156,9 @@ const Editor = () => {
 
     setSaving(true);
     try {
+      console.log("Saving resumeData:", resumeData);
+      console.log("Achievements being saved:", resumeData.achievements);
+
       if (resumeData._id) {
         await resumeAPI.update(resumeData._id, resumeData);
         alert("Resume updated successfully!");
@@ -82,6 +167,7 @@ const Editor = () => {
         alert("Resume saved successfully!");
       }
     } catch (err) {
+      console.error("Save error:", err);
       alert(
         "Failed to save resume: " + (err.response?.data?.error || err.message)
       );
@@ -91,6 +177,7 @@ const Editor = () => {
   };
 
   const updateField = (field, value, skipTracking = false) => {
+    console.log(`Updating field: ${field}`, value);
     setResumeData((prev) => ({...prev, [field]: value}));
   };
 
@@ -635,31 +722,111 @@ const Editor = () => {
             >
               🔄 Reset Order
             </button>
-            {/* Template Selector */}
-            <select
-              value={selectedTemplate}
-              onChange={(e) => setSelectedTemplate(e.target.value)}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm font-medium hover:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
-            >
-              <option value="classic">📋 Classic</option>
-              <option value="modern">🎨 Modern</option>
-              <option value="minimal">✨ Minimal</option>
-              <option value="professional">💼 Professional</option>
-            </select>
+            {/* Template Selector Button */}
             <button
-              onClick={() => setShowPreview(!showPreview)}
-              className="btn-secondary"
+              onClick={() => setShowTemplateSelector(true)}
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-medium hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all shadow-md hover:shadow-lg"
+              title="Change template"
             >
-              {showPreview ? "Hide" : "Show"} Preview
-            </button>
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              className="btn-primary"
-            >
-              {saving ? "Saving..." : "Save Resume"}
+              {TEMPLATES.find((t) => t.id === selectedTemplate)?.emoji} Change
+              Template
             </button>
           </div>
+        </div>
+
+        {/* Floating Action Buttons - Icon Only with Hover Tooltips */}
+        <div className="fixed right-6 top-32 z-50 flex flex-col gap-4 no-print">
+          {/* Preview Toggle Button */}
+          <button
+            onClick={() => setShowPreview(!showPreview)}
+            className={`group relative w-14 h-14 rounded-full shadow-2xl font-medium transition-all duration-300 hover:scale-110 hover:shadow-3xl ${
+              showPreview
+                ? "bg-gradient-to-br from-purple-500 via-blue-500 to-indigo-600 text-white hover:from-purple-600 hover:via-blue-600 hover:to-indigo-700"
+                : "bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 text-gray-700 dark:text-gray-300 hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-600 dark:hover:to-gray-700 border-2 border-gray-300 dark:border-gray-600"
+            }`}
+          >
+            <div className="flex items-center justify-center">
+              <span className="text-2xl">{showPreview ? "👁️" : "👁️‍🗨️"}</span>
+            </div>
+            {/* Hover Tooltip */}
+            <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-xs font-semibold rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+              {showPreview ? "Hide Preview" : "Show Preview"}
+              <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-1 border-4 border-transparent border-l-gray-900 dark:border-l-gray-700"></span>
+            </span>
+          </button>
+
+          {/* Download PDF Button */}
+          <button
+            onClick={() => {
+              if (!showPreview) {
+                setShowPreview(true);
+                setTimeout(() => {
+                  if (
+                    resumePreviewRef.current &&
+                    resumePreviewRef.current.downloadPDF
+                  ) {
+                    resumePreviewRef.current.downloadPDF();
+                  }
+                }, 300);
+              } else {
+                if (
+                  resumePreviewRef.current &&
+                  resumePreviewRef.current.downloadPDF
+                ) {
+                  resumePreviewRef.current.downloadPDF();
+                }
+              }
+            }}
+            className="group relative w-14 h-14 rounded-full bg-gradient-to-br from-green-400 via-emerald-500 to-teal-600 text-white shadow-2xl font-medium hover:from-green-500 hover:via-emerald-600 hover:to-teal-700 transition-all duration-300 hover:scale-110 hover:shadow-3xl hover:rotate-12"
+          >
+            <div className="flex items-center justify-center">
+              <span className="text-2xl">📥</span>
+            </div>
+            {/* Hover Tooltip */}
+            <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-xs font-semibold rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+              Download PDF
+              <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-1 border-4 border-transparent border-l-gray-900 dark:border-l-gray-700"></span>
+            </span>
+          </button>
+
+          {/* Save Button */}
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className={`group relative w-14 h-14 rounded-full shadow-2xl font-medium transition-all duration-300 ${
+              saving
+                ? "bg-gradient-to-br from-gray-300 to-gray-400 cursor-not-allowed"
+                : "bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 text-white hover:from-blue-500 hover:via-blue-600 hover:to-blue-700 hover:scale-110 hover:shadow-3xl hover:-rotate-12"
+            }`}
+          >
+            <div className="flex items-center justify-center">
+              <span className="text-2xl">{saving ? "⏳" : "💾"}</span>
+            </div>
+            {/* Hover Tooltip */}
+            {!saving && (
+              <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-xs font-semibold rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+                Save Resume
+                <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-1 border-4 border-transparent border-l-gray-900 dark:border-l-gray-700"></span>
+              </span>
+            )}
+          </button>
+
+          {/* Scroll to Top Button */}
+          <button
+            onClick={() => window.scrollTo({top: 0, behavior: "smooth"})}
+            className="group relative w-14 h-14 rounded-full bg-gradient-to-br from-orange-400 via-red-400 to-pink-500 text-white shadow-2xl font-medium hover:from-orange-500 hover:via-red-500 hover:to-pink-600 transition-all duration-300 hover:scale-110 hover:shadow-3xl"
+          >
+            <div className="flex items-center justify-center">
+              <span className="text-2xl transition-transform duration-300 group-hover:-translate-y-1">
+                ⬆️
+              </span>
+            </div>
+            {/* Hover Tooltip */}
+            <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-xs font-semibold rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+              Scroll to Top
+              <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-1 border-4 border-transparent border-l-gray-900 dark:border-l-gray-700"></span>
+            </span>
+          </button>
         </div>
 
         {/* Info Banner */}
@@ -773,12 +940,146 @@ const Editor = () => {
               style={{height: "calc(100vh - 6rem)"}}
             >
               <ResumePreview
+                ref={resumePreviewRef}
                 resumeData={resumeData}
                 template={selectedTemplate}
               />
             </div>
           )}
         </div>
+
+        {/* Template Selector Modal */}
+        {showTemplateSelector && (
+          <div
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100] flex items-center justify-center p-4 no-print"
+            onClick={() => setShowTemplateSelector(false)}
+          >
+            <div
+              className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal Header */}
+              <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 flex justify-between items-center">
+                <div>
+                  <h2 className="text-2xl font-bold text-white mb-1">
+                    Choose Resume Template
+                  </h2>
+                  <p className="text-blue-100">
+                    Select a template and see changes instantly
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowTemplateSelector(false)}
+                  className="text-white hover:bg-white/20 p-2 rounded-full transition-colors"
+                >
+                  <svg
+                    className="w-8 h-8"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Modal Body - Template Grid */}
+              <div className="overflow-auto max-h-[calc(90vh-140px)] p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {TEMPLATES.map((template) => (
+                    <div
+                      key={template.id}
+                      onClick={() => {
+                        setSelectedTemplate(template.id);
+                        localStorage.setItem("selectedTemplate", template.id);
+                        setShowTemplateSelector(false);
+                      }}
+                      className={`group relative bg-white dark:bg-gray-700 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden cursor-pointer transform hover:scale-105 border-4 ${
+                        selectedTemplate === template.id
+                          ? "border-blue-600 dark:border-blue-400 ring-4 ring-blue-200 dark:ring-blue-900"
+                          : "border-transparent hover:border-blue-300"
+                      }`}
+                    >
+                      {/* Current Selection Badge */}
+                      {selectedTemplate === template.id && (
+                        <div className="absolute top-2 left-2 z-10 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg flex items-center gap-1">
+                          ✓ Current
+                        </div>
+                      )}
+
+                      {/* Template Preview */}
+                      <div className="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-600">
+                        <div
+                          className="absolute inset-0 scale-[0.2] origin-top-left pointer-events-none"
+                          style={{
+                            transformOrigin: "top left",
+                            width: "210mm",
+                            height: "297mm",
+                          }}
+                        >
+                          <template.component resumeData={resumeData} />
+                        </div>
+
+                        {/* Hover Overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-blue-600/90 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
+                          <span className="text-white font-bold text-sm">
+                            Click to Apply
+                          </span>
+                        </div>
+
+                        {/* ATS Score Badge */}
+                        <div className="absolute top-2 right-2 bg-white dark:bg-gray-800 px-2 py-1 rounded-full shadow-md">
+                          <span
+                            className={`text-xs font-bold ${
+                              template.atsScore >= 95
+                                ? "text-green-500"
+                                : template.atsScore >= 90
+                                ? "text-blue-500"
+                                : "text-orange-500"
+                            }`}
+                          >
+                            {template.atsScore}%
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Template Info */}
+                      <div className="p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                            <span className="text-2xl">{template.emoji}</span>
+                            {template.name}
+                          </h3>
+                        </div>
+                        <span className="inline-block text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-1 rounded-full">
+                          {template.category}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Modal Footer */}
+              <div className="p-4 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  💡 Your resume content stays the same, only the design changes
+                </div>
+                <button
+                  onClick={() => setShowTemplateSelector(false)}
+                  className="px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

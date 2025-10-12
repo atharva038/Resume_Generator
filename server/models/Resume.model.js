@@ -70,6 +70,16 @@ const resumeSchema = new mongoose.Schema(
         link: String,
       },
     ],
+    achievements: {
+      type: [String],
+      default: [],
+    },
+    customSections: [
+      {
+        title: String,
+        content: [String],
+      },
+    ],
     rawText: {
       type: String,
       default: "",

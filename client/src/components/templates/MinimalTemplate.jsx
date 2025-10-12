@@ -153,10 +153,13 @@ const MinimalTemplate = forwardRef(({resumeData}, ref) => {
                   <span className="font-bold" style={{fontSize: "11pt"}}>
                     {project.name}
                   </span>
-                  {project.technologies && project.technologies.length > 0 && (
+                  {project.technologies && (
                     <span style={{fontSize: "9pt", color: "#6b7280"}}>
                       {" "}
-                      — {project.technologies.join(", ")}
+                      —{" "}
+                      {Array.isArray(project.technologies)
+                        ? project.technologies.join(", ")
+                        : project.technologies}
                     </span>
                   )}
                 </div>

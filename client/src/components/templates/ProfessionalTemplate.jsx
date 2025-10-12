@@ -250,7 +250,7 @@ const ProfessionalTemplate = forwardRef(({resumeData}, ref) => {
                   </a>
                 )}
               </div>
-              {project.technologies && project.technologies.length > 0 && (
+              {project.technologies && (
                 <div
                   style={{
                     fontSize: "9pt",
@@ -259,7 +259,10 @@ const ProfessionalTemplate = forwardRef(({resumeData}, ref) => {
                     fontStyle: "italic",
                   }}
                 >
-                  Technologies: {project.technologies.join(" | ")}
+                  Technologies:{" "}
+                  {Array.isArray(project.technologies)
+                    ? project.technologies.join(" | ")
+                    : project.technologies}
                 </div>
               )}
               {project.bullets && project.bullets.length > 0 && (

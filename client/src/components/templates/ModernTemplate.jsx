@@ -228,7 +228,7 @@ const ModernTemplate = forwardRef(({resumeData}, ref) => {
                   </a>
                 )}
               </div>
-              {project.technologies && project.technologies.length > 0 && (
+              {project.technologies && (
                 <div
                   style={{
                     fontSize: "9pt",
@@ -237,7 +237,9 @@ const ModernTemplate = forwardRef(({resumeData}, ref) => {
                   }}
                 >
                   <span className="font-semibold">Tech:</span>{" "}
-                  {project.technologies.join(", ")}
+                  {Array.isArray(project.technologies)
+                    ? project.technologies.join(", ")
+                    : project.technologies}
                 </div>
               )}
               {project.bullets && project.bullets.length > 0 && (

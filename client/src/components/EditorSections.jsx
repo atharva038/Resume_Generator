@@ -3,7 +3,7 @@
  * Separated components for each editable section
  */
 
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import EditableSection from "../components/EditableSection";
 import ScoreCard from "../components/ScoreCard";
 import RecommendationsPanel from "../components/RecommendationsPanel";
@@ -21,6 +21,7 @@ export const PersonalInfoSection = ({
       onChange={(e) => updateField("name", e.target.value)}
       placeholder="Full Name"
       className="input-field font-semibold text-lg"
+      autoComplete="name"
     />
     <div className="grid grid-cols-2 gap-3">
       <input
@@ -29,6 +30,7 @@ export const PersonalInfoSection = ({
         onChange={(e) => updateContact("email", e.target.value)}
         placeholder="Email"
         className="input-field"
+        autoComplete="email"
       />
       <input
         type="tel"
@@ -36,6 +38,7 @@ export const PersonalInfoSection = ({
         onChange={(e) => updateContact("phone", e.target.value)}
         placeholder="Phone"
         className="input-field"
+        autoComplete="tel"
       />
     </div>
     <input
@@ -44,6 +47,7 @@ export const PersonalInfoSection = ({
       onChange={(e) => updateContact("location", e.target.value)}
       placeholder="Location"
       className="input-field"
+      autoComplete="off"
     />
     <div className="grid grid-cols-2 gap-3">
       <input
@@ -52,6 +56,7 @@ export const PersonalInfoSection = ({
         onChange={(e) => updateContact("linkedin", e.target.value)}
         placeholder="LinkedIn URL"
         className="input-field"
+        autoComplete="url"
       />
       <input
         type="url"
@@ -59,6 +64,7 @@ export const PersonalInfoSection = ({
         onChange={(e) => updateContact("github", e.target.value)}
         placeholder="GitHub URL"
         className="input-field"
+        autoComplete="url"
       />
     </div>
   </div>
@@ -68,17 +74,18 @@ export const SkillsSection = ({resumeData, updateField}) => {
   const [skillsInput, setSkillsInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [initialized, setInitialized] = useState(false);
 
-  // Initialize skills input from existing data
-  const initializeSkillsInput = () => {
-    if (resumeData.skills && resumeData.skills.length > 0) {
+  // Initialize skills input from existing data when skills are loaded
+  useEffect(() => {
+    if (resumeData.skills && resumeData.skills.length > 0 && !initialized) {
       const allSkills = resumeData.skills
         .flatMap((group) => group.items || [])
         .join(", ");
-      return allSkills;
+      setSkillsInput(allSkills);
+      setInitialized(true);
     }
-    return "";
-  };
+  }, [resumeData.skills, initialized]);
 
   // Handle AI categorization
   const handleCategorize = async () => {
@@ -145,11 +152,12 @@ export const SkillsSection = ({resumeData, updateField}) => {
               Enter all your skills (comma-separated or line-separated)
             </label>
             <textarea
-              value={skillsInput || initializeSkillsInput()}
+              value={skillsInput}
               onChange={(e) => setSkillsInput(e.target.value)}
               placeholder="e.g., JavaScript, React, Node.js, Python, Docker, AWS, MongoDB, Git, Problem Solving, Team Leadership"
               className="input-field min-h-[120px] resize-y"
               rows={5}
+              autoComplete="off"
             />
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
               💡 Tip: Just list all your skills and AI will automatically
@@ -217,12 +225,13 @@ export const SkillsSection = ({resumeData, updateField}) => {
                   <div className="flex gap-2 mb-2">
                     <input
                       type="text"
-                      value={skillGroup.category}
+                      value={skillGroup.category || ""}
                       onChange={(e) =>
                         updateSkillCategory(index, "category", e.target.value)
                       }
                       placeholder="Category Name"
                       className="input-field flex-1 font-semibold"
+                      autoComplete="off"
                     />
                     <button
                       onClick={() => removeSkillCategory(index)}
@@ -233,20 +242,23 @@ export const SkillsSection = ({resumeData, updateField}) => {
                     </button>
                   </div>
                   <textarea
-                    value={skillGroup.items?.join(", ") || ""}
-                    onChange={(e) =>
-                      updateSkillCategory(
-                        index,
-                        "items",
-                        e.target.value
-                          .split(",")
-                          .map((s) => s.trim())
-                          .filter(Boolean)
-                      )
+                    value={
+                      Array.isArray(skillGroup.items)
+                        ? skillGroup.items.join(", ")
+                        : skillGroup.items || ""
                     }
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      const itemsArray = value
+                        .split(",")
+                        .map((s) => s.trim())
+                        .filter(Boolean);
+                      updateSkillCategory(index, "items", itemsArray);
+                    }}
                     placeholder="Skills (comma-separated)"
                     className="input-field min-h-[60px] resize-y"
                     rows={2}
+                    autoComplete="off"
                   />
                 </div>
               ))}
@@ -525,31 +537,34 @@ export const CertificationsSection = ({
         <div className="space-y-2">
           <input
             type="text"
-            value={cert.name}
+            value={cert.name || ""}
             onChange={(e) =>
               updateArrayItem("certifications", index, "name", e.target.value)
             }
             placeholder="Certification Name"
             className="input-field"
+            autoComplete="off"
           />
           <input
             type="text"
-            value={cert.issuer}
+            value={cert.issuer || ""}
             onChange={(e) =>
               updateArrayItem("certifications", index, "issuer", e.target.value)
             }
             placeholder="Issuing Organization"
             className="input-field"
+            autoComplete="off"
           />
           <div className="grid grid-cols-2 gap-2">
             <input
               type="text"
-              value={cert.date}
+              value={cert.date || ""}
               onChange={(e) =>
                 updateArrayItem("certifications", index, "date", e.target.value)
               }
               placeholder="Date"
               className="input-field"
+              autoComplete="off"
             />
             <input
               type="text"
@@ -564,6 +579,7 @@ export const CertificationsSection = ({
               }
               placeholder="Credential ID"
               className="input-field"
+              autoComplete="off"
             />
           </div>
           <input
@@ -574,6 +590,7 @@ export const CertificationsSection = ({
             }
             placeholder="Credential URL"
             className="input-field"
+            autoComplete="off"
           />
         </div>
       </div>
@@ -586,14 +603,15 @@ export const AchievementsSection = ({resumeData, updateField}) => {
   const [achievementsInput, setAchievementsInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [initialized, setInitialized] = useState(false);
 
-  // Initialize input from existing data
-  const initializeInput = () => {
-    if (achievements && achievements.length > 0) {
-      return achievements.join("\n");
+  // Initialize input from existing data when achievements are loaded
+  useEffect(() => {
+    if (achievements && achievements.length > 0 && !initialized) {
+      setAchievementsInput(achievements.join("\n"));
+      setInitialized(true);
     }
-    return "";
-  };
+  }, [achievements, initialized]);
 
   // Handle AI segregation
   const handleSegregate = async () => {
@@ -641,6 +659,26 @@ export const AchievementsSection = ({resumeData, updateField}) => {
     updateField("achievements", [...achievements, ""]);
   };
 
+  // Manual save - split by newlines and add to achievements
+  const handleManualSave = () => {
+    if (!achievementsInput.trim()) {
+      setError("Please enter some achievements first");
+      return;
+    }
+
+    // Split by newlines and filter out empty lines
+    const newAchievements = achievementsInput
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0);
+
+    if (newAchievements.length > 0) {
+      updateField("achievements", [...achievements, ...newAchievements]);
+      setAchievementsInput("");
+      setError("");
+    }
+  };
+
   return (
     <>
       <div className="mb-4">
@@ -658,11 +696,12 @@ export const AchievementsSection = ({resumeData, updateField}) => {
               Enter your achievements (paragraph or mixed format)
             </label>
             <textarea
-              value={achievementsInput || initializeInput()}
+              value={achievementsInput}
               onChange={(e) => setAchievementsInput(e.target.value)}
               placeholder="e.g., Won first place in national coding competition with 500+ participants. Led a team of 10 developers to successfully complete a major project 2 weeks ahead of schedule. Published 3 research papers in top-tier AI conferences."
               className="input-field min-h-[120px] resize-y"
               rows={5}
+              autoComplete="off"
             />
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
               💡 Tip: Write naturally and AI will format them into professional
@@ -670,40 +709,56 @@ export const AchievementsSection = ({resumeData, updateField}) => {
             </p>
           </div>
 
-          {/* Segregate button */}
-          <button
-            onClick={handleSegregate}
-            disabled={isLoading || !achievementsInput.trim()}
-            className={`w-full py-3 px-4 rounded-lg font-medium transition-all ${
-              isLoading || !achievementsInput.trim()
-                ? "bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
-                : "bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white shadow-md hover:shadow-lg"
-            }`}
-          >
-            {isLoading ? (
-              <span className="flex items-center justify-center gap-2">
-                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                    fill="none"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
-                </svg>
-                Formatting with AI...
-              </span>
-            ) : (
-              "🤖 Format Achievements with AI"
-            )}
-          </button>
+          {/* Action buttons */}
+          <div className="flex gap-2">
+            {/* Manual Save button */}
+            <button
+              onClick={handleManualSave}
+              disabled={!achievementsInput.trim()}
+              className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all ${
+                !achievementsInput.trim()
+                  ? "bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
+                  : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg"
+              }`}
+            >
+              ➕ Add to List
+            </button>
+
+            {/* AI Segregate button */}
+            <button
+              onClick={handleSegregate}
+              disabled={isLoading || !achievementsInput.trim()}
+              className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all ${
+                isLoading || !achievementsInput.trim()
+                  ? "bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
+                  : "bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white shadow-md hover:shadow-lg"
+              }`}
+            >
+              {isLoading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      fill="none"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  Formatting with AI...
+                </span>
+              ) : (
+                "🤖 Format with AI"
+              )}
+            </button>
+          </div>
 
           {/* Error message */}
           {error && (
@@ -734,10 +789,11 @@ export const AchievementsSection = ({resumeData, updateField}) => {
                 <div key={index} className="flex gap-2">
                   <input
                     type="text"
-                    value={achievement}
+                    value={achievement || ""}
                     onChange={(e) => updateAchievement(index, e.target.value)}
                     placeholder="Enter achievement"
                     className="input-field flex-1"
+                    autoComplete="off"
                   />
                   <button
                     onClick={() => removeAchievement(index)}

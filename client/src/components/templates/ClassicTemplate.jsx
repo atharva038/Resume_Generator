@@ -162,12 +162,15 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
                   </a>
                 )}
               </div>
-              {project.technologies && project.technologies.length > 0 && (
+              {project.technologies && (
                 <div
                   className="italic"
                   style={{fontSize: "9pt", marginBottom: "3px"}}
                 >
-                  Technologies: {project.technologies.join(", ")}
+                  Technologies:{" "}
+                  {Array.isArray(project.technologies)
+                    ? project.technologies.join(", ")
+                    : project.technologies}
                 </div>
               )}
               {project.bullets && project.bullets.length > 0 && (
