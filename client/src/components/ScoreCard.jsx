@@ -18,9 +18,11 @@ const ScoreCard = ({resumeData, expanded = false}) => {
 
   // Color based on score
   const getColor = (score) => {
-    if (score >= 80) return "text-green-600 border-green-500 bg-green-50";
-    if (score >= 60) return "text-yellow-600 border-yellow-500 bg-yellow-50";
-    return "text-red-600 border-red-500 bg-red-50";
+    if (score >= 80)
+      return "text-green-600 border-green-500 bg-green-50 dark:bg-green-900/20 dark:border-green-700 dark:text-green-400";
+    if (score >= 60)
+      return "text-yellow-600 border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20 dark:border-yellow-700 dark:text-yellow-400";
+    return "text-red-600 border-red-500 bg-red-50 dark:bg-red-900/20 dark:border-red-700 dark:text-red-400";
   };
 
   const getProgressColor = (score) => {
@@ -40,12 +42,16 @@ const ScoreCard = ({resumeData, expanded = false}) => {
       {/* Header */}
       <div className="flex justify-between items-start mb-4">
         <div>
-          <h3 className="text-lg font-bold text-gray-900">ATS Score</h3>
-          <p className="text-sm text-gray-600">Resume Quality Analysis</p>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+            ATS Score
+          </h3>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Resume Quality Analysis
+          </p>
         </div>
         <button
           onClick={() => setShowDetails(!showDetails)}
-          className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+          className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-500 font-medium"
         >
           {showDetails ? "Hide Details" : "Show Details"}
         </button>
@@ -81,7 +87,9 @@ const ScoreCard = ({resumeData, expanded = false}) => {
             <span className="text-4xl font-bold" style={{color: progressColor}}>
               {totalScore}
             </span>
-            <span className="text-sm text-gray-600">/ 100</span>
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              / 100
+            </span>
           </div>
         </div>
 
@@ -91,19 +99,25 @@ const ScoreCard = ({resumeData, expanded = false}) => {
           >
             {level.label}
           </div>
-          <p className="text-sm text-gray-700">{level.description}</p>
+          <p className="text-sm text-gray-700 dark:text-gray-300">
+            {level.description}
+          </p>
 
           {/* Quick stats */}
           <div className="grid grid-cols-2 gap-2 mt-3">
             <div className="text-xs">
-              <span className="text-gray-500">Experience:</span>
-              <span className="font-semibold ml-1">
+              <span className="text-gray-500 dark:text-gray-400">
+                Experience:
+              </span>
+              <span className="font-semibold ml-1 dark:text-gray-300">
                 {breakdown.experience.score}/{breakdown.experience.maxScore}
               </span>
             </div>
             <div className="text-xs">
-              <span className="text-gray-500">Keywords:</span>
-              <span className="font-semibold ml-1">
+              <span className="text-gray-500 dark:text-gray-400">
+                Keywords:
+              </span>
+              <span className="font-semibold ml-1 dark:text-gray-300">
                 {breakdown.keywords.score}/{breakdown.keywords.maxScore}
               </span>
             </div>
@@ -113,25 +127,25 @@ const ScoreCard = ({resumeData, expanded = false}) => {
 
       {/* Expandable Details */}
       {showDetails && (
-        <div className="border-t pt-4 space-y-4">
+        <div className="border-t dark:border-gray-700 pt-4 space-y-4">
           {/* Category Breakdown */}
           <div>
-            <h4 className="font-semibold text-gray-900 mb-3 text-sm">
+            <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-3 text-sm">
               Score Breakdown
             </h4>
             <div className="space-y-2">
               {Object.entries(breakdown).map(([category, data]) => (
                 <div key={category} className="group">
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-xs font-medium text-gray-700 capitalize">
+                    <span className="text-xs font-medium text-gray-700 dark:text-gray-300 capitalize">
                       {category === "extras" ? "Projects & Certs" : category}
                     </span>
-                    <span className="text-xs font-semibold">
+                    <span className="text-xs font-semibold dark:text-gray-300">
                       {data.score}/{data.maxScore}
                     </span>
                   </div>
                   {/* Progress bar */}
-                  <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
                     <div
                       className="h-2 rounded-full transition-all duration-500"
                       style={{
@@ -143,7 +157,9 @@ const ScoreCard = ({resumeData, expanded = false}) => {
                     />
                   </div>
                   {/* Details tooltip */}
-                  <p className="text-xs text-gray-500 mt-1">{data.details}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    {data.details}
+                  </p>
                 </div>
               ))}
             </div>
@@ -151,32 +167,36 @@ const ScoreCard = ({resumeData, expanded = false}) => {
 
           {/* Top Recommendations */}
           <div>
-            <h4 className="font-semibold text-gray-900 mb-3 text-sm flex items-center gap-2">
+            <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-3 text-sm flex items-center gap-2">
               <span>🎯</span>
               Top Recommendations
             </h4>
             <div className="space-y-2">
               {recommendations.slice(0, 5).map((rec, index) => (
                 <div key={index} className="flex items-start gap-2 text-xs">
-                  <span className="text-primary-600 mt-0.5">•</span>
-                  <span className="text-gray-700 flex-1">{rec}</span>
+                  <span className="text-primary-600 dark:text-primary-400 mt-0.5">
+                    •
+                  </span>
+                  <span className="text-gray-700 dark:text-gray-300 flex-1">
+                    {rec}
+                  </span>
                 </div>
               ))}
             </div>
             {recommendations.length > 5 && (
-              <button className="text-xs text-primary-600 hover:text-primary-700 font-medium mt-2">
+              <button className="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-500 font-medium mt-2">
                 View all {recommendations.length} recommendations →
               </button>
             )}
           </div>
 
           {/* Improvement Tips */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-            <h4 className="font-semibold text-blue-900 mb-2 text-xs flex items-center gap-1">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 dark:bg-blue-900/20 dark:border-blue-800">
+            <h4 className="font-semibold text-blue-900 dark:text-blue-300 mb-2 text-xs flex items-center gap-1">
               <span>💡</span>
               Quick Tips to Improve
             </h4>
-            <ul className="text-xs text-blue-800 space-y-1">
+            <ul className="text-xs text-blue-800 dark:text-blue-400 space-y-1">
               <li>
                 • Start bullets with action verbs (Led, Developed, Achieved)
               </li>
@@ -191,14 +211,16 @@ const ScoreCard = ({resumeData, expanded = false}) => {
 
       {/* Progress indicator */}
       {totalScore < 100 && (
-        <div className="mt-4 pt-4 border-t">
+        <div className="mt-4 pt-4 border-t dark:border-gray-700">
           <div className="flex items-center justify-between text-xs">
-            <span className="text-gray-600">Progress to Excellent (90+)</span>
-            <span className="font-semibold text-gray-900">
+            <span className="text-gray-600 dark:text-gray-400">
+              Progress to Excellent (90+)
+            </span>
+            <span className="font-semibold text-gray-900 dark:text-gray-100">
               {Math.max(0, 90 - totalScore)} points needed
             </span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 mt-2">
             <div
               className="bg-gradient-to-r from-yellow-500 to-green-500 h-1.5 rounded-full transition-all duration-500"
               style={{width: `${(totalScore / 90) * 100}%`}}

@@ -42,17 +42,19 @@ const Register = () => {
     <div className="container mx-auto px-4 py-16">
       <div className="max-w-md mx-auto">
         <div className="card p-8">
-          <h1 className="text-3xl font-bold text-center mb-6">Sign Up</h1>
+          <h1 className="text-3xl font-bold text-center mb-6 dark:text-gray-100">
+            Sign Up
+          </h1>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600">
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400">
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
                 Full Name
               </label>
               <input
@@ -65,7 +67,7 @@ const Register = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
                 Email
               </label>
               <input
@@ -78,7 +80,7 @@ const Register = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
                 Password
               </label>
               <input
@@ -92,7 +94,7 @@ const Register = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
                 Confirm Password
               </label>
               <input
@@ -113,9 +115,12 @@ const Register = () => {
             </button>
           </form>
 
-          <p className="mt-4 text-center text-gray-600">
+          <p className="mt-4 text-center text-gray-600 dark:text-gray-400">
             Already have an account?{" "}
-            <a href="/login" className="text-primary-600 hover:underline">
+            <a
+              href="/login"
+              className="text-primary-600 dark:text-primary-400 hover:underline"
+            >
               Login
             </a>
           </p>

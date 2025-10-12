@@ -4,7 +4,7 @@ const ModernTemplate = forwardRef(({resumeData}, ref) => {
   return (
     <div
       ref={ref}
-      className="resume-preview bg-white shadow-lg border border-gray-300 font-resume"
+      className="resume-preview !bg-white !text-black shadow-lg border border-gray-300 font-resume"
       style={{
         width: "8.5in",
         minHeight: "11in",
@@ -41,14 +41,24 @@ const ModernTemplate = forwardRef(({resumeData}, ref) => {
             <span>📍 {resumeData.contact.location}</span>
           )}
           {resumeData.contact?.linkedin && (
-            <span>
-              🔗 {resumeData.contact.linkedin.replace(/^https?:\/\//, "")}
-            </span>
+            <a
+              href={resumeData.contact.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{color: "#1a56db", textDecoration: "underline"}}
+            >
+              🔗 LinkedIn
+            </a>
           )}
           {resumeData.contact?.github && (
-            <span>
-              💻 {resumeData.contact.github.replace(/^https?:\/\//, "")}
-            </span>
+            <a
+              href={resumeData.contact.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{color: "#1a56db", textDecoration: "underline"}}
+            >
+              💻 GitHub
+            </a>
           )}
         </div>
       </header>
@@ -191,8 +201,32 @@ const ModernTemplate = forwardRef(({resumeData}, ref) => {
           </h2>
           {resumeData.projects.map((project, index) => (
             <div key={index} style={{marginBottom: "10px"}}>
-              <div className="font-bold" style={{fontSize: "11pt"}}>
-                {project.name}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "baseline",
+                  flexWrap: "wrap",
+                }}
+              >
+                <div className="font-bold" style={{fontSize: "11pt"}}>
+                  {project.name}
+                </div>
+                {project.link && (
+                  <a
+                    href={project.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      fontSize: "9pt",
+                      color: "#1a56db",
+                      textDecoration: "underline",
+                      marginLeft: "8px",
+                    }}
+                  >
+                    🔗 Link
+                  </a>
+                )}
               </div>
               {project.technologies && project.technologies.length > 0 && (
                 <div
@@ -292,6 +326,72 @@ const ModernTemplate = forwardRef(({resumeData}, ref) => {
             </div>
           ))}
         </section>
+      )}
+
+      {/* Achievements */}
+      {resumeData.achievements && resumeData.achievements.length > 0 && (
+        <section style={{marginBottom: "12px"}}>
+          <h2
+            className="font-bold uppercase"
+            style={{
+              fontSize: "12pt",
+              color: "#1a56db",
+              marginBottom: "6px",
+              letterSpacing: "0.5px",
+            }}
+          >
+            ACHIEVEMENTS
+          </h2>
+          <ul
+            className="list-disc list-outside ml-5"
+            style={{marginTop: "4px"}}
+          >
+            {resumeData.achievements.map((achievement, index) => (
+              <li key={index} style={{fontSize: "10pt", marginBottom: "3px"}}>
+                {achievement}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {/* Custom Sections */}
+      {resumeData.customSections && resumeData.customSections.length > 0 && (
+        <>
+          {resumeData.customSections.map((section, sectionIndex) => {
+            if (section.title && section.items && section.items.length > 0) {
+              return (
+                <section key={sectionIndex} style={{marginBottom: "12px"}}>
+                  <h2
+                    className="font-bold uppercase"
+                    style={{
+                      fontSize: "12pt",
+                      color: "#1a56db",
+                      marginBottom: "6px",
+                      letterSpacing: "0.5px",
+                    }}
+                  >
+                    {section.title.toUpperCase()}
+                  </h2>
+                  <ul
+                    className="list-disc list-outside ml-5"
+                    style={{marginTop: "4px"}}
+                  >
+                    {section.items.map((item, itemIndex) => (
+                      <li
+                        key={itemIndex}
+                        style={{fontSize: "10pt", marginBottom: "3px"}}
+                      >
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              );
+            }
+            return null;
+          })}
+        </>
       )}
     </div>
   );

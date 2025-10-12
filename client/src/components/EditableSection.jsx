@@ -96,7 +96,7 @@ const EditableSection = ({
           {onMoveUp && (
             <button
               onClick={onMoveUp}
-              className="text-gray-400 hover:text-gray-600 p-1"
+              className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 p-1"
             >
               ↑
             </button>
@@ -104,7 +104,7 @@ const EditableSection = ({
           {onMoveDown && (
             <button
               onClick={onMoveDown}
-              className="text-gray-400 hover:text-gray-600 p-1"
+              className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 p-1"
             >
               ↓
             </button>
@@ -112,14 +112,14 @@ const EditableSection = ({
           <button
             onClick={handleEnhance}
             disabled={enhancing}
-            className="text-primary-600 hover:text-primary-700 font-medium px-3 py-1 rounded border border-primary-600 hover:bg-primary-50 transition-colors disabled:opacity-50"
+            className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-500 font-medium px-3 py-1 rounded border border-primary-600 dark:border-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors disabled:opacity-50"
           >
             {enhancing ? "✨ Enhancing..." : "✨ Enhance"}
           </button>
           {onRemove && (
             <button
               onClick={onRemove}
-              className="text-red-600 hover:text-red-700 font-medium px-3 py-1"
+              className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-500 font-medium px-3 py-1"
             >
               Remove
             </button>
@@ -176,7 +176,9 @@ const EditableSection = ({
               onChange={(e) => onUpdateExperience("current", e.target.checked)}
               className="rounded"
             />
-            <span className="text-sm text-gray-600">Current position</span>
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              Current position
+            </span>
           </label>
         </div>
       )}
@@ -214,14 +216,14 @@ const EditableSection = ({
       )}
 
       {/* TipTap Editor */}
-      <div className="border border-gray-300 rounded-lg overflow-hidden">
-        <div className="bg-gray-50 border-b border-gray-300 p-2 flex gap-2">
+      <div className="border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
+        <div className="bg-gray-50 dark:bg-gray-800 border-b border-gray-300 dark:border-gray-600 p-2 flex gap-2">
           <button
             onClick={() => editor?.chain().focus().toggleBold().run()}
             className={`px-2 py-1 rounded ${
               editor?.isActive("bold")
-                ? "bg-primary-100 text-primary-700"
-                : "hover:bg-gray-200"
+                ? "bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400"
+                : "hover:bg-gray-200 dark:hover:bg-gray-700"
             }`}
           >
             <strong>B</strong>
@@ -230,8 +232,8 @@ const EditableSection = ({
             onClick={() => editor?.chain().focus().toggleItalic().run()}
             className={`px-2 py-1 rounded ${
               editor?.isActive("italic")
-                ? "bg-primary-100 text-primary-700"
-                : "hover:bg-gray-200"
+                ? "bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400"
+                : "hover:bg-gray-200 dark:hover:bg-gray-700"
             }`}
           >
             <em>I</em>
@@ -241,18 +243,21 @@ const EditableSection = ({
               onClick={() => editor?.chain().focus().toggleBulletList().run()}
               className={`px-2 py-1 rounded ${
                 editor?.isActive("bulletList")
-                  ? "bg-primary-100 text-primary-700"
-                  : "hover:bg-gray-200"
+                  ? "bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400"
+                  : "hover:bg-gray-200 dark:hover:bg-gray-700"
               }`}
             >
               • List
             </button>
           )}
         </div>
-        <EditorContent editor={editor} className="prose max-w-none" />
+        <EditorContent
+          editor={editor}
+          className="prose dark:prose-invert max-w-none"
+        />
       </div>
 
-      <p className="text-xs text-gray-500 mt-2">
+      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
         💡 Tip: Click "Enhance" to optimize this content with AI for better ATS
         compatibility
       </p>

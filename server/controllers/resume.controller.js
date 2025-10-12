@@ -4,6 +4,9 @@ import {
   parseResumeWithAI,
   enhanceContentWithAI,
   generateSummaryWithAI,
+  categorizeSkillsWithAI,
+  segregateAchievementsWithAI,
+  processCustomSectionWithAI,
 } from "../services/gemini.service.js";
 
 /**
@@ -262,6 +265,104 @@ export const deleteResume = async (req, res) => {
     console.error("Delete resume error:", error);
     res.status(500).json({
       error: error.message || "Failed to delete resume",
+    });
+  }
+};
+
+/**
+ * Categorize skills using AI
+ * POST /api/resume/categorize-skills
+ */
+export const categorizeSkills = async (req, res) => {
+  try {
+    const {skills} = req.body;
+
+    if (!skills) {
+      return res.status(400).json({error: "Skills text is required"});
+    }
+
+    if (typeof skills !== "string") {
+      return res.status(400).json({error: "Skills must be a string"});
+    }
+
+    // Categorize skills using Gemini AI
+    const categorizedSkills = await categorizeSkillsWithAI(skills);
+
+    res.json({
+      message: "Skills categorized successfully",
+      skills: categorizedSkills,
+    });
+  } catch (error) {
+    console.error("Categorize skills error:", error);
+    res.status(500).json({
+      error: error.message || "Failed to categorize skills",
+    });
+  }
+};
+
+/**
+ * Segregate achievements using AI
+ * POST /api/resume/segregate-achievements
+ */
+export const segregateAchievements = async (req, res) => {
+  try {
+    const {achievements} = req.body;
+
+    if (!achievements) {
+      return res.status(400).json({error: "Achievements text is required"});
+    }
+
+    if (typeof achievements !== "string") {
+      return res.status(400).json({error: "Achievements must be a string"});
+    }
+
+    // Segregate achievements using Gemini AI
+    const segregatedAchievements = await segregateAchievementsWithAI(
+      achievements
+    );
+
+    res.json({
+      message: "Achievements segregated successfully",
+      achievements: segregatedAchievements,
+    });
+  } catch (error) {
+    console.error("Segregate achievements error:", error);
+    res.status(500).json({
+      error: error.message || "Failed to segregate achievements",
+    });
+  }
+};
+
+/**
+ * Process custom section using AI
+ * POST /api/resume/process-custom-section
+ */
+export const processCustomSection = async (req, res) => {
+  try {
+    const {content, title} = req.body;
+
+    if (!content) {
+      return res.status(400).json({error: "Content is required"});
+    }
+
+    if (typeof content !== "string") {
+      return res.status(400).json({error: "Content must be a string"});
+    }
+
+    // Process custom section using Gemini AI
+    const processedContent = await processCustomSectionWithAI(
+      content,
+      title || "Custom Section"
+    );
+
+    res.json({
+      message: "Custom section processed successfully",
+      content: processedContent,
+    });
+  } catch (error) {
+    console.error("Process custom section error:", error);
+    res.status(500).json({
+      error: error.message || "Failed to process custom section",
     });
   }
 };

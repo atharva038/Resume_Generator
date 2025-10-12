@@ -6,19 +6,22 @@ import Editor from "./pages/Editor";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import {DarkModeProvider} from "./context/DarkModeContext";
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Layout />}>
-        <Route index element={<Home />} />
-        <Route path="upload" element={<Upload />} />
-        <Route path="editor" element={<Editor />} />
-        <Route path="login" element={<Login />} />
-        <Route path="register" element={<Register />} />
-        <Route path="dashboard" element={<Dashboard />} />
-      </Route>
-    </Routes>
+    <DarkModeProvider>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route path="upload" element={<Upload />} />
+          <Route path="editor" element={<Editor />} />
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
+          <Route path="dashboard" element={<Dashboard />} />
+        </Route>
+      </Routes>
+    </DarkModeProvider>
   );
 }
 

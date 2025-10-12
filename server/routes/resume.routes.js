@@ -10,6 +10,9 @@ import {
   getResumes,
   getResumeById,
   deleteResume,
+  categorizeSkills,
+  segregateAchievements,
+  processCustomSection,
 } from "../controllers/resume.controller.js";
 
 const router = express.Router();
@@ -22,6 +25,15 @@ router.post("/enhance", enhanceContent);
 
 // Public route - generate summary (no auth required for demo)
 router.post("/generate-summary", generateSummary);
+
+// Public route - categorize skills with AI (no auth required for demo)
+router.post("/categorize-skills", categorizeSkills);
+
+// Public route - segregate achievements with AI (no auth required for demo)
+router.post("/segregate-achievements", segregateAchievements);
+
+// Public route - process custom section with AI (no auth required for demo)
+router.post("/process-custom-section", processCustomSection);
 
 // Protected routes - require authentication
 router.post("/save", authenticateToken, saveResume);

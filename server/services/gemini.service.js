@@ -223,8 +223,212 @@ Return only the summary text without any additional formatting or explanations.`
   }
 }
 
+/**
+ * Categorize skills using AI into relevant categories
+ * @param {string} skillsText - Comma-separated or line-separated skills
+ * @returns {Promise<Array>} - Categorized skills array
+ */
+export async function categorizeSkillsWithAI(skillsText) {
+  try {
+    const model = genAI.getGenerativeModel({model: "gemini-2.5-flash"});
+
+    const prompt = `You are an expert technical recruiter. Categorize the following skills into relevant categories.
+
+RULES:
+1. Common categories: Programming Languages, Frameworks & Libraries, Databases, Cloud & DevOps, Tools & Technologies, Soft Skills, etc.
+2. Create categories that make sense for the skills provided
+3. Each skill should appear in only ONE category
+4. Use clear, professional category names
+5. If a skill is vague or unclear, place it in the most appropriate category
+6. Remove duplicates and normalize skill names (e.g., "React.js" → "React", "nodejs" → "Node.js")
+
+Skills to categorize:
+${skillsText}
+
+Return ONLY a valid JSON array in this exact format:
+[
+  {
+    "category": "Programming Languages",
+    "items": ["JavaScript", "Python", "Java"]
+  },
+  {
+    "category": "Frameworks & Libraries", 
+    "items": ["React", "Node.js", "Express"]
+  }
+]
+
+Return ONLY valid JSON with no additional text, explanations, or markdown formatting.`;
+
+    console.log("🤖 Calling Gemini API to categorize skills...");
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    let text = response.text().trim();
+
+    // Clean response - remove markdown code blocks if present
+    if (text.startsWith("```json")) {
+      text = text.replace(/^```json\n/, "").replace(/\n```$/, "");
+    } else if (text.startsWith("```")) {
+      text = text.replace(/^```\n/, "").replace(/\n```$/, "");
+    }
+
+    // Parse JSON
+    const categorizedSkills = JSON.parse(text);
+
+    // Validate structure
+    if (!Array.isArray(categorizedSkills)) {
+      throw new Error("Invalid response format from AI");
+    }
+
+    console.log(
+      "✅ Skills categorized successfully:",
+      categorizedSkills.length,
+      "categories"
+    );
+    return categorizedSkills;
+  } catch (error) {
+    console.error("❌ Gemini skill categorization error:", error.message);
+    throw new Error(`Failed to categorize skills with AI: ${error.message}`);
+  }
+}
+
+/**
+ * Segregate achievements from paragraph format into bullet points
+ * @param {string} achievementsText - Paragraph or mixed format achievements
+ * @returns {Promise<Array>} - Array of achievement bullet points
+ */
+export async function segregateAchievementsWithAI(achievementsText) {
+  try {
+    const model = genAI.getGenerativeModel({model: "gemini-2.5-flash"});
+
+    const prompt = `You are an expert resume writer. Convert the following achievements text into clear, impactful bullet points.
+
+RULES:
+1. Each achievement should be a separate bullet point
+2. Start each bullet with a strong action verb (Led, Achieved, Developed, Increased, etc.)
+3. Quantify achievements with numbers, percentages, or metrics when possible
+4. Keep each bullet concise (1-2 lines maximum)
+5. Remove redundant information
+6. Focus on impact and results
+7. Use past tense for completed achievements
+8. Remove personal pronouns (I, my, we)
+9. If text is already in bullet format, improve and optimize it
+
+Achievements text:
+${achievementsText}
+
+Return ONLY a valid JSON array of achievement strings:
+["Achievement 1", "Achievement 2", "Achievement 3"]
+
+Return ONLY valid JSON with no additional text, explanations, or markdown formatting.`;
+
+    console.log("🤖 Calling Gemini API to segregate achievements...");
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    let text = response.text().trim();
+
+    // Clean response - remove markdown code blocks if present
+    if (text.startsWith("```json")) {
+      text = text.replace(/^```json\n/, "").replace(/\n```$/, "");
+    } else if (text.startsWith("```")) {
+      text = text.replace(/^```\n/, "").replace(/\n```$/, "");
+    }
+
+    // Parse JSON
+    const achievements = JSON.parse(text);
+
+    // Validate structure
+    if (!Array.isArray(achievements)) {
+      throw new Error("Invalid response format from AI");
+    }
+
+    console.log(
+      "✅ Achievements segregated successfully:",
+      achievements.length,
+      "items"
+    );
+    return achievements;
+  } catch (error) {
+    console.error("❌ Gemini achievement segregation error:", error.message);
+    throw new Error(
+      `Failed to segregate achievements with AI: ${error.message}`
+    );
+  }
+}
+
+/**
+ * Process custom section content with AI
+ * @param {string} content - Custom section content (paragraph or mixed format)
+ * @param {string} sectionTitle - Title of the custom section for context
+ * @returns {Promise<Array>} - Array of formatted bullet points
+ */
+export async function processCustomSectionWithAI(
+  content,
+  sectionTitle = "Custom Section"
+) {
+  try {
+    const model = genAI.getGenerativeModel({model: "gemini-2.5-flash"});
+
+    const prompt = `You are an expert resume writer. Format the following content from a resume section titled "${sectionTitle}" into clear, professional bullet points.
+
+RULES:
+1. Convert content into clear, concise bullet points
+2. Start each bullet with a strong action verb when appropriate
+3. Quantify with numbers, percentages, or metrics when available
+4. Keep each bullet concise (1-2 lines maximum)
+5. Remove redundant or vague information
+6. Focus on specific details and achievements
+7. Use professional language appropriate for a resume
+8. Remove personal pronouns (I, my, we)
+9. If already in bullet format, improve and optimize it
+
+Section: ${sectionTitle}
+Content:
+${content}
+
+Return ONLY a valid JSON array of formatted strings:
+["Point 1", "Point 2", "Point 3"]
+
+Return ONLY valid JSON with no additional text, explanations, or markdown formatting.`;
+
+    console.log(
+      `🤖 Calling Gemini API to process custom section: ${sectionTitle}...`
+    );
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    let text = response.text().trim();
+
+    // Clean response - remove markdown code blocks if present
+    if (text.startsWith("```json")) {
+      text = text.replace(/^```json\n/, "").replace(/\n```$/, "");
+    } else if (text.startsWith("```")) {
+      text = text.replace(/^```\n/, "").replace(/\n```$/, "");
+    }
+
+    // Parse JSON
+    const formattedContent = JSON.parse(text);
+
+    // Validate structure
+    if (!Array.isArray(formattedContent)) {
+      throw new Error("Invalid response format from AI");
+    }
+
+    console.log(
+      `✅ Custom section processed successfully: ${formattedContent.length} items`
+    );
+    return formattedContent;
+  } catch (error) {
+    console.error("❌ Gemini custom section processing error:", error.message);
+    throw new Error(
+      `Failed to process custom section with AI: ${error.message}`
+    );
+  }
+}
+
 export default {
   parseResumeWithAI,
   enhanceContentWithAI,
   generateSummaryWithAI,
+  categorizeSkillsWithAI,
+  segregateAchievementsWithAI,
+  processCustomSectionWithAI,
 };

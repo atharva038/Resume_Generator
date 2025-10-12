@@ -44,12 +44,12 @@ const CollapsibleSection = ({
     >
       {/* Header with collapse toggle and drag handle */}
       <div
-        className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 rounded-t-lg transition-colors"
+        className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded-t-lg transition-colors"
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center gap-3">
           {/* Drag handle */}
-          <div className="cursor-move text-gray-400 hover:text-gray-600">
+          <div className="cursor-move text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">
             <svg
               width="20"
               height="20"
@@ -67,7 +67,7 @@ const CollapsibleSection = ({
 
           {/* Item count badge (if applicable) */}
           {children && children.props && children.props.items && (
-            <span className="text-xs bg-primary-100 text-primary-700 px-2 py-1 rounded-full font-medium">
+            <span className="text-xs bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 px-2 py-1 rounded-full font-medium">
               {children.props.items.length} items
             </span>
           )}
@@ -75,7 +75,7 @@ const CollapsibleSection = ({
 
         {/* Expand/collapse icon */}
         <div
-          className="text-gray-400 transition-transform duration-200"
+          className="text-gray-400 dark:text-gray-500 transition-transform duration-200"
           style={{
             transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
           }}

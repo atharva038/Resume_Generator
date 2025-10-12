@@ -42,13 +42,13 @@ const ResumePreview = ({resumeData, template = "classic"}) => {
         <button onClick={handlePrint} className="w-full btn-primary">
           📥 Download PDF
         </button>
-        <p className="text-xs text-gray-500 mt-2 text-center">
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
           This will generate a text-based, ATS-friendly PDF
         </p>
       </div>
 
-      {/* Template Container */}
-      <div className="flex-1 overflow-auto bg-gray-100 p-4 flex items-start justify-center">
+      {/* Template Container - Always white background for resume */}
+      <div className="flex-1 overflow-auto bg-gray-100 dark:bg-gray-700 p-4 flex items-start justify-center">
         <SelectedTemplate ref={componentRef} resumeData={resumeData} />
       </div>
     </div>

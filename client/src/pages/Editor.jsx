@@ -5,21 +5,23 @@ import {resumeAPI} from "../services/api";
 import ResumePreview from "../components/ResumePreview";
 import EditableSection from "../components/EditableSection";
 import ScoreCard from "../components/ScoreCard";
+import JobSpecificScoreCard from "../components/JobSpecificScoreCard";
 import RecommendationsPanel from "../components/RecommendationsPanel";
 import CollapsibleSection from "../components/CollapsibleSection";
 import * as EditorSections from "../components/EditorSections";
+import {getJobCategories, getJobsByCategory} from "../utils/jobProfiles";
 
-// Default section order
+// Default section order (only editable resume sections)
 const DEFAULT_SECTION_ORDER = [
-  "score",
   "personal",
   "summary",
-  "recommendations",
   "skills",
   "experience",
   "education",
   "projects",
   "certifications",
+  "achievements",
+  "customSections",
 ];
 
 const Editor = () => {
@@ -36,12 +38,29 @@ const Editor = () => {
     return saved ? JSON.parse(saved) : DEFAULT_SECTION_ORDER;
   });
   const [draggedSection, setDraggedSection] = useState(null);
+  const [isAnalysisExpanded, setIsAnalysisExpanded] = useState(() => {
+    // Load analysis section state from localStorage or default to true
+    const saved = localStorage.getItem("analysisExpanded");
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+
+  // Save analysis section state to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem(
+      "analysisExpanded",
+      JSON.stringify(isAnalysisExpanded)
+    );
+  }, [isAnalysisExpanded]);
 
   useEffect(() => {
     const data = location.state?.resumeData;
     if (!data) {
       navigate("/upload");
       return;
+    }
+    // Initialize targetJobRole if it doesn't exist
+    if (!data.targetJobRole) {
+      data.targetJobRole = "software-engineer";
     }
     setResumeData(data);
   }, [location, navigate]);
@@ -299,21 +318,35 @@ const Editor = () => {
   // Render section based on section ID
   const renderSection = (sectionId) => {
     const sections = {
-      score: (
+      combinedScore: (
         <CollapsibleSection
-          key="score"
-          sectionId="score"
-          title="ATS Score"
+          key="combinedScore"
+          sectionId="combinedScore"
+          title="ATS Score & Job Match"
           icon="📊"
           defaultExpanded={true}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
           onDragOver={handleDragOver}
           onDrop={handleDrop}
-          isDragging={draggedSection === "score"}
+          isDragging={draggedSection === "combinedScore"}
         >
-          <div className="-m-6">
-            <ScoreCard resumeData={resumeData} expanded={false} />
+          <div className="space-y-6">
+            {/* Overall ATS Score */}
+            <div className="-mx-6 -mt-6">
+              <ScoreCard resumeData={resumeData} expanded={false} />
+            </div>
+
+            {/* Divider */}
+            <div className="border-t border-gray-200 dark:border-gray-700"></div>
+
+            {/* Job-Specific Score */}
+            <div className="-mx-6 -mb-6">
+              <JobSpecificScoreCard
+                resumeData={resumeData}
+                onUpdateField={updateField}
+              />
+            </div>
           </div>
         </CollapsibleSection>
       ),
@@ -444,9 +477,7 @@ const Editor = () => {
         >
           <EditorSections.SkillsSection
             resumeData={resumeData}
-            addArrayItem={addArrayItem}
-            updateArrayItem={updateArrayItem}
-            removeArrayItem={removeArrayItem}
+            updateField={updateField}
           />
         </CollapsibleSection>
       ),
@@ -542,6 +573,46 @@ const Editor = () => {
           />
         </CollapsibleSection>
       ),
+
+      achievements: (
+        <CollapsibleSection
+          key="achievements"
+          sectionId="achievements"
+          title="Achievements"
+          icon="🏆"
+          defaultExpanded={true}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+          isDragging={draggedSection === "achievements"}
+        >
+          <EditorSections.AchievementsSection
+            resumeData={resumeData}
+            updateField={updateField}
+          />
+        </CollapsibleSection>
+      ),
+
+      customSections: (
+        <CollapsibleSection
+          key="customSections"
+          sectionId="customSections"
+          title="Custom Sections"
+          icon="✏️"
+          defaultExpanded={true}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+          isDragging={draggedSection === "customSections"}
+        >
+          <EditorSections.CustomSectionsManager
+            resumeData={resumeData}
+            updateField={updateField}
+          />
+        </CollapsibleSection>
+      ),
     };
 
     return sections[sectionId] || null;
@@ -552,12 +623,14 @@ const Editor = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-6 no-print">
-          <h1 className="text-3xl font-bold">Resume Editor</h1>
+          <h1 className="text-3xl font-bold dark:text-gray-100">
+            Resume Editor
+          </h1>
           <div className="flex gap-3 items-center">
             {/* Reset Order Button */}
             <button
               onClick={handleResetOrder}
-              className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm font-medium hover:border-orange-500 hover:text-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium hover:border-orange-500 hover:text-orange-600 dark:hover:text-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
               title="Reset section order to default"
             >
               🔄 Reset Order
@@ -566,7 +639,7 @@ const Editor = () => {
             <select
               value={selectedTemplate}
               onChange={(e) => setSelectedTemplate(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm font-medium hover:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm font-medium hover:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
               <option value="classic">📋 Classic</option>
               <option value="modern">🎨 Modern</option>
@@ -590,13 +663,95 @@ const Editor = () => {
         </div>
 
         {/* Info Banner */}
-        <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <div className="flex items-center gap-2 text-sm text-blue-800">
+        <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+          <div className="flex items-center gap-2 text-sm text-blue-800 dark:text-blue-300">
             <span className="text-lg">💡</span>
             <span>
-              <strong>Tip:</strong> Click section headers to collapse/expand.
-              Drag sections to reorder them. Your resume preview will update
-              automatically!
+              <strong>Tip:</strong> Your ATS scores and recommendations are
+              shown at the top. Scroll down to edit resume sections. Drag
+              section headers to reorder them!
+            </span>
+          </div>
+        </div>
+
+        {/* Fixed Scores & Analysis Section - Collapsible */}
+        <div className="mb-8">
+          <div className="bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-900/20 dark:to-blue-900/20 border-2 border-primary-200 dark:border-primary-800 rounded-xl overflow-hidden">
+            {/* Collapsible Header */}
+            <button
+              onClick={() => setIsAnalysisExpanded(!isAnalysisExpanded)}
+              className="w-full p-6 flex items-center justify-between hover:bg-primary-100/50 dark:hover:bg-primary-900/30 transition-colors"
+            >
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-3">
+                <span className="text-3xl">📊</span>
+                Resume Analysis & Scoring
+              </h2>
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                  {isAnalysisExpanded ? "Click to collapse" : "Click to expand"}
+                </span>
+                <svg
+                  className={`w-6 h-6 text-gray-600 dark:text-gray-400 transition-transform duration-200 ${
+                    isAnalysisExpanded ? "rotate-180" : ""
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
+            </button>
+
+            {/* Collapsible Content */}
+            {isAnalysisExpanded && (
+              <div className="px-6 pb-6 space-y-6">
+                <div className="grid lg:grid-cols-2 gap-6">
+                  {/* ATS Score Card */}
+                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                    <ScoreCard resumeData={resumeData} expanded={false} />
+                  </div>
+
+                  {/* Job-Specific Score Card */}
+                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                    <JobSpecificScoreCard
+                      resumeData={resumeData}
+                      onUpdateField={updateField}
+                    />
+                  </div>
+                </div>
+
+                {/* Recommendations Panel - Full Width */}
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                  <div className="p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                      <span className="text-xl">💡</span>
+                      Improvement Recommendations
+                    </h3>
+                    <RecommendationsPanel
+                      resumeData={resumeData}
+                      onEnhanceAll={handleEnhanceAll}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Divider with Label */}
+        <div className="relative mb-8">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t-2 border-gray-300 dark:border-gray-600"></div>
+          </div>
+          <div className="relative flex justify-center">
+            <span className="bg-gray-50 dark:bg-gray-900 px-6 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 rounded-full border-2 border-gray-300 dark:border-gray-600">
+              ✏️ Resume Content Editor
             </span>
           </div>
         </div>

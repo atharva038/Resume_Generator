@@ -10,10 +10,11 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
     "projects",
     "certifications",
   ];
-  
-  const sectionOrder = resumeData.sectionOrder?.filter(id => 
-    !['score', 'personal', 'recommendations'].includes(id)
-  ) || DEFAULT_SECTION_ORDER;
+
+  const sectionOrder =
+    resumeData.sectionOrder?.filter(
+      (id) => !["score", "personal", "recommendations"].includes(id)
+    ) || DEFAULT_SECTION_ORDER;
 
   // Render section helper function
   const renderSection = (sectionId) => {
@@ -34,7 +35,7 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
           <p style={{fontSize: "10pt"}}>{resumeData.summary}</p>
         </section>
       ),
-      
+
       skills: resumeData.skills && resumeData.skills.length > 0 && (
         <section key="skills" style={{marginBottom: "12px"}}>
           <h2
@@ -56,7 +57,7 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
           ))}
         </section>
       ),
-      
+
       experience: resumeData.experience && resumeData.experience.length > 0 && (
         <section key="experience" style={{marginBottom: "12px"}}>
           <h2
@@ -116,7 +117,7 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
           ))}
         </section>
       ),
-      
+
       projects: resumeData.projects && resumeData.projects.length > 0 && (
         <section key="projects" style={{marginBottom: "12px"}}>
           <h2
@@ -132,8 +133,32 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
           </h2>
           {resumeData.projects.map((project, index) => (
             <div key={index} style={{marginBottom: "10px"}}>
-              <div className="font-bold" style={{fontSize: "10pt"}}>
-                {project.name}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "baseline",
+                  flexWrap: "wrap",
+                }}
+              >
+                <div className="font-bold" style={{fontSize: "10pt"}}>
+                  {project.name}
+                </div>
+                {project.link && (
+                  <a
+                    href={project.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      fontSize: "9pt",
+                      color: "#0066cc",
+                      textDecoration: "underline",
+                      marginLeft: "8px",
+                    }}
+                  >
+                    🔗 View Project
+                  </a>
+                )}
               </div>
               {project.technologies && project.technologies.length > 0 && (
                 <div
@@ -159,7 +184,7 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
           ))}
         </section>
       ),
-      
+
       education: resumeData.education && resumeData.education.length > 0 && (
         <section key="education" style={{marginBottom: "12px"}}>
           <h2
@@ -206,40 +231,109 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
           ))}
         </section>
       ),
-      
-      certifications: resumeData.certifications && resumeData.certifications.length > 0 && (
-        <section key="certifications" style={{marginBottom: "12px"}}>
-          <h2
-            className="font-bold uppercase"
-            style={{
-              fontSize: "11pt",
-              borderBottom: "1px solid black",
-              paddingBottom: "3px",
-              marginBottom: "6px",
-            }}
-          >
-            Certifications
-          </h2>
-          {resumeData.certifications.map((cert, index) => (
-            <div key={index} style={{fontSize: "10pt", marginBottom: "4px"}}>
-              <span className="font-semibold">{cert.name}</span>
-              {cert.issuer && <span> — {cert.issuer}</span>}
-              {cert.date && (
-                <span style={{fontSize: "9pt"}}> ({cert.date})</span>
-              )}
-            </div>
-          ))}
-        </section>
+
+      certifications: resumeData.certifications &&
+        resumeData.certifications.length > 0 && (
+          <section key="certifications" style={{marginBottom: "12px"}}>
+            <h2
+              className="font-bold uppercase"
+              style={{
+                fontSize: "11pt",
+                borderBottom: "1px solid black",
+                paddingBottom: "3px",
+                marginBottom: "6px",
+              }}
+            >
+              Certifications
+            </h2>
+            {resumeData.certifications.map((cert, index) => (
+              <div key={index} style={{fontSize: "10pt", marginBottom: "4px"}}>
+                <span className="font-semibold">{cert.name}</span>
+                {cert.issuer && <span> — {cert.issuer}</span>}
+                {cert.date && (
+                  <span style={{fontSize: "9pt"}}> ({cert.date})</span>
+                )}
+              </div>
+            ))}
+          </section>
+        ),
+
+      achievements: resumeData.achievements &&
+        resumeData.achievements.length > 0 && (
+          <section key="achievements" style={{marginBottom: "12px"}}>
+            <h2
+              className="font-bold uppercase"
+              style={{
+                fontSize: "11pt",
+                borderBottom: "1px solid black",
+                paddingBottom: "3px",
+                marginBottom: "6px",
+              }}
+            >
+              Achievements
+            </h2>
+            <ul
+              className="list-disc list-outside ml-5"
+              style={{marginTop: "4px"}}
+            >
+              {resumeData.achievements.map((achievement, index) => (
+                <li key={index} style={{fontSize: "10pt", marginBottom: "3px"}}>
+                  {achievement}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ),
+
+      // Custom Sections
+      ...(resumeData.customSections || []).reduce(
+        (acc, section, sectionIndex) => {
+          if (section.title && section.items && section.items.length > 0) {
+            acc[`customSection_${sectionIndex}`] = (
+              <section
+                key={`customSection_${sectionIndex}`}
+                style={{marginBottom: "12px"}}
+              >
+                <h2
+                  className="font-bold uppercase"
+                  style={{
+                    fontSize: "11pt",
+                    borderBottom: "1px solid black",
+                    paddingBottom: "3px",
+                    marginBottom: "6px",
+                  }}
+                >
+                  {section.title}
+                </h2>
+                <ul
+                  className="list-disc list-outside ml-5"
+                  style={{marginTop: "4px"}}
+                >
+                  {section.items.map((item, itemIndex) => (
+                    <li
+                      key={itemIndex}
+                      style={{fontSize: "10pt", marginBottom: "3px"}}
+                    >
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            );
+          }
+          return acc;
+        },
+        {}
       ),
     };
-    
+
     return sections[sectionId] || null;
   };
 
   return (
     <div
       ref={ref}
-      className="resume-preview bg-white shadow-lg border border-gray-300 font-resume"
+      className="resume-preview !bg-white !text-black shadow-lg border border-gray-300 font-resume"
       style={{
         width: "8.5in",
         minHeight: "11in",
@@ -274,14 +368,24 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
           </div>
           <div className="flex justify-center gap-3 flex-wrap">
             {resumeData.contact?.linkedin && (
-              <span>
-                {resumeData.contact.linkedin.replace(/^https?:\/\//, "")}
-              </span>
+              <a
+                href={resumeData.contact.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{color: "#0066cc", textDecoration: "underline"}}
+              >
+                LinkedIn
+              </a>
             )}
             {resumeData.contact?.github && (
-              <span>
-                {resumeData.contact.github.replace(/^https?:\/\//, "")}
-              </span>
+              <a
+                href={resumeData.contact.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{color: "#0066cc", textDecoration: "underline"}}
+              >
+                GitHub
+              </a>
             )}
           </div>
         </div>

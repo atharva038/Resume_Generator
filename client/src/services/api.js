@@ -46,6 +46,15 @@ export const resumeAPI = {
   generateSummary: (resumeData) => {
     return api.post("/resume/generate-summary", {resumeData});
   },
+  categorizeSkills: (skills) => {
+    return api.post("/resume/categorize-skills", {skills});
+  },
+  segregateAchievements: (achievements) => {
+    return api.post("/resume/segregate-achievements", {achievements});
+  },
+  processCustomSection: (content, title) => {
+    return api.post("/resume/process-custom-section", {content, title});
+  },
   save: (resumeData) => api.post("/resume/save", resumeData),
   update: (id, resumeData) => api.put(`/resume/${id}`, resumeData),
   list: () => api.get("/resume/list"),

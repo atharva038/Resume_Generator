@@ -3,9 +3,11 @@
  * Separated components for each editable section
  */
 
+import {useState} from "react";
 import EditableSection from "../components/EditableSection";
 import ScoreCard from "../components/ScoreCard";
 import RecommendationsPanel from "../components/RecommendationsPanel";
+import {resumeAPI} from "../services/api";
 
 export const PersonalInfoSection = ({
   resumeData,
@@ -62,64 +64,199 @@ export const PersonalInfoSection = ({
   </div>
 );
 
-export const SkillsSection = ({
-  resumeData,
-  addArrayItem,
-  updateArrayItem,
-  removeArrayItem,
-}) => (
-  <>
-    <div className="flex justify-between items-center mb-4">
-      <h2 className="section-title mb-0">Skills</h2>
-      <button
-        onClick={() =>
-          addArrayItem("skills", {
-            category: "Technical Skills",
-            items: [],
-          })
-        }
-        className="text-primary-600 hover:text-primary-700 font-medium"
-      >
-        + Add Category
-      </button>
-    </div>
-    {resumeData.skills?.map((skillGroup, index) => (
-      <div key={index} className="mb-4 p-3 border border-gray-200 rounded">
-        <div className="flex gap-2 mb-2">
-          <input
-            type="text"
-            value={skillGroup.category}
-            onChange={(e) =>
-              updateArrayItem("skills", index, "category", e.target.value)
-            }
-            placeholder="Category"
-            className="input-field flex-1"
-          />
-          <button
-            onClick={() => removeArrayItem("skills", index)}
-            className="text-red-600 hover:text-red-700 px-2"
-          >
-            ✕
-          </button>
+export const SkillsSection = ({resumeData, updateField}) => {
+  const [skillsInput, setSkillsInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  // Initialize skills input from existing data
+  const initializeSkillsInput = () => {
+    if (resumeData.skills && resumeData.skills.length > 0) {
+      const allSkills = resumeData.skills
+        .flatMap((group) => group.items || [])
+        .join(", ");
+      return allSkills;
+    }
+    return "";
+  };
+
+  // Handle AI categorization
+  const handleCategorize = async () => {
+    if (!skillsInput.trim()) {
+      setError("Please enter some skills first");
+      return;
+    }
+
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const response = await resumeAPI.categorizeSkills(skillsInput);
+
+      if (response.data && response.data.skills) {
+        // Update the skills in resumeData
+        updateField("skills", response.data.skills);
+        setError("");
+      } else {
+        setError("Failed to categorize skills");
+      }
+    } catch (err) {
+      console.error("Categorization error:", err);
+      setError(
+        err.response?.data?.error ||
+          "Failed to categorize skills. Please try again."
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle manual edit of categorized skills
+  const updateSkillCategory = (index, field, value) => {
+    const updatedSkills = [...(resumeData.skills || [])];
+    updatedSkills[index] = {
+      ...updatedSkills[index],
+      [field]: value,
+    };
+    updateField("skills", updatedSkills);
+  };
+
+  const removeSkillCategory = (index) => {
+    const updatedSkills = (resumeData.skills || []).filter(
+      (_, i) => i !== index
+    );
+    updateField("skills", updatedSkills);
+  };
+
+  return (
+    <>
+      <div className="mb-4">
+        <div className="flex justify-between items-center mb-2">
+          <h2 className="section-title mb-0">Skills</h2>
+          <div className="text-sm text-gray-500 dark:text-gray-400">
+            ✨ AI-Powered Categorization
+          </div>
         </div>
-        <input
-          type="text"
-          value={skillGroup.items?.join(", ") || ""}
-          onChange={(e) =>
-            updateArrayItem(
-              "skills",
-              index,
-              "items",
-              e.target.value.split(",").map((s) => s.trim())
-            )
-          }
-          placeholder="Skills (comma-separated)"
-          className="input-field"
-        />
+
+        <div className="space-y-3">
+          {/* Single input box for all skills */}
+          <div>
+            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+              Enter all your skills (comma-separated or line-separated)
+            </label>
+            <textarea
+              value={skillsInput || initializeSkillsInput()}
+              onChange={(e) => setSkillsInput(e.target.value)}
+              placeholder="e.g., JavaScript, React, Node.js, Python, Docker, AWS, MongoDB, Git, Problem Solving, Team Leadership"
+              className="input-field min-h-[120px] resize-y"
+              rows={5}
+            />
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              💡 Tip: Just list all your skills and AI will automatically
+              organize them into categories
+            </p>
+          </div>
+
+          {/* Categorize button */}
+          <button
+            onClick={handleCategorize}
+            disabled={isLoading || !skillsInput.trim()}
+            className={`w-full py-3 px-4 rounded-lg font-medium transition-all ${
+              isLoading || !skillsInput.trim()
+                ? "bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
+                : "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-md hover:shadow-lg"
+            }`}
+          >
+            {isLoading ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+                Categorizing with AI...
+              </span>
+            ) : (
+              "🤖 Categorize Skills with AI"
+            )}
+          </button>
+
+          {/* Error message */}
+          {error && (
+            <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-600 dark:text-red-400 text-sm">
+              ⚠️ {error}
+            </div>
+          )}
+
+          {/* Display categorized skills */}
+          {resumeData.skills && resumeData.skills.length > 0 && (
+            <div className="mt-4 space-y-3">
+              <div className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                <span>📊 Categorized Skills</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  ({resumeData.skills.length} categories)
+                </span>
+              </div>
+
+              {resumeData.skills.map((skillGroup, index) => (
+                <div
+                  key={index}
+                  className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800"
+                >
+                  <div className="flex gap-2 mb-2">
+                    <input
+                      type="text"
+                      value={skillGroup.category}
+                      onChange={(e) =>
+                        updateSkillCategory(index, "category", e.target.value)
+                      }
+                      placeholder="Category Name"
+                      className="input-field flex-1 font-semibold"
+                    />
+                    <button
+                      onClick={() => removeSkillCategory(index)}
+                      className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 px-3 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+                      title="Remove category"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  <textarea
+                    value={skillGroup.items?.join(", ") || ""}
+                    onChange={(e) =>
+                      updateSkillCategory(
+                        index,
+                        "items",
+                        e.target.value
+                          .split(",")
+                          .map((s) => s.trim())
+                          .filter(Boolean)
+                      )
+                    }
+                    placeholder="Skills (comma-separated)"
+                    className="input-field min-h-[60px] resize-y"
+                    rows={2}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
-    ))}
-  </>
-);
+    </>
+  );
+};
 
 export const ExperienceSection = ({
   resumeData,
@@ -443,3 +580,463 @@ export const CertificationsSection = ({
     ))}
   </>
 );
+
+export const AchievementsSection = ({resumeData, updateField}) => {
+  const achievements = resumeData.achievements || [];
+  const [achievementsInput, setAchievementsInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  // Initialize input from existing data
+  const initializeInput = () => {
+    if (achievements && achievements.length > 0) {
+      return achievements.join("\n");
+    }
+    return "";
+  };
+
+  // Handle AI segregation
+  const handleSegregate = async () => {
+    if (!achievementsInput.trim()) {
+      setError("Please enter some achievements first");
+      return;
+    }
+
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const response = await resumeAPI.segregateAchievements(achievementsInput);
+
+      if (response.data && response.data.achievements) {
+        updateField("achievements", response.data.achievements);
+        setAchievementsInput("");
+        setError("");
+      } else {
+        setError("Failed to segregate achievements");
+      }
+    } catch (err) {
+      console.error("Segregation error:", err);
+      setError(
+        err.response?.data?.error ||
+          "Failed to segregate achievements. Please try again."
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const updateAchievement = (index, value) => {
+    const updated = [...achievements];
+    updated[index] = value;
+    updateField("achievements", updated);
+  };
+
+  const removeAchievement = (index) => {
+    const updated = achievements.filter((_, i) => i !== index);
+    updateField("achievements", updated);
+  };
+
+  const addAchievement = () => {
+    updateField("achievements", [...achievements, ""]);
+  };
+
+  return (
+    <>
+      <div className="mb-4">
+        <div className="flex justify-between items-center mb-2">
+          <h2 className="section-title mb-0">Achievements</h2>
+          <div className="text-sm text-gray-500 dark:text-gray-400">
+            ✨ AI-Powered Formatting
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          {/* Input textarea for bulk achievements */}
+          <div>
+            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+              Enter your achievements (paragraph or mixed format)
+            </label>
+            <textarea
+              value={achievementsInput || initializeInput()}
+              onChange={(e) => setAchievementsInput(e.target.value)}
+              placeholder="e.g., Won first place in national coding competition with 500+ participants. Led a team of 10 developers to successfully complete a major project 2 weeks ahead of schedule. Published 3 research papers in top-tier AI conferences."
+              className="input-field min-h-[120px] resize-y"
+              rows={5}
+            />
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              💡 Tip: Write naturally and AI will format them into professional
+              bullet points
+            </p>
+          </div>
+
+          {/* Segregate button */}
+          <button
+            onClick={handleSegregate}
+            disabled={isLoading || !achievementsInput.trim()}
+            className={`w-full py-3 px-4 rounded-lg font-medium transition-all ${
+              isLoading || !achievementsInput.trim()
+                ? "bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
+                : "bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white shadow-md hover:shadow-lg"
+            }`}
+          >
+            {isLoading ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+                Formatting with AI...
+              </span>
+            ) : (
+              "🤖 Format Achievements with AI"
+            )}
+          </button>
+
+          {/* Error message */}
+          {error && (
+            <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-600 dark:text-red-400 text-sm">
+              ⚠️ {error}
+            </div>
+          )}
+
+          {/* Display formatted achievements */}
+          {achievements && achievements.length > 0 && (
+            <div className="mt-4 space-y-3">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <span>🏆 Formatted Achievements</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    ({achievements.length} items)
+                  </span>
+                </div>
+                <button
+                  onClick={addAchievement}
+                  className="text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400 font-medium"
+                >
+                  + Add More
+                </button>
+              </div>
+
+              {achievements.map((achievement, index) => (
+                <div key={index} className="flex gap-2">
+                  <input
+                    type="text"
+                    value={achievement}
+                    onChange={(e) => updateAchievement(index, e.target.value)}
+                    placeholder="Enter achievement"
+                    className="input-field flex-1"
+                  />
+                  <button
+                    onClick={() => removeAchievement(index)}
+                    className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 px-3 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+                    title="Remove achievement"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </>
+  );
+};
+
+export const CustomSectionsManager = ({resumeData, updateField}) => {
+  const customSections = resumeData.customSections || [];
+
+  const addCustomSection = () => {
+    updateField("customSections", [
+      ...customSections,
+      {
+        id: Date.now().toString(),
+        title: "",
+        items: [],
+      },
+    ]);
+  };
+
+  const updateCustomSection = (index, field, value) => {
+    const updated = [...customSections];
+    updated[index] = {
+      ...updated[index],
+      [field]: value,
+    };
+    updateField("customSections", updated);
+  };
+
+  const removeCustomSection = (index) => {
+    const updated = customSections.filter((_, i) => i !== index);
+    updateField("customSections", updated);
+  };
+
+  return (
+    <>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="section-title mb-0">Custom Sections</h2>
+        <button
+          onClick={addCustomSection}
+          className="text-primary-600 hover:text-primary-700 font-medium"
+        >
+          + Add Custom Section
+        </button>
+      </div>
+
+      {customSections.length === 0 ? (
+        <div className="text-center py-8 px-4 bg-gray-50 dark:bg-gray-800 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
+          <p className="text-gray-500 dark:text-gray-400 mb-2">
+            No custom sections yet
+          </p>
+          <p className="text-sm text-gray-400 dark:text-gray-500">
+            Add custom sections like Publications, Volunteer Work, Languages,
+            etc.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {customSections.map((section, index) => (
+            <CustomSectionItem
+              key={section.id}
+              section={section}
+              index={index}
+              onUpdate={updateCustomSection}
+              onRemove={removeCustomSection}
+            />
+          ))}
+        </div>
+      )}
+    </>
+  );
+};
+
+const CustomSectionItem = ({section, index, onUpdate, onRemove}) => {
+  const [contentInput, setContentInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [isExpanded, setIsExpanded] = useState(true);
+
+  // Initialize input from existing data
+  const initializeInput = () => {
+    if (section.items && section.items.length > 0) {
+      return section.items.join("\n");
+    }
+    return "";
+  };
+
+  // Handle AI processing
+  const handleProcess = async () => {
+    if (!contentInput.trim()) {
+      setError("Please enter some content first");
+      return;
+    }
+
+    if (!section.title.trim()) {
+      setError("Please enter a section title first");
+      return;
+    }
+
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const response = await resumeAPI.processCustomSection(
+        contentInput,
+        section.title
+      );
+
+      if (response.data && response.data.content) {
+        onUpdate(index, "items", response.data.content);
+        setContentInput("");
+        setError("");
+      } else {
+        setError("Failed to process content");
+      }
+    } catch (err) {
+      console.error("Processing error:", err);
+      setError(
+        err.response?.data?.error ||
+          "Failed to process content. Please try again."
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const updateItem = (itemIndex, value) => {
+    const updated = [...section.items];
+    updated[itemIndex] = value;
+    onUpdate(index, "items", updated);
+  };
+
+  const removeItem = (itemIndex) => {
+    const updated = section.items.filter((_, i) => i !== itemIndex);
+    onUpdate(index, "items", updated);
+  };
+
+  const addItem = () => {
+    onUpdate(index, "items", [...section.items, ""]);
+  };
+
+  return (
+    <div className="p-4 border-2 border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900">
+      {/* Header */}
+      <div className="flex items-center gap-2 mb-3">
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+        >
+          <svg
+            className={`w-5 h-5 transition-transform ${
+              isExpanded ? "rotate-90" : ""
+            }`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </button>
+        <input
+          type="text"
+          value={section.title}
+          onChange={(e) => onUpdate(index, "title", e.target.value)}
+          placeholder="Section Title (e.g., Publications, Languages, Volunteer Work)"
+          className="input-field flex-1 font-semibold"
+        />
+        <button
+          onClick={() => onRemove(index)}
+          className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 px-3 py-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+          title="Remove section"
+        >
+          ✕
+        </button>
+      </div>
+
+      {/* Content */}
+      {isExpanded && (
+        <div className="space-y-3 ml-7">
+          <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+            <span>✨ AI-Powered Formatting</span>
+          </div>
+
+          {/* Input textarea */}
+          <div>
+            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+              Enter content (paragraph or mixed format)
+            </label>
+            <textarea
+              value={contentInput || initializeInput()}
+              onChange={(e) => setContentInput(e.target.value)}
+              placeholder="e.g., Fluent in English and Spanish. Conversational in French. Published 5 papers in top AI journals. Active volunteer at local food bank for 3 years."
+              className="input-field min-h-[100px] resize-y"
+              rows={4}
+            />
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              💡 Tip: Write naturally and AI will format into professional
+              bullet points
+            </p>
+          </div>
+
+          {/* Process button */}
+          <button
+            onClick={handleProcess}
+            disabled={
+              isLoading || !contentInput.trim() || !section.title.trim()
+            }
+            className={`w-full py-2 px-4 rounded-lg font-medium transition-all text-sm ${
+              isLoading || !contentInput.trim() || !section.title.trim()
+                ? "bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
+                : "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-md hover:shadow-lg"
+            }`}
+          >
+            {isLoading ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+                Formatting...
+              </span>
+            ) : (
+              "🤖 Format with AI"
+            )}
+          </button>
+
+          {/* Error message */}
+          {error && (
+            <div className="p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded text-red-600 dark:text-red-400 text-xs">
+              ⚠️ {error}
+            </div>
+          )}
+
+          {/* Display formatted items */}
+          {section.items && section.items.length > 0 && (
+            <div className="mt-3 space-y-2">
+              <div className="flex justify-between items-center">
+                <div className="text-xs font-medium text-gray-700 dark:text-gray-300">
+                  📝 Formatted Items ({section.items.length})
+                </div>
+                <button
+                  onClick={addItem}
+                  className="text-xs text-primary-600 hover:text-primary-700 dark:text-primary-400 font-medium"
+                >
+                  + Add Item
+                </button>
+              </div>
+
+              {section.items.map((item, itemIndex) => (
+                <div key={itemIndex} className="flex gap-2">
+                  <input
+                    type="text"
+                    value={item}
+                    onChange={(e) => updateItem(itemIndex, e.target.value)}
+                    placeholder="Enter item"
+                    className="input-field flex-1 text-sm"
+                  />
+                  <button
+                    onClick={() => removeItem(itemIndex)}
+                    className="text-red-600 hover:text-red-700 dark:text-red-400 px-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded text-sm"
+                    title="Remove item"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
