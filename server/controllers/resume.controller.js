@@ -138,15 +138,8 @@ export const saveResume = async (req, res) => {
 
     await resume.save();
 
-    res.status(201).json({
-      message: "Resume saved successfully",
-      resume: {
-        id: resume._id,
-        name: resume.name,
-        createdAt: resume.createdAt,
-        updatedAt: resume.updatedAt,
-      },
-    });
+    // Return the full resume object
+    res.status(201).json(resume);
   } catch (error) {
     console.error("Save resume error:", error);
     res.status(500).json({
@@ -172,18 +165,23 @@ export const updateResume = async (req, res) => {
       return res.status(404).json({error: "Resume not found"});
     }
 
-    // Update resume fields
-    Object.assign(resume, resumeData);
+    // Update resume fields - special handling for nested contact object
+    if (resumeData.contact !== undefined) {
+      resume.contact = {...resume.contact, ...resumeData.contact};
+      resume.markModified("contact");
+    }
+
+    // Update other fields
+    Object.keys(resumeData).forEach((key) => {
+      if (key !== "contact") {
+        resume[key] = resumeData[key];
+      }
+    });
+
     await resume.save();
 
-    res.json({
-      message: "Resume updated successfully",
-      resume: {
-        id: resume._id,
-        name: resume.name,
-        updatedAt: resume.updatedAt,
-      },
-    });
+    // Return the full resume object
+    res.json(resume);
   } catch (error) {
     console.error("Update resume error:", error);
     res.status(500).json({
@@ -231,10 +229,8 @@ export const getResumeById = async (req, res) => {
       return res.status(404).json({error: "Resume not found"});
     }
 
-    res.json({
-      message: "Resume retrieved successfully",
-      resume,
-    });
+    // Return the resume object directly
+    res.json(resume);
   } catch (error) {
     console.error("Get resume error:", error);
     res.status(500).json({

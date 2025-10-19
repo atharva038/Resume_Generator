@@ -137,10 +137,15 @@ const Editor = () => {
   // Load resume data on mount
   useEffect(() => {
     const loadResumeData = async () => {
+      console.log("🚀 Starting resume data load...");
+      console.log("📍 Location state:", location.state);
+      console.log("👤 User:", user);
+
       // First, try to get data from location state (when navigating from upload)
       const stateData = location.state?.resumeData;
 
       if (stateData) {
+        console.log("✅ Found data in location state");
         // Initialize data from location state
         initializeResumeData(stateData);
 
@@ -153,26 +158,32 @@ const Editor = () => {
 
       // If no state data, check if we have a saved resume ID
       const savedResumeId = localStorage.getItem("currentResumeId");
+      console.log("💾 Saved resume ID:", savedResumeId);
 
       if (savedResumeId && user) {
         // Fetch the resume from the database
         try {
+          console.log("📥 Fetching resume from database...");
           const response = await resumeAPI.getById(savedResumeId);
           const loadedData = response.data;
+          console.log("✅ Resume loaded from database:", loadedData);
           initializeResumeData(loadedData);
         } catch (err) {
-          console.error("Error loading resume:", err);
+          console.error("❌ Error loading resume:", err);
           // If error loading, clear the saved ID and redirect to upload
           localStorage.removeItem("currentResumeId");
           navigate("/upload");
         }
       } else {
+        console.log("⚠️ No data available, redirecting to upload");
         // No data available, redirect to upload
         navigate("/upload");
       }
     };
 
     const initializeResumeData = (data) => {
+      console.log("🔍 Initializing resume data:", data);
+
       // Initialize targetJobRole if it doesn't exist
       if (!data.targetJobRole) {
         data.targetJobRole = "software-engineer";
@@ -211,6 +222,8 @@ const Editor = () => {
           achievements: "Achievements",
         };
       }
+
+      console.log("✅ Resume data initialized:", data);
       setResumeData(data);
     };
 
