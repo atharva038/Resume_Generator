@@ -1,4 +1,4 @@
-# AI Resume Rebuilder - Project Overview
+# SmartNShine - Project Overview
 
 ## 🎯 Project Summary
 

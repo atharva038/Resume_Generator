@@ -1,7 +1,7 @@
 {
-    "name": "ats-resume-server",
+    "name": "smartnshine-server",
     "version": "1.0.0",
-    "description": "Backend API for AI Resume Rebuilder",
+    "description": "Backend API for SmartNShine Resume Builder",
     "main": "server.js",
     "type": "module",
     "scripts": {

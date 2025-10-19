@@ -1,6 +1,6 @@
 # 📚 AI Features Documentation Index
 
-Welcome to the comprehensive documentation for the AI-powered features in the ATS Resume Generator!
+Welcome to the comprehensive documentation for the AI-powered features in SmartNShine Resume Builder!
 
 ---
 
@@ -358,7 +358,7 @@ Stay tuned for updates!
 
 ## 📜 License
 
-This documentation is part of the ATS Resume Generator project.
+This documentation is part of the SmartNShine project.
 Licensed under MIT License.
 
 ---

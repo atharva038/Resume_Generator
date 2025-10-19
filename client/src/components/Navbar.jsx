@@ -19,7 +19,7 @@ const Navbar = () => {
             to="/"
             className="text-xl font-bold text-primary-600 dark:text-primary-400"
           >
-            AI Resume Rebuilder
+            SmartNShine
           </Link>
 
           <div className="flex items-center space-x-4">

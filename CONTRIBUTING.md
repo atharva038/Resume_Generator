@@ -1,4 +1,4 @@
-# Contributing to AI Resume Rebuilder
+# Contributing to SmartNShine
 
 Thank you for your interest in contributing! This document provides guidelines and instructions for contributing to the project.
 

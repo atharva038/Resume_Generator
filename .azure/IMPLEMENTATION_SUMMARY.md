@@ -1,7 +1,7 @@
 # 🎉 Implementation Summary: AI-Powered Resume Features
 
 ## Project Overview
-Successfully implemented three AI-powered features for the ATS Resume Generator, using Google Gemini 2.5 Flash for intelligent resume content processing.
+Successfully implemented three AI-powered features for SmartNShine Resume Builder, using Google Gemini 2.5 Flash for intelligent resume content processing.
 
 ---
 

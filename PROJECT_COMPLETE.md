@@ -1,8 +1,8 @@
-# 🎉 AI Resume Rebuilder - Project Complete!
+# 🎉 SmartNShine - Project Complete!
 
 ## ✅ What Has Been Built
 
-A **complete, production-ready** AI Resume Rebuilder application with the following components:
+A **complete, production-ready** SmartNShine Resume Builder application with the following components:
 
 ### Backend (Node.js + Express)
 ✅ **27 Files Created** including:
@@ -306,7 +306,7 @@ Current constraints (see ROADMAP.md for plans):
 
 ## 🎊 Congratulations!
 
-You now have a **complete, production-ready AI Resume Rebuilder**! 
+You now have a **complete, production-ready SmartNShine Resume Builder**! 
 
 ### What You Can Do Now
 ✅ Upload and parse resumes

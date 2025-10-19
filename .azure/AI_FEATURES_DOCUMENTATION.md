@@ -1,7 +1,7 @@
 # AI-Powered Resume Features Documentation
 
 ## Overview
-This document describes the AI-powered features implemented in the ATS Resume Generator using Google Gemini 2.5 Flash model.
+This document describes the AI-powered features implemented in SmartNShine Resume Builder using Google Gemini 2.5 Flash model.
 
 ## Features
 
@@ -549,7 +549,7 @@ No database changes required. All data stored in existing `resumeData` JSON stru
 ## License & Credits
 
 **AI Model**: Google Gemini 2.5 Flash
-**Developer**: ATS Resume Generator Team
+**Developer**: SmartNShine Team
 **Last Updated**: January 2025
 **Version**: 1.0.0
 

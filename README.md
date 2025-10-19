@@ -1,4 +1,4 @@
-# AI Resume Rebuilder - ATS Optimized
+# SmartNShine - ATS Optimized Resume Builder
 
 A complete MERN stack application that uses Google's Gemini AI to transform resumes into ATS-friendly, optimized documents. Upload PDF or DOCX files, get AI-powered enhancements, and download professionally formatted resumes that pass Applicant Tracking Systems.
 

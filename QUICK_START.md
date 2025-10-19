@@ -1,4 +1,4 @@
-# ATS Resume Generator - Quick Start Guide
+# SmartNShine - Quick Start Guide
 
 ## Prerequisites Checklist
 - [ ] Node.js 18+ installed

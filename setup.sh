@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# AI Resume Rebuilder - Setup Script
+# SmartNShine - Setup Script
 # This script automates the initial setup process
 
-echo "🚀 AI Resume Rebuilder - Setup Script"
+echo "🚀 SmartNShine - Setup Script"
 echo "======================================"
 echo ""
 
