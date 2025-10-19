@@ -1,104 +1,576 @@
 import {Link} from "react-router-dom";
+import {useState} from "react";
 
 const Home = () => {
+  const [openFAQ, setOpenFAQ] = useState(null);
+
+  const features = [
+    {
+      icon: "🤖",
+      title: "AI-Powered Enhancement",
+      description:
+        "Let Google's Gemini AI analyze and enhance your resume with role-specific suggestions, powerful action verbs, and quantifiable achievements.",
+    },
+    {
+      icon: "🎯",
+      title: "ATS Optimization",
+      description:
+        "Beat the bots! Our system ensures your resume passes Applicant Tracking Systems with optimized formatting and keyword placement.",
+    },
+    {
+      icon: "📊",
+      title: "Smart Scoring & Insights",
+      description:
+        "Get instant ATS scores and job-match ratings. Know exactly how your resume performs against real job descriptions and tech stacks.",
+    },
+    {
+      icon: "🎨",
+      title: "Professional Templates",
+      description:
+        "Choose from 8+ sleek, recruiter-approved templates. From Classic to Creative — all ATS-friendly and beautifully designed.",
+    },
+  ];
+
+  const howItWorks = [
+    {
+      step: "1",
+      title: "Upload & Connect",
+      description:
+        "Upload your existing resume (PDF/DOCX) or connect your LinkedIn profile in seconds.",
+      icon: "📤",
+    },
+    {
+      step: "2",
+      title: "AI Analysis",
+      description:
+        "SmartNShine analyzes your content and suggests powerful enhancements tailored to your target role.",
+      icon: "🧠",
+    },
+    {
+      step: "3",
+      title: "Customize & Perfect",
+      description:
+        "Choose your template, review AI suggestions, and customize every detail to match your style.",
+      icon: "✨",
+    },
+    {
+      step: "4",
+      title: "Score & Optimize",
+      description:
+        "Get your ATS score and job-match insights. Make real-time improvements with AI-powered recommendations.",
+      icon: "📈",
+    },
+    {
+      step: "5",
+      title: "Download & Shine",
+      description:
+        "Export your polished, recruiter-ready resume instantly. Share, print, or apply with confidence!",
+      icon: "🚀",
+    },
+  ];
+
+  const testimonials = [
+    {
+      name: "Priya Sharma",
+      role: "Software Engineer",
+      company: "Google",
+      quote:
+        "SmartNShine transformed my resume in minutes. The AI suggestions were spot-on, and I landed 3 interviews in a week!",
+      avatar: "👩‍💻",
+    },
+    {
+      name: "Rahul Mehta",
+      role: "Product Manager",
+      company: "Amazon",
+      quote:
+        "The ATS scoring feature is a game-changer. I finally understood what recruiters were looking for. Got my dream job!",
+      avatar: "👨‍💼",
+    },
+    {
+      name: "Sarah Johnson",
+      role: "UX Designer",
+      company: "Meta",
+      quote:
+        "Beautiful templates, powerful AI, and so easy to use. SmartNShine made me stand out from hundreds of applicants.",
+      avatar: "👩‍🎨",
+    },
+  ];
+
+  const faqs = [
+    {
+      question: "Is my resume data safe and private?",
+      answer:
+        "Absolutely! We use bank-level encryption to protect your data. Your resume is stored securely and never shared with third parties. You can delete your data anytime.",
+    },
+    {
+      question: "Is SmartNShine really free?",
+      answer:
+        "Yes! Our free plan includes AI-powered parsing, basic enhancements, and access to all templates. Premium features like advanced AI scoring and unlimited downloads are available in our Pro plan.",
+    },
+    {
+      question: "How does the AI enhancement work?",
+      answer:
+        "We use Google's Gemini 2.5 Flash AI to analyze your resume content and suggest improvements. It adds action verbs, quantifies achievements, optimizes for ATS, and tailors content to your target role.",
+    },
+    {
+      question: "Will my resume pass ATS systems?",
+      answer:
+        "Yes! All our templates are ATS-optimized with proper formatting, no complex graphics, and keyword-friendly structure. Our scoring system tells you exactly how ATS-friendly your resume is.",
+    },
+    {
+      question: "Can I edit my resume after downloading?",
+      answer:
+        "Of course! You can edit your resume anytime by logging in. All changes are auto-saved, and you can download updated versions whenever you need.",
+    },
+    {
+      question: "What file formats can I upload?",
+      answer:
+        "We support PDF and DOCX files. Our AI extracts text from both formats and converts them into editable, structured resume data.",
+    },
+  ];
+
   return (
-    <div className="container mx-auto px-4 py-16">
-      <div className="max-w-4xl mx-auto text-center">
-        <h1 className="text-5xl font-bold text-gray-900 dark:text-gray-100 mb-6">
-          Build an ATS-Friendly Resume with AI
-        </h1>
-        <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
-          Upload your resume and let AI transform it into an optimized,
-          ATS-compatible document that gets you noticed by recruiters.
-        </p>
+    <div className="overflow-x-hidden">
+      {/* Hero Section */}
+      <section className="relative bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-blue-900/20 dark:to-purple-900/20 py-20 md:py-32">
+        <div className="container mx-auto px-4">
+          <div className="max-w-5xl mx-auto text-center">
+            {/* Trust Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 rounded-full text-blue-700 dark:text-blue-300 text-sm font-semibold mb-6 animate-pulse">
+              <span className="w-2 h-2 bg-green-500 rounded-full animate-ping"></span>
+              Trusted by 10,000+ Job Seekers
+            </div>
 
-        <div className="flex justify-center gap-4 mb-16">
-          <Link to="/upload" className="btn-primary text-lg px-8 py-3">
-            Get Started
-          </Link>
-          <a href="#features" className="btn-secondary text-lg px-8 py-3">
-            Learn More
-          </a>
+            {/* Main Headline */}
+            <h1 className="text-5xl md:text-7xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
+              Build a{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
+                Smart, Shining
+              </span>{" "}
+              Resume
+              <br />
+              That Gets You{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-pink-500">
+                Hired
+              </span>
+            </h1>
+
+            {/* Subheadline */}
+            <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+              Create your AI-enhanced, recruiter-ready resume in just{" "}
+              <span className="font-bold text-blue-600 dark:text-blue-400">
+                5 minutes
+              </span>
+              . Beat ATS systems, impress hiring managers, and land more
+              interviews — Powered by AI.
+            </p>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row justify-center gap-4 mb-12">
+              <Link
+                to="/upload"
+                className="group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-semibold rounded-xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+              >
+                <span className="relative z-10">
+                  Build My Resume Now — Free
+                </span>
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              </Link>
+              <a
+                href="#how-it-works"
+                className="px-8 py-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-2 border-gray-300 dark:border-gray-600 text-lg font-semibold rounded-xl hover:border-blue-500 dark:hover:border-blue-400 transition-all duration-300"
+              >
+                See How It Works
+              </a>
+            </div>
+
+            {/* Trust Indicators */}
+            <div className="flex flex-wrap justify-center items-center gap-6 text-sm text-gray-600 dark:text-gray-400">
+              <div className="flex items-center gap-2">
+                <span className="text-green-500 text-xl">✓</span>
+                <span>No Credit Card Required</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-green-500 text-xl">✓</span>
+                <span>Free Forever Plan</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-green-500 text-xl">✓</span>
+                <span>ATS-Optimized Templates</span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div id="features" className="grid md:grid-cols-3 gap-8 mt-16">
-          <div className="card p-6">
-            <div className="text-4xl mb-4">📄</div>
-            <h3 className="text-xl font-semibold mb-2 dark:text-gray-100">
-              Smart Upload
-            </h3>
-            <p className="text-gray-600 dark:text-gray-400">
-              Upload PDF or DOCX files. Our AI extracts and structures your
-              resume content automatically.
+        {/* Decorative Elements */}
+        <div className="absolute top-20 left-10 w-20 h-20 bg-blue-400 rounded-full opacity-20 blur-3xl animate-bounce"></div>
+        <div className="absolute bottom-20 right-10 w-32 h-32 bg-purple-400 rounded-full opacity-20 blur-3xl animate-pulse"></div>
+      </section>
+
+      {/* WHO Section - Target Audience */}
+      <section className="py-16 bg-white dark:bg-gray-900">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              Who is SmartNShine For?
+            </h2>
+            <p className="text-lg text-gray-600 dark:text-gray-400">
+              Whether you're just starting out or climbing the corporate ladder,
+              SmartNShine empowers you to shine.
             </p>
           </div>
 
-          <div className="card p-6">
-            <div className="text-4xl mb-4">✨</div>
-            <h3 className="text-xl font-semibold mb-2 dark:text-gray-100">
-              AI Enhancement
-            </h3>
-            <p className="text-gray-600 dark:text-gray-400">
-              Powered by Gemini AI to rewrite bullets with action verbs,
-              metrics, and ATS keywords.
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            {[
+              {
+                icon: "🎓",
+                title: "Students & Freshers",
+                desc: "Land your first job with a polished, professional resume that stands out from the crowd.",
+              },
+              {
+                icon: "💻",
+                title: "Developers & Engineers",
+                desc: "Showcase your tech stack and projects with ATS-optimized formatting that recruiters love.",
+              },
+              {
+                icon: "💼",
+                title: "Working Professionals",
+                desc: "Climb the ladder faster with AI-enhanced achievements and quantifiable metrics.",
+              },
+              {
+                icon: "🔄",
+                title: "Career Switchers",
+                desc: "Reposition your skills for a new role with smart, targeted content that highlights transferable skills.",
+              },
+            ].map((audience, idx) => (
+              <div
+                key={idx}
+                className="p-6 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-700 rounded-2xl hover:shadow-xl transition-shadow duration-300"
+              >
+                <div className="text-5xl mb-4">{audience.icon}</div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                  {audience.title}
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400">
+                  {audience.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* WHAT Section - Feature Highlights */}
+      <section
+        id="features"
+        className="py-20 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-800 dark:to-gray-900"
+      >
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+              What Makes SmartNShine Different?
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+              Not just a resume builder — it's your AI-powered career
+              advancement partner.
             </p>
           </div>
 
-          <div className="card p-6">
-            <div className="text-4xl mb-4">🎯</div>
-            <h3 className="text-xl font-semibold mb-2 dark:text-gray-100">
-              ATS Optimized
-            </h3>
-            <p className="text-gray-600 dark:text-gray-400">
-              Export text-based PDFs that pass through Applicant Tracking
-              Systems seamlessly.
+          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {features.map((feature, idx) => (
+              <div
+                key={idx}
+                className="group p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+              >
+                <div className="text-6xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                  {feature.icon}
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                  {feature.title}
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                  {feature.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* WHEN Section - Speed & Efficiency */}
+      <section className="py-16 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              ⚡ Create Your Resume in Just 5 Minutes
+            </h2>
+            <p className="text-xl mb-8 opacity-90">
+              No more hours of formatting struggles. SmartNShine's AI does the
+              heavy lifting while you focus on what matters — getting hired.
             </p>
+            <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto">
+              <div>
+                <div className="text-5xl font-bold mb-2">5</div>
+                <div className="text-sm opacity-80">Minutes to Create</div>
+              </div>
+              <div>
+                <div className="text-5xl font-bold mb-2">95%</div>
+                <div className="text-sm opacity-80">ATS Pass Rate</div>
+              </div>
+              <div>
+                <div className="text-5xl font-bold mb-2">3x</div>
+                <div className="text-sm opacity-80">More Interviews</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* WHERE Section - Accessibility */}
+      <section className="py-16 bg-white dark:bg-gray-900">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">
+              🌍 Accessible Anywhere, Anytime
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
+              Fully online — no downloads, no installations. Create and edit
+              your resume from any device, whether you're at home, in a café, or
+              on the go.
+            </p>
+            <div className="flex justify-center gap-8 text-6xl">
+              <span title="Desktop">🖥️</span>
+              <span title="Laptop">💻</span>
+              <span title="Tablet">📱</span>
+              <span title="Mobile">📲</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* WHY Section - Benefits & Emotional Value */}
+      <section className="py-20 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-800 dark:to-purple-900/20">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+              Why Choose SmartNShine?
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-400">
+              Because your career deserves more than a generic template.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <div className="text-center p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
+              <div className="text-6xl mb-4">🏆</div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                Beat the Competition
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                Stand out with AI-crafted content that hiring managers can't
+                ignore. Your resume, but better.
+              </p>
+            </div>
+
+            <div className="text-center p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
+              <div className="text-6xl mb-4">💪</div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                Gain Confidence
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                Know exactly where you stand with instant scoring and job-match
+                insights. Apply with certainty.
+              </p>
+            </div>
+
+            <div className="text-center p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
+              <div className="text-6xl mb-4">⏰</div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                Save Time & Stress
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                Stop wrestling with formatting. Focus on your career while AI
+                handles the rest.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* HOW Section - Step-by-Step Process */}
+      <section id="how-it-works" className="py-20 bg-white dark:bg-gray-900">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+              How SmartNShine Works
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-400">
+              Five simple steps to your dream job.
+            </p>
+          </div>
+
+          <div className="max-w-4xl mx-auto space-y-8">
+            {howItWorks.map((step, idx) => (
+              <div key={idx} className="flex gap-6 items-start group">
+                <div className="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg group-hover:scale-110 transition-transform duration-300">
+                  {step.step}
+                </div>
+                <div className="flex-1 p-6 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-700 rounded-2xl group-hover:shadow-xl transition-shadow duration-300">
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="text-4xl">{step.icon}</span>
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                      {step.title}
+                    </h3>
+                  </div>
+                  <p className="text-gray-600 dark:text-gray-400 text-lg">
+                    {step.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center mt-12">
+            <Link
+              to="/upload"
+              className="inline-block px-10 py-5 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xl font-bold rounded-xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+            >
+              Start Building Now — It's Free! 🚀
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Social Proof - Testimonials */}
+      <section className="py-20 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-800 dark:to-gray-900">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+              Don't Just Take Our Word For It
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-400">
+              Join thousands of successful job seekers who found their dream
+              roles with SmartNShine.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {testimonials.map((testimonial, idx) => (
+              <div
+                key={idx}
+                className="p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300"
+              >
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="text-5xl">{testimonial.avatar}</div>
+                  <div>
+                    <div className="font-bold text-gray-900 dark:text-white">
+                      {testimonial.name}
+                    </div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                      {testimonial.role}
+                    </div>
+                    <div className="text-sm text-blue-600 dark:text-blue-400 font-semibold">
+                      {testimonial.company}
+                    </div>
+                  </div>
+                </div>
+                <p className="text-gray-600 dark:text-gray-400 italic leading-relaxed">
+                  "{testimonial.quote}"
+                </p>
+                <div className="mt-4 text-yellow-500">⭐⭐⭐⭐⭐</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-20 bg-white dark:bg-gray-900">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white text-center mb-12">
+              Frequently Asked Questions
+            </h2>
+
+            <div className="space-y-4">
+              {faqs.map((faq, idx) => (
+                <div
+                  key={idx}
+                  className="border-2 border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden"
+                >
+                  <button
+                    onClick={() => setOpenFAQ(openFAQ === idx ? null : idx)}
+                    className="w-full px-6 py-5 flex justify-between items-center bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+                  >
+                    <span className="text-lg font-semibold text-gray-900 dark:text-white text-left">
+                      {faq.question}
+                    </span>
+                    <span
+                      className={`text-2xl text-blue-600 transform transition-transform duration-300 ${
+                        openFAQ === idx ? "rotate-180" : ""
+                      }`}
+                    >
+                      ▼
+                    </span>
+                  </button>
+                  <div
+                    className={`overflow-hidden transition-all duration-300 ${
+                      openFAQ === idx ? "max-h-96" : "max-h-0"
+                    }`}
+                  >
+                    <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 text-gray-600 dark:text-gray-400 leading-relaxed">
+                      {faq.answer}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA Section */}
+      <section className="py-20 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white relative overflow-hidden">
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-4xl md:text-6xl font-bold mb-6">
+              Ready to Shine in Your Next Interview?
+            </h2>
+            <p className="text-xl md:text-2xl mb-8 opacity-90">
+              Join 10,000+ professionals who transformed their careers with
+              SmartNShine.
+            </p>
+
+            <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
+              <Link
+                to="/upload"
+                className="group relative px-10 py-5 bg-white text-blue-600 text-xl font-bold rounded-xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300"
+              >
+                Build My Resume — Free Forever 🚀
+              </Link>
+            </div>
+
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-6 text-sm opacity-80">
+              <div className="flex items-center gap-2">
+                <span className="text-green-300 text-xl">✓</span>
+                <span>Takes only 5 minutes</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-green-300 text-xl">✓</span>
+                <span>No credit card needed</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-green-300 text-xl">✓</span>
+                <span>Cancel anytime</span>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="mt-16 card p-8">
-          <h2 className="text-3xl font-bold mb-4 dark:text-gray-100">
-            Why ATS Optimization Matters
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400 text-lg mb-4">
-            Over 90% of large companies use Applicant Tracking Systems (ATS) to
-            filter resumes. If your resume isn't optimized, it may never reach
-            human eyes.
-          </p>
-          <ul className="text-left max-w-2xl mx-auto space-y-2 text-gray-700 dark:text-gray-300">
-            <li className="flex items-start">
-              <span className="text-primary-600 dark:text-primary-400 mr-2">
-                ✓
-              </span>
-              <span>
-                Clean, single-column layout that ATS can parse correctly
-              </span>
-            </li>
-            <li className="flex items-start">
-              <span className="text-primary-600 dark:text-primary-400 mr-2">
-                ✓
-              </span>
-              <span>
-                Action-verb-first bullets with quantifiable achievements
-              </span>
-            </li>
-            <li className="flex items-start">
-              <span className="text-primary-600 dark:text-primary-400 mr-2">
-                ✓
-              </span>
-              <span>
-                Industry-standard keywords relevant to your target role
-              </span>
-            </li>
-            <li className="flex items-start">
-              <span className="text-primary-600 dark:text-primary-400 mr-2">
-                ✓
-              </span>
-              <span>Text-based PDF format (not image-based)</span>
-            </li>
-          </ul>
-        </div>
-      </div>
+        {/* Animated Background Elements */}
+        <div className="absolute top-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      </section>
     </div>
   );
 };
