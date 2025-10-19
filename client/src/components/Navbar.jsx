@@ -2,7 +2,20 @@ import {Link, useNavigate, useLocation} from "react-router-dom";
 import {useAuth} from "../context/AuthContext";
 import DarkModeToggle from "./DarkModeToggle";
 import {useState, useEffect} from "react";
-import {Menu, X, Sparkles, Home, Grid, Palette, Wand2, DollarSign, Mail, User, LogOut, LayoutDashboard} from "lucide-react";
+import {
+  Menu,
+  X,
+  Sparkles,
+  Home,
+  Grid,
+  Palette,
+  Wand2,
+  DollarSign,
+  Mail,
+  User,
+  LogOut,
+  LayoutDashboard,
+} from "lucide-react";
 
 const Navbar = () => {
   const {user, logout} = useAuth();
@@ -32,11 +45,11 @@ const Navbar = () => {
   };
 
   const navLinks = [
-    { name: "Home", path: "/", icon: Home },
-    { name: "Features", path: "/#features", icon: Grid },
-    { name: "Templates", path: "/templates", icon: Palette },
-    { name: "AI Enhancer", path: "/upload", icon: Wand2 },
-    { name: "Contact", path: "/#contact", icon: Mail },
+    {name: "Home", path: "/", icon: Home},
+    {name: "Features", path: "/#features", icon: Grid},
+    {name: "Templates", path: "/templates", icon: Palette},
+    {name: "AI Enhancer", path: "/upload", icon: Wand2},
+    {name: "Contact", path: "/#contact", icon: Mail},
   ];
 
   const isActivePath = (path) => {
@@ -75,7 +88,7 @@ const Navbar = () => {
               const Icon = link.icon;
               const isActive = isActivePath(link.path);
               const isHash = link.path.startsWith("/#");
-              
+
               return isHash ? (
                 <a
                   key={link.name}
@@ -115,7 +128,7 @@ const Navbar = () => {
           {/* Desktop Auth Buttons */}
           <div className="hidden lg:flex items-center gap-4">
             <DarkModeToggle />
-            
+
             {user ? (
               <>
                 <Link
@@ -176,7 +189,9 @@ const Navbar = () => {
         {/* Mobile Menu */}
         <div
           className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${
-            isMobileMenuOpen ? "max-h-screen opacity-100 mt-4" : "max-h-0 opacity-0"
+            isMobileMenuOpen
+              ? "max-h-screen opacity-100 mt-4"
+              : "max-h-0 opacity-0"
           }`}
         >
           <div className="py-4 space-y-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700">
@@ -185,7 +200,7 @@ const Navbar = () => {
               const Icon = link.icon;
               const isActive = isActivePath(link.path);
               const isHash = link.path.startsWith("/#");
-              
+
               return isHash ? (
                 <a
                   key={link.name}
