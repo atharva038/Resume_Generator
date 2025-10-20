@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import resumeRoutes from "./routes/resume.routes.js";
 import authRoutes from "./routes/auth.routes.js";
+import githubRoutes from "./routes/github.routes.js";
 
 // Load environment variables
 dotenv.config();
@@ -53,6 +54,7 @@ mongoose.connection.on("disconnected", () => {
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/resume", resumeRoutes);
+app.use("/api/github", githubRoutes);
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {

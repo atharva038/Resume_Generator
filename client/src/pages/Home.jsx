@@ -227,6 +227,59 @@ const Home = () => {
         </div>
       </section>
 
+      {/* GitHub Import Feature Section */}
+      <section className="py-16 relative">
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-900/20 to-pink-900/20"></div>
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-3xl shadow-2xl border border-white/20 dark:border-gray-700/50 p-8 md:p-12">
+              <div className="flex flex-col md:flex-row items-center gap-8">
+                <div className="flex-1">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 rounded-full mb-4">
+                    <span className="text-2xl">🚀</span>
+                    <span className="text-sm font-semibold text-purple-700 dark:text-purple-300">
+                      New Feature
+                    </span>
+                  </div>
+                  <h3 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                    Import Your GitHub Profile
+                  </h3>
+                  <p className="text-lg text-gray-600 dark:text-gray-400 mb-6">
+                    Automatically extract your projects, skills, and
+                    contributions from GitHub. Let AI transform your code into
+                    compelling resume content.
+                  </p>
+                  <Link
+                    to="/github-import"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                  >
+                    <span>🔗</span>
+                    Try GitHub Import
+                    <span>→</span>
+                  </Link>
+                </div>
+                <div className="w-full md:w-auto">
+                  <div className="relative w-48 h-48 mx-auto">
+                    <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-pink-500 rounded-3xl opacity-20 blur-2xl animate-pulse"></div>
+                    <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl p-6 shadow-xl">
+                      <div className="text-6xl mb-2 text-center">🐙</div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                          GitHub
+                        </div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400">
+                          Data Extraction
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* WHEN Section - Speed & Efficiency */}
       <section className="py-16 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
         <div className="container mx-auto px-4">
