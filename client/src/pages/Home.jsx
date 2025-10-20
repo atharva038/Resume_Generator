@@ -131,13 +131,15 @@ const Home = () => {
   ];
 
   return (
-    <div className="overflow-x-hidden">
+    <div className="overflow-x-hidden bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-indigo-950 dark:to-purple-950">
       {/* Hero Section */}
       <HeroSection />
 
       {/* WHO Section - Target Audience */}
-      <section id="who" className="py-16 bg-white dark:bg-gray-900">
-        <div className="container mx-auto px-4">
+      <section id="who" className="py-16 relative">
+        {/* Subtle overlay for slight differentiation */}
+        <div className="absolute inset-0 bg-white/30 dark:bg-gray-900/30 backdrop-blur-sm"></div>
+        <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-6xl mx-auto text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
               Who is SmartNShine For?
@@ -208,7 +210,7 @@ const Home = () => {
             {features.map((feature, idx) => (
               <div
                 key={idx}
-                className="group p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+                className="group p-8 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 border border-white/20 dark:border-gray-700/50"
               >
                 <div className="text-6xl mb-4 group-hover:scale-110 transition-transform duration-300">
                   {feature.icon}
@@ -255,8 +257,9 @@ const Home = () => {
       </section>
 
       {/* WHERE Section - Accessibility */}
-      <section className="py-16 bg-white dark:bg-gray-900">
-        <div className="container mx-auto px-4">
+      <section className="py-16 relative">
+        <div className="absolute inset-0 bg-white/20 dark:bg-gray-900/20"></div>
+        <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">
               🌍 Accessible Anywhere, Anytime
@@ -289,7 +292,7 @@ const Home = () => {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <div className="text-center p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
+            <div className="text-center p-8 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl shadow-lg border border-white/20 dark:border-gray-700/50">
               <div className="text-6xl mb-4">🏆</div>
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
                 Beat the Competition
@@ -300,7 +303,7 @@ const Home = () => {
               </p>
             </div>
 
-            <div className="text-center p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
+            <div className="text-center p-8 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl shadow-lg border border-white/20 dark:border-gray-700/50">
               <div className="text-6xl mb-4">💪</div>
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
                 Gain Confidence
@@ -311,7 +314,7 @@ const Home = () => {
               </p>
             </div>
 
-            <div className="text-center p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
+            <div className="text-center p-8 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl shadow-lg border border-white/20 dark:border-gray-700/50">
               <div className="text-6xl mb-4">⏰</div>
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
                 Save Time & Stress
@@ -326,8 +329,9 @@ const Home = () => {
       </section>
 
       {/* HOW Section - Step-by-Step Process */}
-      <section id="how-it-works" className="py-20 bg-white dark:bg-gray-900">
-        <div className="container mx-auto px-4">
+      <section id="how-it-works" className="py-20 relative">
+        <div className="absolute inset-0 bg-white/30 dark:bg-gray-900/30 backdrop-blur-sm"></div>
+        <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-6xl mx-auto text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
               How SmartNShine Works
@@ -386,7 +390,7 @@ const Home = () => {
             {testimonials.map((testimonial, idx) => (
               <div
                 key={idx}
-                className="p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300"
+                className="p-8 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300 border border-white/20 dark:border-gray-700/50"
               >
                 <div className="flex items-center gap-4 mb-4">
                   <div className="text-5xl">{testimonial.avatar}</div>
@@ -413,8 +417,9 @@ const Home = () => {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-20 bg-white dark:bg-gray-900">
-        <div className="container mx-auto px-4">
+      <section className="py-20 relative">
+        <div className="absolute inset-0 bg-white/20 dark:bg-gray-900/20"></div>
+        <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white text-center mb-12">
               Frequently Asked Questions
@@ -424,11 +429,11 @@ const Home = () => {
               {faqs.map((faq, idx) => (
                 <div
                   key={idx}
-                  className="border-2 border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden"
+                  className="border-2 border-white/20 dark:border-gray-700/50 rounded-xl overflow-hidden backdrop-blur-sm"
                 >
                   <button
                     onClick={() => setOpenFAQ(openFAQ === idx ? null : idx)}
-                    className="w-full px-6 py-5 flex justify-between items-center bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+                    className="w-full px-6 py-5 flex justify-between items-center bg-white/70 dark:bg-gray-800/70 hover:bg-white/90 dark:hover:bg-gray-700/90 transition-colors duration-200"
                   >
                     <span className="text-lg font-semibold text-gray-900 dark:text-white text-left">
                       {faq.question}
@@ -446,7 +451,7 @@ const Home = () => {
                       openFAQ === idx ? "max-h-96" : "max-h-0"
                     }`}
                   >
-                    <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 text-gray-600 dark:text-gray-400 leading-relaxed">
+                    <div className="px-6 py-4 bg-white/50 dark:bg-gray-800/30 text-gray-600 dark:text-gray-400 leading-relaxed backdrop-blur-sm">
                       {faq.answer}
                     </div>
                   </div>
@@ -472,7 +477,7 @@ const Home = () => {
             <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
               <Link
                 to="/upload"
-                className="group relative px-10 py-5 bg-white text-blue-600 text-xl font-bold rounded-xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300"
+                className="group relative px-10 py-5 bg-white/95 dark:bg-white/90 text-blue-600 dark:text-blue-700 text-xl font-bold rounded-xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 backdrop-blur-md border border-white/50"
               >
                 Build My Resume — Free Forever 🚀
               </Link>

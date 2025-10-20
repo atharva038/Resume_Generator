@@ -51,7 +51,7 @@ const HeroSection = () => {
 
   return (
     <section
-      className="relative min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-indigo-950 dark:to-purple-950 overflow-hidden transition-opacity duration-300"
+      className="relative min-h-screen overflow-hidden transition-opacity duration-300"
       style={{
         opacity: Math.max(0.3, 1 - scrollY / 1500),
       }}
