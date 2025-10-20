@@ -39,6 +39,22 @@ export const getGitHubProfile = async (req, res) => {
 
     const repos = reposResponse.data;
 
+    // Fetch organizations (for experience)
+    let organizations = [];
+    try {
+      const orgsResponse = await axios.get(
+        `https://api.github.com/users/${username}/orgs`,
+        {
+          headers: {
+            "User-Agent": "SmartNShine-Resume-Builder",
+          },
+        }
+      );
+      organizations = orgsResponse.data;
+    } catch (error) {
+      console.log("Could not fetch organizations");
+    }
+
     // Get top 5 repositories by stars
     const topRepos = repos
       .sort((a, b) => b.stargazers_count - a.stargazers_count)
@@ -70,6 +86,85 @@ export const getGitHubProfile = async (req, res) => {
         percentage: Math.round((count / repos.length) * 100),
       }));
 
+    // Extract experience from organizations and repositories
+    const experience = [];
+
+    // Add organization experience
+    organizations.forEach((org) => {
+      experience.push({
+        company: org.login,
+        position: "Contributor",
+        description: `Active contributor to ${org.login} organization`,
+        logo: org.avatar_url,
+        url: `https://github.com/${org.login}`,
+      });
+    });
+
+    // Extract notable projects as experience (repos with >10 stars or forks)
+    const notableRepos = repos
+      .filter(
+        (repo) =>
+          !repo.fork && (repo.stargazers_count >= 10 || repo.forks_count >= 5)
+      )
+      .slice(0, 5);
+
+    notableRepos.forEach((repo) => {
+      experience.push({
+        company: "Open Source",
+        position: `${repo.name} - Creator/Maintainer`,
+        description: repo.description || "Open source project",
+        period: new Date(repo.created_at).getFullYear().toString(),
+        highlights: [
+          `⭐ ${repo.stargazers_count} stars`,
+          `🔱 ${repo.forks_count} forks`,
+          `Language: ${repo.language || "Multiple"}`,
+        ],
+        url: repo.html_url,
+      });
+    });
+
+    // Extract certifications/achievements
+    const achievements = [];
+
+    // Add repository milestones as achievements
+    if (repos.length >= 50) {
+      achievements.push({
+        title: "Prolific Open Source Contributor",
+        description: `Created and maintained ${repos.length}+ public repositories`,
+        date: new Date().getFullYear().toString(),
+      });
+    }
+
+    const totalStars = repos.reduce(
+      (sum, repo) => sum + repo.stargazers_count,
+      0
+    );
+    if (totalStars >= 100) {
+      achievements.push({
+        title: "Community Recognition",
+        description: `Earned ${totalStars}+ stars across projects`,
+        date: new Date().getFullYear().toString(),
+      });
+    }
+
+    if (profile.followers >= 50) {
+      achievements.push({
+        title: "Developer Influencer",
+        description: `${profile.followers}+ followers on GitHub`,
+        date: new Date().getFullYear().toString(),
+      });
+    }
+
+    // Add language expertise badges
+    if (dominantLanguages.length > 0) {
+      const topLang = dominantLanguages[0];
+      achievements.push({
+        title: `${topLang.name} Expert`,
+        description: `Primary language in ${topLang.percentage}% of projects`,
+        date: new Date().getFullYear().toString(),
+      });
+    }
+
     // Structure response data
     const extractedData = {
       profile: {
@@ -88,6 +183,8 @@ export const getGitHubProfile = async (req, res) => {
         githubUrl: profile.html_url,
       },
       topRepositories: topRepos,
+      experience: experience,
+      certifications: achievements,
       skills: {
         languages: dominantLanguages,
         totalRepos: repos.length,

@@ -8,6 +8,7 @@ import ScoreCard from "../components/ScoreCard";
 import JobSpecificScoreCard from "../components/JobSpecificScoreCard";
 import RecommendationsPanel from "../components/RecommendationsPanel";
 import CollapsibleSection from "../components/CollapsibleSection";
+import GitHubImportModal from "../components/GitHubImportModal";
 import * as EditorSections from "../components/EditorSections";
 import {getJobCategories, getJobsByCategory} from "../utils/jobProfiles";
 import ClassicTemplate from "../components/templates/ClassicTemplate";
@@ -125,6 +126,8 @@ const Editor = () => {
     const saved = localStorage.getItem("analysisExpanded");
     return saved !== null ? JSON.parse(saved) : true;
   });
+  const [showGitHubImportModal, setShowGitHubImportModal] = useState(false);
+  const [githubImportSuccess, setGithubImportSuccess] = useState(false);
 
   // Save analysis section state to localStorage when it changes
   useEffect(() => {
@@ -354,6 +357,232 @@ const Editor = () => {
     }
 
     setDraggedSection(null);
+  };
+
+  // GitHub Import Handler
+  const handleGitHubImport = async (importedData) => {
+    console.log("🔥 GitHub Import Data:", importedData);
+
+    let updatedResumeData = null;
+
+    setResumeData((prev) => {
+      // Create a deep copy to ensure React detects the change
+      const updated = JSON.parse(JSON.stringify(prev));
+
+      // Import Profile Data
+      if (importedData.profile) {
+        updated.contact = {
+          ...updated.contact,
+          github: importedData.profile.githubUrl,
+          location: importedData.profile.location || updated.contact.location,
+        };
+        if (importedData.profile.bio) {
+          updated.summary = importedData.profile.bio;
+        }
+        console.log("✅ Profile imported:", updated.contact);
+      }
+
+      // Import Projects
+      if (importedData.projects && importedData.projects.length > 0) {
+        const githubProjects = importedData.projects.map((repo) => ({
+          name: repo.name, // Use 'name' instead of 'title'
+          title: repo.name, // Also keep 'title' for compatibility
+          description: repo.description || "No description provided",
+          technologies: [repo.language, ...(repo.topics || [])].filter(Boolean),
+          link: repo.url,
+          bullets: [`⭐ ${repo.stars} stars`, `🔱 ${repo.forks} forks`],
+          highlights: [`⭐ ${repo.stars} stars`, `🔱 ${repo.forks} forks`],
+        }));
+
+        console.log("📦 GitHub Projects to import:", githubProjects);
+        console.log("🔀 Merge option:", importedData.mergeOptions.projects);
+        console.log("📋 Existing projects:", updated.projects);
+
+        if (importedData.mergeOptions.projects === "replace") {
+          updated.projects = githubProjects;
+        } else {
+          // Add new projects
+          updated.projects = [...(updated.projects || []), ...githubProjects];
+        }
+
+        console.log("✅ Updated projects:", updated.projects);
+      }
+
+      // Import Skills
+      if (importedData.skills && importedData.skills.length > 0) {
+        console.log("🎯 Importing skills:", importedData.skills);
+        console.log("📊 Existing skills structure:", updated.skills);
+
+        // Check if skills are categorized (array of objects with category/items)
+        const isCategorized =
+          Array.isArray(updated.skills) &&
+          updated.skills.length > 0 &&
+          updated.skills[0]?.category;
+
+        if (importedData.mergeOptions.skills === "replace") {
+          // If replacing, convert to same format as existing
+          if (isCategorized) {
+            updated.skills = [
+              {
+                category: "GitHub Skills",
+                items: importedData.skills,
+              },
+            ];
+          } else {
+            updated.skills = importedData.skills;
+          }
+        } else {
+          // Add new skills based on format
+          if (isCategorized) {
+            // Find or create "GitHub Skills" category
+            let githubCategory = updated.skills.find(
+              (cat) => cat.category === "GitHub Skills"
+            );
+
+            if (githubCategory) {
+              // Get existing items in lowercase for comparison
+              const existingItems = new Set(
+                githubCategory.items.map((item) => item.toLowerCase())
+              );
+              const newSkills = importedData.skills.filter(
+                (skill) => !existingItems.has(skill.toLowerCase())
+              );
+              githubCategory.items = [...githubCategory.items, ...newSkills];
+            } else {
+              // Create new category
+              updated.skills.push({
+                category: "GitHub Skills",
+                items: importedData.skills,
+              });
+            }
+          } else {
+            // Plain array format
+            const existingSkills = new Set(
+              (updated.skills || []).map((s) =>
+                typeof s === "string"
+                  ? s.toLowerCase()
+                  : s.name?.toLowerCase() || ""
+              )
+            );
+            const newSkills = importedData.skills.filter(
+              (skill) =>
+                !existingSkills.has(
+                  typeof skill === "string"
+                    ? skill.toLowerCase()
+                    : skill.name?.toLowerCase() || ""
+                )
+            );
+            updated.skills = [...(updated.skills || []), ...newSkills];
+          }
+        }
+        console.log("✅ Skills imported:", updated.skills);
+      }
+
+      // Import Experience
+      if (importedData.experience && importedData.experience.length > 0) {
+        const githubExperience = importedData.experience.map((exp) => ({
+          company: exp.company,
+          title: exp.position, // Map 'position' to 'title'
+          position: exp.position,
+          location: "",
+          startDate: exp.period || "Present",
+          endDate: "Present",
+          current: true,
+          bullets: exp.highlights || [],
+          description: exp.description,
+        }));
+
+        console.log("💼 Experience to import:", githubExperience);
+
+        if (importedData.mergeOptions.experience === "replace") {
+          updated.experience = githubExperience;
+        } else {
+          // Add new experience
+          updated.experience = [
+            ...(updated.experience || []),
+            ...githubExperience,
+          ];
+        }
+        console.log("✅ Experience imported:", updated.experience);
+      }
+
+      // Import Certifications/Achievements
+      if (
+        importedData.certifications &&
+        importedData.certifications.length > 0
+      ) {
+        const githubCertifications = importedData.certifications.map(
+          (cert) => ({
+            title: cert.title,
+            issuer: "GitHub",
+            date: cert.date,
+            description: cert.description,
+          })
+        );
+
+        console.log("🏆 Certifications to import:", githubCertifications);
+
+        if (importedData.mergeOptions.certifications === "replace") {
+          updated.certifications = githubCertifications;
+        } else {
+          // Add new certifications
+          updated.certifications = [
+            ...(updated.certifications || []),
+            ...githubCertifications,
+          ];
+        }
+        console.log("✅ Certifications imported:", updated.certifications);
+      }
+
+      console.log("🎉 Final updated resume data:", updated);
+
+      // Store the updated data to save later
+      updatedResumeData = updated;
+
+      return updated;
+    });
+
+    // Close modal
+    setShowGitHubImportModal(false);
+
+    // Show success message
+    setGithubImportSuccess(true);
+    setTimeout(() => setGithubImportSuccess(false), 3000);
+
+    // Auto-save with the updated data (wait for state to settle)
+    setTimeout(async () => {
+      if (updatedResumeData && user) {
+        console.log("💾 Auto-saving imported data...", updatedResumeData);
+        try {
+          setSaving(true);
+          let savedResume;
+          if (updatedResumeData._id) {
+            // Update existing resume
+            const response = await resumeAPI.update(
+              updatedResumeData._id,
+              updatedResumeData
+            );
+            savedResume = response.data;
+            console.log("✅ Resume auto-saved successfully!");
+          } else {
+            // Save new resume
+            const response = await resumeAPI.save(updatedResumeData);
+            savedResume = response.data;
+            console.log("✅ Resume auto-saved successfully!");
+          }
+
+          // Update the resumeData with the saved version
+          if (savedResume && savedResume._id) {
+            setResumeData(savedResume);
+            localStorage.setItem("currentResumeId", savedResume._id);
+          }
+        } catch (err) {
+          console.error("❌ Auto-save error:", err);
+        } finally {
+          setSaving(false);
+        }
+      }
+    }, 1000);
   };
 
   // Reset section order to default
@@ -804,6 +1033,14 @@ const Editor = () => {
             Resume Editor
           </h1>
           <div className="flex gap-3 items-center">
+            {/* GitHub Import Button */}
+            <button
+              onClick={() => setShowGitHubImportModal(true)}
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm font-medium hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all shadow-md hover:shadow-lg flex items-center gap-2"
+              title="Import from GitHub"
+            >
+              💻 Import GitHub Data
+            </button>
             {/* Reset Order Button */}
             <button
               onClick={handleResetOrder}
@@ -1163,6 +1400,29 @@ const Editor = () => {
                 >
                   Close
                 </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* GitHub Import Modal */}
+        <GitHubImportModal
+          isOpen={showGitHubImportModal}
+          onClose={() => setShowGitHubImportModal(false)}
+          onImport={handleGitHubImport}
+          currentResume={resumeData}
+        />
+
+        {/* GitHub Import Success Notification */}
+        {githubImportSuccess && (
+          <div className="fixed bottom-6 right-6 z-50 animate-fade-in">
+            <div className="bg-green-600 text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3">
+              <span className="text-2xl">✨</span>
+              <div>
+                <p className="font-bold">Successfully Updated!</p>
+                <p className="text-sm text-green-100">
+                  GitHub data added to your resume
+                </p>
               </div>
             </div>
           </div>

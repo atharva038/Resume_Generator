@@ -12,6 +12,8 @@ import {
   AlertCircle,
   Loader2,
   ExternalLink,
+  Briefcase,
+  Award,
 } from "lucide-react";
 import axios from "axios";
 
@@ -83,8 +85,8 @@ const GitHubExtractor = ({onDataExtracted}) => {
           Import Your GitHub Profile
         </h2>
         <p className="text-lg text-gray-600 dark:text-gray-400">
-          Automatically extract your projects, skills, and experience from
-          GitHub
+          Automatically extract your projects, skills, experience, and
+          achievements from GitHub
         </p>
       </div>
 
@@ -281,6 +283,106 @@ const GitHubExtractor = ({onDataExtracted}) => {
               ))}
             </div>
           </div>
+
+          {/* Experience Section */}
+          {githubData.experience && githubData.experience.length > 0 && (
+            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/50 p-6 md:p-8 mb-6">
+              <div className="flex items-center gap-2 mb-6">
+                <Briefcase className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                  Experience & Contributions
+                </h3>
+              </div>
+              <div className="space-y-4">
+                {githubData.experience.map((exp, idx) => (
+                  <div
+                    key={idx}
+                    className="p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-700"
+                  >
+                    <div className="flex items-start justify-between gap-4 mb-2">
+                      <div className="flex-1">
+                        <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
+                          {exp.position}
+                        </h4>
+                        <p className="text-purple-600 dark:text-purple-400 font-medium">
+                          {exp.company}
+                        </p>
+                        {exp.period && (
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            {exp.period}
+                          </p>
+                        )}
+                      </div>
+                      {exp.url && (
+                        <a
+                          href={exp.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+                        >
+                          <ExternalLink className="w-5 h-5" />
+                        </a>
+                      )}
+                    </div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                      {exp.description}
+                    </p>
+                    {exp.highlights && exp.highlights.length > 0 && (
+                      <ul className="space-y-1">
+                        {exp.highlights.map((highlight, hIdx) => (
+                          <li
+                            key={hIdx}
+                            className="text-xs text-gray-500 dark:text-gray-400 flex items-start gap-2"
+                          >
+                            <span className="text-purple-600 dark:text-purple-400 mt-0.5">
+                              •
+                            </span>
+                            {highlight}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Certifications/Achievements Section */}
+          {githubData.certifications &&
+            githubData.certifications.length > 0 && (
+              <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/50 p-6 md:p-8 mb-6">
+                <div className="flex items-center gap-2 mb-6">
+                  <Award className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                    Achievements & Recognition
+                  </h3>
+                </div>
+                <div className="grid md:grid-cols-2 gap-4">
+                  {githubData.certifications.map((cert, idx) => (
+                    <div
+                      key={idx}
+                      className="p-4 bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-xl border border-yellow-200 dark:border-yellow-700/50"
+                    >
+                      <div className="flex items-start gap-3">
+                        <Award className="w-6 h-6 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-1" />
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-gray-900 dark:text-white mb-1">
+                            {cert.title}
+                          </h4>
+                          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                            {cert.description}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-500">
+                            {cert.date}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
           {/* Use This Data Button */}
           <div className="text-center">
