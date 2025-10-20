@@ -88,15 +88,29 @@ const ENHANCE_CONTENT_PROMPT = `You are an expert resume writer specializing in 
 
 TASK: Rewrite the following resume content to be more ATS-friendly and impactful.
 
-RULES:
-1. Start each bullet with strong action verbs (Led, Developed, Implemented, Achieved, etc.)
-2. Quantify achievements with numbers, percentages, or metrics whenever possible
-3. Use industry-standard keywords relevant to the role
-4. Keep bullets concise (1-2 lines max)
-5. Focus on impact and results, not just responsibilities
-6. Remove personal pronouns (I, my, we)
-7. Use past tense for previous roles, present tense for current roles
-8. Ensure technical terms are spelled correctly
+CRITICAL RULES:
+1. **ANALYZE EXPERIENCE LEVEL FIRST**: Based on the full resume context, determine if this is a fresher, junior (1-2 years), or senior (3+ years) professional
+2. **MAINTAIN EXPERIENCE LEVEL**: DO NOT add fake experience, projects, or achievements. Only enhance what already exists
+3. **STRICT LENGTH LIMITS**:
+   - Summary: Maximum 50 words (3-4 lines)
+   - Each bullet point: Maximum 15 words (1 line)
+   - Project descriptions: Maximum 30 words (2 lines)
+4. **ATS OPTIMIZATION**:
+   - Start each bullet with strong action verbs (Led, Developed, Implemented, Achieved, etc.)
+   - Quantify achievements with numbers, percentages, or metrics when possible
+   - Use industry-standard keywords relevant to the role
+   - Focus on impact and results, not just responsibilities
+5. **FORMATTING**:
+   - Remove personal pronouns (I, my, we)
+   - Use past tense for previous roles, present tense for current roles
+   - Ensure technical terms are spelled correctly
+6. **CONTENT INTEGRITY**:
+   - Keep content concise to maintain 1-page resume length
+   - Don't invent metrics or achievements
+   - Preserve the user's actual work history and skill level
+
+Full Resume Context:
+{resumeContext}
 
 Section Type: {sectionType}
 Content to enhance:
@@ -148,7 +162,9 @@ export async function parseResumeWithAI(resumeText) {
  */
 export async function enhanceContentWithAI(
   content,
-  sectionType = "experience"
+  sectionType = "experience",
+  resumeData = null,
+  customPrompt = ""
 ) {
   try {
     const model = genAI.getGenerativeModel({model: "gemini-2.5-flash"});
@@ -159,12 +175,72 @@ export async function enhanceContentWithAI(
       contentStr = JSON.stringify(content, null, 2);
     }
 
-    const prompt = ENHANCE_CONTENT_PROMPT.replace(
-      "{sectionType}",
-      sectionType
-    ).replace("{content}", contentStr);
+    // Prepare resume context for experience level detection
+    let resumeContext = "No full resume context provided";
+    if (resumeData) {
+      // Extract key info for context: experience level, skills, education
+      const experienceCount = resumeData.experience?.length || 0;
+      const hasProjects = resumeData.projects && resumeData.projects.length > 0;
+      const yearsOfExperience =
+        resumeData.experience?.reduce((total, exp) => {
+          // Rough calculation of years from dates
+          if (exp.startDate && exp.endDate) {
+            const start = new Date(exp.startDate);
+            const end = exp.current ? new Date() : new Date(exp.endDate);
+            const years = (end - start) / (1000 * 60 * 60 * 24 * 365);
+            return total + years;
+          }
+          return total;
+        }, 0) || 0;
+
+      const level =
+        experienceCount === 0
+          ? "FRESHER"
+          : yearsOfExperience < 2
+          ? "JUNIOR (1-2 years)"
+          : "SENIOR (3+ years)";
+
+      resumeContext = `
+Experience Level: ${level}
+Number of work experiences: ${experienceCount}
+Total years of experience: ${Math.round(yearsOfExperience)} years
+Has projects: ${hasProjects}
+Education: ${
+        resumeData.education?.map((e) => e.degree).join(", ") || "Not specified"
+      }
+Skills count: ${
+        resumeData.skills?.reduce(
+          (sum, cat) => sum + (cat.items?.length || 0),
+          0
+        ) || 0
+      }
+
+IMPORTANT: This is a ${level} resume. Do not add or invent any experience or achievements that don't exist.
+`;
+    }
+
+    // Add custom prompt if provided
+    let customInstructions = "";
+    if (customPrompt && customPrompt.trim()) {
+      customInstructions = `
+
+ADDITIONAL CUSTOM INSTRUCTIONS FROM USER:
+${customPrompt.trim()}
+
+YOU MUST follow these custom instructions while maintaining all the critical rules above.
+`;
+    }
+
+    const prompt =
+      ENHANCE_CONTENT_PROMPT.replace("{resumeContext}", resumeContext)
+        .replace("{sectionType}", sectionType)
+        .replace("{content}", contentStr) + customInstructions;
 
     console.log(`🤖 Calling Gemini API to enhance ${sectionType}...`);
+    if (customPrompt) {
+      console.log(`📝 Custom instructions: ${customPrompt}`);
+    }
+
     const result = await model.generateContent(prompt);
     const response = await result.response;
     let text = response.text().trim();

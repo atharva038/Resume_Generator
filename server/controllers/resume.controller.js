@@ -65,7 +65,7 @@ export const uploadResume = async (req, res) => {
  */
 export const enhanceContent = async (req, res) => {
   try {
-    const {content, sectionType} = req.body;
+    const {content, sectionType, resumeData, customPrompt} = req.body;
 
     if (!content) {
       return res.status(400).json({error: "Content is required"});
@@ -75,8 +75,13 @@ export const enhanceContent = async (req, res) => {
       return res.status(400).json({error: "Section type is required"});
     }
 
-    // Enhance content using Gemini AI
-    const enhancedContent = await enhanceContentWithAI(content, sectionType);
+    // Enhance content using Gemini AI with full resume context and custom prompt
+    const enhancedContent = await enhanceContentWithAI(
+      content,
+      sectionType,
+      resumeData,
+      customPrompt
+    );
 
     res.json({
       message: "Content enhanced successfully",

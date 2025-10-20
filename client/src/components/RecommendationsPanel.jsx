@@ -4,6 +4,7 @@ import {calculateResumeScore} from "../utils/resumeScoring";
 const RecommendationsPanel = ({resumeData, onEnhanceAll}) => {
   const [expanded, setExpanded] = useState(true);
   const [enhancing, setEnhancing] = useState(false);
+  const [customPrompt, setCustomPrompt] = useState("");
 
   if (!resumeData) return null;
 
@@ -203,15 +204,34 @@ const RecommendationsPanel = ({resumeData, onEnhanceAll}) => {
         </div>
       </div>
 
-      {/* Action Button */}
-      {totalScore < 80 && onEnhanceAll && (
-        <div className="mt-6 text-center">
+      {/* Action Button - AI Enhancement */}
+      {onEnhanceAll && (
+        <div className="mt-6">
+          {/* Custom Prompt Input */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              ✨ Custom AI Instructions (Optional)
+            </label>
+            <textarea
+              value={customPrompt}
+              onChange={(e) => setCustomPrompt(e.target.value)}
+              placeholder="e.g., Focus on technical skills, add more metrics, emphasize leadership experience, target software engineering roles..."
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+              rows="3"
+            />
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              💡 Tip: Give specific instructions like "target data science
+              roles" or "emphasize cloud technologies"
+            </p>
+          </div>
+
+          {/* Enhancement Button */}
           <button
             className="btn-primary w-full"
             onClick={async () => {
               setEnhancing(true);
               try {
-                await onEnhanceAll();
+                await onEnhanceAll(customPrompt);
               } finally {
                 setEnhancing(false);
               }
@@ -224,12 +244,17 @@ const RecommendationsPanel = ({resumeData, onEnhanceAll}) => {
                 Enhancing All Sections...
               </>
             ) : (
-              "Apply AI Enhancement to All Sections"
+              <>
+                <span className="mr-2">🚀</span>
+                {customPrompt
+                  ? "Apply Custom AI Enhancement"
+                  : "Apply AI Enhancement to All Sections"}
+              </>
             )}
           </button>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-            Let AI optimize your content with action verbs, metrics, and
-            keywords
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
+            AI will analyze your experience level and optimize content with
+            action verbs, metrics, and keywords
           </p>
         </div>
       )}

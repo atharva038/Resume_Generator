@@ -61,7 +61,12 @@ const EditableSection = ({
         contentToEnhance = content;
       }
 
-      const response = await resumeAPI.enhance(contentToEnhance, sectionType);
+      // Pass full resumeData for context-aware enhancement
+      const response = await resumeAPI.enhance(
+        contentToEnhance,
+        sectionType,
+        resumeData
+      );
       const enhanced = response.data.enhanced;
 
       if (sectionType === "summary") {

@@ -610,12 +610,12 @@ const Editor = () => {
   };
 
   // Enhance all sections with AI
-  const handleEnhanceAll = async () => {
-    if (
-      !window.confirm(
-        "Apply AI enhancement to all sections? This will improve your summary, experience bullets, and project descriptions with action verbs and metrics."
-      )
-    ) {
+  const handleEnhanceAll = async (customPrompt = "") => {
+    const confirmMessage = customPrompt
+      ? `Apply AI enhancement with your custom instructions?\n\n"${customPrompt}"\n\nThis will improve your summary, experience bullets, and project descriptions.`
+      : "Apply AI enhancement to all sections? This will improve your summary, experience bullets, and project descriptions with action verbs and metrics.";
+
+    if (!window.confirm(confirmMessage)) {
       return;
     }
 
@@ -629,7 +629,7 @@ const Editor = () => {
         const oldSummary = resumeData.summary;
         enhancements.push(
           resumeAPI
-            .enhance(oldSummary, "summary")
+            .enhance(oldSummary, "summary", resumeData, customPrompt)
             .then((response) => {
               const enhanced = response.data.enhanced;
               updateField("summary", enhanced);
@@ -650,7 +650,7 @@ const Editor = () => {
             const oldBullets = [...exp.bullets];
             enhancements.push(
               resumeAPI
-                .enhance(oldBullets, "experience")
+                .enhance(oldBullets, "experience", resumeData, customPrompt)
                 .then((response) => {
                   const enhanced = response.data.enhanced;
                   const bullets = Array.isArray(enhanced)
@@ -680,7 +680,7 @@ const Editor = () => {
             const oldBullets = [...project.bullets];
             enhancements.push(
               resumeAPI
-                .enhance(oldBullets, "project")
+                .enhance(oldBullets, "project", resumeData, customPrompt)
                 .then((response) => {
                   const enhanced = response.data.enhanced;
                   const bullets = Array.isArray(enhanced)

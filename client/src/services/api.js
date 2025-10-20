@@ -40,8 +40,13 @@ export const resumeAPI = {
       },
     });
   },
-  enhance: (content, sectionType) => {
-    return api.post("/resume/enhance", {content, sectionType});
+  enhance: (content, sectionType, resumeData = null, customPrompt = "") => {
+    return api.post("/resume/enhance", {
+      content,
+      sectionType,
+      resumeData,
+      customPrompt,
+    });
   },
   generateSummary: (resumeData) => {
     return api.post("/resume/generate-summary", {resumeData});
