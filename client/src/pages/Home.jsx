@@ -1,5 +1,6 @@
 import {Link} from "react-router-dom";
 import {useState} from "react";
+import HeroSection from "../components/HeroSection";
 
 const Home = () => {
   const [openFAQ, setOpenFAQ] = useState(null);
@@ -132,83 +133,10 @@ const Home = () => {
   return (
     <div className="overflow-x-hidden">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-blue-900/20 dark:to-purple-900/20 py-20 md:py-32">
-        <div className="container mx-auto px-4">
-          <div className="max-w-5xl mx-auto text-center">
-            {/* Trust Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 rounded-full text-blue-700 dark:text-blue-300 text-sm font-semibold mb-6 animate-pulse">
-              <span className="w-2 h-2 bg-green-500 rounded-full animate-ping"></span>
-              Trusted by 10,000+ Job Seekers
-            </div>
-
-            {/* Main Headline */}
-            <h1 className="text-5xl md:text-7xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
-              Build a{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
-                Smart, Shining
-              </span>{" "}
-              Resume
-              <br />
-              That Gets You{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-pink-500">
-                Hired
-              </span>
-            </h1>
-
-            {/* Subheadline */}
-            <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
-              Create your AI-enhanced, recruiter-ready resume in just{" "}
-              <span className="font-bold text-blue-600 dark:text-blue-400">
-                5 minutes
-              </span>
-              . Beat ATS systems, impress hiring managers, and land more
-              interviews — Powered by AI.
-            </p>
-
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row justify-center gap-4 mb-12">
-              <Link
-                to="/upload"
-                className="group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-semibold rounded-xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
-              >
-                <span className="relative z-10">
-                  Build My Resume Now — Free
-                </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </Link>
-              <a
-                href="#how-it-works"
-                className="px-8 py-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-2 border-gray-300 dark:border-gray-600 text-lg font-semibold rounded-xl hover:border-blue-500 dark:hover:border-blue-400 transition-all duration-300"
-              >
-                See How It Works
-              </a>
-            </div>
-
-            {/* Trust Indicators */}
-            <div className="flex flex-wrap justify-center items-center gap-6 text-sm text-gray-600 dark:text-gray-400">
-              <div className="flex items-center gap-2">
-                <span className="text-green-500 text-xl">✓</span>
-                <span>No Credit Card Required</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-green-500 text-xl">✓</span>
-                <span>Free Forever Plan</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-green-500 text-xl">✓</span>
-                <span>ATS-Optimized Templates</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Decorative Elements */}
-        <div className="absolute top-20 left-10 w-20 h-20 bg-blue-400 rounded-full opacity-20 blur-3xl animate-bounce"></div>
-        <div className="absolute bottom-20 right-10 w-32 h-32 bg-purple-400 rounded-full opacity-20 blur-3xl animate-pulse"></div>
-      </section>
+      <HeroSection />
 
       {/* WHO Section - Target Audience */}
-      <section className="py-16 bg-white dark:bg-gray-900">
+      <section id="who" className="py-16 bg-white dark:bg-gray-900">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
