@@ -15,6 +15,7 @@ import ClassicTemplate from "../components/templates/ClassicTemplate";
 import ModernTemplate from "../components/templates/ModernTemplate";
 import MinimalTemplate from "../components/templates/MinimalTemplate";
 import ProfessionalTemplate from "../components/templates/ProfessionalTemplate";
+import ProfessionalV2Template from "../components/templates/ProfessionalV2Template";
 import ExecutiveTemplate from "../components/templates/ExecutiveTemplate";
 import TechTemplate from "../components/templates/TechTemplate";
 import CreativeTemplate from "../components/templates/CreativeTemplate";
@@ -66,6 +67,14 @@ const TEMPLATES = [
     category: "Professional",
     emoji: "💼",
     atsScore: 94,
+  },
+  {
+    id: "professional-v2",
+    name: "Professional V2",
+    component: ProfessionalV2Template,
+    category: "Professional",
+    emoji: "📄",
+    atsScore: 96,
   },
   {
     id: "executive",
