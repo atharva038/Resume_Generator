@@ -8,6 +8,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Templates from "./pages/Templates";
 import GitHubImport from "./pages/GitHubImport";
+import ATSAnalyzer from "./pages/ATSAnalyzer";
 import {DarkModeProvider} from "./context/DarkModeContext";
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
           <Route path="editor" element={<Editor />} />
           <Route path="templates" element={<Templates />} />
           <Route path="github-import" element={<GitHubImport />} />
+          <Route path="ats-analyzer" element={<ATSAnalyzer />} />
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
           <Route path="dashboard" element={<Dashboard />} />

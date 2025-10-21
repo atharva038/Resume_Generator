@@ -1,0 +1,35 @@
+import express from "express";
+import multer from "multer";
+import {analyzeResume} from "../controllers/ats.controller.js";
+import {authenticateToken} from "../middleware/auth.middleware.js";
+
+const router = express.Router();
+
+// Configure multer for file upload (store in memory)
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    if (
+      file.mimetype === "application/pdf" ||
+      file.mimetype ===
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ) {
+      cb(null, true);
+    } else {
+      cb(new Error("Only PDF and DOCX files are allowed"));
+    }
+  },
+});
+
+// Analyze resume against job description
+router.post(
+  "/analyze-resume",
+  authenticateToken,
+  upload.single("resumeFile"),
+  analyzeResume
+);
+
+export default router;

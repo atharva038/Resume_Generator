@@ -500,6 +500,111 @@ Return ONLY valid JSON with no additional text, explanations, or markdown format
   }
 }
 
+/**
+ * Analyze resume against job description for ATS match scoring
+ * @param {string} resumeText - Full resume text
+ * @param {string} jobDescription - Job description text
+ * @returns {Promise<Object>} - Analysis result with match score, keywords, strengths, improvements
+ */
+export async function analyzeResumeJobMatch(resumeText, jobDescription) {
+  try {
+    const model = genAI.getGenerativeModel({model: "gemini-2.5-flash"});
+
+    const prompt = `You are an expert ATS (Applicant Tracking System) analyzer and career coach.
+
+TASK: Analyze how well a resume matches a job description and provide detailed insights.
+
+JOB DESCRIPTION:
+${jobDescription}
+
+RESUME:
+${resumeText}
+
+ANALYSIS REQUIREMENTS:
+1. **Match Score (0-100)**: Calculate overall compatibility based on:
+   - Keyword overlap (40%)
+   - Skills alignment (30%)
+   - Experience relevance (20%)
+   - Education match (10%)
+
+2. **Keyword Analysis**:
+   - Extract top 10 important keywords from job description
+   - Identify which keywords are MISSING from the resume
+   - Identify which keywords are PRESENT in the resume
+
+3. **Strengths**: List 3-5 strong points that make this candidate suitable
+   (e.g., "Has 5 years of Python experience as required", "Leadership experience matches job needs")
+
+4. **Improvement Tips**: Provide 3-5 specific, actionable suggestions
+   (e.g., "Add metrics to project descriptions", "Include missing keyword: Docker")
+
+5. **Eligibility**: Determine if candidate is likely to pass ATS screening (true/false)
+   - True if match_score >= 60
+   - False if match_score < 60
+
+CRITICAL RULES:
+- Be honest and realistic with scoring
+- Focus on hard skills and keywords for ATS compatibility
+- Provide specific, actionable improvements
+- Missing keywords should be relevant and important (not filler words)
+
+Return ONLY a valid JSON object in this exact format:
+{
+  "match_score": 85,
+  "eligible": true,
+  "missing_keywords": ["Docker", "Kubernetes", "CI/CD"],
+  "present_keywords": ["Python", "React", "Node.js", "AWS"],
+  "strengths": [
+    "Has 5+ years of full-stack development experience",
+    "Strong leadership and team management background",
+    "Relevant project experience with similar tech stack"
+  ],
+  "improvements": [
+    "Add quantifiable metrics to project descriptions (e.g., 'Increased performance by 40%')",
+    "Include missing keywords: Docker, Kubernetes in skills or projects",
+    "Add more detail about cloud infrastructure experience",
+    "Mention specific testing frameworks used"
+  ]
+}
+
+Return ONLY valid JSON with no additional text, explanations, or markdown formatting.`;
+
+    console.log("🤖 Calling Gemini API for resume-job match analysis...");
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    let text = response.text().trim();
+
+    // Clean response - remove markdown code blocks if present
+    if (text.startsWith("```json")) {
+      text = text.replace(/^```json\n/, "").replace(/\n```$/, "");
+    } else if (text.startsWith("```")) {
+      text = text.replace(/^```\n/, "").replace(/\n```$/, "");
+    }
+
+    // Parse JSON
+    const analysis = JSON.parse(text);
+
+    // Validate structure
+    if (
+      typeof analysis.match_score !== "number" ||
+      typeof analysis.eligible !== "boolean" ||
+      !Array.isArray(analysis.missing_keywords) ||
+      !Array.isArray(analysis.strengths) ||
+      !Array.isArray(analysis.improvements)
+    ) {
+      throw new Error("Invalid response format from AI");
+    }
+
+    console.log(`✅ Resume-job match analyzed: ${analysis.match_score}% match`);
+    return analysis;
+  } catch (error) {
+    console.error("❌ Gemini resume-job match analysis error:", error.message);
+    throw new Error(
+      `Failed to analyze resume-job match with AI: ${error.message}`
+    );
+  }
+}
+
 export default {
   parseResumeWithAI,
   enhanceContentWithAI,
@@ -507,4 +612,5 @@ export default {
   categorizeSkillsWithAI,
   segregateAchievementsWithAI,
   processCustomSectionWithAI,
+  analyzeResumeJobMatch,
 };

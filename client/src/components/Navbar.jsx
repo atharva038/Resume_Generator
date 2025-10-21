@@ -15,6 +15,7 @@ import {
   User,
   LogOut,
   LayoutDashboard,
+  Target,
 } from "lucide-react";
 
 const Navbar = () => {
@@ -49,6 +50,7 @@ const Navbar = () => {
     {name: "Features", path: "/#features", icon: Grid},
     {name: "Templates", path: "/templates", icon: Palette},
     {name: "AI Enhancer", path: "/upload", icon: Wand2},
+    {name: "ATS Analyzer", path: "/ats-analyzer", icon: Target},
     {name: "Contact", path: "/#contact", icon: Mail},
   ];
 

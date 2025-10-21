@@ -60,6 +60,13 @@ export const resumeAPI = {
   processCustomSection: (content, title) => {
     return api.post("/resume/process-custom-section", {content, title});
   },
+  analyzeResume: (formData) => {
+    return api.post("/ats/analyze-resume", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  },
   save: (resumeData) => api.post("/resume/save", resumeData),
   update: (id, resumeData) => api.put(`/resume/${id}`, resumeData),
   list: () => api.get("/resume/list"),
