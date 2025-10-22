@@ -74,4 +74,14 @@ export const resumeAPI = {
   delete: (id) => api.delete(`/resume/${id}`),
 };
 
+// Contact API
+export const contactAPI = {
+  submit: (data) => api.post("/contact", data),
+  list: (params) => api.get("/contact", {params}),
+  getById: (id) => api.get(`/contact/${id}`),
+  update: (id, data) => api.patch(`/contact/${id}`, data),
+  delete: (id) => api.delete(`/contact/${id}`),
+  getStats: () => api.get("/contact/stats/summary"),
+};
+
 export default api;

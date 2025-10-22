@@ -56,10 +56,9 @@ const Sidebar = ({isOpen, setIsOpen}) => {
     },
     {
       name: "Contact",
-      path: "/#contact",
+      path: "/contact",
       icon: Mail,
       description: "Get in touch",
-      isHash: true,
     },
   ];
 
