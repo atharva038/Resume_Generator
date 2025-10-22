@@ -51,18 +51,38 @@ const ResumePreview = forwardRef(({resumeData, template = "classic"}, ref) => {
 
   return (
     <div className="h-full flex flex-col resume-preview">
-      <div className="mb-3 no-print flex-shrink-0">
-        <button onClick={handlePrint} className="w-full btn-primary">
-          📥 Download PDF
+      {/* Stylish Download Button */}
+      <div className="mb-4 no-print flex-shrink-0">
+        <button
+          onClick={handlePrint}
+          className="w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-3"
+        >
+          <span className="text-2xl">📥</span>
+          <span className="text-base">Download PDF</span>
         </button>
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
+        <p className="text-xs text-center mt-2 text-gray-500 dark:text-gray-400 font-medium">
           This will generate a text-based, ATS-friendly PDF
         </p>
       </div>
 
-      {/* Template Container - Always white background for resume */}
-      <div className="flex-1 overflow-auto bg-gray-100 dark:bg-gray-700 p-4 flex items-start justify-center">
-        <SelectedTemplate ref={componentRef} resumeData={resumeData} />
+      {/* Resume Container - Fully visible and scrollable */}
+      <div
+        className="flex-1 overflow-y-auto overflow-x-hidden bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30 dark:from-gray-800 dark:via-indigo-900/20 dark:to-purple-900/20 rounded-xl shadow-inner p-4"
+        style={{maxHeight: "calc(100vh - 12rem)"}}
+      >
+        <div className="flex justify-center pb-12" style={{minHeight: "100%"}}>
+          <div
+            className="bg-white dark:bg-gray-50 shadow-2xl rounded-sm origin-top mb-8"
+            style={{
+              width: "210mm",
+              height: "297mm",
+              transform: "scale(0.65)",
+              transformOrigin: "top center",
+            }}
+          >
+            <SelectedTemplate ref={componentRef} resumeData={resumeData} />
+          </div>
+        </div>
       </div>
     </div>
   );

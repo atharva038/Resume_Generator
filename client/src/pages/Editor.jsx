@@ -1343,14 +1343,16 @@ const Editor = () => {
           {/* Preview Panel */}
           {showPreview && (
             <div className="xl:sticky xl:top-4 xl:h-[calc(100vh-8rem)] xl:overflow-hidden">
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 border border-gray-200 dark:border-gray-700">
+              <div className="bg-gradient-to-br from-white via-blue-50/30 to-purple-50/30 dark:from-gray-800 dark:via-indigo-900/20 dark:to-purple-900/20 rounded-2xl shadow-2xl border-2 border-indigo-200/50 dark:border-indigo-700/50 backdrop-blur-sm p-6">
+                {/* Stylish Header */}
                 <div className="flex justify-between items-center mb-4 xl:hidden">
-                  <h3 className="text-lg font-bold dark:text-gray-100">
-                    Preview
+                  <h3 className="text-xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent flex items-center gap-2">
+                    <span className="text-2xl">👁️</span>
+                    <span>Resume Preview</span>
                   </h3>
                   <button
                     onClick={() => setShowPreview(false)}
-                    className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                    className="p-2 rounded-full hover:bg-indigo-100 dark:hover:bg-indigo-900/30 text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 transition-all duration-200"
                   >
                     <svg
                       className="w-6 h-6"
