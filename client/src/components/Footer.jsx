@@ -42,32 +42,34 @@ const Footer = () => {
     {name: "AI Enhancer", path: "/upload"},
   ];
 
+  // Hidden until connected to real data
   const resourceLinks = [
-    {name: "Blog", path: "/#blog"},
-    {name: "FAQ", path: "/#faq"},
-    {name: "Privacy Policy", path: "/privacy"},
-    {name: "Terms of Service", path: "/terms"},
+    // {name: "Blog", path: "/#blog"},
+    // {name: "FAQ", path: "/#faq"},
+    // {name: "Privacy Policy", path: "/privacy"},
+    // {name: "Terms of Service", path: "/terms"},
   ];
 
+  // Hidden until connected to real data
   const socialLinks = [
-    {
-      name: "LinkedIn",
-      icon: Linkedin,
-      url: "https://linkedin.com/company/smartnshine",
-      color: "hover:text-blue-400",
-    },
-    {
-      name: "Twitter",
-      icon: Twitter,
-      url: "https://twitter.com/smartnshine",
-      color: "hover:text-sky-400",
-    },
-    {
-      name: "GitHub",
-      icon: Github,
-      url: "https://github.com/smartnshine",
-      color: "hover:text-purple-400",
-    },
+    // {
+    //   name: "LinkedIn",
+    //   icon: Linkedin,
+    //   url: "https://linkedin.com/company/smartnshine",
+    //   color: "hover:text-blue-400",
+    // },
+    // {
+    //   name: "Twitter",
+    //   icon: Twitter,
+    //   url: "https://twitter.com/smartnshine",
+    //   color: "hover:text-sky-400",
+    // },
+    // {
+    //   name: "GitHub",
+    //   icon: Github,
+    //   url: "https://github.com/smartnshine",
+    //   color: "hover:text-purple-400",
+    // },
   ];
 
   return (
@@ -94,24 +96,26 @@ const Footer = () => {
               Build resumes that shine in every interview. Powered by AI to help
               you land your dream job.
             </p>
-            {/* Social Media Icons */}
-            <div className="flex items-center gap-4 pt-2">
-              {socialLinks.map((social) => {
-                const Icon = social.icon;
-                return (
-                  <a
-                    key={social.name}
-                    href={social.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`p-2 bg-slate-800 rounded-lg text-gray-400 ${social.color} transition-all duration-300 hover:bg-slate-700 hover:scale-110 hover:shadow-lg`}
-                    aria-label={social.name}
-                  >
-                    <Icon className="w-5 h-5" />
-                  </a>
-                );
-              })}
-            </div>
+            {/* Social Media Icons - Hidden until connected to real data */}
+            {socialLinks.length > 0 && (
+              <div className="flex items-center gap-4 pt-2">
+                {socialLinks.map((social) => {
+                  const Icon = social.icon;
+                  return (
+                    <a
+                      key={social.name}
+                      href={social.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`p-2 bg-slate-800 rounded-lg text-gray-400 ${social.color} transition-all duration-300 hover:bg-slate-700 hover:scale-110 hover:shadow-lg`}
+                      aria-label={social.name}
+                    >
+                      <Icon className="w-5 h-5" />
+                    </a>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {/* Product Column */}
@@ -137,43 +141,45 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Resources Column */}
-          <div>
-            <h3 className="text-white font-semibold text-lg mb-4 flex items-center gap-2">
-              <Mail className="w-4 h-4 text-blue-400" />
-              Resources
-            </h3>
-            <ul className="space-y-3">
-              {resourceLinks.map((link) => {
-                const isHash = link.path.startsWith("/#");
-                return (
-                  <li key={link.name}>
-                    {isHash ? (
-                      <a
-                        href={link.path}
-                        className="text-gray-400 hover:text-white transition-colors duration-200 inline-flex items-center group"
-                      >
-                        <span className="relative">
-                          {link.name}
-                          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300"></span>
-                        </span>
-                      </a>
-                    ) : (
-                      <Link
-                        to={link.path}
-                        className="text-gray-400 hover:text-white transition-colors duration-200 inline-flex items-center group"
-                      >
-                        <span className="relative">
-                          {link.name}
-                          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300"></span>
-                        </span>
-                      </Link>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
+          {/* Resources Column - Hidden until connected to real data */}
+          {resourceLinks.length > 0 && (
+            <div>
+              <h3 className="text-white font-semibold text-lg mb-4 flex items-center gap-2">
+                <Mail className="w-4 h-4 text-blue-400" />
+                Resources
+              </h3>
+              <ul className="space-y-3">
+                {resourceLinks.map((link) => {
+                  const isHash = link.path.startsWith("/#");
+                  return (
+                    <li key={link.name}>
+                      {isHash ? (
+                        <a
+                          href={link.path}
+                          className="text-gray-400 hover:text-white transition-colors duration-200 inline-flex items-center group"
+                        >
+                          <span className="relative">
+                            {link.name}
+                            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300"></span>
+                          </span>
+                        </a>
+                      ) : (
+                        <Link
+                          to={link.path}
+                          className="text-gray-400 hover:text-white transition-colors duration-200 inline-flex items-center group"
+                        >
+                          <span className="relative">
+                            {link.name}
+                            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300"></span>
+                          </span>
+                        </Link>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
 
           {/* Contact Column */}
           <div>
@@ -195,17 +201,18 @@ const Footer = () => {
               </li>
               <li>
                 <a
-                  href="mailto:support@smartnshine.com"
+                  href="mailto:atharvasjoshi2005@gmail.com"
                   className="text-gray-400 hover:text-white transition-colors duration-200 inline-flex items-center gap-2 group"
                 >
                   <Mail className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
                   <span className="relative">
-                    support@smartnshine.com
+                    atharvasjoshi2005@gmail.com
                     <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300"></span>
                   </span>
                 </a>
               </li>
-              <li>
+              {/* Hidden until connected to real data */}
+              {/* <li>
                 <a
                   href="https://discord.gg/smartnshine"
                   target="_blank"
@@ -218,7 +225,7 @@ const Footer = () => {
                     <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300"></span>
                   </span>
                 </a>
-              </li>
+              </li> */}
             </ul>
           </div>
         </div>

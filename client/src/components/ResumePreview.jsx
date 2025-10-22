@@ -67,7 +67,7 @@ const ResumePreview = forwardRef(({resumeData, template = "classic"}, ref) => {
 
       {/* Resume Container - Fully visible and scrollable */}
       <div
-        className="flex-1 overflow-y-auto overflow-x-hidden bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30 dark:from-gray-800 dark:via-indigo-900/20 dark:to-purple-900/20 rounded-xl shadow-inner p-4"
+        className="flex-1 overflow-y-auto overflow-x-hidden bg-gradient-to-br from-blue-50/50 via-indigo-50/40 to-purple-100/50 dark:from-slate-800/80 dark:via-indigo-900/40 dark:to-purple-900/40 rounded-xl shadow-inner p-4 backdrop-blur-sm"
         style={{maxHeight: "calc(100vh - 12rem)"}}
       >
         <div className="flex justify-center pb-12" style={{minHeight: "100%"}}>

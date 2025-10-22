@@ -168,10 +168,10 @@ const Contact = () => {
                         Email
                       </p>
                       <a
-                        href="mailto:support@atsresume.com"
+                        href="mailto:atharvasjoshi2005@gmail.com"
                         className="text-gray-900 dark:text-gray-100 font-medium hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
                       >
-                        support@atsresume.com
+                        atharvasjoshi2005@gmail.com
                       </a>
                     </div>
                   </div>
@@ -186,10 +186,10 @@ const Contact = () => {
                         Phone
                       </p>
                       <a
-                        href="tel:+1234567890"
+                        href="tel:+919156906881"
                         className="text-gray-900 dark:text-gray-100 font-medium hover:text-green-600 dark:hover:text-green-400 transition-colors"
                       >
-                        +1 (234) 567-8900
+                        +91 9156906881
                       </a>
                     </div>
                   </div>
@@ -204,9 +204,9 @@ const Contact = () => {
                         Location
                       </p>
                       <p className="text-gray-900 dark:text-gray-100 font-medium">
-                        San Francisco, CA 94105
+                        Cidco, Nanded
                         <br />
-                        United States
+                        Maharashtra, India
                       </p>
                     </div>
                   </div>
@@ -230,8 +230,8 @@ const Contact = () => {
                 </div>
               </div>
 
-              {/* Social Media */}
-              <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+              {/* Social Media - Hidden until connected to real data */}
+              {/* <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
                 <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">
                   Follow Us
                 </h3>
@@ -273,7 +273,7 @@ const Contact = () => {
                     </span>
                   </a>
                 </div>
-              </div>
+              </div> */}
             </div>
 
             {/* Contact Form */}
