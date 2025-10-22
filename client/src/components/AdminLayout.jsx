@@ -109,12 +109,14 @@ const AdminLayout = () => {
                 {user?.email || "admin@smartnshine.com"}
               </p>
             </div>
-            
+
             {/* Dark Mode Toggle */}
             <button
               onClick={toggleDarkMode}
               className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-              title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+              title={
+                isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"
+              }
             >
               {isDarkMode ? (
                 <Sun className="w-5 h-5 text-yellow-500" />
