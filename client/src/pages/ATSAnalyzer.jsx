@@ -111,13 +111,13 @@ const ATSAnalyzer = () => {
               AI-Powered Job Match Analysis
             </span>
           </div>
-          
+
           <h1 className="text-4xl sm:text-5xl font-bold mb-3 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
             ATS Job Match Analyzer
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            Upload your resume and paste a job description to get AI-powered insights 
-            on how well you match the role
+            Upload your resume and paste a job description to get AI-powered
+            insights on how well you match the role
           </p>
         </div>
 
@@ -290,7 +290,8 @@ const ATSAnalyzer = () => {
                   Ready to Analyze
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-6">
-                  Enter a job description and select your resume to get AI-powered insights
+                  Enter a job description and select your resume to get
+                  AI-powered insights
                 </p>
                 <div className="space-y-2 text-sm text-gray-500 dark:text-gray-400">
                   <div className="flex items-center justify-center gap-2">
@@ -366,18 +367,48 @@ const ATSAnalyzer = () => {
                             (1 - analysisResult.match_score / 100)
                           }`}
                           strokeLinecap="round"
-                          style={{transition: "stroke-dashoffset 1.5s ease-in-out"}}
+                          style={{
+                            transition: "stroke-dashoffset 1.5s ease-in-out",
+                          }}
                         />
                         <defs>
-                          <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stopColor={analysisResult.match_score >= 75 ? "#10b981" : analysisResult.match_score >= 50 ? "#f59e0b" : "#ef4444"} />
-                            <stop offset="100%" stopColor={analysisResult.match_score >= 75 ? "#059669" : analysisResult.match_score >= 50 ? "#d97706" : "#dc2626"} />
+                          <linearGradient
+                            id="gradient"
+                            x1="0%"
+                            y1="0%"
+                            x2="100%"
+                            y2="100%"
+                          >
+                            <stop
+                              offset="0%"
+                              stopColor={
+                                analysisResult.match_score >= 75
+                                  ? "#10b981"
+                                  : analysisResult.match_score >= 50
+                                  ? "#f59e0b"
+                                  : "#ef4444"
+                              }
+                            />
+                            <stop
+                              offset="100%"
+                              stopColor={
+                                analysisResult.match_score >= 75
+                                  ? "#059669"
+                                  : analysisResult.match_score >= 50
+                                  ? "#d97706"
+                                  : "#dc2626"
+                              }
+                            />
                           </linearGradient>
                         </defs>
                       </svg>
                       <div className="absolute inset-0 flex items-center justify-center">
                         <div className="text-center">
-                          <div className={`text-5xl font-bold ${getScoreColor(analysisResult.match_score)}`}>
+                          <div
+                            className={`text-5xl font-bold ${getScoreColor(
+                              analysisResult.match_score
+                            )}`}
+                          >
                             {analysisResult.match_score}%
                           </div>
                           <div className="text-sm text-gray-600 dark:text-gray-400 mt-1 font-medium">
@@ -386,12 +417,14 @@ const ATSAnalyzer = () => {
                         </div>
                       </div>
                     </div>
-                    
-                    <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full font-semibold ${
-                      analysisResult.eligible 
-                        ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
-                        : "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300"
-                    }`}>
+
+                    <div
+                      className={`inline-flex items-center gap-2 px-4 py-2 rounded-full font-semibold ${
+                        analysisResult.eligible
+                          ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
+                          : "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300"
+                      }`}
+                    >
                       {analysisResult.eligible ? (
                         <>
                           <CheckCircle className="w-5 h-5" />
@@ -421,7 +454,10 @@ const ATSAnalyzer = () => {
                       </div>
                       <ul className="space-y-3">
                         {analysisResult.strengths.map((strength, index) => (
-                          <li key={index} className="flex items-start gap-3 p-3 bg-white/50 dark:bg-gray-900/30 rounded-lg">
+                          <li
+                            key={index}
+                            className="flex items-start gap-3 p-3 bg-white/50 dark:bg-gray-900/30 rounded-lg"
+                          >
                             <div className="flex-shrink-0 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mt-0.5">
                               <CheckCircle className="w-4 h-4 text-white" />
                             </div>
@@ -478,7 +514,10 @@ const ATSAnalyzer = () => {
                       </div>
                       <ul className="space-y-3 mb-6">
                         {analysisResult.improvements.map((tip, index) => (
-                          <li key={index} className="flex items-start gap-3 p-4 bg-white/60 dark:bg-gray-900/30 rounded-lg border border-indigo-200 dark:border-indigo-800">
+                          <li
+                            key={index}
+                            className="flex items-start gap-3 p-4 bg-white/60 dark:bg-gray-900/30 rounded-lg border border-indigo-200 dark:border-indigo-800"
+                          >
                             <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center mt-0.5">
                               <TrendingUp className="w-4 h-4 text-white" />
                             </div>
