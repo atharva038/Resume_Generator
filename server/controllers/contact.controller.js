@@ -1,13 +1,11 @@
-import express from "express";
 import Contact from "../models/Contact.js";
-import {authenticateToken} from "../middleware/auth.middleware.js";
 
-const router = express.Router();
-
-// @route   POST /api/contact
-// @desc    Submit contact form
-// @access  Public
-router.post("/", async (req, res) => {
+/**
+ * @desc    Submit contact form
+ * @route   POST /api/contact
+ * @access  Public
+ */
+export const submitContact = async (req, res) => {
   try {
     const {name, email, subject, message, phone, company, category} = req.body;
 
@@ -54,12 +52,14 @@ router.post("/", async (req, res) => {
       error: "Failed to submit contact form. Please try again later.",
     });
   }
-});
+};
 
-// @route   GET /api/contact
-// @desc    Get all contact submissions (Admin only)
-// @access  Private
-router.get("/", authenticateToken, async (req, res) => {
+/**
+ * @desc    Get all contact submissions
+ * @route   GET /api/contact
+ * @access  Private
+ */
+export const getAllContacts = async (req, res) => {
   try {
     const {status, limit = 50, page = 1} = req.query;
 
@@ -89,12 +89,14 @@ router.get("/", authenticateToken, async (req, res) => {
       error: "Failed to fetch contacts",
     });
   }
-});
+};
 
-// @route   GET /api/contact/:id
-// @desc    Get single contact submission
-// @access  Private
-router.get("/:id", authenticateToken, async (req, res) => {
+/**
+ * @desc    Get single contact submission
+ * @route   GET /api/contact/:id
+ * @access  Private
+ */
+export const getContactById = async (req, res) => {
   try {
     const contact = await Contact.findById(req.params.id);
 
@@ -122,12 +124,14 @@ router.get("/:id", authenticateToken, async (req, res) => {
       error: "Failed to fetch contact",
     });
   }
-});
+};
 
-// @route   PATCH /api/contact/:id
-// @desc    Update contact status
-// @access  Private
-router.patch("/:id", authenticateToken, async (req, res) => {
+/**
+ * @desc    Update contact status
+ * @route   PATCH /api/contact/:id
+ * @access  Private
+ */
+export const updateContact = async (req, res) => {
   try {
     const {status, notes} = req.body;
 
@@ -160,12 +164,14 @@ router.patch("/:id", authenticateToken, async (req, res) => {
       error: "Failed to update contact",
     });
   }
-});
+};
 
-// @route   DELETE /api/contact/:id
-// @desc    Delete contact submission
-// @access  Private
-router.delete("/:id", authenticateToken, async (req, res) => {
+/**
+ * @desc    Delete contact submission
+ * @route   DELETE /api/contact/:id
+ * @access  Private
+ */
+export const deleteContact = async (req, res) => {
   try {
     const contact = await Contact.findByIdAndDelete(req.params.id);
 
@@ -187,12 +193,14 @@ router.delete("/:id", authenticateToken, async (req, res) => {
       error: "Failed to delete contact",
     });
   }
-});
+};
 
-// @route   GET /api/contact/stats/summary
-// @desc    Get contact statistics
-// @access  Private
-router.get("/stats/summary", authenticateToken, async (req, res) => {
+/**
+ * @desc    Get contact statistics
+ * @route   GET /api/contact/stats/summary
+ * @access  Private
+ */
+export const getContactStats = async (req, res) => {
   try {
     const stats = await Contact.aggregate([
       {
@@ -228,6 +236,4 @@ router.get("/stats/summary", authenticateToken, async (req, res) => {
       error: "Failed to fetch statistics",
     });
   }
-});
-
-export default router;
+};

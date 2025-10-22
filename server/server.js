@@ -6,7 +6,7 @@ import resumeRoutes from "./routes/resume.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import githubRoutes from "./routes/github.routes.js";
 import atsRoutes from "./routes/ats.routes.js";
-import contactRoutes from "./routes/contact.js";
+import contactRoutes from "./routes/contact.routes.js";
 
 // Load environment variables
 dotenv.config();
