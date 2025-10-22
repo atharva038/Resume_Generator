@@ -13,14 +13,18 @@ import {
   X,
   FileBox,
   Activity,
+  Moon,
+  Sun,
 } from "lucide-react";
 import {useAuth} from "../context/AuthContext";
+import {useDarkMode} from "../context/DarkModeContext";
 
 const AdminLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
   const {user, logout} = useAuth();
+  const {isDarkMode, toggleDarkMode} = useDarkMode();
 
   const menuItems = [
     {
@@ -105,6 +109,20 @@ const AdminLayout = () => {
                 {user?.email || "admin@smartnshine.com"}
               </p>
             </div>
+            
+            {/* Dark Mode Toggle */}
+            <button
+              onClick={toggleDarkMode}
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            >
+              {isDarkMode ? (
+                <Sun className="w-5 h-5 text-yellow-500" />
+              ) : (
+                <Moon className="w-5 h-5 text-gray-700" />
+              )}
+            </button>
+
             <button
               onClick={handleLogout}
               className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"

@@ -11,10 +11,13 @@ import {
   ChevronLeft,
   ChevronRight,
   Sparkles,
+  Shield,
 } from "lucide-react";
+import {useAuth} from "../context/AuthContext";
 
 const Sidebar = ({isOpen, setIsOpen}) => {
   const location = useLocation();
+  const {user} = useAuth();
 
   const navLinks = [
     {
@@ -132,6 +135,48 @@ const Sidebar = ({isOpen, setIsOpen}) => {
           {/* Navigation Links */}
           <nav className="flex-1 overflow-y-auto py-6 px-3">
             <div className="space-y-2">
+              {/* Admin Panel Link - Only for Admin Users */}
+              {user && user.role === "admin" && (
+                <Link
+                  to="/admin/dashboard"
+                  onClick={() => setIsOpen(false)}
+                  className={`group flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 ${
+                    location.pathname.startsWith("/admin")
+                      ? "bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 text-purple-600 dark:text-purple-400 shadow-sm"
+                      : "text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-purple-50/50 hover:to-blue-50/50 dark:hover:from-purple-900/10 dark:hover:to-blue-900/10"
+                  }`}
+                  title={!isOpen ? "Admin Panel" : ""}
+                >
+                  <Shield
+                    className={`w-5 h-5 flex-shrink-0 transition-transform duration-200 ${
+                      location.pathname.startsWith("/admin")
+                        ? "scale-110 animate-pulse"
+                        : "group-hover:scale-110"
+                    }`}
+                  />
+                  <span
+                    className={`font-medium whitespace-nowrap transition-all duration-300 ${
+                      isOpen
+                        ? "opacity-100 translate-x-0"
+                        : "opacity-0 -translate-x-4 lg:hidden"
+                    }`}
+                  >
+                    Admin Panel
+                  </span>
+                  {location.pathname.startsWith("/admin") && (
+                    <span
+                      className={`ml-auto bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 text-xs px-2 py-0.5 rounded-full font-semibold transition-all duration-300 ${
+                        isOpen
+                          ? "opacity-100 translate-x-0"
+                          : "opacity-0 -translate-x-4 lg:hidden"
+                      }`}
+                    >
+                      Active
+                    </span>
+                  )}
+                </Link>
+              )}
+
               {navLinks.map((link) => {
                 const Icon = link.icon;
                 const isActive = isActivePath(link.path);
