@@ -1,6 +1,7 @@
 import {Routes, Route} from "react-router-dom";
 import Layout from "./components/Layout";
 import ScrollToTop from "./components/ScrollToTop";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Home from "./pages/Home";
 import Upload from "./pages/Upload";
 import Editor from "./pages/Editor";
@@ -20,15 +21,66 @@ function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
-          <Route path="upload" element={<Upload />} />
-          <Route path="editor" element={<Editor />} />
-          <Route path="templates" element={<Templates />} />
-          <Route path="github-import" element={<GitHubImport />} />
-          <Route path="ats-analyzer" element={<ATSAnalyzer />} />
-          <Route path="contact" element={<Contact />} />
+          {/* Protected Routes - Require Authentication */}
+          <Route
+            path="upload"
+            element={
+              <ProtectedRoute>
+                <Upload />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="editor"
+            element={
+              <ProtectedRoute>
+                <Editor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="templates"
+            element={
+              <ProtectedRoute>
+                <Templates />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="github-import"
+            element={
+              <ProtectedRoute>
+                <GitHubImport />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="ats-analyzer"
+            element={
+              <ProtectedRoute>
+                <ATSAnalyzer />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="contact"
+            element={
+              <ProtectedRoute>
+                <Contact />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          {/* Public Routes */}
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
-          <Route path="dashboard" element={<Dashboard />} />
         </Route>
       </Routes>
     </DarkModeProvider>

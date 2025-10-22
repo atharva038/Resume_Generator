@@ -1,5 +1,5 @@
 import {useState} from "react";
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useLocation} from "react-router-dom";
 import {useAuth} from "../context/AuthContext";
 
 const Login = () => {
@@ -9,6 +9,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const {login} = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,7 +18,9 @@ const Login = () => {
 
     try {
       await login(email, password);
-      navigate("/dashboard");
+      // Redirect to the page they tried to visit or dashboard
+      const from = location.state?.from?.pathname || "/dashboard";
+      navigate(from, {replace: true});
     } catch (err) {
       setError(err.response?.data?.error || "Login failed");
     } finally {
@@ -32,6 +35,16 @@ const Login = () => {
           <h1 className="text-3xl font-bold text-center mb-6 dark:text-gray-100">
             Login
           </h1>
+
+          {location.state?.from && (
+            <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-blue-700 dark:text-blue-300 text-sm">
+              <p className="font-semibold mb-1">🔒 Authentication Required</p>
+              <p>
+                Please log in to access this feature. You'll be redirected after
+                login.
+              </p>
+            </div>
+          )}
 
           {error && (
             <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-600 dark:text-red-400">

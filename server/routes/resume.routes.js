@@ -17,23 +17,32 @@ import {
 
 const router = express.Router();
 
-// Public route - upload and parse resume (no auth required for demo)
-router.post("/upload", upload.single("resume"), uploadResume);
+// Protected routes - require authentication for resume upload and processing
+router.post(
+  "/upload",
+  authenticateToken,
+  upload.single("resume"),
+  uploadResume
+);
 
-// Public route - enhance content (no auth required for demo)
-router.post("/enhance", enhanceContent);
+// Protected routes - enhance content (requires authentication)
+router.post("/enhance", authenticateToken, enhanceContent);
 
-// Public route - generate summary (no auth required for demo)
-router.post("/generate-summary", generateSummary);
+// Protected routes - generate summary (requires authentication)
+router.post("/generate-summary", authenticateToken, generateSummary);
 
-// Public route - categorize skills with AI (no auth required for demo)
-router.post("/categorize-skills", categorizeSkills);
+// Protected routes - categorize skills with AI (requires authentication)
+router.post("/categorize-skills", authenticateToken, categorizeSkills);
 
-// Public route - segregate achievements with AI (no auth required for demo)
-router.post("/segregate-achievements", segregateAchievements);
+// Protected routes - segregate achievements with AI (requires authentication)
+router.post(
+  "/segregate-achievements",
+  authenticateToken,
+  segregateAchievements
+);
 
-// Public route - process custom section with AI (no auth required for demo)
-router.post("/process-custom-section", processCustomSection);
+// Protected routes - process custom section with AI (requires authentication)
+router.post("/process-custom-section", authenticateToken, processCustomSection);
 
 // Protected routes - require authentication
 router.post("/save", authenticateToken, saveResume);

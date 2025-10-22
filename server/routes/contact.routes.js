@@ -11,8 +11,8 @@ import {
 
 const router = express.Router();
 
-// Public routes
-router.post("/", submitContact);
+// Protected route - user must be logged in to submit contact form
+router.post("/", authenticateToken, submitContact);
 
 // Protected routes (Admin only)
 router.get("/", authenticateToken, getAllContacts);
