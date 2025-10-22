@@ -2,6 +2,13 @@ import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {useDropzone} from "react-dropzone";
 import {resumeAPI} from "../services/api";
+import {
+  Upload as UploadIcon,
+  FileText,
+  Sparkles,
+  CheckCircle2,
+  Zap,
+} from "lucide-react";
 
 const Upload = () => {
   const [uploading, setUploading] = useState(false);
@@ -46,106 +53,210 @@ const Upload = () => {
   });
 
   return (
-    <div className="container mx-auto px-4 py-16">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-4xl font-bold text-center mb-4 dark:text-gray-100">
-          Upload Your Resume
-        </h1>
-        <p className="text-center text-gray-600 dark:text-gray-400 mb-8">
-          Upload a PDF or DOCX file and let AI rebuild it into an ATS-optimized
-          resume
-        </p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <div className="container mx-auto px-4 py-12 sm:py-16">
+        <div className="max-w-4xl mx-auto">
+          {/* Header Section */}
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 rounded-full mb-4">
+              <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">
+                AI-Powered Resume Parser
+              </span>
+            </div>
 
-        <div
-          {...getRootProps()}
-          className={`
-            border-2 border-dashed rounded-lg p-12 text-center cursor-pointer
-            transition-all duration-200
-            ${
-              isDragActive
-                ? "border-primary-500 bg-primary-50 dark:bg-primary-900/20"
-                : "border-gray-300 dark:border-gray-600 hover:border-primary-400 dark:hover:border-primary-500 bg-white dark:bg-gray-800"
-            }
-            ${uploading ? "opacity-50 pointer-events-none" : ""}
-          `}
-        >
-          <input {...getInputProps()} />
-
-          <div className="text-6xl mb-4">
-            {uploading ? "⏳" : isDragActive ? "📥" : "📄"}
+            <h1 className="text-4xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+              Upload Your Resume
+            </h1>
+            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+              Upload a PDF or DOCX file and let our AI transform it into an
+              ATS-optimized, recruiter-ready resume in minutes
+            </p>
           </div>
 
-          {uploading ? (
-            <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
-              Processing your resume...
-            </p>
-          ) : isDragActive ? (
-            <p className="text-lg font-medium text-primary-600 dark:text-primary-400">
-              Drop your resume here
-            </p>
-          ) : (
-            <>
-              <p className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Drag and drop your resume here
-              </p>
-              <p className="text-gray-500 dark:text-gray-400 mb-4">
-                or click to browse files
-              </p>
-              <p className="text-sm text-gray-400 dark:text-gray-500">
-                Supported formats: PDF, DOCX (max 5MB)
-              </p>
-            </>
+          {/* Upload Area */}
+          <div
+            {...getRootProps()}
+            className={`
+              relative border-2 border-dashed rounded-2xl p-12 sm:p-16 text-center cursor-pointer
+              transition-all duration-300 backdrop-blur-sm
+              ${
+                isDragActive
+                  ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 scale-105 shadow-2xl"
+                  : "border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500 bg-white/80 dark:bg-gray-800/80 hover:shadow-xl"
+              }
+              ${uploading ? "opacity-50 pointer-events-none" : ""}
+            `}
+          >
+            <input {...getInputProps()} />
+
+            {/* Animated Background Effect */}
+            {!uploading && (
+              <div className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
+                <div className="absolute top-0 left-0 w-40 h-40 bg-blue-400/10 rounded-full blur-3xl animate-pulse"></div>
+                <div className="absolute bottom-0 right-0 w-40 h-40 bg-purple-400/10 rounded-full blur-3xl animate-pulse delay-700"></div>
+              </div>
+            )}
+
+            <div className="relative z-10">
+              {/* Icon */}
+              <div className="mb-6 flex justify-center">
+                {uploading ? (
+                  <div className="relative">
+                    <div className="w-20 h-20 border-4 border-blue-200 dark:border-blue-800 border-t-blue-600 dark:border-t-blue-400 rounded-full animate-spin"></div>
+                    <Sparkles className="w-8 h-8 text-blue-600 dark:text-blue-400 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+                  </div>
+                ) : isDragActive ? (
+                  <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center animate-bounce">
+                    <UploadIcon className="w-10 h-10 text-white" />
+                  </div>
+                ) : (
+                  <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <FileText className="w-10 h-10 text-blue-600 dark:text-blue-400" />
+                  </div>
+                )}
+              </div>
+
+              {/* Text */}
+              {uploading ? (
+                <div>
+                  <p className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Processing Your Resume...
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    Our AI is analyzing your resume structure
+                  </p>
+                </div>
+              ) : isDragActive ? (
+                <p className="text-xl font-semibold text-blue-600 dark:text-blue-400">
+                  Drop your resume here to get started! 🎯
+                </p>
+              ) : (
+                <>
+                  <p className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Drag & Drop Your Resume Here
+                  </p>
+                  <p className="text-gray-500 dark:text-gray-400 mb-6">
+                    or click to browse your files
+                  </p>
+
+                  {/* Upload Button */}
+                  <button
+                    type="button"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                  >
+                    <UploadIcon className="w-5 h-5" />
+                    Choose File
+                  </button>
+
+                  <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      <span className="font-semibold">Supported formats:</span>{" "}
+                      PDF, DOCX, DOC
+                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                      <span className="font-semibold">Maximum size:</span> 5MB
+                    </p>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Error Message */}
+          {error && (
+            <div className="mt-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg dark:bg-red-900/20 dark:border-red-500 animate-shake">
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0">
+                  <div className="w-6 h-6 bg-red-100 dark:bg-red-900/50 rounded-full flex items-center justify-center">
+                    <span className="text-red-600 dark:text-red-400 text-sm">
+                      ✕
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <p className="font-semibold text-red-800 dark:text-red-300 mb-1">
+                    Upload Failed
+                  </p>
+                  <p className="text-sm text-red-600 dark:text-red-400">
+                    {error}
+                  </p>
+                </div>
+              </div>
+            </div>
           )}
-        </div>
 
-        {error && (
-          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg dark:bg-red-900/20 dark:border-red-800">
-            <p className="text-red-600 dark:text-red-400 font-medium">
-              Error: {error}
+          {/* Features Grid */}
+          <div className="mt-12 grid sm:grid-cols-2 gap-6">
+            {/* What Happens Next */}
+            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                  <Zap className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                  What Happens Next?
+                </h3>
+              </div>
+              <ol className="space-y-3">
+                {[
+                  "AI extracts and structures your resume data",
+                  "Review and edit sections in our smart editor",
+                  "Enhance content with AI-powered suggestions",
+                  "Download your ATS-optimized resume",
+                ].map((step, idx) => (
+                  <li
+                    key={idx}
+                    className="flex items-start gap-3 text-sm text-gray-600 dark:text-gray-400"
+                  >
+                    <div className="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mt-0.5">
+                      <span className="text-xs font-bold text-blue-600 dark:text-blue-400">
+                        {idx + 1}
+                      </span>
+                    </div>
+                    <span>{step}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+
+            {/* Key Features */}
+            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center">
+                  <Sparkles className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                  Why Upload Here?
+                </h3>
+              </div>
+              <ul className="space-y-3">
+                {[
+                  "Smart AI text extraction",
+                  "Automatic section categorization",
+                  "ATS-friendly formatting",
+                  "Privacy-focused & secure",
+                ].map((feature, idx) => (
+                  <li
+                    key={idx}
+                    className="flex items-start gap-3 text-sm text-gray-600 dark:text-gray-400"
+                  >
+                    <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Privacy Notice */}
+          <div className="mt-8 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+            <p className="text-sm text-blue-800 dark:text-blue-300 text-center">
+              🔒 <span className="font-semibold">Your privacy matters.</span>{" "}
+              All uploads are encrypted and processed securely. We never share
+              your data with third parties.
             </p>
           </div>
-        )}
-
-        <div className="mt-8 card p-6">
-          <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">
-            What happens next?
-          </h3>
-          <ol className="space-y-2 text-gray-600 dark:text-gray-400">
-            <li className="flex items-start">
-              <span className="font-bold text-primary-600 dark:text-primary-400 mr-2">
-                1.
-              </span>
-              <span>
-                AI extracts text from your resume and structures it into
-                sections
-              </span>
-            </li>
-            <li className="flex items-start">
-              <span className="font-bold text-primary-600 dark:text-primary-400 mr-2">
-                2.
-              </span>
-              <span>
-                You'll be taken to the editor where you can review and edit each
-                section
-              </span>
-            </li>
-            <li className="flex items-start">
-              <span className="font-bold text-primary-600 dark:text-primary-400 mr-2">
-                3.
-              </span>
-              <span>
-                Use the "Enhance" button to optimize any section with AI
-              </span>
-            </li>
-            <li className="flex items-start">
-              <span className="font-bold text-primary-600 dark:text-primary-400 mr-2">
-                4.
-              </span>
-              <span>
-                Preview and download your ATS-friendly resume as a PDF
-              </span>
-            </li>
-          </ol>
         </div>
       </div>
     </div>
