@@ -12,6 +12,7 @@ import {
   ChevronRight,
   Sparkles,
   Shield,
+  MessageCircle,
 } from "lucide-react";
 import {useAuth} from "../context/AuthContext";
 
@@ -56,6 +57,12 @@ const Sidebar = ({isOpen, setIsOpen}) => {
       path: "/dashboard",
       icon: LayoutDashboard,
       description: "Manage your resumes",
+    },
+    {
+      name: "Feedback",
+      path: "/feedback",
+      icon: MessageCircle,
+      description: "Share your feedback",
     },
     {
       name: "Contact",

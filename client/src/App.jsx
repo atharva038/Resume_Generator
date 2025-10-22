@@ -14,10 +14,12 @@ import Templates from "./pages/Templates";
 import GitHubImport from "./pages/GitHubImport";
 import ATSAnalyzer from "./pages/ATSAnalyzer";
 import Contact from "./pages/Contact";
+import Feedback from "./pages/Feedback";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import UserManagement from "./pages/admin/UserManagement";
 import AIAnalytics from "./pages/admin/AIAnalytics";
 import ContactMessages from "./pages/admin/ContactMessages";
+import AdminFeedback from "./pages/admin/AdminFeedback";
 import AdminLogs from "./pages/admin/AdminLogs";
 import TemplateManagement from "./pages/admin/TemplateManagement";
 import AdminSettings from "./pages/admin/AdminSettings";
@@ -80,6 +82,14 @@ function App() {
             }
           />
           <Route
+            path="feedback"
+            element={
+              <ProtectedRoute>
+                <Feedback />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="dashboard"
             element={
               <ProtectedRoute>
@@ -106,6 +116,7 @@ function App() {
           <Route path="templates" element={<TemplateManagement />} />
           <Route path="ai-analytics" element={<AIAnalytics />} />
           <Route path="contacts" element={<ContactMessages />} />
+          <Route path="feedback" element={<AdminFeedback />} />
           <Route path="logs" element={<AdminLogs />} />
           <Route path="settings" element={<AdminSettings />} />
         </Route>

@@ -58,6 +58,12 @@ const AdminLayout = () => {
       color: "text-pink-500",
     },
     {
+      path: "/admin/feedback",
+      icon: MessageSquare,
+      label: "User Feedback",
+      color: "text-indigo-500",
+    },
+    {
       path: "/admin/logs",
       icon: Activity,
       label: "Activity Logs",

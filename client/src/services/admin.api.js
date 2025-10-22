@@ -54,4 +54,11 @@ export const updateTemplateStatus = (templateId, isActive) =>
 export const deleteTemplate = (templateId) =>
   adminAPI.delete(`/templates/${templateId}`);
 
+// Feedback Management
+export const getAllFeedback = (params) => adminAPI.get("/feedback", {params});
+export const getFeedbackStatistics = () => adminAPI.get("/feedback/statistics");
+export const updateFeedbackStatus = (id, data) =>
+  adminAPI.patch(`/feedback/${id}/status`, data);
+export const deleteFeedbackAdmin = (id) => adminAPI.delete(`/feedback/${id}`);
+
 export default adminAPI;

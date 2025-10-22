@@ -4,6 +4,7 @@ import Contact from "../models/Contact.js";
 import AIUsage from "../models/AIUsage.model.js";
 import AdminLog from "../models/AdminLog.model.js";
 import Template from "../models/Template.model.js";
+import Feedback from "../models/Feedback.model.js";
 
 // Get Dashboard Statistics
 export const getDashboardStats = async (req, res) => {
@@ -798,5 +799,171 @@ export const deleteTemplate = async (req, res) => {
       message: "Failed to delete template",
       error: error.message,
     });
+  }
+};
+
+// Get All Feedback (Admin)
+export const getAllFeedback = async (req, res) => {
+  try {
+    const {type, status, priority, page = 1, limit = 20, search} = req.query;
+
+    const query = {};
+
+    if (type) query.type = type;
+    if (status) query.status = status;
+    if (priority) query.priority = priority;
+    if (search) {
+      query.$or = [
+        {title: {$regex: search, $options: "i"}},
+        {description: {$regex: search, $options: "i"}},
+      ];
+    }
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    const feedbacks = await Feedback.find(query)
+      .sort({createdAt: -1})
+      .skip(skip)
+      .limit(parseInt(limit))
+      .populate("userId", "name email")
+      .populate("resolvedBy", "name email");
+
+    const total = await Feedback.countDocuments(query);
+
+    res.json({
+      feedbacks,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total,
+        pages: Math.ceil(total / parseInt(limit)),
+      },
+    });
+  } catch (error) {
+    console.error("Get all feedback error:", error);
+    res.status(500).json({error: "Failed to fetch feedback"});
+  }
+};
+
+// Update Feedback Status (Admin)
+export const updateFeedbackStatus = async (req, res) => {
+  try {
+    const {id} = req.params;
+    const {status, adminResponse, adminNotes} = req.body;
+
+    const feedback = await Feedback.findById(id);
+
+    if (!feedback) {
+      return res.status(404).json({error: "Feedback not found"});
+    }
+
+    if (status) feedback.status = status;
+    if (adminResponse) feedback.adminResponse = adminResponse;
+    if (adminNotes) feedback.adminNotes = adminNotes;
+
+    if (status === "resolved" || status === "closed") {
+      feedback.resolvedAt = new Date();
+      feedback.resolvedBy = req.user.userId;
+    }
+
+    await feedback.save();
+    await feedback.populate("userId", "name email");
+    await feedback.populate("resolvedBy", "name email");
+
+    res.json({
+      message: "Feedback updated successfully",
+      feedback,
+    });
+  } catch (error) {
+    console.error("Update feedback status error:", error);
+    res.status(500).json({error: "Failed to update feedback"});
+  }
+};
+
+// Delete Feedback (Admin)
+export const deleteFeedbackAdmin = async (req, res) => {
+  try {
+    const {id} = req.params;
+
+    const feedback = await Feedback.findById(id);
+
+    if (!feedback) {
+      return res.status(404).json({error: "Feedback not found"});
+    }
+
+    await feedback.deleteOne();
+
+    res.json({message: "Feedback deleted successfully"});
+  } catch (error) {
+    console.error("Delete feedback error:", error);
+    res.status(500).json({error: "Failed to delete feedback"});
+  }
+};
+
+// Get Feedback Statistics (Admin)
+export const getFeedbackStatistics = async (req, res) => {
+  try {
+    const stats = await Feedback.aggregate([
+      {
+        $group: {
+          _id: null,
+          total: {$sum: 1},
+          improvements: {
+            $sum: {$cond: [{$eq: ["$type", "improvement"]}, 1, 0]},
+          },
+          feedbacks: {
+            $sum: {$cond: [{$eq: ["$type", "feedback"]}, 1, 0]},
+          },
+          bugs: {$sum: {$cond: [{$eq: ["$type", "bug"]}, 1, 0]}},
+          open: {$sum: {$cond: [{$eq: ["$status", "open"]}, 1, 0]}},
+          inProgress: {
+            $sum: {$cond: [{$eq: ["$status", "in-progress"]}, 1, 0]},
+          },
+          resolved: {
+            $sum: {$cond: [{$eq: ["$status", "resolved"]}, 1, 0]},
+          },
+          closed: {$sum: {$cond: [{$eq: ["$status", "closed"]}, 1, 0]}},
+          avgUpvotes: {$avg: "$upvotes"},
+        },
+      },
+    ]);
+
+    // Get feedback by category
+    const byCategory = await Feedback.aggregate([
+      {
+        $group: {
+          _id: "$category",
+          count: {$sum: 1},
+        },
+      },
+      {
+        $sort: {count: -1},
+      },
+    ]);
+
+    // Get top upvoted feedback
+    const topFeedback = await Feedback.find()
+      .sort({upvotes: -1})
+      .limit(10)
+      .populate("userId", "name email");
+
+    res.json({
+      stats: stats[0] || {
+        total: 0,
+        improvements: 0,
+        feedbacks: 0,
+        bugs: 0,
+        open: 0,
+        inProgress: 0,
+        resolved: 0,
+        closed: 0,
+        avgUpvotes: 0,
+      },
+      byCategory,
+      topFeedback,
+    });
+  } catch (error) {
+    console.error("Get feedback statistics error:", error);
+    res.status(500).json({error: "Failed to fetch statistics"});
   }
 };
