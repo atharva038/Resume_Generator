@@ -7,6 +7,7 @@ import authRoutes from "./routes/auth.routes.js";
 import githubRoutes from "./routes/github.routes.js";
 import atsRoutes from "./routes/ats.routes.js";
 import contactRoutes from "./routes/contact.routes.js";
+import adminRoutes from "./routes/admin.routes.js";
 
 // Load environment variables
 dotenv.config();
@@ -59,6 +60,7 @@ app.use("/api/resume", resumeRoutes);
 app.use("/api/github", githubRoutes);
 app.use("/api/ats", atsRoutes);
 app.use("/api/contact", contactRoutes);
+app.use("/api/admin", adminRoutes);
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {
