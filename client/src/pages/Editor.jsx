@@ -1034,34 +1034,35 @@ const Editor = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex justify-between items-center mb-6 no-print">
-          <h1 className="text-3xl font-bold dark:text-gray-100">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 no-print">
+          <h1 className="text-2xl sm:text-3xl font-bold dark:text-gray-100">
             Resume Editor
           </h1>
-          <div className="flex gap-3 items-center">
+          <div className="flex flex-wrap gap-2 sm:gap-3 items-center">
             {/* GitHub Import Button */}
             <button
               onClick={() => setShowGitHubImportModal(true)}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm font-medium hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all shadow-md hover:shadow-lg flex items-center gap-2"
+              className="flex-1 sm:flex-none px-3 sm:px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs sm:text-sm font-medium hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2"
               title="Import from GitHub"
             >
-              💻 Import GitHub Data
+              <span className="hidden sm:inline">💻</span>
+              <span className="text-xs sm:text-sm">Import GitHub</span>
             </button>
             {/* Reset Order Button */}
             <button
               onClick={handleResetOrder}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium hover:border-orange-500 hover:text-orange-600 dark:hover:text-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
+              className="flex-1 sm:flex-none px-3 sm:px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-medium hover:border-orange-500 hover:text-orange-600 dark:hover:text-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
               title="Reset section order to default"
             >
-              🔄 Reset Order
+              <span className="hidden sm:inline">🔄 </span>Reset
             </button>
             {/* Template Selector Button */}
             <button
               onClick={() => setShowTemplateSelector(true)}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-medium hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all shadow-md hover:shadow-lg"
+              className="w-full sm:w-auto px-3 sm:px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs sm:text-sm font-medium hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all shadow-md hover:shadow-lg"
               title="Change template"
             >
               {TEMPLATES.find((t) => t.id === selectedTemplate)?.emoji} Change
@@ -1070,8 +1071,68 @@ const Editor = () => {
           </div>
         </div>
 
-        {/* Floating Action Buttons - Icon Only with Hover Tooltips */}
-        <div className="fixed right-6 top-32 z-50 flex flex-col gap-4 no-print">
+        {/* Mobile-Friendly Action Bar */}
+        <div className="lg:hidden sticky top-0 z-40 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 -mx-2 sm:-mx-4 px-2 sm:px-4 py-3 mb-4 no-print">
+          <div className="flex gap-2 justify-between items-center">
+            {/* Preview Toggle - Mobile */}
+            <button
+              onClick={() => setShowPreview(!showPreview)}
+              className={`flex-1 px-4 py-2.5 rounded-lg font-medium transition-all duration-300 text-sm ${
+                showPreview
+                  ? "bg-gradient-to-br from-purple-500 via-blue-500 to-indigo-600 text-white"
+                  : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600"
+              }`}
+            >
+              <span className="text-lg mr-2">{showPreview ? "👁️" : "👁️‍🗨️"}</span>
+              {showPreview ? "Hide" : "Show"} Preview
+            </button>
+
+            {/* Download PDF - Mobile */}
+            <button
+              onClick={() => {
+                if (!showPreview) {
+                  setShowPreview(true);
+                  setTimeout(() => {
+                    if (
+                      resumePreviewRef.current &&
+                      resumePreviewRef.current.downloadPDF
+                    ) {
+                      resumePreviewRef.current.downloadPDF();
+                    }
+                  }, 300);
+                } else {
+                  if (
+                    resumePreviewRef.current &&
+                    resumePreviewRef.current.downloadPDF
+                  ) {
+                    resumePreviewRef.current.downloadPDF();
+                  }
+                }
+              }}
+              className="flex-1 px-4 py-2.5 rounded-lg bg-gradient-to-br from-green-400 via-emerald-500 to-teal-600 text-white font-medium transition-all duration-300 text-sm"
+            >
+              <span className="text-lg mr-2">📥</span>
+              Download
+            </button>
+
+            {/* Save Button - Mobile */}
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className={`flex-1 px-4 py-2.5 rounded-lg font-medium transition-all duration-300 text-sm ${
+                saving
+                  ? "bg-gray-300 dark:bg-gray-700 cursor-not-allowed text-gray-500"
+                  : "bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 text-white"
+              }`}
+            >
+              <span className="text-lg mr-2">{saving ? "⏳" : "💾"}</span>
+              {saving ? "Saving..." : "Save"}
+            </button>
+          </div>
+        </div>
+
+        {/* Floating Action Buttons - Desktop Only */}
+        <div className="hidden lg:flex fixed right-6 top-32 z-50 flex-col gap-4 no-print">
           {/* Preview Toggle Button */}
           <button
             onClick={() => setShowPreview(!showPreview)}
@@ -1166,13 +1227,17 @@ const Editor = () => {
         </div>
 
         {/* Info Banner */}
-        <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-          <div className="flex items-center gap-2 text-sm text-blue-800 dark:text-blue-300">
-            <span className="text-lg">💡</span>
+        <div className="mb-6 p-3 sm:p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+          <div className="flex items-start gap-2 text-xs sm:text-sm text-blue-800 dark:text-blue-300">
+            <span className="text-base sm:text-lg flex-shrink-0">💡</span>
             <span>
-              <strong>Tip:</strong> Your ATS scores and recommendations are
-              shown at the top. Scroll down to edit resume sections. Drag
-              section headers to reorder them!
+              <strong>Tip:</strong>{" "}
+              <span className="hidden sm:inline">
+                Your ATS scores and recommendations are shown at the top. Scroll
+                down to edit resume sections.
+              </span>{" "}
+              <span className="sm:hidden">Scroll to edit sections below.</span>{" "}
+              Drag section headers to reorder them!
             </span>
           </div>
         </div>
@@ -1183,18 +1248,21 @@ const Editor = () => {
             {/* Collapsible Header */}
             <button
               onClick={() => setIsAnalysisExpanded(!isAnalysisExpanded)}
-              className="w-full p-6 flex items-center justify-between hover:bg-primary-100/50 dark:hover:bg-primary-900/30 transition-colors"
+              className="w-full p-4 sm:p-6 flex items-center justify-between hover:bg-primary-100/50 dark:hover:bg-primary-900/30 transition-colors"
             >
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-3">
-                <span className="text-3xl">📊</span>
-                Resume Analysis & Scoring
+              <h2 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2 sm:gap-3">
+                <span className="text-2xl sm:text-3xl">📊</span>
+                <span className="hidden sm:inline">
+                  Resume Analysis & Scoring
+                </span>
+                <span className="sm:hidden">Analysis</span>
               </h2>
-              <div className="flex items-center gap-3">
-                <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <span className="hidden sm:inline text-sm text-gray-600 dark:text-gray-400 font-medium">
                   {isAnalysisExpanded ? "Click to collapse" : "Click to expand"}
                 </span>
                 <svg
-                  className={`w-6 h-6 text-gray-600 dark:text-gray-400 transition-transform duration-200 ${
+                  className={`w-5 h-5 sm:w-6 sm:h-6 text-gray-600 dark:text-gray-400 transition-transform duration-200 ${
                     isAnalysisExpanded ? "rotate-180" : ""
                   }`}
                   fill="none"
@@ -1213,8 +1281,8 @@ const Editor = () => {
 
             {/* Collapsible Content */}
             {isAnalysisExpanded && (
-              <div className="px-6 pb-6 space-y-6">
-                <div className="grid lg:grid-cols-2 gap-6">
+              <div className="px-3 sm:px-6 pb-4 sm:pb-6 space-y-4 sm:space-y-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                   {/* ATS Score Card */}
                   <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
                     <ScoreCard resumeData={resumeData} expanded={false} />
@@ -1231,10 +1299,13 @@ const Editor = () => {
 
                 {/* Recommendations Panel - Full Width */}
                 <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-                  <div className="p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
-                      <span className="text-xl">💡</span>
-                      Improvement Recommendations
+                  <div className="p-4 sm:p-6">
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                      <span className="text-lg sm:text-xl">💡</span>
+                      <span className="hidden sm:inline">
+                        Improvement Recommendations
+                      </span>
+                      <span className="sm:hidden">Recommendations</span>
                     </h3>
                     <RecommendationsPanel
                       resumeData={resumeData}
@@ -1248,12 +1319,12 @@ const Editor = () => {
         </div>
 
         {/* Divider with Label */}
-        <div className="relative mb-8">
+        <div className="relative mb-6 sm:mb-8">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t-2 border-gray-300 dark:border-gray-600"></div>
           </div>
           <div className="relative flex justify-center">
-            <span className="bg-gray-50 dark:bg-gray-900 px-6 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 rounded-full border-2 border-gray-300 dark:border-gray-600">
+            <span className="bg-gray-50 dark:bg-gray-900 px-4 sm:px-6 py-2 text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 rounded-full border-2 border-gray-300 dark:border-gray-600">
               ✏️ Resume Content Editor
             </span>
           </div>
@@ -1261,22 +1332,47 @@ const Editor = () => {
 
         <div
           className={`grid ${
-            showPreview ? "lg:grid-cols-2" : "lg:grid-cols-1"
-          } gap-6`}
+            showPreview ? "grid-cols-1 xl:grid-cols-2" : "grid-cols-1"
+          } gap-4 sm:gap-6`}
         >
           {/* Editor Panel - Dynamic Sections */}
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {sectionOrder.map((sectionId) => renderSection(sectionId))}
           </div>
 
           {/* Preview Panel */}
           {showPreview && (
-            <div className="lg:sticky lg:top-4 lg:h-[calc(100vh-8rem)] lg:overflow-hidden">
-              <ResumePreview
-                ref={resumePreviewRef}
-                resumeData={resumeData}
-                template={selectedTemplate}
-              />
+            <div className="xl:sticky xl:top-4 xl:h-[calc(100vh-8rem)] xl:overflow-hidden">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 border border-gray-200 dark:border-gray-700">
+                <div className="flex justify-between items-center mb-4 xl:hidden">
+                  <h3 className="text-lg font-bold dark:text-gray-100">
+                    Preview
+                  </h3>
+                  <button
+                    onClick={() => setShowPreview(false)}
+                    className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                  >
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <ResumePreview
+                  ref={resumePreviewRef}
+                  resumeData={resumeData}
+                  template={selectedTemplate}
+                />
+              </div>
             </div>
           )}
         </div>
@@ -1284,29 +1380,29 @@ const Editor = () => {
         {/* Template Selector Modal */}
         {showTemplateSelector && (
           <div
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100] flex items-center justify-center p-4 no-print"
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100] flex items-center justify-center p-2 sm:p-4 no-print"
             onClick={() => setShowTemplateSelector(false)}
           >
             <div
-              className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden"
+              className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-6xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Modal Header */}
-              <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 flex justify-between items-center">
+              <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-4 sm:p-6 flex justify-between items-center">
                 <div>
-                  <h2 className="text-2xl font-bold text-white mb-1">
+                  <h2 className="text-xl sm:text-2xl font-bold text-white mb-1">
                     Choose Resume Template
                   </h2>
-                  <p className="text-blue-100">
+                  <p className="text-xs sm:text-sm text-blue-100">
                     Select a template and see changes instantly
                   </p>
                 </div>
                 <button
                   onClick={() => setShowTemplateSelector(false)}
-                  className="text-white hover:bg-white/20 p-2 rounded-full transition-colors"
+                  className="text-white hover:bg-white/20 p-2 rounded-full transition-colors flex-shrink-0"
                 >
                   <svg
-                    className="w-8 h-8"
+                    className="w-6 h-6 sm:w-8 sm:h-8"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -1322,8 +1418,8 @@ const Editor = () => {
               </div>
 
               {/* Modal Body - Template Grid */}
-              <div className="overflow-auto max-h-[calc(90vh-140px)] p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="overflow-auto max-h-[calc(95vh-120px)] sm:max-h-[calc(90vh-140px)] p-3 sm:p-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                   {TEMPLATES.map((template) => (
                     <div
                       key={template.id}
@@ -1382,11 +1478,15 @@ const Editor = () => {
                       </div>
 
                       {/* Template Info */}
-                      <div className="p-4">
+                      <div className="p-3 sm:p-4">
                         <div className="flex items-center justify-between mb-2">
-                          <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                            <span className="text-2xl">{template.emoji}</span>
-                            {template.name}
+                          <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                            <span className="text-xl sm:text-2xl">
+                              {template.emoji}
+                            </span>
+                            <span className="text-sm sm:text-base">
+                              {template.name}
+                            </span>
                           </h3>
                         </div>
                         <span className="inline-block text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-1 rounded-full">
@@ -1399,13 +1499,13 @@ const Editor = () => {
               </div>
 
               {/* Modal Footer */}
-              <div className="p-4 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
-                <div className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="p-3 sm:p-4 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row justify-between items-center gap-3">
+                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 text-center sm:text-left">
                   💡 Your resume content stays the same, only the design changes
                 </div>
                 <button
                   onClick={() => setShowTemplateSelector(false)}
-                  className="px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium"
+                  className="w-full sm:w-auto px-4 sm:px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium text-sm"
                 >
                   Close
                 </button>
