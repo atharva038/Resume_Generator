@@ -1,10 +1,8 @@
-import {Outlet} from "react-router-dom";
 import {useState, useEffect} from "react";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
-import Footer from "./Footer";
 
-const Layout = () => {
+const MainLayout = ({children}) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Auto-open sidebar on desktop
@@ -23,32 +21,24 @@ const Layout = () => {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-950">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       {/* Sidebar */}
       <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
 
       {/* Main Content Area */}
       <div
-        className={`flex-1 flex flex-col transition-all duration-300 ${
+        className={`transition-all duration-300 ${
           isSidebarOpen ? "lg:ml-64" : "lg:ml-20"
         }`}
       >
         {/* Top Navbar */}
-        <Navbar
-          toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
-          isSidebarOpen={isSidebarOpen}
-        />
+        <Navbar toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
 
         {/* Page Content */}
-        <main className="flex-1 pt-16 md:pt-20 w-full">
-          <Outlet />
-        </main>
-
-        {/* Footer */}
-        <Footer />
+        <main className="pt-16">{children}</main>
       </div>
     </div>
   );
 };
 
-export default Layout;
+export default MainLayout;

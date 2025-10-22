@@ -24,7 +24,7 @@ const ATSAnalyzer = () => {
     const loadResumes = async () => {
       try {
         const response = await resumeAPI.list();
-        setUserResumes(response.data);
+        setUserResumes(response.data.resumes);
       } catch (error) {
         console.error("Failed to load resumes:", error);
       } finally {
