@@ -50,7 +50,9 @@ const ResumePreview = forwardRef(({resumeData, template = "classic"}, ref) => {
   if (!resumeData) return null;
 
   return (
-    <div className="h-full flex flex-col resume-preview">
+    <div className="h-full flex flex-col resume-preview"
+    // style={{height: "calc(100vh - 8rem)"}}
+    >
       {/* Stylish Download Button */}
       <div className="mb-4 no-print flex-shrink-0">
         <button
@@ -68,14 +70,14 @@ const ResumePreview = forwardRef(({resumeData, template = "classic"}, ref) => {
       {/* Resume Container - Fully visible and scrollable */}
       <div
         className="flex-1 overflow-y-auto overflow-x-hidden bg-gradient-to-br from-blue-50/50 via-indigo-50/40 to-purple-100/50 dark:from-slate-800/80 dark:via-indigo-900/40 dark:to-purple-900/40 rounded-xl shadow-inner p-4 backdrop-blur-sm"
-        style={{maxHeight: "calc(100vh - 12rem)"}}
+        style={{maxHeight: "calc(100vh - 13rem)"}}
       >
-        <div className="flex justify-center pb-12" style={{minHeight: "100%"}}>
+        <div className="flex justify-center pb-4 ps-5" style={{minHeight: "100%"}}>
           <div
             className="bg-white dark:bg-gray-50 shadow-2xl rounded-sm origin-top mb-8"
             style={{
               width: "210mm",
-              height: "187mm",
+              height: "210mm",
               transform: "scale(0.65)",
               transformOrigin: "top center",
             }}

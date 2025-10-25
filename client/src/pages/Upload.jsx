@@ -8,6 +8,8 @@ import {
   Sparkles,
   CheckCircle2,
   Zap,
+  PlusCircle,
+  ArrowRight,
 } from "lucide-react";
 
 const Upload = () => {
@@ -38,6 +40,31 @@ const Upload = () => {
     } finally {
       setUploading(false);
     }
+  };
+
+  // Create blank resume and navigate to editor
+  const createBlankResume = () => {
+    const blankResumeData = {
+      name: "",
+      contact: {
+        email: "",
+        phone: "",
+        location: "",
+        linkedin: "",
+        github: "",
+        portfolio: "",
+      },
+      summary: "",
+      skills: [],
+      experience: [],
+      education: [],
+      projects: [],
+      certifications: [],
+      achievements: [],
+      customSections: [],
+    };
+
+    navigate("/editor", {state: {resumeData: blankResumeData}});
   };
 
   const {getRootProps, getInputProps, isDragActive} = useDropzone({
@@ -185,6 +212,34 @@ const Upload = () => {
               </div>
             </div>
           )}
+
+          {/* Divider with OR */}
+          <div className="relative my-10">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-4 bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400 font-semibold">
+                OR
+              </span>
+            </div>
+          </div>
+
+          {/* Start from Scratch Button */}
+          <div className="text-center">
+            <button
+              onClick={createBlankResume}
+              disabled={uploading}
+              className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            >
+              <PlusCircle className="w-6 h-6 group-hover:rotate-90 transition-transform duration-300" />
+              <span>Start from Scratch</span>
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+            </button>
+            <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">
+              Create a new resume from a blank template
+            </p>
+          </div>
 
           {/* Features Grid */}
           <div className="mt-12 grid sm:grid-cols-2 gap-6">
