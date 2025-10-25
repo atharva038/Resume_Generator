@@ -75,7 +75,7 @@ const ResumePreview = forwardRef(({resumeData, template = "classic"}, ref) => {
             className="bg-white dark:bg-gray-50 shadow-2xl rounded-sm origin-top mb-8"
             style={{
               width: "210mm",
-              height: "297mm",
+              height: "187mm",
               transform: "scale(0.65)",
               transformOrigin: "top center",
             }}

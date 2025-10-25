@@ -204,7 +204,7 @@ export const getResumes = async (req, res) => {
     const userId = req.user.userId;
 
     const resumes = await Resume.find({userId})
-      .select("name templateId createdAt updatedAt")
+      .select("name resumeTitle description templateId createdAt updatedAt")
       .sort({updatedAt: -1});
 
     res.json({

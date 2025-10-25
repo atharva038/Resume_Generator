@@ -12,6 +12,8 @@ import {
   Sparkles,
   FolderOpen,
   Download,
+  Edit3,
+  X,
 } from "lucide-react";
 
 const Dashboard = () => {
@@ -19,6 +21,8 @@ const Dashboard = () => {
   const [resumes, setResumes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [editingResume, setEditingResume] = useState(null);
+  const [editForm, setEditForm] = useState({name: "", description: ""});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -59,6 +63,44 @@ const Dashboard = () => {
       navigate("/editor", {state: {resumeData: response.data}});
     } catch (err) {
       alert("Failed to load resume");
+      console.error(err);
+    }
+  };
+
+  const handleEditInfo = (resume) => {
+    setEditingResume(resume);
+    setEditForm({
+      name: resume.resumeTitle || resume.name || "Untitled Resume",
+      description: resume.description || "",
+    });
+  };
+
+  const handleSaveInfo = async () => {
+    if (!editForm.name.trim()) {
+      alert("Resume title is required");
+      return;
+    }
+
+    try {
+      await resumeAPI.update(editingResume._id, {
+        resumeTitle: editForm.name,
+        description: editForm.description,
+      });
+      setResumes(
+        resumes.map((r) =>
+          r._id === editingResume._id
+            ? {
+                ...r,
+                resumeTitle: editForm.name,
+                description: editForm.description,
+              }
+            : r
+        )
+      );
+      setEditingResume(null);
+      setEditForm({name: "", description: ""});
+    } catch (err) {
+      alert("Failed to update resume info");
       console.error(err);
     }
   };
@@ -239,18 +281,32 @@ const Dashboard = () => {
                     <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
                       <FileText className="w-6 h-6 text-white" />
                     </div>
-                    <span className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-xs font-semibold rounded-full">
-                      Active
-                    </span>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleEditInfo(resume)}
+                        className="p-2 text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                        title="Edit name & description"
+                      >
+                        <Edit3 className="w-4 h-4" />
+                      </button>
+                      <span className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-xs font-semibold rounded-full">
+                        Active
+                      </span>
+                    </div>
                   </div>
 
                   {/* Resume Info */}
                   <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-gray-100 line-clamp-1">
-                    {resume.name}
+                    {resume.resumeTitle || resume.name || "Untitled Resume"}
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-1 line-clamp-1">
-                    {resume.contact?.name || "Unnamed Resume"}
+                    {resume.name}
                   </p>
+                  {resume.description && (
+                    <p className="text-sm text-gray-500 dark:text-gray-500 mb-3 line-clamp-2 italic">
+                      {resume.description}
+                    </p>
+                  )}
                   <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-6">
                     <Calendar className="w-4 h-4" />
                     <span>
@@ -286,6 +342,78 @@ const Dashboard = () => {
           )}
         </div>
       </div>
+
+      {/* Edit Name & Description Modal */}
+      {editingResume && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 border border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                Edit Resume Info
+              </h2>
+              <button
+                onClick={() => setEditingResume(null)}
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Resume Title *
+                </label>
+                <input
+                  type="text"
+                  value={editForm.name}
+                  onChange={(e) =>
+                    setEditForm({...editForm, name: e.target.value})
+                  }
+                  placeholder="e.g., Software Engineer Resume - FAANG"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                />
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  This is for your reference only (not shown on the resume)
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Description (Optional)
+                </label>
+                <textarea
+                  value={editForm.description}
+                  onChange={(e) =>
+                    setEditForm({...editForm, description: e.target.value})
+                  }
+                  placeholder="e.g., Tailored for FAANG applications with emphasis on system design"
+                  rows={3}
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+                />
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  Add notes to help you remember this resume's purpose
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => setEditingResume(null)}
+                className="flex-1 px-4 py-3 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveInfo}
+                className="flex-1 px-4 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

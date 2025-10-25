@@ -7,7 +7,12 @@
     "scripts": {
         "dev": "node --env-file=.env --watch server.js",
         "start": "node --env-file=.env server.js",
-        "create-admin": "node --env-file=.env scripts/createAdmin.js"
+        "create-admin": "node --env-file=.env scripts/createAdmin.js",
+        "sync:templates": "node --env-file=.env scripts/syncTemplates.js",
+        "check:templates": "node --env-file=.env scripts/checkTemplates.js",
+        "find:duplicates": "node --env-file=.env scripts/listDuplicateTemplates.js",
+        "dedupe:templates": "node --env-file=.env scripts/dedupeTemplates.js",
+        "migrate:resume-titles": "node --env-file=.env scripts/migrateResumeTitles.js"
     },
     "keywords": [
         "resume",
