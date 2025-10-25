@@ -1342,7 +1342,7 @@ const Editor = () => {
 
           {/* Preview Panel */}
           {showPreview && (
-            <div className="xl:sticky xl:top-4 xl:h-[calc(100vh-8rem)] xl:overflow-hidden">
+            <div className="xl:sticky xl:top-2 xl:h-[calc(100vh-3rem)] xl:overflow-auto">
               <div className="bg-gradient-to-br from-white via-blue-50/30 to-purple-50/30 dark:from-gray-800 dark:via-indigo-900/20 dark:to-purple-900/20 rounded-2xl shadow-2xl border-2 border-indigo-200/50 dark:border-indigo-700/50 backdrop-blur-sm p-6">
                 {/* Stylish Header */}
                 <div className="flex justify-between items-center mb-4 xl:hidden">
