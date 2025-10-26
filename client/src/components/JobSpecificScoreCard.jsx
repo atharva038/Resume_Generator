@@ -12,11 +12,136 @@ const JobSpecificScoreCard = ({resumeData, onUpdateField}) => {
   const [scoreData, setScoreData] = useState(null);
   const [isCalculating, setIsCalculating] = useState(false);
 
+  // New state for cascading dropdowns
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedSubCategory, setSelectedSubCategory] = useState("");
+  const [selectedExperienceLevel, setSelectedExperienceLevel] = useState("all");
+  const [filteredJobs, setFilteredJobs] = useState([]);
+
   const categories = getJobCategories();
   const allJobs = getAllJobs();
 
   // Get selected job from resumeData or default
   const selectedJob = resumeData?.targetJobRole || "software-engineer";
+
+  // Sub-categories for Engineering
+  const engineeringSubCategories = [
+    {value: "", label: "All Engineering Roles"},
+    {value: "frontend", label: "Frontend Development"},
+    {value: "backend", label: "Backend Development"},
+    {value: "fullstack", label: "Full Stack Development"},
+    {value: "mobile", label: "Mobile Development"},
+    {value: "devops", label: "DevOps & Infrastructure"},
+    {value: "database", label: "Database & Data Engineering"},
+    {value: "ai-ml", label: "AI & Machine Learning"},
+    {value: "security", label: "Security Engineering"},
+    {value: "embedded", label: "Embedded Systems"},
+    {value: "game", label: "Game Development"},
+  ];
+
+  // Map job keys to subcategories
+  const jobSubCategoryMap = {
+    // Frontend
+    "frontend-developer": "frontend",
+    "react-developer": "frontend",
+    "angular-developer": "frontend",
+    "vue-developer": "frontend",
+    "ui-ux-engineer": "frontend",
+
+    // Backend
+    "backend-developer": "backend",
+    "nodejs-developer": "backend",
+    "python-developer": "backend",
+    "java-developer": "backend",
+    "dotnet-developer": "backend",
+    "golang-developer": "backend",
+    "ruby-developer": "backend",
+    "php-developer": "backend",
+
+    // Full Stack
+    "full-stack-developer": "fullstack",
+    "mern-stack-developer": "fullstack",
+    "mean-stack-developer": "fullstack",
+
+    // Mobile
+    "mobile-developer": "mobile",
+    "ios-developer": "mobile",
+    "android-developer": "mobile",
+    "react-native-developer": "mobile",
+    "flutter-developer": "mobile",
+
+    // DevOps
+    "devops-engineer": "devops",
+    "cloud-engineer": "devops",
+    sre: "devops",
+    "platform-engineer": "devops",
+
+    // Database
+    "database-administrator": "database",
+    "data-engineer": "database",
+
+    // AI/ML
+    "machine-learning-engineer": "ai-ml",
+    "ai-engineer": "ai-ml",
+    "data-scientist": "ai-ml",
+
+    // Security
+    "security-engineer": "security",
+    "cybersecurity-analyst": "security",
+
+    // Game
+    "game-developer": "game",
+    "unity-developer": "game",
+  };
+
+  // Experience level options
+  const experienceLevels = [
+    {value: "all", label: "All Levels"},
+    {value: "entry", label: "Entry Level (0-2 years)"},
+    {value: "junior", label: "Junior (1-3 years)"},
+    {value: "mid", label: "Mid-Level (3-5 years)"},
+    {value: "senior", label: "Senior (5-8 years)"},
+    {value: "lead", label: "Lead/Staff (8+ years)"},
+    {value: "principal", label: "Principal/Architect (10+ years)"},
+  ];
+
+  // Initialize category based on selected job
+  useEffect(() => {
+    if (selectedJob && !selectedCategory) {
+      const jobProfile = allJobs.find((job) => job.key === selectedJob);
+      if (jobProfile) {
+        setSelectedCategory(jobProfile.category);
+        // Auto-set subcategory if it's an engineering role
+        if (
+          jobProfile.category === "Engineering" &&
+          jobSubCategoryMap[selectedJob]
+        ) {
+          setSelectedSubCategory(jobSubCategoryMap[selectedJob]);
+        }
+      }
+    }
+  }, [selectedJob, allJobs]);
+
+  // Filter jobs based on selected category, subcategory, and experience level
+  useEffect(() => {
+    let jobs = allJobs;
+
+    if (selectedCategory) {
+      jobs = jobs.filter((job) => job.category === selectedCategory);
+
+      // Apply subcategory filter for Engineering roles
+      if (selectedCategory === "Engineering" && selectedSubCategory) {
+        jobs = jobs.filter(
+          (job) => jobSubCategoryMap[job.key] === selectedSubCategory
+        );
+      }
+    }
+
+    // Future: Can add experience level filtering logic here
+    // For now, show all jobs in category
+
+    setFilteredJobs(jobs);
+  }, [selectedCategory, selectedSubCategory, selectedExperienceLevel, allJobs]);
 
   // Calculate score when job or tech stack changes
   const calculateScore = () => {
@@ -108,27 +233,131 @@ const JobSpecificScoreCard = ({resumeData, onUpdateField}) => {
       </div>
 
       {/* Job Selection */}
-      <div className="space-y-3">
+      <div className="space-y-4">
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          Target Job Role
+          Target Job Selection
         </label>
 
-        <div className="space-y-2">
+        {/* Category Dropdown */}
+        <div>
+          <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">
+            1. Job Category
+          </label>
+          <select
+            value={selectedCategory}
+            onChange={(e) => {
+              setSelectedCategory(e.target.value);
+              setSelectedSubCategory(""); // Reset subcategory when category changes
+            }}
+            className="input-field"
+          >
+            <option value="">All Categories</option>
+            {categories.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Engineering Sub-Category Dropdown (only shown for Engineering) */}
+        {selectedCategory === "Engineering" && (
+          <div>
+            <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">
+              2. Engineering Specialization
+            </label>
+            <select
+              value={selectedSubCategory}
+              onChange={(e) => setSelectedSubCategory(e.target.value)}
+              className="input-field"
+            >
+              {engineeringSubCategories.map((subCat) => (
+                <option key={subCat.value} value={subCat.value}>
+                  {subCat.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {/* Experience Level Dropdown */}
+        <div>
+          <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">
+            {selectedCategory === "Engineering" ? "3" : "2"}. Experience Level
+          </label>
+          <select
+            value={selectedExperienceLevel}
+            onChange={(e) => setSelectedExperienceLevel(e.target.value)}
+            className="input-field"
+          >
+            {experienceLevels.map((level) => (
+              <option key={level.value} value={level.value}>
+                {level.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Job Role Dropdown (Filtered) */}
+        <div>
+          <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">
+            {selectedCategory === "Engineering" ? "4" : "3"}. Specific Job Role
+            {(selectedCategory || selectedSubCategory) && (
+              <span className="ml-2 text-xs text-primary-600 dark:text-primary-400">
+                ({filteredJobs.length}{" "}
+                {filteredJobs.length === 1 ? "role" : "roles"}
+                {selectedSubCategory &&
+                  ` in ${
+                    engineeringSubCategories.find(
+                      (sc) => sc.value === selectedSubCategory
+                    )?.label
+                  }`}
+                {!selectedSubCategory &&
+                  selectedCategory &&
+                  ` in ${selectedCategory}`}
+                )
+              </span>
+            )}
+          </label>
           <select
             value={selectedJob}
             onChange={(e) => handleJobChange(e.target.value)}
             className="input-field"
           >
-            {categories.map((category) => (
-              <optgroup key={category} label={category}>
-                {getJobsByCategory(category).map((job) => (
+            {selectedCategory ? (
+              // Show filtered jobs
+              filteredJobs.length > 0 ? (
+                filteredJobs.map((job) => (
                   <option key={job.key} value={job.key}>
                     {job.label}
                   </option>
-                ))}
-              </optgroup>
-            ))}
+                ))
+              ) : (
+                <option value="">No roles found for this filter</option>
+              )
+            ) : (
+              // Show all jobs grouped by category
+              categories.map((category) => (
+                <optgroup key={category} label={category}>
+                  {getJobsByCategory(category).map((job) => (
+                    <option key={job.key} value={job.key}>
+                      {job.label}
+                    </option>
+                  ))}
+                </optgroup>
+              ))
+            )}
           </select>
+        </div>
+
+        {/* Helper Text */}
+        <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+          <p className="text-xs text-blue-800 dark:text-blue-300">
+            💡 <strong>Tip:</strong>{" "}
+            {selectedCategory === "Engineering"
+              ? "Select Engineering specialization to see focused roles (e.g., Frontend, Backend, Full Stack)"
+              : "Select a category first to narrow down job roles, then choose your experience level for better matching"}
+          </p>
         </div>
 
         {/* Custom Tech Stack */}
