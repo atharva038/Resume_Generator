@@ -15,6 +15,7 @@ import GitHubImport from "./pages/GitHubImport";
 import ATSAnalyzer from "./pages/ATSAnalyzer";
 import Contact from "./pages/Contact";
 import Feedback from "./pages/Feedback";
+import NotFound from "./pages/NotFound";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import UserManagement from "./pages/admin/UserManagement";
 import AIAnalytics from "./pages/admin/AIAnalytics";
@@ -101,6 +102,9 @@ function App() {
           {/* Public Routes */}
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
+
+          {/* 404 Not Found - Must be last route in this Route group */}
+          <Route path="*" element={<NotFound />} />
         </Route>
 
         {/* Admin Routes - Separate Layout */}
