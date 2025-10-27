@@ -4,6 +4,32 @@ import {GoogleGenerativeAI} from "@google/generative-ai";
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 /**
+ * Extract token usage from Gemini API response
+ * @param {Object} response - Gemini API response object
+ * @returns {Object} Token usage information
+ */
+function extractTokenUsage(response) {
+  try {
+    const usage = response.usageMetadata;
+    if (usage) {
+      return {
+        promptTokens: usage.promptTokenCount || 0,
+        candidatesTokens: usage.candidatesTokenCount || 0,
+        totalTokens: usage.totalTokenCount || 0,
+      };
+    }
+  } catch (error) {
+    console.warn("Could not extract token usage:", error.message);
+  }
+  // Return estimated tokens if metadata not available
+  return {
+    promptTokens: 0,
+    candidatesTokens: 0,
+    totalTokens: 0,
+  };
+}
+
+/**
  * Prompt template for parsing raw resume text into structured JSON
  */
 const PARSE_RESUME_PROMPT = `You are an expert resume parser. Extract and structure the following resume text into a JSON format.
@@ -135,6 +161,9 @@ export async function parseResumeWithAI(resumeText) {
     const response = await result.response;
     const text = response.text();
 
+    // Extract token usage
+    const tokenUsage = extractTokenUsage(response);
+
     // Clean response - remove markdown code blocks if present
     let cleanedText = text.trim();
     if (cleanedText.startsWith("```json")) {
@@ -146,8 +175,10 @@ export async function parseResumeWithAI(resumeText) {
     // Parse JSON
     const parsedData = JSON.parse(cleanedText);
 
-    console.log("✅ Resume parsed successfully by AI");
-    return parsedData;
+    console.log(
+      `✅ Resume parsed successfully by AI (Tokens: ${tokenUsage.totalTokens})`
+    );
+    return {data: parsedData, tokenUsage};
   } catch (error) {
     console.error("❌ Gemini parsing error:", error.message);
     throw new Error(`Failed to parse resume with AI: ${error.message}`);
@@ -245,6 +276,9 @@ YOU MUST follow these custom instructions while maintaining all the critical rul
     const response = await result.response;
     let text = response.text().trim();
 
+    // Extract token usage
+    const tokenUsage = extractTokenUsage(response);
+
     // Clean response
     if (text.startsWith("```json")) {
       text = text.replace(/^```json\n/, "").replace(/\n```$/, "");
@@ -253,17 +287,22 @@ YOU MUST follow these custom instructions while maintaining all the critical rul
     }
 
     // Try to parse as JSON array if it looks like JSON
+    let enhancedContent;
     if (text.startsWith("[") || text.startsWith("{")) {
       try {
-        return JSON.parse(text);
+        enhancedContent = JSON.parse(text);
       } catch {
         // If parsing fails, return as string
-        return text;
+        enhancedContent = text;
       }
+    } else {
+      enhancedContent = text;
     }
 
-    console.log(`✅ Content enhanced successfully for ${sectionType}`);
-    return text;
+    console.log(
+      `✅ Content enhanced successfully for ${sectionType} (Tokens: ${tokenUsage.totalTokens})`
+    );
+    return {data: enhancedContent, tokenUsage};
   } catch (error) {
     console.error("❌ Gemini enhancement error:", error.message);
     throw new Error(`Failed to enhance content with AI: ${error.message}`);
@@ -291,8 +330,13 @@ Return only the summary text without any additional formatting or explanations.`
     const response = await result.response;
     const text = response.text().trim();
 
-    console.log("✅ Summary generated successfully");
-    return text;
+    // Extract token usage
+    const tokenUsage = extractTokenUsage(response);
+
+    console.log(
+      `✅ Summary generated successfully (Tokens: ${tokenUsage.totalTokens})`
+    );
+    return {data: text, tokenUsage};
   } catch (error) {
     console.error("❌ Gemini summary generation error:", error.message);
     throw new Error(`Failed to generate summary with AI: ${error.message}`);
@@ -340,6 +384,9 @@ Return ONLY valid JSON with no additional text, explanations, or markdown format
     const response = await result.response;
     let text = response.text().trim();
 
+    // Extract token usage
+    const tokenUsage = extractTokenUsage(response);
+
     // Clean response - remove markdown code blocks if present
     if (text.startsWith("```json")) {
       text = text.replace(/^```json\n/, "").replace(/\n```$/, "");
@@ -356,11 +403,9 @@ Return ONLY valid JSON with no additional text, explanations, or markdown format
     }
 
     console.log(
-      "✅ Skills categorized successfully:",
-      categorizedSkills.length,
-      "categories"
+      `✅ Skills categorized successfully: ${categorizedSkills.length} categories (Tokens: ${tokenUsage.totalTokens})`
     );
-    return categorizedSkills;
+    return {data: categorizedSkills, tokenUsage};
   } catch (error) {
     console.error("❌ Gemini skill categorization error:", error.message);
     throw new Error(`Failed to categorize skills with AI: ${error.message}`);
@@ -402,6 +447,9 @@ Return ONLY valid JSON with no additional text, explanations, or markdown format
     const response = await result.response;
     let text = response.text().trim();
 
+    // Extract token usage
+    const tokenUsage = extractTokenUsage(response);
+
     // Clean response - remove markdown code blocks if present
     if (text.startsWith("```json")) {
       text = text.replace(/^```json\n/, "").replace(/\n```$/, "");
@@ -418,11 +466,9 @@ Return ONLY valid JSON with no additional text, explanations, or markdown format
     }
 
     console.log(
-      "✅ Achievements segregated successfully:",
-      achievements.length,
-      "items"
+      `✅ Achievements segregated successfully: ${achievements.length} items (Tokens: ${tokenUsage.totalTokens})`
     );
-    return achievements;
+    return {data: achievements, tokenUsage};
   } catch (error) {
     console.error("❌ Gemini achievement segregation error:", error.message);
     throw new Error(
@@ -473,6 +519,9 @@ Return ONLY valid JSON with no additional text, explanations, or markdown format
     const response = await result.response;
     let text = response.text().trim();
 
+    // Extract token usage
+    const tokenUsage = extractTokenUsage(response);
+
     // Clean response - remove markdown code blocks if present
     if (text.startsWith("```json")) {
       text = text.replace(/^```json\n/, "").replace(/\n```$/, "");
@@ -489,9 +538,9 @@ Return ONLY valid JSON with no additional text, explanations, or markdown format
     }
 
     console.log(
-      `✅ Custom section processed successfully: ${formattedContent.length} items`
+      `✅ Custom section processed successfully: ${formattedContent.length} items (Tokens: ${tokenUsage.totalTokens})`
     );
-    return formattedContent;
+    return {data: formattedContent, tokenUsage};
   } catch (error) {
     console.error("❌ Gemini custom section processing error:", error.message);
     throw new Error(
@@ -574,6 +623,9 @@ Return ONLY valid JSON with no additional text, explanations, or markdown format
     const response = await result.response;
     let text = response.text().trim();
 
+    // Extract token usage
+    const tokenUsage = extractTokenUsage(response);
+
     // Clean response - remove markdown code blocks if present
     if (text.startsWith("```json")) {
       text = text.replace(/^```json\n/, "").replace(/\n```$/, "");
@@ -595,8 +647,10 @@ Return ONLY valid JSON with no additional text, explanations, or markdown format
       throw new Error("Invalid response format from AI");
     }
 
-    console.log(`✅ Resume-job match analyzed: ${analysis.match_score}% match`);
-    return analysis;
+    console.log(
+      `✅ Resume-job match analyzed: ${analysis.match_score}% match (Tokens: ${tokenUsage.totalTokens})`
+    );
+    return {data: analysis, tokenUsage};
   } catch (error) {
     console.error("❌ Gemini resume-job match analysis error:", error.message);
     throw new Error(

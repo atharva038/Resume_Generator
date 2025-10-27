@@ -2,6 +2,7 @@ import PDFParser from "pdf-parse/lib/pdf-parse.js";
 import mammoth from "mammoth";
 import {analyzeResumeJobMatch} from "../services/gemini.service.js";
 import Resume from "../models/Resume.model.js";
+import {trackAIUsage} from "../middleware/aiUsageTracker.middleware.js";
 
 /**
  * Analyze resume against job description
@@ -60,11 +61,38 @@ export const analyzeResume = async (req, res) => {
     console.log(
       "🤖 Analyzing resume against job description with Gemini AI..."
     );
-    const analysis = await analyzeResumeJobMatch(resumeText, jobDescription);
+    const startTime = Date.now();
+    const {data: analysis, tokenUsage} = await analyzeResumeJobMatch(
+      resumeText,
+      jobDescription
+    );
+    const responseTime = Date.now() - startTime;
+
+    // Track AI usage
+    await trackAIUsage(
+      req.user.userId,
+      "ats_analysis",
+      tokenUsage?.totalTokens || 0,
+      responseTime,
+      "success"
+    );
 
     res.json(analysis);
   } catch (error) {
     console.error("❌ Resume analysis error:", error);
+
+    // Track failed AI usage
+    if (req.user?.userId) {
+      await trackAIUsage(
+        req.user.userId,
+        "ats_analysis",
+        0,
+        0,
+        "error",
+        error.message
+      );
+    }
+
     res.status(500).json({
       error: error.message || "Failed to analyze resume",
     });

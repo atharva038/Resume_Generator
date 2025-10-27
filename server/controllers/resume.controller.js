@@ -8,6 +8,7 @@ import {
   segregateAchievementsWithAI,
   processCustomSectionWithAI,
 } from "../services/gemini.service.js";
+import {trackAIUsage} from "../middleware/aiUsageTracker.middleware.js";
 
 /**
  * Upload and parse resume file
@@ -34,7 +35,24 @@ export const uploadResume = async (req, res) => {
     }
 
     // Parse resume using Gemini AI
-    const parsedData = await parseResumeWithAI(extractedText);
+    const startTime = Date.now();
+    const {data: parsedData, tokenUsage} = await parseResumeWithAI(
+      extractedText
+    );
+    const responseTime = Date.now() - startTime;
+
+    // Track AI usage (upload doesn't require auth, so skip tracking)
+    // Note: Upload endpoint should ideally require authentication for better tracking
+    // For now, we'll track only if user is authenticated
+    if (req.user?.userId) {
+      await trackAIUsage(
+        req.user.userId,
+        "resume_enhancement",
+        tokenUsage?.totalTokens || 0,
+        responseTime,
+        "success"
+      );
+    }
 
     // Add raw text to parsed data
     parsedData.rawText = extractedText;
@@ -76,11 +94,22 @@ export const enhanceContent = async (req, res) => {
     }
 
     // Enhance content using Gemini AI with full resume context and custom prompt
-    const enhancedContent = await enhanceContentWithAI(
+    const startTime = Date.now();
+    const {data: enhancedContent, tokenUsage} = await enhanceContentWithAI(
       content,
       sectionType,
       resumeData,
       customPrompt
+    );
+    const responseTime = Date.now() - startTime;
+
+    // Track AI usage
+    await trackAIUsage(
+      req.user.userId,
+      "resume_enhancement",
+      tokenUsage?.totalTokens || 0,
+      responseTime,
+      "success"
     );
 
     res.json({
@@ -89,6 +118,19 @@ export const enhanceContent = async (req, res) => {
     });
   } catch (error) {
     console.error("Enhance error:", error);
+
+    // Track failed AI usage
+    if (req.user?.userId) {
+      await trackAIUsage(
+        req.user.userId,
+        "resume_enhancement",
+        0,
+        0,
+        "error",
+        error.message
+      );
+    }
+
     res.status(500).json({
       error: error.message || "Failed to enhance content",
     });
@@ -108,7 +150,18 @@ export const generateSummary = async (req, res) => {
     }
 
     // Generate summary using Gemini AI
-    const summary = await generateSummaryWithAI(resumeData);
+    const startTime = Date.now();
+    const {data: summary, tokenUsage} = await generateSummaryWithAI(resumeData);
+    const responseTime = Date.now() - startTime;
+
+    // Track AI usage
+    await trackAIUsage(
+      req.user.userId,
+      "ai_suggestions",
+      tokenUsage?.totalTokens || 0,
+      responseTime,
+      "success"
+    );
 
     res.json({
       message: "Summary generated successfully",
@@ -116,6 +169,19 @@ export const generateSummary = async (req, res) => {
     });
   } catch (error) {
     console.error("Generate summary error:", error);
+
+    // Track failed AI usage
+    if (req.user?.userId) {
+      await trackAIUsage(
+        req.user.userId,
+        "ai_suggestions",
+        0,
+        0,
+        "error",
+        error.message
+      );
+    }
+
     res.status(500).json({
       error: error.message || "Failed to generate summary",
     });
@@ -287,7 +353,20 @@ export const categorizeSkills = async (req, res) => {
     }
 
     // Categorize skills using Gemini AI
-    const categorizedSkills = await categorizeSkillsWithAI(skills);
+    const startTime = Date.now();
+    const {data: categorizedSkills, tokenUsage} = await categorizeSkillsWithAI(
+      skills
+    );
+    const responseTime = Date.now() - startTime;
+
+    // Track AI usage
+    await trackAIUsage(
+      req.user.userId,
+      "ai_suggestions",
+      tokenUsage?.totalTokens || 0,
+      responseTime,
+      "success"
+    );
 
     res.json({
       message: "Skills categorized successfully",
@@ -295,6 +374,19 @@ export const categorizeSkills = async (req, res) => {
     });
   } catch (error) {
     console.error("Categorize skills error:", error);
+
+    // Track failed AI usage
+    if (req.user?.userId) {
+      await trackAIUsage(
+        req.user.userId,
+        "ai_suggestions",
+        0,
+        0,
+        "error",
+        error.message
+      );
+    }
+
     res.status(500).json({
       error: error.message || "Failed to categorize skills",
     });
@@ -318,8 +410,18 @@ export const segregateAchievements = async (req, res) => {
     }
 
     // Segregate achievements using Gemini AI
-    const segregatedAchievements = await segregateAchievementsWithAI(
-      achievements
+    const startTime = Date.now();
+    const {data: segregatedAchievements, tokenUsage} =
+      await segregateAchievementsWithAI(achievements);
+    const responseTime = Date.now() - startTime;
+
+    // Track AI usage
+    await trackAIUsage(
+      req.user.userId,
+      "ai_suggestions",
+      tokenUsage?.totalTokens || 0,
+      responseTime,
+      "success"
     );
 
     res.json({
@@ -328,6 +430,19 @@ export const segregateAchievements = async (req, res) => {
     });
   } catch (error) {
     console.error("Segregate achievements error:", error);
+
+    // Track failed AI usage
+    if (req.user?.userId) {
+      await trackAIUsage(
+        req.user.userId,
+        "ai_suggestions",
+        0,
+        0,
+        "error",
+        error.message
+      );
+    }
+
     res.status(500).json({
       error: error.message || "Failed to segregate achievements",
     });
@@ -351,9 +466,18 @@ export const processCustomSection = async (req, res) => {
     }
 
     // Process custom section using Gemini AI
-    const processedContent = await processCustomSectionWithAI(
-      content,
-      title || "Custom Section"
+    const startTime = Date.now();
+    const {data: processedContent, tokenUsage} =
+      await processCustomSectionWithAI(content, title || "Custom Section");
+    const responseTime = Date.now() - startTime;
+
+    // Track AI usage
+    await trackAIUsage(
+      req.user.userId,
+      "ai_suggestions",
+      tokenUsage?.totalTokens || 0,
+      responseTime,
+      "success"
     );
 
     res.json({
@@ -362,6 +486,19 @@ export const processCustomSection = async (req, res) => {
     });
   } catch (error) {
     console.error("Process custom section error:", error);
+
+    // Track failed AI usage
+    if (req.user?.userId) {
+      await trackAIUsage(
+        req.user.userId,
+        "ai_suggestions",
+        0,
+        0,
+        "error",
+        error.message
+      );
+    }
+
     res.status(500).json({
       error: error.message || "Failed to process custom section",
     });

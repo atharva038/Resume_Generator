@@ -5,6 +5,7 @@ import {
   aiLimiter,
   uploadLimiter,
 } from "../middleware/rateLimiter.middleware.js";
+import {checkAIQuota} from "../middleware/aiUsageTracker.middleware.js";
 import {
   uploadResume,
   enhanceContent,
@@ -30,33 +31,48 @@ router.post(
   uploadResume
 );
 
-// Protected routes - enhance content (requires authentication + AI rate limiting)
-router.post("/enhance", authenticateToken, aiLimiter, enhanceContent);
+// Protected routes - enhance content (requires authentication + AI rate limiting + quota check)
+router.post(
+  "/enhance",
+  authenticateToken,
+  aiLimiter,
+  checkAIQuota,
+  enhanceContent
+);
 
-// Protected routes - generate summary (requires authentication + AI rate limiting)
-router.post("/generate-summary", authenticateToken, aiLimiter, generateSummary);
+// Protected routes - generate summary (requires authentication + AI rate limiting + quota check)
+router.post(
+  "/generate-summary",
+  authenticateToken,
+  aiLimiter,
+  checkAIQuota,
+  generateSummary
+);
 
-// Protected routes - categorize skills with AI (requires authentication + AI rate limiting)
+// Protected routes - categorize skills with AI (requires authentication + AI rate limiting + quota check)
 router.post(
   "/categorize-skills",
   authenticateToken,
   aiLimiter,
+  checkAIQuota,
   categorizeSkills
 );
 
-// Protected routes - segregate achievements with AI (requires authentication + AI rate limiting)
+// Protected routes - segregate achievements with AI (requires authentication + AI rate limiting + quota check)
 router.post(
   "/segregate-achievements",
   authenticateToken,
   aiLimiter,
+  checkAIQuota,
   segregateAchievements
 );
 
-// Protected routes - process custom section with AI (requires authentication + AI rate limiting)
+// Protected routes - process custom section with AI (requires authentication + AI rate limiting + quota check)
 router.post(
   "/process-custom-section",
   authenticateToken,
   aiLimiter,
+  checkAIQuota,
   processCustomSection
 );
 

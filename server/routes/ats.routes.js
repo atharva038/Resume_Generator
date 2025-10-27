@@ -6,6 +6,7 @@ import {
   aiLimiter,
   uploadLimiter,
 } from "../middleware/rateLimiter.middleware.js";
+import {checkAIQuota} from "../middleware/aiUsageTracker.middleware.js";
 
 const router = express.Router();
 
@@ -28,12 +29,13 @@ const upload = multer({
   },
 });
 
-// Analyze resume against job description (AI-powered + file upload)
+// Analyze resume against job description (AI-powered + file upload + quota check)
 router.post(
   "/analyze-resume",
   authenticateToken,
   uploadLimiter, // Limit file uploads
   aiLimiter, // Limit AI usage
+  checkAIQuota, // Check AI quota
   upload.single("resumeFile"),
   analyzeResume
 );
