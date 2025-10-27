@@ -1,4 +1,4 @@
-import {useState, useEffect} from "react";
+import {useState, useEffect, useCallback, useMemo} from "react";
 import {
   getAllJobs,
   getJobCategories,
@@ -18,8 +18,9 @@ const JobSpecificScoreCard = ({resumeData, onUpdateField}) => {
   const [selectedExperienceLevel, setSelectedExperienceLevel] = useState("all");
   const [filteredJobs, setFilteredJobs] = useState([]);
 
-  const categories = getJobCategories();
-  const allJobs = getAllJobs();
+  // Memoize to prevent recreation on every render
+  const categories = useMemo(() => getJobCategories(), []);
+  const allJobs = useMemo(() => getAllJobs(), []);
 
   // Get selected job from resumeData or default
   const selectedJob = resumeData?.targetJobRole || "software-engineer";
@@ -111,7 +112,8 @@ const JobSpecificScoreCard = ({resumeData, onUpdateField}) => {
       const jobProfile = allJobs.find((job) => job.key === selectedJob);
       if (jobProfile) {
         setSelectedCategory(jobProfile.category);
-        // Auto-set subcategory if it's an engineering role
+
+        // If Engineering job, set the subcategory
         if (
           jobProfile.category === "Engineering" &&
           jobSubCategoryMap[selectedJob]
@@ -120,7 +122,7 @@ const JobSpecificScoreCard = ({resumeData, onUpdateField}) => {
         }
       }
     }
-  }, [selectedJob, allJobs]);
+  }, [selectedJob, allJobs, selectedCategory]);
 
   // Filter jobs based on selected category, subcategory, and experience level
   useEffect(() => {
@@ -144,7 +146,7 @@ const JobSpecificScoreCard = ({resumeData, onUpdateField}) => {
   }, [selectedCategory, selectedSubCategory, selectedExperienceLevel, allJobs]);
 
   // Calculate score when job or tech stack changes
-  const calculateScore = () => {
+  const calculateScore = useCallback(() => {
     if (!resumeData) return;
 
     setIsCalculating(true);
@@ -186,12 +188,12 @@ const JobSpecificScoreCard = ({resumeData, onUpdateField}) => {
       });
       setIsCalculating(false);
     }
-  };
+  }, [resumeData, selectedJob, customTechStack]);
 
   // Calculate on mount and when dependencies change
   useEffect(() => {
     calculateScore();
-  }, [resumeData, selectedJob, customTechStack]);
+  }, [calculateScore]);
 
   if (!resumeData) return null;
 
