@@ -9,14 +9,15 @@ import {
   getFeedbackStats,
 } from "../controllers/feedback.controller.js";
 import {authenticateToken} from "../middleware/auth.middleware.js";
+import {feedbackLimiter} from "../middleware/rateLimiter.middleware.js";
 
 const router = express.Router();
 
 // All routes require authentication
 router.use(authenticateToken);
 
-// User routes
-router.post("/", submitFeedback);
+// User routes - rate limited to prevent feedback spam
+router.post("/", feedbackLimiter, submitFeedback);
 router.get("/my-feedback", getMyFeedback);
 router.get("/stats", getFeedbackStats);
 router.get("/:id", getFeedbackById);

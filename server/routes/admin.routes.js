@@ -1,6 +1,7 @@
 import express from "express";
 import {authenticateToken} from "../middleware/auth.middleware.js";
 import {isAdmin, logAdminAction} from "../middleware/admin.middleware.js";
+import {adminLimiter} from "../middleware/rateLimiter.middleware.js";
 import {
   getDashboardStats,
   getAllUsers,
@@ -22,9 +23,10 @@ import {
 
 const router = express.Router();
 
-// Apply auth and admin middleware to all routes
+// Apply auth, admin, rate limiting, and logging middleware to all routes
 router.use(authenticateToken);
 router.use(isAdmin);
+router.use(adminLimiter); // Higher limit for admin operations (200 req/15min)
 router.use(logAdminAction);
 
 // Dashboard

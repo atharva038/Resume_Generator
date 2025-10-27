@@ -2,6 +2,10 @@ import express from "express";
 import multer from "multer";
 import {analyzeResume} from "../controllers/ats.controller.js";
 import {authenticateToken} from "../middleware/auth.middleware.js";
+import {
+  aiLimiter,
+  uploadLimiter,
+} from "../middleware/rateLimiter.middleware.js";
 
 const router = express.Router();
 
@@ -24,10 +28,12 @@ const upload = multer({
   },
 });
 
-// Analyze resume against job description
+// Analyze resume against job description (AI-powered + file upload)
 router.post(
   "/analyze-resume",
   authenticateToken,
+  uploadLimiter, // Limit file uploads
+  aiLimiter, // Limit AI usage
   upload.single("resumeFile"),
   analyzeResume
 );

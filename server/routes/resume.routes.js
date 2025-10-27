@@ -2,6 +2,10 @@ import express from "express";
 import upload from "../config/multer.config.js";
 import {authenticateToken} from "../middleware/auth.middleware.js";
 import {
+  aiLimiter,
+  uploadLimiter,
+} from "../middleware/rateLimiter.middleware.js";
+import {
   uploadResume,
   enhanceContent,
   generateSummary,
@@ -21,28 +25,40 @@ const router = express.Router();
 router.post(
   "/upload",
   authenticateToken,
+  uploadLimiter, // Rate limit file uploads
   upload.single("resume"),
   uploadResume
 );
 
-// Protected routes - enhance content (requires authentication)
-router.post("/enhance", authenticateToken, enhanceContent);
+// Protected routes - enhance content (requires authentication + AI rate limiting)
+router.post("/enhance", authenticateToken, aiLimiter, enhanceContent);
 
-// Protected routes - generate summary (requires authentication)
-router.post("/generate-summary", authenticateToken, generateSummary);
+// Protected routes - generate summary (requires authentication + AI rate limiting)
+router.post("/generate-summary", authenticateToken, aiLimiter, generateSummary);
 
-// Protected routes - categorize skills with AI (requires authentication)
-router.post("/categorize-skills", authenticateToken, categorizeSkills);
+// Protected routes - categorize skills with AI (requires authentication + AI rate limiting)
+router.post(
+  "/categorize-skills",
+  authenticateToken,
+  aiLimiter,
+  categorizeSkills
+);
 
-// Protected routes - segregate achievements with AI (requires authentication)
+// Protected routes - segregate achievements with AI (requires authentication + AI rate limiting)
 router.post(
   "/segregate-achievements",
   authenticateToken,
+  aiLimiter,
   segregateAchievements
 );
 
-// Protected routes - process custom section with AI (requires authentication)
-router.post("/process-custom-section", authenticateToken, processCustomSection);
+// Protected routes - process custom section with AI (requires authentication + AI rate limiting)
+router.post(
+  "/process-custom-section",
+  authenticateToken,
+  aiLimiter,
+  processCustomSection
+);
 
 // Protected routes - require authentication
 router.post("/save", authenticateToken, saveResume);

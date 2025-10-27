@@ -9,6 +9,7 @@ import atsRoutes from "./routes/ats.routes.js";
 import contactRoutes from "./routes/contact.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import feedbackRoutes from "./routes/feedback.routes.js";
+import {apiLimiter} from "./middleware/rateLimiter.middleware.js";
 
 // Load environment variables
 dotenv.config();
@@ -23,6 +24,10 @@ app.use(
     credentials: true,
   })
 );
+
+// Apply global rate limiter to all API routes
+app.use("/api/", apiLimiter);
+
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 

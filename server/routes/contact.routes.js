@@ -1,5 +1,6 @@
 import express from "express";
 import {authenticateToken} from "../middleware/auth.middleware.js";
+import {contactLimiter} from "../middleware/rateLimiter.middleware.js";
 import {
   submitContact,
   getAllContacts,
@@ -12,7 +13,8 @@ import {
 const router = express.Router();
 
 // Protected route - user must be logged in to submit contact form
-router.post("/", authenticateToken, submitContact);
+// Rate limited to prevent spam (3 submissions per hour)
+router.post("/", authenticateToken, contactLimiter, submitContact);
 
 // Protected routes (Admin only)
 router.get("/", authenticateToken, getAllContacts);
