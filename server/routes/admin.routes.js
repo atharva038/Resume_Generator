@@ -23,6 +23,13 @@ import {
   getUserQuotaDetails,
   updateUserTier,
   resetUserDailyQuota,
+  getSettings,
+  updateSettings,
+  resetSettings,
+  getSystemStats,
+  updateAIQuotaLimits,
+  toggleFeature,
+  updateRateLimits,
 } from "../controllers/admin.controller.js";
 
 const router = express.Router();
@@ -68,5 +75,14 @@ router.get("/ai-quota/users", getUserQuotaStatus);
 router.get("/ai-quota/users/:userId", getUserQuotaDetails);
 router.patch("/ai-quota/users/:userId/tier", updateUserTier);
 router.post("/ai-quota/users/:userId/reset-daily", resetUserDailyQuota);
+
+// System Settings
+router.get("/settings", getSettings);
+router.get("/settings/stats", getSystemStats);
+router.patch("/settings", updateSettings);
+router.post("/settings/reset", resetSettings);
+router.patch("/settings/ai-quota", updateAIQuotaLimits);
+router.patch("/settings/features/:feature", toggleFeature);
+router.patch("/settings/rate-limits", updateRateLimits);
 
 export default router;

@@ -5,6 +5,7 @@ import AIUsage from "../models/AIUsage.model.js";
 import AdminLog from "../models/AdminLog.model.js";
 import Template from "../models/Template.model.js";
 import Feedback from "../models/Feedback.model.js";
+import Settings from "../models/Settings.model.js";
 
 // Get Dashboard Statistics
 export const getDashboardStats = async (req, res) => {
@@ -1316,5 +1317,259 @@ export const resetUserDailyQuota = async (req, res) => {
   } catch (error) {
     console.error("Reset user daily quota error:", error);
     res.status(500).json({error: "Failed to reset daily quota"});
+  }
+};
+
+// ============================================
+// SYSTEM SETTINGS ENDPOINTS
+// ============================================
+
+/**
+ * Get all system settings
+ * GET /api/admin/settings
+ */
+export const getSettings = async (req, res) => {
+  try {
+    const settings = await Settings.getSettings();
+    res.json({settings});
+  } catch (error) {
+    console.error("Get settings error:", error);
+    res.status(500).json({error: "Failed to fetch settings"});
+  }
+};
+
+/**
+ * Update system settings
+ * PATCH /api/admin/settings
+ */
+export const updateSettings = async (req, res) => {
+  try {
+    const updates = req.body;
+    const adminId = req.user.id;
+
+    let settings = await Settings.getSettings();
+
+    // Update settings with provided data
+    Object.keys(updates).forEach((key) => {
+      if (key !== "_id" && key !== "createdAt" && key !== "updatedAt") {
+        if (typeof updates[key] === "object" && !Array.isArray(updates[key])) {
+          // Handle nested objects
+          settings[key] = {...settings[key], ...updates[key]};
+        } else {
+          settings[key] = updates[key];
+        }
+      }
+    });
+
+    settings.lastUpdatedBy = adminId;
+    await settings.save();
+
+    res.json({
+      message: "Settings updated successfully",
+      settings,
+    });
+  } catch (error) {
+    console.error("Update settings error:", error);
+    res.status(500).json({error: "Failed to update settings"});
+  }
+};
+
+/**
+ * Reset settings to defaults
+ * POST /api/admin/settings/reset
+ */
+export const resetSettings = async (req, res) => {
+  try {
+    const adminId = req.user.id;
+
+    // Delete existing settings
+    await Settings.deleteMany({});
+
+    // Create new default settings
+    const settings = await Settings.create({lastUpdatedBy: adminId});
+
+    res.json({
+      message: "Settings reset to defaults successfully",
+      settings,
+    });
+  } catch (error) {
+    console.error("Reset settings error:", error);
+    res.status(500).json({error: "Failed to reset settings"});
+  }
+};
+
+/**
+ * Get system statistics for settings page
+ * GET /api/admin/settings/stats
+ */
+export const getSystemStats = async (req, res) => {
+  try {
+    const [
+      totalUsers,
+      activeUsers,
+      totalResumes,
+      totalAIUsage,
+      totalStorage,
+      avgResponseTime,
+    ] = await Promise.all([
+      User.countDocuments(),
+      User.countDocuments({status: "active"}),
+      Resume.countDocuments(),
+      AIUsage.countDocuments(),
+      Resume.aggregate([
+        {
+          $group: {
+            _id: null,
+            totalSize: {$sum: {$ifNull: ["$fileSize", 0]}},
+          },
+        },
+      ]),
+      AIUsage.aggregate([
+        {
+          $group: {
+            _id: null,
+            avgTime: {$avg: "$responseTime"},
+          },
+        },
+      ]),
+    ]);
+
+    // Get today's stats
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const [todayUsers, todayAIUsage] = await Promise.all([
+      User.countDocuments({createdAt: {$gte: today}}),
+      AIUsage.countDocuments({createdAt: {$gte: today}}),
+    ]);
+
+    // Calculate storage in MB
+    const storageInMB = totalStorage[0]
+      ? (totalStorage[0].totalSize / (1024 * 1024)).toFixed(2)
+      : 0;
+
+    res.json({
+      stats: {
+        users: {
+          total: totalUsers,
+          active: activeUsers,
+          todayNew: todayUsers,
+        },
+        resumes: {
+          total: totalResumes,
+        },
+        ai: {
+          totalUsage: totalAIUsage,
+          todayUsage: todayAIUsage,
+          avgResponseTime: avgResponseTime[0]
+            ? Math.round(avgResponseTime[0].avgTime)
+            : 0,
+        },
+        storage: {
+          used: storageInMB,
+          unit: "MB",
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Get system stats error:", error);
+    res.status(500).json({error: "Failed to fetch system statistics"});
+  }
+};
+
+/**
+ * Update AI quota limits
+ * PATCH /api/admin/settings/ai-quota
+ */
+export const updateAIQuotaLimits = async (req, res) => {
+  try {
+    const {tier, daily, monthly} = req.body;
+
+    if (!["free", "premium"].includes(tier)) {
+      return res
+        .status(400)
+        .json({error: "Invalid tier. Must be 'free' or 'premium'"});
+    }
+
+    if (daily < 1 || monthly < 1) {
+      return res.status(400).json({error: "Quota limits must be at least 1"});
+    }
+
+    const settings = await Settings.getSettings();
+    settings.aiQuota[tier].daily = daily;
+    settings.aiQuota[tier].monthly = monthly;
+    settings.lastUpdatedBy = req.user.id;
+    await settings.save();
+
+    res.json({
+      message: `AI quota limits updated for ${tier} tier`,
+      aiQuota: settings.aiQuota,
+    });
+  } catch (error) {
+    console.error("Update AI quota limits error:", error);
+    res.status(500).json({error: "Failed to update AI quota limits"});
+  }
+};
+
+/**
+ * Toggle feature flag
+ * PATCH /api/admin/settings/features/:feature
+ */
+export const toggleFeature = async (req, res) => {
+  try {
+    const {feature} = req.params;
+    const {enabled} = req.body;
+
+    const settings = await Settings.getSettings();
+
+    if (settings.features[feature] === undefined) {
+      return res.status(400).json({error: "Invalid feature name"});
+    }
+
+    settings.features[feature] = enabled;
+    settings.lastUpdatedBy = req.user.id;
+    await settings.save();
+
+    res.json({
+      message: `Feature '${feature}' ${enabled ? "enabled" : "disabled"}`,
+      features: settings.features,
+    });
+  } catch (error) {
+    console.error("Toggle feature error:", error);
+    res.status(500).json({error: "Failed to toggle feature"});
+  }
+};
+
+/**
+ * Update rate limits
+ * PATCH /api/admin/settings/rate-limits
+ */
+export const updateRateLimits = async (req, res) => {
+  try {
+    const {category, windowMs, max} = req.body;
+
+    if (!["general", "auth", "ai", "upload"].includes(category)) {
+      return res.status(400).json({error: "Invalid rate limit category"});
+    }
+
+    if (windowMs < 1000 || max < 1) {
+      return res.status(400).json({
+        error: "Invalid values. windowMs must be >= 1000ms, max must be >= 1",
+      });
+    }
+
+    const settings = await Settings.getSettings();
+    settings.rateLimits[category].windowMs = windowMs;
+    settings.rateLimits[category].max = max;
+    settings.lastUpdatedBy = req.user.id;
+    await settings.save();
+
+    res.json({
+      message: `Rate limits updated for ${category}`,
+      rateLimits: settings.rateLimits,
+    });
+  } catch (error) {
+    console.error("Update rate limits error:", error);
+    res.status(500).json({error: "Failed to update rate limits"});
   }
 };

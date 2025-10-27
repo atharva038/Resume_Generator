@@ -71,4 +71,17 @@ export const updateUserTier = (userId, tier) =>
 export const resetUserDailyQuota = (userId) =>
   adminAPI.post(`/ai-quota/users/${userId}/reset-daily`);
 
+// System Settings
+export const getSettings = () => adminAPI.get("/settings");
+export const getSystemStats = () => adminAPI.get("/settings/stats");
+export const updateSettings = (settings) =>
+  adminAPI.patch("/settings", settings);
+export const resetSettings = () => adminAPI.post("/settings/reset");
+export const updateAIQuotaLimits = (data) =>
+  adminAPI.patch("/settings/ai-quota", data);
+export const toggleFeature = (feature, enabled) =>
+  adminAPI.patch(`/settings/features/${feature}`, {enabled});
+export const updateRateLimits = (data) =>
+  adminAPI.patch("/settings/rate-limits", data);
+
 export default adminAPI;
