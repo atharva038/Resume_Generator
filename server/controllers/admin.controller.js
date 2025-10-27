@@ -967,3 +967,354 @@ export const getFeedbackStatistics = async (req, res) => {
     res.status(500).json({error: "Failed to fetch statistics"});
   }
 };
+
+// ============================================
+// AI QUOTA MONITORING ENDPOINTS
+// ============================================
+
+/**
+ * Get all users with their AI quota status
+ * GET /api/admin/ai-quota/users
+ */
+export const getUserQuotaStatus = async (req, res) => {
+  try {
+    const {sortBy = "usage", order = "desc", search = ""} = req.query;
+
+    // Get all users
+    const searchFilter = search
+      ? {
+          $or: [
+            {name: {$regex: search, $options: "i"}},
+            {email: {$regex: search, $options: "i"}},
+          ],
+        }
+      : {};
+
+    const users = await User.find(searchFilter).select(
+      "name email role status createdAt"
+    );
+
+    // Calculate quota status for each user
+    const now = new Date();
+    const startOfDay = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate()
+    );
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    const quotaStatuses = await Promise.all(
+      users.map(async (user) => {
+        // Get daily and monthly usage
+        const [dailyUsage, monthlyUsage] = await Promise.all([
+          AIUsage.countDocuments({
+            userId: user._id,
+            createdAt: {$gte: startOfDay},
+            status: "success",
+          }),
+          AIUsage.countDocuments({
+            userId: user._id,
+            createdAt: {$gte: startOfMonth},
+            status: "success",
+          }),
+        ]);
+
+        // Get monthly costs
+        const monthlyCosts = await AIUsage.aggregate([
+          {
+            $match: {
+              userId: user._id,
+              createdAt: {$gte: startOfMonth},
+              status: "success",
+            },
+          },
+          {
+            $group: {
+              _id: null,
+              totalCost: {$sum: "$cost"},
+              totalTokens: {$sum: "$tokensUsed"},
+            },
+          },
+        ]);
+
+        const tier = user.role === "admin" ? "admin" : "free"; // TODO: Add premium tier support
+        const limits = {
+          free: {daily: 10, monthly: 200},
+          premium: {daily: 100, monthly: 2000},
+          admin: {daily: Infinity, monthly: Infinity},
+        };
+
+        const dailyLimit = limits[tier].daily;
+        const monthlyLimit = limits[tier].monthly;
+
+        return {
+          userId: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          status: user.status,
+          tier,
+          quota: {
+            daily: {
+              used: dailyUsage,
+              limit: dailyLimit,
+              remaining: Math.max(0, dailyLimit - dailyUsage),
+              percentage:
+                dailyLimit === Infinity ? 0 : (dailyUsage / dailyLimit) * 100,
+            },
+            monthly: {
+              used: monthlyUsage,
+              limit: monthlyLimit,
+              remaining: Math.max(0, monthlyLimit - monthlyUsage),
+              percentage:
+                monthlyLimit === Infinity
+                  ? 0
+                  : (monthlyUsage / monthlyLimit) * 100,
+              totalCost: monthlyCosts[0]?.totalCost || 0,
+              totalTokens: monthlyCosts[0]?.totalTokens || 0,
+            },
+          },
+          createdAt: user.createdAt,
+        };
+      })
+    );
+
+    // Sort results
+    quotaStatuses.sort((a, b) => {
+      let comparison = 0;
+      switch (sortBy) {
+        case "usage":
+          comparison = b.quota.daily.used - a.quota.daily.used;
+          break;
+        case "cost":
+          comparison = b.quota.monthly.totalCost - a.quota.monthly.totalCost;
+          break;
+        case "percentage":
+          comparison = b.quota.daily.percentage - a.quota.daily.percentage;
+          break;
+        case "name":
+          comparison = a.name.localeCompare(b.name);
+          break;
+        default:
+          comparison = b.quota.daily.used - a.quota.daily.used;
+      }
+      return order === "desc" ? comparison : -comparison;
+    });
+
+    res.json({
+      users: quotaStatuses,
+      totalUsers: quotaStatuses.length,
+      summary: {
+        totalDailyUsage: quotaStatuses.reduce(
+          (sum, u) => sum + u.quota.daily.used,
+          0
+        ),
+        totalMonthlyCost: quotaStatuses.reduce(
+          (sum, u) => sum + u.quota.monthly.totalCost,
+          0
+        ),
+        usersNearLimit: quotaStatuses.filter(
+          (u) => u.quota.daily.percentage >= 80 && u.tier !== "admin"
+        ).length,
+        usersOverLimit: quotaStatuses.filter(
+          (u) => u.quota.daily.used >= u.quota.daily.limit && u.tier !== "admin"
+        ).length,
+      },
+    });
+  } catch (error) {
+    console.error("Get user quota status error:", error);
+    res.status(500).json({error: "Failed to fetch user quota status"});
+  }
+};
+
+/**
+ * Get detailed quota info for a specific user
+ * GET /api/admin/ai-quota/users/:userId
+ */
+export const getUserQuotaDetails = async (req, res) => {
+  try {
+    const {userId} = req.params;
+
+    const user = await User.findById(userId).select("name email role status");
+    if (!user) {
+      return res.status(404).json({error: "User not found"});
+    }
+
+    const now = new Date();
+    const startOfDay = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate()
+    );
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    // Get usage breakdown by feature
+    const usageByFeature = await AIUsage.aggregate([
+      {
+        $match: {
+          userId: user._id,
+          createdAt: {$gte: startOfMonth},
+        },
+      },
+      {
+        $group: {
+          _id: "$feature",
+          count: {$sum: 1},
+          successCount: {
+            $sum: {$cond: [{$eq: ["$status", "success"]}, 1, 0]},
+          },
+          errorCount: {
+            $sum: {$cond: [{$eq: ["$status", "error"]}, 1, 0]},
+          },
+          totalTokens: {$sum: "$tokensUsed"},
+          totalCost: {$sum: "$cost"},
+          avgResponseTime: {$avg: "$responseTime"},
+        },
+      },
+    ]);
+
+    // Get daily usage over last 30 days
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const dailyUsage = await AIUsage.aggregate([
+      {
+        $match: {
+          userId: user._id,
+          createdAt: {$gte: thirtyDaysAgo},
+        },
+      },
+      {
+        $group: {
+          _id: {
+            $dateToString: {format: "%Y-%m-%d", date: "$createdAt"},
+          },
+          count: {$sum: 1},
+          successCount: {
+            $sum: {$cond: [{$eq: ["$status", "success"]}, 1, 0]},
+          },
+          totalCost: {$sum: "$cost"},
+        },
+      },
+      {$sort: {_id: 1}},
+    ]);
+
+    // Get recent requests
+    const recentRequests = await AIUsage.find({userId: user._id})
+      .sort({createdAt: -1})
+      .limit(20)
+      .select(
+        "feature tokensUsed cost responseTime status createdAt errorMessage"
+      );
+
+    // Calculate quota status
+    const [dailyUsageCount, monthlyUsageCount] = await Promise.all([
+      AIUsage.countDocuments({
+        userId: user._id,
+        createdAt: {$gte: startOfDay},
+        status: "success",
+      }),
+      AIUsage.countDocuments({
+        userId: user._id,
+        createdAt: {$gte: startOfMonth},
+        status: "success",
+      }),
+    ]);
+
+    const tier = user.role === "admin" ? "admin" : "free";
+    const limits = {
+      free: {daily: 10, monthly: 200},
+      premium: {daily: 100, monthly: 2000},
+      admin: {daily: Infinity, monthly: Infinity},
+    };
+
+    res.json({
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        status: user.status,
+        tier,
+      },
+      quota: {
+        daily: {
+          used: dailyUsageCount,
+          limit: limits[tier].daily,
+          remaining: Math.max(0, limits[tier].daily - dailyUsageCount),
+        },
+        monthly: {
+          used: monthlyUsageCount,
+          limit: limits[tier].monthly,
+          remaining: Math.max(0, limits[tier].monthly - monthlyUsageCount),
+        },
+      },
+      usageByFeature,
+      dailyUsage,
+      recentRequests,
+    });
+  } catch (error) {
+    console.error("Get user quota details error:", error);
+    res.status(500).json({error: "Failed to fetch user quota details"});
+  }
+};
+
+/**
+ * Update user's AI quota tier (for future premium support)
+ * PATCH /api/admin/ai-quota/users/:userId/tier
+ */
+export const updateUserTier = async (req, res) => {
+  try {
+    const {userId} = req.params;
+    const {tier} = req.body;
+
+    if (!["free", "premium"].includes(tier)) {
+      return res
+        .status(400)
+        .json({error: "Invalid tier. Must be 'free' or 'premium'"});
+    }
+
+    // TODO: Add tier field to User model
+    // For now, return a message
+    res.json({
+      message:
+        "Tier update feature coming soon. Please add 'tier' field to User model first.",
+      note: "Currently, tier is determined by role: admin = unlimited, user = free",
+    });
+  } catch (error) {
+    console.error("Update user tier error:", error);
+    res.status(500).json({error: "Failed to update user tier"});
+  }
+};
+
+/**
+ * Reset user's daily quota (for testing/support)
+ * POST /api/admin/ai-quota/users/:userId/reset-daily
+ */
+export const resetUserDailyQuota = async (req, res) => {
+  try {
+    const {userId} = req.params;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({error: "User not found"});
+    }
+
+    // Delete today's usage records for this user
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const result = await AIUsage.deleteMany({
+      userId: user._id,
+      createdAt: {$gte: startOfDay},
+    });
+
+    res.json({
+      message: `Daily quota reset successfully for ${user.name}`,
+      deletedRecords: result.deletedCount,
+    });
+  } catch (error) {
+    console.error("Reset user daily quota error:", error);
+    res.status(500).json({error: "Failed to reset daily quota"});
+  }
+};

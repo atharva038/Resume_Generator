@@ -61,4 +61,14 @@ export const updateFeedbackStatus = (id, data) =>
   adminAPI.patch(`/feedback/${id}/status`, data);
 export const deleteFeedbackAdmin = (id) => adminAPI.delete(`/feedback/${id}`);
 
+// AI Quota Management
+export const getUserQuotaStatus = (params) =>
+  adminAPI.get("/ai-quota/users", {params});
+export const getUserQuotaDetails = (userId) =>
+  adminAPI.get(`/ai-quota/users/${userId}`);
+export const updateUserTier = (userId, tier) =>
+  adminAPI.patch(`/ai-quota/users/${userId}/tier`, {tier});
+export const resetUserDailyQuota = (userId) =>
+  adminAPI.post(`/ai-quota/users/${userId}/reset-daily`);
+
 export default adminAPI;

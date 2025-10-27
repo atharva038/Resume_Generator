@@ -18,6 +18,7 @@ import Feedback from "./pages/Feedback";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import UserManagement from "./pages/admin/UserManagement";
 import AIAnalytics from "./pages/admin/AIAnalytics";
+import AIQuotaManagement from "./pages/admin/AIQuotaManagement";
 import ContactMessages from "./pages/admin/ContactMessages";
 import AdminFeedback from "./pages/admin/AdminFeedback";
 import AdminLogs from "./pages/admin/AdminLogs";
@@ -115,6 +116,7 @@ function App() {
           <Route path="users" element={<UserManagement />} />
           <Route path="templates" element={<TemplateManagement />} />
           <Route path="ai-analytics" element={<AIAnalytics />} />
+          <Route path="ai-quota" element={<AIQuotaManagement />} />
           <Route path="contacts" element={<ContactMessages />} />
           <Route path="feedback" element={<AdminFeedback />} />
           <Route path="logs" element={<AdminLogs />} />

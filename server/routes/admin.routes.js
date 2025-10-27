@@ -19,6 +19,10 @@ import {
   updateFeedbackStatus,
   deleteFeedbackAdmin,
   getFeedbackStatistics,
+  getUserQuotaStatus,
+  getUserQuotaDetails,
+  updateUserTier,
+  resetUserDailyQuota,
 } from "../controllers/admin.controller.js";
 
 const router = express.Router();
@@ -58,5 +62,11 @@ router.get("/feedback", getAllFeedback);
 router.get("/feedback/statistics", getFeedbackStatistics);
 router.patch("/feedback/:id/status", updateFeedbackStatus);
 router.delete("/feedback/:id", deleteFeedbackAdmin);
+
+// AI Quota Management
+router.get("/ai-quota/users", getUserQuotaStatus);
+router.get("/ai-quota/users/:userId", getUserQuotaDetails);
+router.patch("/ai-quota/users/:userId/tier", updateUserTier);
+router.post("/ai-quota/users/:userId/reset-daily", resetUserDailyQuota);
 
 export default router;

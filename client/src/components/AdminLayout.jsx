@@ -15,6 +15,7 @@ import {
   Activity,
   Moon,
   Sun,
+  TrendingUp,
 } from "lucide-react";
 import {useAuth} from "../context/AuthContext";
 import {useDarkMode} from "../context/DarkModeContext";
@@ -50,6 +51,12 @@ const AdminLayout = () => {
       icon: BarChart3,
       label: "AI Analytics",
       color: "text-orange-500",
+    },
+    {
+      path: "/admin/ai-quota",
+      icon: TrendingUp,
+      label: "AI Quota Management",
+      color: "text-yellow-500",
     },
     {
       path: "/admin/contacts",
