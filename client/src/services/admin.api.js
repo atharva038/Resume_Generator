@@ -43,6 +43,10 @@ export const getAIAnalytics = (params) =>
 // Contact Messages
 export const getContactMessages = (params) =>
   adminAPI.get("/contacts", {params});
+export const getContactStatistics = () => adminAPI.get("/contacts/statistics");
+export const updateContactStatus = (id, data) =>
+  adminAPI.patch(`/contacts/${id}/status`, data);
+export const deleteContactMessage = (id) => adminAPI.delete(`/contacts/${id}`);
 
 // Admin Logs
 export const getAdminLogs = (params) => adminAPI.get("/logs", {params});

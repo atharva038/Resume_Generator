@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import {useAuth} from "../context/AuthContext";
 import {useDarkMode} from "../context/DarkModeContext";
+import PageTransition from "./PageTransition";
 
 const AdminLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -196,7 +197,9 @@ const AdminLayout = () => {
         }`}
       >
         <div className="p-6">
-          <Outlet />
+          <PageTransition key={location.pathname}>
+            <Outlet />
+          </PageTransition>
         </div>
       </main>
     </div>

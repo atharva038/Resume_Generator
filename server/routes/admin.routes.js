@@ -11,6 +11,9 @@ import {
   deleteUser,
   getAIAnalytics,
   getContactMessages,
+  updateContactStatus,
+  deleteContactMessage,
+  getContactStatistics,
   getAdminLogs,
   getAllTemplates,
   updateTemplateStatus,
@@ -55,6 +58,9 @@ router.get("/ai-analytics", getAIAnalytics);
 
 // Contact Messages
 router.get("/contacts", getContactMessages);
+router.get("/contacts/statistics", getContactStatistics);
+router.patch("/contacts/:id/status", updateContactStatus);
+router.delete("/contacts/:id", deleteContactMessage);
 
 // Admin Logs
 router.get("/logs", getAdminLogs);

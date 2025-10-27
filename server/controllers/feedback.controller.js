@@ -251,7 +251,7 @@ export const getFeedbackStats = async (req, res) => {
     const userId = req.user.userId;
 
     const stats = await Feedback.aggregate([
-      {$match: {userId: mongoose.Types.ObjectId(userId)}},
+      {$match: {userId: new mongoose.Types.ObjectId(userId)}},
       {
         $group: {
           _id: null,

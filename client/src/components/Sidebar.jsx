@@ -147,18 +147,23 @@ const Sidebar = ({isOpen, setIsOpen}) => {
                 <Link
                   to="/admin/dashboard"
                   onClick={() => setIsOpen(false)}
-                  className={`group flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 ${
+                  className={`group flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-300 ease-out relative overflow-hidden ${
                     location.pathname.startsWith("/admin")
                       ? "bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 text-purple-600 dark:text-purple-400 shadow-sm"
-                      : "text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-purple-50/50 hover:to-blue-50/50 dark:hover:from-purple-900/10 dark:hover:to-blue-900/10"
+                      : "text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-purple-50/50 hover:to-blue-50/50 dark:hover:from-purple-900/10 dark:hover:to-blue-900/10 hover:translate-x-1"
                   }`}
                   title={!isOpen ? "Admin Panel" : ""}
                 >
+                  {/* Active indicator bar */}
+                  {location.pathname.startsWith("/admin") && (
+                    <span className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-purple-500 to-blue-500 active-indicator"></span>
+                  )}
+
                   <Shield
-                    className={`w-5 h-5 flex-shrink-0 transition-transform duration-200 ${
+                    className={`w-5 h-5 flex-shrink-0 transition-all duration-300 ${
                       location.pathname.startsWith("/admin")
-                        ? "scale-110 animate-pulse"
-                        : "group-hover:scale-110"
+                        ? "scale-110"
+                        : "group-hover:scale-110 group-hover:rotate-3"
                     }`}
                   />
                   <span
@@ -193,16 +198,23 @@ const Sidebar = ({isOpen, setIsOpen}) => {
                     key={link.name}
                     href={link.path}
                     onClick={() => setIsOpen(false)}
-                    className={`group flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 ${
+                    className={`group flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-300 ease-out relative overflow-hidden ${
                       isActive
                         ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
-                        : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                        : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:translate-x-1"
                     }`}
                     title={!isOpen ? link.name : ""}
                   >
+                    {/* Active indicator bar */}
+                    {isActive && (
+                      <span className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 to-blue-600 active-indicator"></span>
+                    )}
+
                     <Icon
-                      className={`w-5 h-5 flex-shrink-0 transition-transform duration-200 ${
-                        isActive ? "scale-110" : "group-hover:scale-110"
+                      className={`w-5 h-5 flex-shrink-0 transition-all duration-300 ${
+                        isActive
+                          ? "scale-110"
+                          : "group-hover:scale-110 group-hover:rotate-3"
                       }`}
                     />
                     <span
@@ -220,16 +232,23 @@ const Sidebar = ({isOpen, setIsOpen}) => {
                     key={link.name}
                     to={link.path}
                     onClick={() => setIsOpen(false)}
-                    className={`group flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 ${
+                    className={`group flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-300 ease-out relative overflow-hidden ${
                       isActive
                         ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
-                        : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                        : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:translate-x-1"
                     }`}
                     title={!isOpen ? link.name : ""}
                   >
+                    {/* Active indicator bar */}
+                    {isActive && (
+                      <span className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 to-blue-600 active-indicator"></span>
+                    )}
+
                     <Icon
-                      className={`w-5 h-5 flex-shrink-0 transition-transform duration-200 ${
-                        isActive ? "scale-110" : "group-hover:scale-110"
+                      className={`w-5 h-5 flex-shrink-0 transition-all duration-300 ${
+                        isActive
+                          ? "scale-110"
+                          : "group-hover:scale-110 group-hover:rotate-3"
                       }`}
                     />
                     <span

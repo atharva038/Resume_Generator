@@ -1,11 +1,13 @@
-import {Outlet} from "react-router-dom";
+import {Outlet, useLocation} from "react-router-dom";
 import {useState, useEffect} from "react";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import PageTransition from "./PageTransition";
 
 const Layout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const location = useLocation();
 
   // Auto-open sidebar on desktop
   useEffect(() => {
@@ -39,9 +41,11 @@ const Layout = () => {
           isSidebarOpen={isSidebarOpen}
         />
 
-        {/* Page Content */}
+        {/* Page Content with Transition */}
         <main className="flex-1 pt-16 md:pt-20 w-full">
-          <Outlet />
+          <PageTransition key={location.pathname}>
+            <Outlet />
+          </PageTransition>
         </main>
 
         {/* Footer */}

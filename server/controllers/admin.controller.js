@@ -623,6 +623,135 @@ export const getContactMessages = async (req, res) => {
   }
 };
 
+// Update Contact Message Status
+export const updateContactStatus = async (req, res) => {
+  try {
+    const {id} = req.params;
+    const {status, notes} = req.body;
+
+    const validStatuses = ["new", "read", "replied", "archived"];
+    if (status && !validStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid status value",
+      });
+    }
+
+    const updateData = {};
+    if (status) updateData.status = status;
+    if (notes !== undefined) updateData.notes = notes;
+    if (status === "replied") updateData.repliedAt = new Date();
+
+    const contact = await Contact.findByIdAndUpdate(id, updateData, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!contact) {
+      return res.status(404).json({
+        success: false,
+        message: "Contact message not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Contact status updated successfully",
+      data: contact,
+    });
+  } catch (error) {
+    console.error("Update contact status error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update contact status",
+      error: error.message,
+    });
+  }
+};
+
+// Delete Contact Message
+export const deleteContactMessage = async (req, res) => {
+  try {
+    const {id} = req.params;
+
+    const contact = await Contact.findByIdAndDelete(id);
+
+    if (!contact) {
+      return res.status(404).json({
+        success: false,
+        message: "Contact message not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Contact message deleted successfully",
+    });
+  } catch (error) {
+    console.error("Delete contact message error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete contact message",
+      error: error.message,
+    });
+  }
+};
+
+// Get Contact Message Statistics
+export const getContactStatistics = async (req, res) => {
+  try {
+    const [totalContacts, statusStats, categoryStats] = await Promise.all([
+      Contact.countDocuments(),
+      Contact.aggregate([
+        {
+          $group: {
+            _id: "$status",
+            count: {$sum: 1},
+          },
+        },
+      ]),
+      Contact.aggregate([
+        {
+          $group: {
+            _id: "$category",
+            count: {$sum: 1},
+          },
+        },
+      ]),
+    ]);
+
+    // Get recent contacts (last 7 days)
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const recentCount = await Contact.countDocuments({
+      createdAt: {$gte: sevenDaysAgo},
+    });
+
+    res.json({
+      success: true,
+      data: {
+        total: totalContacts,
+        byStatus: statusStats.reduce((acc, curr) => {
+          acc[curr._id] = curr.count;
+          return acc;
+        }, {}),
+        byCategory: categoryStats.reduce((acc, curr) => {
+          acc[curr._id] = curr.count;
+          return acc;
+        }, {}),
+        recentCount,
+      },
+    });
+  } catch (error) {
+    console.error("Get contact statistics error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch contact statistics",
+      error: error.message,
+    });
+  }
+};
+
 // Get Admin Logs
 export const getAdminLogs = async (req, res) => {
   try {

@@ -64,3 +64,96 @@
 .ProseMirror:focus {
   @apply ring-2 ring-primary-500 rounded;
 }
+
+/* ===== Page Transition Animations ===== */
+/* Smooth, elegant, and professional page transitions */
+
+.page-transition {
+  animation-fill-mode: both;
+  animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.page-transition-enter {
+  animation: pageEnter 0.3s;
+}
+
+.page-transition-exit {
+  animation: pageExit 0.2s;
+}
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pageExit {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.99);
+  }
+}
+
+/* Sidebar link hover effects */
+.sidebar-link-hover {
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar-link-hover::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 3px;
+  background: linear-gradient(to bottom, #3b82f6, #8b5cf6);
+  transform: scaleY(0);
+  transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.sidebar-link-hover:hover::before,
+.sidebar-link-active::before {
+  transform: scaleY(1);
+}
+
+/* Smooth content fade for tab switching */
+.content-fade-enter {
+  animation: contentFadeIn 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+@keyframes contentFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Sidebar active indicator animation */
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.active-indicator {
+  animation: slideInFromLeft 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
