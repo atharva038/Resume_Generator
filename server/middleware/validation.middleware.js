@@ -220,8 +220,15 @@ export const validateResumeCreate = [
     .optional()
     .trim()
     .custom((value) => {
-      if (value && !validator.isURL(value)) {
-        throw new Error("LinkedIn URL must be valid");
+      // If empty, it's fine (optional field)
+      if (!value || value.trim() === "") {
+        return true;
+      }
+      // If has value, must be valid URL with protocol
+      if (!validator.isURL(value, {require_protocol: true})) {
+        throw new Error(
+          "LinkedIn must be a valid URL (e.g., https://linkedin.com/in/yourname)"
+        );
       }
       return true;
     }),
@@ -230,8 +237,13 @@ export const validateResumeCreate = [
     .optional()
     .trim()
     .custom((value) => {
-      if (value && !validator.isURL(value)) {
-        throw new Error("Portfolio URL must be valid");
+      if (!value || value.trim() === "") {
+        return true;
+      }
+      if (!validator.isURL(value, {require_protocol: true})) {
+        throw new Error(
+          "Portfolio must be a valid URL (e.g., https://yourwebsite.com)"
+        );
       }
       return true;
     }),
@@ -240,8 +252,13 @@ export const validateResumeCreate = [
     .optional()
     .trim()
     .custom((value) => {
-      if (value && !validator.isURL(value)) {
-        throw new Error("GitHub URL must be valid");
+      if (!value || value.trim() === "") {
+        return true;
+      }
+      if (!validator.isURL(value, {require_protocol: true})) {
+        throw new Error(
+          "GitHub must be a valid URL (e.g., https://github.com/yourusername)"
+        );
       }
       return true;
     }),
@@ -356,8 +373,15 @@ export const validateResumeUpdate = [
     .optional()
     .trim()
     .custom((value) => {
-      if (value && !validator.isURL(value)) {
-        throw new Error("LinkedIn URL must be valid");
+      // If empty, it's fine (optional field)
+      if (!value || value.trim() === "") {
+        return true;
+      }
+      // If has value, must be valid URL with protocol
+      if (!validator.isURL(value, {require_protocol: true})) {
+        throw new Error(
+          "LinkedIn must be a valid URL (e.g., https://linkedin.com/in/yourname)"
+        );
       }
       return true;
     }),
@@ -366,8 +390,13 @@ export const validateResumeUpdate = [
     .optional()
     .trim()
     .custom((value) => {
-      if (value && !validator.isURL(value)) {
-        throw new Error("Portfolio URL must be valid");
+      if (!value || value.trim() === "") {
+        return true;
+      }
+      if (!validator.isURL(value, {require_protocol: true})) {
+        throw new Error(
+          "Portfolio must be a valid URL (e.g., https://yourwebsite.com)"
+        );
       }
       return true;
     }),
@@ -376,8 +405,13 @@ export const validateResumeUpdate = [
     .optional()
     .trim()
     .custom((value) => {
-      if (value && !validator.isURL(value)) {
-        throw new Error("GitHub URL must be valid");
+      if (!value || value.trim() === "") {
+        return true;
+      }
+      if (!validator.isURL(value, {require_protocol: true})) {
+        throw new Error(
+          "GitHub must be a valid URL (e.g., https://github.com/yourusername)"
+        );
       }
       return true;
     }),
