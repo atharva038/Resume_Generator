@@ -1,6 +1,7 @@
 import {useState} from "react";
 import {useNavigate, useLocation, Link} from "react-router-dom";
 import {useAuth} from "../context/AuthContext";
+import {parseValidationErrors} from "../utils/errorHandler";
 import {
   Mail,
   Lock,
@@ -31,7 +32,7 @@ const Login = () => {
       const from = location.state?.from?.pathname || "/dashboard";
       navigate(from, {replace: true});
     } catch (err) {
-      setError(err.response?.data?.error || "Login failed");
+      setError(parseValidationErrors(err));
     } finally {
       setLoading(false);
     }

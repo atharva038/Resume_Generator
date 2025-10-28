@@ -20,6 +20,7 @@ import {
   updateFeedbackStatus,
   deleteFeedbackAdmin,
 } from "../../services/admin.api";
+import {parseValidationErrors} from "../../utils/errorHandler";
 
 const AdminFeedback = () => {
   const [feedbacks, setFeedbacks] = useState([]);
@@ -71,7 +72,7 @@ const AdminFeedback = () => {
       fetchStatistics();
     } catch (error) {
       console.error("Error updating status:", error);
-      alert("Failed to update status");
+      alert("Failed to update status: " + parseValidationErrors(error));
     }
   };
 
@@ -91,7 +92,7 @@ const AdminFeedback = () => {
       fetchStatistics();
     } catch (error) {
       console.error("Error submitting response:", error);
-      alert("Failed to submit response");
+      alert("Failed to submit response: " + parseValidationErrors(error));
     }
   };
 
@@ -103,7 +104,7 @@ const AdminFeedback = () => {
         fetchStatistics();
       } catch (error) {
         console.error("Error deleting feedback:", error);
-        alert("Failed to delete feedback");
+        alert("Failed to delete feedback: " + parseValidationErrors(error));
       }
     }
   };

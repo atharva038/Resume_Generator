@@ -1,6 +1,7 @@
 import {useState} from "react";
 import {useNavigate, Link} from "react-router-dom";
 import {useAuth} from "../context/AuthContext";
+import {parseValidationErrors} from "../utils/errorHandler";
 import {
   Mail,
   Lock,
@@ -32,8 +33,8 @@ const Register = () => {
       return;
     }
 
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters");
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters");
       return;
     }
 
@@ -43,7 +44,7 @@ const Register = () => {
       await register(name, email, password);
       navigate("/dashboard");
     } catch (err) {
-      setError(err.response?.data?.error || "Registration failed");
+      setError(parseValidationErrors(err));
     } finally {
       setLoading(false);
     }
@@ -153,11 +154,12 @@ const Register = () => {
                   placeholder="Create a strong password"
                   className="w-full pl-11 pr-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:text-white placeholder-gray-400 transition-all duration-200"
                   required
-                  minLength={6}
+                  minLength={8}
                 />
               </div>
               <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                Must be at least 6 characters long
+                Must be 8+ characters with uppercase, lowercase, number, and
+                special character
               </p>
             </div>
 

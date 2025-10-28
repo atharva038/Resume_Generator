@@ -3,6 +3,12 @@ import {authenticateToken} from "../middleware/auth.middleware.js";
 import {isAdmin, logAdminAction} from "../middleware/admin.middleware.js";
 import {adminLimiter} from "../middleware/rateLimiter.middleware.js";
 import {
+  validateMongoId,
+  validateContactStatusUpdate,
+  validateFeedbackStatusUpdate,
+  validateUserRoleUpdate,
+} from "../middleware/validation.middleware.js";
+import {
   getDashboardStats,
   getAllUsers,
   getUserDetails,
@@ -48,10 +54,10 @@ router.get("/dashboard/stats", getDashboardStats);
 
 // User Management
 router.get("/users", getAllUsers);
-router.get("/users/:userId", getUserDetails);
-router.patch("/users/:userId/status", updateUserStatus);
-router.patch("/users/:userId/role", updateUserRole);
-router.delete("/users/:userId", deleteUser);
+router.get("/users/:userId", validateMongoId, getUserDetails);
+router.patch("/users/:userId/status", validateMongoId, updateUserStatus);
+router.patch("/users/:userId/role", validateUserRoleUpdate, updateUserRole);
+router.delete("/users/:userId", validateMongoId, deleteUser);
 
 // AI Analytics
 router.get("/ai-analytics", getAIAnalytics);
@@ -59,28 +65,44 @@ router.get("/ai-analytics", getAIAnalytics);
 // Contact Messages
 router.get("/contacts", getContactMessages);
 router.get("/contacts/statistics", getContactStatistics);
-router.patch("/contacts/:id/status", updateContactStatus);
-router.delete("/contacts/:id", deleteContactMessage);
+router.patch(
+  "/contacts/:id/status",
+  validateContactStatusUpdate,
+  updateContactStatus
+);
+router.delete("/contacts/:id", validateMongoId, deleteContactMessage);
 
 // Admin Logs
 router.get("/logs", getAdminLogs);
 
 // Template Management
 router.get("/templates", getAllTemplates);
-router.patch("/templates/:templateId/status", updateTemplateStatus);
-router.delete("/templates/:templateId", deleteTemplate);
+router.patch(
+  "/templates/:templateId/status",
+  validateMongoId,
+  updateTemplateStatus
+);
+router.delete("/templates/:templateId", validateMongoId, deleteTemplate);
 
 // Feedback Management
 router.get("/feedback", getAllFeedback);
 router.get("/feedback/statistics", getFeedbackStatistics);
-router.patch("/feedback/:id/status", updateFeedbackStatus);
-router.delete("/feedback/:id", deleteFeedbackAdmin);
+router.patch(
+  "/feedback/:id/status",
+  validateFeedbackStatusUpdate,
+  updateFeedbackStatus
+);
+router.delete("/feedback/:id", validateMongoId, deleteFeedbackAdmin);
 
 // AI Quota Management
 router.get("/ai-quota/users", getUserQuotaStatus);
-router.get("/ai-quota/users/:userId", getUserQuotaDetails);
-router.patch("/ai-quota/users/:userId/tier", updateUserTier);
-router.post("/ai-quota/users/:userId/reset-daily", resetUserDailyQuota);
+router.get("/ai-quota/users/:userId", validateMongoId, getUserQuotaDetails);
+router.patch("/ai-quota/users/:userId/tier", validateMongoId, updateUserTier);
+router.post(
+  "/ai-quota/users/:userId/reset-daily",
+  validateMongoId,
+  resetUserDailyQuota
+);
 
 // System Settings
 router.get("/settings", getSettings);

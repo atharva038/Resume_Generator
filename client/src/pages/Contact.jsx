@@ -17,6 +17,7 @@ import {
   Globe,
 } from "lucide-react";
 import {contactAPI} from "../services/api";
+import {parseValidationErrors, formatFieldErrors} from "../utils/errorHandler";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -116,12 +117,16 @@ const Contact = () => {
         setStatus({loading: false, success: false, error: null});
       }, 5000);
     } catch (err) {
+      // Check for field-specific validation errors
+      const fieldErrors = formatFieldErrors(err);
+      if (fieldErrors) {
+        setErrors(fieldErrors);
+      }
+
       setStatus({
         loading: false,
         success: false,
-        error:
-          err.response?.data?.error ||
-          "Failed to send message. Please try again.",
+        error: parseValidationErrors(err),
       });
     }
   };

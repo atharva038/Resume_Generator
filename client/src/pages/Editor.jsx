@@ -2,6 +2,7 @@ import {useState, useEffect, useRef} from "react";
 import {useLocation, useNavigate} from "react-router-dom";
 import {useAuth} from "../context/AuthContext";
 import {resumeAPI} from "../services/api";
+import {parseValidationErrors} from "../utils/errorHandler";
 import ResumePreview from "../components/ResumePreview";
 import EditableSection from "../components/EditableSection";
 import ScoreCard from "../components/ScoreCard";
@@ -271,9 +272,7 @@ const Editor = () => {
       }
     } catch (err) {
       console.error("Save error:", err);
-      alert(
-        "Failed to save resume: " + (err.response?.data?.error || err.message)
-      );
+      alert("Failed to save resume: " + parseValidationErrors(err));
     } finally {
       setSaving(false);
     }
@@ -587,6 +586,9 @@ const Editor = () => {
           }
         } catch (err) {
           console.error("❌ Auto-save error:", err);
+          alert(
+            "Failed to auto-save imported data: " + parseValidationErrors(err)
+          );
         } finally {
           setSaving(false);
         }

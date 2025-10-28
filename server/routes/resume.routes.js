@@ -7,6 +7,14 @@ import {
 } from "../middleware/rateLimiter.middleware.js";
 import {checkAIQuota} from "../middleware/aiUsageTracker.middleware.js";
 import {
+  validateResumeCreate,
+  validateResumeUpdate,
+  validateResumeId,
+  validateContentEnhance,
+  validateSkillsCategorize,
+  validateFileUpload,
+} from "../middleware/validation.middleware.js";
+import {
   uploadResume,
   enhanceContent,
   generateSummary,
@@ -28,6 +36,7 @@ router.post(
   authenticateToken,
   uploadLimiter, // Rate limit file uploads
   upload.single("resume"),
+  validateFileUpload,
   uploadResume
 );
 
@@ -37,6 +46,7 @@ router.post(
   authenticateToken,
   aiLimiter,
   checkAIQuota,
+  validateContentEnhance,
   enhanceContent
 );
 
@@ -46,6 +56,7 @@ router.post(
   authenticateToken,
   aiLimiter,
   checkAIQuota,
+  validateContentEnhance,
   generateSummary
 );
 
@@ -55,6 +66,7 @@ router.post(
   authenticateToken,
   aiLimiter,
   checkAIQuota,
+  validateSkillsCategorize,
   categorizeSkills
 );
 
@@ -64,6 +76,7 @@ router.post(
   authenticateToken,
   aiLimiter,
   checkAIQuota,
+  validateContentEnhance,
   segregateAchievements
 );
 
@@ -73,14 +86,15 @@ router.post(
   authenticateToken,
   aiLimiter,
   checkAIQuota,
+  validateContentEnhance,
   processCustomSection
 );
 
 // Protected routes - require authentication
-router.post("/save", authenticateToken, saveResume);
-router.put("/:id", authenticateToken, updateResume);
+router.post("/save", authenticateToken, validateResumeCreate, saveResume);
+router.put("/:id", authenticateToken, validateResumeUpdate, updateResume);
 router.get("/list", authenticateToken, getResumes);
-router.get("/:id", authenticateToken, getResumeById);
-router.delete("/:id", authenticateToken, deleteResume);
+router.get("/:id", authenticateToken, validateResumeId, getResumeById);
+router.delete("/:id", authenticateToken, validateResumeId, deleteResume);
 
 export default router;

@@ -26,6 +26,7 @@ import {
   updateContactStatus,
   deleteContactMessage,
 } from "../../services/admin.api";
+import {parseValidationErrors} from "../../utils/errorHandler";
 
 const ContactMessages = () => {
   const [messages, setMessages] = useState([]);
@@ -80,7 +81,7 @@ const ContactMessages = () => {
       setSelectedMessage(null);
     } catch (error) {
       console.error("Error updating status:", error);
-      alert("Failed to update status");
+      alert("Failed to update status: " + parseValidationErrors(error));
     } finally {
       setUpdating(false);
     }
@@ -95,7 +96,7 @@ const ContactMessages = () => {
         setShowModal(false);
       } catch (error) {
         console.error("Error deleting message:", error);
-        alert("Failed to delete message");
+        alert("Failed to delete message: " + parseValidationErrors(error));
       }
     }
   };

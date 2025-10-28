@@ -17,6 +17,7 @@ import {
   updateUserRole,
   deleteUser,
 } from "../../services/admin.api";
+import {parseValidationErrors} from "../../utils/errorHandler";
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
@@ -69,7 +70,7 @@ const UserManagement = () => {
       await updateUserStatus(userId, newStatus);
       fetchUsers();
     } catch (err) {
-      alert(err.response?.data?.message || "Failed to update user status");
+      alert("Failed to update user status: " + parseValidationErrors(err));
     }
   };
 
@@ -85,7 +86,7 @@ const UserManagement = () => {
       await updateUserRole(userId, newRole);
       fetchUsers();
     } catch (err) {
-      alert(err.response?.data?.message || "Failed to update user role");
+      alert("Failed to update user role: " + parseValidationErrors(err));
     }
   };
 
@@ -101,7 +102,7 @@ const UserManagement = () => {
       await deleteUser(userId);
       fetchUsers();
     } catch (err) {
-      alert(err.response?.data?.message || "Failed to delete user");
+      alert("Failed to delete user: " + parseValidationErrors(err));
     }
   };
 

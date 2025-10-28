@@ -7,6 +7,7 @@ import {
   uploadLimiter,
 } from "../middleware/rateLimiter.middleware.js";
 import {checkAIQuota} from "../middleware/aiUsageTracker.middleware.js";
+import {validateATSAnalysis} from "../middleware/validation.middleware.js";
 
 const router = express.Router();
 

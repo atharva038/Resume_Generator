@@ -2,6 +2,7 @@ import {useState, useEffect} from "react";
 import {Link, useNavigate} from "react-router-dom";
 import {useAuth} from "../context/AuthContext";
 import {resumeAPI} from "../services/api";
+import {parseValidationErrors} from "../utils/errorHandler";
 import {
   FileText,
   Plus,
@@ -100,7 +101,7 @@ const Dashboard = () => {
       setEditingResume(null);
       setEditForm({name: "", description: ""});
     } catch (err) {
-      alert("Failed to update resume info");
+      alert("Failed to update resume info: " + parseValidationErrors(err));
       console.error(err);
     }
   };

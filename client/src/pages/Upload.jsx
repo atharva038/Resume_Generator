@@ -2,6 +2,7 @@ import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {useDropzone} from "react-dropzone";
 import {resumeAPI} from "../services/api";
+import {parseValidationErrors} from "../utils/errorHandler";
 import {
   Upload as UploadIcon,
   FileText,
@@ -34,9 +35,7 @@ const Upload = () => {
       navigate("/editor", {state: {resumeData: response.data.data}});
     } catch (err) {
       console.error("Upload error:", err);
-      setError(
-        err.response?.data?.error || "Failed to upload and parse resume"
-      );
+      setError(parseValidationErrors(err));
     } finally {
       setUploading(false);
     }

@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import mongoSanitize from "express-mongo-sanitize";
+import xss from "xss-clean";
 import resumeRoutes from "./routes/resume.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import githubRoutes from "./routes/github.routes.js";
@@ -28,8 +30,15 @@ app.use(
 // Apply global rate limiter to all API routes
 app.use("/api/", apiLimiter);
 
-app.use(express.json());
-app.use(express.urlencoded({extended: true}));
+// Body parser with size limits
+app.use(express.json({limit: "10kb"}));
+app.use(express.urlencoded({extended: true, limit: "10kb"}));
+
+// Data sanitization against NoSQL query injection
+app.use(mongoSanitize());
+
+// Data sanitization against XSS
+app.use(xss());
 
 // MongoDB Connection with better error handling
 mongoose

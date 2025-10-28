@@ -2,6 +2,7 @@ import {useState} from "react";
 import {useEditor, EditorContent} from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import {resumeAPI} from "../services/api";
+import {parseValidationErrors} from "../utils/errorHandler";
 
 const EditableSection = ({
   title,
@@ -82,10 +83,7 @@ const EditableSection = ({
 
       alert("Content enhanced successfully!");
     } catch (err) {
-      alert(
-        "Failed to enhance content: " +
-          (err.response?.data?.error || err.message)
-      );
+      alert("Failed to enhance content: " + parseValidationErrors(err));
     } finally {
       setEnhancing(false);
     }
