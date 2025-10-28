@@ -1,6 +1,7 @@
 import {useState, useEffect, useRef} from "react";
 import {useLocation, useNavigate} from "react-router-dom";
 import {useAuth} from "../context/AuthContext";
+import {useNavigationBlocker} from "../context/NavigationBlockerContext";
 import {resumeAPI} from "../services/api";
 import {parseValidationErrors} from "../utils/errorHandler";
 import ResumePreview from "../components/ResumePreview";
@@ -115,8 +116,13 @@ const Editor = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const {user} = useAuth();
+  const {blockNavigation, unblockNavigation} = useNavigationBlocker();
   const resumePreviewRef = useRef(null);
   const [resumeData, setResumeData] = useState(null);
+  const [originalResumeData, setOriginalResumeData] = useState(null); // Track original data
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [showUnsavedModal, setShowUnsavedModal] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState(null);
   const [saving, setSaving] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState(() => {
@@ -146,6 +152,83 @@ const Editor = () => {
       JSON.stringify(isAnalysisExpanded)
     );
   }, [isAnalysisExpanded]);
+
+  // Setup navigation blocker when there are unsaved changes
+  useEffect(() => {
+    if (hasUnsavedChanges) {
+      blockNavigation((to) => {
+        // Show modal and store pending navigation
+        setShowUnsavedModal(true);
+        setPendingNavigation(to);
+        return false; // Block navigation
+      });
+    } else {
+      unblockNavigation();
+    }
+
+    return () => {
+      unblockNavigation();
+    };
+  }, [hasUnsavedChanges, blockNavigation, unblockNavigation]);
+
+  // Track unsaved changes
+  useEffect(() => {
+    if (!resumeData || !originalResumeData) return;
+
+    const hasChanges =
+      JSON.stringify(resumeData) !== JSON.stringify(originalResumeData);
+    setHasUnsavedChanges(hasChanges);
+  }, [resumeData, originalResumeData]);
+
+  // Warn before leaving page with unsaved changes
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (hasUnsavedChanges) {
+        e.preventDefault();
+        e.returnValue = ""; // Chrome requires returnValue to be set
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [hasUnsavedChanges]);
+
+  // Intercept navigation attempts
+  useEffect(() => {
+    if (!hasUnsavedChanges) return;
+
+    const handlePopState = (e) => {
+      if (hasUnsavedChanges) {
+        // Store the current state before showing modal
+        const currentPath = window.location.pathname;
+
+        setShowUnsavedModal(true);
+        setPendingNavigation("back");
+
+        // Push a new state to prevent navigation
+        window.history.pushState(
+          {preventNav: true, originalPath: currentPath},
+          "",
+          currentPath
+        );
+      }
+    };
+
+    // Add initial state to enable back button interception
+    if (!window.history.state?.preventNav) {
+      window.history.pushState(
+        {preventNav: false},
+        "",
+        window.location.pathname
+      );
+    }
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [hasUnsavedChanges]);
 
   // Load resume data on mount
   useEffect(() => {
@@ -238,6 +321,8 @@ const Editor = () => {
 
       console.log("✅ Resume data initialized:", data);
       setResumeData(data);
+      // Store a deep copy as original data for change detection
+      setOriginalResumeData(JSON.parse(JSON.stringify(data)));
     };
 
     loadResumeData();
@@ -269,6 +354,9 @@ const Editor = () => {
       if (savedResume && savedResume._id) {
         setResumeData(savedResume);
         localStorage.setItem("currentResumeId", savedResume._id);
+        // Update original data to current state after successful save
+        setOriginalResumeData(JSON.parse(JSON.stringify(savedResume)));
+        setHasUnsavedChanges(false);
       }
     } catch (err) {
       console.error("Save error:", err);
@@ -276,6 +364,41 @@ const Editor = () => {
     } finally {
       setSaving(false);
     }
+  };
+
+  // Handle unsaved changes modal actions
+  const handleSaveAndNavigate = async () => {
+    await handleSave();
+    // Temporarily unblock navigation
+    unblockNavigation();
+    setHasUnsavedChanges(false);
+
+    if (pendingNavigation === "back") {
+      window.history.back();
+    } else if (pendingNavigation) {
+      navigate(pendingNavigation);
+    }
+    setShowUnsavedModal(false);
+    setPendingNavigation(null);
+  };
+
+  const handleDiscardAndNavigate = () => {
+    // Temporarily unblock navigation
+    unblockNavigation();
+    setHasUnsavedChanges(false);
+
+    if (pendingNavigation === "back") {
+      window.history.back();
+    } else if (pendingNavigation) {
+      navigate(pendingNavigation);
+    }
+    setShowUnsavedModal(false);
+    setPendingNavigation(null);
+  };
+
+  const handleCancelNavigation = () => {
+    setShowUnsavedModal(false);
+    setPendingNavigation(null);
   };
 
   const updateField = (field, value, skipTracking = false) => {
@@ -1121,14 +1244,21 @@ const Editor = () => {
             <button
               onClick={handleSave}
               disabled={saving}
-              className={`flex-1 px-4 py-2.5 rounded-lg font-medium transition-all duration-300 text-sm ${
+              className={`flex-1 px-4 py-2.5 rounded-lg font-medium transition-all duration-300 text-sm relative ${
                 saving
                   ? "bg-gray-300 dark:bg-gray-700 cursor-not-allowed text-gray-500"
+                  : hasUnsavedChanges
+                  ? "bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 text-white"
                   : "bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 text-white"
               }`}
             >
-              <span className="text-lg mr-2">{saving ? "⏳" : "💾"}</span>
-              {saving ? "Saving..." : "Save"}
+              {hasUnsavedChanges && !saving && (
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white dark:border-gray-800 animate-pulse"></span>
+              )}
+              <span className="text-lg mr-2">
+                {saving ? "⏳" : hasUnsavedChanges ? "⚠️" : "💾"}
+              </span>
+              {saving ? "Saving..." : hasUnsavedChanges ? "Save*" : "Saved"}
             </button>
           </div>
         </div>
@@ -1195,16 +1325,23 @@ const Editor = () => {
             className={`group relative w-14 h-14 rounded-full shadow-2xl font-medium transition-all duration-300 ${
               saving
                 ? "bg-gradient-to-br from-gray-300 to-gray-400 cursor-not-allowed"
+                : hasUnsavedChanges
+                ? "bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 text-white hover:from-orange-500 hover:via-orange-600 hover:to-orange-700 hover:scale-110 hover:shadow-3xl hover:-rotate-12"
                 : "bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 text-white hover:from-blue-500 hover:via-blue-600 hover:to-blue-700 hover:scale-110 hover:shadow-3xl hover:-rotate-12"
             }`}
           >
+            {hasUnsavedChanges && !saving && (
+              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white dark:border-gray-800 animate-pulse"></span>
+            )}
             <div className="flex items-center justify-center">
-              <span className="text-2xl">{saving ? "⏳" : "💾"}</span>
+              <span className="text-2xl">
+                {saving ? "⏳" : hasUnsavedChanges ? "⚠️" : "💾"}
+              </span>
             </div>
             {/* Hover Tooltip */}
             {!saving && (
               <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-xs font-semibold rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
-                Save Resume
+                {hasUnsavedChanges ? "Save Changes*" : "Resume Saved"}
                 <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-1 border-4 border-transparent border-l-gray-900 dark:border-l-gray-700"></span>
               </span>
             )}
@@ -1536,6 +1673,77 @@ const Editor = () => {
                 <p className="text-sm text-green-100">
                   GitHub data added to your resume
                 </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Unsaved Changes Modal */}
+        {showUnsavedModal && (
+          <div className="fixed inset-0 z-50 overflow-y-auto">
+            <div className="flex min-h-screen items-center justify-center p-4">
+              {/* Backdrop */}
+              <div
+                className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+                onClick={handleCancelNavigation}
+              />
+
+              {/* Modal */}
+              <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all">
+                {/* Icon */}
+                <div className="flex items-center justify-center w-12 h-12 mx-auto mb-4 bg-yellow-100 dark:bg-yellow-900 rounded-full">
+                  <svg
+                    className="w-6 h-6 text-yellow-600 dark:text-yellow-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                    />
+                  </svg>
+                </div>
+
+                {/* Content */}
+                <div className="text-center mb-6">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                    Unsaved Changes
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    You have unsaved changes to your resume. What would you like
+                    to do?
+                  </p>
+                </div>
+
+                {/* Actions */}
+                <div className="space-y-3">
+                  <button
+                    onClick={handleSaveAndNavigate}
+                    disabled={saving}
+                    className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {saving ? "Saving..." : "Save Changes"}
+                  </button>
+
+                  <button
+                    onClick={handleDiscardAndNavigate}
+                    disabled={saving}
+                    className="w-full px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Discard Changes
+                  </button>
+
+                  <button
+                    onClick={handleCancelNavigation}
+                    disabled={saving}
+                    className="w-full px-4 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
             </div>
           </div>

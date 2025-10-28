@@ -26,107 +26,110 @@ import AdminLogs from "./pages/admin/AdminLogs";
 import TemplateManagement from "./pages/admin/TemplateManagement";
 import AdminSettings from "./pages/admin/AdminSettings";
 import {DarkModeProvider} from "./context/DarkModeContext";
+import {NavigationBlockerProvider} from "./context/NavigationBlockerContext";
 
 function App() {
   return (
     <DarkModeProvider>
-      <ScrollToTop />
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
-          {/* Protected Routes - Require Authentication */}
-          <Route
-            path="upload"
-            element={
-              <ProtectedRoute>
-                <Upload />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="editor"
-            element={
-              <ProtectedRoute>
-                <Editor />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="templates"
-            element={
-              <ProtectedRoute>
-                <Templates />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="github-import"
-            element={
-              <ProtectedRoute>
-                <GitHubImport />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="ats-analyzer"
-            element={
-              <ProtectedRoute>
-                <ATSAnalyzer />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="contact"
-            element={
-              <ProtectedRoute>
-                <Contact />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="feedback"
-            element={
-              <ProtectedRoute>
-                <Feedback />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-          {/* Public Routes */}
-          <Route path="login" element={<Login />} />
-          <Route path="register" element={<Register />} />
+      <NavigationBlockerProvider>
+        <ScrollToTop />
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+            {/* Protected Routes - Require Authentication */}
+            <Route
+              path="upload"
+              element={
+                <ProtectedRoute>
+                  <Upload />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="editor"
+              element={
+                <ProtectedRoute>
+                  <Editor />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="templates"
+              element={
+                <ProtectedRoute>
+                  <Templates />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="github-import"
+              element={
+                <ProtectedRoute>
+                  <GitHubImport />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="ats-analyzer"
+              element={
+                <ProtectedRoute>
+                  <ATSAnalyzer />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="contact"
+              element={
+                <ProtectedRoute>
+                  <Contact />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="feedback"
+              element={
+                <ProtectedRoute>
+                  <Feedback />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            {/* Public Routes */}
+            <Route path="login" element={<Login />} />
+            <Route path="register" element={<Register />} />
 
-          {/* 404 Not Found - Must be last route in this Route group */}
-          <Route path="*" element={<NotFound />} />
-        </Route>
+            {/* 404 Not Found - Must be last route in this Route group */}
+            <Route path="*" element={<NotFound />} />
+          </Route>
 
-        {/* Admin Routes - Separate Layout */}
-        <Route
-          path="/admin"
-          element={
-            <AdminProtectedRoute>
-              <AdminLayout />
-            </AdminProtectedRoute>
-          }
-        >
-          <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="users" element={<UserManagement />} />
-          <Route path="templates" element={<TemplateManagement />} />
-          <Route path="ai-analytics" element={<AIAnalytics />} />
-          <Route path="ai-quota" element={<AIQuotaManagement />} />
-          <Route path="contacts" element={<ContactMessages />} />
-          <Route path="feedback" element={<AdminFeedback />} />
-          <Route path="logs" element={<AdminLogs />} />
-          <Route path="settings" element={<AdminSettings />} />
-        </Route>
-      </Routes>
+          {/* Admin Routes - Separate Layout */}
+          <Route
+            path="/admin"
+            element={
+              <AdminProtectedRoute>
+                <AdminLayout />
+              </AdminProtectedRoute>
+            }
+          >
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="users" element={<UserManagement />} />
+            <Route path="templates" element={<TemplateManagement />} />
+            <Route path="ai-analytics" element={<AIAnalytics />} />
+            <Route path="ai-quota" element={<AIQuotaManagement />} />
+            <Route path="contacts" element={<ContactMessages />} />
+            <Route path="feedback" element={<AdminFeedback />} />
+            <Route path="logs" element={<AdminLogs />} />
+            <Route path="settings" element={<AdminSettings />} />
+          </Route>
+        </Routes>
+      </NavigationBlockerProvider>
     </DarkModeProvider>
   );
 }

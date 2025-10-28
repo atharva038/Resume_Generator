@@ -1,4 +1,5 @@
 import {Link, useLocation} from "react-router-dom";
+import BlockableLink from "./BlockableLink";
 import {useState} from "react";
 import {
   Home,
@@ -144,7 +145,7 @@ const Sidebar = ({isOpen, setIsOpen}) => {
             <div className="space-y-2">
               {/* Admin Panel Link - Only for Admin Users */}
               {user && user.role === "admin" && (
-                <Link
+                <BlockableLink
                   to="/admin/dashboard"
                   onClick={() => setIsOpen(false)}
                   className={`group flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-300 ease-out relative overflow-hidden ${
@@ -186,7 +187,7 @@ const Sidebar = ({isOpen, setIsOpen}) => {
                       Active
                     </span>
                   )}
-                </Link>
+                </BlockableLink>
               )}
 
               {navLinks.map((link) => {
@@ -228,7 +229,7 @@ const Sidebar = ({isOpen, setIsOpen}) => {
                     </span>
                   </a>
                 ) : (
-                  <Link
+                  <BlockableLink
                     key={link.name}
                     to={link.path}
                     onClick={() => setIsOpen(false)}
@@ -260,7 +261,7 @@ const Sidebar = ({isOpen, setIsOpen}) => {
                     >
                       {link.name}
                     </span>
-                  </Link>
+                  </BlockableLink>
                 );
               })}
             </div>

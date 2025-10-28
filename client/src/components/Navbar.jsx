@@ -1,5 +1,6 @@
 import {Link, useNavigate} from "react-router-dom";
 import {useAuth} from "../context/AuthContext";
+import BlockableLink from "./BlockableLink";
 import DarkModeToggle from "./DarkModeToggle";
 import {useState, useEffect} from "react";
 import {Menu, Sparkles, User, LogOut, LayoutDashboard} from "lucide-react";
@@ -65,13 +66,13 @@ const Navbar = ({toggleSidebar, isSidebarOpen}) => {
 
             {user ? (
               <>
-                <Link
+                <BlockableLink
                   to="/dashboard"
                   className="hidden sm:flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 font-medium"
                 >
                   <LayoutDashboard className="w-4 h-4" />
                   <span className="hidden md:inline">My Resumes</span>
-                </Link>
+                </BlockableLink>
                 <button
                   onClick={handleLogout}
                   className="flex items-center gap-2 px-3 py-2 sm:px-4 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:border-red-500 hover:text-red-500 dark:hover:text-red-400 transition-all duration-200 font-medium"
@@ -82,14 +83,14 @@ const Navbar = ({toggleSidebar, isSidebarOpen}) => {
               </>
             ) : (
               <>
-                <Link
+                <BlockableLink
                   to="/login"
                   className="flex items-center gap-2 px-3 py-2 sm:px-5 sm:py-2.5 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 font-medium"
                 >
                   <User className="w-4 h-4" />
                   <span className="hidden sm:inline">Login</span>
-                </Link>
-                <Link
+                </BlockableLink>
+                <BlockableLink
                   to="/upload"
                   className="group relative px-3 py-2 sm:px-5 sm:py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 overflow-hidden"
                 >
@@ -99,7 +100,7 @@ const Navbar = ({toggleSidebar, isSidebarOpen}) => {
                     <span className="sm:hidden">Build</span>
                   </span>
                   <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                </Link>
+                </BlockableLink>
               </>
             )}
           </div>
