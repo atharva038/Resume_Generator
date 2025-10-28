@@ -186,37 +186,37 @@ export const validateResumeCreate = [
     ])
     .withMessage("Invalid template ID"),
 
-  body("personalInfo")
-    .optional()
-    .isObject()
-    .withMessage("Personal info must be an object"),
-
-  body("personalInfo.name")
+  body("name")
     .optional()
     .trim()
     .isLength({max: 100})
     .withMessage("Name must not exceed 100 characters"),
 
-  body("personalInfo.email")
+  body("contact")
+    .optional()
+    .isObject()
+    .withMessage("Contact must be an object"),
+
+  body("contact.email")
     .optional()
     .trim()
     .isEmail()
     .withMessage("Invalid email format")
     .normalizeEmail(),
 
-  body("personalInfo.phone")
+  body("contact.phone")
     .optional()
     .trim()
     .isLength({max: 20})
     .withMessage("Phone must not exceed 20 characters"),
 
-  body("personalInfo.location")
+  body("contact.location")
     .optional()
     .trim()
     .isLength({max: 200})
     .withMessage("Location must not exceed 200 characters"),
 
-  body("personalInfo.linkedin")
+  body("contact.linkedin")
     .optional()
     .trim()
     .custom((value) => {
@@ -226,7 +226,7 @@ export const validateResumeCreate = [
       return true;
     }),
 
-  body("personalInfo.portfolio")
+  body("contact.portfolio")
     .optional()
     .trim()
     .custom((value) => {
@@ -236,7 +236,7 @@ export const validateResumeCreate = [
       return true;
     }),
 
-  body("personalInfo.github")
+  body("contact.github")
     .optional()
     .trim()
     .custom((value) => {
@@ -322,37 +322,37 @@ export const validateResumeUpdate = [
     ])
     .withMessage("Invalid template ID"),
 
-  body("personalInfo")
-    .optional()
-    .isObject()
-    .withMessage("Personal info must be an object"),
-
-  body("personalInfo.name")
+  body("name")
     .optional()
     .trim()
     .isLength({max: 100})
     .withMessage("Name must not exceed 100 characters"),
 
-  body("personalInfo.email")
+  body("contact")
+    .optional()
+    .isObject()
+    .withMessage("Contact must be an object"),
+
+  body("contact.email")
     .optional()
     .trim()
     .isEmail()
     .withMessage("Invalid email format")
     .normalizeEmail(),
 
-  body("personalInfo.phone")
+  body("contact.phone")
     .optional()
     .trim()
     .isLength({max: 20})
     .withMessage("Phone must not exceed 20 characters"),
 
-  body("personalInfo.location")
+  body("contact.location")
     .optional()
     .trim()
     .isLength({max: 200})
     .withMessage("Location must not exceed 200 characters"),
 
-  body("personalInfo.linkedin")
+  body("contact.linkedin")
     .optional()
     .trim()
     .custom((value) => {
@@ -362,7 +362,7 @@ export const validateResumeUpdate = [
       return true;
     }),
 
-  body("personalInfo.portfolio")
+  body("contact.portfolio")
     .optional()
     .trim()
     .custom((value) => {
@@ -372,7 +372,7 @@ export const validateResumeUpdate = [
       return true;
     }),
 
-  body("personalInfo.github")
+  body("contact.github")
     .optional()
     .trim()
     .custom((value) => {
