@@ -12,6 +12,12 @@ import contactRoutes from "./routes/contact.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import feedbackRoutes from "./routes/feedback.routes.js";
 import {apiLimiter} from "./middleware/rateLimiter.middleware.js";
+import {
+  securityHeaders,
+  additionalSecurityHeaders,
+  corsOptions,
+  securityLogger,
+} from "./middleware/security.middleware.js";
 
 // Load environment variables
 dotenv.config();
@@ -19,16 +25,34 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
-app.use(
-  cors({
-    origin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
-    credentials: true,
-  })
-);
+// ==========================================
+// SECURITY MIDDLEWARE (Applied First)
+// ==========================================
+
+// 1. Security Headers - Helmet.js configuration
+app.use(securityHeaders);
+
+// 2. Additional custom security headers
+app.use(additionalSecurityHeaders);
+
+// 3. CORS - Cross-Origin Resource Sharing
+app.use(cors(corsOptions));
+
+// 4. Security logging (optional - for monitoring)
+if (process.env.NODE_ENV === "development") {
+  app.use(securityLogger);
+}
+
+// ==========================================
+// RATE LIMITING
+// ==========================================
 
 // Apply global rate limiter to all API routes
 app.use("/api/", apiLimiter);
+
+// ==========================================
+// BODY PARSING & DATA SANITIZATION
+// ==========================================
 
 // Body parser with size limits
 app.use(express.json({limit: "10kb"}));
