@@ -1,4 +1,5 @@
 import {Routes, Route} from "react-router-dom";
+import {Toaster} from "react-hot-toast";
 import Layout from "./components/Layout";
 import AdminLayout from "./components/AdminLayout";
 import ScrollToTop from "./components/ScrollToTop";
@@ -33,6 +34,50 @@ function App() {
     <DarkModeProvider>
       <NavigationBlockerProvider>
         <ScrollToTop />
+        {/* Global Toast Notifications */}
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            // Default options
+            duration: 3000,
+            style: {
+              background: "var(--toast-bg, #fff)",
+              color: "var(--toast-text, #333)",
+              padding: "16px",
+              borderRadius: "8px",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+            },
+            // Success
+            success: {
+              style: {
+                background: "#10b981",
+                color: "#fff",
+              },
+              iconTheme: {
+                primary: "#fff",
+                secondary: "#10b981",
+              },
+            },
+            // Error
+            error: {
+              style: {
+                background: "#ef4444",
+                color: "#fff",
+              },
+              iconTheme: {
+                primary: "#fff",
+                secondary: "#ef4444",
+              },
+            },
+            // Loading
+            loading: {
+              style: {
+                background: "#3b82f6",
+                color: "#fff",
+              },
+            },
+          }}
+        />
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />

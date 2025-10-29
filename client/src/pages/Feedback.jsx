@@ -1,4 +1,5 @@
 import {useState, useEffect} from "react";
+import toast from "react-hot-toast";
 import {
   Lightbulb,
   MessageSquare,
@@ -167,9 +168,16 @@ const Feedback = () => {
         await feedbackAPI.deleteFeedback(id);
         fetchMyFeedback();
         fetchStats();
+        toast.success("Feedback deleted successfully!", {
+          icon: "🗑️",
+          duration: 2000,
+        });
       } catch (error) {
         console.error("Error deleting:", error);
-        alert("Failed to delete feedback");
+        toast.error("Failed to delete feedback", {
+          icon: "❌",
+          duration: 3000,
+        });
       }
     }
   };

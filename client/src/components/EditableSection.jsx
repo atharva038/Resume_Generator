@@ -1,6 +1,7 @@
 import {useState} from "react";
 import {useEditor, EditorContent} from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import toast from "react-hot-toast";
 import {resumeAPI} from "../services/api";
 import {parseValidationErrors} from "../utils/errorHandler";
 
@@ -81,9 +82,15 @@ const EditableSection = ({
         );
       }
 
-      alert("Content enhanced successfully!");
+      toast.success("Content enhanced successfully!", {
+        icon: "✨",
+        duration: 2000,
+      });
     } catch (err) {
-      alert("Failed to enhance content: " + parseValidationErrors(err));
+      toast.error("Failed to enhance content: " + parseValidationErrors(err), {
+        icon: "❌",
+        duration: 3000,
+      });
     } finally {
       setEnhancing(false);
     }

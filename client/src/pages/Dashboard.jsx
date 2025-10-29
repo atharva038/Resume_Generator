@@ -1,5 +1,6 @@
 import {useState, useEffect} from "react";
 import {Link, useNavigate} from "react-router-dom";
+import toast from "react-hot-toast";
 import {useAuth} from "../context/AuthContext";
 import {resumeAPI} from "../services/api";
 import {parseValidationErrors} from "../utils/errorHandler";
@@ -52,8 +53,15 @@ const Dashboard = () => {
     try {
       await resumeAPI.delete(id);
       setResumes(resumes.filter((r) => r._id !== id));
+      toast.success("Resume deleted successfully!", {
+        icon: "🗑️",
+        duration: 2000,
+      });
     } catch (err) {
-      alert("Failed to delete resume");
+      toast.error("Failed to delete resume", {
+        icon: "❌",
+        duration: 3000,
+      });
       console.error(err);
     }
   };
@@ -63,7 +71,10 @@ const Dashboard = () => {
       const response = await resumeAPI.getById(id);
       navigate("/editor", {state: {resumeData: response.data}});
     } catch (err) {
-      alert("Failed to load resume");
+      toast.error("Failed to load resume", {
+        icon: "❌",
+        duration: 3000,
+      });
       console.error(err);
     }
   };
@@ -78,7 +89,10 @@ const Dashboard = () => {
 
   const handleSaveInfo = async () => {
     if (!editForm.name.trim()) {
-      alert("Resume title is required");
+      toast.error("Resume title is required", {
+        icon: "📝",
+        duration: 2000,
+      });
       return;
     }
 
@@ -100,8 +114,18 @@ const Dashboard = () => {
       );
       setEditingResume(null);
       setEditForm({name: "", description: ""});
+      toast.success("Resume info updated successfully!", {
+        icon: "✅",
+        duration: 2000,
+      });
     } catch (err) {
-      alert("Failed to update resume info: " + parseValidationErrors(err));
+      toast.error(
+        "Failed to update resume info: " + parseValidationErrors(err),
+        {
+          icon: "❌",
+          duration: 4000,
+        }
+      );
       console.error(err);
     }
   };

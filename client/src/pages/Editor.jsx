@@ -392,7 +392,10 @@ const Editor = () => {
 
   const handleSave = async () => {
     if (!user) {
-      alert("Please login to save your resume");
+      toast.error("Please login to save your resume", {
+        icon: "🔒",
+        duration: 3000,
+      });
       navigate("/login");
       return;
     }
@@ -404,12 +407,18 @@ const Editor = () => {
         // Update existing resume
         const response = await resumeAPI.update(resumeData._id, resumeData);
         savedResume = response.data;
-        alert("Resume updated successfully!");
+        toast.success("Resume updated successfully!", {
+          icon: "✅",
+          duration: 2500,
+        });
       } else {
         // Save new resume
         const response = await resumeAPI.save(resumeData);
         savedResume = response.data;
-        alert("Resume saved successfully!");
+        toast.success("Resume saved successfully!", {
+          icon: "💾",
+          duration: 2500,
+        });
       }
 
       // Update the resumeData with the saved version (includes _id if it's new)
@@ -422,7 +431,10 @@ const Editor = () => {
       }
     } catch (err) {
       console.error("Save error:", err);
-      alert("Failed to save resume: " + parseValidationErrors(err));
+      toast.error("Failed to save resume: " + parseValidationErrors(err), {
+        icon: "❌",
+        duration: 4000,
+      });
     } finally {
       setSaving(false);
     }
@@ -771,8 +783,12 @@ const Editor = () => {
           }
         } catch (err) {
           console.error("❌ Auto-save error:", err);
-          alert(
-            "Failed to auto-save imported data: " + parseValidationErrors(err)
+          toast.error(
+            "Failed to auto-save imported data: " + parseValidationErrors(err),
+            {
+              icon: "❌",
+              duration: 4000,
+            }
           );
         } finally {
           setSaving(false);
@@ -792,7 +808,10 @@ const Editor = () => {
         ...prev,
         sectionOrder: DEFAULT_SECTION_ORDER,
       }));
-      alert("Section order reset to default!");
+      toast.success("Section order reset to default!", {
+        icon: "🔄",
+        duration: 2000,
+      });
     }
   };
 
@@ -894,17 +913,29 @@ const Editor = () => {
       await Promise.all(enhancements);
 
       if (failCount === 0) {
-        alert(
-          `✅ All sections enhanced successfully! (${successCount} sections improved)`
+        toast.success(
+          `All sections enhanced successfully! (${successCount} sections improved)`,
+          {
+            icon: "✨",
+            duration: 3000,
+          }
         );
       } else {
-        alert(
-          `⚠️ Enhancement completed with some issues:\n✓ ${successCount} sections enhanced\n✗ ${failCount} sections failed`
+        toast.warning(
+          `Enhancement completed with some issues: ${successCount} enhanced, ${failCount} failed`,
+          {
+            icon: "⚠️",
+            duration: 4000,
+          }
         );
       }
     } catch (err) {
-      alert(
-        "Enhancement failed: " + (err.response?.data?.error || err.message)
+      toast.error(
+        "Enhancement failed: " + (err.response?.data?.error || err.message),
+        {
+          icon: "❌",
+          duration: 4000,
+        }
       );
     }
   };

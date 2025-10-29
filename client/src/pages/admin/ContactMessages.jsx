@@ -20,6 +20,7 @@ import {
   AlertCircle,
   Loader2,
 } from "lucide-react";
+import toast from "react-hot-toast";
 import {
   getContactMessages,
   getContactStatistics,
@@ -79,9 +80,16 @@ const ContactMessages = () => {
       fetchStats();
       setShowModal(false);
       setSelectedMessage(null);
+      toast.success("Message status updated successfully!", {
+        icon: "✅",
+        duration: 2000,
+      });
     } catch (error) {
       console.error("Error updating status:", error);
-      alert("Failed to update status: " + parseValidationErrors(error));
+      toast.error("Failed to update status: " + parseValidationErrors(error), {
+        icon: "❌",
+        duration: 3000,
+      });
     } finally {
       setUpdating(false);
     }
@@ -94,9 +102,19 @@ const ContactMessages = () => {
         fetchMessages();
         fetchStats();
         setShowModal(false);
+        toast.success("Message deleted successfully!", {
+          icon: "🗑️",
+          duration: 2000,
+        });
       } catch (error) {
         console.error("Error deleting message:", error);
-        alert("Failed to delete message: " + parseValidationErrors(error));
+        toast.error(
+          "Failed to delete message: " + parseValidationErrors(error),
+          {
+            icon: "❌",
+            duration: 3000,
+          }
+        );
       }
     }
   };

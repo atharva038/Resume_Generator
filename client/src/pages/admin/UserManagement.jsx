@@ -1,4 +1,5 @@
 import {useState, useEffect} from "react";
+import toast from "react-hot-toast";
 import {
   Search,
   Filter,
@@ -69,8 +70,23 @@ const UserManagement = () => {
     try {
       await updateUserStatus(userId, newStatus);
       fetchUsers();
+      toast.success(
+        `User ${
+          newStatus === "active" ? "activated" : "deactivated"
+        } successfully!`,
+        {
+          icon: newStatus === "active" ? "✅" : "🚫",
+          duration: 2000,
+        }
+      );
     } catch (err) {
-      alert("Failed to update user status: " + parseValidationErrors(err));
+      toast.error(
+        "Failed to update user status: " + parseValidationErrors(err),
+        {
+          icon: "❌",
+          duration: 4000,
+        }
+      );
     }
   };
 
@@ -85,8 +101,15 @@ const UserManagement = () => {
     try {
       await updateUserRole(userId, newRole);
       fetchUsers();
+      toast.success(`User role changed to ${newRole} successfully!`, {
+        icon: "👤",
+        duration: 2000,
+      });
     } catch (err) {
-      alert("Failed to update user role: " + parseValidationErrors(err));
+      toast.error("Failed to update user role: " + parseValidationErrors(err), {
+        icon: "❌",
+        duration: 4000,
+      });
     }
   };
 
@@ -101,8 +124,15 @@ const UserManagement = () => {
     try {
       await deleteUser(userId);
       fetchUsers();
+      toast.success("User deleted successfully!", {
+        icon: "🗑️",
+        duration: 2000,
+      });
     } catch (err) {
-      alert("Failed to delete user: " + parseValidationErrors(err));
+      toast.error("Failed to delete user: " + parseValidationErrors(err), {
+        icon: "❌",
+        duration: 4000,
+      });
     }
   };
 

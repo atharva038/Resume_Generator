@@ -14,6 +14,7 @@ import {
   Eye,
   MessageCircle,
 } from "lucide-react";
+import toast from "react-hot-toast";
 import {
   getAllFeedback,
   getFeedbackStatistics,
@@ -70,9 +71,16 @@ const AdminFeedback = () => {
       await updateFeedbackStatus(id, {status});
       fetchFeedbacks();
       fetchStatistics();
+      toast.success("Feedback status updated successfully!", {
+        icon: "✅",
+        duration: 2000,
+      });
     } catch (error) {
       console.error("Error updating status:", error);
-      alert("Failed to update status: " + parseValidationErrors(error));
+      toast.error("Failed to update status: " + parseValidationErrors(error), {
+        icon: "❌",
+        duration: 3000,
+      });
     }
   };
 
@@ -90,9 +98,19 @@ const AdminFeedback = () => {
       setStatusUpdate("");
       fetchFeedbacks();
       fetchStatistics();
+      toast.success("Response submitted successfully!", {
+        icon: "💬",
+        duration: 2000,
+      });
     } catch (error) {
       console.error("Error submitting response:", error);
-      alert("Failed to submit response: " + parseValidationErrors(error));
+      toast.error(
+        "Failed to submit response: " + parseValidationErrors(error),
+        {
+          icon: "❌",
+          duration: 3000,
+        }
+      );
     }
   };
 
@@ -102,9 +120,19 @@ const AdminFeedback = () => {
         await deleteFeedbackAdmin(id);
         fetchFeedbacks();
         fetchStatistics();
+        toast.success("Feedback deleted successfully!", {
+          icon: "🗑️",
+          duration: 2000,
+        });
       } catch (error) {
         console.error("Error deleting feedback:", error);
-        alert("Failed to delete feedback: " + parseValidationErrors(error));
+        toast.error(
+          "Failed to delete feedback: " + parseValidationErrors(error),
+          {
+            icon: "❌",
+            duration: 3000,
+          }
+        );
       }
     }
   };

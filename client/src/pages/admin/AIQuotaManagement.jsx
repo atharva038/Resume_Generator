@@ -1,4 +1,5 @@
 import {useState, useEffect} from "react";
+import toast from "react-hot-toast";
 import {
   Users,
   TrendingUp,
@@ -58,10 +59,16 @@ const AIQuotaManagement = () => {
 
     try {
       await resetUserDailyQuota(userId);
-      alert("Daily quota reset successfully!");
+      toast.success(`Daily quota reset successfully for ${userName}!`, {
+        icon: "🔄",
+        duration: 2500,
+      });
       fetchQuotaStatus();
     } catch (err) {
-      alert(err.response?.data?.error || "Failed to reset quota");
+      toast.error(err.response?.data?.error || "Failed to reset quota", {
+        icon: "❌",
+        duration: 3000,
+      });
     }
   };
 
@@ -71,7 +78,10 @@ const AIQuotaManagement = () => {
       setSelectedUser(response.data);
       setShowUserDetails(true);
     } catch (err) {
-      alert(err.response?.data?.error || "Failed to load user details");
+      toast.error(err.response?.data?.error || "Failed to load user details", {
+        icon: "❌",
+        duration: 3000,
+      });
     }
   };
 

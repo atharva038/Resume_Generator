@@ -1,4 +1,5 @@
 import {useState, useEffect} from "react";
+import toast from "react-hot-toast";
 import {
   Upload,
   FileText,
@@ -49,18 +50,27 @@ const ATSAnalyzer = () => {
       setUploadedFile(file);
       setSelectedResume(null);
     } else {
-      alert("Please upload a PDF or DOCX file");
+      toast.error("Please upload a PDF or DOCX file", {
+        icon: "📄",
+        duration: 3000,
+      });
     }
   };
 
   const handleAnalyze = async () => {
     if (!jobDescription.trim()) {
-      alert("Please enter a job description");
+      toast.error("Please enter a job description", {
+        icon: "📝",
+        duration: 3000,
+      });
       return;
     }
 
     if (!selectedResume && !uploadedFile) {
-      alert("Please select a resume or upload a file");
+      toast.error("Please select a resume or upload a file", {
+        icon: "📁",
+        duration: 3000,
+      });
       return;
     }
 
@@ -79,9 +89,17 @@ const ATSAnalyzer = () => {
 
       const response = await resumeAPI.analyzeResume(formData);
       setAnalysisResult(response.data);
+      toast.success("Analysis completed successfully!", {
+        icon: "✅",
+        duration: 2000,
+      });
     } catch (error) {
-      alert(
-        "Analysis failed: " + (error.response?.data?.error || error.message)
+      toast.error(
+        "Analysis failed: " + (error.response?.data?.error || error.message),
+        {
+          icon: "❌",
+          duration: 4000,
+        }
       );
     } finally {
       setAnalyzing(false);
