@@ -87,6 +87,15 @@ export const SkillsSection = ({resumeData, updateField}) => {
     }
   }, [resumeData.skills, initialized]);
 
+  // Handle textarea input with no restrictions
+  const handleSkillsInputChange = (e) => {
+    const value = e.target.value;
+    // Allow all characters including commas, periods, etc.
+    setSkillsInput(value);
+    // Clear any error
+    if (error) setError("");
+  };
+
   // Handle AI categorization
   const handleCategorize = async () => {
     if (!skillsInput.trim()) {
@@ -153,16 +162,24 @@ export const SkillsSection = ({resumeData, updateField}) => {
             </label>
             <textarea
               value={skillsInput}
-              onChange={(e) => setSkillsInput(e.target.value)}
+              onChange={handleSkillsInputChange}
               placeholder="e.g., JavaScript, React, Node.js, Python, Docker, AWS, MongoDB, Git, Problem Solving, Team Leadership"
               className="input-field min-h-[120px] resize-y"
               rows={5}
               autoComplete="off"
+              spellCheck="false"
             />
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
               💡 Tip: Just list all your skills and AI will automatically
               organize them into categories
             </p>
+            {skillsInput && (
+              <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                {skillsInput.length} characters |{" "}
+                {skillsInput.split(/[,\n]/).filter((s) => s.trim()).length}{" "}
+                skills detected
+              </p>
+            )}
           </div>
 
           {/* Categorize button */}
@@ -245,20 +262,31 @@ export const SkillsSection = ({resumeData, updateField}) => {
                     value={
                       Array.isArray(skillGroup.items)
                         ? skillGroup.items.join(", ")
-                        : skillGroup.items || ""
+                        : typeof skillGroup.items === "string"
+                        ? skillGroup.items
+                        : ""
                     }
                     onChange={(e) => {
+                      // Allow free-form editing, store as string temporarily
                       const value = e.target.value;
-                      const itemsArray = value
-                        .split(",")
-                        .map((s) => s.trim())
-                        .filter(Boolean);
-                      updateSkillCategory(index, "items", itemsArray);
+                      updateSkillCategory(index, "items", value);
+                    }}
+                    onBlur={(e) => {
+                      // Convert to array when user finishes editing
+                      const value = e.target.value;
+                      if (typeof value === "string") {
+                        const itemsArray = value
+                          .split(",")
+                          .map((s) => s.trim())
+                          .filter(Boolean);
+                        updateSkillCategory(index, "items", itemsArray);
+                      }
                     }}
                     placeholder="Skills (comma-separated)"
                     className="input-field min-h-[60px] resize-y"
                     rows={2}
                     autoComplete="off"
+                    spellCheck="false"
                   />
                 </div>
               ))}

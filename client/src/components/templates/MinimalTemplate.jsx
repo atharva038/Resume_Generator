@@ -1,6 +1,17 @@
 import {forwardRef} from "react";
 
 const MinimalTemplate = forwardRef(({resumeData}, ref) => {
+  // Helper function to safely format skills (handles both array and string)
+  const formatSkills = (items) => {
+    if (Array.isArray(items)) {
+      return items.join(" • ");
+    }
+    if (typeof items === "string") {
+      return items;
+    }
+    return "";
+  };
+
   // Default section order if not specified
   const DEFAULT_SECTION_ORDER = [
     "summary",
@@ -221,7 +232,7 @@ const MinimalTemplate = forwardRef(({resumeData}, ref) => {
           {resumeData.skills.map((skillGroup, index) => (
             <div key={index} style={{fontSize: "10pt", marginBottom: "5px"}}>
               <span className="font-semibold">{skillGroup.category}:</span>{" "}
-              {skillGroup.items?.join(" • ")}
+              {formatSkills(skillGroup.items)}
             </div>
           ))}
         </section>

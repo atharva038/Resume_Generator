@@ -1,6 +1,17 @@
 import {forwardRef} from "react";
 
 const ExecutiveTemplate = forwardRef(({resumeData}, ref) => {
+  // Helper function to safely format skills (handles both array and string)
+  const formatSkills = (items) => {
+    if (Array.isArray(items)) {
+      return items.join(", ");
+    }
+    if (typeof items === "string") {
+      return items;
+    }
+    return "";
+  };
+
   // Default section order optimized for executives
   const DEFAULT_SECTION_ORDER = [
     "summary",
@@ -205,7 +216,7 @@ const ExecutiveTemplate = forwardRef(({resumeData}, ref) => {
                   {skillGroup.category}:
                 </span>{" "}
                 <span style={{color: "#333"}}>
-                  {skillGroup.items?.join(", ")}
+                  {formatSkills(skillGroup.items)}
                 </span>
               </div>
             ))}

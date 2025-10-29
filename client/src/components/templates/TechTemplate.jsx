@@ -1,6 +1,17 @@
 import {forwardRef} from "react";
 
 const TechTemplate = forwardRef(({resumeData}, ref) => {
+  // Helper function to safely format skills (handles both array and string)
+  const formatSkills = (items) => {
+    if (Array.isArray(items)) {
+      return items.join(" • ");
+    }
+    if (typeof items === "string") {
+      return items;
+    }
+    return "";
+  };
+
   // Default section order optimized for tech roles
   const DEFAULT_SECTION_ORDER = [
     "skills",
@@ -68,7 +79,7 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
                     lineHeight: "1.4",
                   }}
                 >
-                  {skillGroup.items?.join(" • ")}
+                  {formatSkills(skillGroup.items)}
                 </div>
               </div>
             ))}

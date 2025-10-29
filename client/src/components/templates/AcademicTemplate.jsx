@@ -1,7 +1,18 @@
 import {forwardRef} from "react";
 
 const AcademicTemplate = forwardRef(({resumeData}, ref) => {
-  // Default section order optimized for academic CVs
+  // Helper function to safely format skills (handles both array and string)
+  const formatSkills = (items) => {
+    if (Array.isArray(items)) {
+      return items.join(", ");
+    }
+    if (typeof items === "string") {
+      return items;
+    }
+    return "";
+  };
+
+  // Default section order optimized for academic/research roles
   const DEFAULT_SECTION_ORDER = [
     "education",
     "experience",
@@ -418,7 +429,7 @@ const AcademicTemplate = forwardRef(({resumeData}, ref) => {
               style={{fontSize: "9.5pt", marginBottom: "4px", color: "#2d3748"}}
             >
               <span style={{fontWeight: "bold"}}>{skillGroup.category}:</span>{" "}
-              {skillGroup.items?.join(", ")}
+              {formatSkills(skillGroup.items)}
             </div>
           ))}
         </section>
