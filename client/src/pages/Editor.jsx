@@ -4,6 +4,7 @@ import {useAuth} from "../context/AuthContext";
 import {useNavigationBlocker} from "../context/NavigationBlockerContext";
 import {resumeAPI} from "../services/api";
 import {parseValidationErrors} from "../utils/errorHandler";
+import toast, {Toaster} from "react-hot-toast";
 import ResumePreview from "../components/ResumePreview";
 import EditableSection from "../components/EditableSection";
 import ScoreCard from "../components/ScoreCard";
@@ -124,6 +125,7 @@ const Editor = () => {
   const [showUnsavedModal, setShowUnsavedModal] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [autoSaving, setAutoSaving] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState(() => {
     // Load template from localStorage (set by Templates page) or default to "classic"
@@ -179,6 +181,66 @@ const Editor = () => {
       JSON.stringify(resumeData) !== JSON.stringify(originalResumeData);
     setHasUnsavedChanges(hasChanges);
   }, [resumeData, originalResumeData]);
+
+  // Auto-save functionality
+  useEffect(() => {
+    // Don't auto-save if:
+    // - No unsaved changes
+    // - No resume ID (new resume not saved yet)
+    // - Currently saving manually
+    // - Already auto-saving
+    if (
+      !hasUnsavedChanges ||
+      !resumeData?._id ||
+      saving ||
+      autoSaving ||
+      !user
+    ) {
+      return;
+    }
+
+    // Set up auto-save timer (30 seconds after last change)
+    const autoSaveTimer = setTimeout(async () => {
+      console.log("🔄 Auto-saving resume...");
+      setAutoSaving(true);
+
+      try {
+        const response = await resumeAPI.update(resumeData._id, resumeData);
+        const savedResume = response.data;
+
+        // Update state with saved data
+        setResumeData(savedResume);
+        setOriginalResumeData(JSON.parse(JSON.stringify(savedResume)));
+        setHasUnsavedChanges(false);
+
+        // Show success toast
+        toast.success("Auto-saved ✓", {
+          duration: 2000,
+          position: "bottom-right",
+          style: {
+            background: "#10b981",
+            color: "#fff",
+            fontSize: "14px",
+            fontWeight: "500",
+          },
+          icon: "💾",
+        });
+
+        console.log("✅ Auto-save successful");
+      } catch (error) {
+        console.error("❌ Auto-save failed:", error);
+        // Don't show error toast for auto-save failures to avoid annoying users
+        // They can still manually save if needed
+      } finally {
+        setAutoSaving(false);
+      }
+    }, 30000); // 30 seconds
+
+    // Cleanup timer on unmount or when dependencies change
+    return () => {
+      clearTimeout(autoSaveTimer);
+    };
+  }, [hasUnsavedChanges, resumeData, saving, autoSaving, user]);
 
   // Warn before leaving page with unsaved changes
   useEffect(() => {
@@ -1243,22 +1305,28 @@ const Editor = () => {
             {/* Save Button - Mobile */}
             <button
               onClick={handleSave}
-              disabled={saving}
+              disabled={saving || autoSaving}
               className={`flex-1 px-4 py-2.5 rounded-lg font-medium transition-all duration-300 text-sm relative ${
-                saving
+                saving || autoSaving
                   ? "bg-gray-300 dark:bg-gray-700 cursor-not-allowed text-gray-500"
                   : hasUnsavedChanges
                   ? "bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 text-white"
                   : "bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 text-white"
               }`}
             >
-              {hasUnsavedChanges && !saving && (
+              {hasUnsavedChanges && !saving && !autoSaving && (
                 <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white dark:border-gray-800 animate-pulse"></span>
               )}
               <span className="text-lg mr-2">
-                {saving ? "⏳" : hasUnsavedChanges ? "⚠️" : "💾"}
+                {saving || autoSaving ? "⏳" : hasUnsavedChanges ? "⚠️" : "💾"}
               </span>
-              {saving ? "Saving..." : hasUnsavedChanges ? "Save*" : "Saved"}
+              {saving
+                ? "Saving..."
+                : autoSaving
+                ? "Auto-saving..."
+                : hasUnsavedChanges
+                ? "Save*"
+                : "Saved"}
             </button>
           </div>
         </div>
@@ -1321,27 +1389,33 @@ const Editor = () => {
           {/* Save Button */}
           <button
             onClick={handleSave}
-            disabled={saving}
+            disabled={saving || autoSaving}
             className={`group relative w-14 h-14 rounded-full shadow-2xl font-medium transition-all duration-300 ${
-              saving
+              saving || autoSaving
                 ? "bg-gradient-to-br from-gray-300 to-gray-400 cursor-not-allowed"
                 : hasUnsavedChanges
                 ? "bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 text-white hover:from-orange-500 hover:via-orange-600 hover:to-orange-700 hover:scale-110 hover:shadow-3xl hover:-rotate-12"
                 : "bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 text-white hover:from-blue-500 hover:via-blue-600 hover:to-blue-700 hover:scale-110 hover:shadow-3xl hover:-rotate-12"
             }`}
           >
-            {hasUnsavedChanges && !saving && (
+            {hasUnsavedChanges && !saving && !autoSaving && (
               <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white dark:border-gray-800 animate-pulse"></span>
             )}
             <div className="flex items-center justify-center">
               <span className="text-2xl">
-                {saving ? "⏳" : hasUnsavedChanges ? "⚠️" : "💾"}
+                {saving || autoSaving ? "⏳" : hasUnsavedChanges ? "⚠️" : "💾"}
               </span>
             </div>
             {/* Hover Tooltip */}
-            {!saving && (
+            {!saving && !autoSaving && (
               <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-xs font-semibold rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
                 {hasUnsavedChanges ? "Save Changes*" : "Resume Saved"}
+                <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-1 border-4 border-transparent border-l-gray-900 dark:border-l-gray-700"></span>
+              </span>
+            )}
+            {(saving || autoSaving) && (
+              <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-xs font-semibold rounded-lg shadow-xl opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+                {autoSaving ? "Auto-saving..." : "Saving..."}
                 <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-1 border-4 border-transparent border-l-gray-900 dark:border-l-gray-700"></span>
               </span>
             )}
@@ -1749,6 +1823,9 @@ const Editor = () => {
           </div>
         )}
       </div>
+
+      {/* Toast Notifications */}
+      <Toaster position="bottom-right" />
     </div>
   );
 };

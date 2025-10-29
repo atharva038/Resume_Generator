@@ -520,21 +520,13 @@ export const validateContentEnhance = [
  */
 export const validateSkillsCategorize = [
   body("skills")
-    .isArray({min: 1})
-    .withMessage("Skills must be a non-empty array"),
-
-  body("skills.*")
     .trim()
     .notEmpty()
-    .withMessage("Each skill must be a non-empty string")
-    .isLength({max: 100})
-    .withMessage("Each skill must not exceed 100 characters"),
-
-  body("jobTitle")
-    .optional()
-    .trim()
-    .isLength({max: 200})
-    .withMessage("Job title must not exceed 200 characters"),
+    .withMessage("Skills text is required")
+    .isString()
+    .withMessage("Skills must be a string")
+    .isLength({min: 1, max: 5000})
+    .withMessage("Skills text must be between 1 and 5000 characters"),
 
   handleValidationErrors,
 ];
