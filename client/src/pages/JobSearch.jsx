@@ -11,6 +11,8 @@ import {
   Loader2,
   AlertCircle,
   TrendingUp,
+  X,
+  Eye,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -34,6 +36,9 @@ const JobSearch = () => {
   const [categories, setCategories] = useState([]);
   const [topCompanies, setTopCompanies] = useState([]);
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [expandedJobs, setExpandedJobs] = useState({}); // Track which job descriptions are expanded
+  const [selectedJob, setSelectedJob] = useState(null); // Track selected job for modal
+  const [showJobModal, setShowJobModal] = useState(false); // Modal visibility
 
   // Backend API URL
   const API_BASE_URL =
@@ -455,6 +460,28 @@ const JobSearch = () => {
     return date.toLocaleDateString();
   };
 
+  // Toggle job description expansion
+  const toggleJobDescription = (jobId) => {
+    setExpandedJobs((prev) => ({
+      ...prev,
+      [jobId]: !prev[jobId],
+    }));
+  };
+
+  // Open job details modal
+  const openJobModal = (job) => {
+    setSelectedJob(job);
+    setShowJobModal(true);
+    document.body.style.overflow = "hidden"; // Prevent background scrolling
+  };
+
+  // Close job details modal
+  const closeJobModal = () => {
+    setShowJobModal(false);
+    setSelectedJob(null);
+    document.body.style.overflow = "unset"; // Re-enable scrolling
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <div className="container mx-auto px-4 py-8">
@@ -739,12 +766,60 @@ const JobSearch = () => {
                         </div>
 
                         {/* Description */}
-                        <p className="text-gray-700 dark:text-gray-300 mb-4 line-clamp-3">
-                          {job.description
-                            ?.replace(/<[^>]*>/g, "")
-                            .substring(0, 200)}
-                          ...
-                        </p>
+                        <div className="mb-4">
+                          <p
+                            className={`text-gray-700 dark:text-gray-300 ${
+                              expandedJobs[job.id] ? "" : "line-clamp-3"
+                            }`}
+                          >
+                            {job.description?.replace(/<[^>]*>/g, "") ||
+                              "No description available"}
+                          </p>
+                          {job.description &&
+                            job.description.replace(/<[^>]*>/g, "").length >
+                              200 && (
+                              <button
+                                onClick={() => toggleJobDescription(job.id)}
+                                className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium mt-2 flex items-center gap-1"
+                              >
+                                {expandedJobs[job.id] ? (
+                                  <>
+                                    Show Less
+                                    <svg
+                                      className="w-4 h-4"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M5 15l7-7 7 7"
+                                      />
+                                    </svg>
+                                  </>
+                                ) : (
+                                  <>
+                                    Show More
+                                    <svg
+                                      className="w-4 h-4"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M19 9l-7 7-7-7"
+                                      />
+                                    </svg>
+                                  </>
+                                )}
+                              </button>
+                            )}
+                        </div>
 
                         {/* Tags */}
                         <div className="flex flex-wrap gap-2 mb-3">
@@ -812,16 +887,28 @@ const JobSearch = () => {
                           {formatDate(job.created)}
                         </div>
 
-                        {/* Apply Button */}
-                        <a
-                          href={job.redirect_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-200 flex items-center"
-                        >
-                          Apply Now
-                          <ExternalLink className="w-4 h-4 ml-2" />
-                        </a>
+                        {/* Buttons */}
+                        <div className="flex flex-col gap-2 w-full">
+                          {/* View Details Button */}
+                          <button
+                            onClick={() => openJobModal(job)}
+                            className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-200 flex items-center justify-center"
+                          >
+                            <Eye className="w-4 h-4 mr-2" />
+                            View Details
+                          </button>
+
+                          {/* Apply Button */}
+                          <a
+                            href={job.redirect_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-200 flex items-center justify-center"
+                          >
+                            Apply Now
+                            <ExternalLink className="w-4 h-4 ml-2" />
+                          </a>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -913,6 +1000,190 @@ const JobSearch = () => {
             . Job listings are updated in real-time from thousands of sources.
           </p>
         </div>
+
+        {/* Job Details Modal */}
+        {showJobModal && selectedJob && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60 backdrop-blur-sm"
+            onClick={closeJobModal}
+          >
+            <div
+              className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[92vh] overflow-hidden flex flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal Header - Fixed */}
+              <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 flex justify-between items-start flex-shrink-0">
+                <div className="flex-1 pr-4">
+                  <h2 className="text-2xl font-bold mb-2">
+                    {selectedJob.title}
+                  </h2>
+                  <div className="flex items-center gap-4 text-sm flex-wrap">
+                    <div className="flex items-center gap-1">
+                      <Building2 className="w-4 h-4" />
+                      <span>
+                        {selectedJob.company?.display_name ||
+                          "Company not specified"}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <MapPin className="w-4 h-4" />
+                      <span>
+                        {selectedJob.location?.display_name ||
+                          "Location not specified"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <button
+                  onClick={closeJobModal}
+                  className="text-white hover:bg-white/20 rounded-full p-2 transition-all"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              {/* Modal Content - Scrollable */}
+              <div className="p-6 space-y-6 overflow-y-auto flex-1">
+                {/* Salary & Date */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
+                    <div className="flex items-center gap-2 text-green-600 dark:text-green-400 mb-1">
+                      <DollarSign className="w-5 h-5" />
+                      <span className="font-semibold">Salary</span>
+                    </div>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white">
+                      {formatSalary(
+                        selectedJob.salary_min,
+                        selectedJob.salary_max
+                      )}
+                    </p>
+                  </div>
+                  <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+                    <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 mb-1">
+                      <Calendar className="w-5 h-5" />
+                      <span className="font-semibold">Posted</span>
+                    </div>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white">
+                      {formatDate(selectedJob.created)}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Job Tags */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+                    Job Type
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {(() => {
+                      const jobType = getJobTypeFromJob(selectedJob);
+                      return (
+                        <span
+                          className={`px-4 py-2 ${
+                            jobType.color
+                          } text-sm font-semibold rounded-full flex items-center gap-2 ring-2 ring-offset-1 ${
+                            jobType.label === "Internship"
+                              ? "ring-yellow-400 dark:ring-yellow-600"
+                              : "ring-indigo-400 dark:ring-indigo-600"
+                          }`}
+                        >
+                          <span className="text-xl">{jobType.icon}</span>
+                          <span>{jobType.label}</span>
+                        </span>
+                      );
+                    })()}
+                    {(() => {
+                      const workType = getWorkTypeFromJob(selectedJob);
+                      return (
+                        <span
+                          className={`px-4 py-2 ${workType.color} text-sm font-medium rounded-full flex items-center gap-2`}
+                        >
+                          <span className="text-xl">{workType.icon}</span>
+                          <span>{workType.label}</span>
+                        </span>
+                      );
+                    })()}
+                    {selectedJob.category?.label && (
+                      <span className="px-4 py-2 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 text-sm font-medium rounded-full">
+                        {selectedJob.category.label}
+                      </span>
+                    )}
+                    {selectedJob.contract_time && (
+                      <span className="px-4 py-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-sm font-medium rounded-full">
+                        {selectedJob.contract_time}
+                      </span>
+                    )}
+                    {selectedJob.contract_type && (
+                      <span className="px-4 py-2 bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 text-sm font-medium rounded-full">
+                        {selectedJob.contract_type}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Full Description */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+                    Job Description Preview
+                  </h3>
+                  <div
+                    className="text-gray-700 dark:text-gray-300 leading-relaxed bg-gray-50 dark:bg-gray-900/50 rounded-lg p-6 border-2 border-gray-200 dark:border-gray-700"
+                    style={{
+                      wordBreak: "break-word",
+                      overflowWrap: "break-word",
+                    }}
+                  >
+                    {selectedJob.description ? (
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: selectedJob.description,
+                        }}
+                        style={{
+                          fontSize: "15px",
+                          lineHeight: "1.7",
+                        }}
+                      />
+                    ) : (
+                      <p className="text-gray-500 dark:text-gray-400 italic">
+                        No description available
+                      </p>
+                    )}
+                  </div>
+                  <div className="mt-3 p-4 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 rounded">
+                    <p className="text-sm text-blue-800 dark:text-blue-300 flex items-center gap-2">
+                      <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                      <span>
+                        <strong>Note:</strong> This is a preview. Click "Apply
+                        Now on Adzuna" below to see the complete job
+                        description, requirements, and application details on
+                        the official job posting page.
+                      </span>
+                    </p>
+                  </div>
+                </div>
+
+                {/* Apply Button */}
+                <div className="space-y-3">
+                  <a
+                    href={selectedJob.redirect_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-4 px-6 rounded-lg transition-all duration-200 flex items-center justify-center text-lg shadow-lg hover:shadow-xl"
+                  >
+                    <ExternalLink className="w-6 h-6 mr-3" />
+                    View Complete Job Details & Apply on Adzuna
+                  </a>
+                  <button
+                    onClick={closeJobModal}
+                    className="w-full px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-all"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
