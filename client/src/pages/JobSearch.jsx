@@ -20,17 +20,49 @@ const JobSearch = () => {
   const [searchParams, setSearchParams] = useState({
     query: "software developer",
     location: "in", // Default to India
+    city: "", // Specific city
+    category: "", // Job category
     workType: "all", // all, remote, onsite, hybrid
+    jobType: "all", // all, jobs, internships
     page: 1,
   });
   const [stats, setStats] = useState(null);
   const [activeTab, setActiveTab] = useState("all");
+  const [activeJobType, setActiveJobType] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages] = useState(10); // Load 10 pages of results
+  const [totalPages] = useState(3); // Load 3 pages to avoid rate limiting
+  const [categories, setCategories] = useState([]);
+  const [topCompanies, setTopCompanies] = useState([]);
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   // Backend API URL
   const API_BASE_URL =
     import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
+  // Major cities in India
+  const indianCities = [
+    {value: "", label: "All Cities"},
+    {value: "Mumbai", label: "Mumbai"},
+    {value: "Delhi", label: "Delhi"},
+    {value: "Bangalore", label: "Bangalore"},
+    {value: "Hyderabad", label: "Hyderabad"},
+    {value: "Chennai", label: "Chennai"},
+    {value: "Kolkata", label: "Kolkata"},
+    {value: "Pune", label: "Pune"},
+    {value: "Ahmedabad", label: "Ahmedabad"},
+    {value: "Jaipur", label: "Jaipur"},
+    {value: "Surat", label: "Surat"},
+    {value: "Lucknow", label: "Lucknow"},
+    {value: "Kanpur", label: "Kanpur"},
+    {value: "Nagpur", label: "Nagpur"},
+    {value: "Indore", label: "Indore"},
+    {value: "Thane", label: "Thane"},
+    {value: "Bhopal", label: "Bhopal"},
+    {value: "Visakhapatnam", label: "Visakhapatnam"},
+    {value: "Vadodara", label: "Vadodara"},
+    {value: "Gurgaon", label: "Gurgaon"},
+    {value: "Noida", label: "Noida"},
+  ];
 
   // Work type options
   const workTypes = [
@@ -40,51 +72,87 @@ const JobSearch = () => {
     {value: "hybrid", label: "Hybrid", icon: "🔄"},
   ];
 
-  const searchJobs = async () => {
-    if (!searchParams.query.trim()) {
-      toast.error("Please enter a job title or keyword", {
-        icon: "🔍",
-        duration: 2500,
-      });
-      return;
+  // Job type options
+  const jobTypes = [
+    {value: "all", label: "All Opportunities", icon: "🌟"},
+    {value: "jobs", label: "Jobs", icon: "💼"},
+    {value: "internships", label: "Internships", icon: "🎓"},
+  ];
+
+  // Helper function to modify search query based on job type
+  const modifyQueryForJobType = (query, jobType) => {
+    let searchQuery = query.trim() || "jobs";
+
+    if (jobType === "internships") {
+      // Add "internship" to the search query for better API results
+      searchQuery = searchQuery.includes("intern")
+        ? searchQuery
+        : `${searchQuery} internship`;
+    } else if (jobType === "jobs") {
+      // Remove internship keywords for regular jobs
+      searchQuery =
+        searchQuery.replace(/\b(intern|internship|trainee)\b/gi, "").trim() ||
+        "jobs";
     }
 
+    return searchQuery;
+  };
+
+  const searchJobs = async () => {
     setLoading(true);
     setCurrentPage(1); // Reset to page 1 when searching
 
     try {
-      // Load 10 pages of results
+      // Modify query based on job type using helper function
+      const searchQuery = modifyQueryForJobType(
+        searchParams.query,
+        searchParams.jobType
+      );
+
+      // Load pages sequentially with delay to avoid rate limiting
       const allJobs = [];
-      const promises = [];
+      let meanSalary = 0;
 
       for (let page = 1; page <= totalPages; page++) {
-        const url = `${API_BASE_URL}/jobs/adzuna?query=${encodeURIComponent(
-          searchParams.query
+        let url = `${API_BASE_URL}/jobs/adzuna?query=${encodeURIComponent(
+          searchQuery
         )}&country=${searchParams.location}&page=${page}`;
 
-        promises.push(
-          fetch(url)
-            .then((res) => res.json())
-            .then((data) => ({
-              page,
-              results: data.results || [],
-              mean: data.mean,
-            }))
-        );
+        // Add city filter if selected
+        if (searchParams.city) {
+          url += `&city=${encodeURIComponent(searchParams.city)}`;
+        }
+
+        // Add category filter if selected
+        if (searchParams.category) {
+          url += `&category=${encodeURIComponent(searchParams.category)}`;
+        }
+
+        try {
+          const response = await fetch(url);
+          const data = await response.json();
+
+          if (data.results) {
+            allJobs.push(...data.results);
+          }
+
+          if (page === 1) {
+            meanSalary = data.mean || 0;
+          }
+
+          // Add small delay between requests to avoid rate limiting
+          if (page < totalPages) {
+            await new Promise((resolve) => setTimeout(resolve, 300));
+          }
+        } catch (error) {
+          console.error(`Error fetching page ${page}:`, error);
+          // Continue with other pages even if one fails
+        }
       }
 
-      const results = await Promise.all(promises);
-
-      // Combine all results
-      results.forEach((result) => {
-        allJobs.push(...result.results);
-      });
-
-      // Use the mean from first page for stats
-      const meanSalary = results[0]?.mean || 0;
-
-      // Filter jobs based on work type
+      // Filter jobs based on work type only (job type filtering is now done at API level)
       let filteredJobs = allJobs;
+
       if (searchParams.workType !== "all") {
         filteredJobs = filteredJobs.filter((job) => {
           const title = job.title?.toLowerCase() || "";
@@ -122,7 +190,10 @@ const JobSearch = () => {
           duration: 3000,
         });
       } else {
-        toast.success(`Found ${filteredJobs.length} jobs in India!`, {
+        const message = searchParams.query.trim()
+          ? `Found ${filteredJobs.length} jobs in India!`
+          : `Showing ${filteredJobs.length} available jobs in India!`;
+        toast.success(message, {
           icon: "✨",
           duration: 2000,
         });
@@ -141,14 +212,163 @@ const JobSearch = () => {
     }
   };
 
+  // Fetch job categories
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/jobs/categories?country=${searchParams.location}`
+      );
+      const data = await response.json();
+      if (data.results) {
+        setCategories(data.results);
+      }
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
+  // Fetch top companies
+  const fetchTopCompanies = async () => {
+    try {
+      // Modify query based on job type using helper function
+      const searchQuery = modifyQueryForJobType(
+        searchParams.query,
+        searchParams.jobType
+      );
+
+      const response = await fetch(
+        `${API_BASE_URL}/jobs/top-companies?query=${encodeURIComponent(
+          searchQuery
+        )}&country=${searchParams.location}`
+      );
+      const data = await response.json();
+      if (data.leaderboard) {
+        setTopCompanies(data.leaderboard.slice(0, 10)); // Top 10 companies
+      }
+    } catch (error) {
+      console.error("Error fetching top companies:", error);
+    }
+  };
+
   useEffect(() => {
-    searchJobs();
-  }, [searchParams.workType]); // Re-fetch when work type changes
+    fetchCategories();
+  }, []); // Fetch categories once on mount
+
+  // No auto-search on filter changes - user must click Search button
+  // This prevents repetitive API calls when switching tabs/filters
 
   const handleSearch = (e) => {
     e.preventDefault();
     setSearchParams({...searchParams, page: 1});
     searchJobs();
+    fetchTopCompanies(); // Fetch top companies when searching
+  };
+
+  // Handle company click to search jobs from that company
+  const handleCompanyClick = async (companyName) => {
+    // Update search params
+    const newParams = {
+      ...searchParams,
+      query: companyName,
+      page: 1,
+    };
+    setSearchParams(newParams);
+
+    // Immediately trigger search with new company name
+    setLoading(true);
+    setCurrentPage(1);
+
+    try {
+      let allJobs = [];
+      let meanSalary = 0;
+      const pagesToFetch = 3;
+
+      // Modify company search query based on job type using helper function
+      const companySearchQuery = modifyQueryForJobType(
+        companyName,
+        newParams.jobType
+      );
+
+      for (let i = 1; i <= pagesToFetch; i++) {
+        let url = `${API_BASE_URL}/jobs/adzuna?query=${encodeURIComponent(
+          companySearchQuery
+        )}&country=${newParams.location}&page=${i}`;
+
+        if (newParams.city) {
+          url += `&city=${encodeURIComponent(newParams.city)}`;
+        }
+        if (newParams.category) {
+          url += `&category=${encodeURIComponent(newParams.category)}`;
+        }
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.results && data.results.length > 0) {
+          allJobs = [...allJobs, ...data.results];
+        }
+
+        if (i === 1 && data.mean) {
+          meanSalary = data.mean;
+        }
+
+        // Add delay between requests to avoid rate limiting
+        if (i < pagesToFetch) {
+          await new Promise((resolve) => setTimeout(resolve, 300));
+        }
+      }
+
+      // Apply filters (work type only - job type filtering done at API level)
+      let filteredJobs = allJobs;
+
+      if (newParams.workType !== "all") {
+        filteredJobs = filteredJobs.filter((job) => {
+          const title = job.title?.toLowerCase() || "";
+          const description = job.description?.toLowerCase() || "";
+          const combined = title + " " + description;
+
+          if (newParams.workType === "remote") {
+            return (
+              combined.includes("remote") ||
+              combined.includes("work from home") ||
+              combined.includes("wfh")
+            );
+          } else if (newParams.workType === "onsite") {
+            return (
+              !combined.includes("remote") &&
+              !combined.includes("work from home") &&
+              !combined.includes("hybrid")
+            );
+          } else if (newParams.workType === "hybrid") {
+            return combined.includes("hybrid");
+          }
+          return true;
+        });
+      }
+
+      setJobs(filteredJobs);
+      setStats({
+        count: filteredJobs.length,
+        mean: meanSalary,
+      });
+
+      // Scroll to top to see results
+      window.scrollTo({top: 0, behavior: "smooth"});
+
+      if (filteredJobs.length === 0) {
+        toast.error(`No jobs found from ${companyName}`);
+      } else {
+        toast.success(`Found ${filteredJobs.length} jobs from ${companyName}`, {
+          icon: "🏢",
+          duration: 2000,
+        });
+      }
+    } catch (error) {
+      console.error("Error searching company jobs:", error);
+      toast.error("Failed to search jobs. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const getWorkTypeFromJob = (job) => {
@@ -180,6 +400,32 @@ const JobSearch = () => {
         color:
           "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
         icon: "🏢",
+      };
+    }
+  };
+
+  const getJobTypeFromJob = (job) => {
+    const title = job.title?.toLowerCase() || "";
+    const description = job.description?.toLowerCase() || "";
+    const combined = title + " " + description;
+
+    if (
+      combined.includes("intern") ||
+      combined.includes("internship") ||
+      combined.includes("trainee")
+    ) {
+      return {
+        label: "Internship",
+        color:
+          "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300",
+        icon: "🎓",
+      };
+    } else {
+      return {
+        label: "Job",
+        color:
+          "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300",
+        icon: "💼",
       };
     }
   };
@@ -219,8 +465,41 @@ const JobSearch = () => {
             Job Search in India 🇮🇳
           </h1>
           <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            Find your dream job in India - Remote, On-site, or Hybrid positions
+            Find your dream job or internship in India - Remote, On-site, or
+            Hybrid positions
           </p>
+        </div>
+
+        {/* Job Type Tabs (Jobs vs Internships) */}
+        <div className="max-w-5xl mx-auto mb-6">
+          <div className="flex flex-wrap justify-center gap-3">
+            {jobTypes.map((type) => (
+              <button
+                key={type.value}
+                onClick={() => {
+                  setSearchParams({
+                    ...searchParams,
+                    jobType: type.value,
+                    page: 1,
+                  });
+                  setActiveJobType(type.value);
+                }}
+                className={`px-8 py-4 rounded-xl font-semibold transition-all duration-200 flex items-center gap-3 shadow-md ${
+                  activeJobType === type.value
+                    ? "bg-gradient-to-r from-indigo-600 to-pink-600 text-white shadow-2xl scale-110 ring-4 ring-indigo-200 dark:ring-indigo-800"
+                    : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:shadow-xl hover:scale-105"
+                }`}
+              >
+                <span className="text-2xl">{type.icon}</span>
+                <span className="text-lg">{type.label}</span>
+                {activeJobType === type.value && stats && (
+                  <span className="ml-2 px-3 py-1 bg-white/30 rounded-full text-sm font-bold">
+                    {stats.count}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Work Type Tabs */}
@@ -266,7 +545,7 @@ const JobSearch = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   <Search className="inline w-4 h-4 mr-2" />
-                  Job Title or Keywords
+                  Job Title or Keywords (Optional)
                 </label>
                 <input
                   type="text"
@@ -274,11 +553,74 @@ const JobSearch = () => {
                   onChange={(e) =>
                     setSearchParams({...searchParams, query: e.target.value})
                   }
-                  placeholder="e.g., Software Developer, Marketing Manager"
+                  placeholder="e.g., Software Developer, Marketing Manager (or leave empty for all jobs)"
                   className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                 />
               </div>
             </div>
+
+            {/* Advanced Filters Toggle */}
+            <button
+              type="button"
+              onClick={() => setShowAdvanced(!showAdvanced)}
+              className="text-blue-600 dark:text-blue-400 text-sm font-medium mb-4 flex items-center gap-2 hover:underline"
+            >
+              <Filter className="w-4 h-4" />
+              {showAdvanced
+                ? "Hide Advanced Filters"
+                : "Show Advanced Filters (City, Category)"}
+            </button>
+
+            {/* Advanced Filters */}
+            {showAdvanced && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                {/* City Filter */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <MapPin className="inline w-4 h-4 mr-2" />
+                    City
+                  </label>
+                  <select
+                    value={searchParams.city}
+                    onChange={(e) =>
+                      setSearchParams({...searchParams, city: e.target.value})
+                    }
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  >
+                    {indianCities.map((city) => (
+                      <option key={city.value} value={city.value}>
+                        {city.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Category Filter */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <Briefcase className="inline w-4 h-4 mr-2" />
+                    Category
+                  </label>
+                  <select
+                    value={searchParams.category}
+                    onChange={(e) =>
+                      setSearchParams({
+                        ...searchParams,
+                        category: e.target.value,
+                      })
+                    }
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  >
+                    <option value="">All Categories</option>
+                    {categories.map((cat) => (
+                      <option key={cat.tag} value={cat.tag}>
+                        {cat.label} ({cat.count})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            )}
 
             {/* Search Button */}
             <button
@@ -324,6 +666,33 @@ const JobSearch = () => {
                     ₹{Math.round(stats.mean).toLocaleString("en-IN")}
                   </p>
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* Top Companies */}
+          {topCompanies.length > 0 && (
+            <div className="mt-6 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                <Building2 className="w-5 h-5 text-blue-600" />
+                Top Hiring Companies
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                {topCompanies.map((company, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleCompanyClick(company.canonical_name)}
+                    className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 hover:shadow-md hover:bg-blue-50 dark:hover:bg-gray-600 transition-all cursor-pointer text-left border-2 border-transparent hover:border-blue-500"
+                    title={`Click to see all jobs from ${company.canonical_name}`}
+                  >
+                    <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                      {company.canonical_name}
+                    </p>
+                    <p className="text-xs text-gray-600 dark:text-gray-400">
+                      {company.count} jobs
+                    </p>
+                  </button>
+                ))}
               </div>
             </div>
           )}
@@ -379,6 +748,24 @@ const JobSearch = () => {
 
                         {/* Tags */}
                         <div className="flex flex-wrap gap-2 mb-3">
+                          {/* Job Type Badge (Internship/Job) */}
+                          {(() => {
+                            const jobType = getJobTypeFromJob(job);
+                            return (
+                              <span
+                                className={`px-3 py-1 ${
+                                  jobType.color
+                                } text-xs font-semibold rounded-full flex items-center gap-1 ring-2 ring-offset-1 ${
+                                  jobType.label === "Internship"
+                                    ? "ring-yellow-400 dark:ring-yellow-600"
+                                    : "ring-indigo-400 dark:ring-indigo-600"
+                                }`}
+                              >
+                                <span>{jobType.icon}</span>
+                                <span>{jobType.label}</span>
+                              </span>
+                            );
+                          })()}
                           {/* Work Type Badge */}
                           {(() => {
                             const workType = getWorkTypeFromJob(job);
