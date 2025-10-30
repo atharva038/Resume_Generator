@@ -14,6 +14,7 @@ import {
   Sparkles,
   Shield,
   MessageCircle,
+  Briefcase,
 } from "lucide-react";
 import {useAuth} from "../context/AuthContext";
 
@@ -52,6 +53,12 @@ const Sidebar = ({isOpen, setIsOpen}) => {
       path: "/ats-analyzer",
       icon: Target,
       description: "Check ATS compatibility",
+    },
+    {
+      name: "Job Search",
+      path: "/job-search",
+      icon: Briefcase,
+      description: "Find jobs with Adzuna",
     },
     {
       name: "My Resumes",

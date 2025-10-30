@@ -14,6 +14,7 @@ import Dashboard from "./pages/Dashboard";
 import Templates from "./pages/Templates";
 import GitHubImport from "./pages/GitHubImport";
 import ATSAnalyzer from "./pages/ATSAnalyzer";
+import JobSearch from "./pages/JobSearch";
 import Contact from "./pages/Contact";
 import Feedback from "./pages/Feedback";
 import NotFound from "./pages/NotFound";
@@ -119,6 +120,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ATSAnalyzer />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="job-search"
+              element={
+                <ProtectedRoute>
+                  <JobSearch />
                 </ProtectedRoute>
               }
             />
