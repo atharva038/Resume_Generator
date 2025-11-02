@@ -7,12 +7,12 @@ import rateLimit from "express-rate-limit";
 
 /**
  * Authentication Rate Limiter
- * Applied to: /api/auth/login, /api/auth/register
- * Purpose: Prevent brute force attacks and spam registrations
+ * Applied to: /api/auth/login, /api/auth/register, /api/auth/forgot-password, /api/auth/reset-password
+ * Purpose: Prevent brute force attacks and spam registrations while allowing reasonable user errors
  */
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // Limit each IP to 5 requests per windowMs
+  max: 20, // Limit each IP to 20 requests per 15 minutes (allows for typos and multiple attempts)
   message: {
     error:
       "Too many authentication attempts. Please try again after 15 minutes.",

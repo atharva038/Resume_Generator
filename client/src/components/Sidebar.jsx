@@ -15,6 +15,7 @@ import {
   Shield,
   MessageCircle,
   Briefcase,
+  TrendingUp,
 } from "lucide-react";
 import {useAuth} from "../context/AuthContext";
 
@@ -59,6 +60,13 @@ const Sidebar = ({isOpen, setIsOpen}) => {
       path: "/job-search",
       icon: Briefcase,
       description: "Find jobs with Adzuna",
+    },
+    {
+      name: "Smart Match",
+      path: "/smart-match",
+      icon: TrendingUp,
+      description: "AI-powered job recommendations",
+      badge: "NEW",
     },
     {
       name: "My Resumes",

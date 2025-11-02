@@ -45,7 +45,7 @@ if (process.env.NODE_ENV === "development") {
 }
 
 // ==========================================
-// RATE LIMITING
+// *  RATE LIMITING
 // ==========================================
 
 // Apply global rate limiter to all API routes

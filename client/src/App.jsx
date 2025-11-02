@@ -10,11 +10,14 @@ import Upload from "./pages/Upload";
 import Editor from "./pages/Editor";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import Templates from "./pages/Templates";
 import GitHubImport from "./pages/GitHubImport";
 import ATSAnalyzer from "./pages/ATSAnalyzer";
 import JobSearch from "./pages/JobSearch";
+import SmartJobMatchPage from "./pages/SmartJobMatchPage";
 import Contact from "./pages/Contact";
 import Feedback from "./pages/Feedback";
 import NotFound from "./pages/NotFound";
@@ -132,6 +135,14 @@ function App() {
               }
             />
             <Route
+              path="smart-match"
+              element={
+                <ProtectedRoute>
+                  <SmartJobMatchPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="contact"
               element={
                 <ProtectedRoute>
@@ -158,6 +169,8 @@ function App() {
             {/* Public Routes */}
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
+            <Route path="forgot-password" element={<ForgotPassword />} />
+            <Route path="reset-password" element={<ResetPassword />} />
 
             {/* 404 Not Found - Must be last route in this Route group */}
             <Route path="*" element={<NotFound />} />
