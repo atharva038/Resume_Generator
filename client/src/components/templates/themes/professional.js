@@ -34,6 +34,15 @@ export const professionalTheme = {
       bold: 700,
     },
   },
+  typography: {
+    headingFont: "'Inter', 'Helvetica Neue', Arial, sans-serif",
+    bodyFont: "'Inter', 'Helvetica Neue', Arial, sans-serif",
+    sizes: {
+      base: "10pt",
+      small: "9pt",
+      large: "12pt",
+    },
+  },
   spacing: {
     section: "16px",
     element: "8px",

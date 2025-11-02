@@ -34,6 +34,15 @@ export const creativeTheme = {
       bold: 700,
     },
   },
+  typography: {
+    headingFont: "'Poppins', 'Helvetica Neue', Arial, sans-serif",
+    bodyFont: "'Roboto', 'Helvetica Neue', Arial, sans-serif",
+    sizes: {
+      base: "10pt",
+      small: "9pt",
+      large: "13pt",
+    },
+  },
   spacing: {
     section: "20px",
     element: "10px",

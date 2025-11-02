@@ -79,8 +79,24 @@ const SkillsCloud = ({
     return "normal";
   };
 
+  // Flatten skills if they're in nested structure {category, items}
+  const flattenSkills = (skillsArray) => {
+    if (!Array.isArray(skillsArray) || skillsArray.length === 0) return [];
+
+    // Check if first item has nested structure
+    if (skillsArray[0]?.items && Array.isArray(skillsArray[0].items)) {
+      // Flatten nested structure
+      return skillsArray.flatMap((category) => category.items || []);
+    }
+
+    // Already flat
+    return skillsArray;
+  };
+
+  const flatSkills = flattenSkills(skills);
+
   // Sort skills by level (highest first) for better visual hierarchy
-  const sortedSkills = [...skills].sort((a, b) => {
+  const sortedSkills = [...flatSkills].sort((a, b) => {
     const levelA = a.level || a.proficiency || 50;
     const levelB = b.level || b.proficiency || 50;
     return levelB - levelA;

@@ -34,6 +34,15 @@ export const techTheme = {
       bold: 700,
     },
   },
+  typography: {
+    headingFont: "'JetBrains Mono', 'Fira Code', 'Courier New', monospace",
+    bodyFont: "'Inter', 'Helvetica Neue', Arial, sans-serif",
+    sizes: {
+      base: "10pt",
+      small: "9pt",
+      large: "12pt",
+    },
+  },
   spacing: {
     section: "16px",
     element: "8px",

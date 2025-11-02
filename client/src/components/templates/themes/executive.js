@@ -34,6 +34,15 @@ export const executiveTheme = {
       bold: 700,
     },
   },
+  typography: {
+    headingFont: "'Playfair Display', 'Georgia', serif",
+    bodyFont: "'Source Sans Pro', 'Helvetica Neue', Arial, sans-serif",
+    sizes: {
+      base: "10pt",
+      small: "9pt",
+      large: "12pt",
+    },
+  },
   spacing: {
     section: "18px",
     element: "9px",

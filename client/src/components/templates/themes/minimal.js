@@ -34,6 +34,15 @@ export const minimalTheme = {
       bold: 700,
     },
   },
+  typography: {
+    headingFont: "'Inter', 'Helvetica Neue', Arial, sans-serif",
+    bodyFont: "'Inter', 'Helvetica Neue', Arial, sans-serif",
+    sizes: {
+      base: "10pt",
+      small: "9pt",
+      large: "11pt",
+    },
+  },
   spacing: {
     section: "18px",
     element: "8px",
