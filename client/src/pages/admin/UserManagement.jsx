@@ -19,6 +19,7 @@ import {
   deleteUser,
 } from "../../services/admin.api";
 import {parseValidationErrors} from "../../utils/errorHandler";
+import ConfirmationModal from "../../components/ConfirmationModal";
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
@@ -37,6 +38,12 @@ const UserManagement = () => {
     totalPages: 1,
   });
   const [selectedUser, setSelectedUser] = useState(null);
+  const [deleteModal, setDeleteModal] = useState({
+    isOpen: false,
+    userId: null,
+    userName: null,
+    loading: false,
+  });
 
   useEffect(() => {
     fetchUsers();
@@ -58,80 +65,153 @@ const UserManagement = () => {
   };
 
   const handleStatusChange = async (userId, newStatus) => {
-    if (
-      !confirm(
-        `Are you sure you want to ${
-          newStatus === "active" ? "enable" : "disable"
-        } this user?`
-      )
-    )
-      return;
-
     try {
       await updateUserStatus(userId, newStatus);
       fetchUsers();
       toast.success(
-        `User ${
-          newStatus === "active" ? "activated" : "deactivated"
-        } successfully!`,
+        <div>
+          <div className="font-semibold">Status Updated!</div>
+          <div className="text-sm opacity-90">
+            User {newStatus === "active" ? "activated" : "deactivated"}{" "}
+            successfully
+          </div>
+        </div>,
         {
           icon: newStatus === "active" ? "✅" : "🚫",
-          duration: 2000,
+          duration: 2500,
+          style: {
+            borderRadius: "12px",
+          },
         }
       );
     } catch (err) {
       toast.error(
-        "Failed to update user status: " + parseValidationErrors(err),
+        <div>
+          <div className="font-semibold">Failed to Update Status</div>
+          <div className="text-sm opacity-90">{parseValidationErrors(err)}</div>
+        </div>,
         {
           icon: "❌",
           duration: 4000,
+          style: {
+            borderRadius: "12px",
+          },
         }
       );
     }
   };
 
   const handleRoleChange = async (userId, newRole) => {
-    if (
-      !confirm(
-        `Are you sure you want to change this user's role to ${newRole}?`
-      )
-    )
-      return;
-
     try {
       await updateUserRole(userId, newRole);
       fetchUsers();
-      toast.success(`User role changed to ${newRole} successfully!`, {
-        icon: "👤",
-        duration: 2000,
-      });
+      toast.success(
+        <div>
+          <div className="font-semibold">Role Updated!</div>
+          <div className="text-sm opacity-90">
+            User role changed to {newRole} successfully
+          </div>
+        </div>,
+        {
+          icon: "👤",
+          duration: 2500,
+          style: {
+            borderRadius: "12px",
+          },
+        }
+      );
     } catch (err) {
-      toast.error("Failed to update user role: " + parseValidationErrors(err), {
-        icon: "❌",
-        duration: 4000,
-      });
+      toast.error(
+        <div>
+          <div className="font-semibold">Failed to Update Role</div>
+          <div className="text-sm opacity-90">{parseValidationErrors(err)}</div>
+        </div>,
+        {
+          icon: "❌",
+          duration: 4000,
+          style: {
+            borderRadius: "12px",
+          },
+        }
+      );
     }
   };
 
-  const handleDeleteUser = async (userId) => {
-    if (
-      !confirm(
-        "Are you sure you want to delete this user? This action cannot be undone."
-      )
-    )
-      return;
+  const handleDeleteUser = async (userId, userName) => {
+    // Open confirmation modal
+    setDeleteModal({
+      isOpen: true,
+      userId,
+      userName,
+      loading: false,
+    });
+  };
+
+  const confirmDeleteUser = async () => {
+    const {userId, userName} = deleteModal;
 
     try {
+      // Set loading state
+      setDeleteModal((prev) => ({...prev, loading: true}));
+
       await deleteUser(userId);
-      fetchUsers();
-      toast.success("User deleted successfully!", {
-        icon: "🗑️",
-        duration: 2000,
+
+      // Close modal
+      setDeleteModal({
+        isOpen: false,
+        userId: null,
+        userName: null,
+        loading: false,
       });
+
+      // Refresh users list
+      fetchUsers();
+
+      // Show success toast
+      toast.success(
+        <div>
+          <div className="font-semibold">User Deleted Successfully!</div>
+          <div className="text-sm opacity-90">
+            {userName} has been removed from the system
+          </div>
+        </div>,
+        {
+          icon: "🗑️",
+          duration: 3000,
+          style: {
+            borderRadius: "12px",
+            background: "#10b981",
+            color: "#fff",
+          },
+        }
+      );
     } catch (err) {
-      toast.error("Failed to delete user: " + parseValidationErrors(err), {
-        icon: "❌",
-        duration: 4000,
+      // Keep modal open but remove loading state
+      setDeleteModal((prev) => ({...prev, loading: false}));
+
+      toast.error(
+        <div>
+          <div className="font-semibold">Failed to Delete User</div>
+          <div className="text-sm opacity-90">{parseValidationErrors(err)}</div>
+        </div>,
+        {
+          icon: "❌",
+          duration: 4000,
+          style: {
+            borderRadius: "12px",
+          },
+        }
+      );
+    }
+  };
+
+  const closeDeleteModal = () => {
+    if (!deleteModal.loading) {
+      setDeleteModal({
+        isOpen: false,
+        userId: null,
+        userName: null,
+        loading: false,
       });
     }
   };
@@ -327,7 +407,9 @@ const UserManagement = () => {
                             )}
                           </button>
                           <button
-                            onClick={() => handleDeleteUser(user._id)}
+                            onClick={() =>
+                              handleDeleteUser(user._id, user.name)
+                            }
                             className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                             title="Delete"
                           >
@@ -371,6 +453,45 @@ const UserManagement = () => {
           </>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={deleteModal.isOpen}
+        onClose={closeDeleteModal}
+        onConfirm={confirmDeleteUser}
+        title="Delete User"
+        message={
+          deleteModal.userName ? (
+            <div className="space-y-3">
+              <div className="text-base">
+                Are you sure you want to permanently delete{" "}
+                <span className="font-semibold text-gray-900 dark:text-white">
+                  {deleteModal.userName}
+                </span>
+                ?
+              </div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                This will delete:
+              </div>
+              <ul className="text-sm text-left list-disc list-inside text-gray-600 dark:text-gray-400 space-y-1">
+                <li>User account and profile</li>
+                <li>All resumes created by this user</li>
+                <li>AI usage history and records</li>
+              </ul>
+              <div className="text-sm font-semibold text-red-600 dark:text-red-400 mt-3">
+                ⚠️ This action cannot be undone!
+              </div>
+            </div>
+          ) : (
+            "Are you sure you want to delete this user?"
+          )
+        }
+        confirmText="Delete User"
+        cancelText="Cancel"
+        type="danger"
+        icon={Trash2}
+        loading={deleteModal.loading}
+      />
     </div>
   );
 };
