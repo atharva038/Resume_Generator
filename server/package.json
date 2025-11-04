@@ -6,7 +6,7 @@
     "type": "module",
     "scripts": {
         "dev": "node --env-file=.env --watch server.js",
-        "start": "node --env-file=.env server.js",
+        "start": "node server.js",
         "create-admin": "node --env-file=.env scripts/createAdmin.js",
         "sync:templates": "node --env-file=.env scripts/syncTemplates.js",
         "check:templates": "node --env-file=.env scripts/checkTemplates.js",
