@@ -10,7 +10,9 @@ import {
   ArrowRight,
   AlertCircle,
   Shield,
+  Github,
 } from "lucide-react";
+import {FcGoogle} from "react-icons/fc";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -155,6 +157,43 @@ const Login = () => {
               )}
             </button>
           </form>
+
+          {/* OAuth Divider */}
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-4 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 font-medium">
+                Or continue with
+              </span>
+            </div>
+          </div>
+
+          {/* OAuth Buttons */}
+          <div className="space-y-3">
+            {/* Google OAuth Button */}
+            <a
+              href={`${
+                import.meta.env.VITE_SERVER_URL || "http://localhost:5000"
+              }/api/auth/google`}
+              className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md font-medium text-gray-700 dark:text-gray-300 group"
+            >
+              <FcGoogle className="w-5 h-5" />
+              <span>Continue with Google</span>
+            </a>
+
+            {/* GitHub OAuth Button */}
+            <a
+              href={`${
+                import.meta.env.VITE_SERVER_URL || "http://localhost:5000"
+              }/api/auth/github`}
+              className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-gray-900 dark:bg-gray-700 border-2 border-gray-800 dark:border-gray-600 hover:bg-gray-800 dark:hover:bg-gray-600 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md font-medium text-white group"
+            >
+              <Github className="w-5 h-5" />
+              <span>Continue with GitHub</span>
+            </a>
+          </div>
 
           {/* Divider */}
           <div className="relative my-6">

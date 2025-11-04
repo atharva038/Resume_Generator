@@ -12,7 +12,10 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
+      required: function () {
+        // Password not required for OAuth users
+        return !this.googleId && !this.githubId;
+      },
       minlength: 6,
     },
     name: {
@@ -29,6 +32,25 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["active", "disabled"],
       default: "active",
+    },
+    // OAuth fields
+    googleId: {
+      type: String,
+      sparse: true,
+      unique: true,
+    },
+    githubId: {
+      type: String,
+      sparse: true,
+      unique: true,
+    },
+    provider: {
+      type: String,
+      enum: ["local", "google", "github"],
+      default: "local",
+    },
+    profilePicture: {
+      type: String,
     },
     lastLogin: {
       type: Date,
@@ -47,7 +69,8 @@ const userSchema = new mongoose.Schema(
 
 // Hash password before saving
 userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
+  // Skip hashing if password not modified or OAuth user
+  if (!this.isModified("password") || !this.password) return next();
 
   try {
     const salt = await bcrypt.genSalt(10);
@@ -60,6 +83,8 @@ userSchema.pre("save", async function (next) {
 
 // Compare password method
 userSchema.methods.comparePassword = async function (candidatePassword) {
+  // OAuth users don't have passwords
+  if (!this.password) return false;
   return bcrypt.compare(candidatePassword, this.password);
 };
 

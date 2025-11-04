@@ -44,8 +44,15 @@ export const AuthProvider = ({children}) => {
     setUser(null);
   };
 
+  // Set user directly (for OAuth callbacks)
+  const setUserData = (userData) => {
+    setUser(userData);
+  };
+
   return (
-    <AuthContext.Provider value={{user, login, register, logout, loading}}>
+    <AuthContext.Provider
+      value={{user, login, register, logout, loading, setUserData}}
+    >
       {children}
     </AuthContext.Provider>
   );

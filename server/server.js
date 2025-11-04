@@ -2,8 +2,10 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import session from "express-session";
 import mongoSanitize from "express-mongo-sanitize";
 import xss from "xss-clean";
+import passport from "./config/passport.config.js";
 import resumeRoutes from "./routes/resume.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import githubRoutes from "./routes/github.routes.js";
@@ -51,6 +53,29 @@ app.use(cors(corsOptions));
 if (process.env.NODE_ENV === "development") {
   app.use(securityLogger);
 }
+
+// ==========================================
+// SESSION & PASSPORT (For OAuth)
+// ==========================================
+
+// Express session (required by Passport for OAuth)
+app.use(
+  session({
+    secret:
+      process.env.SESSION_SECRET || "your-session-secret-change-in-production",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === "production", // HTTPS only in production
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    },
+  })
+);
+
+// Initialize Passport
+app.use(passport.initialize());
+app.use(passport.session());
 
 // ==========================================
 // *  RATE LIMITING
