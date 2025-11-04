@@ -201,6 +201,14 @@ export const saveResume = async (req, res) => {
       return res.status(400).json({error: "Resume name is required"});
     }
 
+    // Map 'title' to 'resumeTitle' if provided, otherwise use default
+    if (resumeData.title) {
+      resumeData.resumeTitle = resumeData.title;
+      delete resumeData.title;
+    } else if (!resumeData.resumeTitle) {
+      resumeData.resumeTitle = "Untitled Resume";
+    }
+
     // Create new resume document
     const resume = new Resume({
       ...resumeData,
@@ -234,6 +242,12 @@ export const updateResume = async (req, res) => {
 
     if (!resume) {
       return res.status(404).json({error: "Resume not found"});
+    }
+
+    // Map 'title' to 'resumeTitle' if provided
+    if (resumeData.title) {
+      resumeData.resumeTitle = resumeData.title;
+      delete resumeData.title;
     }
 
     // Update resume fields - special handling for nested contact object

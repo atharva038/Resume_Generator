@@ -165,9 +165,9 @@ export const validateChangePassword = [
  */
 export const validateResumeCreate = [
   body("title")
+    .optional()
     .trim()
-    .notEmpty()
-    .withMessage("Resume title is required")
+    .default("Untitled Resume")
     .isLength({min: 3, max: 200})
     .withMessage("Title must be between 3 and 200 characters"),
 
