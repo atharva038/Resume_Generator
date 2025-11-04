@@ -61,21 +61,23 @@ const Navbar = ({toggleSidebar, isSidebarOpen}) => {
           </div>
 
           {/* Desktop Auth Buttons */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <DarkModeToggle />
 
             {user ? (
               <>
                 <BlockableLink
                   to="/dashboard"
-                  className="hidden sm:flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 font-medium"
+                  className="flex items-center gap-2 p-2 sm:px-4 sm:py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 font-medium"
+                  title="My Dashboard"
                 >
-                  <LayoutDashboard className="w-4 h-4" />
+                  <User className="w-5 h-5" />
                   <span className="hidden md:inline">My Resumes</span>
                 </BlockableLink>
                 <button
                   onClick={handleLogout}
                   className="flex items-center gap-2 px-3 py-2 sm:px-4 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:border-red-500 hover:text-red-500 dark:hover:text-red-400 transition-all duration-200 font-medium"
+                  title="Logout"
                 >
                   <LogOut className="w-4 h-4" />
                   <span className="hidden sm:inline">Logout</span>
@@ -85,19 +87,20 @@ const Navbar = ({toggleSidebar, isSidebarOpen}) => {
               <>
                 <BlockableLink
                   to="/login"
-                  className="flex items-center gap-2 px-3 py-2 sm:px-5 sm:py-2.5 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 font-medium"
+                  className="flex items-center gap-1.5 sm:gap-2 p-2 sm:px-4 sm:py-2 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 font-medium"
+                  title="Login"
                 >
-                  <User className="w-4 h-4" />
+                  <User className="w-4 h-4 sm:w-5 sm:h-5" />
                   <span className="hidden sm:inline">Login</span>
                 </BlockableLink>
                 <BlockableLink
                   to="/upload"
-                  className="group relative px-3 py-2 sm:px-5 sm:py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 overflow-hidden"
+                  className="group relative flex items-center gap-1.5 p-2 sm:px-5 sm:py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 overflow-hidden"
+                  title="Build My Resume"
                 >
-                  <span className="relative z-10 flex items-center gap-2">
-                    <Sparkles className="w-4 h-4" />
+                  <span className="relative z-10 flex items-center gap-1.5">
+                    <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
                     <span className="hidden sm:inline">Build My Resume</span>
-                    <span className="sm:hidden">Build</span>
                   </span>
                   <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </BlockableLink>
