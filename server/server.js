@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import session from "express-session";
+import MongoStore from "connect-mongo";
 import mongoSanitize from "express-mongo-sanitize";
 import xss from "xss-clean";
 import passport from "./config/passport.config.js";
@@ -58,17 +59,25 @@ if (process.env.NODE_ENV === "development") {
 // SESSION & PASSPORT (For OAuth)
 // ==========================================
 
-// Express session (required by Passport for OAuth)
+// Express session with MongoDB store (required by Passport for OAuth)
 app.use(
   session({
     secret:
       process.env.SESSION_SECRET || "your-session-secret-change-in-production",
     resave: false,
     saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGODB_URI,
+      touchAfter: 24 * 3600, // lazy session update (in seconds)
+      crypto: {
+        secret: process.env.SESSION_SECRET || "session-encryption-secret",
+      },
+    }),
     cookie: {
       secure: process.env.NODE_ENV === "production", // HTTPS only in production
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // For cross-site OAuth
     },
   })
 );
