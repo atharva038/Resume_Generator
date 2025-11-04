@@ -4,6 +4,8 @@ import {isAdmin, logAdminAction} from "../middleware/admin.middleware.js";
 import {adminLimiter} from "../middleware/rateLimiter.middleware.js";
 import {
   validateMongoId,
+  validateUserId,
+  validateTemplateId,
   validateContactStatusUpdate,
   validateFeedbackStatusUpdate,
   validateUserRoleUpdate,
@@ -54,10 +56,10 @@ router.get("/dashboard/stats", getDashboardStats);
 
 // User Management
 router.get("/users", getAllUsers);
-router.get("/users/:userId", validateMongoId, getUserDetails);
-router.patch("/users/:userId/status", validateMongoId, updateUserStatus);
+router.get("/users/:userId", validateUserId, getUserDetails);
+router.patch("/users/:userId/status", validateUserId, updateUserStatus);
 router.patch("/users/:userId/role", validateUserRoleUpdate, updateUserRole);
-router.delete("/users/:userId", validateMongoId, deleteUser);
+router.delete("/users/:userId", validateUserId, deleteUser);
 
 // AI Analytics
 router.get("/ai-analytics", getAIAnalytics);
@@ -79,10 +81,10 @@ router.get("/logs", getAdminLogs);
 router.get("/templates", getAllTemplates);
 router.patch(
   "/templates/:templateId/status",
-  validateMongoId,
+  validateTemplateId,
   updateTemplateStatus
 );
-router.delete("/templates/:templateId", validateMongoId, deleteTemplate);
+router.delete("/templates/:templateId", validateTemplateId, deleteTemplate);
 
 // Feedback Management
 router.get("/feedback", getAllFeedback);
@@ -96,11 +98,11 @@ router.delete("/feedback/:id", validateMongoId, deleteFeedbackAdmin);
 
 // AI Quota Management
 router.get("/ai-quota/users", getUserQuotaStatus);
-router.get("/ai-quota/users/:userId", validateMongoId, getUserQuotaDetails);
-router.patch("/ai-quota/users/:userId/tier", validateMongoId, updateUserTier);
+router.get("/ai-quota/users/:userId", validateUserId, getUserQuotaDetails);
+router.patch("/ai-quota/users/:userId/tier", validateUserId, updateUserTier);
 router.post(
   "/ai-quota/users/:userId/reset-daily",
-  validateMongoId,
+  validateUserId,
   resetUserDailyQuota
 );
 

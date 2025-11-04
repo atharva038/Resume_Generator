@@ -790,7 +790,7 @@ export const validateContactStatusUpdate = [
  * Validation rules for user role update
  */
 export const validateUserRoleUpdate = [
-  param("id").isMongoId().withMessage("Invalid user ID"),
+  param("userId").isMongoId().withMessage("Invalid user ID"),
 
   body("role")
     .trim()
@@ -807,6 +807,24 @@ export const validateUserRoleUpdate = [
  */
 export const validateMongoId = [
   param("id").isMongoId().withMessage("Invalid ID format"),
+
+  handleValidationErrors,
+];
+
+/**
+ * Validation rules for MongoDB userId parameter
+ */
+export const validateUserId = [
+  param("userId").isMongoId().withMessage("Invalid user ID format"),
+
+  handleValidationErrors,
+];
+
+/**
+ * Validation rules for MongoDB templateId parameter
+ */
+export const validateTemplateId = [
+  param("templateId").isMongoId().withMessage("Invalid template ID format"),
 
   handleValidationErrors,
 ];
