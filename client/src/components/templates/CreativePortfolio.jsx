@@ -50,9 +50,9 @@ const CreativePortfolio = ({resumeData = {}}) => {
       )}
 
       {/* Contact Info */}
-      <div className="mb-8">
+      <div className="mb-6">
         <h3
-          className="text-lg font-bold mb-4"
+          className="text-lg font-bold mb-3"
           style={{
             color: "#ffffff",
             fontFamily: theme.typography.headingFont,
@@ -79,9 +79,9 @@ const CreativePortfolio = ({resumeData = {}}) => {
 
       {/* Skills Cloud */}
       {skills && skills.length > 0 && (
-        <div className="mb-8">
+        <div className="mb-6">
           <h3
-            className="text-lg font-bold mb-4"
+            className="text-lg font-bold mb-3"
             style={{
               color: "#ffffff",
               fontFamily: theme.typography.headingFont,
@@ -131,9 +131,9 @@ const CreativePortfolio = ({resumeData = {}}) => {
 
       {/* Awards */}
       {awards && awards.length > 0 && (
-        <div className="mb-8">
+        <div className="mb-6">
           <h3
-            className="text-lg font-bold mb-4"
+            className="text-lg font-bold mb-3"
             style={{
               color: "#ffffff",
               fontFamily: theme.typography.headingFont,
@@ -177,9 +177,9 @@ const CreativePortfolio = ({resumeData = {}}) => {
 
       {/* Summary */}
       {summary && (
-        <section className="mb-8">
+        <section className="mb-6">
           <h2
-            className="text-2xl font-bold mb-4 text-center"
+            className="text-xl font-bold mb-3 text-center"
             style={{
               color: theme.colors.primary,
               fontFamily: theme.typography.headingFont,
@@ -202,9 +202,9 @@ const CreativePortfolio = ({resumeData = {}}) => {
 
       {/* Experience Cards */}
       {experience && experience.length > 0 && (
-        <div className="mb-8">
+        <div className="mb-6">
           <h2
-            className="text-2xl font-bold mb-6 text-center"
+            className="text-xl font-bold mb-4 text-center"
             style={{
               color: theme.colors.primary,
               fontFamily: theme.typography.headingFont,
@@ -232,7 +232,7 @@ const CreativePortfolio = ({resumeData = {}}) => {
 
         return (
           totalSkills > 15 && (
-            <div className="mb-8">
+            <div className="mb-6">
               <SkillsCloud
                 skills={skills}
                 theme={theme}
@@ -250,11 +250,11 @@ const CreativePortfolio = ({resumeData = {}}) => {
   return (
     <SidebarLeft
       sidebar={sidebarContent}
-      sidebarWidth="300px"
+      sidebarWidth="00px"
       sidebarBackground={`linear-gradient(135deg, ${theme.colors.primary} 0%, ${theme.colors.secondary} 100%)`}
       mainBackground={theme.colors.background}
-      sidebarPadding="2.5rem"
-      mainPadding="3rem"
+      sidebarPadding="1.5rem"
+      mainPadding="2rem"
       theme={theme}
     >
       {mainContent}

@@ -45,15 +45,37 @@ const SkillsBar = ({
     },
   };
 
+  // Flatten skills if they're in nested structure {category, items}
+  const flattenSkills = (skillsArray) => {
+    if (!Array.isArray(skillsArray) || skillsArray.length === 0) return [];
+
+    // Check if first item has nested structure
+    if (skillsArray[0]?.items && Array.isArray(skillsArray[0].items)) {
+      // Flatten nested structure and add category to each item
+      return skillsArray.flatMap((group) =>
+        (group.items || []).map((item) => ({
+          ...item,
+          category: item.category || group.category,
+        }))
+      );
+    }
+
+    // Already flat
+    return skillsArray;
+  };
+
+  // Get flattened skills
+  const flatSkills = flattenSkills(skills);
+
   // Group skills by category if needed
   const groupedSkills = groupByCategory
-    ? skills.reduce((acc, skill) => {
+    ? flatSkills.reduce((acc, skill) => {
         const category = skill.category || "Other";
         if (!acc[category]) acc[category] = [];
         acc[category].push(skill);
         return acc;
       }, {})
-    : {Skills: skills};
+    : {Skills: flatSkills};
 
   // Render a single skill bar
   const renderSkillBar = (skill, index) => {
