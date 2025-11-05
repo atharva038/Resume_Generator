@@ -15,14 +15,12 @@ import ResetPassword from "./pages/ResetPassword";
 import AuthCallback from "./pages/AuthCallback";
 import Dashboard from "./pages/Dashboard";
 import Templates from "./pages/Templates";
-import TemplatePreview from "./pages/TemplatePreview";
 import GitHubImport from "./pages/GitHubImport";
 import ATSAnalyzer from "./pages/ATSAnalyzer";
 import JobSearch from "./pages/JobSearch";
 import SmartJobMatchPage from "./pages/SmartJobMatchPage";
 import Contact from "./pages/Contact";
 import Feedback from "./pages/Feedback";
-import ComponentsDemo from "./pages/ComponentsDemo";
 import NotFound from "./pages/NotFound";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import UserManagement from "./pages/admin/UserManagement";
@@ -146,14 +144,6 @@ function App() {
               }
             />
             <Route
-              path="template-preview"
-              element={
-                <ProtectedRoute>
-                  <TemplatePreview />
-                </ProtectedRoute>
-              }
-            />
-            <Route
               path="contact"
               element={
                 <ProtectedRoute>
@@ -183,7 +173,6 @@ function App() {
             <Route path="forgot-password" element={<ForgotPassword />} />
             <Route path="reset-password/:token" element={<ResetPassword />} />
             <Route path="auth/callback" element={<AuthCallback />} />
-            <Route path="components-demo" element={<ComponentsDemo />} />
 
             {/* 404 Not Found - Must be last route in this Route group */}
             <Route path="*" element={<NotFound />} />
