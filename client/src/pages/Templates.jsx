@@ -235,10 +235,69 @@ const templates = [
   },
 ];
 
+// Color theme configurations (same as Editor.jsx)
+const TEMPLATE_COLOR_THEMES = {
+  classic: [
+    {id: "navy", name: "Navy Blue", primary: "#0066cc"},
+    {id: "burgundy", name: "Burgundy", primary: "#8b1a1a"},
+    {id: "forest", name: "Forest Green", primary: "#1b5e20"},
+    {id: "charcoal", name: "Charcoal", primary: "#2d3748"},
+  ],
+  modern: [
+    {id: "blue", name: "Blue", primary: "#2563eb"},
+    {id: "purple", name: "Purple", primary: "#7c3aed"},
+    {id: "teal", name: "Teal", primary: "#0d9488"},
+    {id: "orange", name: "Orange", primary: "#ea580c"},
+  ],
+  minimal: [
+    {id: "charcoal", name: "Charcoal", primary: "#2d3748"},
+    {id: "navy", name: "Navy", primary: "#1e40af"},
+    {id: "slate", name: "Slate", primary: "#475569"},
+    {id: "graphite", name: "Graphite", primary: "#18181b"},
+  ],
+  professional: [
+    {id: "navy", name: "Navy Blue", primary: "#1e3a8a"},
+    {id: "burgundy", name: "Burgundy", primary: "#881337"},
+    {id: "forest", name: "Forest Green", primary: "#065f46"},
+    {id: "gray", name: "Gray", primary: "#374151"},
+  ],
+  "professional-v2": [
+    {id: "blue", name: "Blue", primary: "#1d4ed8"},
+    {id: "purple", name: "Purple", primary: "#7e22ce"},
+    {id: "teal", name: "Teal", primary: "#0f766e"},
+    {id: "burgundy", name: "Burgundy", primary: "#9f1239"},
+  ],
+  "corporate-elite": [
+    {id: "navy", name: "Navy Blue", primary: "#1e3a5f"},
+    {id: "burgundy", name: "Burgundy", primary: "#7c2d41"},
+    {id: "forest", name: "Forest Green", primary: "#1e5f4d"},
+    {id: "charcoal", name: "Charcoal", primary: "#2d3748"},
+  ],
+  "strategic-leader": [
+    {id: "teal", name: "Teal", primary: "#0d7377"},
+    {id: "purple", name: "Purple", primary: "#6b46c1"},
+    {id: "burgundy", name: "Burgundy", primary: "#9b2c2c"},
+    {id: "navy", name: "Navy Blue", primary: "#2c5282"},
+  ],
+  "impact-pro": [
+    {id: "emerald", name: "Emerald", primary: "#047857"},
+    {id: "blue", name: "Blue", primary: "#1e40af"},
+    {id: "purple", name: "Purple", primary: "#7e22ce"},
+    {id: "orange", name: "Orange", primary: "#c2410c"},
+  ],
+  tech: [
+    {id: "black", name: "Tech Black", primary: "#0f172a"},
+    {id: "blue", name: "Solid Blue", primary: "#1e40af"},
+    {id: "purple", name: "Solid Purple", primary: "#7e22ce"},
+    {id: "teal", name: "Solid Teal", primary: "#0f766e"},
+  ],
+};
+
 const Templates = () => {
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedTemplate, setSelectedTemplate] = useState(null);
+  const [selectedColorTheme, setSelectedColorTheme] = useState(null);
 
   const categories = [
     "All",
@@ -255,8 +314,11 @@ const Templates = () => {
       : templates.filter((t) => t.category === selectedCategory);
 
   const handleSelectTemplate = (templateId) => {
-    // Store selected template in localStorage
+    // Store selected template and color theme in localStorage
     localStorage.setItem("selectedTemplate", templateId);
+    if (selectedColorTheme) {
+      localStorage.setItem("selectedColorTheme", selectedColorTheme);
+    }
     // Navigate to editor
     navigate("/editor");
   };
@@ -308,7 +370,16 @@ const Templates = () => {
             <div
               key={template.id}
               className="group bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden cursor-pointer transform hover:scale-105 border border-gray-200 dark:border-gray-700"
-              onClick={() => setSelectedTemplate(template)}
+              onClick={() => {
+                setSelectedTemplate(template);
+                // Set default color theme for this template
+                const themes = TEMPLATE_COLOR_THEMES[template.id];
+                if (themes && themes.length > 0) {
+                  setSelectedColorTheme(themes[0].id);
+                } else {
+                  setSelectedColorTheme(null);
+                }
+              }}
             >
               {/* Template Preview */}
               <div
@@ -445,13 +516,48 @@ const Templates = () => {
                 </button>
               </div>
 
+              {/* Color Theme Selector - Show if template supports color themes */}
+              {TEMPLATE_COLOR_THEMES[selectedTemplate.id] && (
+                <div className="px-6 py-4 bg-white/90 dark:bg-gray-800/90 border-b border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      🎨 Color Theme:
+                    </span>
+                    {TEMPLATE_COLOR_THEMES[selectedTemplate.id].map((theme) => (
+                      <button
+                        key={theme.id}
+                        onClick={() => setSelectedColorTheme(theme.id)}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                          selectedColorTheme === theme.id
+                            ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg scale-105"
+                            : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                        }`}
+                      >
+                        <div
+                          className="w-4 h-4 rounded-full border-2 border-white shadow-sm"
+                          style={{backgroundColor: theme.primary}}
+                        />
+                        <span className="text-sm font-medium">
+                          {theme.name}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Modal Body - Template Preview */}
               <div className="overflow-auto max-h-[60vh] p-6 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
                 <div
                   className="scale-75 origin-top mx-auto"
                   style={{width: "210mm"}}
                 >
-                  <selectedTemplate.component resumeData={sampleResumeData} />
+                  <selectedTemplate.component
+                    resumeData={{
+                      ...sampleResumeData,
+                      colorTheme: selectedColorTheme,
+                    }}
+                  />
                 </div>
               </div>
 

@@ -96,6 +96,10 @@ const resumeSchema = new mongoose.Schema(
       type: String,
       default: "classic",
     },
+    colorTheme: {
+      type: String,
+      default: null, // Will use template's default if not specified
+    },
   },
   {
     timestamps: true,

@@ -5,14 +5,22 @@ import {useNavigationBlocker} from "../context/NavigationBlockerContext";
 import {resumeAPI} from "../services/api";
 import {parseValidationErrors} from "../utils/errorHandler";
 import toast, {Toaster} from "react-hot-toast";
-import ResumePreview from "../components/ResumePreview";
-import EditableSection from "../components/EditableSection";
-import ScoreCard from "../components/ScoreCard";
-import JobSpecificScoreCard from "../components/JobSpecificScoreCard";
-import RecommendationsPanel from "../components/RecommendationsPanel";
-import CollapsibleSection from "../components/CollapsibleSection";
-import GitHubImportModal from "../components/GitHubImportModal";
-import * as EditorSections from "../components/EditorSections";
+import {
+  ResumePreview,
+  EditableSection,
+  CollapsibleSection,
+  RecommendationsPanel,
+  PersonalInfoSection,
+  SkillsSection,
+  ExperienceSection,
+  EducationSection,
+  ProjectsSection,
+  CertificationsSection,
+  AchievementsSection,
+  CustomSectionsManager,
+} from "../components/editor";
+import {ScoreCard, JobSpecificScoreCard} from "../components/common/cards";
+import {GitHubImportModal} from "../components/common/modals";
 import {getJobCategories, getJobsByCategory} from "../utils/jobProfiles";
 import ClassicTemplate from "../components/templates/ClassicTemplate";
 import ModernTemplate from "../components/templates/ModernTemplate";
@@ -142,6 +150,60 @@ const TEMPLATES = [
 
 // Color theme configurations for templates that support multiple themes
 const TEMPLATE_COLOR_THEMES = {
+  classic: [
+    {id: "navy", name: "Navy Blue", primary: "#0066cc", emoji: "💼"},
+    {id: "burgundy", name: "Burgundy", primary: "#8b1a1a", emoji: "🍷"},
+    {id: "forest", name: "Forest Green", primary: "#1b5e20", emoji: "🌲"},
+    {id: "charcoal", name: "Charcoal", primary: "#2d3748", emoji: "⚫"},
+  ],
+  modern: [
+    {id: "blue", name: "Blue", primary: "#2563eb", emoji: "💙"},
+    {id: "purple", name: "Purple", primary: "#7c3aed", emoji: "💜"},
+    {id: "teal", name: "Teal", primary: "#0d9488", emoji: "🌊"},
+    {id: "orange", name: "Orange", primary: "#ea580c", emoji: "🧡"},
+  ],
+  minimal: [
+    {id: "charcoal", name: "Charcoal", primary: "#2d3748", emoji: "⚫"},
+    {id: "navy", name: "Navy", primary: "#1e40af", emoji: "💼"},
+    {id: "slate", name: "Slate", primary: "#475569", emoji: "🌑"},
+    {id: "graphite", name: "Graphite", primary: "#18181b", emoji: "⬛"},
+  ],
+  professional: [
+    {id: "navy", name: "Navy Blue", primary: "#1e3a8a", emoji: "💼"},
+    {id: "burgundy", name: "Burgundy", primary: "#881337", emoji: "🍷"},
+    {id: "forest", name: "Forest Green", primary: "#065f46", emoji: "🌲"},
+    {id: "gray", name: "Gray", primary: "#374151", emoji: "⚪"},
+  ],
+  "professional-v2": [
+    {id: "blue", name: "Blue", primary: "#1d4ed8", emoji: "💙"},
+    {id: "purple", name: "Purple", primary: "#7e22ce", emoji: "💜"},
+    {id: "teal", name: "Teal", primary: "#0f766e", emoji: "🌊"},
+    {id: "burgundy", name: "Burgundy", primary: "#9f1239", emoji: "🍷"},
+  ],
+  executive: [
+    {id: "navy", name: "Navy Blue", primary: "#1e40af", emoji: "💼"},
+    {id: "burgundy", name: "Burgundy", primary: "#7f1d1d", emoji: "🍷"},
+    {id: "charcoal", name: "Charcoal", primary: "#1f2937", emoji: "⚫"},
+    {id: "forest", name: "Forest Green", primary: "#14532d", emoji: "🌲"},
+  ],
+  tech: [
+    {id: "blue", name: "Tech Blue", primary: "#1e3a8a", emoji: "💻"},
+    {id: "purple", name: "Purple", primary: "#6d28d9", emoji: "🔮"},
+    {id: "teal", name: "Teal", primary: "#0e7490", emoji: "🌊"},
+    {id: "green", name: "Green", primary: "#047857", emoji: "💚"},
+  ],
+  creative: [
+    {id: "purple", name: "Purple", primary: "#a21caf", emoji: "💜"},
+    {id: "orange", name: "Orange", primary: "#ea580c", emoji: "🧡"},
+    {id: "pink", name: "Pink", primary: "#db2777", emoji: "💗"},
+    {id: "teal", name: "Teal", primary: "#0891b2", emoji: "🌊"},
+  ],
+  academic: [
+    {id: "navy", name: "Navy Blue", primary: "#1e3a8a", emoji: "📘"},
+    {id: "burgundy", name: "Burgundy", primary: "#881337", emoji: "📕"},
+    {id: "forest", name: "Forest Green", primary: "#065f46", emoji: "📗"},
+    {id: "charcoal", name: "Charcoal", primary: "#1f2937", emoji: "📓"},
+  ],
   "corporate-elite": [
     {id: "navy", name: "Navy Blue", primary: "#1e3a5f", emoji: "💼"},
     {id: "burgundy", name: "Burgundy", primary: "#7c2d41", emoji: "🍷"},
@@ -396,6 +458,18 @@ const Editor = () => {
       if (!data.targetJobRole) {
         data.targetJobRole = "software-engineer";
       }
+
+      // Initialize colorTheme if it doesn't exist
+      // First check if there's a saved color theme from Templates page
+      if (!data.colorTheme) {
+        const savedColorTheme = localStorage.getItem("selectedColorTheme");
+        if (savedColorTheme) {
+          data.colorTheme = savedColorTheme;
+          // Clear the saved color theme after using it
+          localStorage.removeItem("selectedColorTheme");
+        }
+      }
+
       // Ensure contact object exists with all fields
       if (!data.contact || typeof data.contact !== "object") {
         data.contact = {
@@ -1158,10 +1232,7 @@ const Editor = () => {
           onDrop={handleDrop}
           isDragging={draggedSection === "skills"}
         >
-          <EditorSections.SkillsSection
-            resumeData={resumeData}
-            updateField={updateField}
-          />
+          <SkillsSection resumeData={resumeData} updateField={updateField} />
         </CollapsibleSection>
       ),
 
@@ -1178,7 +1249,7 @@ const Editor = () => {
           onDrop={handleDrop}
           isDragging={draggedSection === "experience"}
         >
-          <EditorSections.ExperienceSection
+          <ExperienceSection
             resumeData={resumeData}
             addArrayItem={addArrayItem}
             updateArrayItem={updateArrayItem}
@@ -1202,7 +1273,7 @@ const Editor = () => {
           onDrop={handleDrop}
           isDragging={draggedSection === "education"}
         >
-          <EditorSections.EducationSection
+          <EducationSection
             resumeData={resumeData}
             addArrayItem={addArrayItem}
             updateArrayItem={updateArrayItem}
@@ -1225,7 +1296,7 @@ const Editor = () => {
           onDrop={handleDrop}
           isDragging={draggedSection === "projects"}
         >
-          <EditorSections.ProjectsSection
+          <ProjectsSection
             resumeData={resumeData}
             addArrayItem={addArrayItem}
             updateArrayItem={updateArrayItem}
@@ -1248,7 +1319,7 @@ const Editor = () => {
           onDrop={handleDrop}
           isDragging={draggedSection === "certifications"}
         >
-          <EditorSections.CertificationsSection
+          <CertificationsSection
             resumeData={resumeData}
             addArrayItem={addArrayItem}
             updateArrayItem={updateArrayItem}
@@ -1270,7 +1341,7 @@ const Editor = () => {
           onDrop={handleDrop}
           isDragging={draggedSection === "achievements"}
         >
-          <EditorSections.AchievementsSection
+          <AchievementsSection
             resumeData={resumeData}
             updateField={updateField}
           />
@@ -1290,7 +1361,7 @@ const Editor = () => {
           onDrop={handleDrop}
           isDragging={draggedSection === "customSections"}
         >
-          <EditorSections.CustomSectionsManager
+          <CustomSectionsManager
             resumeData={resumeData}
             updateField={updateField}
           />

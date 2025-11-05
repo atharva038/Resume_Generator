@@ -19,7 +19,7 @@ import {
   deleteUser,
 } from "../../services/admin.api";
 import {parseValidationErrors} from "../../utils/errorHandler";
-import ConfirmationModal from "../../components/ConfirmationModal";
+import {ConfirmationModal} from "../../components/common/modals";
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
