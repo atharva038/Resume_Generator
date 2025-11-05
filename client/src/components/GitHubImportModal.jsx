@@ -86,8 +86,8 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
     try {
       const response = await axios.get(
         `${
-          import.meta.env.VITE_API_URL || "http://localhost:5000"
-        }/api/github/${username.trim()}`
+          import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+        }/github/${username.trim()}`
       );
 
       if (response.data.success) {
