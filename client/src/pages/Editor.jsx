@@ -23,6 +23,9 @@ import ExecutiveTemplate from "../components/templates/ExecutiveTemplate";
 import TechTemplate from "../components/templates/TechTemplate";
 import CreativeTemplate from "../components/templates/CreativeTemplate";
 import AcademicTemplate from "../components/templates/AcademicTemplate";
+import CorporateEliteTemplate from "../components/templates/CorporateEliteTemplate";
+import StrategicLeaderTemplate from "../components/templates/StrategicLeaderTemplate";
+import ImpactProTemplate from "../components/templates/ImpactProTemplate";
 
 // Default section order (only editable resume sections)
 const DEFAULT_SECTION_ORDER = [
@@ -111,7 +114,53 @@ const TEMPLATES = [
     emoji: "🎓",
     atsScore: 97,
   },
+  {
+    id: "corporate-elite",
+    name: "Corporate Elite",
+    component: CorporateEliteTemplate,
+    category: "Professional",
+    emoji: "🏢",
+    atsScore: 99,
+  },
+  {
+    id: "strategic-leader",
+    name: "Strategic Leader",
+    component: StrategicLeaderTemplate,
+    category: "Leadership",
+    emoji: "🎯",
+    atsScore: 97,
+  },
+  {
+    id: "impact-pro",
+    name: "Impact Pro",
+    component: ImpactProTemplate,
+    category: "Professional",
+    emoji: "⚡",
+    atsScore: 98,
+  },
 ];
+
+// Color theme configurations for templates that support multiple themes
+const TEMPLATE_COLOR_THEMES = {
+  "corporate-elite": [
+    {id: "navy", name: "Navy Blue", primary: "#1e3a5f", emoji: "💼"},
+    {id: "burgundy", name: "Burgundy", primary: "#7c2d41", emoji: "🍷"},
+    {id: "forest", name: "Forest Green", primary: "#1e5f4d", emoji: "🌲"},
+    {id: "charcoal", name: "Charcoal", primary: "#2d3748", emoji: "⚫"},
+  ],
+  "strategic-leader": [
+    {id: "teal", name: "Teal", primary: "#0d7377", emoji: "🌊"},
+    {id: "purple", name: "Purple", primary: "#6b46c1", emoji: "🔮"},
+    {id: "burgundy", name: "Burgundy", primary: "#9b2c2c", emoji: "🍷"},
+    {id: "navy", name: "Navy Blue", primary: "#2c5282", emoji: "💼"},
+  ],
+  "impact-pro": [
+    {id: "emerald", name: "Emerald", primary: "#047857", emoji: "💚"},
+    {id: "blue", name: "Blue", primary: "#1e40af", emoji: "💙"},
+    {id: "purple", name: "Purple", primary: "#7e22ce", emoji: "💜"},
+    {id: "orange", name: "Orange", primary: "#c2410c", emoji: "🧡"},
+  ],
+};
 
 const Editor = () => {
   const location = useLocation();
@@ -133,6 +182,7 @@ const Editor = () => {
     return savedTemplate || "classic";
   });
   const [showTemplateSelector, setShowTemplateSelector] = useState(false);
+  const [showColorThemeSelector, setShowColorThemeSelector] = useState(false);
   const [sectionOrder, setSectionOrder] = useState(() => {
     // Load section order from localStorage or use default
     const saved = localStorage.getItem("resumeSectionOrder");
@@ -1280,12 +1330,22 @@ const Editor = () => {
             {/* Template Selector Button */}
             <button
               onClick={() => setShowTemplateSelector(true)}
-              className="w-full sm:w-auto px-3 sm:px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs sm:text-sm font-medium hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all shadow-md hover:shadow-lg"
+              className="flex-1 sm:flex-none px-3 sm:px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs sm:text-sm font-medium hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all shadow-md hover:shadow-lg"
               title="Change template"
             >
               {TEMPLATES.find((t) => t.id === selectedTemplate)?.emoji} Change
               Template
             </button>
+            {/* Color Theme Selector Button - Only show for templates with color themes */}
+            {TEMPLATE_COLOR_THEMES[selectedTemplate] && (
+              <button
+                onClick={() => setShowColorThemeSelector(true)}
+                className="flex-1 sm:flex-none px-3 sm:px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs sm:text-sm font-medium hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all shadow-md hover:shadow-lg"
+                title="Change color theme"
+              >
+                🎨 Colors
+              </button>
+            )}
           </div>
         </div>
 
@@ -1767,6 +1827,139 @@ const Editor = () => {
           onImport={handleGitHubImport}
           currentResume={resumeData}
         />
+
+        {/* Color Theme Selector Modal */}
+        {showColorThemeSelector && TEMPLATE_COLOR_THEMES[selectedTemplate] && (
+          <div
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100] flex items-center justify-center p-2 sm:p-4 no-print"
+            onClick={() => setShowColorThemeSelector(false)}
+          >
+            <div
+              className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal Header */}
+              <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-4 sm:p-6 flex justify-between items-center">
+                <div>
+                  <h2 className="text-xl sm:text-2xl font-bold text-white mb-1">
+                    Choose Color Theme
+                  </h2>
+                  <p className="text-xs sm:text-sm text-purple-100">
+                    Pick a professional color palette for your resume
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowColorThemeSelector(false)}
+                  className="text-white hover:bg-white/20 p-2 rounded-full transition-colors flex-shrink-0"
+                >
+                  <svg
+                    className="w-6 h-6 sm:w-8 sm:h-8"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Modal Body - Color Theme Grid */}
+              <div className="p-4 sm:p-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {TEMPLATE_COLOR_THEMES[selectedTemplate].map((theme) => (
+                    <div
+                      key={theme.id}
+                      onClick={() => {
+                        setResumeData((prev) => ({
+                          ...prev,
+                          colorTheme: theme.id,
+                        }));
+                        setShowColorThemeSelector(false);
+                        toast.success(
+                          `${theme.emoji} ${theme.name} theme applied!`,
+                          {
+                            duration: 2000,
+                            position: "bottom-right",
+                          }
+                        );
+                      }}
+                      className={`group relative bg-white dark:bg-gray-700 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden cursor-pointer transform hover:scale-105 border-4 p-6 ${
+                        resumeData?.colorTheme === theme.id
+                          ? "border-purple-600 dark:border-purple-400 ring-4 ring-purple-200 dark:ring-purple-900"
+                          : "border-transparent hover:border-purple-300"
+                      }`}
+                    >
+                      {/* Current Selection Badge */}
+                      {resumeData?.colorTheme === theme.id && (
+                        <div className="absolute top-2 right-2 bg-purple-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                          ✓ Active
+                        </div>
+                      )}
+
+                      {/* Color Swatch */}
+                      <div className="flex items-center gap-4 mb-4">
+                        <div
+                          className="w-16 h-16 rounded-lg shadow-md border-2 border-gray-200 dark:border-gray-600"
+                          style={{backgroundColor: theme.primary}}
+                        />
+                        <div>
+                          <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                            <span className="text-2xl">{theme.emoji}</span>
+                            {theme.name}
+                          </h3>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            {theme.primary}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Preview bars showing color in action */}
+                      <div className="space-y-2">
+                        <div
+                          className="h-2 rounded-full"
+                          style={{backgroundColor: theme.primary, opacity: 1}}
+                        />
+                        <div
+                          className="h-2 rounded-full"
+                          style={{backgroundColor: theme.primary, opacity: 0.7}}
+                        />
+                        <div
+                          className="h-2 rounded-full"
+                          style={{backgroundColor: theme.primary, opacity: 0.4}}
+                        />
+                      </div>
+
+                      {/* Hover Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-purple-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                        <span className="text-purple-600 dark:text-purple-300 font-bold text-sm bg-white dark:bg-gray-800 px-4 py-2 rounded-full shadow-lg">
+                          Click to Apply
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Modal Footer */}
+              <div className="p-4 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                  🎨 Choose a color that matches your industry
+                </div>
+                <button
+                  onClick={() => setShowColorThemeSelector(false)}
+                  className="px-4 sm:px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium text-sm"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* GitHub Import Success Notification */}
         {githubImportSuccess && (

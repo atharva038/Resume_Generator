@@ -4,10 +4,14 @@ import ClassicTemplate from "./templates/ClassicTemplate";
 import ModernTemplate from "./templates/ModernTemplate";
 import MinimalTemplate from "./templates/MinimalTemplate";
 import ProfessionalTemplate from "./templates/ProfessionalTemplate";
+import ProfessionalV2Template from "./templates/ProfessionalV2Template";
 import ExecutiveTemplate from "./templates/ExecutiveTemplate";
 import TechTemplate from "./templates/TechTemplate";
 import CreativeTemplate from "./templates/CreativeTemplate";
 import AcademicTemplate from "./templates/AcademicTemplate";
+import CorporateEliteTemplate from "./templates/CorporateEliteTemplate";
+import StrategicLeaderTemplate from "./templates/StrategicLeaderTemplate";
+import ImpactProTemplate from "./templates/ImpactProTemplate";
 
 const ResumePreview = forwardRef(({resumeData, template = "classic"}, ref) => {
   const componentRef = useRef();
@@ -17,10 +21,14 @@ const ResumePreview = forwardRef(({resumeData, template = "classic"}, ref) => {
     modern: ModernTemplate,
     minimal: MinimalTemplate,
     professional: ProfessionalTemplate,
+    "professional-v2": ProfessionalV2Template,
     executive: ExecutiveTemplate,
     tech: TechTemplate,
     creative: CreativeTemplate,
     academic: AcademicTemplate,
+    "corporate-elite": CorporateEliteTemplate,
+    "strategic-leader": StrategicLeaderTemplate,
+    "impact-pro": ImpactProTemplate,
   };
 
   const SelectedTemplate = templates[template] || ClassicTemplate;

@@ -20,6 +20,9 @@ import ExecutiveTemplate from "../components/templates/ExecutiveTemplate";
 import TechTemplate from "../components/templates/TechTemplate";
 import CreativeTemplate from "../components/templates/CreativeTemplate";
 import AcademicTemplate from "../components/templates/AcademicTemplate";
+import CorporateEliteTemplate from "../components/templates/CorporateEliteTemplate";
+import StrategicLeaderTemplate from "../components/templates/StrategicLeaderTemplate";
+import ImpactProTemplate from "../components/templates/ImpactProTemplate";
 
 // Sample resume data for preview - matches template structure
 const sampleResumeData = {
@@ -197,6 +200,39 @@ const templates = [
     features: ["Publication-Ready", "Research-Focused", "Extended Format"],
     colors: ["#1a202c", "#ffffff"],
   },
+  {
+    id: "corporate-elite",
+    name: "Corporate Elite",
+    component: CorporateEliteTemplate,
+    category: "Professional",
+    atsScore: 99,
+    description:
+      "Ultra-professional Fortune 500 template with sophisticated navy accents",
+    features: ["Fortune 500 Ready", "Maximum ATS", "Executive Polish"],
+    colors: ["#1e3a5f", "#ffffff"],
+  },
+  {
+    id: "strategic-leader",
+    name: "Strategic Leader",
+    component: StrategicLeaderTemplate,
+    category: "Leadership",
+    atsScore: 97,
+    description:
+      "Leadership-focused layout emphasizing strategic impact and results",
+    features: ["Impact-Driven", "Two-Column Layout", "Achievement Focus"],
+    colors: ["#0d7377", "#f7fafc"],
+  },
+  {
+    id: "impact-pro",
+    name: "Impact Pro",
+    component: ImpactProTemplate,
+    category: "Professional",
+    atsScore: 98,
+    description:
+      "Bold results-driven template highlighting quantifiable achievements",
+    features: ["Metrics-First", "Bold Design", "Results-Focused"],
+    colors: ["#047857", "#ffffff"],
+  },
 ];
 
 const Templates = () => {
@@ -233,7 +269,7 @@ const Templates = () => {
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-full mb-4">
             <Layout className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
             <span className="text-sm font-semibold text-indigo-700 dark:text-indigo-300">
-              8 Professional Templates
+              11 Professional Templates
             </span>
           </div>
           <h1 className="text-4xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
