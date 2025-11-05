@@ -8,6 +8,10 @@ import ExecutiveTemplate from "./templates/ExecutiveTemplate";
 import TechTemplate from "./templates/TechTemplate";
 import CreativeTemplate from "./templates/CreativeTemplate";
 import AcademicTemplate from "./templates/AcademicTemplate";
+// New Modular Templates
+import CorporateProfessional from "./templates/CorporateProfessional";
+import ModernTech from "./templates/ModernTech";
+import CreativePortfolio from "./templates/CreativePortfolio";
 
 const ResumePreview = forwardRef(({resumeData, template = "classic"}, ref) => {
   const componentRef = useRef();
@@ -21,6 +25,10 @@ const ResumePreview = forwardRef(({resumeData, template = "classic"}, ref) => {
     tech: TechTemplate,
     creative: CreativeTemplate,
     academic: AcademicTemplate,
+    // New Modular Templates
+    "corporate-professional": CorporateProfessional,
+    "modern-tech": ModernTech,
+    "creative-portfolio": CreativePortfolio,
   };
 
   const SelectedTemplate = templates[template] || ClassicTemplate;

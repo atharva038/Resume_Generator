@@ -20,6 +20,10 @@ import ExecutiveTemplate from "../components/templates/ExecutiveTemplate";
 import TechTemplate from "../components/templates/TechTemplate";
 import CreativeTemplate from "../components/templates/CreativeTemplate";
 import AcademicTemplate from "../components/templates/AcademicTemplate";
+// New Modular Templates
+import CorporateProfessional from "../components/templates/CorporateProfessional";
+import ModernTech from "../components/templates/ModernTech";
+import CreativePortfolio from "../components/templates/CreativePortfolio";
 
 // Sample resume data for preview - matches template structure
 const sampleResumeData = {
@@ -197,6 +201,40 @@ const templates = [
     features: ["Publication-Ready", "Research-Focused", "Extended Format"],
     colors: ["#1a202c", "#ffffff"],
   },
+  // New Modular Templates
+  {
+    id: "corporate-professional",
+    name: "Corporate Professional",
+    component: CorporateProfessional,
+    category: "Modular",
+    atsScore: 95,
+    description:
+      "Clean, modular ATS-friendly template perfect for corporate roles with traditional layout",
+    features: ["Modular Components", "ATS-Optimized", "Single Column Layout"],
+    colors: ["#1e40af", "#ffffff"],
+  },
+  {
+    id: "modern-tech",
+    name: "Modern Tech",
+    component: ModernTech,
+    category: "Modular",
+    atsScore: 90,
+    description:
+      "Modern, visually appealing modular template designed for tech professionals with timeline layout",
+    features: ["Visual Timeline", "Skill Bars", "Two-Column Layout"],
+    colors: ["#0ea5e9", "#0f172a"],
+  },
+  {
+    id: "creative-portfolio",
+    name: "Creative Portfolio",
+    component: CreativePortfolio,
+    category: "Modular",
+    atsScore: 88,
+    description:
+      "Visually striking modular template for creative professionals with sidebar layout and card design",
+    features: ["Colored Sidebar", "Card Layout", "Eye-Catching Design"],
+    colors: ["#8b5cf6", "#ec4899"],
+  },
 ];
 
 const Templates = () => {
@@ -211,6 +249,7 @@ const Templates = () => {
     "Tech",
     "Creative",
     "Academic",
+    "Modular",
   ];
 
   const filteredTemplates =
@@ -233,7 +272,7 @@ const Templates = () => {
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-full mb-4">
             <Layout className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
             <span className="text-sm font-semibold text-indigo-700 dark:text-indigo-300">
-              8 Professional Templates
+              11 Professional Templates
             </span>
           </div>
           <h1 className="text-4xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">

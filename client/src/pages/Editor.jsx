@@ -23,6 +23,10 @@ import ExecutiveTemplate from "../components/templates/ExecutiveTemplate";
 import TechTemplate from "../components/templates/TechTemplate";
 import CreativeTemplate from "../components/templates/CreativeTemplate";
 import AcademicTemplate from "../components/templates/AcademicTemplate";
+// New Modular Templates
+import CorporateProfessional from "../components/templates/CorporateProfessional";
+import ModernTech from "../components/templates/ModernTech";
+import CreativePortfolio from "../components/templates/CreativePortfolio";
 
 // Default section order (only editable resume sections)
 const DEFAULT_SECTION_ORDER = [
@@ -110,6 +114,31 @@ const TEMPLATES = [
     category: "Academic",
     emoji: "🎓",
     atsScore: 97,
+  },
+  // New Modular Templates
+  {
+    id: "corporate-professional",
+    name: "Corporate Professional",
+    component: CorporateProfessional,
+    category: "Modular",
+    emoji: "🏢",
+    atsScore: 95,
+  },
+  {
+    id: "modern-tech",
+    name: "Modern Tech",
+    component: ModernTech,
+    category: "Modular",
+    emoji: "⚡",
+    atsScore: 90,
+  },
+  {
+    id: "creative-portfolio",
+    name: "Creative Portfolio",
+    component: CreativePortfolio,
+    category: "Modular",
+    emoji: "🎨",
+    atsScore: 88,
   },
 ];
 
