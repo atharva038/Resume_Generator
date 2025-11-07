@@ -4,6 +4,7 @@ import StarterKit from "@tiptap/starter-kit";
 import toast from "react-hot-toast";
 import {resumeAPI} from "../services/api";
 import {parseValidationErrors} from "../utils/errorHandler";
+import CharacterCounter from "./CharacterCounter";
 
 const EditableSection = ({
   title,
@@ -240,7 +241,6 @@ const EditableSection = ({
         </div>
       )}
 
-      {/* TipTap Editor */}
       <div className="border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
         <div className="bg-gray-50 dark:bg-gray-800 border-b border-gray-300 dark:border-gray-600 p-2 flex gap-2">
           <button
@@ -280,6 +280,15 @@ const EditableSection = ({
           editor={editor}
           className="prose dark:prose-invert max-w-none"
         />
+        {sectionType === "summary" && (
+          <div className="px-3 py-2 bg-gray-50 dark:bg-gray-800 border-t border-gray-300 dark:border-gray-600">
+            <CharacterCounter 
+              section="summary" 
+              field="summary" 
+              value={content || ''} 
+            />
+          </div>
+        )}
       </div>
 
       <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">

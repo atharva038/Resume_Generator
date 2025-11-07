@@ -12,8 +12,11 @@ import JobSpecificScoreCard from "../components/JobSpecificScoreCard";
 import RecommendationsPanel from "../components/RecommendationsPanel";
 import CollapsibleSection from "../components/CollapsibleSection";
 import GitHubImportModal from "../components/GitHubImportModal";
+import PageLimitWarning from "../components/PageLimitWarning";
+import CharacterCounter from "../components/CharacterCounter";
 import * as EditorSections from "../components/EditorSections";
 import {getJobCategories, getJobsByCategory} from "../utils/jobProfiles";
+import {validateFieldLength} from "../utils/resumePageValidator";
 import ClassicTemplate from "../components/templates/ClassicTemplate";
 import ModernTemplate from "../components/templates/ModernTemplate";
 import MinimalTemplate from "../components/templates/MinimalTemplate";
@@ -1855,7 +1858,16 @@ const Editor = () => {
         )}
       </div>
 
-      {/* Toast Notifications */}
+      <PageLimitWarning 
+        resumePreviewRef={resumePreviewRef}
+        onOverflow={(result) => {
+          toast.error(
+            `Resume exceeds one page by ${Math.round(result.overflow)}px. Please reduce content.`,
+            { duration: 5000 }
+          );
+        }}
+      />
+
       <Toaster position="bottom-right" />
     </div>
   );

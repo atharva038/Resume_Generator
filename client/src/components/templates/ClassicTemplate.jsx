@@ -35,37 +35,37 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
   const renderSection = (sectionId) => {
     const sections = {
       summary: resumeData.summary && (
-        <section key="summary" style={{marginBottom: "12px"}}>
+        <section key="summary" style={{marginBottom: "8px"}}>
           <h2
             className="font-bold uppercase"
             style={{
-              fontSize: "11pt",
+              fontSize: "10pt",
               borderBottom: "1px solid black",
-              paddingBottom: "3px",
-              marginBottom: "6px",
+              paddingBottom: "2px",
+              marginBottom: "4px",
             }}
           >
             Professional Summary
           </h2>
-          <p style={{fontSize: "10pt"}}>{resumeData.summary}</p>
+          <p style={{fontSize: "9pt", lineHeight: "1.3"}}>{resumeData.summary}</p>
         </section>
       ),
 
       skills: resumeData.skills && resumeData.skills.length > 0 && (
-        <section key="skills" style={{marginBottom: "12px"}}>
+        <section key="skills" style={{marginBottom: "8px"}}>
           <h2
             className="font-bold uppercase"
             style={{
-              fontSize: "11pt",
+              fontSize: "10pt",
               borderBottom: "1px solid black",
-              paddingBottom: "3px",
-              marginBottom: "6px",
+              paddingBottom: "2px",
+              marginBottom: "4px",
             }}
           >
             Skills
           </h2>
           {resumeData.skills.map((skillGroup, index) => (
-            <div key={index} style={{fontSize: "10pt", marginBottom: "4px"}}>
+            <div key={index} style={{fontSize: "9pt", marginBottom: "2px", lineHeight: "1.3"}}>
               <span className="font-semibold">{skillGroup.category}:</span>{" "}
               {formatSkills(skillGroup.items)}
             </div>
@@ -74,33 +74,33 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
       ),
 
       experience: resumeData.experience && resumeData.experience.length > 0 && (
-        <section key="experience" style={{marginBottom: "12px"}}>
+        <section key="experience" style={{marginBottom: "8px"}}>
           <h2
             className="font-bold uppercase"
             style={{
-              fontSize: "11pt",
+              fontSize: "10pt",
               borderBottom: "1px solid black",
-              paddingBottom: "3px",
-              marginBottom: "6px",
+              paddingBottom: "2px",
+              marginBottom: "4px",
             }}
           >
-            Professional Experience
+            Experience
           </h2>
           {resumeData.experience.map((exp, index) => (
-            <div key={index} style={{marginBottom: "10px"}}>
+            <div key={index} style={{marginBottom: "6px"}}>
               <div
                 className="flex justify-between items-baseline"
-                style={{marginBottom: "3px"}}
+                style={{marginBottom: "1px"}}
               >
                 <div>
-                  <span className="font-bold" style={{fontSize: "10pt"}}>
-                    {exp.company}
+                  <span className="font-bold" style={{fontSize: "9pt"}}>
+                    {exp.title || exp.company}
                   </span>
-                  {exp.title && (
-                    <span style={{fontSize: "10pt"}}> — {exp.title}</span>
+                  {exp.title && exp.company && (
+                    <span className="italic" style={{fontSize: "9pt"}}> | {exp.company}</span>
                   )}
                 </div>
-                <div style={{fontSize: "9pt"}}>
+                <div style={{fontSize: "8.5pt"}}>
                   {exp.startDate && (
                     <>
                       {exp.startDate} - {exp.current ? "Present" : exp.endDate}
@@ -111,18 +111,18 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
               {exp.location && (
                 <div
                   className="italic"
-                  style={{fontSize: "9pt", marginBottom: "3px"}}
+                  style={{fontSize: "8.5pt", marginBottom: "2px"}}
                 >
                   {exp.location}
                 </div>
               )}
               {exp.bullets && exp.bullets.length > 0 && (
                 <ul
-                  className="list-disc list-outside ml-5"
-                  style={{marginTop: "4px"}}
+                  className="list-disc list-outside ml-4"
+                  style={{marginTop: "2px"}}
                 >
                   {exp.bullets.map((bullet, i) => (
-                    <li key={i} style={{fontSize: "10pt", marginBottom: "3px"}}>
+                    <li key={i} style={{fontSize: "9pt", marginBottom: "1px", lineHeight: "1.3"}}>
                       {bullet}
                     </li>
                   ))}
@@ -134,20 +134,20 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
       ),
 
       projects: resumeData.projects && resumeData.projects.length > 0 && (
-        <section key="projects" style={{marginBottom: "12px"}}>
+        <section key="projects" style={{marginBottom: "8px"}}>
           <h2
             className="font-bold uppercase"
             style={{
-              fontSize: "11pt",
+              fontSize: "10pt",
               borderBottom: "1px solid black",
-              paddingBottom: "3px",
-              marginBottom: "6px",
+              paddingBottom: "2px",
+              marginBottom: "4px",
             }}
           >
             Projects
           </h2>
           {resumeData.projects.map((project, index) => (
-            <div key={index} style={{marginBottom: "10px"}}>
+            <div key={index} style={{marginBottom: "6px"}}>
               <div
                 style={{
                   display: "flex",
@@ -156,8 +156,15 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
                   flexWrap: "wrap",
                 }}
               >
-                <div className="font-bold" style={{fontSize: "10pt"}}>
+                <div className="font-bold" style={{fontSize: "9pt"}}>
                   {project.name}
+                  {project.technologies && (
+                    <span className="italic font-normal" style={{fontSize: "8.5pt", marginLeft: "6px"}}>
+                      | {Array.isArray(project.technologies)
+                        ? project.technologies.join(", ")
+                        : project.technologies}
+                    </span>
+                  )}
                 </div>
                 {project.link && (
                   <a
@@ -165,34 +172,22 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{
-                      fontSize: "9pt",
+                      fontSize: "8.5pt",
                       color: "#0066cc",
                       textDecoration: "underline",
-                      marginLeft: "8px",
                     }}
                   >
-                    🔗 View Project
+                    🔗
                   </a>
                 )}
               </div>
-              {project.technologies && (
-                <div
-                  className="italic"
-                  style={{fontSize: "9pt", marginBottom: "3px"}}
-                >
-                  Technologies:{" "}
-                  {Array.isArray(project.technologies)
-                    ? project.technologies.join(", ")
-                    : project.technologies}
-                </div>
-              )}
               {project.bullets && project.bullets.length > 0 && (
                 <ul
-                  className="list-disc list-outside ml-5"
-                  style={{marginTop: "4px"}}
+                  className="list-disc list-outside ml-4"
+                  style={{marginTop: "2px"}}
                 >
                   {project.bullets.map((bullet, i) => (
-                    <li key={i} style={{fontSize: "10pt", marginBottom: "3px"}}>
+                    <li key={i} style={{fontSize: "9pt", marginBottom: "1px", lineHeight: "1.3"}}>
                       {bullet}
                     </li>
                   ))}
@@ -204,30 +199,30 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
       ),
 
       education: resumeData.education && resumeData.education.length > 0 && (
-        <section key="education" style={{marginBottom: "12px"}}>
+        <section key="education" style={{marginBottom: "8px"}}>
           <h2
             className="font-bold uppercase"
             style={{
-              fontSize: "11pt",
+              fontSize: "10pt",
               borderBottom: "1px solid black",
-              paddingBottom: "3px",
-              marginBottom: "6px",
+              paddingBottom: "2px",
+              marginBottom: "4px",
             }}
           >
             Education
           </h2>
           {resumeData.education.map((edu, index) => (
-            <div key={index} style={{marginBottom: "8px"}}>
+            <div key={index} style={{marginBottom: "5px"}}>
               <div className="flex justify-between items-baseline">
                 <div>
-                  <span className="font-bold" style={{fontSize: "10pt"}}>
+                  <span className="font-bold" style={{fontSize: "9pt"}}>
                     {edu.institution}
                   </span>
                   {edu.location && (
-                    <span style={{fontSize: "9pt"}}> — {edu.location}</span>
+                    <span className="italic" style={{fontSize: "8.5pt"}}> | {edu.location}</span>
                   )}
                 </div>
-                <div style={{fontSize: "9pt"}}>
+                <div style={{fontSize: "8.5pt"}}>
                   {edu.startDate && (
                     <>
                       {edu.startDate} - {edu.endDate}
@@ -235,14 +230,14 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
                   )}
                 </div>
               </div>
-              <div style={{fontSize: "10pt"}}>
+              <div style={{fontSize: "9pt", lineHeight: "1.3"}}>
                 {edu.degree && edu.field && (
-                  <span>
+                  <span className="italic">
                     {edu.degree} in {edu.field}
                   </span>
                 )}
                 {edu.gpa && (
-                  <span style={{fontSize: "9pt"}}> | GPA: {edu.gpa}</span>
+                  <span style={{fontSize: "8.5pt"}}> | GPA: {edu.gpa}</span>
                 )}
               </div>
             </div>
@@ -252,24 +247,24 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
 
       certifications: resumeData.certifications &&
         resumeData.certifications.length > 0 && (
-          <section key="certifications" style={{marginBottom: "12px"}}>
+          <section key="certifications" style={{marginBottom: "8px"}}>
             <h2
               className="font-bold uppercase"
               style={{
-                fontSize: "11pt",
+                fontSize: "10pt",
                 borderBottom: "1px solid black",
-                paddingBottom: "3px",
-                marginBottom: "6px",
+                paddingBottom: "2px",
+                marginBottom: "4px",
               }}
             >
               Certifications
             </h2>
             {resumeData.certifications.map((cert, index) => (
-              <div key={index} style={{fontSize: "10pt", marginBottom: "4px"}}>
+              <div key={index} style={{fontSize: "9pt", marginBottom: "2px", lineHeight: "1.3"}}>
                 <span className="font-semibold">{cert.name}</span>
                 {cert.issuer && <span> — {cert.issuer}</span>}
                 {cert.date && (
-                  <span style={{fontSize: "9pt"}}> ({cert.date})</span>
+                  <span style={{fontSize: "8.5pt"}}> ({cert.date})</span>
                 )}
               </div>
             ))}
@@ -278,24 +273,24 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
 
       achievements: resumeData.achievements &&
         resumeData.achievements.length > 0 && (
-          <section key="achievements" style={{marginBottom: "12px"}}>
+          <section key="achievements" style={{marginBottom: "8px"}}>
             <h2
               className="font-bold uppercase"
               style={{
-                fontSize: "11pt",
+                fontSize: "10pt",
                 borderBottom: "1px solid black",
-                paddingBottom: "3px",
-                marginBottom: "6px",
+                paddingBottom: "2px",
+                marginBottom: "4px",
               }}
             >
               Achievements
             </h2>
             <ul
-              className="list-disc list-outside ml-5"
-              style={{marginTop: "4px"}}
+              className="list-disc list-outside ml-4"
+              style={{marginTop: "2px"}}
             >
               {resumeData.achievements.map((achievement, index) => (
-                <li key={index} style={{fontSize: "10pt", marginBottom: "3px"}}>
+                <li key={index} style={{fontSize: "9pt", marginBottom: "1px", lineHeight: "1.3"}}>
                   {achievement}
                 </li>
               ))}
@@ -303,7 +298,6 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
           </section>
         ),
 
-      // Custom Sections - render all custom sections when "customSections" is in sectionOrder
       customSections: resumeData.customSections &&
         resumeData.customSections.length > 0 && (
           <>
@@ -312,27 +306,27 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
                 return (
                   <section
                     key={`customSection_${sectionIndex}`}
-                    style={{marginBottom: "12px"}}
+                    style={{marginBottom: "8px"}}
                   >
                     <h2
                       className="font-bold uppercase"
                       style={{
-                        fontSize: "11pt",
+                        fontSize: "10pt",
                         borderBottom: "1px solid black",
-                        paddingBottom: "3px",
-                        marginBottom: "6px",
+                        paddingBottom: "2px",
+                        marginBottom: "4px",
                       }}
                     >
                       {section.title}
                     </h2>
                     <ul
-                      className="list-disc list-outside ml-5"
-                      style={{marginTop: "4px"}}
+                      className="list-disc list-outside ml-4"
+                      style={{marginTop: "2px"}}
                     >
                       {section.items.map((item, itemIndex) => (
                         <li
                           key={itemIndex}
-                          style={{fontSize: "10pt", marginBottom: "3px"}}
+                          style={{fontSize: "9pt", marginBottom: "1px", lineHeight: "1.3"}}
                         >
                           {item}
                         </li>
@@ -355,30 +349,32 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
       ref={ref}
       className="resume-preview !bg-white !text-black shadow-lg border border-gray-300 font-resume"
       style={{
-        width: "8.5in",
-        minHeight: "11in",
-        padding: "0.5in",
-        fontSize: "10.5pt",
-        lineHeight: "1.35",
+        width: "210mm",
+        height: "297mm",
+        maxHeight: "297mm",
+        padding: "0.4in 0.5in",
+        fontSize: "9.5pt",
+        lineHeight: "1.25",
         color: "#000000",
+        overflow: "hidden",
+        boxSizing: "border-box"
       }}
     >
-      {/* Header - Contact Information */}
       <header
-        className="text-center pb-2 mb-3"
-        style={{borderBottom: "2px solid black"}}
+        className="text-center pb-1.5 mb-2"
+        style={{borderBottom: "1.5px solid black"}}
       >
         <h1
           className="font-bold uppercase tracking-wide"
-          style={{fontSize: "22pt", marginBottom: "8px"}}
+          style={{fontSize: "18pt", marginBottom: "4px", lineHeight: "1.1"}}
         >
           {resumeData.name || "Your Name"}
         </h1>
-        <div style={{fontSize: "10pt"}}>
+        <div style={{fontSize: "9pt", lineHeight: "1.3"}}>
           {resumeData.contact?.email && (
-            <div style={{marginBottom: "4px"}}>{resumeData.contact.email}</div>
+            <div style={{marginBottom: "2px"}}>{resumeData.contact.email}</div>
           )}
-          <div className="flex justify-center gap-3 flex-wrap">
+          <div className="flex justify-center gap-2 flex-wrap">
             {resumeData.contact?.phone && (
               <span>{resumeData.contact.phone}</span>
             )}
@@ -386,7 +382,7 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
               <span>{resumeData.contact.location}</span>
             )}
           </div>
-          <div className="flex justify-center gap-3 flex-wrap">
+          <div className="flex justify-center gap-2 flex-wrap">
             {resumeData.contact?.linkedin && (
               <a
                 href={resumeData.contact.linkedin}
@@ -407,11 +403,20 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
                 GitHub
               </a>
             )}
+            {resumeData.contact?.portfolio && (
+              <a
+                href={resumeData.contact.portfolio}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{color: "#0066cc", textDecoration: "underline"}}
+              >
+                Portfolio
+              </a>
+            )}
           </div>
         </div>
       </header>
 
-      {/* Dynamic sections based on sectionOrder */}
       {sectionOrder.map((sectionId) => renderSection(sectionId))}
     </div>
   );
