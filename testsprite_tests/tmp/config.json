@@ -1,0 +1,18 @@
+{
+  "status": "commited",
+  "type": "frontend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:5173",
+  "loginUser": "atharvasjoshi2005@gmail.com",
+  "loginPassword": "Admin@123",
+  "executionArgs": {
+    "projectName": "ATS_RESUME_GENERATOR",
+    "projectPath": "/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR",
+    "testIds": [],
+    "additionalInstruction": "Test the SmartNShine ATS Resume Builder application. Focus on authentication flows, resume upload and editing, ATS analysis, and user dashboard functionality.",
+    "envs": {
+      "API_KEY": "sk-user-2b00upuoGxJgFylyfjHwzVjED9-kJEJhKg4buhspB7wLCQ7UCheM_Neq5Q0F7twwww4YVGE0-5OUP7RZ3-dxu2vsm7x9MmcIXJIP5uaKNOulfQ-hgGeLBJH8RTU5Nlb-FY8"
+    }
+  },
+  "proxy": "http://a13148ee-8436-449d-82c0-4ab7aab52d63:Qt6HJCzmAWdtgLF9Q3NJP7nJUanju027@tun.testsprite.com:8080"
+}

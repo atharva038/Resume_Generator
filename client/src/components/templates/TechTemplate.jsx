@@ -1,6 +1,54 @@
 import {forwardRef} from "react";
 
 const TechTemplate = forwardRef(({resumeData}, ref) => {
+  // Color themes for the template
+  const colorThemes = {
+    black: {
+      primary: "#0f172a", // slate-900 - Deep tech black
+      secondary: "#1e293b", // slate-800
+      accent: "#334155", // slate-700
+      text: "#1e293b", // slate-800
+      textLight: "#475569", // slate-600
+      border: "#0f172a",
+      headerBg: "#0f172a", // Black header
+      headerText: "#ffffff",
+    },
+    blue: {
+      primary: "#1e40af", // blue-800 - Solid blue
+      secondary: "#1e3a8a", // blue-900
+      accent: "#3b82f6", // blue-500
+      text: "#1e293b", // slate-800
+      textLight: "#475569", // slate-600
+      border: "#1e40af",
+      headerBg: "#1e40af",
+      headerText: "#ffffff",
+    },
+    purple: {
+      primary: "#7e22ce", // purple-700 - Solid purple
+      secondary: "#6b21a8", // purple-800
+      accent: "#a855f7", // purple-500
+      text: "#1e293b",
+      textLight: "#475569",
+      border: "#7e22ce",
+      headerBg: "#7e22ce",
+      headerText: "#ffffff",
+    },
+    teal: {
+      primary: "#0f766e", // teal-700 - Solid teal
+      secondary: "#115e59", // teal-800
+      accent: "#14b8a6", // teal-500
+      text: "#1e293b",
+      textLight: "#475569",
+      border: "#0f766e",
+      headerBg: "#0f766e",
+      headerText: "#ffffff",
+    },
+  };
+
+  // Select the color theme (default to black if not specified)
+  const selectedTheme =
+    colorThemes[resumeData?.colorTheme] || colorThemes.black;
+
   // Helper function to safely format skills (handles both array and string)
   const formatSkills = (items) => {
     if (Array.isArray(items)) {
@@ -40,10 +88,10 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
             style={{
               fontSize: "13pt",
               fontWeight: "bold",
-              color: "#0ea5e9",
+              color: selectedTheme.primary,
               marginBottom: "10px",
               paddingBottom: "4px",
-              borderBottom: "2px solid #0ea5e9",
+              borderBottom: `2px solid ${selectedTheme.border}`,
               fontFamily: "'Courier New', monospace",
               letterSpacing: "1px",
             }}
@@ -55,7 +103,7 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
               display: "grid",
               gridTemplateColumns: "1fr 1fr",
               gap: "10px",
-              backgroundColor: "#f8fafc",
+              backgroundColor: `${selectedTheme.primary}10`,
               padding: "10px",
               borderRadius: "4px",
             }}
@@ -65,7 +113,7 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
                 <div
                   style={{
                     fontWeight: "bold",
-                    color: "#334155",
+                    color: selectedTheme.text,
                     marginBottom: "3px",
                     fontFamily: "'Courier New', monospace",
                   }}
@@ -74,7 +122,7 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
                 </div>
                 <div
                   style={{
-                    color: "#64748b",
+                    color: selectedTheme.textLight,
                     fontSize: "9.5pt",
                     lineHeight: "1.4",
                   }}
@@ -93,10 +141,10 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
             style={{
               fontSize: "13pt",
               fontWeight: "bold",
-              color: "#0ea5e9",
+              color: selectedTheme.primary,
               marginBottom: "10px",
               paddingBottom: "4px",
-              borderBottom: "2px solid #0ea5e9",
+              borderBottom: `2px solid ${selectedTheme.border}`,
               fontFamily: "'Courier New', monospace",
               letterSpacing: "1px",
             }}
@@ -108,7 +156,7 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
               key={index}
               style={{
                 marginBottom: "12px",
-                borderLeft: "3px solid #cbd5e1",
+                borderLeft: `3px solid ${selectedTheme.border}`,
                 paddingLeft: "12px",
               }}
             >
@@ -124,7 +172,7 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
                   style={{
                     fontSize: "11pt",
                     fontWeight: "bold",
-                    color: "#1e293b",
+                    color: selectedTheme.text,
                   }}
                 >
                   {exp.position}
@@ -132,7 +180,7 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
                 <span
                   style={{
                     fontSize: "9pt",
-                    color: "#64748b",
+                    color: selectedTheme.textLight,
                     fontFamily: "'Courier New', monospace",
                   }}
                 >
@@ -142,7 +190,7 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
               <div
                 style={{
                   fontSize: "10pt",
-                  color: "#475569",
+                  color: selectedTheme.textLight,
                   fontWeight: "600",
                   marginBottom: "5px",
                 }}
@@ -164,7 +212,7 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
                         fontSize: "9.5pt",
                         marginBottom: "4px",
                         lineHeight: "1.5",
-                        color: "#334155",
+                        color: selectedTheme.text,
                         position: "relative",
                         paddingLeft: "10px",
                       }}
@@ -173,7 +221,7 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
                         style={{
                           position: "absolute",
                           left: "-10px",
-                          color: "#0ea5e9",
+                          color: selectedTheme.primary,
                           fontWeight: "bold",
                         }}
                       >
@@ -195,10 +243,10 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
             style={{
               fontSize: "13pt",
               fontWeight: "bold",
-              color: "#0ea5e9",
+              color: selectedTheme.primary,
               marginBottom: "10px",
               paddingBottom: "4px",
-              borderBottom: "2px solid #0ea5e9",
+              borderBottom: `2px solid ${selectedTheme.border}`,
               fontFamily: "'Courier New', monospace",
               letterSpacing: "1px",
             }}
@@ -210,10 +258,10 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
               key={index}
               style={{
                 marginBottom: "12px",
-                backgroundColor: "#f8fafc",
+                backgroundColor: `${selectedTheme.primary}10`,
                 padding: "10px",
                 borderRadius: "4px",
-                borderLeft: "3px solid #0ea5e9",
+                borderLeft: `3px solid ${selectedTheme.border}`,
               }}
             >
               <div
@@ -227,7 +275,7 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
                   style={{
                     fontSize: "10.5pt",
                     fontWeight: "bold",
-                    color: "#1e293b",
+                    color: selectedTheme.text,
                   }}
                 >
                   {project.name}
@@ -236,7 +284,7 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
                   <span
                     style={{
                       fontSize: "9pt",
-                      color: "#64748b",
+                      color: selectedTheme.textLight,
                       fontFamily: "'Courier New', monospace",
                     }}
                   >
@@ -249,7 +297,7 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
                   style={{
                     fontSize: "9.5pt",
                     margin: "4px 0",
-                    color: "#475569",
+                    color: selectedTheme.textLight,
                     lineHeight: "1.5",
                   }}
                 >
@@ -260,10 +308,10 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
                 <div
                   style={{
                     fontSize: "9pt",
-                    color: "#64748b",
+                    color: selectedTheme.textLight,
                     marginTop: "5px",
                     fontFamily: "'Courier New', monospace",
-                    backgroundColor: "#e0f2fe",
+                    backgroundColor: `${selectedTheme.accent}30`,
                     padding: "4px 8px",
                     borderRadius: "3px",
                     display: "inline-block",
@@ -274,7 +322,11 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
               )}
               {project.link && (
                 <div
-                  style={{fontSize: "9pt", color: "#0ea5e9", marginTop: "3px"}}
+                  style={{
+                    fontSize: "9pt",
+                    color: selectedTheme.primary,
+                    marginTop: "3px",
+                  }}
                 >
                   🔗 {project.link}
                 </div>
@@ -290,10 +342,10 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
             style={{
               fontSize: "13pt",
               fontWeight: "bold",
-              color: "#0ea5e9",
+              color: selectedTheme.primary,
               marginBottom: "10px",
               paddingBottom: "4px",
-              borderBottom: "2px solid #0ea5e9",
+              borderBottom: `2px solid ${selectedTheme.border}`,
               fontFamily: "'Courier New', monospace",
               letterSpacing: "1px",
             }}
@@ -314,19 +366,21 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
                     style={{
                       fontSize: "10.5pt",
                       fontWeight: "bold",
-                      color: "#1e293b",
+                      color: selectedTheme.text,
                     }}
                   >
                     {edu.degree} in {edu.field}
                   </div>
-                  <div style={{fontSize: "9.5pt", color: "#475569"}}>
+                  <div
+                    style={{fontSize: "9.5pt", color: selectedTheme.textLight}}
+                  >
                     {edu.institution} {edu.location && `• ${edu.location}`}
                   </div>
                 </div>
                 <span
                   style={{
                     fontSize: "9pt",
-                    color: "#64748b",
+                    color: selectedTheme.textLight,
                     fontFamily: "'Courier New', monospace",
                   }}
                 >
@@ -335,7 +389,11 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
               </div>
               {edu.gpa && (
                 <div
-                  style={{fontSize: "9pt", color: "#64748b", marginTop: "2px"}}
+                  style={{
+                    fontSize: "9pt",
+                    color: selectedTheme.textLight,
+                    marginTop: "2px",
+                  }}
                 >
                   GPA: {edu.gpa}
                 </div>
@@ -352,10 +410,10 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
               style={{
                 fontSize: "13pt",
                 fontWeight: "bold",
-                color: "#0ea5e9",
+                color: selectedTheme.primary,
                 marginBottom: "10px",
                 paddingBottom: "4px",
-                borderBottom: "2px solid #0ea5e9",
+                borderBottom: `2px solid ${selectedTheme.border}`,
                 fontFamily: "'Courier New', monospace",
                 letterSpacing: "1px",
               }}
@@ -374,15 +432,20 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
                   key={index}
                   style={{
                     fontSize: "9.5pt",
-                    color: "#334155",
-                    backgroundColor: "#f1f5f9",
+                    color: selectedTheme.text,
+                    backgroundColor: `${selectedTheme.primary}10`,
                     padding: "6px 10px",
                     borderRadius: "3px",
                   }}
                 >
                   <span style={{fontWeight: "600"}}>{cert.name}</span>
                   {cert.issuer && (
-                    <div style={{fontSize: "8.5pt", color: "#64748b"}}>
+                    <div
+                      style={{
+                        fontSize: "8.5pt",
+                        color: selectedTheme.textLight,
+                      }}
+                    >
                       {cert.issuer}
                     </div>
                   )}
@@ -390,7 +453,7 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
                     <div
                       style={{
                         fontSize: "8.5pt",
-                        color: "#64748b",
+                        color: selectedTheme.textLight,
                         fontFamily: "'Courier New', monospace",
                       }}
                     >
@@ -410,10 +473,10 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
               style={{
                 fontSize: "13pt",
                 fontWeight: "bold",
-                color: "#0ea5e9",
+                color: selectedTheme.primary,
                 marginBottom: "10px",
                 paddingBottom: "4px",
-                borderBottom: "2px solid #0ea5e9",
+                borderBottom: `2px solid ${selectedTheme.border}`,
                 fontFamily: "'Courier New', monospace",
                 letterSpacing: "1px",
               }}
@@ -428,7 +491,7 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
                     fontSize: "9.5pt",
                     marginBottom: "4px",
                     lineHeight: "1.5",
-                    color: "#334155",
+                    color: selectedTheme.text,
                     position: "relative",
                     paddingLeft: "10px",
                   }}
@@ -437,7 +500,7 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
                     style={{
                       position: "absolute",
                       left: "-10px",
-                      color: "#0ea5e9",
+                      color: selectedTheme.primary,
                       fontWeight: "bold",
                     }}
                   >
@@ -459,10 +522,10 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
                   style={{
                     fontSize: "13pt",
                     fontWeight: "bold",
-                    color: "#0ea5e9",
+                    color: selectedTheme.primary,
                     marginBottom: "10px",
                     paddingBottom: "4px",
-                    borderBottom: "2px solid #0ea5e9",
+                    borderBottom: `2px solid ${selectedTheme.border}`,
                     fontFamily: "'Courier New', monospace",
                     letterSpacing: "1px",
                   }}
@@ -473,7 +536,7 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
                   style={{
                     fontSize: "9.5pt",
                     lineHeight: "1.5",
-                    color: "#334155",
+                    color: selectedTheme.text,
                     whiteSpace: "pre-wrap",
                   }}
                 >
@@ -498,7 +561,7 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
         backgroundColor: "white",
         padding: "0.5in",
         fontFamily: "'Arial', 'Helvetica', sans-serif",
-        color: "#1e293b",
+        color: selectedTheme.text,
         boxShadow: "0 0 10px rgba(0,0,0,0.1)",
       }}
     >
@@ -506,8 +569,8 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
       <header
         style={{
           marginBottom: "18px",
-          backgroundColor: "#0f172a",
-          color: "white",
+          backgroundColor: selectedTheme.headerBg || selectedTheme.primary,
+          color: selectedTheme.headerText || "white",
           padding: "20px",
           borderRadius: "6px",
         }}
@@ -528,7 +591,7 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
             style={{
               fontSize: "10pt",
               marginBottom: "10px",
-              color: "#cbd5e1",
+              color: "rgba(255, 255, 255, 0.9)",
               lineHeight: "1.5",
             }}
           >
@@ -538,7 +601,7 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
         <div
           style={{
             fontSize: "9.5pt",
-            color: "#94a3b8",
+            color: "rgba(255, 255, 255, 0.8)",
             display: "flex",
             gap: "12px",
             flexWrap: "wrap",

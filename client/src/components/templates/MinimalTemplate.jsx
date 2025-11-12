@@ -1,6 +1,42 @@
 import {forwardRef} from "react";
 
 const MinimalTemplate = forwardRef(({resumeData}, ref) => {
+  // Color Themes - Multiple professional palettes
+  const colorThemes = {
+    charcoal: {
+      primary: "#2d3748",
+      text: "#1a202c",
+      textLight: "#4a5568",
+      textMuted: "#718096",
+      border: "#e2e8f0",
+    },
+    navy: {
+      primary: "#1e40af",
+      text: "#1a202c",
+      textLight: "#4a5568",
+      textMuted: "#718096",
+      border: "#e2e8f0",
+    },
+    slate: {
+      primary: "#475569",
+      text: "#1a202c",
+      textLight: "#64748b",
+      textMuted: "#94a3b8",
+      border: "#e2e8f0",
+    },
+    graphite: {
+      primary: "#18181b",
+      text: "#09090b",
+      textLight: "#3f3f46",
+      textMuted: "#71717a",
+      border: "#e4e4e7",
+    },
+  };
+
+  // Select theme based on resumeData or default to charcoal
+  const selectedTheme =
+    colorThemes[resumeData?.colorTheme] || colorThemes.charcoal;
+
   // Helper function to safely format skills (handles both array and string)
   const formatSkills = (items) => {
     if (Array.isArray(items)) {

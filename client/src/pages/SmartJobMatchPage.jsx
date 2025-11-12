@@ -1,6 +1,6 @@
 import {useState, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
-import SmartJobMatch from "../components/SmartJobMatch";
+import {SmartJobMatch} from "../components/features/job-match";
 import {Loader2, AlertCircle, Plus} from "lucide-react";
 import toast from "react-hot-toast";
 

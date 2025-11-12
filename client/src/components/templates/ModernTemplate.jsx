@@ -1,6 +1,41 @@
 import {forwardRef} from "react";
 
 const ModernTemplate = forwardRef(({resumeData}, ref) => {
+  // Color Themes - Multiple professional palettes
+  const colorThemes = {
+    blue: {
+      primary: "#2563eb",
+      secondary: "#1e40af",
+      text: "#000000",
+      textLight: "#374151",
+      textMuted: "#6b7280",
+    },
+    purple: {
+      primary: "#7c3aed",
+      secondary: "#6d28d9",
+      text: "#000000",
+      textLight: "#374151",
+      textMuted: "#6b7280",
+    },
+    teal: {
+      primary: "#0d9488",
+      secondary: "#0f766e",
+      text: "#000000",
+      textLight: "#374151",
+      textMuted: "#6b7280",
+    },
+    orange: {
+      primary: "#ea580c",
+      secondary: "#c2410c",
+      text: "#000000",
+      textLight: "#374151",
+      textMuted: "#6b7280",
+    },
+  };
+
+  // Select theme based on resumeData or default to blue
+  const selectedTheme = colorThemes[resumeData?.colorTheme] || colorThemes.blue;
+
   // Helper function to safely format skills (handles both array and string)
   const formatSkills = (items) => {
     if (Array.isArray(items)) {
@@ -59,7 +94,7 @@ const ModernTemplate = forwardRef(({resumeData}, ref) => {
             className="font-bold uppercase"
             style={{
               fontSize: "12pt",
-              color: "#1a56db",
+              color: selectedTheme.primary,
               marginBottom: "6px",
               letterSpacing: "0.5px",
             }}
@@ -78,7 +113,7 @@ const ModernTemplate = forwardRef(({resumeData}, ref) => {
             className="font-bold uppercase"
             style={{
               fontSize: "12pt",
-              color: "#1a56db",
+              color: selectedTheme.primary,
               marginBottom: "6px",
               letterSpacing: "0.5px",
             }}
@@ -94,10 +129,13 @@ const ModernTemplate = forwardRef(({resumeData}, ref) => {
           >
             {resumeData.skills.map((skillGroup, index) => (
               <div key={index} style={{fontSize: "10pt"}}>
-                <span className="font-semibold" style={{color: "#374151"}}>
+                <span
+                  className="font-semibold"
+                  style={{color: selectedTheme.textLight}}
+                >
                   {skillGroup.category}:
                 </span>{" "}
-                <span style={{color: "#6b7280"}}>
+                <span style={{color: selectedTheme.textMuted}}>
                   {formatSkills(skillGroup.items)}
                 </span>
               </div>
@@ -112,7 +150,7 @@ const ModernTemplate = forwardRef(({resumeData}, ref) => {
             className="font-bold uppercase"
             style={{
               fontSize: "12pt",
-              color: "#1a56db",
+              color: selectedTheme.primary,
               marginBottom: "6px",
               letterSpacing: "0.5px",
             }}
@@ -130,13 +168,15 @@ const ModernTemplate = forwardRef(({resumeData}, ref) => {
                     {exp.title || "Position"}
                   </span>
                   {exp.company && (
-                    <span style={{fontSize: "10pt", color: "#6b7280"}}>
+                    <span
+                      style={{fontSize: "10pt", color: selectedTheme.textMuted}}
+                    >
                       {" "}
                       @ {exp.company}
                     </span>
                   )}
                 </div>
-                <div style={{fontSize: "9pt", color: "#9ca3af"}}>
+                <div style={{fontSize: "9pt", color: selectedTheme.textMuted}}>
                   {exp.startDate && (
                     <>
                       {exp.startDate} - {exp.current ? "Present" : exp.endDate}
@@ -148,7 +188,7 @@ const ModernTemplate = forwardRef(({resumeData}, ref) => {
                 <div
                   style={{
                     fontSize: "9pt",
-                    color: "#6b7280",
+                    color: selectedTheme.textMuted,
                     marginBottom: "4px",
                   }}
                 >
@@ -178,7 +218,7 @@ const ModernTemplate = forwardRef(({resumeData}, ref) => {
             className="font-bold uppercase"
             style={{
               fontSize: "12pt",
-              color: "#1a56db",
+              color: selectedTheme.primary,
               marginBottom: "6px",
               letterSpacing: "0.5px",
             }}
@@ -205,7 +245,7 @@ const ModernTemplate = forwardRef(({resumeData}, ref) => {
                     rel="noopener noreferrer"
                     style={{
                       fontSize: "9pt",
-                      color: "#1a56db",
+                      color: selectedTheme.primary,
                       textDecoration: "underline",
                       marginLeft: "8px",
                     }}
@@ -218,7 +258,7 @@ const ModernTemplate = forwardRef(({resumeData}, ref) => {
                 <div
                   style={{
                     fontSize: "9pt",
-                    color: "#6b7280",
+                    color: selectedTheme.textMuted,
                     marginBottom: "3px",
                   }}
                 >
@@ -251,7 +291,7 @@ const ModernTemplate = forwardRef(({resumeData}, ref) => {
             className="font-bold uppercase"
             style={{
               fontSize: "12pt",
-              color: "#1a56db",
+              color: selectedTheme.primary,
               marginBottom: "6px",
               letterSpacing: "0.5px",
             }}
@@ -266,7 +306,7 @@ const ModernTemplate = forwardRef(({resumeData}, ref) => {
                     {edu.degree} {edu.field && `in ${edu.field}`}
                   </span>
                 </div>
-                <div style={{fontSize: "9pt", color: "#9ca3af"}}>
+                <div style={{fontSize: "9pt", color: selectedTheme.textMuted}}>
                   {edu.startDate && (
                     <>
                       {edu.startDate} - {edu.endDate}
@@ -274,7 +314,7 @@ const ModernTemplate = forwardRef(({resumeData}, ref) => {
                   )}
                 </div>
               </div>
-              <div style={{fontSize: "10pt", color: "#6b7280"}}>
+              <div style={{fontSize: "10pt", color: selectedTheme.textMuted}}>
                 {edu.institution}
                 {edu.location && <span> — {edu.location}</span>}
                 {edu.gpa && <span> | GPA: {edu.gpa}</span>}
@@ -291,7 +331,7 @@ const ModernTemplate = forwardRef(({resumeData}, ref) => {
               className="font-bold uppercase"
               style={{
                 fontSize: "12pt",
-                color: "#1a56db",
+                color: selectedTheme.primary,
                 marginBottom: "6px",
                 letterSpacing: "0.5px",
               }}
@@ -302,10 +342,15 @@ const ModernTemplate = forwardRef(({resumeData}, ref) => {
               <div key={index} style={{fontSize: "10pt", marginBottom: "4px"}}>
                 <span className="font-semibold">{cert.name}</span>
                 {cert.issuer && (
-                  <span style={{color: "#6b7280"}}> — {cert.issuer}</span>
+                  <span style={{color: selectedTheme.textMuted}}>
+                    {" "}
+                    — {cert.issuer}
+                  </span>
                 )}
                 {cert.date && (
-                  <span style={{fontSize: "9pt", color: "#9ca3af"}}>
+                  <span
+                    style={{fontSize: "9pt", color: selectedTheme.textMuted}}
+                  >
                     {" "}
                     ({cert.date})
                   </span>
@@ -322,7 +367,7 @@ const ModernTemplate = forwardRef(({resumeData}, ref) => {
               className="font-bold uppercase"
               style={{
                 fontSize: "12pt",
-                color: "#1a56db",
+                color: selectedTheme.primary,
                 marginBottom: "6px",
                 letterSpacing: "0.5px",
               }}
@@ -353,7 +398,7 @@ const ModernTemplate = forwardRef(({resumeData}, ref) => {
                       className="font-bold uppercase"
                       style={{
                         fontSize: "12pt",
-                        color: "#1a56db",
+                        color: selectedTheme.primary,
                         marginBottom: "6px",
                         letterSpacing: "0.5px",
                       }}
@@ -402,7 +447,11 @@ const ModernTemplate = forwardRef(({resumeData}, ref) => {
       <header style={{marginBottom: "16px"}}>
         <h1
           className="font-bold"
-          style={{fontSize: "28pt", marginBottom: "6px", color: "#1a56db"}}
+          style={{
+            fontSize: "28pt",
+            marginBottom: "6px",
+            color: selectedTheme.primary,
+          }}
         >
           {resumeData.name || "Your Name"}
         </h1>
@@ -429,7 +478,10 @@ const ModernTemplate = forwardRef(({resumeData}, ref) => {
               href={resumeData.contact.linkedin}
               target="_blank"
               rel="noopener noreferrer"
-              style={{color: "#1a56db", textDecoration: "underline"}}
+              style={{
+                color: selectedTheme.primary,
+                textDecoration: "underline",
+              }}
             >
               🔗 LinkedIn
             </a>
@@ -439,7 +491,10 @@ const ModernTemplate = forwardRef(({resumeData}, ref) => {
               href={resumeData.contact.github}
               target="_blank"
               rel="noopener noreferrer"
-              style={{color: "#1a56db", textDecoration: "underline"}}
+              style={{
+                color: selectedTheme.primary,
+                textDecoration: "underline",
+              }}
             >
               💻 GitHub
             </a>

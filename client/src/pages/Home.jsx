@@ -1,6 +1,6 @@
 import {Link} from "react-router-dom";
 import {useState} from "react";
-import HeroSection from "../components/HeroSection";
+import {HeroSection} from "../components/layout";
 
 const Home = () => {
   const [openFAQ, setOpenFAQ] = useState(null);

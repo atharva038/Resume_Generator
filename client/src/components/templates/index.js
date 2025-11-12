@@ -3,7 +3,14 @@
  * Export all complete resume templates
  */
 
-// This file is kept for future template exports
-// Currently, templates are imported directly where needed
-
-export default {};
+export {default as ClassicTemplate} from "./ClassicTemplate";
+export {default as ModernTemplate} from "./ModernTemplate";
+export {default as MinimalTemplate} from "./MinimalTemplate";
+export {default as ProfessionalTemplate} from "./ProfessionalTemplate";
+export {default as ExecutiveTemplate} from "./ExecutiveTemplate";
+export {default as TechTemplate} from "./TechTemplate";
+export {default as CreativeTemplate} from "./CreativeTemplate";
+export {default as AcademicTemplate} from "./AcademicTemplate";
+export {default as CorporateEliteTemplate} from "./CorporateEliteTemplate";
+export {default as StrategicLeaderTemplate} from "./StrategicLeaderTemplate";
+export {default as ImpactProTemplate} from "./ImpactProTemplate";
