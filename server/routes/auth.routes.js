@@ -17,6 +17,24 @@ import {
 
 const router = express.Router();
 
+// OAuth configuration status endpoint
+router.get("/oauth-status", (req, res) => {
+  const googleConfigured =
+    process.env.GOOGLE_CLIENT_ID &&
+    process.env.GOOGLE_CLIENT_SECRET &&
+    !process.env.GOOGLE_CLIENT_ID.includes("PLACEHOLDER");
+
+  const githubConfigured =
+    process.env.GITHUB_CLIENT_ID &&
+    process.env.GITHUB_CLIENT_SECRET &&
+    !process.env.GITHUB_CLIENT_ID.includes("PLACEHOLDER");
+
+  res.json({
+    google: googleConfigured,
+    github: githubConfigured,
+  });
+});
+
 // Public routes with rate limiting and validation for security
 router.post("/register", authLimiter, validateRegister, register);
 router.post("/login", authLimiter, validateLogin, login);
@@ -29,22 +47,41 @@ router.post("/reset-password", authLimiter, resetPassword);
 // GOOGLE OAUTH ROUTES
 // ==========================================
 
+// Check if Google OAuth is configured
+const isGoogleConfigured =
+  process.env.GOOGLE_CLIENT_ID &&
+  process.env.GOOGLE_CLIENT_SECRET &&
+  !process.env.GOOGLE_CLIENT_ID.includes("PLACEHOLDER");
+
 // Initiate Google OAuth
-router.get(
-  "/google",
+router.get("/google", (req, res, next) => {
+  if (!isGoogleConfigured) {
+    return res.status(503).json({
+      error: "Google OAuth is not configured on this server",
+      message:
+        "Please contact the administrator to enable Google authentication",
+    });
+  }
   passport.authenticate("google", {
     scope: ["profile", "email"],
     session: false,
-  })
-);
+  })(req, res, next);
+});
 
 // Google OAuth callback
 router.get(
   "/google/callback",
-  passport.authenticate("google", {
-    session: false,
-    failureRedirect: `${process.env.CLIENT_URL}/login?error=google_auth_failed`,
-  }),
+  (req, res, next) => {
+    if (!isGoogleConfigured) {
+      return res.redirect(
+        `${process.env.CLIENT_URL}/login?error=google_not_configured`
+      );
+    }
+    passport.authenticate("google", {
+      session: false,
+      failureRedirect: `${process.env.CLIENT_URL}/login?error=google_auth_failed`,
+    })(req, res, next);
+  },
   (req, res) => {
     try {
       // Generate JWT token
@@ -75,22 +112,41 @@ router.get(
 // GITHUB OAUTH ROUTES
 // ==========================================
 
+// Check if GitHub OAuth is configured
+const isGitHubConfigured =
+  process.env.GITHUB_CLIENT_ID &&
+  process.env.GITHUB_CLIENT_SECRET &&
+  !process.env.GITHUB_CLIENT_ID.includes("PLACEHOLDER");
+
 // Initiate GitHub OAuth
-router.get(
-  "/github",
+router.get("/github", (req, res, next) => {
+  if (!isGitHubConfigured) {
+    return res.status(503).json({
+      error: "GitHub OAuth is not configured on this server",
+      message:
+        "Please contact the administrator to enable GitHub authentication",
+    });
+  }
   passport.authenticate("github", {
     scope: ["user:email"],
     session: false,
-  })
-);
+  })(req, res, next);
+});
 
 // GitHub OAuth callback
 router.get(
   "/github/callback",
-  passport.authenticate("github", {
-    session: false,
-    failureRedirect: `${process.env.CLIENT_URL}/login?error=github_auth_failed`,
-  }),
+  (req, res, next) => {
+    if (!isGitHubConfigured) {
+      return res.redirect(
+        `${process.env.CLIENT_URL}/login?error=github_not_configured`
+      );
+    }
+    passport.authenticate("github", {
+      session: false,
+      failureRedirect: `${process.env.CLIENT_URL}/login?error=github_auth_failed`,
+    })(req, res, next);
+  },
   (req, res) => {
     try {
       // Generate JWT token
