@@ -69,6 +69,13 @@ const Sidebar = ({isOpen, setIsOpen}) => {
       badge: "NEW",
     },
     {
+      name: "System Flowchart",
+      path: "/system-flowchart",
+      icon: Grid,
+      description: "Interactive system architecture",
+      badge: "DEMO",
+    },
+    {
       name: "My Resumes",
       path: "/dashboard",
       icon: LayoutDashboard,
