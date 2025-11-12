@@ -1,0 +1,404 @@
+{
+    "fullStackDeveloper": {
+        "personalInfo": {
+            "name": "John Doe",
+            "email": "john.doe@example.com",
+            "phone": "+1 (555) 123-4567",
+            "location": "San Francisco, CA",
+            "linkedin": "linkedin.com/in/johndoe",
+            "github": "github.com/johndoe",
+            "portfolio": "johndoe.dev"
+        },
+        "summary": "Experienced Full-Stack Developer with 5+ years of expertise in building scalable web applications using React, Node.js, and cloud technologies. Passionate about creating efficient, user-friendly solutions and staying current with emerging technologies.",
+        "skills": [
+            "React.js",
+            "Node.js",
+            "JavaScript",
+            "TypeScript",
+            "Express.js",
+            "MongoDB",
+            "PostgreSQL",
+            "Git",
+            "RESTful APIs",
+            "HTML5",
+            "CSS3",
+            "Tailwind CSS",
+            "Redux",
+            "Next.js",
+            "Jest",
+            "Docker",
+            "AWS",
+            "CI/CD",
+            "Agile",
+            "Microservices"
+        ],
+        "experience": [
+            {
+                "role": "Senior Full-Stack Developer",
+                "company": "Tech Innovations Inc.",
+                "location": "San Francisco, CA",
+                "startDate": "2021-03",
+                "endDate": "Present",
+                "current": true,
+                "responsibilities": [
+                    "Led development of a microservices-based e-commerce platform serving 100K+ daily users",
+                    "Architected and implemented RESTful APIs using Node.js and Express.js",
+                    "Built responsive React applications with Redux for state management",
+                    "Optimized database queries reducing response time by 40%",
+                    "Implemented CI/CD pipelines using Docker and AWS ECS",
+                    "Mentored 3 junior developers and conducted code reviews"
+                ]
+            },
+            {
+                "role": "Full-Stack Developer",
+                "company": "StartupXYZ",
+                "location": "Palo Alto, CA",
+                "startDate": "2019-01",
+                "endDate": "2021-02",
+                "current": false,
+                "responsibilities": [
+                    "Developed and maintained web applications using React and Node.js",
+                    "Designed MongoDB schemas and optimized database performance",
+                    "Integrated third-party APIs including Stripe, SendGrid, and Twilio",
+                    "Wrote unit and integration tests achieving 85% code coverage",
+                    "Collaborated with UX designers to implement pixel-perfect designs"
+                ]
+            }
+        ],
+        "education": [
+            {
+                "degree": "Bachelor of Science in Computer Science",
+                "institution": "Stanford University",
+                "location": "Stanford, CA",
+                "graduationDate": "2018-06",
+                "gpa": "3.8"
+            }
+        ],
+        "projects": [
+            {
+                "name": "E-Commerce Analytics Dashboard",
+                "description": "Built a real-time analytics dashboard for tracking sales, inventory, and customer behavior",
+                "technologies": [
+                    "React",
+                    "Node.js",
+                    "MongoDB",
+                    "Chart.js",
+                    "WebSocket"
+                ],
+                "url": "github.com/johndoe/analytics-dashboard"
+            },
+            {
+                "name": "Social Media API",
+                "description": "Developed a RESTful API for a social media platform with authentication and real-time features",
+                "technologies": [
+                    "Express.js",
+                    "PostgreSQL",
+                    "JWT",
+                    "Socket.io",
+                    "Redis"
+                ],
+                "url": "github.com/johndoe/social-api"
+            }
+        ],
+        "certifications": [
+            {
+                "name": "AWS Certified Solutions Architect",
+                "issuer": "Amazon Web Services",
+                "date": "2022-08"
+            },
+            {
+                "name": "MongoDB Certified Developer",
+                "issuer": "MongoDB University",
+                "date": "2020-05"
+            }
+        ]
+    },
+    "frontendDeveloper": {
+        "personalInfo": {
+            "name": "Sarah Johnson",
+            "email": "sarah.j@example.com",
+            "phone": "+1 (555) 987-6543",
+            "location": "New York, NY",
+            "linkedin": "linkedin.com/in/sarahjohnson",
+            "portfolio": "sarahjohnson.design"
+        },
+        "summary": "Creative Frontend Developer with 4 years of experience specializing in React, Vue.js, and modern CSS frameworks. Expert in creating beautiful, accessible, and performant user interfaces.",
+        "skills": [
+            "React.js",
+            "Vue.js",
+            "JavaScript",
+            "TypeScript",
+            "HTML5",
+            "CSS3",
+            "Sass",
+            "Tailwind CSS",
+            "Material-UI",
+            "Responsive Design",
+            "Webpack",
+            "Vite",
+            "Git",
+            "Figma",
+            "Adobe XD",
+            "Jest",
+            "Cypress",
+            "Accessibility (WCAG)",
+            "Performance Optimization"
+        ],
+        "experience": [
+            {
+                "role": "Frontend Developer",
+                "company": "DesignHub",
+                "location": "New York, NY",
+                "startDate": "2021-06",
+                "endDate": "Present",
+                "current": true,
+                "responsibilities": [
+                    "Built interactive dashboards using React and TypeScript",
+                    "Implemented responsive designs with Tailwind CSS",
+                    "Improved web performance achieving 95+ Lighthouse scores",
+                    "Ensured WCAG 2.1 AA accessibility compliance",
+                    "Collaborated with designers to create pixel-perfect UIs"
+                ]
+            },
+            {
+                "role": "Junior Frontend Developer",
+                "company": "WebCraft Studios",
+                "location": "Brooklyn, NY",
+                "startDate": "2020-01",
+                "endDate": "2021-05",
+                "current": false,
+                "responsibilities": [
+                    "Developed Vue.js components for e-commerce platforms",
+                    "Wrote unit tests using Jest and Vue Test Utils",
+                    "Optimized images and assets for faster load times",
+                    "Fixed cross-browser compatibility issues"
+                ]
+            }
+        ],
+        "education": [
+            {
+                "degree": "Bachelor of Arts in Web Design",
+                "institution": "Parsons School of Design",
+                "location": "New York, NY",
+                "graduationDate": "2019-05"
+            }
+        ],
+        "projects": [
+            {
+                "name": "Portfolio Builder",
+                "description": "Interactive portfolio builder with drag-and-drop interface",
+                "technologies": [
+                    "React",
+                    "TypeScript",
+                    "Tailwind CSS",
+                    "Framer Motion"
+                ],
+                "url": "github.com/sarahj/portfolio-builder"
+            }
+        ]
+    },
+    "backendDeveloper": {
+        "personalInfo": {
+            "name": "Michael Chen",
+            "email": "michael.chen@example.com",
+            "phone": "+1 (555) 456-7890",
+            "location": "Seattle, WA"
+        },
+        "summary": "Backend Engineer with 6 years of experience building scalable APIs and microservices. Expert in Node.js, Python, and cloud infrastructure.",
+        "skills": [
+            "Node.js",
+            "Python",
+            "Express.js",
+            "FastAPI",
+            "PostgreSQL",
+            "MongoDB",
+            "Redis",
+            "GraphQL",
+            "RESTful APIs",
+            "Microservices",
+            "Docker",
+            "Kubernetes",
+            "AWS",
+            "Azure",
+            "RabbitMQ",
+            "Kafka",
+            "Elasticsearch",
+            "MySQL",
+            "Git",
+            "CI/CD"
+        ],
+        "experience": [
+            {
+                "role": "Senior Backend Engineer",
+                "company": "CloudTech Solutions",
+                "location": "Seattle, WA",
+                "startDate": "2020-08",
+                "endDate": "Present",
+                "current": true,
+                "responsibilities": [
+                    "Designed and implemented microservices architecture serving 1M+ requests/day",
+                    "Built GraphQL APIs using Node.js and Apollo Server",
+                    "Optimized database queries improving response time by 60%",
+                    "Implemented event-driven architecture using RabbitMQ",
+                    "Deployed services to Kubernetes clusters on AWS EKS",
+                    "Set up monitoring and alerting using Prometheus and Grafana"
+                ]
+            },
+            {
+                "role": "Backend Developer",
+                "company": "DataFlow Inc.",
+                "location": "San Jose, CA",
+                "startDate": "2018-03",
+                "endDate": "2020-07",
+                "current": false,
+                "responsibilities": [
+                    "Developed RESTful APIs using Python Flask and FastAPI",
+                    "Managed PostgreSQL and MongoDB databases",
+                    "Implemented caching strategies with Redis",
+                    "Created automated deployment pipelines"
+                ]
+            }
+        ],
+        "education": [
+            {
+                "degree": "Master of Science in Computer Science",
+                "institution": "University of Washington",
+                "location": "Seattle, WA",
+                "graduationDate": "2018-06"
+            }
+        ],
+        "certifications": [
+            {
+                "name": "AWS Certified Developer - Associate",
+                "issuer": "Amazon Web Services",
+                "date": "2021-03"
+            }
+        ]
+    },
+    "dataScientist": {
+        "personalInfo": {
+            "name": "Emily Rodriguez",
+            "email": "emily.r@example.com",
+            "phone": "+1 (555) 234-5678",
+            "location": "Boston, MA"
+        },
+        "summary": "Data Scientist with 4 years of experience in machine learning, statistical analysis, and data visualization. Proficient in Python, R, and SQL.",
+        "skills": [
+            "Python",
+            "R",
+            "SQL",
+            "Machine Learning",
+            "Deep Learning",
+            "TensorFlow",
+            "PyTorch",
+            "scikit-learn",
+            "Pandas",
+            "NumPy",
+            "Matplotlib",
+            "Seaborn",
+            "Tableau",
+            "Power BI",
+            "Jupyter",
+            "Statistics",
+            "A/B Testing",
+            "NLP",
+            "Computer Vision",
+            "Git"
+        ],
+        "experience": [
+            {
+                "role": "Data Scientist",
+                "company": "AI Analytics Corp",
+                "location": "Boston, MA",
+                "startDate": "2021-01",
+                "endDate": "Present",
+                "current": true,
+                "responsibilities": [
+                    "Built predictive models using Python and scikit-learn achieving 92% accuracy",
+                    "Developed NLP models for sentiment analysis and text classification",
+                    "Created interactive dashboards using Tableau and Plotly",
+                    "Performed A/B testing and statistical analysis",
+                    "Collaborated with engineering teams to deploy ML models to production"
+                ]
+            }
+        ],
+        "education": [
+            {
+                "degree": "Master of Science in Data Science",
+                "institution": "MIT",
+                "location": "Cambridge, MA",
+                "graduationDate": "2020-05"
+            }
+        ]
+    },
+    "juniorDeveloper": {
+        "personalInfo": {
+            "name": "Alex Kim",
+            "email": "alex.kim@example.com",
+            "phone": "+1 (555) 111-2222",
+            "location": "Austin, TX"
+        },
+        "summary": "Recent Computer Science graduate with internship experience and strong foundation in web development. Eager to learn and contribute to innovative projects.",
+        "skills": [
+            "JavaScript",
+            "React.js",
+            "HTML5",
+            "CSS3",
+            "Node.js",
+            "Git",
+            "MySQL",
+            "Bootstrap",
+            "jQuery",
+            "REST APIs"
+        ],
+        "experience": [
+            {
+                "role": "Software Development Intern",
+                "company": "TechStart",
+                "location": "Austin, TX",
+                "startDate": "2023-06",
+                "endDate": "2023-08",
+                "current": false,
+                "responsibilities": [
+                    "Developed React components for company website",
+                    "Fixed bugs and improved code quality",
+                    "Participated in daily standups and sprint planning",
+                    "Learned Agile development methodology"
+                ]
+            }
+        ],
+        "education": [
+            {
+                "degree": "Bachelor of Science in Computer Science",
+                "institution": "University of Texas at Austin",
+                "location": "Austin, TX",
+                "graduationDate": "2024-05",
+                "gpa": "3.6"
+            }
+        ],
+        "projects": [
+            {
+                "name": "Weather App",
+                "description": "Built a weather application using React and OpenWeather API",
+                "technologies": [
+                    "React",
+                    "JavaScript",
+                    "CSS3",
+                    "API Integration"
+                ],
+                "url": "github.com/alexkim/weather-app"
+            },
+            {
+                "name": "Task Manager",
+                "description": "Full-stack task management app with CRUD operations",
+                "technologies": [
+                    "Node.js",
+                    "Express",
+                    "MySQL",
+                    "Bootstrap"
+                ],
+                "url": "github.com/alexkim/task-manager"
+            }
+        ]
+    }
+}

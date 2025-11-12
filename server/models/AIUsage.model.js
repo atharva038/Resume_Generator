@@ -14,6 +14,8 @@ const aiUsageSchema = new mongoose.Schema(
         "resume_enhancement",
         "github_import",
         "ai_suggestions",
+        "ml_job_matching",
+        "ml_skill_gap_analysis",
       ],
       required: true,
     },

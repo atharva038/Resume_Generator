@@ -1,0 +1,245 @@
+{
+  "tech_stack": [
+    "JavaScript",
+    "React 18",
+    "Vite",
+    "Node.js",
+    "Express.js",
+    "MongoDB",
+    "Mongoose",
+    "TailwindCSS",
+    "Google Gemini AI",
+    "JWT Authentication",
+    "Python (ML Service)",
+    "Scikit-learn"
+  ],
+  "features": [
+    {
+      "name": "Authentication System",
+      "description": "Complete user authentication with JWT, OAuth (Google & GitHub), password reset, and session management",
+      "files": [
+        "client/src/pages/Login.jsx",
+        "client/src/pages/Register.jsx",
+        "client/src/pages/ForgotPassword.jsx",
+        "client/src/pages/ResetPassword.jsx",
+        "client/src/pages/AuthCallback.jsx",
+        "client/src/context/AuthContext.jsx",
+        "client/src/components/auth/ProtectedRoute.jsx",
+        "client/src/components/auth/AdminProtectedRoute.jsx",
+        "server/routes/auth.routes.js",
+        "server/controllers/auth.controller.js",
+        "server/config/passport.config.js",
+        "server/models/User.model.js"
+      ]
+    },
+    {
+      "name": "Resume Upload & Parsing",
+      "description": "Upload PDF/DOCX resumes, extract text using AI, and parse into structured data with Gemini AI",
+      "files": [
+        "client/src/pages/Upload.jsx",
+        "server/routes/resume.routes.js",
+        "server/controllers/resume.controller.js",
+        "server/config/multer.config.js",
+        "server/models/Resume.model.js"
+      ]
+    },
+    {
+      "name": "Resume Editor",
+      "description": "Rich text editor with TipTap for editing resume sections, drag-and-drop reordering, and real-time preview",
+      "files": [
+        "client/src/pages/Editor.jsx",
+        "client/src/components/editor/ResumeEditor.jsx",
+        "client/src/components/editor/PersonalInfoEditor.jsx",
+        "client/src/components/editor/ExperienceEditor.jsx",
+        "client/src/components/editor/EducationEditor.jsx",
+        "client/src/components/editor/SkillsEditor.jsx",
+        "client/src/components/editor/ProjectsEditor.jsx"
+      ]
+    },
+    {
+      "name": "Template System",
+      "description": "Multiple ATS-friendly resume templates with color themes and customization options",
+      "files": [
+        "client/src/pages/Templates.jsx",
+        "client/src/components/templates/TemplateGallery.jsx",
+        "client/src/components/templates/TemplatePreview.jsx",
+        "client/src/components/templates/ColorThemeSelector.jsx",
+        "server/models/Template.model.js",
+        "server/routes/resume.routes.js"
+      ]
+    },
+    {
+      "name": "ATS Analyzer",
+      "description": "AI-powered ATS score calculation, keyword matching, and resume optimization suggestions",
+      "files": [
+        "client/src/pages/ATSAnalyzer.jsx",
+        "client/src/components/features/ats/ATSScoreCard.jsx",
+        "client/src/components/features/ats/ATSKeywordAnalysis.jsx",
+        "server/routes/ats.routes.js",
+        "server/controllers/ats.controller.js"
+      ]
+    },
+    {
+      "name": "Job Search & Matching",
+      "description": "Search jobs, match resumes to job descriptions using ML, and get compatibility scores",
+      "files": [
+        "client/src/pages/JobSearch.jsx",
+        "client/src/pages/SmartJobMatchPage.jsx",
+        "client/src/components/features/job-match/JobMatchResults.jsx",
+        "client/src/components/features/job-match/JobCard.jsx",
+        "server/routes/jobs.js",
+        "server/routes/ml.routes.js",
+        "ml-service/app.py",
+        "ml-service/train_model.py"
+      ]
+    },
+    {
+      "name": "GitHub Profile Import",
+      "description": "Import user profile, projects, and contributions from GitHub to auto-populate resume",
+      "files": [
+        "client/src/pages/GitHubImport.jsx",
+        "client/src/components/features/github/GitHubProfileCard.jsx",
+        "client/src/components/features/github/GitHubProjectsList.jsx",
+        "server/routes/github.routes.js",
+        "server/controllers/github.controller.js"
+      ]
+    },
+    {
+      "name": "User Dashboard",
+      "description": "View all saved resumes, manage resume versions, delete resumes, and access quick actions",
+      "files": [
+        "client/src/pages/Dashboard.jsx",
+        "client/src/components/features/dashboard/ResumeCard.jsx",
+        "client/src/components/features/dashboard/ResumeStats.jsx",
+        "server/routes/resume.routes.js"
+      ]
+    },
+    {
+      "name": "Admin Dashboard",
+      "description": "Admin panel with user management, AI analytics, contact messages, feedback, logs, and settings",
+      "files": [
+        "client/src/pages/admin/AdminDashboard.jsx",
+        "client/src/pages/admin/UserManagement.jsx",
+        "client/src/pages/admin/AIAnalytics.jsx",
+        "client/src/pages/admin/AIQuotaManagement.jsx",
+        "client/src/pages/admin/ContactMessages.jsx",
+        "client/src/pages/admin/AdminFeedback.jsx",
+        "client/src/pages/admin/AdminLogs.jsx",
+        "client/src/pages/admin/TemplateManagement.jsx",
+        "client/src/pages/admin/AdminSettings.jsx",
+        "server/routes/admin.routes.js",
+        "server/controllers/admin.controller.js",
+        "server/middleware/admin.middleware.js",
+        "server/models/AdminLog.model.js"
+      ]
+    },
+    {
+      "name": "Contact & Feedback System",
+      "description": "Contact form for user inquiries and feedback submission system",
+      "files": [
+        "client/src/pages/Contact.jsx",
+        "client/src/pages/Feedback.jsx",
+        "server/routes/contact.routes.js",
+        "server/routes/feedback.routes.js",
+        "server/controllers/contact.controller.js",
+        "server/controllers/feedback.controller.js",
+        "server/models/Contact.js",
+        "server/models/Feedback.model.js"
+      ]
+    },
+    {
+      "name": "Dark Mode",
+      "description": "Global dark mode toggle with persistent theme preference",
+      "files": [
+        "client/src/context/DarkModeContext.jsx",
+        "client/src/components/common/DarkModeToggle.jsx"
+      ]
+    },
+    {
+      "name": "Navigation Blocker",
+      "description": "Prevent accidental navigation when user has unsaved changes in editor",
+      "files": [
+        "client/src/context/NavigationBlockerContext.jsx"
+      ]
+    },
+    {
+      "name": "Security Middleware",
+      "description": "Rate limiting, helmet security headers, CORS, XSS protection, and data sanitization",
+      "files": [
+        "server/middleware/rateLimiter.middleware.js",
+        "server/middleware/security.middleware.js",
+        "server/middleware/auth.middleware.js",
+        "server/middleware/validation.middleware.js"
+      ]
+    },
+    {
+      "name": "AI Usage Tracking",
+      "description": "Track and monitor AI API usage, quota management, and analytics",
+      "files": [
+        "server/middleware/aiUsageTracker.middleware.js",
+        "server/models/AIUsage.model.js"
+      ]
+    },
+    {
+      "name": "ML Job Classification",
+      "description": "Machine learning service for resume classification and job matching using scikit-learn",
+      "files": [
+        "ml-service/app.py",
+        "ml-service/train_model.py",
+        "ml-service/download_dataset.py",
+        "ml-service/models/resume_classifier.joblib",
+        "ml-service/models/tfidf_vectorizer.joblib"
+      ]
+    },
+    {
+      "name": "PDF Export",
+      "description": "Export resume to ATS-friendly PDF format with print optimization",
+      "files": [
+        "client/src/components/editor/ResumePreview.jsx"
+      ]
+    },
+    {
+      "name": "Responsive Layout",
+      "description": "Mobile-responsive navigation, header, footer, and layout components",
+      "files": [
+        "client/src/components/layout/Layout.jsx",
+        "client/src/components/layout/AdminLayout.jsx",
+        "client/src/components/layout/Header.jsx",
+        "client/src/components/layout/Footer.jsx",
+        "client/src/components/common/ScrollToTop.jsx"
+      ]
+    },
+    {
+      "name": "API Services",
+      "description": "Centralized API client with axios for all backend communication",
+      "files": [
+        "client/src/services/api.js",
+        "client/src/services/admin.api.js",
+        "client/src/services/feedback.api.js"
+      ]
+    },
+    {
+      "name": "Database Models",
+      "description": "Mongoose schemas for User, Resume, Template, Contact, Feedback, AI Usage, and Admin Logs",
+      "files": [
+        "server/models/User.model.js",
+        "server/models/Resume.model.js",
+        "server/models/Template.model.js",
+        "server/models/Contact.js",
+        "server/models/Feedback.model.js",
+        "server/models/AIUsage.model.js",
+        "server/models/AdminLog.model.js",
+        "server/models/Settings.model.js"
+      ]
+    },
+    {
+      "name": "Utility Functions",
+      "description": "Helper functions for validation, email sending, and data processing",
+      "files": [
+        "server/utils/email.utils.js",
+        "server/utils/validation.utils.js",
+        "server/utils/logger.utils.js"
+      ]
+    }
+  ]
+}
