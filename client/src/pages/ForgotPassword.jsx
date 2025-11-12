@@ -15,10 +15,11 @@ const ForgotPassword = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/auth/forgot-password",
-        {email}
-      );
+      const API_URL =
+        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const response = await axios.post(`${API_URL}/auth/forgot-password`, {
+        email,
+      });
 
       setSuccess(true);
       setEmail("");
