@@ -1,6 +1,33 @@
 import {forwardRef} from "react";
 
 const ClassicTemplate = forwardRef(({resumeData}, ref) => {
+  // Color Themes - Multiple professional palettes
+  const colorThemes = {
+    navy: {
+      primary: "#0066cc",
+      text: "#000000",
+      border: "#000000",
+    },
+    burgundy: {
+      primary: "#8b1a1a",
+      text: "#000000",
+      border: "#8b1a1a",
+    },
+    forest: {
+      primary: "#1b5e20",
+      text: "#000000",
+      border: "#1b5e20",
+    },
+    charcoal: {
+      primary: "#2d3748",
+      text: "#000000",
+      border: "#2d3748",
+    },
+  };
+
+  // Select theme based on resumeData or default to navy
+  const selectedTheme = colorThemes[resumeData?.colorTheme] || colorThemes.navy;
+
   // Helper function to safely format skills (handles both array and string)
   const formatSkills = (items) => {
     if (Array.isArray(items)) {
@@ -40,7 +67,7 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
             className="font-bold uppercase"
             style={{
               fontSize: "11pt",
-              borderBottom: "1px solid black",
+              borderBottom: `1px solid ${selectedTheme.border}`,
               paddingBottom: "3px",
               marginBottom: "6px",
             }}
@@ -57,7 +84,7 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
             className="font-bold uppercase"
             style={{
               fontSize: "11pt",
-              borderBottom: "1px solid black",
+              borderBottom: `1px solid ${selectedTheme.border}`,
               paddingBottom: "3px",
               marginBottom: "6px",
             }}
@@ -79,7 +106,7 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
             className="font-bold uppercase"
             style={{
               fontSize: "11pt",
-              borderBottom: "1px solid black",
+              borderBottom: `1px solid ${selectedTheme.border}`,
               paddingBottom: "3px",
               marginBottom: "6px",
             }}
@@ -139,7 +166,7 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
             className="font-bold uppercase"
             style={{
               fontSize: "11pt",
-              borderBottom: "1px solid black",
+              borderBottom: `1px solid ${selectedTheme.border}`,
               paddingBottom: "3px",
               marginBottom: "6px",
             }}
@@ -166,7 +193,7 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
                     rel="noopener noreferrer"
                     style={{
                       fontSize: "9pt",
-                      color: "#0066cc",
+                      color: selectedTheme.primary,
                       textDecoration: "underline",
                       marginLeft: "8px",
                     }}
@@ -209,7 +236,7 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
             className="font-bold uppercase"
             style={{
               fontSize: "11pt",
-              borderBottom: "1px solid black",
+              borderBottom: `1px solid ${selectedTheme.border}`,
               paddingBottom: "3px",
               marginBottom: "6px",
             }}
@@ -257,7 +284,7 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
               className="font-bold uppercase"
               style={{
                 fontSize: "11pt",
-                borderBottom: "1px solid black",
+                borderBottom: `1px solid ${selectedTheme.border}`,
                 paddingBottom: "3px",
                 marginBottom: "6px",
               }}
@@ -283,7 +310,7 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
               className="font-bold uppercase"
               style={{
                 fontSize: "11pt",
-                borderBottom: "1px solid black",
+                borderBottom: `1px solid ${selectedTheme.border}`,
                 paddingBottom: "3px",
                 marginBottom: "6px",
               }}
@@ -318,7 +345,7 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
                       className="font-bold uppercase"
                       style={{
                         fontSize: "11pt",
-                        borderBottom: "1px solid black",
+                        borderBottom: `1px solid ${selectedTheme.border}`,
                         paddingBottom: "3px",
                         marginBottom: "6px",
                       }}
@@ -360,13 +387,13 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
         padding: "0.5in",
         fontSize: "10.5pt",
         lineHeight: "1.35",
-        color: "#000000",
+        color: selectedTheme.text,
       }}
     >
       {/* Header - Contact Information */}
       <header
         className="text-center pb-2 mb-3"
-        style={{borderBottom: "2px solid black"}}
+        style={{borderBottom: `2px solid ${selectedTheme.border}`}}
       >
         <h1
           className="font-bold uppercase tracking-wide"
@@ -392,7 +419,10 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
                 href={resumeData.contact.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{color: "#0066cc", textDecoration: "underline"}}
+                style={{
+                  color: selectedTheme.primary,
+                  textDecoration: "underline",
+                }}
               >
                 LinkedIn
               </a>
@@ -402,7 +432,10 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
                 href={resumeData.contact.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{color: "#0066cc", textDecoration: "underline"}}
+                style={{
+                  color: selectedTheme.primary,
+                  textDecoration: "underline",
+                }}
               >
                 GitHub
               </a>

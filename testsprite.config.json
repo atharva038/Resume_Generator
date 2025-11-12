@@ -1,0 +1,402 @@
+{
+    "projectName": "SmartNShine ATS Resume Builder",
+    "version": "1.0.0",
+    "description": "AI-powered ATS Resume Builder with MERN Stack + Gemini AI",
+    "testConfiguration": {
+        "frontend": {
+            "type": "frontend",
+            "localPort": 5173,
+            "pathname": "/",
+            "testScope": "codebase",
+            "framework": "React + Vite",
+            "needLogin": true,
+            "projectPath": "/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR"
+        },
+        "backend": {
+            "type": "backend",
+            "localPort": 5000,
+            "baseURL": "http://localhost:5000/api",
+            "testScope": "api",
+            "framework": "Express.js",
+            "needAuth": true
+        }
+    },
+    "prerequisites": {
+        "services": [
+            {
+                "name": "MongoDB",
+                "required": true,
+                "defaultURL": "mongodb://localhost:27017/smartnshine"
+            },
+            {
+                "name": "Backend Server",
+                "required": true,
+                "port": 5000,
+                "startCommand": "cd server && npm run dev"
+            },
+            {
+                "name": "Frontend Dev Server",
+                "required": true,
+                "port": 5173,
+                "startCommand": "cd client && npm run dev"
+            },
+            {
+                "name": "ML Service (Optional)",
+                "required": false,
+                "port": 8000,
+                "startCommand": "cd ml-service && python app.py"
+            }
+        ],
+        "environmentVariables": {
+            "backend": [
+                "MONGODB_URI",
+                "JWT_SECRET",
+                "GEMINI_API_KEY",
+                "SESSION_SECRET",
+                "GOOGLE_CLIENT_ID",
+                "GOOGLE_CLIENT_SECRET",
+                "GITHUB_CLIENT_ID",
+                "GITHUB_CLIENT_SECRET"
+            ],
+            "frontend": [
+                "VITE_API_URL"
+            ]
+        }
+    },
+    "testUsers": {
+        "regular": {
+            "email": "testuser@example.com",
+            "password": "Test123456",
+            "name": "Test User",
+            "note": "Create before testing or let TestSprite register"
+        },
+        "admin": {
+            "email": "admin@example.com",
+            "password": "Admin123456",
+            "name": "Admin User",
+            "role": "admin",
+            "note": "Use npm run create-admin in server directory"
+        }
+    },
+    "testScenarios": {
+        "priority": "high",
+        "scenarios": [
+            {
+                "id": "P0-001",
+                "name": "User Registration & Login",
+                "priority": "P0",
+                "flow": [
+                    "Navigate to /register",
+                    "Fill registration form with valid data",
+                    "Submit form",
+                    "Verify redirect to /dashboard",
+                    "Verify user is logged in",
+                    "Logout",
+                    "Login with same credentials",
+                    "Verify successful login"
+                ],
+                "expectedOutcome": "User can register, login, and access dashboard"
+            },
+            {
+                "id": "P0-002",
+                "name": "Resume Upload & Parse",
+                "priority": "P0",
+                "prerequisites": [
+                    "User must be logged in"
+                ],
+                "flow": [
+                    "Navigate to /upload",
+                    "Upload sample-resume.pdf",
+                    "Wait for AI parsing (3-10 seconds)",
+                    "Verify redirect to /editor",
+                    "Verify parsed data displayed correctly"
+                ],
+                "expectedOutcome": "Resume uploaded and parsed successfully"
+            },
+            {
+                "id": "P0-003",
+                "name": "Resume Editing & Save",
+                "priority": "P0",
+                "prerequisites": [
+                    "Resume data loaded in editor"
+                ],
+                "flow": [
+                    "Edit summary section",
+                    "Add new skill",
+                    "Edit experience entry",
+                    "Click Save button",
+                    "Verify toast notification 'Resume saved successfully'",
+                    "Navigate to /dashboard",
+                    "Verify resume appears in list"
+                ],
+                "expectedOutcome": "Resume edited and saved successfully"
+            },
+            {
+                "id": "P0-004",
+                "name": "AI Content Enhancement",
+                "priority": "P0",
+                "prerequisites": [
+                    "Resume data loaded in editor"
+                ],
+                "flow": [
+                    "Navigate to editor summary section",
+                    "Click 'AI Enhance' button",
+                    "Wait for AI processing (2-5 seconds)",
+                    "Verify enhanced content displayed",
+                    "Verify content improved with action verbs/metrics"
+                ],
+                "expectedOutcome": "AI enhances content successfully"
+            },
+            {
+                "id": "P0-005",
+                "name": "ATS Resume Analysis",
+                "priority": "P0",
+                "prerequisites": [
+                    "User logged in, has saved resume"
+                ],
+                "flow": [
+                    "Navigate to /ats-analyzer",
+                    "Select 'ATS Analysis' tab",
+                    "Paste job description",
+                    "Select resume from dropdown",
+                    "Click 'Analyze' button",
+                    "Wait for analysis (3-8 seconds)",
+                    "Verify ATS score displayed",
+                    "Verify keyword matches shown",
+                    "Verify suggestions provided"
+                ],
+                "expectedOutcome": "ATS analysis completed with score and feedback"
+            },
+            {
+                "id": "P1-001",
+                "name": "Template Selection",
+                "priority": "P1",
+                "prerequisites": [
+                    "Resume in editor"
+                ],
+                "flow": [
+                    "Open template picker in editor",
+                    "Select different template",
+                    "Verify preview updates",
+                    "Save resume",
+                    "Reload resume",
+                    "Verify template persisted"
+                ],
+                "expectedOutcome": "Template changes and persists"
+            },
+            {
+                "id": "P1-002",
+                "name": "PDF Export",
+                "priority": "P1",
+                "prerequisites": [
+                    "Resume in editor"
+                ],
+                "flow": [
+                    "Click 'Export PDF' button",
+                    "Verify browser print dialog opens",
+                    "Check print preview",
+                    "Verify resume formatted correctly"
+                ],
+                "expectedOutcome": "PDF export initiates successfully"
+            },
+            {
+                "id": "P1-003",
+                "name": "Dashboard Resume Management",
+                "priority": "P1",
+                "prerequisites": [
+                    "User has multiple saved resumes"
+                ],
+                "flow": [
+                    "Navigate to /dashboard",
+                    "Verify resume list displays",
+                    "Click resume card to load",
+                    "Verify resume opens in editor",
+                    "Return to dashboard",
+                    "Delete a resume",
+                    "Confirm deletion",
+                    "Verify resume removed from list"
+                ],
+                "expectedOutcome": "Dashboard CRUD operations work correctly"
+            },
+            {
+                "id": "P1-004",
+                "name": "ML Job Matching",
+                "priority": "P1",
+                "prerequisites": [
+                    "User logged in with resume",
+                    "ML service running"
+                ],
+                "flow": [
+                    "Navigate to /ats-analyzer",
+                    "Select 'ML Job Matching' tab",
+                    "Paste job description",
+                    "Select resume",
+                    "Click 'Analyze Match'",
+                    "Wait for ML processing (2-4 seconds)",
+                    "Verify match score displayed",
+                    "Verify skill gap analysis shown",
+                    "Verify recommendations provided"
+                ],
+                "expectedOutcome": "ML analysis provides match score and gaps"
+            },
+            {
+                "id": "P2-001",
+                "name": "GitHub Project Import",
+                "priority": "P2",
+                "prerequisites": [
+                    "User logged in",
+                    "GitHub OAuth configured"
+                ],
+                "flow": [
+                    "Navigate to /github-import",
+                    "Click 'Connect GitHub'",
+                    "Complete OAuth flow",
+                    "Verify repository list loads",
+                    "Select repositories",
+                    "Click 'Import Selected'",
+                    "Navigate to /editor",
+                    "Verify projects imported"
+                ],
+                "expectedOutcome": "GitHub projects imported successfully"
+            }
+        ]
+    },
+    "testData": {
+        "files": {
+            "validPDF": "tests/fixtures/sample-resume.pdf",
+            "validDOCX": "tests/fixtures/sample-resume.docx",
+            "invalidFile": "tests/fixtures/invalid-file.txt",
+            "largeFile": "tests/fixtures/large-file.pdf",
+            "jobDescription": "tests/fixtures/sample-job-description.txt"
+        },
+        "sampleJobDescription": "We are seeking a Senior Full-Stack Developer with 5+ years of experience. Required Skills: React, Node.js, MongoDB, Express, AWS, Docker, Git. Responsibilities: Design and develop scalable web applications, collaborate with teams, write clean code, mentor juniors. Qualifications: Bachelor's degree in CS, strong problem-solving.",
+        "sampleResumeData": {
+            "name": "Jane Developer",
+            "contact": {
+                "email": "jane@example.com",
+                "phone": "+1-555-987-6543",
+                "location": "Austin, TX",
+                "linkedin": "linkedin.com/in/janedev",
+                "github": "github.com/janedev"
+            },
+            "summary": "Experienced Full-Stack Developer with 6 years in React and Node.js",
+            "skills": [
+                "React",
+                "Node.js",
+                "MongoDB",
+                "Express",
+                "AWS",
+                "Docker",
+                "Git"
+            ],
+            "experience": [
+                {
+                    "company": "TechStartup Inc",
+                    "role": "Senior Developer",
+                    "duration": "2020 - Present",
+                    "responsibilities": [
+                        "Led development of microservices architecture",
+                        "Improved performance by 40%",
+                        "Mentored 5 junior developers"
+                    ]
+                }
+            ],
+            "education": [
+                {
+                    "institution": "State University",
+                    "degree": "B.S. Computer Science",
+                    "year": "2018",
+                    "gpa": "3.8"
+                }
+            ]
+        }
+    },
+    "validation": {
+        "criticalFeatures": [
+            "User authentication (register/login)",
+            "Resume file upload (PDF/DOCX)",
+            "AI resume parsing",
+            "Resume editing (all sections)",
+            "Resume save/load/delete",
+            "AI content enhancement",
+            "ATS analysis",
+            "Template selection",
+            "PDF export"
+        ],
+        "errorScenarios": [
+            "Upload file > 5MB",
+            "Upload non-PDF/DOCX file",
+            "Login with wrong password",
+            "Access protected route without auth",
+            "AI API failure/timeout",
+            "Network errors",
+            "Form validation errors",
+            "Concurrent edit conflicts"
+        ],
+        "responsiveBreakpoints": [
+            "Mobile: 320px - 768px",
+            "Tablet: 768px - 1024px",
+            "Desktop: 1024px+"
+        ]
+    },
+    "coverage": {
+        "routes": {
+            "public": [
+                "/",
+                "/login",
+                "/register",
+                "/contact",
+                "/feedback"
+            ],
+            "protected": [
+                "/dashboard",
+                "/upload",
+                "/editor",
+                "/templates",
+                "/ats-analyzer",
+                "/job-search",
+                "/smart-job-match",
+                "/github-import"
+            ],
+            "admin": [
+                "/admin",
+                "/admin/users",
+                "/admin/ai-analytics",
+                "/admin/ai-quota",
+                "/admin/contacts",
+                "/admin/feedback",
+                "/admin/logs",
+                "/admin/templates",
+                "/admin/settings"
+            ]
+        },
+        "apiEndpoints": {
+            "auth": 8,
+            "resume": 12,
+            "ats": 1,
+            "ml": 3,
+            "contact": 1,
+            "feedback": 1,
+            "github": 2,
+            "admin": 10
+        }
+    },
+    "documentation": {
+        "frontendSpec": "TESTSPRITE_FRONTEND_SPEC.md",
+        "backendSpec": "TESTSPRITE_BACKEND_SPEC.md",
+        "quickStart": "TESTSPRITE_QUICK_START.md",
+        "projectReadme": "README.md",
+        "deploymentGuide": "docs/DEPLOYMENT_GUIDE.md",
+        "testingGuide": "docs/TESTING_GUIDE.md"
+    },
+    "notes": [
+        "AI features require valid Gemini API key",
+        "ML features require Python ML service running (optional)",
+        "OAuth features require valid client IDs/secrets",
+        "File uploads limited to 5MB",
+        "Rate limiting applies to AI endpoints (20/hour per user)",
+        "Test users should be created before running full test suite",
+        "MongoDB must be running and accessible",
+        "Consider AI quota limits during extensive testing"
+    ]
+}

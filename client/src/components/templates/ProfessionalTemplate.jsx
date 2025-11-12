@@ -1,6 +1,45 @@
 import {forwardRef} from "react";
 
 const ProfessionalTemplate = forwardRef(({resumeData}, ref) => {
+  // Color Themes - Multiple professional palettes
+  const colorThemes = {
+    navy: {
+      primary: "#1e3a8a",
+      secondary: "#1e40af",
+      text: "#1f2937",
+      textLight: "#4b5563",
+      textMuted: "#6b7280",
+      border: "#e5e7eb",
+    },
+    burgundy: {
+      primary: "#881337",
+      secondary: "#9f1239",
+      text: "#1f2937",
+      textLight: "#4b5563",
+      textMuted: "#6b7280",
+      border: "#e5e7eb",
+    },
+    forest: {
+      primary: "#065f46",
+      secondary: "#047857",
+      text: "#1f2937",
+      textLight: "#4b5563",
+      textMuted: "#6b7280",
+      border: "#e5e7eb",
+    },
+    gray: {
+      primary: "#374151",
+      secondary: "#4b5563",
+      text: "#1f2937",
+      textLight: "#6b7280",
+      textMuted: "#9ca3af",
+      border: "#e5e7eb",
+    },
+  };
+
+  // Select theme based on resumeData or default to navy
+  const selectedTheme = colorThemes[resumeData?.colorTheme] || colorThemes.navy;
+
   // Helper function to safely format skills (handles both array and string)
   const formatSkills = (items) => {
     if (Array.isArray(items)) {
@@ -59,10 +98,10 @@ const ProfessionalTemplate = forwardRef(({resumeData}, ref) => {
             className="font-bold uppercase"
             style={{
               fontSize: "11pt",
-              color: "#1e40af",
+              color: selectedTheme.primary,
               marginBottom: "6px",
               paddingBottom: "3px",
-              borderBottom: "2px solid #93c5fd",
+              borderBottom: `2px solid ${selectedTheme.border}`,
             }}
           >
             {getSectionTitle("summary")}
@@ -81,10 +120,10 @@ const ProfessionalTemplate = forwardRef(({resumeData}, ref) => {
             className="font-bold uppercase"
             style={{
               fontSize: "11pt",
-              color: "#1e40af",
+              color: selectedTheme.primary,
               marginBottom: "6px",
               paddingBottom: "3px",
-              borderBottom: "2px solid #93c5fd",
+              borderBottom: `2px solid ${selectedTheme.border}`,
             }}
           >
             {getSectionTitle("skills")}
@@ -100,11 +139,11 @@ const ProfessionalTemplate = forwardRef(({resumeData}, ref) => {
               <div key={index} style={{fontSize: "10pt"}}>
                 <div
                   className="font-semibold"
-                  style={{color: "#1e40af", marginBottom: "2px"}}
+                  style={{color: selectedTheme.primary, marginBottom: "2px"}}
                 >
                   {skillGroup.category}
                 </div>
-                <div style={{color: "#4b5563"}}>
+                <div style={{color: selectedTheme.textLight}}>
                   {formatSkills(skillGroup.items)}
                 </div>
               </div>
@@ -119,10 +158,10 @@ const ProfessionalTemplate = forwardRef(({resumeData}, ref) => {
             className="font-bold uppercase"
             style={{
               fontSize: "11pt",
-              color: "#1e40af",
+              color: selectedTheme.primary,
               marginBottom: "6px",
               paddingBottom: "3px",
-              borderBottom: "2px solid #93c5fd",
+              borderBottom: `2px solid ${selectedTheme.border}`,
             }}
           >
             {getSectionTitle("experience")}
@@ -136,7 +175,7 @@ const ProfessionalTemplate = forwardRef(({resumeData}, ref) => {
                 <div style={{flex: 1}}>
                   <div
                     className="font-bold"
-                    style={{fontSize: "11pt", color: "#1e40af"}}
+                    style={{fontSize: "11pt", color: selectedTheme.primary}}
                   >
                     {exp.title || "Position"}
                   </div>
@@ -147,7 +186,7 @@ const ProfessionalTemplate = forwardRef(({resumeData}, ref) => {
                 <div
                   style={{
                     fontSize: "9pt",
-                    color: "#6b7280",
+                    color: selectedTheme.textMuted,
                     textAlign: "right",
                   }}
                 >
@@ -180,10 +219,10 @@ const ProfessionalTemplate = forwardRef(({resumeData}, ref) => {
             className="font-bold uppercase"
             style={{
               fontSize: "11pt",
-              color: "#1e40af",
+              color: selectedTheme.primary,
               marginBottom: "6px",
               paddingBottom: "3px",
-              borderBottom: "2px solid #93c5fd",
+              borderBottom: `2px solid ${selectedTheme.border}`,
             }}
           >
             {getSectionTitle("projects")}
@@ -200,7 +239,7 @@ const ProfessionalTemplate = forwardRef(({resumeData}, ref) => {
               >
                 <div
                   className="font-bold"
-                  style={{fontSize: "11pt", color: "#1e40af"}}
+                  style={{fontSize: "11pt", color: selectedTheme.primary}}
                 >
                   {project.name}
                 </div>
@@ -211,7 +250,7 @@ const ProfessionalTemplate = forwardRef(({resumeData}, ref) => {
                     rel="noopener noreferrer"
                     style={{
                       fontSize: "9pt",
-                      color: "#1e40af",
+                      color: selectedTheme.primary,
                       textDecoration: "underline",
                       whiteSpace: "nowrap",
                     }}
@@ -224,7 +263,7 @@ const ProfessionalTemplate = forwardRef(({resumeData}, ref) => {
                 <div
                   style={{
                     fontSize: "9pt",
-                    color: "#6b7280",
+                    color: selectedTheme.textMuted,
                     marginBottom: "3px",
                     fontStyle: "italic",
                   }}
@@ -258,10 +297,10 @@ const ProfessionalTemplate = forwardRef(({resumeData}, ref) => {
             className="font-bold uppercase"
             style={{
               fontSize: "11pt",
-              color: "#1e40af",
+              color: selectedTheme.primary,
               marginBottom: "6px",
               paddingBottom: "3px",
-              borderBottom: "2px solid #93c5fd",
+              borderBottom: `2px solid ${selectedTheme.border}`,
             }}
           >
             {getSectionTitle("education")}
@@ -274,12 +313,14 @@ const ProfessionalTemplate = forwardRef(({resumeData}, ref) => {
                     {edu.degree}
                     {edu.field && ` in ${edu.field}`}
                   </div>
-                  <div style={{fontSize: "10pt", color: "#4b5563"}}>
+                  <div
+                    style={{fontSize: "10pt", color: selectedTheme.textLight}}
+                  >
                     {edu.institution}
                     {edu.location && <span> — {edu.location}</span>}
                   </div>
                 </div>
-                <div style={{fontSize: "9pt", color: "#6b7280"}}>
+                <div style={{fontSize: "9pt", color: selectedTheme.textMuted}}>
                   {edu.startDate && (
                     <div>
                       {edu.startDate} - {edu.endDate}
@@ -300,10 +341,10 @@ const ProfessionalTemplate = forwardRef(({resumeData}, ref) => {
               className="font-bold uppercase"
               style={{
                 fontSize: "11pt",
-                color: "#1e40af",
+                color: selectedTheme.primary,
                 marginBottom: "6px",
                 paddingBottom: "3px",
-                borderBottom: "2px solid #93c5fd",
+                borderBottom: `2px solid ${selectedTheme.border}`,
               }}
             >
               {getSectionTitle("certifications")}
@@ -319,7 +360,9 @@ const ProfessionalTemplate = forwardRef(({resumeData}, ref) => {
                 <div key={index} style={{fontSize: "10pt"}}>
                   <span className="font-semibold">{cert.name}</span>
                   {cert.issuer && (
-                    <div style={{fontSize: "9pt", color: "#6b7280"}}>
+                    <div
+                      style={{fontSize: "9pt", color: selectedTheme.textMuted}}
+                    >
                       {cert.issuer} {cert.date && `(${cert.date})`}
                     </div>
                   )}
@@ -336,10 +379,10 @@ const ProfessionalTemplate = forwardRef(({resumeData}, ref) => {
               className="font-bold uppercase"
               style={{
                 fontSize: "11pt",
-                color: "#1e40af",
+                color: selectedTheme.primary,
                 marginBottom: "6px",
                 paddingBottom: "3px",
-                borderBottom: "2px solid #93c5fd",
+                borderBottom: `2px solid ${selectedTheme.border}`,
               }}
             >
               {getSectionTitle("achievements")}
@@ -368,10 +411,10 @@ const ProfessionalTemplate = forwardRef(({resumeData}, ref) => {
                       className="font-bold uppercase"
                       style={{
                         fontSize: "11pt",
-                        color: "#1e40af",
+                        color: selectedTheme.primary,
                         marginBottom: "6px",
                         paddingBottom: "3px",
-                        borderBottom: "2px solid #93c5fd",
+                        borderBottom: `2px solid ${selectedTheme.border}`,
                       }}
                     >
                       {section.title}
@@ -424,7 +467,11 @@ const ProfessionalTemplate = forwardRef(({resumeData}, ref) => {
       >
         <h1
           className="font-bold"
-          style={{fontSize: "24pt", marginBottom: "8px", color: "#1e40af"}}
+          style={{
+            fontSize: "24pt",
+            marginBottom: "8px",
+            color: selectedTheme.primary,
+          }}
         >
           {resumeData.name || "Your Name"}
         </h1>
@@ -452,7 +499,10 @@ const ProfessionalTemplate = forwardRef(({resumeData}, ref) => {
                   href={resumeData.contact.linkedin}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{color: "#1e40af", textDecoration: "underline"}}
+                  style={{
+                    color: selectedTheme.primary,
+                    textDecoration: "underline",
+                  }}
                 >
                   🔗 LinkedIn
                 </a>
@@ -464,7 +514,10 @@ const ProfessionalTemplate = forwardRef(({resumeData}, ref) => {
                   href={resumeData.contact.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{color: "#1e40af", textDecoration: "underline"}}
+                  style={{
+                    color: selectedTheme.primary,
+                    textDecoration: "underline",
+                  }}
                 >
                   💻 GitHub
                 </a>
@@ -473,7 +526,13 @@ const ProfessionalTemplate = forwardRef(({resumeData}, ref) => {
           </div>
         </div>
         {resumeData.contact?.location && (
-          <div style={{fontSize: "10pt", marginTop: "4px", color: "#6b7280"}}>
+          <div
+            style={{
+              fontSize: "10pt",
+              marginTop: "4px",
+              color: selectedTheme.textMuted,
+            }}
+          >
             📍 {resumeData.contact.location}
           </div>
         )}

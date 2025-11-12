@@ -1,10 +1,8 @@
 import {Routes, Route} from "react-router-dom";
 import {Toaster} from "react-hot-toast";
-import Layout from "./components/Layout";
-import AdminLayout from "./components/AdminLayout";
-import ScrollToTop from "./components/ScrollToTop";
-import ProtectedRoute from "./components/ProtectedRoute";
-import AdminProtectedRoute from "./components/AdminProtectedRoute";
+import {Layout, AdminLayout} from "./components/layout";
+import {ScrollToTop} from "./components/common";
+import {ProtectedRoute, AdminProtectedRoute} from "./components/auth";
 import Home from "./pages/Home";
 import Upload from "./pages/Upload";
 import Editor from "./pages/Editor";

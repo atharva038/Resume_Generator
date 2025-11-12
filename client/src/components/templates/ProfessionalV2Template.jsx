@@ -2,6 +2,45 @@ import {forwardRef, useState} from "react";
 import {Mail, Phone, MapPin, Github, Globe, Linkedin} from "lucide-react";
 
 const ProfessionalV2Template = forwardRef(({resumeData}, ref) => {
+  // Color Themes - Multiple professional palettes
+  const colorThemes = {
+    blue: {
+      primary: "#1d4ed8",
+      secondary: "#2563eb",
+      accent: "#3b82f6",
+      text: "#111827",
+      textLight: "#4b5563",
+      textMuted: "#6b7280",
+    },
+    purple: {
+      primary: "#7e22ce",
+      secondary: "#9333ea",
+      accent: "#a855f7",
+      text: "#111827",
+      textLight: "#4b5563",
+      textMuted: "#6b7280",
+    },
+    teal: {
+      primary: "#0f766e",
+      secondary: "#14b8a6",
+      accent: "#2dd4bf",
+      text: "#111827",
+      textLight: "#4b5563",
+      textMuted: "#6b7280",
+    },
+    burgundy: {
+      primary: "#9f1239",
+      secondary: "#be123c",
+      accent: "#e11d48",
+      text: "#111827",
+      textLight: "#4b5563",
+      textMuted: "#6b7280",
+    },
+  };
+
+  // Select theme based on resumeData or default to blue
+  const selectedTheme = colorThemes[resumeData?.colorTheme] || colorThemes.blue;
+
   const [expandedSkills, setExpandedSkills] = useState(false);
   const [expandedSummary, setExpandedSummary] = useState(false);
 

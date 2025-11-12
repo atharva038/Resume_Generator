@@ -1,6 +1,6 @@
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
-import GitHubExtractor from "../components/GitHubExtractor";
+import {GitHubExtractor} from "../components/features/github";
 import {CheckCircle} from "lucide-react";
 
 const GitHubImport = () => {

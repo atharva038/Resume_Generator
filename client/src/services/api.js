@@ -84,4 +84,14 @@ export const contactAPI = {
   getStats: () => api.get("/contact/stats/summary"),
 };
 
+// AI Matching API (Google Gemini)
+export const mlAPI = {
+  calculateMatchScore: (resumeData, jobDescription) =>
+    api.post("/ml/match-score", {resumeData, jobDescription}),
+  analyzeSkillGaps: (resumeData, jobDescription) =>
+    api.post("/ml/skill-gap-analysis", {resumeData, jobDescription}),
+  quickMatch: (skills, jobDescription) =>
+    api.post("/ml/quick-match", {skills, jobDescription}),
+};
+
 export default api;
