@@ -31,6 +31,7 @@ import AdminFeedback from "./pages/admin/AdminFeedback";
 import AdminLogs from "./pages/admin/AdminLogs";
 import TemplateManagement from "./pages/admin/TemplateManagement";
 import AdminSettings from "./pages/admin/AdminSettings";
+import SystemFlowchart from "./pages/SystemFlowchart";
 import {DarkModeProvider} from "./context/DarkModeContext";
 import {NavigationBlockerProvider} from "./context/NavigationBlockerContext";
 
@@ -140,6 +141,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <SmartJobMatchPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="system-flowchart"
+              element={
+                <ProtectedRoute>
+                  <SystemFlowchart />
                 </ProtectedRoute>
               }
             />

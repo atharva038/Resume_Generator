@@ -16,6 +16,7 @@ import {
   Download,
   Edit3,
   X,
+  Network,
 } from "lucide-react";
 
 const Dashboard = () => {
@@ -180,6 +181,13 @@ const Dashboard = () => {
               >
                 <Plus className="w-5 h-5" />
                 Create New Resume
+              </Link>
+              <Link
+                to="/system-flowchart"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 via-cyan-600 to-teal-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 ml-4"
+              >
+                <Network className="w-5 h-5" />
+                View System Architecture
               </Link>
             </div>
           </div>
