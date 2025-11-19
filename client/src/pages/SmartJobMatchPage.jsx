@@ -1,7 +1,14 @@
 import {useState, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 import {SmartJobMatch} from "../components/features/job-match";
-import {Loader2, AlertCircle, Plus} from "lucide-react";
+import {
+  Loader2,
+  AlertCircle,
+  Plus,
+  Briefcase,
+  TrendingUp,
+  CheckCircle,
+} from "lucide-react";
 import toast from "react-hot-toast";
 
 const SmartJobMatchPage = () => {
@@ -76,6 +83,10 @@ const SmartJobMatchPage = () => {
   const loadResumeDetails = async (resumeId) => {
     try {
       console.log("📥 Loading resume details for ID:", resumeId);
+
+      // Show loading toast
+      const loadingToast = toast.loading("Switching resume...");
+
       const token = localStorage.getItem("token");
       const response = await fetch(`${API_BASE_URL}/resume/${resumeId}`, {
         headers: {
@@ -86,6 +97,7 @@ const SmartJobMatchPage = () => {
       console.log("📡 Resume details response status:", response.status);
 
       if (!response.ok) {
+        toast.dismiss(loadingToast);
         throw new Error("Failed to load resume details");
       }
 
@@ -93,7 +105,10 @@ const SmartJobMatchPage = () => {
       console.log("✅ Resume loaded:", data.resumeTitle || data.name);
       console.log("📋 Resume data:", data);
       setSelectedResume(data);
-      toast.success(`Loaded resume: ${data.resumeTitle || data.name}`);
+
+      // Dismiss loading and show success
+      toast.dismiss(loadingToast);
+      toast.success(`✅ Loaded resume: ${data.resumeTitle || data.name}`);
     } catch (error) {
       console.error("❌ Error loading resume:", error);
       toast.error("Failed to load resume details");
@@ -157,35 +172,93 @@ const SmartJobMatchPage = () => {
 
   return (
     <div>
-      {/* Resume Selector */}
-      {resumes.length > 1 && (
-        <div className="bg-white dark:bg-gray-800 shadow-md border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40">
-          <div className="container mx-auto px-4 py-4">
-            <div className="flex items-center gap-4">
-              <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                Select Resume:
-              </label>
+      {/* Resume Selector - Always show to indicate which resume is being used */}
+      <div className="bg-white dark:bg-gray-800 shadow-md border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+            <div className="flex items-center gap-3 flex-1">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  {resumes.length > 1 ? "Select Resume:" : "Active Resume:"}
+                </label>
+              </div>
               <select
                 value={selectedResume?._id || ""}
-                onChange={(e) => loadResumeDetails(e.target.value)}
-                className="flex-1 max-w-md px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                onChange={(e) => {
+                  if (e.target.value === "create-new") {
+                    navigate("/dashboard");
+                  } else {
+                    loadResumeDetails(e.target.value);
+                  }
+                }}
+                className="flex-1 max-w-md px-4 py-2.5 border-2 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:text-white font-medium transition-all hover:border-purple-400 cursor-pointer"
+                style={{
+                  backgroundPosition: "right 0.5rem center",
+                  paddingBottom: "0.625rem",
+                }}
               >
                 {resumes.map((resume) => (
                   <option key={resume._id} value={resume._id}>
                     {resume.resumeTitle || resume.name}
+                    {resume._id === selectedResume?._id ? " ✓" : ""}
                   </option>
                 ))}
+                <option
+                  value="create-new"
+                  className="font-semibold text-purple-600"
+                >
+                  ➕ Create New Resume
+                </option>
               </select>
+            </div>
+            <div className="flex gap-2">
               <button
                 onClick={() => navigate("/dashboard")}
-                className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 font-semibold py-2 px-4 rounded-lg transition-all"
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-2 px-6 rounded-lg transition-all shadow-md hover:shadow-lg flex items-center gap-2"
               >
-                Manage Resumes
+                {resumes.length === 1 ? (
+                  <>
+                    <Plus className="w-4 h-4" />
+                    Create New Resume
+                  </>
+                ) : (
+                  "Manage Resumes"
+                )}
               </button>
             </div>
           </div>
+
+          {/* Resume Info Bar */}
+          {selectedResume && (
+            <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+                <span className="flex items-center gap-2">
+                  <Briefcase className="w-4 h-4" />
+                  <strong className="text-gray-700 dark:text-gray-300">
+                    Skills:
+                  </strong>
+                  {selectedResume.skills?.length || 0} listed
+                </span>
+                <span className="flex items-center gap-2">
+                  <TrendingUp className="w-4 h-4" />
+                  <strong className="text-gray-700 dark:text-gray-300">
+                    Experience:
+                  </strong>
+                  {selectedResume.experience?.length || 0} positions
+                </span>
+                <span className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4" />
+                  <strong className="text-gray-700 dark:text-gray-300">
+                    Education:
+                  </strong>
+                  {selectedResume.education?.length || 0} entries
+                </span>
+              </div>
+            </div>
+          )}
         </div>
-      )}
+      </div>
 
       {/* Smart Job Match Component */}
       {selectedResume && <SmartJobMatch resumeData={selectedResume} />}

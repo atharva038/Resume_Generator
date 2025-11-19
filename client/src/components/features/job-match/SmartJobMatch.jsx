@@ -280,6 +280,31 @@ const SmartJobMatch = ({resumeData}) => {
     setCurrentPage(1);
   }, [jobTypeFilter, workModeFilter, viewMode]);
 
+  // Clear jobs when resume changes and notify user
+  useEffect(() => {
+    if (resumeData) {
+      // Clear previous job matches when resume changes
+      setMatchedJobs([]);
+      setSearchKeywords([]);
+      setCurrentPage(1);
+      setSavedJobs(new Set());
+
+      console.log("🔄 Resume changed, cleared previous matches");
+      console.log("📝 New resume:", resumeData.resumeTitle || resumeData.name);
+
+      // Show notification about resume change
+      toast(
+        `Resume switched to: ${
+          resumeData.resumeTitle || resumeData.name
+        }. Click "Find Jobs" to get new matches!`,
+        {
+          icon: "🔄",
+          duration: 4000,
+        }
+      );
+    }
+  }, [resumeData?._id]); // Only trigger when resume ID changes
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <div className="container mx-auto px-4 py-8">
