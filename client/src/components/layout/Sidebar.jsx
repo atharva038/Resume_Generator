@@ -75,16 +75,10 @@ const Sidebar = ({isOpen, setIsOpen}) => {
       description: "Manage your resumes",
     },
     {
-      name: "Feedback",
-      path: "/feedback",
-      icon: MessageCircle,
-      description: "Share your feedback",
-    },
-    {
-      name: "Contact",
+      name: "Contact & Feedback",
       path: "/contact",
       icon: Mail,
-      description: "Get in touch",
+      description: "Get in touch or share feedback",
     },
   ];
 

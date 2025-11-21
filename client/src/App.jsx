@@ -18,7 +18,6 @@ import ATSAnalyzer from "./pages/ATSAnalyzer";
 import JobSearch from "./pages/JobSearch";
 import SmartJobMatchPage from "./pages/SmartJobMatchPage";
 import Contact from "./pages/Contact";
-import Feedback from "./pages/Feedback";
 import NotFound from "./pages/NotFound";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import UserManagement from "./pages/admin/UserManagement";
@@ -146,14 +145,6 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Contact />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="feedback"
-              element={
-                <ProtectedRoute>
-                  <Feedback />
                 </ProtectedRoute>
               }
             />
