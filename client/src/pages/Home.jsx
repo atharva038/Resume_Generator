@@ -7,25 +7,25 @@ const Home = () => {
 
   const features = [
     {
-      icon: "🤖",
+      image: "/img/ai_power_enhan.svg",
       title: "AI-Powered Enhancement",
       description:
         "Let Google's Gemini AI analyze and enhance your resume with role-specific suggestions, powerful action verbs, and quantifiable achievements.",
     },
     {
-      icon: "🎯",
+      image: "/img/ats_optimization.svg",
       title: "ATS Optimization",
       description:
         "Beat the bots! Our system ensures your resume passes Applicant Tracking Systems with optimized formatting and keyword placement.",
     },
     {
-      icon: "📊",
+      image: "/img/smart_scoring_Insights.svg",
       title: "Smart Scoring & Insights",
       description:
         "Get instant ATS scores and job-match ratings. Know exactly how your resume performs against real job descriptions and tech stacks.",
     },
     {
-      icon: "🎨",
+      image: "/img/professional_templates.svg",
       title: "Professional Templates",
       description:
         "Choose from 8+ sleek, recruiter-approved templates. From Classic to Creative — all ATS-friendly and beautifully designed.",
@@ -97,6 +97,27 @@ const Home = () => {
     },
   ];
 
+  const whyChooseUs = [
+    {
+      image: "/img/beat_competition.svg",
+      title: "Beat the Competition",
+      description:
+        "Stand out with AI-crafted content that hiring managers can't ignore. Your resume, but better.",
+    },
+    {
+      image: "/img/gain_confidence.svg",
+      title: "Gain Confidence",
+      description:
+        "Know exactly where you stand with instant scoring and job-match insights. Apply with certainty.",
+    },
+    {
+      image: "/img/save_time.svg",
+      title: "Save Time & Stress",
+      description:
+        "Stop wrestling with formatting. Focus on your career while AI handles the rest.",
+    },
+  ];
+
   const faqs = [
     {
       question: "Is my resume data safe and private?",
@@ -153,35 +174,43 @@ const Home = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
             {[
               {
-                icon: "🎓",
+                image: "/img/Students_Freshers.png",
                 title: "Students & Freshers",
                 desc: "Land your first job with a polished, professional resume that stands out from the crowd.",
               },
               {
-                icon: "💻",
+                image: "/img/Developers_Engineer.png",
                 title: "Developers & Engineers",
                 desc: "Showcase your tech stack and projects with ATS-optimized formatting that recruiters love.",
               },
               {
-                icon: "💼",
+                image: "/img/professional.jpeg",
                 title: "Working Professionals",
                 desc: "Climb the ladder faster with AI-enhanced achievements and quantifiable metrics.",
               },
               {
-                icon: "🔄",
+                image: "/img/Swithching_Carrers.png",
                 title: "Career Switchers",
                 desc: "Reposition your skills for a new role with smart, targeted content that highlights transferable skills.",
               },
             ].map((audience, idx) => (
               <div
                 key={idx}
-                className="p-6 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-700 rounded-2xl hover:shadow-xl transition-shadow duration-300"
+                className="group p-6 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-700 rounded-2xl hover:shadow-xl transition-all duration-300 hover:scale-105"
               >
-                <div className="text-5xl mb-4">{audience.icon}</div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                <div className="mb-4 flex justify-center">
+                  <div className="w-20 h-20 rounded-full overflow-hidden bg-white dark:bg-gray-600 flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow duration-300">
+                    <img
+                      src={audience.image}
+                      alt={audience.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 text-center">
                   {audience.title}
                 </h3>
-                <p className="text-gray-600 dark:text-gray-400">
+                <p className="text-gray-600 dark:text-gray-400 text-center">
                   {audience.desc}
                 </p>
               </div>
@@ -212,13 +241,19 @@ const Home = () => {
                 key={idx}
                 className="group p-8 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 border border-white/20 dark:border-gray-700/50"
               >
-                <div className="text-6xl mb-4 group-hover:scale-110 transition-transform duration-300">
-                  {feature.icon}
+                <div className="mb-4 flex justify-center">
+                  <div className="w-24 h-24 rounded-2xl overflow-hidden bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 flex items-center justify-center p-3 shadow-md group-hover:shadow-lg group-hover:scale-110 transition-all duration-300">
+                    <img
+                      src={feature.image}
+                      alt={feature.title}
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3 text-center">
                   {feature.title}
                 </h3>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-center">
                   {feature.description}
                 </p>
               </div>
@@ -345,38 +380,28 @@ const Home = () => {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <div className="text-center p-8 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl shadow-lg border border-white/20 dark:border-gray-700/50">
-              <div className="text-6xl mb-4">🏆</div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
-                Beat the Competition
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400">
-                Stand out with AI-crafted content that hiring managers can't
-                ignore. Your resume, but better.
-              </p>
-            </div>
-
-            <div className="text-center p-8 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl shadow-lg border border-white/20 dark:border-gray-700/50">
-              <div className="text-6xl mb-4">💪</div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
-                Gain Confidence
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400">
-                Know exactly where you stand with instant scoring and job-match
-                insights. Apply with certainty.
-              </p>
-            </div>
-
-            <div className="text-center p-8 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl shadow-lg border border-white/20 dark:border-gray-700/50">
-              <div className="text-6xl mb-4">⏰</div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
-                Save Time & Stress
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400">
-                Stop wrestling with formatting. Focus on your career while AI
-                handles the rest.
-              </p>
-            </div>
+            {whyChooseUs.map((item, idx) => (
+              <div
+                key={idx}
+                className="text-center p-8 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl shadow-lg border border-white/20 dark:border-gray-700/50 hover:shadow-2xl transition-all duration-300 hover:scale-105"
+              >
+                <div className="mb-6 flex justify-center">
+                  <div className="w-24 h-24 rounded-2xl overflow-hidden bg-white dark:bg-gray-700 flex items-center justify-center p-2 shadow-md">
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                  {item.title}
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400">
+                  {item.description}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>

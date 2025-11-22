@@ -1,0 +1,19 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0EA5E9" />
+      <stop offset="1" stop-color="#6366F1" />
+    </linearGradient>
+    <linearGradient id="shield" x1="128" y1="40" x2="128" y2="220" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ECFCCB" />
+      <stop offset="1" stop-color="#86EFAC" />
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="36" fill="url(#bg2)" />
+  <circle cx="128" cy="126" r="92" fill="rgba(255,255,255,0.12)" />
+  <path d="M128 48L188 76V128C188 170.869 163.995 200.273 128 212C92.0045 200.273 68 170.869 68 128V76L128 48Z" fill="url(#shield)" stroke="#4ADE80" stroke-width="5" />
+  <path d="M110 128L124 142L150 112" stroke="#15803D" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" />
+  <circle cx="128" cy="76" r="18" fill="#0EA5E9" opacity="0.3" />
+  <path d="M64 180C80 190 100 196 128 196C156 196 176 190 192 180" stroke="#ffffff" stroke-opacity="0.4" stroke-width="8" stroke-linecap="round" />
+  <text x="128" y="234" text-anchor="middle" font-family="'Inter', 'Segoe UI', sans-serif" font-size="18" fill="#F5F3FF" font-weight="600">Confidence Boost</text>
+</svg>
