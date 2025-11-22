@@ -1,0 +1,25 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="ats_bg" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0EA5E9" />
+      <stop offset="1" stop-color="#2563EB" />
+    </linearGradient>
+    <linearGradient id="doc" x1="128" y1="56" x2="128" y2="204" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F8FAFC" />
+      <stop offset="1" stop-color="#E2E8F0" />
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="36" fill="url(#ats_bg)" />
+  <rect x="64" y="48" width="128" height="160" rx="24" fill="rgba(255,255,255,0.2)" />
+  <rect x="84" y="68" width="88" height="132" rx="16" fill="url(#doc)" />
+  <rect x="100" y="92" width="56" height="10" rx="5" fill="#94A3B8" />
+  <rect x="100" y="116" width="40" height="10" rx="5" fill="#CBD5F5" />
+  <rect x="100" y="140" width="56" height="10" rx="5" fill="#94A3B8" />
+  <rect x="100" y="164" width="48" height="10" rx="5" fill="#94A3B8" />
+  <path d="M160 168L184 144" stroke="#FBBF24" stroke-width="8" stroke-linecap="round" />
+  <circle cx="190" cy="138" r="18" fill="#FBBF24" />
+  <path d="M72 180C84 194 104 204 128 204C152 204 172 194 184 182" stroke="rgba(255,255,255,0.7)" stroke-width="8" stroke-linecap="round" />
+  <circle cx="190" cy="138" r="10" fill="#1E3A8A" />
+  <path d="M84 208H172" stroke="#E0F2FE" stroke-width="6" stroke-linecap="round" />
+  <text x="128" y="232" text-anchor="middle" font-family="'Inter', 'Segoe UI', sans-serif" font-size="18" fill="#E0F2FE" font-weight="600">ATS Optimization</text>
+</svg>

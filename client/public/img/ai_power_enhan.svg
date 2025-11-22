@@ -1,0 +1,24 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="ai_bg" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4F46E5" />
+      <stop offset="1" stop-color="#8B5CF6" />
+    </linearGradient>
+    <linearGradient id="chip" x1="128" y1="60" x2="128" y2="196" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E0E7FF" />
+      <stop offset="1" stop-color="#C7D2FE" />
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="36" fill="url(#ai_bg)" />
+  <rect x="48" y="48" width="160" height="160" rx="32" fill="rgba(255,255,255,0.15)" />
+  <rect x="84" y="84" width="88" height="88" rx="20" fill="url(#chip)" stroke="#818CF8" stroke-width="5" />
+  <path d="M128 84V60" stroke="#C4B5FD" stroke-width="6" stroke-linecap="round" />
+  <path d="M128 196V172" stroke="#C4B5FD" stroke-width="6" stroke-linecap="round" />
+  <path d="M84 128H60" stroke="#C4B5FD" stroke-width="6" stroke-linecap="round" />
+  <path d="M196 128H172" stroke="#C4B5FD" stroke-width="6" stroke-linecap="round" />
+  <circle cx="128" cy="128" r="26" fill="#312E81" />
+  <path d="M118 128C118 133.523 122.477 138 128 138C133.523 138 138 133.523 138 128C138 122.477 133.523 118 128 118" stroke="#A5B4FC" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M118 138L112 146" stroke="#A5B4FC" stroke-width="6" stroke-linecap="round" />
+  <path d="M138 118L144 110" stroke="#A5B4FC" stroke-width="6" stroke-linecap="round" />
+  <text x="128" y="226" text-anchor="middle" font-family="'Inter', 'Segoe UI', sans-serif" font-size="18" fill="#EEF2FF" font-weight="600">AI Enhancement</text>
+</svg>
