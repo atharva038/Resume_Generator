@@ -8,6 +8,7 @@ import EditableSection from "./EditableSection";
 import {ScoreCard} from "../../common/cards";
 import {RecommendationsPanel} from "../panels";
 import {resumeAPI} from "../../../services/api";
+import {LimitedTextarea} from "../../common/LimitedInputs";
 
 export const PersonalInfoSection = ({
   resumeData,

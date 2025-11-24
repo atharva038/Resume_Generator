@@ -1,4 +1,4 @@
-import {useRef, forwardRef, useImperativeHandle} from "react";
+import {useRef, forwardRef, useImperativeHandle, useState, useEffect} from "react";
 import {useReactToPrint} from "react-to-print";
 import ClassicTemplate from "../../templates/ClassicTemplate";
 import ModernTemplate from "../../templates/ModernTemplate";
@@ -13,8 +13,21 @@ import CorporateEliteTemplate from "../../templates/CorporateEliteTemplate";
 import StrategicLeaderTemplate from "../../templates/StrategicLeaderTemplate";
 import ImpactProTemplate from "../../templates/ImpactProTemplate";
 
-const ResumePreview = forwardRef(({resumeData, template = "classic"}, ref) => {
+const ResumePreview = forwardRef(({resumeData, template = "classic", twoPageMode = false}, ref) => {
   const componentRef = useRef();
+  const containerRef = useRef();
+  const [hasOverflow, setHasOverflow] = useState(false);
+
+  // Check for content overflow in single-page mode
+  useEffect(() => {
+    if (!twoPageMode && containerRef.current) {
+      const container = containerRef.current;
+      const isOverflowing = container.scrollHeight > container.clientHeight;
+      setHasOverflow(isOverflowing);
+    } else {
+      setHasOverflow(false);
+    }
+  }, [resumeData, twoPageMode]);
 
   const templates = {
     classic: ClassicTemplate,
@@ -82,19 +95,40 @@ const ResumePreview = forwardRef(({resumeData, template = "classic"}, ref) => {
         style={{maxHeight: "calc(100vh - 15rem)"}}
       >
         <div
-          className="flex justify-center pb-4 ps-5 "
+          className="flex justify-center pb-4"
           style={{minHeight: "100%"}}
         >
           <div
-            className="mr-4 bg-white dark:bg-gray-50 shadow-2xl rounded-sm origin-top mb-8"
+            ref={containerRef}
+            className="bg-white dark:bg-gray-50 shadow-2xl rounded-sm mb-8 relative"
             style={{
               width: "210mm",
-              height: "200mm",
+              minHeight: twoPageMode ? "297mm" : "297mm",
+              height: twoPageMode ? "auto" : "297mm",
+              maxHeight: twoPageMode ? "none" : "297mm",
+              overflow: twoPageMode ? "visible" : "hidden",
               transform: "scale(0.65)",
               transformOrigin: "top center",
+              margin: "0 auto",
             }}
           >
-            <SelectedTemplate ref={componentRef} resumeData={resumeData} />
+            <SelectedTemplate ref={componentRef} resumeData={resumeData} twoPageMode={twoPageMode} />
+            
+            {/* Content overflow warning for single page mode - only show if actually overflowing */}
+            {!twoPageMode && hasOverflow && (
+              <div 
+                className="absolute bottom-0 left-0 right-0 h-20 pointer-events-none"
+                style={{
+                  background: "linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.98))",
+                }}
+              >
+                <div className="absolute bottom-3 left-0 right-0 text-center">
+                  <div className="inline-block bg-red-100 dark:bg-red-900/60 text-red-800 dark:text-red-200 px-5 py-2 rounded-full text-sm font-bold border-2 border-red-400 dark:border-red-600 shadow-lg animate-pulse">
+                    ⚠️ Content Below This Line is Hidden
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
