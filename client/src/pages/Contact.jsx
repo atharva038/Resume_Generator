@@ -94,8 +94,6 @@ const Contact = () => {
     {value: "general", label: "General Inquiry", icon: "💬"},
     {value: "support", label: "Technical Support", icon: "🛠️"},
     {value: "business", label: "Business Inquiry", icon: "💼"},
-    {value: "bug-report", label: "Bug Report", icon: "🐛"},
-    {value: "feature-request", label: "Feature Request", icon: "✨"},
   ];
 
   const feedbackTypes = [

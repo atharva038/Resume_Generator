@@ -20,8 +20,10 @@ import {
   CustomSectionsManager,
 } from "../components/editor";
 import {ScoreCard, JobSpecificScoreCard} from "../components/common/cards";
-import {GitHubImportModal} from "../components/common/modals";
+import {GitHubImportModal, PageLimitExceededModal} from "../components/common/modals";
 import {getJobCategories, getJobsByCategory} from "../utils/jobProfiles";
+import {calculateContentMetrics} from "../utils/resumeLimits";
+import {PageUtilizationIndicator} from "../components/common/LimitedInputs";
 import ClassicTemplate from "../components/templates/ClassicTemplate";
 import ModernTemplate from "../components/templates/ModernTemplate";
 import MinimalTemplate from "../components/templates/MinimalTemplate";
@@ -258,6 +260,11 @@ const Editor = () => {
   });
   const [showGitHubImportModal, setShowGitHubImportModal] = useState(false);
   const [githubImportSuccess, setGithubImportSuccess] = useState(false);
+  
+  // Page limit states
+  const [showPageLimitModal, setShowPageLimitModal] = useState(false);
+  const [twoPageMode, setTwoPageMode] = useState(false);
+  const [lastContentMetrics, setLastContentMetrics] = useState(null);
 
   // Save analysis section state to localStorage when it changes
   useEffect(() => {
@@ -293,6 +300,25 @@ const Editor = () => {
       JSON.stringify(resumeData) !== JSON.stringify(originalResumeData);
     setHasUnsavedChanges(hasChanges);
   }, [resumeData, originalResumeData]);
+
+  // Monitor content size and show warning if exceeds one page
+  useEffect(() => {
+    if (!resumeData || twoPageMode) return;
+
+    // Calculate content metrics
+    const metrics = calculateContentMetrics(resumeData);
+    setLastContentMetrics(metrics);
+
+    // Check if content exceeds one page
+    if (metrics.exceedsOnePage) {
+      // Show modal after a short delay to allow user to see what they typed
+      const timer = setTimeout(() => {
+        setShowPageLimitModal(true);
+      }, 500);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [resumeData, twoPageMode]);
 
   // Auto-save functionality
   useEffect(() => {
@@ -597,6 +623,24 @@ const Editor = () => {
   const handleCancelNavigation = () => {
     setShowUnsavedModal(false);
     setPendingNavigation(null);
+  };
+
+  // Page limit handlers
+  const handleEnableTwoPages = () => {
+    setTwoPageMode(true);
+    setShowPageLimitModal(false);
+    toast.success("Two-page mode enabled", {
+      icon: "📄",
+      duration: 3000,
+    });
+  };
+
+  const handleContinueEditing = () => {
+    setShowPageLimitModal(false);
+    toast.info("Please reduce content to fit one page", {
+      icon: "✏️",
+      duration: 3000,
+    });
   };
 
   const updateField = (field, value, skipTracking = false) => {
@@ -1712,6 +1756,14 @@ const Editor = () => {
         >
           {/* Editor Panel - Dynamic Sections */}
           <div className="space-y-4 sm:space-y-6">
+            {/* Page Utilization Indicator */}
+            {!twoPageMode && lastContentMetrics && (
+              <PageUtilizationIndicator
+                metrics={lastContentMetrics}
+                twoPageMode={twoPageMode}
+              />
+            )}
+            
             {sectionOrder.map((sectionId) => renderSection(sectionId))}
           </div>
 
@@ -1748,6 +1800,7 @@ const Editor = () => {
                   ref={resumePreviewRef}
                   resumeData={resumeData}
                   template={selectedTemplate}
+                  twoPageMode={twoPageMode}
                 />
               </div>
             </div>
@@ -1897,6 +1950,15 @@ const Editor = () => {
           onClose={() => setShowGitHubImportModal(false)}
           onImport={handleGitHubImport}
           currentResume={resumeData}
+        />
+
+        {/* Page Limit Exceeded Modal */}
+        <PageLimitExceededModal
+          isOpen={showPageLimitModal}
+          onClose={() => setShowPageLimitModal(false)}
+          resumeData={resumeData}
+          onEnableTwoPages={handleEnableTwoPages}
+          onContinueEditing={handleContinueEditing}
         />
 
         {/* Color Theme Selector Modal */}
