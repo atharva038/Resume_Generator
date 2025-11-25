@@ -1203,6 +1203,777 @@ export const JOB_PROFILES = {
     ],
     minExperience: 1,
   },
+  
+  // Additional Frontend Frameworks & Stacks
+  "nextjs-developer": {
+    label: "Next.js Developer",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["JavaScript", "TypeScript", "HTML", "CSS"],
+      frameworks: ["Next.js", "React", "Tailwind CSS", "Styled Components"],
+      databases: ["MongoDB", "PostgreSQL", "Prisma"],
+      tools: ["Git", "Webpack", "npm", "Vercel", "Docker"],
+      concepts: ["SSR", "SSG", "ISR", "API Routes", "App Router", "SEO"],
+    },
+    weights: {
+      technical: 0.45,
+      experience: 0.25,
+      projects: 0.2,
+      education: 0.1,
+    },
+    experienceKeywords: ["built", "developed", "deployed", "optimized", "implemented SSR"],
+    minExperience: 0,
+  },
+  
+  "svelte-developer": {
+    label: "Svelte/SvelteKit Developer",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["JavaScript", "TypeScript", "HTML", "CSS"],
+      frameworks: ["Svelte", "SvelteKit", "Vite"],
+      databases: ["MongoDB", "PostgreSQL"],
+      tools: ["Git", "npm", "Vite", "Rollup"],
+      concepts: ["Reactivity", "Stores", "Component Design", "SSR", "Routing"],
+    },
+    weights: {
+      technical: 0.45,
+      experience: 0.25,
+      projects: 0.2,
+      education: 0.1,
+    },
+    experienceKeywords: ["built", "developed", "created", "optimized"],
+    minExperience: 0,
+  },
+  
+  "remix-developer": {
+    label: "Remix Developer",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["JavaScript", "TypeScript", "HTML", "CSS"],
+      frameworks: ["Remix", "React", "React Router"],
+      databases: ["PostgreSQL", "MongoDB", "Prisma"],
+      tools: ["Git", "npm", "Fly.io", "Vercel"],
+      concepts: ["Progressive Enhancement", "Nested Routing", "Data Loading", "SSR"],
+    },
+    weights: {
+      technical: 0.45,
+      experience: 0.25,
+      projects: 0.2,
+      education: 0.1,
+    },
+    experienceKeywords: ["built", "developed", "optimized", "implemented"],
+    minExperience: 0,
+  },
+  
+  "solidjs-developer": {
+    label: "Solid.js Developer",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["JavaScript", "TypeScript", "HTML", "CSS"],
+      frameworks: ["Solid.js", "SolidStart"],
+      databases: [],
+      tools: ["Git", "Vite", "npm"],
+      concepts: ["Fine-grained Reactivity", "Signals", "JSX", "Performance"],
+    },
+    weights: {
+      technical: 0.45,
+      experience: 0.25,
+      projects: 0.2,
+      education: 0.1,
+    },
+    experienceKeywords: ["built", "developed", "optimized", "created"],
+    minExperience: 0,
+  },
+  
+  // Backend Frameworks & Specializations
+  "nestjs-developer": {
+    label: "NestJS Developer",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["TypeScript", "JavaScript"],
+      frameworks: ["NestJS", "Express", "TypeORM", "Prisma"],
+      databases: ["PostgreSQL", "MongoDB", "MySQL", "Redis"],
+      tools: ["Git", "Docker", "Jest", "Swagger", "RabbitMQ"],
+      concepts: ["Dependency Injection", "Microservices", "REST API", "GraphQL"],
+    },
+    weights: {
+      technical: 0.45,
+      experience: 0.25,
+      projects: 0.2,
+      education: 0.1,
+    },
+    experienceKeywords: ["developed", "built", "architected", "implemented APIs"],
+    minExperience: 0,
+  },
+  
+  "fastapi-developer": {
+    label: "FastAPI Developer",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["Python"],
+      frameworks: ["FastAPI", "Pydantic", "SQLAlchemy", "Alembic"],
+      databases: ["PostgreSQL", "MongoDB", "MySQL", "Redis"],
+      tools: ["Git", "Docker", "Uvicorn", "Pytest", "Swagger"],
+      concepts: ["Async Programming", "REST API", "Type Hints", "Dependency Injection"],
+    },
+    weights: {
+      technical: 0.45,
+      experience: 0.25,
+      projects: 0.2,
+      education: 0.1,
+    },
+    experienceKeywords: ["developed", "built", "implemented", "optimized APIs"],
+    minExperience: 0,
+  },
+  
+  "spring-boot-developer": {
+    label: "Spring Boot Developer",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["Java"],
+      frameworks: ["Spring Boot", "Spring MVC", "Spring Security", "Hibernate"],
+      databases: ["PostgreSQL", "MySQL", "Oracle", "MongoDB"],
+      tools: ["Git", "Maven", "Gradle", "Docker", "Jenkins"],
+      concepts: ["Microservices", "REST API", "JPA", "Security", "Cloud Native"],
+    },
+    weights: {
+      technical: 0.45,
+      experience: 0.25,
+      projects: 0.2,
+      education: 0.1,
+    },
+    experienceKeywords: ["developed", "built", "architected", "implemented"],
+    minExperience: 0,
+  },
+  
+  "laravel-developer": {
+    label: "Laravel Developer",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["PHP", "JavaScript"],
+      frameworks: ["Laravel", "Eloquent", "Blade", "Vue.js", "Livewire"],
+      databases: ["MySQL", "PostgreSQL", "Redis"],
+      tools: ["Composer", "Git", "Laravel Forge", "Laravel Vapor"],
+      concepts: ["MVC", "Eloquent ORM", "Artisan", "Middleware", "Queue Jobs"],
+    },
+    weights: {
+      technical: 0.45,
+      experience: 0.25,
+      projects: 0.2,
+      education: 0.1,
+    },
+    experienceKeywords: ["developed", "built", "created", "implemented"],
+    minExperience: 0,
+  },
+  
+  "django-developer": {
+    label: "Django Developer",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["Python", "JavaScript"],
+      frameworks: ["Django", "Django REST Framework", "Celery"],
+      databases: ["PostgreSQL", "MySQL", "MongoDB", "Redis"],
+      tools: ["Git", "Docker", "Gunicorn", "Nginx", "Pytest"],
+      concepts: ["MVT", "ORM", "Middleware", "Authentication", "REST API"],
+    },
+    weights: {
+      technical: 0.45,
+      experience: 0.25,
+      projects: 0.2,
+      education: 0.1,
+    },
+    experienceKeywords: ["developed", "built", "implemented", "deployed"],
+    minExperience: 0,
+  },
+  
+  "rails-developer": {
+    label: "Ruby on Rails Developer",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["Ruby", "JavaScript"],
+      frameworks: ["Rails", "Active Record", "Hotwire", "Stimulus"],
+      databases: ["PostgreSQL", "MySQL", "Redis"],
+      tools: ["Git", "Bundler", "Heroku", "RSpec"],
+      concepts: ["MVC", "Active Record", "Convention over Configuration", "RESTful"],
+    },
+    weights: {
+      technical: 0.45,
+      experience: 0.25,
+      projects: 0.2,
+      education: 0.1,
+    },
+    experienceKeywords: ["developed", "built", "implemented", "deployed"],
+    minExperience: 0,
+  },
+  
+  "express-developer": {
+    label: "Express.js Developer",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["JavaScript", "TypeScript"],
+      frameworks: ["Express.js", "Mongoose", "Passport.js"],
+      databases: ["MongoDB", "PostgreSQL", "MySQL", "Redis"],
+      tools: ["Git", "npm", "Docker", "PM2", "Nginx"],
+      concepts: ["Middleware", "REST API", "Authentication", "Session Management"],
+    },
+    weights: {
+      technical: 0.45,
+      experience: 0.25,
+      projects: 0.2,
+      education: 0.1,
+    },
+    experienceKeywords: ["developed", "built", "implemented", "created APIs"],
+    minExperience: 0,
+  },
+  
+  "graphql-developer": {
+    label: "GraphQL Developer",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["JavaScript", "TypeScript", "Python"],
+      frameworks: ["Apollo Server", "Apollo Client", "GraphQL", "Relay"],
+      databases: ["PostgreSQL", "MongoDB"],
+      tools: ["Git", "GraphQL Playground", "Docker"],
+      concepts: ["Schema Design", "Resolvers", "Subscriptions", "Caching"],
+    },
+    weights: {
+      technical: 0.45,
+      experience: 0.25,
+      projects: 0.2,
+      education: 0.1,
+    },
+    experienceKeywords: ["designed schemas", "implemented", "built APIs", "optimized"],
+    minExperience: 0,
+  },
+  
+  // Full Stack Variations
+  "t3-stack-developer": {
+    label: "T3 Stack Developer (Next.js + tRPC + Prisma)",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["TypeScript", "JavaScript"],
+      frameworks: ["Next.js", "tRPC", "Prisma", "React", "Tailwind CSS"],
+      databases: ["PostgreSQL", "MySQL"],
+      tools: ["Git", "Vercel", "Docker"],
+      concepts: ["Type Safety", "SSR", "API Routes", "Database Modeling"],
+    },
+    weights: {
+      technical: 0.45,
+      experience: 0.25,
+      projects: 0.2,
+      education: 0.1,
+    },
+    experienceKeywords: ["built", "developed", "implemented", "deployed"],
+    minExperience: 0,
+  },
+  
+  "jamstack-developer": {
+    label: "JAMstack Developer",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["JavaScript", "TypeScript", "HTML", "CSS"],
+      frameworks: ["Next.js", "Gatsby", "Eleventy", "Astro", "Hugo"],
+      databases: [],
+      tools: ["Git", "Netlify", "Vercel", "Contentful", "Sanity"],
+      concepts: ["Static Site Generation", "Headless CMS", "CDN", "Serverless"],
+    },
+    weights: {
+      technical: 0.4,
+      experience: 0.25,
+      projects: 0.25,
+      education: 0.1,
+    },
+    experienceKeywords: ["built", "developed", "deployed", "optimized"],
+    minExperience: 0,
+  },
+  
+  "serverless-developer": {
+    label: "Serverless Developer",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["JavaScript", "TypeScript", "Python"],
+      frameworks: ["AWS Lambda", "Serverless Framework", "SAM", "CDK"],
+      databases: ["DynamoDB", "Aurora Serverless", "MongoDB Atlas"],
+      tools: ["Git", "AWS", "Azure Functions", "Google Cloud Functions"],
+      concepts: ["FaaS", "Event-Driven", "Cold Starts", "Scalability"],
+    },
+    weights: {
+      technical: 0.45,
+      experience: 0.25,
+      projects: 0.2,
+      education: 0.1,
+    },
+    experienceKeywords: ["developed", "deployed", "architected", "implemented"],
+    minExperience: 0,
+  },
+  
+  // Mobile Development Variations
+  "kotlin-developer": {
+    label: "Kotlin Developer (Android)",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["Kotlin", "Java"],
+      frameworks: ["Android SDK", "Jetpack Compose", "Coroutines", "Room"],
+      databases: ["SQLite", "Room", "Realm"],
+      tools: ["Android Studio", "Git", "Gradle", "Firebase"],
+      concepts: ["Material Design", "MVVM", "Lifecycle", "Dependency Injection"],
+    },
+    weights: {
+      technical: 0.45,
+      experience: 0.25,
+      projects: 0.2,
+      education: 0.1,
+    },
+    experienceKeywords: ["developed", "built", "published", "implemented"],
+    minExperience: 0,
+  },
+  
+  "swiftui-developer": {
+    label: "SwiftUI Developer (iOS)",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["Swift"],
+      frameworks: ["SwiftUI", "Combine", "Core Data", "UIKit"],
+      databases: ["Core Data", "Realm", "Firebase"],
+      tools: ["Xcode", "Git", "CocoaPods", "Swift Package Manager"],
+      concepts: ["Declarative UI", "State Management", "MVVM", "HIG"],
+    },
+    weights: {
+      technical: 0.45,
+      experience: 0.25,
+      projects: 0.2,
+      education: 0.1,
+    },
+    experienceKeywords: ["developed", "built", "published", "implemented"],
+    minExperience: 0,
+  },
+  
+  "ionic-developer": {
+    label: "Ionic Developer",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["JavaScript", "TypeScript", "HTML", "CSS"],
+      frameworks: ["Ionic", "Angular", "React", "Vue", "Capacitor"],
+      databases: ["SQLite", "Firebase"],
+      tools: ["Git", "Ionic CLI", "Cordova"],
+      concepts: ["Hybrid Apps", "Cross-Platform", "Mobile UI/UX"],
+    },
+    weights: {
+      technical: 0.4,
+      experience: 0.25,
+      projects: 0.25,
+      education: 0.1,
+    },
+    experienceKeywords: ["developed", "built", "deployed", "published"],
+    minExperience: 0,
+  },
+  
+  // DevOps & Cloud Specializations
+  "aws-devops-engineer": {
+    label: "AWS DevOps Engineer",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["Python", "Bash", "JavaScript"],
+      frameworks: ["AWS CDK", "CloudFormation", "Terraform"],
+      databases: ["RDS", "DynamoDB", "Aurora"],
+      tools: ["AWS", "Docker", "Kubernetes", "Jenkins", "GitLab CI"],
+      concepts: ["CI/CD", "IaC", "Serverless", "Containers", "Monitoring"],
+    },
+    weights: {
+      technical: 0.4,
+      experience: 0.3,
+      projects: 0.2,
+      education: 0.1,
+    },
+    experienceKeywords: ["deployed", "automated", "architected", "optimized"],
+    minExperience: 1,
+  },
+  
+  "azure-devops-engineer": {
+    label: "Azure DevOps Engineer",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["PowerShell", "Python", "C#"],
+      frameworks: ["Azure Resource Manager", "Bicep", "Terraform"],
+      databases: ["Azure SQL", "Cosmos DB"],
+      tools: ["Azure", "Docker", "Kubernetes", "Azure DevOps", "GitHub Actions"],
+      concepts: ["CI/CD", "IaC", "Azure Services", "Monitoring"],
+    },
+    weights: {
+      technical: 0.4,
+      experience: 0.3,
+      projects: 0.2,
+      education: 0.1,
+    },
+    experienceKeywords: ["deployed", "automated", "architected", "managed"],
+    minExperience: 1,
+  },
+  
+  "kubernetes-engineer": {
+    label: "Kubernetes Engineer",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["YAML", "Python", "Go", "Bash"],
+      frameworks: ["Kubernetes", "Helm", "Kustomize"],
+      databases: ["etcd"],
+      tools: ["kubectl", "Docker", "ArgoCD", "Prometheus", "Grafana"],
+      concepts: ["Container Orchestration", "Service Mesh", "GitOps", "HA"],
+    },
+    weights: {
+      technical: 0.45,
+      experience: 0.3,
+      projects: 0.15,
+      education: 0.1,
+    },
+    experienceKeywords: ["deployed", "managed clusters", "orchestrated", "automated"],
+    minExperience: 1,
+  },
+  
+  "terraform-engineer": {
+    label: "Terraform/IaC Engineer",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["HCL", "Python", "Bash"],
+      frameworks: ["Terraform", "Ansible", "Pulumi"],
+      databases: [],
+      tools: ["Git", "Terraform Cloud", "AWS", "Azure", "GCP"],
+      concepts: ["IaC", "State Management", "Modules", "Multi-Cloud"],
+    },
+    weights: {
+      technical: 0.45,
+      experience: 0.3,
+      projects: 0.15,
+      education: 0.1,
+    },
+    experienceKeywords: ["provisioned", "automated", "managed infrastructure"],
+    minExperience: 1,
+  },
+  
+  // AI/ML Specializations
+  "nlp-engineer": {
+    label: "NLP Engineer",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["Python"],
+      frameworks: ["Transformers", "spaCy", "NLTK", "Hugging Face", "LangChain"],
+      databases: ["Vector DB", "Pinecone", "Weaviate"],
+      tools: ["PyTorch", "TensorFlow", "Git", "Jupyter"],
+      concepts: ["Language Models", "Embeddings", "Text Classification", "NER"],
+    },
+    weights: {
+      technical: 0.45,
+      experience: 0.3,
+      projects: 0.15,
+      education: 0.1,
+    },
+    experienceKeywords: ["developed models", "trained", "fine-tuned", "implemented"],
+    minExperience: 0,
+  },
+  
+  "computer-vision-engineer": {
+    label: "Computer Vision Engineer",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["Python", "C++"],
+      frameworks: ["OpenCV", "PyTorch", "TensorFlow", "YOLO", "Detectron2"],
+      databases: [],
+      tools: ["Git", "CUDA", "Docker", "Jupyter"],
+      concepts: ["Image Processing", "Object Detection", "Segmentation", "CNNs"],
+    },
+    weights: {
+      technical: 0.45,
+      experience: 0.3,
+      projects: 0.15,
+      education: 0.1,
+    },
+    experienceKeywords: ["developed", "trained models", "implemented", "optimized"],
+    minExperience: 0,
+  },
+  
+  "mlops-engineer": {
+    label: "MLOps Engineer",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["Python", "Bash"],
+      frameworks: ["MLflow", "Kubeflow", "Airflow", "TFX"],
+      databases: ["PostgreSQL", "MongoDB"],
+      tools: ["Docker", "Kubernetes", "Git", "AWS", "Azure ML"],
+      concepts: ["Model Deployment", "CI/CD for ML", "Model Monitoring"],
+    },
+    weights: {
+      technical: 0.4,
+      experience: 0.3,
+      projects: 0.2,
+      education: 0.1,
+    },
+    experienceKeywords: ["deployed models", "automated", "implemented pipelines"],
+    minExperience: 1,
+  },
+  
+  "deep-learning-engineer": {
+    label: "Deep Learning Engineer",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["Python", "C++"],
+      frameworks: ["PyTorch", "TensorFlow", "Keras", "JAX"],
+      databases: [],
+      tools: ["Git", "CUDA", "Docker", "Jupyter", "Weights & Biases"],
+      concepts: ["Neural Networks", "CNNs", "RNNs", "Transformers", "GANs"],
+    },
+    weights: {
+      technical: 0.5,
+      experience: 0.25,
+      projects: 0.15,
+      education: 0.1,
+    },
+    experienceKeywords: ["trained", "developed models", "optimized", "implemented"],
+    minExperience: 0,
+  },
+  
+  // Database Specialists
+  "mongodb-developer": {
+    label: "MongoDB Developer",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["JavaScript", "Python", "Java"],
+      frameworks: ["Mongoose", "MongoDB Atlas"],
+      databases: ["MongoDB", "Redis"],
+      tools: ["MongoDB Compass", "Robo 3T", "Git"],
+      concepts: ["NoSQL", "Aggregation", "Indexing", "Sharding", "Replication"],
+    },
+    weights: {
+      technical: 0.45,
+      experience: 0.25,
+      projects: 0.2,
+      education: 0.1,
+    },
+    experienceKeywords: ["designed schemas", "optimized queries", "implemented"],
+    minExperience: 0,
+  },
+  
+  "postgresql-developer": {
+    label: "PostgreSQL Developer",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["SQL", "PL/pgSQL", "Python"],
+      frameworks: ["PostgreSQL"],
+      databases: ["PostgreSQL", "TimescaleDB"],
+      tools: ["pgAdmin", "Git", "PostGIS"],
+      concepts: ["SQL Optimization", "Indexing", "Transactions", "Replication"],
+    },
+    weights: {
+      technical: 0.45,
+      experience: 0.25,
+      projects: 0.2,
+      education: 0.1,
+    },
+    experienceKeywords: ["optimized queries", "designed schemas", "tuned performance"],
+    minExperience: 0,
+  },
+  
+  "redis-developer": {
+    label: "Redis Developer",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["Python", "Node.js", "Java"],
+      frameworks: ["Redis", "RedisJSON", "RedisSearch"],
+      databases: ["Redis", "MongoDB"],
+      tools: ["Redis CLI", "RedisInsight", "Git"],
+      concepts: ["Caching", "Pub/Sub", "Data Structures", "Performance"],
+    },
+    weights: {
+      technical: 0.45,
+      experience: 0.25,
+      projects: 0.2,
+      education: 0.1,
+    },
+    experienceKeywords: ["implemented caching", "optimized", "designed"],
+    minExperience: 0,
+  },
+  
+  // Game Development
+  "unity-developer": {
+    label: "Unity Game Developer",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["C#"],
+      frameworks: ["Unity", "Unity ML-Agents"],
+      databases: [],
+      tools: ["Git", "Blender", "Photoshop", "Visual Studio"],
+      concepts: ["Game Physics", "Animation", "Scripting", "UI/UX", "Optimization"],
+    },
+    weights: {
+      technical: 0.4,
+      experience: 0.25,
+      projects: 0.25,
+      education: 0.1,
+    },
+    experienceKeywords: ["developed games", "implemented mechanics", "published"],
+    minExperience: 0,
+  },
+  
+  "unreal-developer": {
+    label: "Unreal Engine Developer",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["C++", "Blueprint"],
+      frameworks: ["Unreal Engine"],
+      databases: [],
+      tools: ["Git", "Blender", "Perforce", "Visual Studio"],
+      concepts: ["Game Development", "3D Graphics", "Physics", "AI", "Multiplayer"],
+    },
+    weights: {
+      technical: 0.45,
+      experience: 0.25,
+      projects: 0.2,
+      education: 0.1,
+    },
+    experienceKeywords: ["developed", "implemented", "optimized", "shipped"],
+    minExperience: 0,
+  },
+  
+  "godot-developer": {
+    label: "Godot Developer",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["GDScript", "C#"],
+      frameworks: ["Godot Engine"],
+      databases: [],
+      tools: ["Git", "Blender", "Aseprite"],
+      concepts: ["Game Development", "Scene System", "Signals", "Physics"],
+    },
+    weights: {
+      technical: 0.4,
+      experience: 0.25,
+      projects: 0.25,
+      education: 0.1,
+    },
+    experienceKeywords: ["developed games", "implemented", "created", "published"],
+    minExperience: 0,
+  },
+  
+  // Embedded Systems
+  "embedded-systems-engineer": {
+    label: "Embedded Systems Engineer",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["C", "C++", "Python", "Assembly"],
+      frameworks: ["RTOS", "FreeRTOS", "Arduino"],
+      databases: [],
+      tools: ["Git", "Oscilloscope", "Logic Analyzer", "JTAG"],
+      concepts: ["Microcontrollers", "Hardware Interface", "Real-Time", "IoT"],
+    },
+    weights: {
+      technical: 0.45,
+      experience: 0.3,
+      projects: 0.15,
+      education: 0.1,
+    },
+    experienceKeywords: ["developed firmware", "implemented", "debugged", "optimized"],
+    minExperience: 0,
+  },
+  
+  "iot-developer": {
+    label: "IoT Developer",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["Python", "C", "C++", "JavaScript"],
+      frameworks: ["MQTT", "Arduino", "Raspberry Pi"],
+      databases: ["InfluxDB", "MongoDB", "TimescaleDB"],
+      tools: ["Git", "AWS IoT", "Azure IoT", "Node-RED"],
+      concepts: ["Sensors", "Protocols", "Edge Computing", "Cloud Integration"],
+    },
+    weights: {
+      technical: 0.4,
+      experience: 0.3,
+      projects: 0.2,
+      education: 0.1,
+    },
+    experienceKeywords: ["developed", "implemented", "integrated", "deployed"],
+    minExperience: 0,
+  },
+  
+  // Blockchain
+  "blockchain-developer": {
+    label: "Blockchain Developer",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["Solidity", "JavaScript", "Python", "Rust"],
+      frameworks: ["Ethereum", "Web3.js", "Hardhat", "Truffle"],
+      databases: [],
+      tools: ["Git", "MetaMask", "Ganache", "Remix"],
+      concepts: ["Smart Contracts", "DeFi", "NFTs", "Consensus", "Cryptography"],
+    },
+    weights: {
+      technical: 0.45,
+      experience: 0.25,
+      projects: 0.2,
+      education: 0.1,
+    },
+    experienceKeywords: ["developed smart contracts", "deployed", "audited"],
+    minExperience: 0,
+  },
+  
+  "web3-developer": {
+    label: "Web3 Developer",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["Solidity", "JavaScript", "TypeScript"],
+      frameworks: ["React", "ethers.js", "Web3.js", "Next.js"],
+      databases: ["IPFS", "Arweave"],
+      tools: ["Git", "MetaMask", "Hardhat", "TheGraph"],
+      concepts: ["dApps", "Wallets", "Smart Contracts", "Decentralization"],
+    },
+    weights: {
+      technical: 0.45,
+      experience: 0.25,
+      projects: 0.2,
+      education: 0.1,
+    },
+    experienceKeywords: ["built dApps", "integrated", "developed", "deployed"],
+    minExperience: 0,
+  },
+  
+  // Testing & QA
+  "test-automation-engineer": {
+    label: "Test Automation Engineer",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["JavaScript", "Python", "Java"],
+      frameworks: ["Selenium", "Cypress", "Playwright", "Jest", "Pytest"],
+      databases: [],
+      tools: ["Git", "Jenkins", "Docker", "Postman"],
+      concepts: ["Test Automation", "CI/CD", "E2E Testing", "API Testing"],
+    },
+    weights: {
+      technical: 0.4,
+      experience: 0.3,
+      projects: 0.2,
+      education: 0.1,
+    },
+    experienceKeywords: ["automated tests", "implemented", "developed frameworks"],
+    minExperience: 0,
+  },
+  
+  "qa-engineer": {
+    label: "QA Engineer",
+    category: "Engineering",
+    requiredSkills: {
+      programming: ["JavaScript", "Python"],
+      frameworks: ["Selenium", "Cypress", "TestNG", "JUnit"],
+      databases: [],
+      tools: ["Git", "JIRA", "Postman", "TestRail"],
+      concepts: ["Testing Methodologies", "Bug Tracking", "Test Planning", "QA"],
+    },
+    weights: {
+      technical: 0.35,
+      experience: 0.3,
+      projects: 0.25,
+      education: 0.1,
+    },
+    experienceKeywords: ["tested", "identified bugs", "improved quality", "automated"],
+    minExperience: 0,
+  },
 };
 
 // Get all job categories

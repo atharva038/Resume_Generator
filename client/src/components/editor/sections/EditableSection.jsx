@@ -171,18 +171,22 @@ const EditableSection = ({
               type="text"
               value={experienceData.startDate || ""}
               onChange={(e) => onUpdateExperience("startDate", e.target.value)}
-              placeholder="Start Date"
+              placeholder="Start Date (MM/YYYY)"
               className="input-field"
               autoComplete="off"
+              pattern="(0[1-9]|1[0-2])\/[0-9]{4}"
+              title="Format: MM/YYYY (e.g., 01/2020)"
             />
             <input
               type="text"
               value={experienceData.endDate || ""}
               onChange={(e) => onUpdateExperience("endDate", e.target.value)}
-              placeholder={experienceData.current ? "Present" : "End Date"}
+              placeholder={experienceData.current ? "Present" : "End Date (MM/YYYY)"}
               className="input-field"
               autoComplete="off"
               disabled={experienceData.current}
+              pattern="(0[1-9]|1[0-2])\/[0-9]{4}"
+              title="Format: MM/YYYY (e.g., 12/2023)"
             />
           </div>
           <label className="flex items-center gap-2">

@@ -36,10 +36,17 @@ export const PersonalInfoSection = ({
       <input
         type="tel"
         value={resumeData.contact?.phone || ""}
-        onChange={(e) => updateContact("phone", e.target.value)}
-        placeholder="Phone"
+        onChange={(e) => {
+          const value = e.target.value;
+          // Only allow numbers, spaces, hyphens, parentheses, and plus sign
+          if (/^[0-9\s\-\(\)\+]*$/.test(value)) {
+            updateContact("phone", value);
+          }
+        }}
+        placeholder="Phone (e.g., +1 234-567-8900)"
         className="input-field"
         autoComplete="tel"
+        maxLength="20"
       />
     </div>
     <input
@@ -448,8 +455,10 @@ export const EducationSection = ({
               onChange={(e) =>
                 updateArrayItem("education", index, "startDate", e.target.value)
               }
-              placeholder="Start Date"
+              placeholder="Start (MM/YYYY)"
               className="input-field"
+              pattern="(0[1-9]|1[0-2])\/[0-9]{4}"
+              title="Format: MM/YYYY (e.g., 08/2018)"
             />
             <input
               type="text"
@@ -457,17 +466,25 @@ export const EducationSection = ({
               onChange={(e) =>
                 updateArrayItem("education", index, "endDate", e.target.value)
               }
-              placeholder="End Date"
+              placeholder="End (MM/YYYY)"
               className="input-field"
+              pattern="(0[1-9]|1[0-2])\/[0-9]{4}"
+              title="Format: MM/YYYY (e.g., 05/2022)"
             />
             <input
               type="text"
               value={edu.gpa || ""}
-              onChange={(e) =>
-                updateArrayItem("education", index, "gpa", e.target.value)
-              }
-              placeholder="GPA"
+              onChange={(e) => {
+                const value = e.target.value;
+                // Only allow numbers and decimal point, max one decimal point
+                if (/^\d*\.?\d*$/.test(value) && value.length <= 4) {
+                  updateArrayItem("education", index, "gpa", value);
+                }
+              }}
+              placeholder="GPA (e.g., 3.8)"
               className="input-field"
+              maxLength="4"
+              title="Enter GPA (e.g., 3.8 or 3.85)"
             />
           </div>
         </div>
