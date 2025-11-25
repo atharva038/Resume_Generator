@@ -18,6 +18,7 @@ import {
   CertificationsSection,
   AchievementsSection,
   CustomSectionsManager,
+  ResumeWizard,
 } from "../components/editor";
 import {ScoreCard, JobSpecificScoreCard} from "../components/common/cards";
 import {GitHubImportModal, PageLimitExceededModal} from "../components/common/modals";
@@ -268,6 +269,9 @@ const Editor = () => {
   const [twoPageMode, setTwoPageMode] = useState(false);
   const [lastContentMetrics, setLastContentMetrics] = useState(null);
 
+  // Wizard mode for new resumes
+  const [isWizardMode, setIsWizardMode] = useState(false);
+
   // Save analysis section state to localStorage when it changes
   useEffect(() => {
     localStorage.setItem(
@@ -451,9 +455,20 @@ const Editor = () => {
 
       // First, try to get data from location state (when navigating from upload)
       const stateData = location.state?.resumeData;
+      const isNewResume = location.state?.isNewResume || false;
 
       if (stateData) {
         console.log("✅ Found data in location state");
+        console.log("🆕 Is new resume:", isNewResume);
+        
+        // Set wizard mode for new resumes
+        setIsWizardMode(isNewResume);
+        
+        // Auto-enable preview for wizard mode
+        if (isNewResume && !isMobile) {
+          setShowPreview(true);
+        }
+        
         // Initialize data from location state
         initializeResumeData(stateData);
 
@@ -475,6 +490,8 @@ const Editor = () => {
           const response = await resumeAPI.getById(savedResumeId);
           const loadedData = response.data;
           console.log("✅ Resume loaded from database:", loadedData);
+          // Existing resumes should not show wizard
+          setIsWizardMode(false);
           initializeResumeData(loadedData);
         } catch (err) {
           console.error("❌ Error loading resume:", err);
@@ -635,6 +652,15 @@ const Editor = () => {
   const handleCancelNavigation = () => {
     setShowUnsavedModal(false);
     setPendingNavigation(null);
+  };
+
+  // Handle wizard completion
+  const handleWizardComplete = () => {
+    setIsWizardMode(false);
+    toast.success("Resume setup complete! You can now edit all sections.", {
+      icon: "🎉",
+      duration: 3000,
+    });
   };
 
   // Page limit handlers
@@ -1434,9 +1460,20 @@ const Editor = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 no-print">
           <h1 className="text-2xl sm:text-3xl font-bold dark:text-gray-100">
-            Resume Editor
+            Resume Editor {isWizardMode && <span className="text-base font-normal text-blue-600 dark:text-blue-400">(Step-by-Step Mode)</span>}
           </h1>
           <div className="flex flex-wrap gap-2 sm:gap-3 items-stretch">
+            {/* Switch to Full Editor Button - Only show in wizard mode */}
+            {isWizardMode && (
+              <button
+                onClick={handleWizardComplete}
+                className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 border border-blue-600 dark:border-blue-500 rounded-lg bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 text-xs sm:text-sm font-semibold hover:bg-blue-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+                title="Switch to full editor mode"
+              >
+                <span>📝</span>
+                <span className="text-xs sm:text-sm">Switch to Full Editor</span>
+              </button>
+            )}
             {/* GitHub Import Button */}
             <button
               onClick={() => setShowGitHubImportModal(true)}
@@ -1446,7 +1483,8 @@ const Editor = () => {
               <span className="hidden sm:inline">💻</span>
               <span className="text-xs sm:text-sm">Import GitHub</span>
             </button>
-            {/* Reset Order Button */}
+            {/* Reset Order Button - Hide in wizard mode */}
+            {!isWizardMode && (
             <button
               onClick={handleResetOrder}
               className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-semibold hover:border-orange-500 hover:text-orange-600 dark:hover:text-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors flex items-center justify-center gap-1"
@@ -1455,6 +1493,7 @@ const Editor = () => {
               <span className="hidden sm:inline">🔄</span>
               <span>Reset</span>
             </button>
+            )}
             {/* Template Selector Button */}
             <button
               onClick={() => setShowTemplateSelector(true)}
@@ -1775,66 +1814,105 @@ const Editor = () => {
           </div>
         </div>
 
-        <div
-          className={`grid ${
+        {/* Conditional: Show Wizard for New Resumes, Normal Editor for Existing */}
+        {isWizardMode ? (
+          // Step-by-Step Wizard for New Resumes
+          <div className={`grid ${
             showPreview ? "grid-cols-1 xl:grid-cols-2" : "grid-cols-1"
-          } gap-4 sm:gap-6`}
-        >
-          {/* Editor Panel - Dynamic Sections */}
-          <div className="space-y-4 sm:space-y-6 order-2 xl:order-1">
-            {/* Page Utilization Indicator */}
-            {!twoPageMode && lastContentMetrics && (
-              <PageUtilizationIndicator
-                metrics={lastContentMetrics}
-                twoPageMode={twoPageMode}
+          } gap-4 sm:gap-6`}>
+            <div className="order-2 xl:order-1">
+              <ResumeWizard
+                resumeData={resumeData}
+                updateField={updateField}
+                updateContact={updateContact}
+                addArrayItem={addArrayItem}
+                updateArrayItem={updateArrayItem}
+                removeArrayItem={removeArrayItem}
+                moveItem={moveItem}
+                onComplete={handleWizardComplete}
               />
-            )}
+            </div>
             
-            {sectionOrder.map((sectionId) => renderSection(sectionId))}
-          </div>
-
-          {/* Preview Panel */}
-          {showPreview && (
-            <div
-              ref={previewSectionRef}
-              className="xl:sticky xl:top-2 xl:h-[calc(100vh-3rem)] xl:overflow-auto order-1 xl:order-2"
-            >
-              <div className="bg-gradient-to-br from-white via-blue-50/30 to-purple-50/30 dark:from-gray-800 dark:via-indigo-900/20 dark:to-purple-900/20 rounded-2xl shadow-2xl border-2 border-indigo-200/50 dark:border-indigo-700/50 backdrop-blur-sm p-6">
-                {/* Stylish Header */}
-                <div className="flex justify-between items-center mb-4 xl:hidden">
-                  <h3 className="text-xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent flex items-center gap-2">
-                    <span className="text-2xl">👁️</span>
-                    <span>Resume Preview</span>
-                  </h3>
-                  <button
-                    onClick={() => setShowPreview(false)}
-                    className="p-2 rounded-full hover:bg-indigo-100 dark:hover:bg-indigo-900/30 text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 transition-all duration-200"
-                  >
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
+            {/* Preview Panel for Wizard */}
+            {showPreview && (
+              <div
+                ref={previewSectionRef}
+                className="xl:sticky xl:top-2 xl:h-[calc(100vh-3rem)] xl:overflow-auto order-1 xl:order-2"
+              >
+                <div className="bg-gradient-to-br from-white via-blue-50/30 to-purple-50/30 dark:from-gray-800 dark:via-indigo-900/20 dark:to-purple-900/20 rounded-2xl shadow-2xl border-2 border-indigo-200/50 dark:border-indigo-700/50 backdrop-blur-sm p-6">
+                  <ResumePreview
+                    ref={resumePreviewRef}
+                    resumeData={resumeData}
+                    template={selectedTemplate}
+                    twoPageMode={twoPageMode}
+                  />
                 </div>
-                <ResumePreview
-                  ref={resumePreviewRef}
-                  resumeData={resumeData}
-                  template={selectedTemplate}
+              </div>
+            )}
+          </div>
+        ) : (
+          // Normal Editor for Existing Resumes
+          <div
+            className={`grid ${
+              showPreview ? "grid-cols-1 xl:grid-cols-2" : "grid-cols-1"
+            } gap-4 sm:gap-6`}
+          >
+            {/* Editor Panel - Dynamic Sections */}
+            <div className="space-y-4 sm:space-y-6 order-2 xl:order-1">
+              {/* Page Utilization Indicator */}
+              {!twoPageMode && lastContentMetrics && (
+                <PageUtilizationIndicator
+                  metrics={lastContentMetrics}
                   twoPageMode={twoPageMode}
                 />
-              </div>
+              )}
+              
+              {sectionOrder.map((sectionId) => renderSection(sectionId))}
             </div>
-          )}
-        </div>
+
+            {/* Preview Panel */}
+            {showPreview && (
+              <div
+                ref={previewSectionRef}
+                className="xl:sticky xl:top-2 xl:h-[calc(100vh-3rem)] xl:overflow-auto order-1 xl:order-2"
+              >
+                <div className="bg-gradient-to-br from-white via-blue-50/30 to-purple-50/30 dark:from-gray-800 dark:via-indigo-900/20 dark:to-purple-900/20 rounded-2xl shadow-2xl border-2 border-indigo-200/50 dark:border-indigo-700/50 backdrop-blur-sm p-6">
+                  {/* Stylish Header */}
+                  <div className="flex justify-between items-center mb-4 xl:hidden">
+                    <h3 className="text-xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent flex items-center gap-2">
+                      <span className="text-2xl">👁️</span>
+                      <span>Resume Preview</span>
+                    </h3>
+                    <button
+                      onClick={() => setShowPreview(false)}
+                      className="p-2 rounded-full hover:bg-indigo-100 dark:hover:bg-indigo-900/30 text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 transition-all duration-200"
+                    >
+                      <svg
+                        className="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                  <ResumePreview
+                    ref={resumePreviewRef}
+                    resumeData={resumeData}
+                    template={selectedTemplate}
+                    twoPageMode={twoPageMode}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Template Selector Modal */}
         {showTemplateSelector && (

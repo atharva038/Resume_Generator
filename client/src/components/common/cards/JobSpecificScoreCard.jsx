@@ -32,67 +32,117 @@ const JobSpecificScoreCard = ({resumeData, onUpdateField}) => {
     {value: "backend", label: "Backend Development"},
     {value: "fullstack", label: "Full Stack Development"},
     {value: "mobile", label: "Mobile Development"},
-    {value: "devops", label: "DevOps & Infrastructure"},
-    {value: "database", label: "Database & Data Engineering"},
+    {value: "devops", label: "DevOps & Cloud"},
+    {value: "database", label: "Database Engineering"},
     {value: "ai-ml", label: "AI & Machine Learning"},
     {value: "security", label: "Security Engineering"},
-    {value: "embedded", label: "Embedded Systems"},
+    {value: "embedded", label: "Embedded Systems & IoT"},
     {value: "game", label: "Game Development"},
+    {value: "blockchain", label: "Blockchain & Web3"},
+    {value: "testing", label: "Testing & QA"},
   ];
 
   // Map job keys to subcategories
   const jobSubCategoryMap = {
-    // Frontend
+    // Frontend - All Modern Frameworks
     "frontend-developer": "frontend",
     "react-developer": "frontend",
     "angular-developer": "frontend",
     "vue-developer": "frontend",
+    "nextjs-developer": "frontend",
+    "svelte-developer": "frontend",
+    "remix-developer": "frontend",
+    "solidjs-developer": "frontend",
     "ui-ux-engineer": "frontend",
 
-    // Backend
+    // Backend - All Frameworks & Languages
     "backend-developer": "backend",
-    "nodejs-developer": "backend",
-    "python-developer": "backend",
-    "java-developer": "backend",
-    "dotnet-developer": "backend",
-    "golang-developer": "backend",
-    "ruby-developer": "backend",
-    "php-developer": "backend",
+    "nodejs-backend-developer": "backend",
+    "python-backend-developer": "backend",
+    "java-backend-developer": "backend",
+    "dotnet-backend-developer": "backend",
+    "php-backend-developer": "backend",
+    "ruby-backend-developer": "backend",
+    "go-backend-developer": "backend",
+    "nestjs-developer": "backend",
+    "fastapi-developer": "backend",
+    "spring-boot-developer": "backend",
+    "laravel-developer": "backend",
+    "django-developer": "backend",
+    "rails-developer": "backend",
+    "express-developer": "backend",
+    "graphql-developer": "backend",
 
-    // Full Stack
+    // Full Stack - All Stacks
+    "fullstack-developer": "fullstack",
     "full-stack-developer": "fullstack",
     "mern-stack-developer": "fullstack",
     "mean-stack-developer": "fullstack",
+    "python-fullstack-developer": "fullstack",
+    "java-fullstack-developer": "fullstack",
+    "lamp-stack-developer": "fullstack",
+    "dotnet-fullstack-developer": "fullstack",
+    "t3-stack-developer": "fullstack",
+    "jamstack-developer": "fullstack",
+    "serverless-developer": "fullstack",
 
-    // Mobile
+    // Mobile - All Platforms
     "mobile-developer": "mobile",
     "ios-developer": "mobile",
     "android-developer": "mobile",
     "react-native-developer": "mobile",
     "flutter-developer": "mobile",
+    "kotlin-developer": "mobile",
+    "swiftui-developer": "mobile",
+    "ionic-developer": "mobile",
 
-    // DevOps
+    // DevOps & Cloud
     "devops-engineer": "devops",
     "cloud-engineer": "devops",
-    sre: "devops",
+    "aws-devops-engineer": "devops",
+    "azure-devops-engineer": "devops",
+    "kubernetes-engineer": "devops",
+    "terraform-engineer": "devops",
+    "sre": "devops",
     "platform-engineer": "devops",
 
     // Database
     "database-administrator": "database",
     "data-engineer": "database",
+    "mongodb-developer": "database",
+    "postgresql-developer": "database",
+    "redis-developer": "database",
 
     // AI/ML
     "machine-learning-engineer": "ai-ml",
     "ai-engineer": "ai-ml",
     "data-scientist": "ai-ml",
+    "nlp-engineer": "ai-ml",
+    "computer-vision-engineer": "ai-ml",
+    "mlops-engineer": "ai-ml",
+    "deep-learning-engineer": "ai-ml",
 
     // Security
     "security-engineer": "security",
     "cybersecurity-analyst": "security",
 
-    // Game
+    // Embedded & IoT
+    "embedded-systems-engineer": "embedded",
+    "iot-developer": "embedded",
+
+    // Game Development
     "game-developer": "game",
     "unity-developer": "game",
+    "unreal-developer": "game",
+    "godot-developer": "game",
+
+    // Blockchain
+    "blockchain-developer": "blockchain",
+    "web3-developer": "blockchain",
+
+    // Testing & QA
+    "test-automation-engineer": "testing",
+    "qa-engineer": "testing",
   };
 
   // Experience level options
