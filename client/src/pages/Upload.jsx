@@ -63,7 +63,7 @@ const Upload = () => {
       customSections: [],
     };
 
-    navigate("/editor", {state: {resumeData: blankResumeData}});
+    navigate("/editor", {state: {resumeData: blankResumeData, isNewResume: true}});
   };
 
   const {getRootProps, getInputProps, isDragActive} = useDropzone({
