@@ -1,0 +1,31 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="smart_bg" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0EA5E9" />
+      <stop offset="1" stop-color="#10B981" />
+    </linearGradient>
+    <linearGradient id="screen" x1="128" y1="64" x2="128" y2="208" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F0FDFA" />
+      <stop offset="1" stop-color="#DCFCE7" />
+    </linearGradient>
+    <linearGradient id="dial" x1="200" y1="64" x2="200" y2="144" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FEF3C7" />
+      <stop offset="1" stop-color="#FDE68A" />
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="36" fill="url(#smart_bg)" />
+  <rect x="44" y="60" width="168" height="152" rx="28" fill="rgba(255,255,255,0.15)" />
+  <rect x="68" y="84" width="120" height="120" rx="20" fill="url(#screen)" />
+  <rect x="84" y="108" width="40" height="10" rx="5" fill="#2DD4BF" />
+  <rect x="84" y="130" width="52" height="10" rx="5" fill="#6EE7B7" />
+  <rect x="84" y="152" width="32" height="10" rx="5" fill="#A7F3D0" />
+  <path d="M84 176L112 144L140 156L188 112" stroke="#0EA5E9" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" />
+  <circle cx="112" cy="144" r="8" fill="#0EA5E9" />
+  <circle cx="140" cy="156" r="8" fill="#0EA5E9" />
+  <circle cx="188" cy="112" r="10" fill="#0EA5E9" />
+  <circle cx="196" cy="96" r="36" fill="url(#dial)" stroke="#F59E0B" stroke-width="4" />
+  <path d="M196 76V96L216 106" stroke="#B45309" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+  <circle cx="196" cy="96" r="8" fill="#B45309" />
+  <path d="M68 216H188" stroke="rgba(255,255,255,0.6)" stroke-width="6" stroke-linecap="round" />
+  <text x="128" y="236" text-anchor="middle" font-family="'Inter','Segoe UI',sans-serif" font-size="18" fill="#ECFEFF" font-weight="600">Smart Scoring</text>
+</svg>

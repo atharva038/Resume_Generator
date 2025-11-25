@@ -22,49 +22,63 @@ async function createAdminUser() {
     await mongoose.connect(process.env.MONGODB_URI);
     console.log("✅ Connected to MongoDB");
 
-    // Admin user details
-    const adminEmail = "atharvasjoshi2005@gmail.com";
-    const adminPassword = "Admin@123"; // Change this to a secure password
-    const adminName = "Atharva Sachin Joshi";
+    // Admin users to create/update
+    const adminUsers = [
+      {
+        email: "atharvasjoshi2005@gmail.com",
+        password: "Admin@123",
+        name: "Atharva Sachin Joshi",
+      },
+      {
+        email: "nandkishorjadhav9580@gmail.com",
+        password: "Admin@123",
+        name: "Nandkishor Jadhav",
+      },
+    ];
 
-    // Check if admin already exists
-    const existingAdmin = await User.findOne({email: adminEmail});
+    // Process each admin user
+    for (const adminData of adminUsers) {
+      console.log(`\n🔄 Processing ${adminData.email}...`);
 
-    if (existingAdmin) {
-      // Update existing user to admin and reset password
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(adminPassword, salt);
+      // Check if admin already exists
+      const existingAdmin = await User.findOne({email: adminData.email});
 
-      existingAdmin.password = hashedPassword;
-      existingAdmin.role = "admin";
-      existingAdmin.status = "active";
-      existingAdmin.name = adminName;
-      existingAdmin.updatedAt = new Date();
-      await existingAdmin.save();
-      console.log("✅ Existing user updated to admin role");
-      console.log(`   Email: ${adminEmail}`);
-      console.log(`   Password: ${adminPassword}`);
-      console.log("   🔑 Password has been reset!");
-    } else {
-      // Create new admin user
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(adminPassword, salt);
+      if (existingAdmin) {
+        // Update existing user to admin and reset password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(adminData.password, salt);
 
-      const admin = new User({
-        email: adminEmail,
-        password: hashedPassword,
-        name: adminName,
-        role: "admin",
-        status: "active",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
+        existingAdmin.password = hashedPassword;
+        existingAdmin.role = "admin";
+        existingAdmin.status = "active";
+        existingAdmin.name = adminData.name;
+        existingAdmin.updatedAt = new Date();
+        await existingAdmin.save();
+        console.log("✅ Existing user updated to admin role");
+        console.log(`   Email: ${adminData.email}`);
+        console.log(`   Password: ${adminData.password}`);
+        console.log("   🔑 Password has been reset!");
+      } else {
+        // Create new admin user
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(adminData.password, salt);
 
-      await admin.save();
-      console.log("✅ New admin user created successfully");
-      console.log(`   Email: ${adminEmail}`);
-      console.log(`   Password: ${adminPassword}`);
-      console.log("   ⚠️  Please change this password after first login!");
+        const admin = new User({
+          email: adminData.email,
+          password: hashedPassword,
+          name: adminData.name,
+          role: "admin",
+          status: "active",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+
+        await admin.save();
+        console.log("✅ New admin user created successfully");
+        console.log(`   Email: ${adminData.email}`);
+        console.log(`   Password: ${adminData.password}`);
+        console.log("   ⚠️  Please change this password after first login!");
+      }
     }
 
     // Disconnect

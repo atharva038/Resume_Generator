@@ -556,7 +556,6 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
       ref={ref}
       className="resume-preview"
       style={{
-        width: "8.5in",
         minHeight: "11in",
         backgroundColor: "white",
         padding: "0.5in",

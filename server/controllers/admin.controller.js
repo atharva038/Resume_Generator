@@ -7,7 +7,7 @@ import Template from "../models/Template.model.js";
 import Feedback from "../models/Feedback.model.js";
 import Settings from "../models/Settings.model.js";
 
-// Get Dashboard Statistics
+// Get Dashboard Statistics nicely
 export const getDashboardStats = async (req, res) => {
   try {
     const [
