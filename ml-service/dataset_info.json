@@ -1,0 +1,43 @@
+{
+  "dataset_path": "/Users/atharva_beast/.cache/kagglehub/datasets/snehaanbhawal/resume-dataset/versions/1/Resume",
+  "csv_file": "Resume.csv",
+  "shape": {
+    "rows": 2484,
+    "columns": 4
+  },
+  "columns": [
+    "ID",
+    "Resume_str",
+    "Resume_html",
+    "Category"
+  ],
+  "category_column": "Category",
+  "text_column": "Resume_str",
+  "num_categories": 24,
+  "categories": {
+    "INFORMATION-TECHNOLOGY": 120,
+    "BUSINESS-DEVELOPMENT": 120,
+    "FINANCE": 118,
+    "ADVOCATE": 118,
+    "ACCOUNTANT": 118,
+    "ENGINEERING": 118,
+    "CHEF": 118,
+    "AVIATION": 117,
+    "FITNESS": 117,
+    "SALES": 116,
+    "BANKING": 115,
+    "HEALTHCARE": 115,
+    "CONSULTANT": 115,
+    "CONSTRUCTION": 112,
+    "PUBLIC-RELATIONS": 111,
+    "HR": 110,
+    "DESIGNER": 107,
+    "ARTS": 103,
+    "TEACHER": 102,
+    "APPAREL": 97,
+    "DIGITAL-MEDIA": 96,
+    "AGRICULTURE": 63,
+    "AUTOMOBILE": 36,
+    "BPO": 22
+  }
+}
