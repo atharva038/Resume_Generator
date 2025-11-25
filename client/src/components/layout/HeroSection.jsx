@@ -354,16 +354,16 @@ const HeroSection = () => {
   ];
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-white dark:bg-gray-950">
+    <section className="relative min-h-screen overflow-hidden bg-white dark:bg-gradient-to-br dark:from-gray-900 dark:via-gray-950 dark:to-black">
       {/* Vibrant Gradient Orbs Background - Static */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 -left-20 w-96 h-96 bg-blue-400/20 dark:bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-1/4 -left-20 w-96 h-96 bg-blue-400/20 dark:bg-blue-500/20 rounded-full blur-3xl animate-pulse"></div>
         <div
-          className="absolute bottom-1/4 -right-20 w-96 h-96 bg-purple-400/20 dark:bg-purple-500/10 rounded-full blur-3xl animate-pulse"
+          className="absolute bottom-1/4 -right-20 w-96 h-96 bg-purple-400/20 dark:bg-purple-500/20 rounded-full blur-3xl animate-pulse"
           style={{animationDelay: "700ms"}}
         ></div>
         <div
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-pink-400/10 dark:bg-pink-500/5 rounded-full blur-3xl animate-pulse"
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-pink-400/10 dark:bg-pink-500/15 rounded-full blur-3xl animate-pulse"
           style={{animationDelay: "1000ms"}}
         ></div>
       </div>
