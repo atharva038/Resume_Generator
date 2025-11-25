@@ -1,0 +1,21 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6366F1" />
+      <stop offset="1" stop-color="#A855F7" />
+    </linearGradient>
+    <linearGradient id="trophy" x1="128" y1="48" x2="128" y2="208" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FDE68A" />
+      <stop offset="1" stop-color="#F59E0B" />
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="36" fill="url(#bg)" />
+  <circle cx="128" cy="128" r="88" fill="rgba(255,255,255,0.15)" />
+  <path d="M92 88C92 70.3269 106.327 56 124 56H132C149.673 56 164 70.3269 164 88V124C164 141.673 149.673 156 132 156H124C106.327 156 92 141.673 92 124V88Z" fill="url(#trophy)" />
+  <path d="M84 102H92C92 114.15 82.1503 124 70 124H68C60.268 124 54 117.732 54 110V102H68V110C68 112.209 69.7909 114 72 114H74C78.4183 114 82 110.418 82 106V102Z" fill="#FCD34D" />
+  <path d="M172 102H180V106C180 110.418 183.582 114 188 114H190C192.209 114 194 112.209 194 110V102H208V110C208 117.732 201.732 124 194 124H192C179.85 124 170 114.15 170 102H172Z" fill="#FCD34D" />
+  <rect x="104" y="156" width="48" height="24" rx="8" fill="#1F2937" opacity="0.2" />
+  <rect x="116" y="180" width="24" height="20" rx="6" fill="#FDE68A" stroke="#F59E0B" stroke-width="2" />
+  <path d="M104 206H152" stroke="#F5F3FF" stroke-width="6" stroke-linecap="round" />
+  <text x="128" y="234" text-anchor="middle" font-family="'Inter', 'Segoe UI', sans-serif" font-size="18" fill="#F5F3FF" font-weight="600">Win More Offers</text>
+</svg>

@@ -89,8 +89,9 @@ export const calculateContentMetrics = (resumeData) => {
   // Helper to count characters in a string
   const countChars = (str) => (str || "").length;
 
-  // Helper to count lines (roughly 80 chars per line)
-  const charsToLines = (chars) => Math.ceil(chars / 80);
+  // Helper to count lines (roughly 100 chars per line for resume templates)
+  // Resume templates use smaller fonts and better spacing, so more chars fit per line
+  const charsToLines = (chars) => Math.ceil(chars / 100);
 
   // Personal Information
   const personalChars =

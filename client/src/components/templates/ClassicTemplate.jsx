@@ -382,7 +382,6 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
       ref={ref}
       className="resume-preview !bg-white !text-black shadow-lg border border-gray-300 font-resume"
       style={{
-        width: "8.5in",
         minHeight: "11in",
         padding: "0.5in",
         fontSize: "10.5pt",

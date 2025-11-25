@@ -232,6 +232,7 @@ const Editor = () => {
   const {user} = useAuth();
   const {blockNavigation, unblockNavigation} = useNavigationBlocker();
   const resumePreviewRef = useRef(null);
+  const previewSectionRef = useRef(null);
   const [resumeData, setResumeData] = useState(null);
   const [originalResumeData, setOriginalResumeData] = useState(null); // Track original data
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -240,6 +241,7 @@ const Editor = () => {
   const [saving, setSaving] = useState(false);
   const [autoSaving, setAutoSaving] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState(() => {
     // Load template from localStorage (set by Templates page) or default to "classic"
     const savedTemplate = localStorage.getItem("selectedTemplate");
@@ -273,6 +275,16 @@ const Editor = () => {
       JSON.stringify(isAnalysisExpanded)
     );
   }, [isAnalysisExpanded]);
+
+  // Detect if device is mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024); // lg breakpoint
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   // Setup navigation blocker when there are unsaved changes
   useEffect(() => {
@@ -1424,11 +1436,11 @@ const Editor = () => {
           <h1 className="text-2xl sm:text-3xl font-bold dark:text-gray-100">
             Resume Editor
           </h1>
-          <div className="flex flex-wrap gap-2 sm:gap-3 items-center">
+          <div className="flex flex-wrap gap-2 sm:gap-3 items-stretch">
             {/* GitHub Import Button */}
             <button
               onClick={() => setShowGitHubImportModal(true)}
-              className="flex-1 sm:flex-none px-3 sm:px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs sm:text-sm font-medium hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+              className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 border border-purple-600 dark:border-purple-500 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs sm:text-sm font-semibold hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2"
               title="Import from GitHub"
             >
               <span className="hidden sm:inline">💻</span>
@@ -1437,28 +1449,32 @@ const Editor = () => {
             {/* Reset Order Button */}
             <button
               onClick={handleResetOrder}
-              className="flex-1 sm:flex-none px-3 sm:px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-medium hover:border-orange-500 hover:text-orange-600 dark:hover:text-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
+              className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-semibold hover:border-orange-500 hover:text-orange-600 dark:hover:text-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors flex items-center justify-center gap-1"
               title="Reset section order to default"
             >
-              <span className="hidden sm:inline">🔄 </span>Reset
+              <span className="hidden sm:inline">🔄</span>
+              <span>Reset</span>
             </button>
             {/* Template Selector Button */}
             <button
               onClick={() => setShowTemplateSelector(true)}
-              className="flex-1 sm:flex-none px-3 sm:px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs sm:text-sm font-medium hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all shadow-md hover:shadow-lg"
+              className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 border border-blue-600 dark:border-blue-500 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs sm:text-sm font-semibold hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-1.5"
               title="Change template"
             >
-              {TEMPLATES.find((t) => t.id === selectedTemplate)?.emoji} Change
-              Template
+              <span>
+                {TEMPLATES.find((t) => t.id === selectedTemplate)?.emoji}
+              </span>
+              <span>Change Template</span>
             </button>
             {/* Color Theme Selector Button - Only show for templates with color themes */}
             {TEMPLATE_COLOR_THEMES[selectedTemplate] && (
               <button
                 onClick={() => setShowColorThemeSelector(true)}
-                className="flex-1 sm:flex-none px-3 sm:px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs sm:text-sm font-medium hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all shadow-md hover:shadow-lg"
+                className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 border border-purple-600 dark:border-purple-500 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs sm:text-sm font-semibold hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-1.5"
                 title="Change color theme"
               >
-                🎨 Colors
+                <span>🎨</span>
+                <span>Colors</span>
               </button>
             )}
           </div>
@@ -1466,18 +1482,23 @@ const Editor = () => {
 
         {/* Mobile-Friendly Action Bar */}
         <div className="lg:hidden sticky top-0 z-40 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 -mx-2 sm:-mx-4 px-2 sm:px-4 py-3 mb-4 no-print">
-          <div className="flex gap-2 justify-between items-center">
+          <div className="flex gap-2 justify-between items-stretch">
             {/* Preview Toggle - Mobile */}
             <button
               onClick={() => setShowPreview(!showPreview)}
-              className={`flex-1 px-4 py-2.5 rounded-lg font-medium transition-all duration-300 text-sm ${
+              className={`flex-1 px-3 py-2 rounded-lg font-semibold transition-all duration-300 text-xs flex items-center justify-center ${
                 showPreview
                   ? "bg-gradient-to-br from-purple-500 via-blue-500 to-indigo-600 text-white"
                   : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600"
               }`}
             >
-              <span className="text-lg mr-2">{showPreview ? "👁️" : "👁️‍🗨️"}</span>
-              {showPreview ? "Hide" : "Show"} Preview
+              <span className="text-base mr-1.5">
+                {showPreview ? "👁️" : "👁️‍🗨️"}
+              </span>
+              <span className="hidden xs:inline">
+                {showPreview ? "Hide" : "Show"}{" "}
+              </span>
+              Preview
             </button>
 
             {/* Download PDF - Mobile */}
@@ -1502,9 +1523,9 @@ const Editor = () => {
                   }
                 }
               }}
-              className="flex-1 px-4 py-2.5 rounded-lg bg-gradient-to-br from-green-400 via-emerald-500 to-teal-600 text-white font-medium transition-all duration-300 text-sm"
+              className="flex-1 px-3 py-2 rounded-lg bg-gradient-to-br from-green-400 via-emerald-500 to-teal-600 text-white font-semibold transition-all duration-300 text-xs flex items-center justify-center"
             >
-              <span className="text-lg mr-2">📥</span>
+              <span className="text-base mr-1.5">📥</span>
               Download
             </button>
 
@@ -1512,7 +1533,7 @@ const Editor = () => {
             <button
               onClick={handleSave}
               disabled={saving || autoSaving}
-              className={`flex-1 px-4 py-2.5 rounded-lg font-medium transition-all duration-300 text-sm relative ${
+              className={`flex-1 px-3 py-2 rounded-lg font-semibold transition-all duration-300 text-xs relative flex items-center justify-center ${
                 saving || autoSaving
                   ? "bg-gray-300 dark:bg-gray-700 cursor-not-allowed text-gray-500"
                   : hasUnsavedChanges
@@ -1521,18 +1542,23 @@ const Editor = () => {
               }`}
             >
               {hasUnsavedChanges && !saving && !autoSaving && (
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white dark:border-gray-800 animate-pulse"></span>
+                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-gray-800 animate-pulse"></span>
               )}
-              <span className="text-lg mr-2">
+              <span className="text-base mr-1.5">
                 {saving || autoSaving ? "⏳" : hasUnsavedChanges ? "⚠️" : "💾"}
               </span>
-              {saving
-                ? "Saving..."
-                : autoSaving
-                ? "Auto-saving..."
-                : hasUnsavedChanges
-                ? "Save*"
-                : "Saved"}
+              <span className="hidden xs:inline">
+                {saving
+                  ? "Saving..."
+                  : autoSaving
+                  ? "Auto-saving..."
+                  : hasUnsavedChanges
+                  ? "Save*"
+                  : "Saved"}
+              </span>
+              <span className="xs:hidden">
+                {saving || autoSaving ? "..." : hasUnsavedChanges ? "*" : "✓"}
+              </span>
             </button>
           </div>
         </div>
@@ -1755,7 +1781,7 @@ const Editor = () => {
           } gap-4 sm:gap-6`}
         >
           {/* Editor Panel - Dynamic Sections */}
-          <div className="space-y-4 sm:space-y-6">
+          <div className="space-y-4 sm:space-y-6 order-2 xl:order-1">
             {/* Page Utilization Indicator */}
             {!twoPageMode && lastContentMetrics && (
               <PageUtilizationIndicator
@@ -1769,7 +1795,10 @@ const Editor = () => {
 
           {/* Preview Panel */}
           {showPreview && (
-            <div className="xl:sticky xl:top-2 xl:h-[calc(100vh-3rem)] xl:overflow-auto">
+            <div
+              ref={previewSectionRef}
+              className="xl:sticky xl:top-2 xl:h-[calc(100vh-3rem)] xl:overflow-auto order-1 xl:order-2"
+            >
               <div className="bg-gradient-to-br from-white via-blue-50/30 to-purple-50/30 dark:from-gray-800 dark:via-indigo-900/20 dark:to-purple-900/20 rounded-2xl shadow-2xl border-2 border-indigo-200/50 dark:border-indigo-700/50 backdrop-blur-sm p-6">
                 {/* Stylish Header */}
                 <div className="flex justify-between items-center mb-4 xl:hidden">
