@@ -72,7 +72,7 @@ const Home = () => {
 
   const testimonials = [
     {
-      name: "Priya Sharma",
+      name: "Anshu Nagnurwar",
       role: "Software Engineer",
       company: "Google",
       quote:
@@ -80,7 +80,7 @@ const Home = () => {
       avatar: "👩‍💻",
     },
     {
-      name: "Rahul Mehta",
+      name: "Mansi Ibitwar",
       role: "Product Manager",
       company: "Amazon",
       quote:
@@ -88,7 +88,7 @@ const Home = () => {
       avatar: "👨‍💼",
     },
     {
-      name: "Sarah Johnson",
+      name: "Anuj Nandgaokar",
       role: "UX Designer",
       company: "Meta",
       quote:
@@ -406,47 +406,97 @@ const Home = () => {
         </div>
       </section>
 
-      {/* HOW Section - Step-by-Step Process */}
-      <section id="how-it-works" className="py-20 relative">
-        <div className="absolute inset-0 bg-white/30 dark:bg-gray-900/30 backdrop-blur-sm"></div>
+      {/* HOW Section - Interactive Visual Timeline */}
+      <section id="how-it-works" className="py-20 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-purple-950 dark:to-blue-950"></div>
+
+        {/* Animated background elements */}
+        <div className="absolute top-20 left-10 w-72 h-72 bg-blue-400/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-6xl mx-auto text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-              How SmartNShine Works
+              How It Works
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-400">
-              Five simple steps to your dream job.
+              Five simple steps. One powerful result.
             </p>
           </div>
 
-          <div className="max-w-4xl mx-auto space-y-8">
-            {howItWorks.map((step, idx) => (
-              <div key={idx} className="flex gap-6 items-start group">
-                <div className="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  {step.step}
-                </div>
-                <div className="flex-1 p-6 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-700 rounded-2xl group-hover:shadow-xl transition-shadow duration-300">
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="text-4xl">{step.icon}</span>
-                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                      {step.title}
-                    </h3>
+          {/* Visual Flow Diagram */}
+          <div className="relative max-w-6xl mx-auto">
+            {/* Steps Grid */}
+            <div className="grid md:grid-cols-5 gap-8 md:gap-4 relative z-10">
+              {howItWorks.map((step, idx) => (
+                <div key={idx} className="relative group">
+                  {/* Mobile Connection Line */}
+                  {idx < howItWorks.length - 1 && (
+                    <div className="md:hidden absolute left-1/2 top-32 w-1 h-20 bg-gradient-to-b from-blue-400 to-purple-400 transform -translate-x-1/2 z-0"></div>
+                  )}
+
+                  {/* Step Card */}
+                  <div className="relative flex flex-col items-center">
+                    {/* Animated Icon Container */}
+                    <div className="relative mb-4">
+                      {/* Glow Effect */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full blur-xl opacity-40 group-hover:opacity-70 transition-opacity duration-500 scale-110"></div>
+
+                      {/* Icon Circle */}
+                      <div className="relative w-24 h-24 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 border-4 border-white dark:border-gray-700">
+                        <span className="text-5xl group-hover:scale-125 transition-transform duration-500">
+                          {step.icon}
+                        </span>
+                      </div>
+
+                      {/* Step Number Badge */}
+                      <div className="absolute -top-2 -right-2 w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                        {step.step}
+                      </div>
+                    </div>
+
+                    {/* Step Content */}
+                    <div className="text-center">
+                      <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
+                        {step.title}
+                      </h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                        {step.description}
+                      </p>
+                    </div>
+
+                    {/* Hover Arrow Effect - Desktop */}
+                    {idx < howItWorks.length - 1 && (
+                      <div className="hidden md:block absolute top-12 -right-6 text-4xl text-purple-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all duration-500">
+                        →
+                      </div>
+                    )}
                   </div>
-                  <p className="text-gray-600 dark:text-gray-400 text-lg">
-                    {step.description}
-                  </p>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
 
-          <div className="text-center mt-12">
+          {/* CTA Button */}
+          <div className="text-center mt-16">
             <Link
               to="/upload"
-              className="inline-block px-10 py-5 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xl font-bold rounded-xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+              className="group relative inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white text-xl font-bold rounded-2xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 overflow-hidden"
             >
-              Start Building Now — It's Free! 🚀
+              {/* Animated Shine Effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12 transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+
+              <span className="relative z-10">
+                Start Building Now — It's Free!
+              </span>
+              <span className="relative z-10 text-2xl group-hover:translate-x-1 transition-transform duration-300">
+                🚀
+              </span>
             </Link>
+
+            <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+              ✓ No credit card required • ✓ Takes only 5 minutes
+            </p>
           </div>
         </div>
       </section>
