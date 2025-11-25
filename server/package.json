@@ -5,7 +5,8 @@
     "main": "server.js",
     "type": "module",
     "scripts": {
-        "dev": "node --env-file=.env --watch server.js",
+        "dev-v": "node --env-file=.env --watch server.js",
+        "dev": "node --env-file=.env --watch-path=./routes --watch-path=./controllers --watch-path=./models --watch-path=./middleware --watch-path=./services --watch-path=./utils --watch-path=./config --watch-path=./server.js server.js",
         "start": "node server.js",
         "create-admin": "node --env-file=.env scripts/createAdmin.js",
         "sync:templates": "node --env-file=.env scripts/syncTemplates.js",
