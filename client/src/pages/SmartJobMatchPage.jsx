@@ -108,7 +108,7 @@ const SmartJobMatchPage = () => {
 
       // Dismiss loading and show success
       toast.dismiss(loadingToast);
-      toast.success(`✅ Loaded resume: ${data.resumeTitle || data.name}`);
+      // toast.success(`✅ Loaded resume: ${data.resumeTitle || data.name}`);
     } catch (error) {
       console.error("❌ Error loading resume:", error);
       toast.error("Failed to load resume details");
