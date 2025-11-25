@@ -20,9 +20,10 @@ import StrategicLeaderTemplate from "../../templates/StrategicLeaderTemplate";
 import ImpactProTemplate from "../../templates/ImpactProTemplate";
 import FullPreviewModal from "./FullPreviewModal";
 
-const ResumePreview = forwardRef(({resumeData, template = "classic"}, ref) => {
+const ResumePreview = forwardRef(({resumeData, template = "classic", twoPageMode = false}, ref) => {
   const componentRef = useRef();
-  const previewContainerRef = useRef();
+  const containerRef = useRef();
+  const [hasOverflow, setHasOverflow] = useState(false);
   const [showFullPreview, setShowFullPreview] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -35,6 +36,17 @@ const ResumePreview = forwardRef(({resumeData, template = "classic"}, ref) => {
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
+
+  // Check for content overflow in single-page mode
+  useEffect(() => {
+    if (!twoPageMode && containerRef.current) {
+      const container = containerRef.current;
+      const isOverflowing = container.scrollHeight > container.clientHeight;
+      setHasOverflow(isOverflowing);
+    } else {
+      setHasOverflow(false);
+    }
+  }, [resumeData, twoPageMode]);
 
   const templates = {
     classic: ClassicTemplate,
@@ -80,9 +92,7 @@ const ResumePreview = forwardRef(({resumeData, template = "classic"}, ref) => {
   return (
     <>
       <div
-        ref={previewContainerRef}
         className="h-full flex flex-col resume-preview"
-        // style={{height: "calc(100vh - 8rem)"}}
       >
         {/* Stylish Download Button */}
         <div className="mb-4 no-print flex-shrink-0">
@@ -100,23 +110,25 @@ const ResumePreview = forwardRef(({resumeData, template = "classic"}, ref) => {
 
         {/* Resume Container - Fully visible and scrollable */}
         <div
-          className={`flex-1 bg-gradient-to-br from-blue-50/50 via-indigo-50/40 to-purple-100/50 dark:from-slate-800/80 dark:via-indigo-900/40 dark:to-purple-900/40 rounded-xl shadow-inner backdrop-blur-sm overflow-hidden relative`}
+          className="flex-1 bg-gradient-to-br from-blue-50/50 via-indigo-50/40 to-purple-100/50 dark:from-slate-800/80 dark:via-indigo-900/40 dark:to-purple-900/40 rounded-xl shadow-inner backdrop-blur-sm overflow-y-auto overflow-x-hidden relative"
           style={{
-            maxHeight: "calc(100vh - 15rem)",
-            padding: isMobile ? "0.75rem 0.5rem" : "1rem",
+            maxHeight: isMobile ? "500px" : "calc(100vh - 15rem)",
+            padding: isMobile ? "0.5rem" : "1rem",
           }}
         >
-          <div className="flex justify-center items-start w-full h-full overflow-hidden">
+          <div className="flex flex-col gap-4 items-center w-full min-h-full">
             <div
+              ref={containerRef}
               className={`bg-white dark:bg-gray-50 shadow-2xl rounded-sm relative ${
                 isMobile
                   ? "cursor-pointer hover:shadow-3xl transition-shadow duration-300 group"
-                  : "mr-4 mb-8"
+                  : ""
               }`}
               style={{
                 width: "210mm",
                 minHeight: "297mm",
-                transform: isMobile ? "scale(0.42)" : "scale(0.65)",
+                height: "auto",
+                transform: isMobile ? "scale(0.38)" : "scale(0.65)",
                 transformOrigin: "top center",
               }}
               onClick={isMobile ? () => setShowFullPreview(true) : undefined}
@@ -141,7 +153,12 @@ const ResumePreview = forwardRef(({resumeData, template = "classic"}, ref) => {
                   </div>
                 </div>
               )}
-              <SelectedTemplate ref={componentRef} resumeData={resumeData} />
+              <div style={{ 
+                pageBreakAfter: twoPageMode ? "auto" : "avoid",
+                pageBreakInside: twoPageMode ? "auto" : "avoid"
+              }}>
+                <SelectedTemplate ref={componentRef} resumeData={resumeData} twoPageMode={twoPageMode} />
+              </div>
             </div>
           </div>
         </div>
@@ -159,7 +176,7 @@ const ResumePreview = forwardRef(({resumeData, template = "classic"}, ref) => {
             minHeight: "297mm",
           }}
         >
-          <SelectedTemplate resumeData={resumeData} />
+          <SelectedTemplate resumeData={resumeData} twoPageMode={twoPageMode} />
         </div>
       </FullPreviewModal>
     </>
