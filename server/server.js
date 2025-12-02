@@ -28,9 +28,9 @@ import {
 // Load environment variables
 dotenv.config();
 
-// ==========================================
+// =========================================
 // ENVIRONMENT VALIDATION
-// ==========================================
+// =========================================
 
 // Validate critical environment variables
 const requiredEnvVars = ["MONGODB_URI", "JWT_SECRET", "GEMINI_API_KEY"];
