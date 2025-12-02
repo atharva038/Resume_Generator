@@ -447,6 +447,18 @@ ATS_RESUME_GENERATOR/
 └── README.md
 ```
 
+## 📚 Documentation
+
+For detailed documentation, visit the [`docs/`](docs/) directory:
+
+- **[Quick Start Guides](docs/guides/)** - Get started quickly with various features
+- **[Implementation Reports](docs/implementation/)** - Detailed implementation documentation
+- **[Testing Documentation](docs/testing/)** - TestSprite and testing guides
+- **[Monetization & Pricing](docs/monetization/)** - Business and pricing strategies
+- **[Template Development](docs/)** - Create and customize resume templates
+- **[Deployment Guide](docs/DEPLOYMENT_GUIDE.md)** - Deploy to production
+- **[Project Roadmap](docs/ROADMAP.md)** - Future features and plans
+
 ## 🤝 Contributing
 
 Contributions welcome! Please follow these steps:

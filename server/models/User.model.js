@@ -61,6 +61,131 @@ const userSchema = new mongoose.Schema(
     resetPasswordExpires: {
       type: Date,
     },
+
+    // Subscription fields
+    subscription: {
+      tier: {
+        type: String,
+        enum: ["free", "one-time", "pro", "premium", "student", "lifetime"],
+        default: "free",
+        index: true,
+      },
+      plan: {
+        type: String,
+        enum: ["monthly", "yearly", "3-months", "lifetime", "one-time"],
+      },
+      status: {
+        type: String,
+        enum: ["active", "cancelled", "expired", "trial", "pending"],
+        default: "active",
+        index: true,
+      },
+      startDate: {
+        type: Date,
+      },
+      endDate: {
+        type: Date,
+        index: true,
+      },
+      receiptId: {
+        type: String,
+      },
+      paymentId: {
+        type: String,
+      },
+      orderId: {
+        type: String,
+      },
+      autoRenew: {
+        type: Boolean,
+        default: false,
+      },
+      cancelledAt: {
+        type: Date,
+      },
+      cancelReason: {
+        type: String,
+      },
+    },
+
+    // Usage tracking
+    usage: {
+      resumesCreated: {
+        type: Number,
+        default: 0,
+      },
+      resumesThisMonth: {
+        type: Number,
+        default: 0,
+      },
+      atsScans: {
+        type: Number,
+        default: 0,
+      },
+      atsScansThisMonth: {
+        type: Number,
+        default: 0,
+      },
+      jobMatches: {
+        type: Number,
+        default: 0,
+      },
+      jobMatchesToday: {
+        type: Number,
+        default: 0,
+      },
+      coverLetters: {
+        type: Number,
+        default: 0,
+      },
+      coverLettersThisMonth: {
+        type: Number,
+        default: 0,
+      },
+      aiResumeExtractions: {
+        type: Number,
+        default: 0,
+      },
+      aiResumeExtractionsToday: {
+        type: Number,
+        default: 0,
+      },
+      tokensUsed: {
+        type: Number,
+        default: 0,
+      },
+      lastResetDate: {
+        type: Date,
+        default: Date.now,
+      },
+      lastDailyReset: {
+        type: Date,
+        default: Date.now,
+      },
+    },
+
+    // User Preferences
+    preferences: {
+      currency: {
+        type: String,
+        enum: ["INR", "USD"],
+        default: "INR",
+      },
+      notifications: {
+        email: {
+          type: Boolean,
+          default: true,
+        },
+        usageAlerts: {
+          type: Boolean,
+          default: true,
+        },
+        renewalReminders: {
+          type: Boolean,
+          default: true,
+        },
+      },
+    },
   },
   {
     timestamps: true,
@@ -86,6 +211,178 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
   // OAuth users don't have passwords
   if (!this.password) return false;
   return bcrypt.compare(candidatePassword, this.password);
+};
+
+// Subscription helper methods
+userSchema.methods.hasActiveSubscription = function () {
+  return (
+    this.subscription.status === "active" &&
+    (!this.subscription.endDate || this.subscription.endDate > new Date())
+  );
+};
+
+userSchema.methods.isPremiumUser = function () {
+  return (
+    this.hasActiveSubscription() &&
+    ["one-time", "pro", "premium", "student", "lifetime"].includes(
+      this.subscription.tier
+    )
+  );
+};
+
+userSchema.methods.canAccessFeature = function (feature) {
+  const tier = this.subscription.tier;
+
+  const featureAccess = {
+    free: ["basic-resume", "one-template"],
+    "one-time": [
+      "basic-resume",
+      "all-templates",
+      "ats-score",
+      "cover-letter",
+      "job-match",
+      "portfolio",
+    ],
+    pro: [
+      "unlimited-resumes",
+      "all-templates",
+      "ats-score",
+      "cover-letter",
+      "job-match",
+      "portfolio",
+      "analytics",
+      "ai-resume-extraction",
+    ],
+    premium: [
+      "unlimited-resumes",
+      "all-templates",
+      "ats-score",
+      "cover-letter",
+      "job-match",
+      "portfolio",
+      "analytics",
+      "interview-qa",
+      "priority-support",
+      "ai-resume-extraction",
+    ],
+    lifetime: [
+      "unlimited-resumes",
+      "all-templates",
+      "ats-score",
+      "cover-letter",
+      "job-match",
+      "portfolio",
+      "analytics",
+      "ai-resume-extraction",
+    ],
+  };
+
+  return featureAccess[tier]?.includes(feature) || false;
+};
+
+userSchema.methods.getUsageLimit = function (limitType) {
+  const tier = this.subscription.tier;
+
+  const limits = {
+    free: {
+      resumesPerMonth: 1,
+      atsScansPerMonth: 0,
+      jobMatchesPerDay: 0,
+      coverLettersPerMonth: 0,
+    },
+    "one-time": {
+      resumesPerMonth: 1,
+      atsScansPerMonth: 1,
+      jobMatchesPerDay: 3,
+      coverLettersPerMonth: 1,
+    },
+    pro: {
+      resumesPerMonth: Infinity,
+      atsScansPerMonth: Infinity,
+      jobMatchesPerDay: 10,
+      coverLettersPerMonth: Infinity,
+      aiResumeExtractionsPerDay: 2, // New: AI resume extraction limit
+    },
+    premium: {
+      resumesPerMonth: Infinity,
+      atsScansPerMonth: Infinity,
+      jobMatchesPerDay: Infinity,
+      coverLettersPerMonth: Infinity,
+      aiResumeExtractionsPerDay: 2, // New: AI resume extraction limit
+    },
+    lifetime: {
+      resumesPerMonth: Infinity,
+      atsScansPerMonth: Infinity,
+      jobMatchesPerDay: 10,
+      coverLettersPerMonth: Infinity,
+      aiResumeExtractionsPerDay: 2, // New: AI resume extraction limit
+    },
+  };
+
+  return limits[tier]?.[limitType] || 0;
+};
+
+userSchema.methods.hasReachedLimit = function (limitType) {
+  const limit = this.getUsageLimit(limitType);
+  if (limit === Infinity) return false;
+
+  const usageMap = {
+    resumesPerMonth: this.usage.resumesThisMonth,
+    atsScansPerMonth: this.usage.atsScansThisMonth,
+    jobMatchesPerDay: this.usage.jobMatchesToday,
+    coverLettersPerMonth: this.usage.coverLettersThisMonth,
+  };
+
+  return (usageMap[limitType] || 0) >= limit;
+};
+
+userSchema.methods.incrementUsage = async function (usageType) {
+  const usageMap = {
+    resume: {total: "resumesCreated", monthly: "resumesThisMonth"},
+    ats: {total: "atsScans", monthly: "atsScansThisMonth"},
+    jobMatch: {total: "jobMatches", daily: "jobMatchesToday"},
+    coverLetter: {total: "coverLetters", monthly: "coverLettersThisMonth"},
+  };
+
+  const fields = usageMap[usageType];
+  if (fields) {
+    this.usage[fields.total]++;
+    if (fields.monthly) this.usage[fields.monthly]++;
+    if (fields.daily) this.usage[fields.daily]++;
+    await this.save();
+  }
+};
+
+userSchema.methods.resetMonthlyUsage = async function () {
+  this.usage.resumesThisMonth = 0;
+  this.usage.atsScansThisMonth = 0;
+  this.usage.coverLettersThisMonth = 0;
+  this.usage.lastResetDate = new Date();
+  await this.save();
+};
+
+userSchema.methods.resetDailyUsage = async function () {
+  this.usage.jobMatchesToday = 0;
+  this.usage.lastDailyReset = new Date();
+  await this.save();
+};
+
+// Check if subscription has expired
+userSchema.methods.checkSubscriptionExpiry = async function () {
+  if (this.subscription.endDate && this.subscription.endDate < new Date()) {
+    if (this.subscription.status === "active") {
+      this.subscription.status = "expired";
+
+      // Downgrade to free tier
+      if (["one-time", "student"].includes(this.subscription.tier)) {
+        this.subscription.tier = "free";
+      }
+
+      await this.save();
+      return true; // Subscription expired
+    }
+  }
+  return false; // Still active
 };
 
 const User = mongoose.model("User", userSchema);

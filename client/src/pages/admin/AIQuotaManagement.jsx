@@ -51,7 +51,7 @@ const AIQuotaManagement = () => {
   const handleResetQuota = async (userId, userName) => {
     if (
       !window.confirm(
-        `Are you sure you want to reset daily quota for ${userName}?`
+        `Reset daily quota for ${userName}?\n\nThis will reset their daily usage count to 0, but all usage data will be preserved for analytics.`
       )
     ) {
       return;
@@ -59,10 +59,13 @@ const AIQuotaManagement = () => {
 
     try {
       await resetUserDailyQuota(userId);
-      toast.success(`Daily quota reset successfully for ${userName}!`, {
-        icon: "🔄",
-        duration: 2500,
-      });
+      toast.success(
+        `Daily quota reset for ${userName}! Usage data preserved.`,
+        {
+          icon: "🔄",
+          duration: 3000,
+        }
+      );
       fetchQuotaStatus();
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to reset quota", {
@@ -139,7 +142,7 @@ const AIQuotaManagement = () => {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div>
@@ -177,6 +180,14 @@ const AIQuotaManagement = () => {
               <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
                 ${quotaData?.summary?.totalMonthlyCost?.toFixed(4) || "0.00"}
               </p>
+              <div className="flex gap-3 mt-2 text-xs">
+                <span className="text-green-600 dark:text-green-400">
+                  OpenAI: ${(quotaData?.summary?.openaiCost || 0).toFixed(4)}
+                </span>
+                <span className="text-purple-600 dark:text-purple-400">
+                  Gemini: ${(quotaData?.summary?.geminiCost || 0).toFixed(4)}
+                </span>
+              </div>
             </div>
             <DollarSign className="w-10 h-10 text-yellow-600" />
           </div>
@@ -193,6 +204,104 @@ const AIQuotaManagement = () => {
               </p>
             </div>
             <AlertTriangle className="w-10 h-10 text-orange-600" />
+          </div>
+        </div>
+      </div>
+
+      {/* Provider Breakdown Section */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-xl p-6 shadow-sm border border-green-200 dark:border-green-700">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-green-900 dark:text-green-300">
+              OpenAI
+            </h3>
+            <div className="w-3 h-3 bg-green-600 rounded-full"></div>
+          </div>
+          <div className="space-y-2">
+            <div>
+              <p className="text-sm text-green-700 dark:text-green-400">
+                Total Calls
+              </p>
+              <p className="text-2xl font-bold text-green-900 dark:text-green-200">
+                {quotaData?.summary?.openaiCalls?.toLocaleString() || 0}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm text-green-700 dark:text-green-400">
+                Total Cost
+              </p>
+              <p className="text-xl font-semibold text-green-900 dark:text-green-200">
+                ${(quotaData?.summary?.openaiCost || 0).toFixed(4)}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-xl p-6 shadow-sm border border-purple-200 dark:border-purple-700">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-purple-900 dark:text-purple-300">
+              Gemini
+            </h3>
+            <div className="w-3 h-3 bg-purple-600 rounded-full"></div>
+          </div>
+          <div className="space-y-2">
+            <div>
+              <p className="text-sm text-purple-700 dark:text-purple-400">
+                Total Calls
+              </p>
+              <p className="text-2xl font-bold text-purple-900 dark:text-purple-200">
+                {quotaData?.summary?.geminiCalls?.toLocaleString() || 0}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm text-purple-700 dark:text-purple-400">
+                Total Cost
+              </p>
+              <p className="text-xl font-semibold text-purple-900 dark:text-purple-200">
+                ${(quotaData?.summary?.geminiCost || 0).toFixed(4)}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800/50 dark:to-gray-700/50 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-600">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-300">
+              Cost Analysis
+            </h3>
+            <DollarSign className="w-5 h-5 text-gray-600" />
+          </div>
+          <div className="space-y-2">
+            <div>
+              <p className="text-sm text-gray-700 dark:text-gray-400">
+                OpenAI %
+              </p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-gray-200">
+                {quotaData?.summary?.totalMonthlyCost > 0
+                  ? (
+                      (quotaData?.summary?.openaiCost /
+                        quotaData?.summary?.totalMonthlyCost) *
+                      100
+                    ).toFixed(1)
+                  : 0}
+                %
+              </p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-700 dark:text-gray-400">
+                Gemini %
+              </p>
+              <p className="text-xl font-semibold text-gray-900 dark:text-gray-200">
+                {quotaData?.summary?.totalMonthlyCost > 0
+                  ? (
+                      (quotaData?.summary?.geminiCost /
+                        quotaData?.summary?.totalMonthlyCost) *
+                      100
+                    ).toFixed(1)
+                  : 0}
+                %
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -241,8 +350,14 @@ const AIQuotaManagement = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Monthly Usage
                 </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wider">
+                  OpenAI
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-purple-600 dark:text-purple-400 uppercase tracking-wider">
+                  Gemini
+                </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Cost
+                  Total Cost
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Status
@@ -327,6 +442,22 @@ const AIQuotaManagement = () => {
                     </div>
                     <div className="text-xs text-gray-500 dark:text-gray-400">
                       {user.quota.monthly.totalTokens.toLocaleString()} tokens
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-green-700 dark:text-green-400 font-medium">
+                      {user.providers?.openai?.calls || 0} calls
+                    </div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      ${(user.providers?.openai?.cost || 0).toFixed(4)}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-purple-700 dark:text-purple-400 font-medium">
+                      {user.providers?.gemini?.calls || 0} calls
+                    </div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      ${(user.providers?.gemini?.cost || 0).toFixed(4)}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">

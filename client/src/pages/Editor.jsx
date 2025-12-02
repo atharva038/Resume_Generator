@@ -21,7 +21,10 @@ import {
   ResumeWizard,
 } from "../components/editor";
 import {ScoreCard, JobSpecificScoreCard} from "../components/common/cards";
-import {GitHubImportModal, PageLimitExceededModal} from "../components/common/modals";
+import {
+  GitHubImportModal,
+  PageLimitExceededModal,
+} from "../components/common/modals";
 import {getJobCategories, getJobsByCategory} from "../utils/jobProfiles";
 import {calculateContentMetrics} from "../utils/resumeLimits";
 import {PageUtilizationIndicator} from "../components/common/LimitedInputs";
@@ -263,7 +266,7 @@ const Editor = () => {
   });
   const [showGitHubImportModal, setShowGitHubImportModal] = useState(false);
   const [githubImportSuccess, setGithubImportSuccess] = useState(false);
-  
+
   // Page limit states
   const [showPageLimitModal, setShowPageLimitModal] = useState(false);
   const [twoPageMode, setTwoPageMode] = useState(false);
@@ -331,7 +334,7 @@ const Editor = () => {
       const timer = setTimeout(() => {
         setShowPageLimitModal(true);
       }, 500);
-      
+
       return () => clearTimeout(timer);
     }
   }, [resumeData, twoPageMode]);
@@ -460,15 +463,15 @@ const Editor = () => {
       if (stateData) {
         console.log("✅ Found data in location state");
         console.log("🆕 Is new resume:", isNewResume);
-        
+
         // Set wizard mode for new resumes
         setIsWizardMode(isNewResume);
-        
+
         // Auto-enable preview for wizard mode
         if (isNewResume && !isMobile) {
           setShowPreview(true);
         }
-        
+
         // Initialize data from location state
         initializeResumeData(stateData);
 
@@ -610,10 +613,25 @@ const Editor = () => {
       }
     } catch (err) {
       console.error("Save error:", err);
-      toast.error("Failed to save resume: " + parseValidationErrors(err), {
-        icon: "❌",
-        duration: 4000,
-      });
+
+      // Check if it's a subscription limit error (403 with upgradeRequired)
+      if (err.response?.status === 403 && err.response?.data?.upgradeRequired) {
+        const errorData = err.response.data;
+        toast.error(errorData.message || "Upgrade required", {
+          icon: "⭐",
+          duration: 2000,
+        });
+
+        // Navigate to pricing page after a short delay
+        setTimeout(() => {
+          navigate("/pricing");
+        }, 2000);
+      } else {
+        toast.error("Failed to save resume: " + parseValidationErrors(err), {
+          icon: "❌",
+          duration: 4000,
+        });
+      }
     } finally {
       setSaving(false);
     }
@@ -1127,11 +1145,17 @@ const Editor = () => {
           }
         );
       } else {
-        toast.warning(
+        // react-hot-toast doesn't have toast.warning, use toast with custom styling
+        toast(
           `Enhancement completed with some issues: ${successCount} enhanced, ${failCount} failed`,
           {
             icon: "⚠️",
             duration: 4000,
+            style: {
+              background: "#FEF3C7",
+              color: "#92400E",
+              border: "1px solid #F59E0B",
+            },
           }
         );
       }
@@ -1460,7 +1484,12 @@ const Editor = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 no-print">
           <h1 className="text-2xl sm:text-3xl font-bold dark:text-gray-100">
-            Resume Editor {isWizardMode && <span className="text-base font-normal text-blue-600 dark:text-blue-400">(Step-by-Step Mode)</span>}
+            Resume Editor{" "}
+            {isWizardMode && (
+              <span className="text-base font-normal text-blue-600 dark:text-blue-400">
+                (Step-by-Step Mode)
+              </span>
+            )}
           </h1>
           <div className="flex flex-wrap gap-2 sm:gap-3 items-stretch">
             {/* Switch to Full Editor Button - Only show in wizard mode */}
@@ -1471,7 +1500,9 @@ const Editor = () => {
                 title="Switch to full editor mode"
               >
                 <span>📝</span>
-                <span className="text-xs sm:text-sm">Switch to Full Editor</span>
+                <span className="text-xs sm:text-sm">
+                  Switch to Full Editor
+                </span>
               </button>
             )}
             {/* GitHub Import Button */}
@@ -1485,14 +1516,14 @@ const Editor = () => {
             </button>
             {/* Reset Order Button - Hide in wizard mode */}
             {!isWizardMode && (
-            <button
-              onClick={handleResetOrder}
-              className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-semibold hover:border-orange-500 hover:text-orange-600 dark:hover:text-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors flex items-center justify-center gap-1"
-              title="Reset section order to default"
-            >
-              <span className="hidden sm:inline">🔄</span>
-              <span>Reset</span>
-            </button>
+              <button
+                onClick={handleResetOrder}
+                className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-semibold hover:border-orange-500 hover:text-orange-600 dark:hover:text-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors flex items-center justify-center gap-1"
+                title="Reset section order to default"
+              >
+                <span className="hidden sm:inline">🔄</span>
+                <span>Reset</span>
+              </button>
             )}
             {/* Template Selector Button */}
             <button
@@ -1817,9 +1848,11 @@ const Editor = () => {
         {/* Conditional: Show Wizard for New Resumes, Normal Editor for Existing */}
         {isWizardMode ? (
           // Step-by-Step Wizard for New Resumes
-          <div className={`grid ${
-            showPreview ? "grid-cols-1 xl:grid-cols-2" : "grid-cols-1"
-          } gap-4 sm:gap-6`}>
+          <div
+            className={`grid ${
+              showPreview ? "grid-cols-1 xl:grid-cols-2" : "grid-cols-1"
+            } gap-4 sm:gap-6`}
+          >
             <div className="order-2 xl:order-1">
               <ResumeWizard
                 resumeData={resumeData}
@@ -1832,7 +1865,7 @@ const Editor = () => {
                 onComplete={handleWizardComplete}
               />
             </div>
-            
+
             {/* Preview Panel for Wizard */}
             {showPreview && (
               <div
@@ -1866,7 +1899,7 @@ const Editor = () => {
                   twoPageMode={twoPageMode}
                 />
               )}
-              
+
               {sectionOrder.map((sectionId) => renderSection(sectionId))}
             </div>
 

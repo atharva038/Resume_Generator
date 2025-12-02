@@ -1,7 +1,31 @@
 import {GoogleGenerativeAI} from "@google/generative-ai";
+import dotenv from "dotenv";
 
-// Initialize Gemini AI
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+// Load environment variables if not already loaded
+if (!process.env.GEMINI_API_KEY) {
+  dotenv.config();
+}
+
+// Validate GEMINI_API_KEY after attempting to load
+if (!process.env.GEMINI_API_KEY) {
+  console.error("❌ GEMINI_API_KEY is not set in environment variables");
+  console.error("💡 Please add GEMINI_API_KEY=your_key_here to your .env file");
+  console.error("📚 Get your key from: https://aistudio.google.com/app/apikey");
+  throw new Error(
+    "GEMINI_API_KEY is required. Please set it in your .env file."
+  );
+}
+
+// Trim the API key to remove any whitespace
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY.trim();
+
+// Validate key format
+if (GEMINI_API_KEY.length < 20) {
+  console.warn("⚠️  Warning: GEMINI_API_KEY seems too short");
+}
+
+// Initialize Gemini AI with validated key
+const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
 /**
  * Extract token usage from Gemini API response

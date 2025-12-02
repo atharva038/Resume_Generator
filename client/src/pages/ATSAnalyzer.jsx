@@ -124,6 +124,7 @@ const ATSAnalyzer = () => {
       }
 
       const response = await resumeAPI.analyzeResume(formData);
+      console.log("📊 ATS Analysis Response:", response.data);
       setAnalysisResult(response.data);
       toast.success("Analysis completed successfully!", {
         icon: "✅",
@@ -495,10 +496,10 @@ const ATSAnalyzer = () => {
                           <div className="text-center">
                             <div
                               className={`text-5xl font-bold ${getScoreColor(
-                                analysisResult.match_score
+                                analysisResult.match_score || 0
                               )}`}
                             >
-                              {analysisResult.match_score}%
+                              {analysisResult.match_score || 0}%
                             </div>
                             <div className="text-sm text-gray-600 dark:text-gray-400 mt-1 font-medium">
                               Match Rate

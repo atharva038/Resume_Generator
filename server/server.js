@@ -16,6 +16,7 @@ import adminRoutes from "./routes/admin.routes.js";
 import feedbackRoutes from "./routes/feedback.routes.js";
 import jobsRoutes from "./routes/jobs.js";
 import mlRoutes from "./routes/ml.routes.js";
+import subscriptionRoutes from "./routes/subscription.routes.js";
 import {apiLimiter} from "./middleware/rateLimiter.middleware.js";
 import {
   securityHeaders,
@@ -26,6 +27,58 @@ import {
 
 // Load environment variables
 dotenv.config();
+
+// ==========================================
+// ENVIRONMENT VALIDATION
+// ==========================================
+
+// Validate critical environment variables
+const requiredEnvVars = ["MONGODB_URI", "JWT_SECRET", "GEMINI_API_KEY"];
+const missingEnvVars = requiredEnvVars.filter((envVar) => !process.env[envVar]);
+
+if (missingEnvVars.length > 0) {
+  console.error("❌ Missing required environment variables:");
+  missingEnvVars.forEach((envVar) => {
+    console.error(`   - ${envVar}`);
+  });
+  console.error("\n💡 Please check your .env file");
+  process.exit(1);
+}
+
+// Validate GEMINI_API_KEY format
+if (process.env.GEMINI_API_KEY) {
+  const apiKey = process.env.GEMINI_API_KEY.trim();
+  if (apiKey.length < 20 || !apiKey.startsWith("AIzaSy")) {
+    console.error("❌ GEMINI_API_KEY appears to be invalid");
+    console.error(
+      `   Current key: ${apiKey.substring(0, 10)}...${apiKey.substring(
+        apiKey.length - 4
+      )}`
+    );
+    console.error(
+      "💡 Please get a valid API key from: https://aistudio.google.com/app/apikey"
+    );
+  } else {
+    console.log(
+      `✅ GEMINI_API_KEY is present (${apiKey.substring(
+        0,
+        10
+      )}...${apiKey.substring(apiKey.length - 4)})`
+    );
+  }
+}
+
+// Warn about optional OAuth variables
+if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+  console.warn(
+    "⚠️  Google OAuth not configured - set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET"
+  );
+}
+if (!process.env.GITHUB_CLIENT_ID || !process.env.GITHUB_CLIENT_SECRET) {
+  console.warn(
+    "⚠️  GitHub OAuth not configured - set GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET"
+  );
+}
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -147,6 +200,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/feedback", feedbackRoutes);
 app.use("/api/jobs", jobsRoutes);
 app.use("/api/ml", mlRoutes); // ML/AI matching routes
+app.use("/api/subscription", subscriptionRoutes); // Subscription & payment routes
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {

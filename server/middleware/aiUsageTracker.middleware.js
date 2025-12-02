@@ -25,6 +25,10 @@ const QUOTA_LIMITS = {
     daily: 10, // 10 AI requests per day for free users
     monthly: 200, // 200 AI requests per month
   },
+  "one-time": {
+    daily: 30, // 30 AI requests per day for one-time purchase users
+    monthly: 200, // 200 AI requests during 21-day access period
+  },
   premium: {
     daily: 100, // 100 AI requests per day for premium users
     monthly: 2000, // 2000 AI requests per month
@@ -65,6 +69,7 @@ const getUsageCount = async (userId, startDate) => {
       userId,
       createdAt: {$gte: startDate},
       status: "success", // Only count successful requests
+      countTowardsQuota: {$ne: false}, // Only count records that count towards quota
     });
     return count;
   } catch (error) {

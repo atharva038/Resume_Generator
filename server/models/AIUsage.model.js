@@ -7,6 +7,17 @@ const aiUsageSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    aiProvider: {
+      type: String,
+      enum: ["openai", "gemini", "hybrid"],
+      required: true,
+      index: true,
+    },
+    aiModel: {
+      type: String,
+      enum: ["gpt4o", "gemini", "hybrid"],
+      required: true,
+    },
     feature: {
       type: String,
       enum: [
@@ -35,6 +46,11 @@ const aiUsageSchema = new mongoose.Schema(
       enum: ["success", "error", "timeout"],
       default: "success",
     },
+    countTowardsQuota: {
+      type: Boolean,
+      default: true,
+      index: true,
+    },
     errorMessage: {
       type: String,
     },
@@ -50,6 +66,8 @@ const aiUsageSchema = new mongoose.Schema(
 // Index for faster queries
 aiUsageSchema.index({userId: 1, createdAt: -1});
 aiUsageSchema.index({feature: 1, createdAt: -1});
+aiUsageSchema.index({aiProvider: 1, createdAt: -1});
+aiUsageSchema.index({aiProvider: 1, feature: 1});
 
 const AIUsage = mongoose.model("AIUsage", aiUsageSchema);
 

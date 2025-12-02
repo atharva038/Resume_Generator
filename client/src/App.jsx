@@ -10,6 +10,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import RateLimitExceeded from "./pages/RateLimitExceeded";
 import AuthCallback from "./pages/AuthCallback";
 import Dashboard from "./pages/Dashboard";
 import Templates from "./pages/Templates";
@@ -19,6 +20,15 @@ import JobSearch from "./pages/JobSearch";
 import SmartJobMatchPage from "./pages/SmartJobMatchPage";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
+import Pricing from "./pages/Pricing";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsAndConditions from "./pages/TermsAndConditions";
+import RefundPolicy from "./pages/RefundPolicy";
+import ShippingPolicy from "./pages/ShippingPolicy";
+import PaymentModal from "./components/common/PaymentModal";
+import SubscriptionDashboard from "./pages/SubscriptionDashboard";
+import AdvancedAnalytics from "./pages/AdvancedAnalytics";
+import Profile from "./pages/Profile";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import UserManagement from "./pages/admin/UserManagement";
 import AIAnalytics from "./pages/admin/AIAnalytics";
@@ -156,12 +166,56 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            {/* Public Routes */}
+            {/* Subscription Routes */}
+            <Route path="pricing" element={<Pricing />} />
+            <Route path="privacy-policy" element={<PrivacyPolicy />} />
+            <Route
+              path="terms-and-conditions"
+              element={<TermsAndConditions />}
+            />
+            <Route path="refund-policy" element={<RefundPolicy />} />
+            <Route path="shipping-policy" element={<ShippingPolicy />} />
+
+            {/* Public Auth Routes */}
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
             <Route path="forgot-password" element={<ForgotPassword />} />
             <Route path="reset-password/:token" element={<ResetPassword />} />
+            <Route path="rate-limit-exceeded" element={<RateLimitExceeded />} />
             <Route path="auth/callback" element={<AuthCallback />} />
+
+            <Route
+              path="payment"
+              element={
+                <ProtectedRoute>
+                  <PaymentModal />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="subscription"
+              element={
+                <ProtectedRoute>
+                  <SubscriptionDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="analytics"
+              element={
+                <ProtectedRoute>
+                  <AdvancedAnalytics />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
 
             {/* 404 Not Found - Must be last route in this Route group */}
             <Route path="*" element={<NotFound />} />

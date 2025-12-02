@@ -107,7 +107,8 @@ const AIAnalytics = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Total API Calls */}
         <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-blue-500 rounded-lg">
@@ -124,22 +125,47 @@ const AIAnalytics = () => {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+        {/* OpenAI Stats */}
+        <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl p-6 shadow-sm border-2 border-green-300 dark:border-green-700">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-green-500 rounded-lg">
               <TrendingUp className="w-6 h-6 text-white" />
             </div>
             <div>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
-                Total Tokens
+              <p className="text-green-700 dark:text-green-300 text-sm font-semibold">
+                🤖 OpenAI (GPT-4o)
               </p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {analytics?.totals?.totalTokens?.toLocaleString() || 0}
+                {analytics?.totals?.openaiCalls || 0} calls
+              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                ${(analytics?.totals?.openaiCost || 0).toFixed(2)} cost
               </p>
             </div>
           </div>
         </div>
 
+        {/* Gemini Stats */}
+        <div className="bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20 rounded-xl p-6 shadow-sm border-2 border-purple-300 dark:border-purple-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-purple-500 rounded-lg">
+              <Activity className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <p className="text-purple-700 dark:text-purple-300 text-sm font-semibold">
+                ✨ Gemini Flash
+              </p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                {analytics?.totals?.geminiCalls || 0} calls
+              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                ${(analytics?.totals?.geminiCost || 0).toFixed(2)} cost
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Total Cost */}
         <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-orange-500 rounded-lg">
@@ -152,23 +178,65 @@ const AIAnalytics = () => {
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 ${(analytics?.totals?.totalCost || 0).toFixed(2)}
               </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                {analytics?.totals?.totalTokens?.toLocaleString() || 0} tokens
+              </p>
             </div>
           </div>
         </div>
+      </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-purple-500 rounded-lg">
-              <Clock className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
-                Avg Response Time
-              </p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {(analytics?.totals?.avgResponseTime || 0).toFixed(0)}ms
-              </p>
-            </div>
+      {/* Provider Comparison */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          AI Provider Comparison
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+            <p className="text-sm text-green-700 dark:text-green-300 font-semibold mb-2">
+              🤖 OpenAI
+            </p>
+            <p className="text-3xl font-bold text-gray-900 dark:text-white">
+              {analytics?.totals?.openaiCalls || 0}
+            </p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              {((analytics?.totals?.openaiTokens || 0) / 1000).toFixed(1)}K
+              tokens
+            </p>
+            <p className="text-lg font-semibold text-green-600 dark:text-green-400 mt-2">
+              ${(analytics?.totals?.openaiCost || 0).toFixed(2)}
+            </p>
+          </div>
+
+          <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
+            <p className="text-sm text-purple-700 dark:text-purple-300 font-semibold mb-2">
+              ✨ Gemini
+            </p>
+            <p className="text-3xl font-bold text-gray-900 dark:text-white">
+              {analytics?.totals?.geminiCalls || 0}
+            </p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              {((analytics?.totals?.geminiTokens || 0) / 1000).toFixed(1)}K
+              tokens
+            </p>
+            <p className="text-lg font-semibold text-purple-600 dark:text-purple-400 mt-2">
+              ${(analytics?.totals?.geminiCost || 0).toFixed(2)}
+            </p>
+          </div>
+
+          <div className="text-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-700">
+            <p className="text-sm text-gray-700 dark:text-gray-300 font-semibold mb-2">
+              🔄 Hybrid
+            </p>
+            <p className="text-3xl font-bold text-gray-900 dark:text-white">
+              {analytics?.totals?.hybridCalls || 0}
+            </p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              Mixed usage
+            </p>
+            <p className="text-lg font-semibold text-gray-600 dark:text-gray-400 mt-2">
+              -
+            </p>
           </div>
         </div>
       </div>
@@ -242,13 +310,16 @@ const AIAnalytics = () => {
                   User
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
-                  API Calls
+                  Total Calls
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-green-600 dark:text-green-400 uppercase">
+                  OpenAI
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-purple-600 dark:text-purple-400 uppercase">
+                  Gemini
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
-                  Tokens Used
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
-                  Cost
+                  Total Cost
                 </th>
               </tr>
             </thead>
@@ -268,14 +339,34 @@ const AIAnalytics = () => {
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                    {user.count}
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-semibold text-gray-900 dark:text-white">
+                      {user.count}
+                    </div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      {((user.totalTokens || 0) / 1000).toFixed(1)}K tokens
+                    </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                    {user.totalTokens.toLocaleString()}
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-green-600 dark:text-green-400">
+                      {user.openaiCalls || 0} calls
+                    </div>
+                    <div className="text-xs text-gray-600 dark:text-gray-400">
+                      ${(user.openaiCost || 0).toFixed(2)}
+                    </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                    ${user.totalCost.toFixed(2)}
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-purple-600 dark:text-purple-400">
+                      {user.geminiCalls || 0} calls
+                    </div>
+                    <div className="text-xs text-gray-600 dark:text-gray-400">
+                      ${(user.geminiCost || 0).toFixed(2)}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-bold text-gray-900 dark:text-white">
+                      ${(user.totalCost || 0).toFixed(2)}
+                    </div>
                   </td>
                 </tr>
               ))}

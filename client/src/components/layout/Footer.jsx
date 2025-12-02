@@ -6,6 +6,7 @@ import {
   Linkedin,
   Twitter,
   Github,
+  Shield,
 } from "lucide-react";
 import {useEffect, useRef, useState} from "react";
 
@@ -40,14 +41,15 @@ const Footer = () => {
     {name: "ATS Checker", path: "/upload"},
     {name: "Resume Templates", path: "/templates"},
     {name: "AI Enhancer", path: "/upload"},
+    {name: "Pricing", path: "/pricing"},
   ];
 
-  // Hidden until connected to real data
+  // Legal & Policies (REQUIRED FOR RAZORPAY APPROVAL)
   const resourceLinks = [
-    // {name: "Blog", path: "/#blog"},
-    // {name: "FAQ", path: "/#faq"},
-    // {name: "Privacy Policy", path: "/privacy"},
-    // {name: "Terms of Service", path: "/terms"},
+    {name: "Terms & Conditions", path: "/terms-and-conditions"},
+    {name: "Privacy Policy", path: "/privacy-policy"},
+    {name: "Refund Policy", path: "/refund-policy"},
+    {name: "Shipping Policy", path: "/shipping-policy"},
   ];
 
   // Hidden until connected to real data
@@ -141,12 +143,12 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Resources Column - Hidden until connected to real data */}
+          {/* Legal & Policies Column (REQUIRED FOR RAZORPAY) */}
           {resourceLinks.length > 0 && (
             <div>
               <h3 className="text-white font-semibold text-lg mb-4 flex items-center gap-2">
-                <Mail className="w-4 h-4 text-blue-400" />
-                Resources
+                <Shield className="w-4 h-4 text-green-400" />
+                Legal & Policies
               </h3>
               <ul className="space-y-3">
                 {resourceLinks.map((link) => {
@@ -201,12 +203,12 @@ const Footer = () => {
               </li>
               <li>
                 <a
-                  href="mailto:atharvasjoshi2005@gmail.com"
+                  href="mailto:support@smartnshine.app"
                   className="text-gray-400 hover:text-white transition-colors duration-200 inline-flex items-center gap-2 group"
                 >
                   <Mail className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
                   <span className="relative">
-                    atharvasjoshi2005@gmail.com
+                    support@smartnshine.app
                     <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300"></span>
                   </span>
                 </a>

@@ -1,14 +1,15 @@
 import Resume from "../models/Resume.model.js";
+import User from "../models/User.model.js";
 import {extractTextFromFile, deleteFile} from "../utils/fileExtractor.js";
 import {
-  parseResumeWithAI,
+  parseResumeWithAI as parseResumeWithGemini,
   enhanceContentWithAI,
   generateSummaryWithAI,
   categorizeSkillsWithAI,
   segregateAchievementsWithAI,
   processCustomSectionWithAI,
 } from "../services/gemini.service.js";
-import {trackAIUsage} from "../middleware/aiUsageTracker.middleware.js";
+import {parseResumeWithAI as parseResumeWithOpenAI} from "../services/openai.service.js";
 
 /**
  * Upload and parse resume file
@@ -20,6 +21,31 @@ export const uploadResume = async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({error: "No file uploaded"});
+    }
+
+    // Get user and check tier for AI extraction
+    const userId = req.user._id || req.user.userId;
+    const user = await User.findById(userId);
+    const tier = user?.subscription?.tier || "free";
+
+    // Check if user can use AI resume extraction (Pro/Premium/Lifetime only)
+    const canUseAIExtraction = ["pro", "premium", "lifetime"].includes(tier);
+
+    // If using AI extraction, check daily limit
+    if (canUseAIExtraction) {
+      const limit = user.getUsageLimit("aiResumeExtractionsPerDay");
+      const used = user.usage?.aiResumeExtractionsToday || 0;
+
+      if (used >= limit) {
+        return res.status(403).json({
+          success: false,
+          error: "AI Extraction Limit Reached",
+          message: `You've used all ${limit} AI resume extractions for today. Try again tomorrow or upgrade your plan!`,
+          upgradeRequired: false,
+          limit,
+          used,
+        });
+      }
     }
 
     filePath = req.file.path;
@@ -34,35 +60,47 @@ export const uploadResume = async (req, res) => {
       );
     }
 
-    // Parse resume using Gemini AI
+    // Use OpenAI for premium tiers, Gemini for free/one-time
+    const parseResumeWithAI = canUseAIExtraction
+      ? parseResumeWithOpenAI
+      : parseResumeWithGemini;
+    const aiProvider = canUseAIExtraction ? "OpenAI" : "Gemini";
+
+    // Parse resume using AI
+    console.log(`🤖 Using ${aiProvider} for ${tier} user's resume extraction`);
     const startTime = Date.now();
     const {data: parsedData, tokenUsage} = await parseResumeWithAI(
       extractedText
     );
     const responseTime = Date.now() - startTime;
 
-    // Track AI usage (upload doesn't require auth, so skip tracking)
-    // Note: Upload endpoint should ideally require authentication for better tracking
-    // For now, we'll track only if user is authenticated
-    if (req.user?.userId) {
-      await trackAIUsage(
-        req.user.userId,
-        "resume_enhancement",
-        tokenUsage?.totalTokens || 0,
-        responseTime,
-        "success"
-      );
+    // Increment AI extraction counter for pro/premium/lifetime users
+    if (canUseAIExtraction) {
+      await User.findByIdAndUpdate(userId, {
+        $inc: {
+          "usage.aiResumeExtractions": 1,
+          "usage.aiResumeExtractionsToday": 1,
+        },
+      });
+      console.log(`✅ AI extraction count incremented for ${tier} user`);
     }
+
+    // AI usage tracking is handled by gemini.service.js internally
+    // No need to track here as parseResumeWithAI doesn't go through aiRouter
 
     // Add raw text to parsed data
     parsedData.rawText = extractedText;
 
-    // Delete uploaded file after processing
+    // Delete temporary uploaded file after successful processing
+    // (Data is already parsed and will be saved to database by client)
     await deleteFile(filePath);
+    console.log("✅ Resume data parsed and ready for database storage");
 
     res.json({
       message: "Resume uploaded and parsed successfully",
       data: parsedData,
+      aiUsed: aiProvider.toLowerCase(),
+      extractionsRemaining: canUseAIExtraction ? limit - (used + 1) : null,
     });
   } catch (error) {
     // Clean up file on error
@@ -194,7 +232,8 @@ export const generateSummary = async (req, res) => {
  */
 export const saveResume = async (req, res) => {
   try {
-    const userId = req.user.userId;
+    // After checkSubscription middleware, req.user is the full User document
+    const userId = req.user._id || req.user.userId;
     const resumeData = req.body;
 
     if (!resumeData.name) {
@@ -216,6 +255,18 @@ export const saveResume = async (req, res) => {
     });
 
     await resume.save();
+    console.log(
+      `💾 Resume saved to database: ID ${resume._id}, Title: "${resume.resumeTitle}"`
+    );
+
+    // Increment user's resume creation counters
+    await User.findByIdAndUpdate(userId, {
+      $inc: {
+        "usage.resumesCreated": 1,
+        "usage.resumesThisMonth": 1,
+      },
+    });
+    console.log(`📊 Updated resume creation count for user ${userId}`);
 
     // Return the full resume object
     res.status(201).json(resume);
@@ -233,7 +284,7 @@ export const saveResume = async (req, res) => {
  */
 export const updateResume = async (req, res) => {
   try {
-    const userId = req.user.userId;
+    const userId = req.user._id || req.user.userId;
     const {id} = req.params;
     const resumeData = req.body;
 
@@ -281,7 +332,7 @@ export const updateResume = async (req, res) => {
  */
 export const getResumes = async (req, res) => {
   try {
-    const userId = req.user.userId;
+    const userId = req.user._id || req.user.userId;
 
     const resumes = await Resume.find({userId})
       .select("name resumeTitle description templateId createdAt updatedAt")
@@ -305,7 +356,7 @@ export const getResumes = async (req, res) => {
  */
 export const getResumeById = async (req, res) => {
   try {
-    const userId = req.user.userId;
+    const userId = req.user._id || req.user.userId;
     const {id} = req.params;
 
     const resume = await Resume.findOne({_id: id, userId});
@@ -330,7 +381,7 @@ export const getResumeById = async (req, res) => {
  */
 export const deleteResume = async (req, res) => {
   try {
-    const userId = req.user.userId;
+    const userId = req.user._id || req.user.userId;
     const {id} = req.params;
 
     const resume = await Resume.findOneAndDelete({_id: id, userId});

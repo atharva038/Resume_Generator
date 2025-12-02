@@ -88,14 +88,17 @@ export async function extractTextFromFile(filePath) {
 }
 
 /**
- * Delete uploaded file after processing
+ * Delete temporary uploaded file after processing
  * @param {string} filePath - Path to the file to delete
  */
 export async function deleteFile(filePath) {
   try {
     await fs.unlink(filePath);
-    console.log(`🗑️ Deleted file: ${filePath}`);
+    console.log(`🧹 Cleaned up temporary file: ${path.basename(filePath)}`);
   } catch (error) {
-    console.error(`⚠️ Failed to delete file ${filePath}:`, error.message);
+    console.error(
+      `⚠️ Failed to delete temporary file ${path.basename(filePath)}:`,
+      error.message
+    );
   }
 }

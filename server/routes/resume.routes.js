@@ -7,6 +7,10 @@ import {
 } from "../middleware/rateLimiter.middleware.js";
 import {checkAIQuota} from "../middleware/aiUsageTracker.middleware.js";
 import {
+  checkSubscription,
+  checkUsageLimit,
+} from "../middleware/subscription.middleware.js";
+import {
   validateResumeCreate,
   validateResumeUpdate,
   validateResumeId,
@@ -91,7 +95,14 @@ router.post(
 );
 
 // Protected routes - require authentication
-router.post("/save", authenticateToken, validateResumeCreate, saveResume);
+router.post(
+  "/save",
+  authenticateToken,
+  checkSubscription,
+  checkUsageLimit("resumesPerMonth"),
+  validateResumeCreate,
+  saveResume
+);
 router.put("/:id", authenticateToken, validateResumeUpdate, updateResume);
 router.get("/list", authenticateToken, getResumes);
 router.get("/:id", authenticateToken, validateResumeId, getResumeById);
