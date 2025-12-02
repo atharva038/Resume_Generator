@@ -34,7 +34,25 @@ const Login = () => {
       const from = location.state?.from?.pathname || "/dashboard";
       navigate(from, {replace: true});
     } catch (err) {
-      setError(parseValidationErrors(err));
+      // Check if it's a rate limit error
+      if (
+        err.response?.status === 429 ||
+        err.response?.data?.type === "AUTH_RATE_LIMIT_EXCEEDED"
+      ) {
+        // Redirect to rate limit exceeded page
+        navigate("/rate-limit-exceeded", {
+          state: {
+            errorDetails: {
+              message:
+                err.response?.data?.error ||
+                "Too many authentication attempts. Please try again after 15 minutes.",
+              retryAfter: err.response?.data?.retryAfter || "15 minutes",
+            },
+          },
+        });
+      } else {
+        setError(parseValidationErrors(err));
+      }
     } finally {
       setLoading(false);
     }

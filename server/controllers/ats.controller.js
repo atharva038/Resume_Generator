@@ -1,8 +1,7 @@
 import PDFParser from "pdf-parse/lib/pdf-parse.js";
 import mammoth from "mammoth";
-import {analyzeResumeJobMatch} from "../services/gemini.service.js";
+import * as aiRouter from "../services/aiRouter.service.js";
 import Resume from "../models/Resume.model.js";
-import {trackAIUsage} from "../middleware/aiUsageTracker.middleware.js";
 
 /**
  * Analyze resume against job description
@@ -57,41 +56,37 @@ export const analyzeResume = async (req, res) => {
         .json({error: "Could not extract text from resume"});
     }
 
-    // Analyze resume vs job description using Gemini AI
+    // Get user object for AI routing
+    const User = (await import("../models/User.model.js")).default;
+    const user = await User.findById(req.user.userId);
+
+    if (!user) {
+      return res.status(401).json({error: "User not found"});
+    }
+
+    // Analyze resume vs job description using AI Router (Gemini or GPT-4o based on tier)
     console.log(
-      "🤖 Analyzing resume against job description with Gemini AI..."
+      `🤖 Analyzing resume against job description with AI Router (User tier: ${
+        user.subscription?.tier || "free"
+      })...`
     );
     const startTime = Date.now();
-    const {data: analysis, tokenUsage} = await analyzeResumeJobMatch(
-      resumeText,
-      jobDescription
-    );
+    const {
+      data: analysis,
+      tokenUsage,
+      aiModel,
+    } = await aiRouter.analyzeJobMatch(resumeText, jobDescription, user);
     const responseTime = Date.now() - startTime;
 
-    // Track AI usage
-    await trackAIUsage(
-      req.user.userId,
-      "ats_analysis",
-      tokenUsage?.totalTokens || 0,
-      responseTime,
-      "success"
-    );
+    console.log(`✅ ATS analysis completed using ${aiModel} model`);
+
+    // AI usage is already tracked by aiRouter.analyzeJobMatch
 
     res.json(analysis);
   } catch (error) {
     console.error("❌ Resume analysis error:", error);
 
-    // Track failed AI usage
-    if (req.user?.userId) {
-      await trackAIUsage(
-        req.user.userId,
-        "ats_analysis",
-        0,
-        0,
-        "error",
-        error.message
-      );
-    }
+    // AI usage error is already tracked by aiRouter.analyzeJobMatch
 
     res.status(500).json({
       error: error.message || "Failed to analyze resume",

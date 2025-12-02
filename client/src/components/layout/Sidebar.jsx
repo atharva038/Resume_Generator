@@ -75,6 +75,13 @@ const Sidebar = ({isOpen, setIsOpen}) => {
       description: "Manage your resumes",
     },
     {
+      name: "Analytics",
+      path: "/analytics",
+      icon: TrendingUp,
+      description: "Advanced insights (Pro)",
+      badge: "PRO",
+    },
+    {
       name: "Contact & Feedback",
       path: "/contact",
       icon: Mail,

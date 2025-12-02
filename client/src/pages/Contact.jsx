@@ -24,7 +24,7 @@ import toast from "react-hot-toast";
 
 const Contact = () => {
   const [activeTab, setActiveTab] = useState("contact"); // 'contact' or 'feedback'
-  
+
   // Contact form state
   const [formData, setFormData] = useState({
     name: "",
@@ -43,7 +43,7 @@ const Contact = () => {
   });
 
   const [errors, setErrors] = useState({});
-  
+
   // Feedback form state
   const [feedbackForm, setFeedbackForm] = useState({
     type: "improvement",
@@ -55,7 +55,7 @@ const Contact = () => {
     deviceInfo: `${navigator.platform} - ${window.screen.width}x${window.screen.height}`,
     pageUrl: window.location.href,
   });
-  
+
   const [feedbackLoading, setFeedbackLoading] = useState(false);
   const [myFeedback, setMyFeedback] = useState([]);
   const [loadingFeedback, setLoadingFeedback] = useState(false);
@@ -228,7 +228,7 @@ const Contact = () => {
         icon: "🎉",
         duration: 3000,
       });
-      
+
       // Reset form
       setFeedbackForm({
         type: feedbackForm.type,
@@ -240,7 +240,7 @@ const Contact = () => {
         deviceInfo: `${navigator.platform} - ${window.screen.width}x${window.screen.height}`,
         pageUrl: window.location.href,
       });
-      
+
       fetchMyFeedback();
       fetchStats();
     } catch (error) {
@@ -359,10 +359,10 @@ const Contact = () => {
                         Email
                       </p>
                       <a
-                        href="mailto:atharvasjoshi2005@gmail.com"
+                        href="mailto:support@smartnshine.app"
                         className="text-gray-900 dark:text-gray-100 font-semibold hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
                       >
-                        atharvasjoshi2005@gmail.com
+                        support@smartnshine.app
                       </a>
                     </div>
                   </div>
@@ -484,7 +484,9 @@ const Contact = () => {
                               : "border-gray-200 dark:border-gray-700 hover:border-indigo-300 bg-white dark:bg-gray-700/50"
                           }`}
                         >
-                          <span className="text-2xl mb-1 block">{cat.icon}</span>
+                          <span className="text-2xl mb-1 block">
+                            {cat.icon}
+                          </span>
                           <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
                             {cat.label}
                           </span>

@@ -794,7 +794,7 @@ const HeroSection = () => {
                       }
                     )}
                   </div>
-                  f{/* Screen Glare Effect */}
+                  {/* Screen Glare Effect */}
                   <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-transparent pointer-events-none"></div>
                 </div>
               </div>

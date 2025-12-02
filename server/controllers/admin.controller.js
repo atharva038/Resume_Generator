@@ -462,16 +462,50 @@ export const getAIAnalytics = async (req, res) => {
       {$sort: {_id: 1}},
     ]);
 
-    // Get usage by feature
-    const usageByFeature = await AIUsage.aggregate([
+    // Get usage by AI provider (OpenAI vs Gemini)
+    const usageByProvider = await AIUsage.aggregate([
       {$match: matchFilter},
       {
         $group: {
-          _id: "$feature",
+          _id: "$aiProvider",
           count: {$sum: 1},
           totalTokens: {$sum: "$tokensUsed"},
           totalCost: {$sum: "$cost"},
           avgResponseTime: {$avg: "$responseTime"},
+        },
+      },
+    ]);
+
+    // Get usage by feature (separated by provider)
+    const usageByFeature = await AIUsage.aggregate([
+      {$match: matchFilter},
+      {
+        $group: {
+          _id: {
+            feature: "$feature",
+            provider: "$aiProvider",
+          },
+          count: {$sum: 1},
+          totalTokens: {$sum: "$tokensUsed"},
+          totalCost: {$sum: "$cost"},
+          avgResponseTime: {$avg: "$responseTime"},
+        },
+      },
+      {
+        $group: {
+          _id: "$_id.feature",
+          providers: {
+            $push: {
+              provider: "$_id.provider",
+              count: "$count",
+              totalTokens: "$totalTokens",
+              totalCost: "$totalCost",
+              avgResponseTime: "$avgResponseTime",
+            },
+          },
+          totalCount: {$sum: "$count"},
+          totalTokens: {$sum: "$totalTokens"},
+          totalCost: {$sum: "$totalCost"},
         },
       },
     ]);
@@ -496,6 +530,18 @@ export const getAIAnalytics = async (req, res) => {
           count: {$sum: 1},
           totalTokens: {$sum: "$tokensUsed"},
           totalCost: {$sum: "$cost"},
+          openaiCalls: {
+            $sum: {$cond: [{$eq: ["$aiProvider", "openai"]}, 1, 0]},
+          },
+          geminiCalls: {
+            $sum: {$cond: [{$eq: ["$aiProvider", "gemini"]}, 1, 0]},
+          },
+          openaiCost: {
+            $sum: {$cond: [{$eq: ["$aiProvider", "openai"]}, "$cost", 0]},
+          },
+          geminiCost: {
+            $sum: {$cond: [{$eq: ["$aiProvider", "gemini"]}, "$cost", 0]},
+          },
         },
       },
       {$sort: {count: -1}},
@@ -517,6 +563,10 @@ export const getAIAnalytics = async (req, res) => {
           count: 1,
           totalTokens: 1,
           totalCost: 1,
+          openaiCalls: 1,
+          geminiCalls: 1,
+          openaiCost: 1,
+          geminiCost: 1,
         },
       },
     ]);
@@ -527,7 +577,7 @@ export const getAIAnalytics = async (req, res) => {
       .sort({createdAt: -1})
       .limit(50);
 
-    // Get totals
+    // Get totals (separated by provider)
     const totals = await AIUsage.aggregate([
       {$match: matchFilter},
       {
@@ -537,6 +587,27 @@ export const getAIAnalytics = async (req, res) => {
           totalTokens: {$sum: "$tokensUsed"},
           totalCost: {$sum: "$cost"},
           avgResponseTime: {$avg: "$responseTime"},
+          openaiCalls: {
+            $sum: {$cond: [{$eq: ["$aiProvider", "openai"]}, 1, 0]},
+          },
+          geminiCalls: {
+            $sum: {$cond: [{$eq: ["$aiProvider", "gemini"]}, 1, 0]},
+          },
+          hybridCalls: {
+            $sum: {$cond: [{$eq: ["$aiProvider", "hybrid"]}, 1, 0]},
+          },
+          openaiTokens: {
+            $sum: {$cond: [{$eq: ["$aiProvider", "openai"]}, "$tokensUsed", 0]},
+          },
+          geminiTokens: {
+            $sum: {$cond: [{$eq: ["$aiProvider", "gemini"]}, "$tokensUsed", 0]},
+          },
+          openaiCost: {
+            $sum: {$cond: [{$eq: ["$aiProvider", "openai"]}, "$cost", 0]},
+          },
+          geminiCost: {
+            $sum: {$cond: [{$eq: ["$aiProvider", "gemini"]}, "$cost", 0]},
+          },
         },
       },
     ]);
@@ -549,10 +620,18 @@ export const getAIAnalytics = async (req, res) => {
           totalTokens: 0,
           totalCost: 0,
           avgResponseTime: 0,
+          openaiCalls: 0,
+          geminiCalls: 0,
+          hybridCalls: 0,
+          openaiTokens: 0,
+          geminiTokens: 0,
+          openaiCost: 0,
+          geminiCost: 0,
         },
         charts: {
           usageOverTime,
           usageByFeature,
+          usageByProvider,
           usageByStatus,
         },
         topUsers,
@@ -1141,15 +1220,17 @@ export const getUserQuotaStatus = async (req, res) => {
             userId: user._id,
             createdAt: {$gte: startOfDay},
             status: "success",
+            countTowardsQuota: {$ne: false}, // Only count records that count towards quota
           }),
           AIUsage.countDocuments({
             userId: user._id,
             createdAt: {$gte: startOfMonth},
             status: "success",
+            countTowardsQuota: {$ne: false}, // Only count records that count towards quota
           }),
         ]);
 
-        // Get monthly costs
+        // Get monthly costs with provider breakdown
         const monthlyCosts = await AIUsage.aggregate([
           {
             $match: {
@@ -1163,9 +1244,60 @@ export const getUserQuotaStatus = async (req, res) => {
               _id: null,
               totalCost: {$sum: "$cost"},
               totalTokens: {$sum: "$tokensUsed"},
+              openaiCost: {
+                $sum: {
+                  $cond: [{$eq: ["$aiProvider", "openai"]}, "$cost", 0],
+                },
+              },
+              geminiCost: {
+                $sum: {
+                  $cond: [{$eq: ["$aiProvider", "gemini"]}, "$cost", 0],
+                },
+              },
+              hybridCost: {
+                $sum: {
+                  $cond: [{$eq: ["$aiProvider", "hybrid"]}, "$cost", 0],
+                },
+              },
             },
           },
         ]);
+
+        // Get provider breakdown for calls
+        const providerBreakdown = await AIUsage.aggregate([
+          {
+            $match: {
+              userId: user._id,
+              createdAt: {$gte: startOfMonth},
+              status: "success",
+            },
+          },
+          {
+            $group: {
+              _id: "$aiProvider",
+              calls: {$sum: 1},
+              cost: {$sum: "$cost"},
+              tokens: {$sum: "$tokensUsed"},
+            },
+          },
+        ]);
+
+        // Format provider data
+        const providerData = {
+          openai: {calls: 0, cost: 0, tokens: 0},
+          gemini: {calls: 0, cost: 0, tokens: 0},
+          hybrid: {calls: 0, cost: 0, tokens: 0},
+        };
+
+        providerBreakdown.forEach((item) => {
+          if (item._id && providerData[item._id]) {
+            providerData[item._id] = {
+              calls: item.calls,
+              cost: item.cost,
+              tokens: item.tokens,
+            };
+          }
+        });
 
         const tier = user.role === "admin" ? "admin" : "free"; // TODO: Add premium tier support
         const limits = {
@@ -1204,6 +1336,11 @@ export const getUserQuotaStatus = async (req, res) => {
               totalTokens: monthlyCosts[0]?.totalTokens || 0,
             },
           },
+          providers: {
+            openai: providerData.openai,
+            gemini: providerData.gemini,
+            hybrid: providerData.hybrid,
+          },
           createdAt: user.createdAt,
         };
       })
@@ -1241,6 +1378,22 @@ export const getUserQuotaStatus = async (req, res) => {
         ),
         totalMonthlyCost: quotaStatuses.reduce(
           (sum, u) => sum + u.quota.monthly.totalCost,
+          0
+        ),
+        openaiCost: quotaStatuses.reduce(
+          (sum, u) => sum + (u.providers?.openai?.cost || 0),
+          0
+        ),
+        geminiCost: quotaStatuses.reduce(
+          (sum, u) => sum + (u.providers?.gemini?.cost || 0),
+          0
+        ),
+        openaiCalls: quotaStatuses.reduce(
+          (sum, u) => sum + (u.providers?.openai?.calls || 0),
+          0
+        ),
+        geminiCalls: quotaStatuses.reduce(
+          (sum, u) => sum + (u.providers?.gemini?.calls || 0),
           0
         ),
         usersNearLimit: quotaStatuses.filter(
@@ -1430,18 +1583,27 @@ export const resetUserDailyQuota = async (req, res) => {
       return res.status(404).json({error: "User not found"});
     }
 
-    // Delete today's usage records for this user
+    // Mark today's usage records as not counting towards quota
+    // This preserves the data for analytics while resetting the quota
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
 
-    const result = await AIUsage.deleteMany({
-      userId: user._id,
-      createdAt: {$gte: startOfDay},
-    });
+    const result = await AIUsage.updateMany(
+      {
+        userId: user._id,
+        createdAt: {$gte: startOfDay},
+        status: "success",
+        countTowardsQuota: {$ne: false}, // Only update records that currently count
+      },
+      {
+        $set: {countTowardsQuota: false},
+      }
+    );
 
     res.json({
       message: `Daily quota reset successfully for ${user.name}`,
-      deletedRecords: result.deletedCount,
+      resetRecords: result.modifiedCount,
+      note: "Usage records preserved for analytics",
     });
   } catch (error) {
     console.error("Reset user daily quota error:", error);
