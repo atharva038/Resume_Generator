@@ -118,6 +118,14 @@ const userSchema = new mongoose.Schema(
         type: Number,
         default: 0,
       },
+      resumesDownloaded: {
+        type: Number,
+        default: 0,
+      },
+      resumesDownloadedThisMonth: {
+        type: Number,
+        default: 0,
+      },
       atsScans: {
         type: Number,
         default: 0,
@@ -147,6 +155,14 @@ const userSchema = new mongoose.Schema(
         default: 0,
       },
       aiResumeExtractionsToday: {
+        type: Number,
+        default: 0,
+      },
+      aiGenerationsUsed: {
+        type: Number,
+        default: 0,
+      },
+      aiGenerationsThisMonth: {
         type: Number,
         default: 0,
       },
@@ -286,36 +302,46 @@ userSchema.methods.getUsageLimit = function (limitType) {
   const limits = {
     free: {
       resumesPerMonth: 1,
+      resumeDownloadsPerMonth: 1,
       atsScansPerMonth: 0,
       jobMatchesPerDay: 0,
       coverLettersPerMonth: 0,
+      aiGenerationsPerMonth: 1, // Only 1 AI feature usage for free users
     },
     "one-time": {
-      resumesPerMonth: 1,
-      atsScansPerMonth: 1,
+      resumesPerMonth: Infinity,
+      resumeDownloadsPerMonth: Infinity,
+      atsScansPerMonth: 5,
       jobMatchesPerDay: 3,
-      coverLettersPerMonth: 1,
+      coverLettersPerMonth: 5,
+      aiGenerationsPerMonth: 10,
     },
     pro: {
       resumesPerMonth: Infinity,
+      resumeDownloadsPerMonth: Infinity,
       atsScansPerMonth: Infinity,
       jobMatchesPerDay: 10,
       coverLettersPerMonth: Infinity,
       aiResumeExtractionsPerDay: 2, // New: AI resume extraction limit
+      aiGenerationsPerMonth: Infinity,
     },
     premium: {
       resumesPerMonth: Infinity,
+      resumeDownloadsPerMonth: Infinity,
       atsScansPerMonth: Infinity,
       jobMatchesPerDay: Infinity,
       coverLettersPerMonth: Infinity,
       aiResumeExtractionsPerDay: 2, // New: AI resume extraction limit
+      aiGenerationsPerMonth: Infinity,
     },
     lifetime: {
       resumesPerMonth: Infinity,
+      resumeDownloadsPerMonth: Infinity,
       atsScansPerMonth: Infinity,
       jobMatchesPerDay: 10,
       coverLettersPerMonth: Infinity,
       aiResumeExtractionsPerDay: 2, // New: AI resume extraction limit
+      aiGenerationsPerMonth: Infinity,
     },
   };
 
@@ -328,9 +354,11 @@ userSchema.methods.hasReachedLimit = function (limitType) {
 
   const usageMap = {
     resumesPerMonth: this.usage.resumesThisMonth,
+    resumeDownloadsPerMonth: this.usage.resumesDownloadedThisMonth,
     atsScansPerMonth: this.usage.atsScansThisMonth,
     jobMatchesPerDay: this.usage.jobMatchesToday,
     coverLettersPerMonth: this.usage.coverLettersThisMonth,
+    aiGenerationsPerMonth: this.usage.aiGenerationsThisMonth,
   };
 
   return (usageMap[limitType] || 0) >= limit;
@@ -339,9 +367,17 @@ userSchema.methods.hasReachedLimit = function (limitType) {
 userSchema.methods.incrementUsage = async function (usageType) {
   const usageMap = {
     resume: {total: "resumesCreated", monthly: "resumesThisMonth"},
+    download: {
+      total: "resumesDownloaded",
+      monthly: "resumesDownloadedThisMonth",
+    },
     ats: {total: "atsScans", monthly: "atsScansThisMonth"},
     jobMatch: {total: "jobMatches", daily: "jobMatchesToday"},
     coverLetter: {total: "coverLetters", monthly: "coverLettersThisMonth"},
+    aiGeneration: {
+      total: "aiGenerationsUsed",
+      monthly: "aiGenerationsThisMonth",
+    },
   };
 
   const fields = usageMap[usageType];
@@ -355,8 +391,10 @@ userSchema.methods.incrementUsage = async function (usageType) {
 
 userSchema.methods.resetMonthlyUsage = async function () {
   this.usage.resumesThisMonth = 0;
+  this.usage.resumesDownloadedThisMonth = 0;
   this.usage.atsScansThisMonth = 0;
   this.usage.coverLettersThisMonth = 0;
+  this.usage.aiGenerationsThisMonth = 0;
   this.usage.lastResetDate = new Date();
   await this.save();
 };

@@ -22,7 +22,8 @@ const Home = () => {
       image: "/img/smart_scoring_Insights.svg",
       title: "Smart Scoring & Insights",
       description:
-        "Get instant ATS scores and job-match ratings. Know exactly how your resume performs against real job descriptions and tech stacks.",
+        // TEMPORARILY HIDDEN FOR RAZORPAY COMPLIANCE - "job-match" removed
+        "Get instant ATS scores. Know exactly how your resume performs against real job descriptions and tech stacks.",
     },
     {
       image: "/img/professional_templates.svg",
@@ -58,7 +59,8 @@ const Home = () => {
       step: "4",
       title: "Score & Optimize",
       description:
-        "Get your ATS score and job-match insights. Make real-time improvements with AI-powered recommendations.",
+        // TEMPORARILY HIDDEN FOR RAZORPAY COMPLIANCE - "job-match" removed
+        "Get your ATS score. Make real-time improvements with AI-powered recommendations.",
       icon: "📈",
     },
     {
@@ -108,7 +110,8 @@ const Home = () => {
       image: "/img/gain_confidence.svg",
       title: "Gain Confidence",
       description:
-        "Know exactly where you stand with instant scoring and job-match insights. Apply with certainty.",
+        // TEMPORARILY HIDDEN FOR RAZORPAY COMPLIANCE - "job-match" removed
+        "Know exactly where you stand with instant ATS scoring insights. Apply with certainty.",
     },
     {
       image: "/img/save_time.svg",

@@ -276,11 +276,12 @@ const AdvancedAnalytics = () => {
               used={analytics.currentMonthUsage.coverLetters.used}
               limit={analytics.currentMonthUsage.coverLetters.limit}
             />
-            <UsageBar
+            {/* TEMPORARILY HIDDEN FOR RAZORPAY COMPLIANCE */}
+            {/* <UsageBar
               label="Job Matches"
               used={analytics.currentMonthUsage.jobMatches.used}
               limit={analytics.currentMonthUsage.jobMatches.limit}
-            />
+            /> */}
           </div>
         </div>
 

@@ -356,10 +356,11 @@ const Pricing = () => {
                     name: "ATS Score Analysis",
                     values: ["✗", "1", "∞"],
                   },
-                  {
-                    name: "Job Matches per Day",
-                    values: ["0", "3", "∞"],
-                  },
+                  // TEMPORARILY HIDDEN FOR RAZORPAY COMPLIANCE
+                  // {
+                  //   name: "Job Matches per Day",
+                  //   values: ["0", "3", "∞"],
+                  // },
                   {
                     name: "Cover Letters",
                     values: ["✗", "✗", "∞"],
@@ -431,8 +432,10 @@ const Pricing = () => {
               <p className="text-gray-600 dark:text-gray-400">
                 Pro plan gives you unlimited access to everything - unlimited
                 resumes, GPT-4o AI (premium quality), unlimited ATS scans,
-                unlimited job matches, advanced analytics, and priority support.
-                It's the best value for serious job seekers.
+                {/* TEMPORARILY HIDDEN FOR RAZORPAY COMPLIANCE */}
+                {/* unlimited job matches, */}
+                advanced analytics, and priority support. It's the best value
+                for serious job seekers.
               </p>
             </div>
             <div>

@@ -55,19 +55,20 @@ const Sidebar = ({isOpen, setIsOpen}) => {
       icon: Target,
       description: "Check ATS compatibility",
     },
-    {
-      name: "Job Search",
-      path: "/job-search",
-      icon: Briefcase,
-      description: "Find jobs with Adzuna",
-    },
-    {
-      name: "Smart Match",
-      path: "/smart-match",
-      icon: TrendingUp,
-      description: "AI-powered job recommendations",
-      badge: "NEW",
-    },
+    // TEMPORARILY HIDDEN FOR RAZORPAY COMPLIANCE - Job Search Features
+    // {
+    //   name: "Job Search",
+    //   path: "/job-search",
+    //   icon: Briefcase,
+    //   description: "Find jobs with Adzuna",
+    // },
+    // {
+    //   name: "Smart Match",
+    //   path: "/smart-match",
+    //   icon: TrendingUp,
+    //   description: "AI-powered job recommendations",
+    //   badge: "NEW",
+    // },
     {
       name: "My Resumes",
       path: "/dashboard",

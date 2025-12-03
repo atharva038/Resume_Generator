@@ -150,6 +150,15 @@ export const enhanceContent = async (req, res) => {
       "success"
     );
 
+    // Increment AI generation counter
+    const userId = req.user._id || req.user.userId;
+    await User.findByIdAndUpdate(userId, {
+      $inc: {
+        "usage.aiGenerationsUsed": 1,
+        "usage.aiGenerationsThisMonth": 1,
+      },
+    });
+
     res.json({
       message: "Content enhanced successfully",
       enhanced: enhancedContent,
@@ -200,6 +209,15 @@ export const generateSummary = async (req, res) => {
       responseTime,
       "success"
     );
+
+    // Increment AI generation counter
+    const userId = req.user._id || req.user.userId;
+    await User.findByIdAndUpdate(userId, {
+      $inc: {
+        "usage.aiGenerationsUsed": 1,
+        "usage.aiGenerationsThisMonth": 1,
+      },
+    });
 
     res.json({
       message: "Summary generated successfully",
@@ -433,6 +451,15 @@ export const categorizeSkills = async (req, res) => {
       "success"
     );
 
+    // Increment AI generation counter
+    const userId = req.user._id || req.user.userId;
+    await User.findByIdAndUpdate(userId, {
+      $inc: {
+        "usage.aiGenerationsUsed": 1,
+        "usage.aiGenerationsThisMonth": 1,
+      },
+    });
+
     res.json({
       message: "Skills categorized successfully",
       skills: categorizedSkills,
@@ -488,6 +515,15 @@ export const segregateAchievements = async (req, res) => {
       responseTime,
       "success"
     );
+
+    // Increment AI generation counter
+    const userId = req.user._id || req.user.userId;
+    await User.findByIdAndUpdate(userId, {
+      $inc: {
+        "usage.aiGenerationsUsed": 1,
+        "usage.aiGenerationsThisMonth": 1,
+      },
+    });
 
     res.json({
       message: "Achievements segregated successfully",
@@ -545,6 +581,15 @@ export const processCustomSection = async (req, res) => {
       "success"
     );
 
+    // Increment AI generation counter
+    const userId = req.user._id || req.user.userId;
+    await User.findByIdAndUpdate(userId, {
+      $inc: {
+        "usage.aiGenerationsUsed": 1,
+        "usage.aiGenerationsThisMonth": 1,
+      },
+    });
+
     res.json({
       message: "Custom section processed successfully",
       content: processedContent,
@@ -566,6 +611,42 @@ export const processCustomSection = async (req, res) => {
 
     res.status(500).json({
       error: error.message || "Failed to process custom section",
+    });
+  }
+};
+
+/**
+ * Track resume download
+ * POST /api/resume/track-download
+ */
+export const trackDownload = async (req, res) => {
+  try {
+    const userId = req.user._id || req.user.userId;
+    const user = req.user;
+
+    // Increment download counter
+    await User.findByIdAndUpdate(userId, {
+      $inc: {
+        "usage.resumesDownloaded": 1,
+        "usage.resumesDownloadedThisMonth": 1,
+      },
+    });
+
+    console.log(`📥 Download tracked for user ${userId}`);
+
+    res.json({
+      success: true,
+      message: "Download tracked successfully",
+      usage: {
+        downloaded: (user.usage.resumesDownloaded || 0) + 1,
+        downloadedThisMonth: (user.usage.resumesDownloadedThisMonth || 0) + 1,
+        limit: user.getUsageLimit("resumeDownloadsPerMonth"),
+      },
+    });
+  } catch (error) {
+    console.error("Track download error:", error);
+    res.status(500).json({
+      error: error.message || "Failed to track download",
     });
   }
 };

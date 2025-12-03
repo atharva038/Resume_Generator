@@ -198,7 +198,8 @@ app.use("/api/ats", atsRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/feedback", feedbackRoutes);
-app.use("/api/jobs", jobsRoutes);
+// TEMPORARILY HIDDEN FOR RAZORPAY COMPLIANCE - Job Search Features
+// app.use("/api/jobs", jobsRoutes);
 app.use("/api/ml", mlRoutes); // ML/AI matching routes
 app.use("/api/subscription", subscriptionRoutes); // Subscription & payment routes
 

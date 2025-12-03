@@ -94,7 +94,8 @@ const ShippingPolicy = () => {
                   <li>Professional resume templates</li>
                   <li>AI-powered content tools</li>
                   <li>ATS optimization features</li>
-                  <li>Job matching algorithm</li>
+                  {/* TEMPORARILY HIDDEN FOR RAZORPAY COMPLIANCE */}
+                  {/* <li>Job matching algorithm</li> */}
                   <li>Cover letter generator</li>
                 </ul>
               </div>
