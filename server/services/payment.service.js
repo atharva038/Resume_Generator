@@ -44,7 +44,8 @@ export const PRICING = {
       "GPT-4o AI",
       "All templates",
       "1 ATS scan",
-      "3 job matches",
+      // TEMPORARILY HIDDEN FOR RAZORPAY COMPLIANCE
+      // "3 job matches",
       "21-day access",
     ],
   },
@@ -61,7 +62,8 @@ export const PRICING = {
       "GPT-4o AI (Premium)",
       "All templates",
       "Unlimited ATS scans",
-      "Unlimited job matches",
+      // TEMPORARILY HIDDEN FOR RAZORPAY COMPLIANCE
+      // "Unlimited job matches",
       "Unlimited cover letters",
       "2 AI resume extractions/day",
       "Priority support",

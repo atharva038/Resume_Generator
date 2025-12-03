@@ -1185,7 +1185,7 @@ const Editor = () => {
         <CollapsibleSection
           key="combinedScore"
           sectionId="combinedScore"
-          title="ATS Score & Job Match"
+          title="ATS Score" // TEMPORARILY HIDDEN FOR RAZORPAY COMPLIANCE - "& Job Match" removed
           icon="📊"
           defaultExpanded={true}
           onDragStart={handleDragStart}

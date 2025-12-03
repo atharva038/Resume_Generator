@@ -75,6 +75,34 @@ export function checkUsageLimit(limitType) {
               action: "Upgrade to Pro",
             },
           },
+          resumeDownloadsPerMonth: {
+            free: {
+              title: "Download Limit Reached",
+              message:
+                "You've used your 1 free download for this month. Upgrade to download unlimited times!",
+              action: "Upgrade Now",
+            },
+            "one-time": {
+              title: "Download Limit Reached",
+              message:
+                "You've reached your download limit. Upgrade to Pro for unlimited downloads!",
+              action: "Upgrade to Pro",
+            },
+          },
+          aiGenerationsPerMonth: {
+            free: {
+              title: "AI Feature Limit Reached",
+              message:
+                "You've used your 1 free AI generation for this month. Upgrade to use AI features unlimited times!",
+              action: "Upgrade Now",
+            },
+            "one-time": {
+              title: "AI Generation Limit Reached",
+              message:
+                "You've reached your monthly AI generation limit. Upgrade to Pro for unlimited AI features!",
+              action: "Upgrade to Pro",
+            },
+          },
           atsScansPerMonth: {
             free: {
               title: "ATS Scan Not Available",
@@ -85,7 +113,7 @@ export function checkUsageLimit(limitType) {
             "one-time": {
               title: "ATS Scan Limit Reached",
               message:
-                "You've used your 1 ATS scan. Upgrade to Pro for unlimited scans!",
+                "You've used your ATS scans. Upgrade to Pro for unlimited scans!",
               action: "Upgrade to Pro",
             },
           },
@@ -113,7 +141,7 @@ export function checkUsageLimit(limitType) {
             "one-time": {
               title: "Cover Letter Limit Reached",
               message:
-                "You've used your 1 cover letter. Upgrade to Pro for unlimited cover letters!",
+                "You've used your cover letters. Upgrade to Pro for unlimited cover letters!",
               action: "Upgrade to Pro",
             },
           },

@@ -134,22 +134,23 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route
+            {/* TEMPORARILY HIDDEN FOR RAZORPAY COMPLIANCE - Job Search Features */}
+            {/* <Route
               path="job-search"
               element={
                 <ProtectedRoute>
                   <JobSearch />
                 </ProtectedRoute>
               }
-            />
-            <Route
+            /> */}
+            {/* <Route
               path="smart-match"
               element={
                 <ProtectedRoute>
                   <SmartJobMatchPage />
                 </ProtectedRoute>
               }
-            />
+            /> */}
             <Route
               path="contact"
               element={

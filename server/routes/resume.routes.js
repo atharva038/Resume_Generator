@@ -30,6 +30,7 @@ import {
   categorizeSkills,
   segregateAchievements,
   processCustomSection,
+  trackDownload,
 } from "../controllers/resume.controller.js";
 
 const router = express.Router();
@@ -48,6 +49,8 @@ router.post(
 router.post(
   "/enhance",
   authenticateToken,
+  checkSubscription,
+  checkUsageLimit("aiGenerationsPerMonth"),
   aiLimiter,
   checkAIQuota,
   validateContentEnhance,
@@ -58,6 +61,8 @@ router.post(
 router.post(
   "/generate-summary",
   authenticateToken,
+  checkSubscription,
+  checkUsageLimit("aiGenerationsPerMonth"),
   aiLimiter,
   checkAIQuota,
   validateContentEnhance,
@@ -68,6 +73,8 @@ router.post(
 router.post(
   "/categorize-skills",
   authenticateToken,
+  checkSubscription,
+  checkUsageLimit("aiGenerationsPerMonth"),
   aiLimiter,
   checkAIQuota,
   validateSkillsCategorize,
@@ -78,6 +85,8 @@ router.post(
 router.post(
   "/segregate-achievements",
   authenticateToken,
+  checkSubscription,
+  checkUsageLimit("aiGenerationsPerMonth"),
   aiLimiter,
   checkAIQuota,
   validateContentEnhance,
@@ -88,6 +97,8 @@ router.post(
 router.post(
   "/process-custom-section",
   authenticateToken,
+  checkSubscription,
+  checkUsageLimit("aiGenerationsPerMonth"),
   aiLimiter,
   checkAIQuota,
   validateContentEnhance,
@@ -103,6 +114,16 @@ router.post(
   validateResumeCreate,
   saveResume
 );
+
+// Track resume download (before download happens on frontend)
+router.post(
+  "/track-download",
+  authenticateToken,
+  checkSubscription,
+  checkUsageLimit("resumeDownloadsPerMonth"),
+  trackDownload
+);
+
 router.put("/:id", authenticateToken, validateResumeUpdate, updateResume);
 router.get("/list", authenticateToken, getResumes);
 router.get("/:id", authenticateToken, validateResumeId, getResumeById);

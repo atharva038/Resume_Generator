@@ -163,21 +163,22 @@ const ATSAnalyzer = () => {
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-full mb-4">
             <Target className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
             <span className="text-sm font-semibold text-indigo-700 dark:text-indigo-300">
-              AI-Powered Job Match Analysis
+              AI-Powered Analysis
             </span>
           </div>
 
           <h1 className="text-4xl sm:text-5xl font-bold mb-3 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-            ATS Job Match Analyzer
+            ATS Resume Analyzer
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            Upload your resume and paste a job description to get AI-powered
-            insights on how well you match the role
+            Upload your resume and paste a job description to get AI-powered ATS
+            compatibility insights
           </p>
         </div>
 
         {/* Tab Switcher */}
-        <div className="max-w-7xl mx-auto mb-8">
+        {/* TEMPORARILY HIDDEN FOR RAZORPAY COMPLIANCE - ML Job Match Tab */}
+        {/* <div className="max-w-7xl mx-auto mb-8">
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-2 flex gap-2">
             <button
               onClick={() => setActiveTab("ats")}
@@ -205,7 +206,7 @@ const ATSAnalyzer = () => {
               </span>
             </button>
           </div>
-        </div>
+        </div> */}
 
         {/* Content based on active tab */}
         {activeTab === "ats" ? (
@@ -627,7 +628,9 @@ const ATSAnalyzer = () => {
               )}
             </div>
           </div>
-        ) : (
+        ) : null}
+        {/* TEMPORARILY HIDDEN FOR RAZORPAY COMPLIANCE - ML Job Match Content */}
+        {/* ) : (
           // AI Job Match Analysis content
           <div className="max-w-7xl mx-auto">
             {loadingResumeData ? (
@@ -681,7 +684,7 @@ const ATSAnalyzer = () => {
               <JobMatchAnalyzer resumeData={selectedResumeData} />
             )}
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );

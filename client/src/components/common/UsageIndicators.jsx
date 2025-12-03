@@ -43,7 +43,8 @@ export const UsageBadge = ({compact = false}) => {
     const checks = [
       {used: usage.resumesUsed, limit: usage.resumesLimit},
       {used: usage.atsScansUsed, limit: usage.atsScansLimit},
-      {used: usage.jobMatchesUsed, limit: usage.jobMatchesLimit},
+      // TEMPORARILY HIDDEN FOR RAZORPAY COMPLIANCE
+      // {used: usage.jobMatchesUsed, limit: usage.jobMatchesLimit},
       {used: usage.coverLettersUsed, limit: usage.coverLettersLimit},
     ];
     return checks.some(
@@ -120,7 +121,8 @@ export const UsageProgress = ({type, label}) => {
     const mapping = {
       resumes: {used: usage.resumesUsed, limit: usage.resumesLimit},
       atsScans: {used: usage.atsScansUsed, limit: usage.atsScansLimit},
-      jobMatches: {used: usage.jobMatchesUsed, limit: usage.jobMatchesLimit},
+      // TEMPORARILY HIDDEN FOR RAZORPAY COMPLIANCE
+      // jobMatches: {used: usage.jobMatchesUsed, limit: usage.jobMatchesLimit},
       coverLetters: {
         used: usage.coverLettersUsed,
         limit: usage.coverLettersLimit,
@@ -269,11 +271,12 @@ export const UsageSummaryCard = () => {
   const stats = [
     {label: "Resumes", used: usage.resumesUsed, limit: usage.resumesLimit},
     {label: "ATS Scans", used: usage.atsScansUsed, limit: usage.atsScansLimit},
-    {
-      label: "Job Matches",
-      used: usage.jobMatchesUsed,
-      limit: usage.jobMatchesLimit,
-    },
+    // TEMPORARILY HIDDEN FOR RAZORPAY COMPLIANCE
+    // {
+    //   label: "Job Matches",
+    //   used: usage.jobMatchesUsed,
+    //   limit: usage.jobMatchesLimit,
+    // },
     {
       label: "Cover Letters",
       used: usage.coverLettersUsed,

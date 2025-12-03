@@ -802,8 +802,8 @@ const SubscriptionDashboard = ({embedded = false}) => {
               </div>
             )}
 
-            {/* Job Matches */}
-            {usage.jobMatchesLimit !== undefined &&
+            {/* TEMPORARILY HIDDEN FOR RAZORPAY COMPLIANCE - Job Matches */}
+            {/* {usage.jobMatchesLimit !== undefined &&
               usage.jobMatchesLimit > 0 && (
                 <div>
                   <div className="flex justify-between mb-1.5">
@@ -834,7 +834,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
                     </div>
                   )}
                 </div>
-              )}
+              )} */}
 
             {/* Cover Letters */}
             {usage.coverLettersLimit !== undefined &&

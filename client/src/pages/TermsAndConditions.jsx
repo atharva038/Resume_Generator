@@ -55,7 +55,8 @@ const TermsAndConditions = () => {
               <li>Professional resume templates</li>
               <li>AI-powered content enhancement</li>
               <li>ATS optimization tools</li>
-              <li>Job matching features</li>
+              {/* TEMPORARILY HIDDEN FOR RAZORPAY COMPLIANCE */}
+              {/* <li>Job matching features</li> */}
               <li>Cover letter generation</li>
               <li>Portfolio building tools</li>
             </ul>
