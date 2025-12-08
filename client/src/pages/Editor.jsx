@@ -193,10 +193,10 @@ const TEMPLATE_COLOR_THEMES = {
     {id: "forest", name: "Forest Green", primary: "#14532d", emoji: "🌲"},
   ],
   tech: [
-    {id: "blue", name: "Tech Blue", primary: "#1e3a8a", emoji: "💻"},
+    {id: "black", name: "Black", primary: "#0f172a", emoji: "⚫"},
+    {id: "blue", name: "Tech Blue", primary: "#1e3a8a", emoji: "�"},
     {id: "purple", name: "Purple", primary: "#6d28d9", emoji: "🔮"},
     {id: "teal", name: "Teal", primary: "#0e7490", emoji: "🌊"},
-    {id: "green", name: "Green", primary: "#047857", emoji: "💚"},
   ],
   creative: [
     {id: "purple", name: "Purple", primary: "#a21caf", emoji: "💜"},
@@ -271,6 +271,29 @@ const Editor = () => {
   const [showPageLimitModal, setShowPageLimitModal] = useState(false);
   const [twoPageMode, setTwoPageMode] = useState(false);
   const [lastContentMetrics, setLastContentMetrics] = useState(null);
+
+  // Template-specific page usage (from TechTemplate and ClassicTemplate)
+  const [templatePageUsage, setTemplatePageUsage] = useState(null);
+
+  // Callback to receive page usage from templates
+  const handleTemplatePageUsage = (usageInfo) => {
+    console.log("🎯 Editor.jsx received template page usage:", usageInfo);
+    setTemplatePageUsage(usageInfo);
+  };
+
+  // Reset page usage when switching to non-supported templates
+  useEffect(() => {
+    const supportedTemplates = [
+      "tech",
+      "classic",
+      "modern",
+      "professional",
+      "professionalv2",
+    ];
+    if (!supportedTemplates.includes(selectedTemplate)) {
+      setTemplatePageUsage(null);
+    }
+  }, [selectedTemplate]);
 
   // Wizard mode for new resumes
   const [isWizardMode, setIsWizardMode] = useState(false);
@@ -358,7 +381,6 @@ const Editor = () => {
 
     // Set up auto-save timer (30 seconds after last change)
     const autoSaveTimer = setTimeout(async () => {
-      console.log("🔄 Auto-saving resume...");
       setAutoSaving(true);
 
       try {
@@ -382,8 +404,6 @@ const Editor = () => {
           },
           icon: "💾",
         });
-
-        console.log("✅ Auto-save successful");
       } catch (error) {
         console.error("❌ Auto-save failed:", error);
         // Don't show error toast for auto-save failures to avoid annoying users
@@ -452,18 +472,11 @@ const Editor = () => {
   // Load resume data on mount
   useEffect(() => {
     const loadResumeData = async () => {
-      console.log("🚀 Starting resume data load...");
-      console.log("📍 Location state:", location.state);
-      console.log("👤 User:", user);
-
       // First, try to get data from location state (when navigating from upload)
       const stateData = location.state?.resumeData;
       const isNewResume = location.state?.isNewResume || false;
 
       if (stateData) {
-        console.log("✅ Found data in location state");
-        console.log("🆕 Is new resume:", isNewResume);
-
         // Set wizard mode for new resumes
         setIsWizardMode(isNewResume);
 
@@ -484,15 +497,12 @@ const Editor = () => {
 
       // If no state data, check if we have a saved resume ID
       const savedResumeId = localStorage.getItem("currentResumeId");
-      console.log("💾 Saved resume ID:", savedResumeId);
 
       if (savedResumeId && user) {
         // Fetch the resume from the database
         try {
-          console.log("📥 Fetching resume from database...");
           const response = await resumeAPI.getById(savedResumeId);
           const loadedData = response.data;
-          console.log("✅ Resume loaded from database:", loadedData);
           // Existing resumes should not show wizard
           setIsWizardMode(false);
           initializeResumeData(loadedData);
@@ -503,15 +513,12 @@ const Editor = () => {
           navigate("/upload");
         }
       } else {
-        console.log("⚠️ No data available, redirecting to upload");
         // No data available, redirect to upload
         navigate("/upload");
       }
     };
 
     const initializeResumeData = (data) => {
-      console.log("🔍 Initializing resume data:", data);
-
       // Initialize targetJobRole if it doesn't exist
       if (!data.targetJobRole) {
         data.targetJobRole = "software-engineer";
@@ -563,7 +570,6 @@ const Editor = () => {
         };
       }
 
-      console.log("✅ Resume data initialized:", data);
       setResumeData(data);
       // Store a deep copy as original data for change detection
       setOriginalResumeData(JSON.parse(JSON.stringify(data)));
@@ -790,8 +796,6 @@ const Editor = () => {
 
   // GitHub Import Handler
   const handleGitHubImport = async (importedData) => {
-    console.log("🔥 GitHub Import Data:", importedData);
-
     let updatedResumeData = null;
 
     setResumeData((prev) => {
@@ -808,7 +812,6 @@ const Editor = () => {
         if (importedData.profile.bio) {
           updated.summary = importedData.profile.bio;
         }
-        console.log("✅ Profile imported:", updated.contact);
       }
 
       // Import Projects
@@ -823,25 +826,16 @@ const Editor = () => {
           highlights: [`⭐ ${repo.stars} stars`, `🔱 ${repo.forks} forks`],
         }));
 
-        console.log("📦 GitHub Projects to import:", githubProjects);
-        console.log("🔀 Merge option:", importedData.mergeOptions.projects);
-        console.log("📋 Existing projects:", updated.projects);
-
         if (importedData.mergeOptions.projects === "replace") {
           updated.projects = githubProjects;
         } else {
           // Add new projects
           updated.projects = [...(updated.projects || []), ...githubProjects];
         }
-
-        console.log("✅ Updated projects:", updated.projects);
       }
 
       // Import Skills
       if (importedData.skills && importedData.skills.length > 0) {
-        console.log("🎯 Importing skills:", importedData.skills);
-        console.log("📊 Existing skills structure:", updated.skills);
-
         // Check if skills are categorized (array of objects with category/items)
         const isCategorized =
           Array.isArray(updated.skills) &&
@@ -1508,7 +1502,7 @@ const Editor = () => {
             {/* GitHub Import Button */}
             <button
               onClick={() => setShowGitHubImportModal(true)}
-              className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 border border-purple-600 dark:border-purple-500 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs sm:text-sm font-semibold hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+              className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 border border-gray-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-black text-gray-900 dark:text-gray-300 text-xs sm:text-sm font-semibold hover:bg-gray-50 dark:hover:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-zinc-600 transition-all flex items-center justify-center gap-2"
               title="Import from GitHub"
             >
               <span className="hidden sm:inline">💻</span>
@@ -1518,7 +1512,7 @@ const Editor = () => {
             {!isWizardMode && (
               <button
                 onClick={handleResetOrder}
-                className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-semibold hover:border-orange-500 hover:text-orange-600 dark:hover:text-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors flex items-center justify-center gap-1"
+                className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 border border-gray-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-black text-gray-900 dark:text-gray-300 text-xs sm:text-sm font-semibold hover:border-orange-500 hover:text-orange-600 dark:hover:text-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors flex items-center justify-center gap-1"
                 title="Reset section order to default"
               >
                 <span className="hidden sm:inline">🔄</span>
@@ -1528,7 +1522,7 @@ const Editor = () => {
             {/* Template Selector Button */}
             <button
               onClick={() => setShowTemplateSelector(true)}
-              className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 border border-blue-600 dark:border-blue-500 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs sm:text-sm font-semibold hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-1.5"
+              className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 border border-gray-300 dark:border-zinc-700 rounded-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs sm:text-sm font-semibold hover:bg-gray-800 dark:hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-700 dark:focus:ring-gray-300 transition-all flex items-center justify-center gap-1.5"
               title="Change template"
             >
               <span>
@@ -1540,7 +1534,7 @@ const Editor = () => {
             {TEMPLATE_COLOR_THEMES[selectedTemplate] && (
               <button
                 onClick={() => setShowColorThemeSelector(true)}
-                className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 border border-purple-600 dark:border-purple-500 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs sm:text-sm font-semibold hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-1.5"
+                className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 border border-gray-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-900 text-gray-900 dark:text-white text-xs sm:text-sm font-semibold hover:bg-gray-50 dark:hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-gray-400 dark:focus:ring-zinc-600 transition-all flex items-center justify-center gap-1.5"
                 title="Change color theme"
               >
                 <span>🎨</span>
@@ -1556,10 +1550,10 @@ const Editor = () => {
             {/* Preview Toggle - Mobile */}
             <button
               onClick={() => setShowPreview(!showPreview)}
-              className={`flex-1 px-3 py-2 rounded-lg font-semibold transition-all duration-300 text-xs flex items-center justify-center ${
+              className={`flex-1 px-3 py-2 rounded-lg font-semibold transition-all duration-200 text-xs flex items-center justify-center ${
                 showPreview
-                  ? "bg-gradient-to-br from-purple-500 via-blue-500 to-indigo-600 text-white"
-                  : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600"
+                  ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900"
+                  : "bg-white dark:bg-zinc-900 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-zinc-700"
               }`}
             >
               <span className="text-base mr-1.5">
@@ -1593,7 +1587,7 @@ const Editor = () => {
                   }
                 }
               }}
-              className="flex-1 px-3 py-2 rounded-lg bg-gradient-to-br from-green-400 via-emerald-500 to-teal-600 text-white font-semibold transition-all duration-300 text-xs flex items-center justify-center"
+              className="flex-1 px-3 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white font-semibold transition-all duration-200 text-xs flex items-center justify-center"
             >
               <span className="text-base mr-1.5">📥</span>
               Download
@@ -1603,12 +1597,12 @@ const Editor = () => {
             <button
               onClick={handleSave}
               disabled={saving || autoSaving}
-              className={`flex-1 px-3 py-2 rounded-lg font-semibold transition-all duration-300 text-xs relative flex items-center justify-center ${
+              className={`flex-1 px-3 py-2 rounded-lg font-semibold transition-all duration-200 text-xs relative flex items-center justify-center ${
                 saving || autoSaving
                   ? "bg-gray-300 dark:bg-gray-700 cursor-not-allowed text-gray-500"
                   : hasUnsavedChanges
-                  ? "bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 text-white"
-                  : "bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 text-white"
+                  ? "bg-orange-600 hover:bg-orange-700 text-white"
+                  : "bg-blue-600 hover:bg-blue-700 text-white"
               }`}
             >
               {hasUnsavedChanges && !saving && !autoSaving && (
@@ -1638,17 +1632,17 @@ const Editor = () => {
           {/* Preview Toggle Button */}
           <button
             onClick={() => setShowPreview(!showPreview)}
-            className={`group relative w-14 h-14 rounded-full shadow-2xl font-medium transition-all duration-300 hover:scale-110 hover:shadow-3xl ${
+            className={`group relative w-14 h-14 rounded-full font-medium transition-all duration-200 hover:scale-105 ${
               showPreview
-                ? "bg-gradient-to-br from-purple-500 via-blue-500 to-indigo-600 text-white hover:from-purple-600 hover:via-blue-600 hover:to-indigo-700"
-                : "bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 text-gray-700 dark:text-gray-300 hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-600 dark:hover:to-gray-700 border-2 border-gray-300 dark:border-gray-600"
-            }`}
+                ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100"
+                : "bg-white dark:bg-zinc-900 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 border-2 border-gray-300 dark:border-zinc-700"
+            } shadow-lg hover:shadow-xl`}
           >
             <div className="flex items-center justify-center">
               <span className="text-2xl">{showPreview ? "👁️" : "👁️‍🗨️"}</span>
             </div>
             {/* Hover Tooltip */}
-            <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-xs font-semibold rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+            <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-gray-900 dark:text-white text-xs font-semibold rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
               {showPreview ? "Hide Preview" : "Show Preview"}
               <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-1 border-4 border-transparent border-l-gray-900 dark:border-l-gray-700"></span>
             </span>
@@ -1676,13 +1670,13 @@ const Editor = () => {
                 }
               }
             }}
-            className="group relative w-14 h-14 rounded-full bg-gradient-to-br from-green-400 via-emerald-500 to-teal-600 text-white shadow-2xl font-medium hover:from-green-500 hover:via-emerald-600 hover:to-teal-700 transition-all duration-300 hover:scale-110 hover:shadow-3xl hover:rotate-12"
+            className="group relative w-14 h-14 rounded-full bg-green-600 hover:bg-green-700 text-white shadow-lg font-medium transition-all duration-200 hover:scale-105 hover:shadow-xl"
           >
             <div className="flex items-center justify-center">
               <span className="text-2xl">📥</span>
             </div>
             {/* Hover Tooltip */}
-            <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-xs font-semibold rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+            <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-gray-900 dark:text-white text-xs font-semibold rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
               Download PDF
               <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-1 border-4 border-transparent border-l-gray-900 dark:border-l-gray-700"></span>
             </span>
@@ -1692,12 +1686,12 @@ const Editor = () => {
           <button
             onClick={handleSave}
             disabled={saving || autoSaving}
-            className={`group relative w-14 h-14 rounded-full shadow-2xl font-medium transition-all duration-300 ${
+            className={`group relative w-14 h-14 rounded-full shadow-lg font-medium transition-all duration-200 hover:scale-105 hover:shadow-xl ${
               saving || autoSaving
-                ? "bg-gradient-to-br from-gray-300 to-gray-400 cursor-not-allowed"
+                ? "bg-gray-300 dark:bg-gray-700 cursor-not-allowed"
                 : hasUnsavedChanges
-                ? "bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 text-white hover:from-orange-500 hover:via-orange-600 hover:to-orange-700 hover:scale-110 hover:shadow-3xl hover:-rotate-12"
-                : "bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 text-white hover:from-blue-500 hover:via-blue-600 hover:to-blue-700 hover:scale-110 hover:shadow-3xl hover:-rotate-12"
+                ? "bg-orange-600 hover:bg-orange-700 text-white"
+                : "bg-blue-600 hover:bg-blue-700 text-white"
             }`}
           >
             {hasUnsavedChanges && !saving && !autoSaving && (
@@ -1710,13 +1704,13 @@ const Editor = () => {
             </div>
             {/* Hover Tooltip */}
             {!saving && !autoSaving && (
-              <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-xs font-semibold rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+              <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-gray-900 dark:text-white text-xs font-semibold rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
                 {hasUnsavedChanges ? "Save Changes*" : "Resume Saved"}
                 <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-1 border-4 border-transparent border-l-gray-900 dark:border-l-gray-700"></span>
               </span>
             )}
             {(saving || autoSaving) && (
-              <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-xs font-semibold rounded-lg shadow-xl opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+              <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-gray-900 dark:text-white text-xs font-semibold rounded-lg shadow-xl opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
                 {autoSaving ? "Auto-saving..." : "Saving..."}
                 <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-1 border-4 border-transparent border-l-gray-900 dark:border-l-gray-700"></span>
               </span>
@@ -1726,7 +1720,7 @@ const Editor = () => {
           {/* Scroll to Top Button */}
           <button
             onClick={() => window.scrollTo({top: 0, behavior: "smooth"})}
-            className="group relative w-14 h-14 rounded-full bg-gradient-to-br from-orange-400 via-red-400 to-pink-500 text-white shadow-2xl font-medium hover:from-orange-500 hover:via-red-500 hover:to-pink-600 transition-all duration-300 hover:scale-110 hover:shadow-3xl"
+            className="group relative w-14 h-14 rounded-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 shadow-lg font-medium hover:bg-gray-800 dark:hover:bg-gray-100 transition-all duration-200 hover:scale-105 hover:shadow-xl"
           >
             <div className="flex items-center justify-center">
               <span className="text-2xl transition-transform duration-300 group-hover:-translate-y-1">
@@ -1734,7 +1728,7 @@ const Editor = () => {
               </span>
             </div>
             {/* Hover Tooltip */}
-            <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-xs font-semibold rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+            <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-gray-900 dark:text-white text-xs font-semibold rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
               Scroll to Top
               <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-1 border-4 border-transparent border-l-gray-900 dark:border-l-gray-700"></span>
             </span>
@@ -1742,8 +1736,8 @@ const Editor = () => {
         </div>
 
         {/* Info Banner */}
-        <div className="mb-6 p-3 sm:p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-          <div className="flex items-start gap-2 text-xs sm:text-sm text-blue-800 dark:text-blue-300">
+        <div className="mb-6 p-3 sm:p-4 bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-lg">
+          <div className="flex items-start gap-2 text-xs sm:text-sm text-gray-700 dark:text-gray-300">
             <span className="text-base sm:text-lg flex-shrink-0">💡</span>
             <span>
               <strong>Tip:</strong>{" "}
@@ -1759,11 +1753,11 @@ const Editor = () => {
 
         {/* Fixed Scores & Analysis Section - Collapsible */}
         <div className="mb-8">
-          <div className="bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-900/20 dark:to-blue-900/20 border-2 border-primary-200 dark:border-primary-800 rounded-xl overflow-hidden">
+          <div className="bg-white dark:bg-zinc-950 border border-gray-200 dark:border-zinc-800 rounded-xl overflow-hidden">
             {/* Collapsible Header */}
             <button
               onClick={() => setIsAnalysisExpanded(!isAnalysisExpanded)}
-              className="w-full p-4 sm:p-6 flex items-center justify-between hover:bg-primary-100/50 dark:hover:bg-primary-900/30 transition-colors"
+              className="w-full p-4 sm:p-6 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-zinc-900 transition-colors"
             >
               <h2 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2 sm:gap-3">
                 <span className="text-2xl sm:text-3xl">📊</span>
@@ -1796,15 +1790,15 @@ const Editor = () => {
 
             {/* Collapsible Content */}
             {isAnalysisExpanded && (
-              <div className="px-3 sm:px-6 pb-4 sm:pb-6 space-y-4 sm:space-y-6">
+              <div className="px-3 sm:px-6 pb-4 sm:pb-6 space-y-4 sm:space-y-6 bg-gray-50 dark:bg-zinc-900">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                   {/* ATS Score Card */}
-                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                  <div className="bg-white dark:bg-zinc-950 rounded-lg border border-gray-200 dark:border-zinc-800">
                     <ScoreCard resumeData={resumeData} expanded={false} />
                   </div>
 
                   {/* Job-Specific Score Card */}
-                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                  <div className="bg-white dark:bg-zinc-950 rounded-lg border border-gray-200 dark:border-zinc-800">
                     <JobSpecificScoreCard
                       resumeData={resumeData}
                       onUpdateField={updateField}
@@ -1813,7 +1807,7 @@ const Editor = () => {
                 </div>
 
                 {/* Recommendations Panel - Full Width */}
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                <div className="bg-white dark:bg-zinc-950 rounded-lg border border-gray-200 dark:border-zinc-800">
                   <div className="p-4 sm:p-6">
                     <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
                       <span className="text-lg sm:text-xl">💡</span>
@@ -1839,7 +1833,7 @@ const Editor = () => {
             <div className="w-full border-t-2 border-gray-300 dark:border-gray-600"></div>
           </div>
           <div className="relative flex justify-center">
-            <span className="bg-gray-50 dark:bg-gray-900 px-4 sm:px-6 py-2 text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 rounded-full border-2 border-gray-300 dark:border-gray-600">
+            <span className="bg-gray-50 dark:bg-gray-900 px-4 sm:px-6 py-2 text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-700 dark:text-gray-300 rounded-full border-2 border-gray-300 dark:border-gray-600">
               ✏️ Resume Content Editor
             </span>
           </div>
@@ -1872,12 +1866,13 @@ const Editor = () => {
                 ref={previewSectionRef}
                 className="xl:sticky xl:top-2 xl:h-[calc(100vh-3rem)] xl:overflow-auto order-1 xl:order-2"
               >
-                <div className="bg-gradient-to-br from-white via-blue-50/30 to-purple-50/30 dark:from-gray-800 dark:via-indigo-900/20 dark:to-purple-900/20 rounded-2xl shadow-2xl border-2 border-indigo-200/50 dark:border-indigo-700/50 backdrop-blur-sm p-6">
+                <div className="bg-white dark:bg-zinc-950 rounded-xl border border-gray-200 dark:border-zinc-800 p-6">
                   <ResumePreview
                     ref={resumePreviewRef}
                     resumeData={resumeData}
                     template={selectedTemplate}
                     twoPageMode={twoPageMode}
+                    onPageUsageChange={handleTemplatePageUsage}
                   />
                 </div>
               </div>
@@ -1892,13 +1887,130 @@ const Editor = () => {
           >
             {/* Editor Panel - Dynamic Sections */}
             <div className="space-y-4 sm:space-y-6 order-2 xl:order-1">
-              {/* Page Utilization Indicator */}
-              {!twoPageMode && lastContentMetrics && (
-                <PageUtilizationIndicator
-                  metrics={lastContentMetrics}
-                  twoPageMode={twoPageMode}
-                />
+              {/* Hidden Template Renderer for Page Usage Calculation (when preview is hidden) */}
+              {!showPreview &&
+                !twoPageMode &&
+                (selectedTemplate === "tech" ||
+                  selectedTemplate === "classic" ||
+                  selectedTemplate === "modern" ||
+                  selectedTemplate === "professional" ||
+                  selectedTemplate === "professionalv2") && (
+                  <div
+                    className="fixed top-0 left-[-9999px] opacity-0 pointer-events-none"
+                    style={{width: "210mm", height: "auto"}}
+                  >
+                    <ResumePreview
+                      resumeData={resumeData}
+                      template={selectedTemplate}
+                      twoPageMode={twoPageMode}
+                      onPageUsageChange={handleTemplatePageUsage}
+                    />
+                  </div>
+                )}
+
+              {/* DEBUG: Show template page usage state */}
+              {!twoPageMode && (
+                <div className="bg-blue-100 dark:bg-blue-900 p-2 rounded text-xs">
+                  <strong>Debug:</strong> Template: {selectedTemplate} | Has
+                  Data: {templatePageUsage ? "YES" : "NO"} | Template Name:{" "}
+                  {templatePageUsage?.templateName || "N/A"} | Preview Shown:{" "}
+                  {showPreview ? "YES" : "NO"}
+                </div>
               )}
+
+              {/* Template-Specific Page Usage Indicator */}
+              {!twoPageMode &&
+                templatePageUsage &&
+                templatePageUsage.templateName &&
+                templatePageUsage.percentage > 0 && (
+                  <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-zinc-800 dark:to-zinc-900 rounded-xl p-4 border-2 border-gray-200 dark:border-zinc-700 shadow-sm">
+                    {/* Header */}
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-bold text-gray-800 dark:text-gray-200">
+                          📄 Page Usage
+                        </span>
+                        <span className="text-xs font-mono font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 px-3 py-1 rounded-full shadow-sm">
+                          {templatePageUsage.templateName}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-mono text-gray-600 dark:text-gray-400 bg-white dark:bg-zinc-800 px-2 py-1 rounded border border-gray-300 dark:border-zinc-600">
+                          {templatePageUsage.currentHeight}px /{" "}
+                          {templatePageUsage.maxHeight}px
+                        </span>
+                        {templatePageUsage.isOverflowing && (
+                          <span className="text-xs font-bold text-orange-600 dark:text-orange-400 flex items-center gap-1 animate-pulse">
+                            ⚠️ Overflow!
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Progress Bar */}
+                    <div className="w-full bg-gray-300 dark:bg-zinc-700 rounded-full h-3 overflow-hidden shadow-inner">
+                      <div
+                        className={`h-full rounded-full transition-all duration-500 ${
+                          templatePageUsage.percentage >= 100
+                            ? "bg-gradient-to-r from-red-500 via-orange-500 to-red-600"
+                            : templatePageUsage.percentage >= 80
+                            ? "bg-gradient-to-r from-yellow-400 via-orange-400 to-orange-500"
+                            : "bg-gradient-to-r from-green-400 via-blue-400 to-blue-500"
+                        }`}
+                        style={{
+                          width: `${Math.min(
+                            templatePageUsage.percentage,
+                            100
+                          )}%`,
+                        }}
+                      />
+                    </div>
+
+                    {/* Stats */}
+                    <div className="mt-3 flex items-center justify-between">
+                      <div className="text-sm">
+                        <span className="font-bold text-gray-800 dark:text-gray-200">
+                          {templatePageUsage.percentage}%
+                        </span>
+                        <span className="text-gray-600 dark:text-gray-400 ml-1">
+                          filled
+                        </span>
+                      </div>
+                      {templatePageUsage.isOverflowing && (
+                        <div className="text-sm">
+                          <span className="font-bold text-orange-600 dark:text-orange-400">
+                            +{templatePageUsage.overflowPercentage}%
+                          </span>
+                          <span className="text-gray-600 dark:text-gray-400 ml-1">
+                            overflow
+                          </span>
+                        </div>
+                      )}
+                      {!templatePageUsage.isOverflowing && (
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                          ✅ Fits on one page
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Debug Info */}
+                    <div className="mt-2 pt-2 border-t border-gray-300 dark:border-zinc-700">
+                      <div className="text-xs text-gray-500 dark:text-gray-400 font-mono">
+                        Height: {templatePageUsage.currentHeight}px | Max:{" "}
+                        {templatePageUsage.maxHeight}px |
+                        {templatePageUsage.isOverflowing
+                          ? ` Over by: ${
+                              templatePageUsage.currentHeight -
+                              templatePageUsage.maxHeight
+                            }px`
+                          : ` Space left: ${
+                              templatePageUsage.maxHeight -
+                              templatePageUsage.currentHeight
+                            }px`}
+                      </div>
+                    </div>
+                  </div>
+                )}
 
               {sectionOrder.map((sectionId) => renderSection(sectionId))}
             </div>
@@ -1909,16 +2021,16 @@ const Editor = () => {
                 ref={previewSectionRef}
                 className="xl:sticky xl:top-2 xl:h-[calc(100vh-3rem)] xl:overflow-auto order-1 xl:order-2"
               >
-                <div className="bg-gradient-to-br from-white via-blue-50/30 to-purple-50/30 dark:from-gray-800 dark:via-indigo-900/20 dark:to-purple-900/20 rounded-2xl shadow-2xl border-2 border-indigo-200/50 dark:border-indigo-700/50 backdrop-blur-sm p-6">
+                <div className="bg-white dark:bg-zinc-950 rounded-xl border border-gray-200 dark:border-zinc-800 p-6">
                   {/* Stylish Header */}
                   <div className="flex justify-between items-center mb-4 xl:hidden">
-                    <h3 className="text-xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent flex items-center gap-2">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
                       <span className="text-2xl">👁️</span>
                       <span>Resume Preview</span>
                     </h3>
                     <button
                       onClick={() => setShowPreview(false)}
-                      className="p-2 rounded-full hover:bg-indigo-100 dark:hover:bg-indigo-900/30 text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 transition-all duration-200"
+                      className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-zinc-900 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all duration-200"
                     >
                       <svg
                         className="w-6 h-6"
@@ -1940,6 +2052,7 @@ const Editor = () => {
                     resumeData={resumeData}
                     template={selectedTemplate}
                     twoPageMode={twoPageMode}
+                    onPageUsageChange={handleTemplatePageUsage}
                   />
                 </div>
               </div>
@@ -1950,26 +2063,26 @@ const Editor = () => {
         {/* Template Selector Modal */}
         {showTemplateSelector && (
           <div
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100] flex items-center justify-center p-2 sm:p-4 no-print"
+            className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-2 sm:p-4 no-print"
             onClick={() => setShowTemplateSelector(false)}
           >
             <div
-              className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-6xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden"
+              className="bg-white dark:bg-zinc-950 rounded-xl w-full max-w-6xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden border border-gray-200 dark:border-zinc-800"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Modal Header */}
-              <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-4 sm:p-6 flex justify-between items-center">
+              <div className="bg-white dark:bg-zinc-950 p-4 sm:p-6 flex justify-between items-center border-b border-gray-200 dark:border-zinc-800">
                 <div>
-                  <h2 className="text-xl sm:text-2xl font-bold text-white mb-1">
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1">
                     Choose Resume Template
                   </h2>
-                  <p className="text-xs sm:text-sm text-blue-100">
+                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                     Select a template and see changes instantly
                   </p>
                 </div>
                 <button
                   onClick={() => setShowTemplateSelector(false)}
-                  className="text-white hover:bg-white/20 p-2 rounded-full transition-colors flex-shrink-0"
+                  className="text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-900 p-2 rounded-lg transition-colors flex-shrink-0"
                 >
                   <svg
                     className="w-6 h-6 sm:w-8 sm:h-8"
@@ -1998,21 +2111,21 @@ const Editor = () => {
                         localStorage.setItem("selectedTemplate", template.id);
                         setShowTemplateSelector(false);
                       }}
-                      className={`group relative bg-white dark:bg-gray-700 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden cursor-pointer transform hover:scale-105 border-4 ${
+                      className={`group relative bg-white dark:bg-zinc-900 rounded-xl hover:shadow-lg transition-all duration-200 overflow-hidden cursor-pointer border-2 ${
                         selectedTemplate === template.id
-                          ? "border-blue-600 dark:border-blue-400 ring-4 ring-blue-200 dark:ring-blue-900"
-                          : "border-transparent hover:border-blue-300"
+                          ? "border-gray-900 dark:border-white ring-4 ring-gray-200 dark:ring-zinc-800"
+                          : "border-gray-200 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-700"
                       }`}
                     >
                       {/* Current Selection Badge */}
                       {selectedTemplate === template.id && (
-                        <div className="absolute top-2 left-2 z-10 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg flex items-center gap-1">
+                        <div className="absolute top-2 left-2 z-10 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-semibold px-3 py-1 rounded-lg flex items-center gap-1">
                           ✓ Current
                         </div>
                       )}
 
                       {/* Template Preview */}
-                      <div className="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-600">
+                      <div className="relative h-48 overflow-hidden bg-gray-50 dark:bg-zinc-800">
                         <div
                           className="absolute inset-0 scale-[0.2] origin-top-left pointer-events-none"
                           style={{
@@ -2025,14 +2138,14 @@ const Editor = () => {
                         </div>
 
                         {/* Hover Overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-blue-600/90 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
-                          <span className="text-white font-bold text-sm">
+                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end justify-center pb-4">
+                          <span className="text-white font-semibold text-sm">
                             Click to Apply
                           </span>
                         </div>
 
                         {/* ATS Score Badge */}
-                        <div className="absolute top-2 right-2 bg-white dark:bg-gray-800 px-2 py-1 rounded-full shadow-md">
+                        <div className="absolute top-2 right-2 bg-white dark:bg-zinc-900 px-2 py-1 rounded-lg border border-gray-200 dark:border-zinc-800">
                           <span
                             className={`text-xs font-bold ${
                               template.atsScore >= 95
@@ -2059,7 +2172,7 @@ const Editor = () => {
                             </span>
                           </h3>
                         </div>
-                        <span className="inline-block text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-1 rounded-full">
+                        <span className="inline-block text-xs bg-gray-100 dark:bg-zinc-900 text-gray-700 dark:text-gray-300 px-2 py-1 rounded-lg border border-gray-200 dark:border-zinc-800">
                           {template.category}
                         </span>
                       </div>
@@ -2069,13 +2182,13 @@ const Editor = () => {
               </div>
 
               {/* Modal Footer */}
-              <div className="p-3 sm:p-4 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row justify-between items-center gap-3">
+              <div className="p-3 sm:p-4 bg-gray-50 dark:bg-zinc-900 border-t border-gray-200 dark:border-zinc-800 flex flex-col sm:flex-row justify-between items-center gap-3">
                 <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 text-center sm:text-left">
                   💡 Your resume content stays the same, only the design changes
                 </div>
                 <button
                   onClick={() => setShowTemplateSelector(false)}
-                  className="w-full sm:w-auto px-4 sm:px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium text-sm"
+                  className="w-full sm:w-auto px-4 sm:px-6 py-2 bg-gray-200 dark:bg-zinc-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-700 transition-colors font-medium text-sm"
                 >
                   Close
                 </button>
@@ -2104,26 +2217,26 @@ const Editor = () => {
         {/* Color Theme Selector Modal */}
         {showColorThemeSelector && TEMPLATE_COLOR_THEMES[selectedTemplate] && (
           <div
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100] flex items-center justify-center p-2 sm:p-4 no-print"
+            className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-2 sm:p-4 no-print"
             onClick={() => setShowColorThemeSelector(false)}
           >
             <div
-              className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden"
+              className="bg-white dark:bg-zinc-950 rounded-xl w-full max-w-2xl overflow-hidden border border-gray-200 dark:border-zinc-800"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Modal Header */}
-              <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-4 sm:p-6 flex justify-between items-center">
+              <div className="bg-white dark:bg-zinc-950 p-4 sm:p-6 flex justify-between items-center border-b border-gray-200 dark:border-zinc-800">
                 <div>
-                  <h2 className="text-xl sm:text-2xl font-bold text-white mb-1">
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1">
                     Choose Color Theme
                   </h2>
-                  <p className="text-xs sm:text-sm text-purple-100">
+                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                     Pick a professional color palette for your resume
                   </p>
                 </div>
                 <button
                   onClick={() => setShowColorThemeSelector(false)}
-                  className="text-white hover:bg-white/20 p-2 rounded-full transition-colors flex-shrink-0"
+                  className="text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-900 p-2 rounded-lg transition-colors flex-shrink-0"
                 >
                   <svg
                     className="w-6 h-6 sm:w-8 sm:h-8"
@@ -2161,15 +2274,15 @@ const Editor = () => {
                           }
                         );
                       }}
-                      className={`group relative bg-white dark:bg-gray-700 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden cursor-pointer transform hover:scale-105 border-4 p-6 ${
+                      className={`group relative bg-white dark:bg-zinc-900 rounded-xl hover:shadow-lg transition-all duration-200 overflow-hidden cursor-pointer border-2 p-6 ${
                         resumeData?.colorTheme === theme.id
-                          ? "border-purple-600 dark:border-purple-400 ring-4 ring-purple-200 dark:ring-purple-900"
-                          : "border-transparent hover:border-purple-300"
+                          ? "border-gray-900 dark:border-white ring-4 ring-gray-200 dark:ring-zinc-800"
+                          : "border-gray-200 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-700"
                       }`}
                     >
                       {/* Current Selection Badge */}
                       {resumeData?.colorTheme === theme.id && (
-                        <div className="absolute top-2 right-2 bg-purple-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                        <div className="absolute top-2 right-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-semibold px-3 py-1 rounded-lg">
                           ✓ Active
                         </div>
                       )}
@@ -2177,7 +2290,7 @@ const Editor = () => {
                       {/* Color Swatch */}
                       <div className="flex items-center gap-4 mb-4">
                         <div
-                          className="w-16 h-16 rounded-lg shadow-md border-2 border-gray-200 dark:border-gray-600"
+                          className="w-16 h-16 rounded-lg border-2 border-gray-200 dark:border-zinc-700"
                           style={{backgroundColor: theme.primary}}
                         />
                         <div>
@@ -2208,8 +2321,8 @@ const Editor = () => {
                       </div>
 
                       {/* Hover Overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-purple-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                        <span className="text-purple-600 dark:text-purple-300 font-bold text-sm bg-white dark:bg-gray-800 px-4 py-2 rounded-full shadow-lg">
+                      <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+                        <span className="text-gray-900 dark:text-white font-semibold text-sm bg-white dark:bg-zinc-900 px-4 py-2 rounded-lg border border-gray-200 dark:border-zinc-800">
                           Click to Apply
                         </span>
                       </div>
@@ -2219,13 +2332,13 @@ const Editor = () => {
               </div>
 
               {/* Modal Footer */}
-              <div className="p-4 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
+              <div className="p-4 bg-gray-50 dark:bg-zinc-900 border-t border-gray-200 dark:border-zinc-800 flex justify-between items-center">
                 <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                   🎨 Choose a color that matches your industry
                 </div>
                 <button
                   onClick={() => setShowColorThemeSelector(false)}
-                  className="px-4 sm:px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium text-sm"
+                  className="px-4 sm:px-6 py-2 bg-gray-200 dark:bg-zinc-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-700 transition-colors font-medium text-sm"
                 >
                   Close
                 </button>
@@ -2237,7 +2350,7 @@ const Editor = () => {
         {/* GitHub Import Success Notification */}
         {githubImportSuccess && (
           <div className="fixed bottom-6 right-6 z-50 animate-fade-in">
-            <div className="bg-green-600 text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3">
+            <div className="bg-green-600 text-gray-900 dark:text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3">
               <span className="text-2xl">✨</span>
               <div>
                 <p className="font-bold">Successfully Updated!</p>
@@ -2280,7 +2393,7 @@ const Editor = () => {
 
                 {/* Content */}
                 <div className="text-center mb-6">
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
                     Unsaved Changes
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400">
@@ -2294,7 +2407,7 @@ const Editor = () => {
                   <button
                     onClick={handleSaveAndNavigate}
                     disabled={saving}
-                    className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {saving ? "Saving..." : "Save Changes"}
                   </button>
@@ -2310,7 +2423,7 @@ const Editor = () => {
                   <button
                     onClick={handleCancelNavigation}
                     disabled={saving}
-                    className="w-full px-4 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full px-4 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Cancel
                   </button>
