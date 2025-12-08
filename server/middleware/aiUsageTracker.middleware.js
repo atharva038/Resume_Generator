@@ -99,19 +99,24 @@ const getUserTier = (user) => {
 export const checkAIQuota = async (req, res, next) => {
   try {
     // Ensure user is authenticated
-    if (!req.user || !req.user.userId) {
+    // Handle both JWT payload (userId) and MongoDB user object (_id)
+    const userId = req.user?.userId || req.user?._id;
+
+    if (!userId) {
+      console.error("❌ checkAIQuota: No user ID found in req.user:", req.user);
       return res.status(401).json({
         success: false,
         error: "Authentication required",
       });
     }
 
-    const userId = req.user.userId;
+    console.log("🔍 checkAIQuota middleware for user:", userId);
+
     const userTier = getUserTier(req.user);
 
     // Admins bypass quota checks
     if (userTier === "admin") {
-      console.log(`[AI Quota] Admin user ${userId} - quota check bypassed`);
+      console.log(`✅ Admin user ${userId} - quota check bypassed`);
       return next();
     }
 
@@ -202,11 +207,11 @@ export const checkAIQuota = async (req, res, next) => {
     };
 
     console.log(
-      `[AI Quota] User ${userId} quota check passed: ${dailyUsage}/${limits.daily} daily, ${monthlyUsage}/${limits.monthly} monthly`
+      `✅ AI quota check passed for user ${userId}: ${dailyUsage}/${limits.daily} daily, ${monthlyUsage}/${limits.monthly} monthly`
     );
     next();
   } catch (error) {
-    console.error("[AI Quota] Error checking quota:", error);
+    console.error("❌ AI Quota check error:", error);
     // Don't block the request on quota check errors
     // Log the error and allow the request to proceed
     next();
@@ -224,7 +229,9 @@ export const trackAIUsage = async (
   tokensUsed,
   responseTime,
   status = "success",
-  errorMessage = null
+  errorMessage = null,
+  aiProvider = "gemini",
+  aiModel = "gemini"
 ) => {
   try {
     // Calculate cost based on token usage
@@ -236,6 +243,8 @@ export const trackAIUsage = async (
     // Create usage record
     const usageRecord = await AIUsage.create({
       userId,
+      aiProvider,
+      aiModel,
       feature,
       tokensUsed,
       cost,
@@ -250,13 +259,13 @@ export const trackAIUsage = async (
     });
 
     console.log(
-      `[AI Usage] Tracked: User ${userId}, Feature: ${feature}, Tokens: ${tokensUsed}, Cost: $${cost.toFixed(
+      `✅ AI Usage tracked: User ${userId}, Provider: ${aiProvider}, Model: ${aiModel}, Feature: ${feature}, Tokens: ${tokensUsed}, Cost: $${cost.toFixed(
         4
       )}, Status: ${status}`
     );
     return usageRecord;
   } catch (error) {
-    console.error("[AI Usage] Error tracking usage:", error);
+    console.error("❌ AI Usage tracking error:", error);
     // Don't throw error - usage tracking failure shouldn't break the app
     return null;
   }

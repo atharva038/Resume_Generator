@@ -531,16 +531,60 @@ export const getAIAnalytics = async (req, res) => {
           totalTokens: {$sum: "$tokensUsed"},
           totalCost: {$sum: "$cost"},
           openaiCalls: {
-            $sum: {$cond: [{$eq: ["$aiProvider", "openai"]}, 1, 0]},
+            $sum: {
+              $cond: [
+                {
+                  $or: [
+                    {$eq: ["$aiProvider", "openai"]},
+                    {$eq: ["$aiModel", "gpt4o"]},
+                  ],
+                },
+                1,
+                0,
+              ],
+            },
           },
           geminiCalls: {
-            $sum: {$cond: [{$eq: ["$aiProvider", "gemini"]}, 1, 0]},
+            $sum: {
+              $cond: [
+                {
+                  $or: [
+                    {$eq: ["$aiProvider", "gemini"]},
+                    {$eq: ["$aiModel", "gemini"]},
+                  ],
+                },
+                1,
+                0,
+              ],
+            },
           },
           openaiCost: {
-            $sum: {$cond: [{$eq: ["$aiProvider", "openai"]}, "$cost", 0]},
+            $sum: {
+              $cond: [
+                {
+                  $or: [
+                    {$eq: ["$aiProvider", "openai"]},
+                    {$eq: ["$aiModel", "gpt4o"]},
+                  ],
+                },
+                "$cost",
+                0,
+              ],
+            },
           },
           geminiCost: {
-            $sum: {$cond: [{$eq: ["$aiProvider", "gemini"]}, "$cost", 0]},
+            $sum: {
+              $cond: [
+                {
+                  $or: [
+                    {$eq: ["$aiProvider", "gemini"]},
+                    {$eq: ["$aiModel", "gemini"]},
+                  ],
+                },
+                "$cost",
+                0,
+              ],
+            },
           },
         },
       },
@@ -588,25 +632,91 @@ export const getAIAnalytics = async (req, res) => {
           totalCost: {$sum: "$cost"},
           avgResponseTime: {$avg: "$responseTime"},
           openaiCalls: {
-            $sum: {$cond: [{$eq: ["$aiProvider", "openai"]}, 1, 0]},
+            $sum: {
+              $cond: [
+                {
+                  $or: [
+                    {$eq: ["$aiProvider", "openai"]},
+                    {$eq: ["$aiModel", "gpt4o"]},
+                  ],
+                },
+                1,
+                0,
+              ],
+            },
           },
           geminiCalls: {
-            $sum: {$cond: [{$eq: ["$aiProvider", "gemini"]}, 1, 0]},
+            $sum: {
+              $cond: [
+                {
+                  $or: [
+                    {$eq: ["$aiProvider", "gemini"]},
+                    {$eq: ["$aiModel", "gemini"]},
+                  ],
+                },
+                1,
+                0,
+              ],
+            },
           },
           hybridCalls: {
             $sum: {$cond: [{$eq: ["$aiProvider", "hybrid"]}, 1, 0]},
           },
           openaiTokens: {
-            $sum: {$cond: [{$eq: ["$aiProvider", "openai"]}, "$tokensUsed", 0]},
+            $sum: {
+              $cond: [
+                {
+                  $or: [
+                    {$eq: ["$aiProvider", "openai"]},
+                    {$eq: ["$aiModel", "gpt4o"]},
+                  ],
+                },
+                "$tokensUsed",
+                0,
+              ],
+            },
           },
           geminiTokens: {
-            $sum: {$cond: [{$eq: ["$aiProvider", "gemini"]}, "$tokensUsed", 0]},
+            $sum: {
+              $cond: [
+                {
+                  $or: [
+                    {$eq: ["$aiProvider", "gemini"]},
+                    {$eq: ["$aiModel", "gemini"]},
+                  ],
+                },
+                "$tokensUsed",
+                0,
+              ],
+            },
           },
           openaiCost: {
-            $sum: {$cond: [{$eq: ["$aiProvider", "openai"]}, "$cost", 0]},
+            $sum: {
+              $cond: [
+                {
+                  $or: [
+                    {$eq: ["$aiProvider", "openai"]},
+                    {$eq: ["$aiModel", "gpt4o"]},
+                  ],
+                },
+                "$cost",
+                0,
+              ],
+            },
           },
           geminiCost: {
-            $sum: {$cond: [{$eq: ["$aiProvider", "gemini"]}, "$cost", 0]},
+            $sum: {
+              $cond: [
+                {
+                  $or: [
+                    {$eq: ["$aiProvider", "gemini"]},
+                    {$eq: ["$aiModel", "gemini"]},
+                  ],
+                },
+                "$cost",
+                0,
+              ],
+            },
           },
         },
       },

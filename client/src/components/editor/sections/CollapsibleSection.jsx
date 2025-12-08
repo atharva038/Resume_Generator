@@ -44,7 +44,7 @@ const CollapsibleSection = ({
     >
       {/* Header with collapse toggle and drag handle */}
       <div
-        className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded-t-lg transition-colors"
+        className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-t-lg transition-colors"
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center gap-3">

@@ -1,0 +1,985 @@
+import {Link} from "react-router-dom";
+import {useState} from "react";
+import {motion} from "framer-motion";
+import {
+  Sparkles,
+  Upload,
+  Brain,
+  Wand2,
+  TrendingUp,
+  Download,
+  Check,
+  ArrowRight,
+  Zap,
+  Shield,
+  Clock,
+  Users,
+  Star,
+  ChevronDown,
+  GitBranch,
+  Briefcase,
+  GraduationCap,
+  Code,
+  TrendingUpIcon,
+} from "lucide-react";
+
+const Home = () => {
+  const [openFAQ, setOpenFAQ] = useState(null);
+
+  const features = [
+    {
+      icon: Brain,
+      title: "AI-Powered Enhancement",
+      description:
+        "Google's Gemini AI analyzes and enhances your resume with role-specific suggestions, powerful action verbs, and quantifiable achievements.",
+      gradient: "from-violet-500 to-purple-500",
+    },
+    {
+      icon: Zap,
+      title: "ATS Optimization",
+      description:
+        "Beat the bots! Our system ensures your resume passes Applicant Tracking Systems with optimized formatting and keyword placement.",
+      gradient: "from-blue-500 to-cyan-500",
+    },
+    {
+      icon: TrendingUp,
+      title: "Smart Scoring & Insights",
+      description:
+        "Get instant ATS scores. Know exactly how your resume performs against real job descriptions and tech stacks.",
+      gradient: "from-orange-500 to-red-500",
+    },
+    {
+      icon: Wand2,
+      title: "Professional Templates",
+      description:
+        "Choose from 8+ sleek, recruiter-approved templates. From Classic to Creative — all ATS-friendly and beautifully designed.",
+      gradient: "from-green-500 to-emerald-500",
+    },
+  ];
+
+  const howItWorks = [
+    {
+      step: "1",
+      title: "Upload & Connect",
+      description:
+        "Upload your existing resume (PDF/DOCX) or connect your LinkedIn profile in seconds.",
+      icon: Upload,
+      color: "blue",
+    },
+    {
+      step: "2",
+      title: "AI Analysis",
+      description:
+        "SmartNShine analyzes your content and suggests powerful enhancements tailored to your target role.",
+      icon: Brain,
+      color: "purple",
+    },
+    {
+      step: "3",
+      title: "Customize & Perfect",
+      description:
+        "Choose your template, review AI suggestions, and customize every detail to match your style.",
+      icon: Wand2,
+      color: "violet",
+    },
+    {
+      step: "4",
+      title: "Score & Optimize",
+      description:
+        "Get your ATS score. Make real-time improvements with AI-powered recommendations.",
+      icon: TrendingUp,
+      color: "cyan",
+    },
+    {
+      step: "5",
+      title: "Download & Shine",
+      description:
+        "Export your polished, recruiter-ready resume instantly. Share, print, or apply with confidence!",
+      icon: Download,
+      color: "green",
+    },
+  ];
+
+  const whyChooseUs = [
+    {
+      icon: Zap,
+      title: "Beat the Competition",
+      description:
+        "Stand out with AI-crafted content that hiring managers can't ignore. Your resume, but better.",
+    },
+    {
+      icon: Shield,
+      title: "Gain Confidence",
+      description:
+        "Know exactly where you stand with instant ATS scoring insights. Apply with certainty.",
+    },
+    {
+      icon: Clock,
+      title: "Save Time & Stress",
+      description:
+        "Stop wrestling with formatting. Focus on your career while AI handles the rest.",
+    },
+  ];
+
+  const testimonials = [
+    {
+      name: "Anshu Nagnurwar",
+      role: "Software Engineer",
+      company: "Google",
+      quote:
+        "SmartNShine transformed my resume in minutes. The AI suggestions were spot-on, and I landed 3 interviews in a week!",
+      initial: "A",
+    },
+    {
+      name: "Mansi Ibitwar",
+      role: "Product Manager",
+      company: "Amazon",
+      quote:
+        "The ATS scoring feature is a game-changer. I finally understood what recruiters were looking for. Got my dream job!",
+      initial: "M",
+    },
+    {
+      name: "Anuj Nandgaokar",
+      role: "UX Designer",
+      company: "Meta",
+      quote:
+        "Beautiful templates, powerful AI, and so easy to use. SmartNShine made me stand out from hundreds of applicants.",
+      initial: "A",
+    },
+  ];
+
+  const faqs = [
+    {
+      question: "Is my resume data safe and private?",
+      answer:
+        "Absolutely! We use bank-level encryption to protect your data. Your resume is stored securely and never shared with third parties. You can delete your data anytime.",
+    },
+    {
+      question: "Is SmartNShine really free?",
+      answer:
+        "Yes! Our free plan includes AI-powered parsing, basic enhancements, and access to all templates. Premium features like advanced AI scoring and unlimited downloads are available in our Pro plan.",
+    },
+    {
+      question: "How does the AI enhancement work?",
+      answer:
+        "We use Google's Gemini 2.5 Flash AI to analyze your resume content and suggest improvements. It adds action verbs, quantifies achievements, optimizes for ATS, and tailors content to your target role.",
+    },
+    {
+      question: "Will my resume pass ATS systems?",
+      answer:
+        "Yes! All our templates are ATS-optimized with proper formatting, no complex graphics, and keyword-friendly structure. Our scoring system tells you exactly how ATS-friendly your resume is.",
+    },
+    {
+      question: "Can I edit my resume after downloading?",
+      answer:
+        "Of course! You can edit your resume anytime by logging in. All changes are auto-saved, and you can download updated versions whenever you need.",
+    },
+    {
+      question: "What file formats can I upload?",
+      answer:
+        "We support PDF and DOCX files. Our AI extracts text from both formats and converts them into editable, structured resume data.",
+    },
+  ];
+
+  const targetAudience = [
+    {
+      icon: GraduationCap,
+      title: "Students & Freshers",
+      desc: "Land your first job with a polished, professional resume that stands out from the crowd.",
+    },
+    {
+      icon: Code,
+      title: "Developers & Engineers",
+      desc: "Showcase your tech stack and projects with ATS-optimized formatting that recruiters love.",
+    },
+    {
+      icon: Briefcase,
+      title: "Working Professionals",
+      desc: "Climb the ladder faster with AI-enhanced achievements and quantifiable metrics.",
+    },
+    {
+      icon: TrendingUpIcon,
+      title: "Career Switchers",
+      desc: "Reposition your skills for a new role with smart, targeted content that highlights transferable skills.",
+    },
+  ];
+
+  return (
+    <div className="min-h-screen bg-black overflow-x-hidden">
+      {/* Linear-style grid background pattern */}
+      <div className="fixed inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none"></div>
+
+      {/* Hero Section - Linear Style */}
+      <section className="relative pt-32 pb-20 px-4 overflow-hidden">
+        {/* Gradient blur effects */}
+        <div className="absolute top-40 left-20 w-[500px] h-[500px] bg-primary-500/20 rounded-full blur-[120px] pointer-events-none"></div>
+        <div className="absolute top-60 right-20 w-[400px] h-[400px] bg-purple-500/20 rounded-full blur-[120px] pointer-events-none"></div>
+
+        <div className="relative max-w-7xl mx-auto">
+          <div className="max-w-4xl mx-auto text-center space-y-8">
+            {/* Badge */}
+            <motion.div
+              initial={{opacity: 0, y: 20}}
+              animate={{opacity: 1, y: 0}}
+              transition={{duration: 0.5}}
+            >
+              <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-primary-500/10 border border-primary-500/20 rounded-full text-sm font-medium text-primary-600 dark:text-primary-400">
+                <Sparkles className="w-4 h-4" />
+                Powered by Google Gemini AI
+              </span>
+            </motion.div>
+
+            {/* Main Heading */}
+            <motion.h1
+              initial={{opacity: 0, y: 20}}
+              animate={{opacity: 1, y: 0}}
+              transition={{duration: 0.5, delay: 0.1}}
+              className="text-5xl sm:text-6xl md:text-7xl font-bold leading-[1.1] text-gray-900 dark:text-white tracking-tight"
+            >
+              Your resume,
+              <br />
+              <span className="bg-gradient-to-r from-primary-600 to-purple-600 bg-clip-text text-transparent">
+                10x better
+              </span>
+            </motion.h1>
+
+            {/* Subheading */}
+            <motion.p
+              initial={{opacity: 0, y: 20}}
+              animate={{opacity: 1, y: 0}}
+              transition={{duration: 0.5, delay: 0.2}}
+              className="text-xl sm:text-2xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed"
+            >
+              AI-powered resume builder that beats ATS systems and lands
+              interviews. Upload your resume, get instant improvements.
+            </motion.p>
+
+            {/* CTA Buttons */}
+            <motion.div
+              initial={{opacity: 0, y: 20}}
+              animate={{opacity: 1, y: 0}}
+              transition={{duration: 0.5, delay: 0.3}}
+              className="flex flex-col sm:flex-row items-center justify-center gap-4"
+            >
+              <Link
+                to="/upload"
+                className="group relative inline-flex items-center gap-2 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-all duration-200 shadow-lg shadow-primary-500/25 hover:shadow-xl hover:shadow-primary-500/30 hover:scale-105"
+              >
+                Start Building Free
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+              <a
+                href="#features"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white rounded-lg font-medium transition-all duration-200 border border-gray-200 dark:border-gray-700"
+              >
+                See How It Works
+              </a>
+            </motion.div>
+
+            {/* Social Proof */}
+            <motion.div
+              initial={{opacity: 0, y: 20}}
+              animate={{opacity: 1, y: 0}}
+              transition={{duration: 0.5, delay: 0.4}}
+              className="flex items-center justify-center gap-8 pt-8"
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex -space-x-2">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div
+                      key={i}
+                      className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-400 to-purple-500 border-2 border-white dark:border-gray-900 flex items-center justify-center text-white font-semibold text-sm"
+                    >
+                      {String.fromCharCode(64 + i)}
+                    </div>
+                  ))}
+                </div>
+                <div className="text-left">
+                  <div className="flex items-center gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className="w-4 h-4 fill-yellow-400 text-yellow-400"
+                      />
+                    ))}
+                  </div>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    2,500+ resumes created
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Hero Visual */}
+          <motion.div
+            initial={{opacity: 0, y: 40}}
+            animate={{opacity: 1, y: 0}}
+            transition={{duration: 0.7, delay: 0.5}}
+            className="mt-20 relative"
+          >
+            <div className="relative max-w-5xl mx-auto">
+              {/* Floating ATS Score Badge */}
+              <div className="absolute -top-6 -right-4 z-20 bg-green-500 text-white px-4 py-2 rounded-lg shadow-xl flex items-center gap-2 animate-bounce">
+                <Check className="w-5 h-5" />
+                <span className="font-semibold">ATS Score: 94%</span>
+              </div>
+
+              {/* Resume Preview Placeholder */}
+              <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 p-8 aspect-[16/10]">
+                <div className="h-full bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 rounded-lg flex items-center justify-center">
+                  <p className="text-gray-400 dark:text-gray-600 text-lg font-medium">
+                    Resume Preview
+                  </p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Target Audience Section */}
+      <section className="relative py-20 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              Who is SmartNShine For?
+            </h2>
+            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+              Whether you're just starting out or climbing the corporate ladder,
+              SmartNShine empowers you to shine.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {targetAudience.map((item, idx) => {
+              const Icon = item.icon;
+              return (
+                <motion.div
+                  key={idx}
+                  initial={{opacity: 0, y: 20}}
+                  whileInView={{opacity: 1, y: 0}}
+                  viewport={{once: true}}
+                  transition={{duration: 0.5, delay: idx * 0.1}}
+                  className="group p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-primary-500 dark:hover:border-primary-500 transition-all duration-300 hover:shadow-lg"
+                >
+                  <div className="mb-4">
+                    <div className="w-12 h-12 rounded-lg bg-primary-500/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <Icon className="w-6 h-6 text-primary-600 dark:text-primary-400" />
+                    </div>
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    {item.title}
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+                    {item.desc}
+                  </p>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section
+        id="features"
+        className="relative py-20 px-4 bg-white dark:bg-gray-900"
+      >
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+              What Makes SmartNShine Different?
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+              Not just a resume builder — it's your AI-powered career
+              advancement partner.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* AI-Powered Enhancement */}
+            <motion.div
+              initial={{opacity: 0, y: 20}}
+              whileInView={{opacity: 1, y: 0}}
+              viewport={{once: true}}
+              transition={{duration: 0.5}}
+              className="group relative bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-primary-500 dark:hover:border-primary-500 transition-all duration-300 overflow-hidden"
+            >
+              <div className="p-8">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-primary-500/10 flex items-center justify-center">
+                    <Brain className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+                  </div>
+                  <h3 className="text-2xl font-semibold text-gray-900 dark:text-white">
+                    AI-Powered Enhancement
+                  </h3>
+                </div>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-6">
+                  Get intelligent suggestions to improve your resume content
+                  with cutting-edge AI technology.
+                </p>
+              </div>
+              {/* Visual Mockup */}
+              <div className="px-8 pb-8">
+                <div className="relative bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 shadow-sm">
+                  <div className="flex items-start gap-3 mb-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-900/20 flex items-center justify-center flex-shrink-0">
+                      <Sparkles className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-sm font-medium text-gray-900 dark:text-white mb-1">
+                        AI Suggestion
+                      </div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                        Your experience bullet point:
+                      </div>
+                      <div className="text-xs bg-gray-100 dark:bg-gray-800 rounded p-2 mb-2 line-through text-gray-500">
+                        "Worked on projects and helped team"
+                      </div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                        Enhanced version:
+                      </div>
+                      <div className="text-xs bg-primary-50 dark:bg-primary-900/10 border border-primary-200 dark:border-primary-800 rounded p-2 text-gray-900 dark:text-white">
+                        "Led cross-functional team of 5 to deliver 3 high-impact
+                        projects, increasing efficiency by 40%"
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button className="flex-1 px-3 py-1.5 bg-primary-600 text-white text-xs rounded-lg font-medium">
+                      Apply
+                    </button>
+                    <button className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-xs rounded-lg">
+                      Regenerate
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* ATS Optimization */}
+            <motion.div
+              initial={{opacity: 0, y: 20}}
+              whileInView={{opacity: 1, y: 0}}
+              viewport={{once: true}}
+              transition={{duration: 0.5, delay: 0.1}}
+              className="group relative bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-primary-500 dark:hover:border-primary-500 transition-all duration-300 overflow-hidden"
+            >
+              <div className="p-8">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                    <Zap className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <h3 className="text-2xl font-semibold text-gray-900 dark:text-white">
+                    ATS Optimization
+                  </h3>
+                </div>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-6">
+                  Beat applicant tracking systems with optimized formatting and
+                  keyword matching.
+                </p>
+              </div>
+              {/* Visual Mockup */}
+              <div className="px-8 pb-8">
+                <div className="relative bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 shadow-sm">
+                  <div className="mb-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">
+                        ATS Score
+                      </span>
+                      <span className="text-2xl font-bold text-green-600 dark:text-green-400">
+                        92%
+                      </span>
+                    </div>
+                    <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full"
+                        style={{width: "92%"}}
+                      ></div>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-xs">
+                      <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                      <span className="text-gray-600 dark:text-gray-400">
+                        Keywords matched: 18/20
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs">
+                      <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                      <span className="text-gray-600 dark:text-gray-400">
+                        Format optimized
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs">
+                      <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
+                      <span className="text-gray-600 dark:text-gray-400">
+                        2 suggestions available
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Smart Scoring */}
+            <motion.div
+              initial={{opacity: 0, y: 20}}
+              whileInView={{opacity: 1, y: 0}}
+              viewport={{once: true}}
+              transition={{duration: 0.5, delay: 0.2}}
+              className="group relative bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-primary-500 dark:hover:border-primary-500 transition-all duration-300 overflow-hidden"
+            >
+              <div className="p-8">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-orange-500/10 flex items-center justify-center">
+                    <TrendingUp className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                  </div>
+                  <h3 className="text-2xl font-semibold text-gray-900 dark:text-white">
+                    Smart Scoring & Insights
+                  </h3>
+                </div>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-6">
+                  Get detailed feedback on every section with actionable
+                  improvements.
+                </p>
+              </div>
+              {/* Visual Mockup */}
+              <div className="px-8 pb-8">
+                <div className="relative bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 shadow-sm space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                      Experience
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-20 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-green-500 rounded-full"
+                          style={{width: "90%"}}
+                        ></div>
+                      </div>
+                      <span className="text-xs font-medium text-gray-900 dark:text-white">
+                        90%
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                      Skills
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-20 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-blue-500 rounded-full"
+                          style={{width: "85%"}}
+                        ></div>
+                      </div>
+                      <span className="text-xs font-medium text-gray-900 dark:text-white">
+                        85%
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                      Education
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-20 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-yellow-500 rounded-full"
+                          style={{width: "70%"}}
+                        ></div>
+                      </div>
+                      <span className="text-xs font-medium text-gray-900 dark:text-white">
+                        70%
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                      Summary
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-20 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-orange-500 rounded-full"
+                          style={{width: "60%"}}
+                        ></div>
+                      </div>
+                      <span className="text-xs font-medium text-gray-900 dark:text-white">
+                        60%
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Professional Templates */}
+            <motion.div
+              initial={{opacity: 0, y: 20}}
+              whileInView={{opacity: 1, y: 0}}
+              viewport={{once: true}}
+              transition={{duration: 0.5, delay: 0.3}}
+              className="group relative bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-primary-500 dark:hover:border-primary-500 transition-all duration-300 overflow-hidden"
+            >
+              <div className="p-8">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                    <Wand2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                  </div>
+                  <h3 className="text-2xl font-semibold text-gray-900 dark:text-white">
+                    Professional Templates
+                  </h3>
+                </div>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-6">
+                  Choose from 8 ATS-friendly templates designed by hiring
+                  experts.
+                </p>
+              </div>
+              {/* Visual Mockup */}
+              <div className="px-8 pb-8">
+                <div className="grid grid-cols-3 gap-3">
+                  {[1, 2, 3].map((i) => (
+                    <div
+                      key={i}
+                      className="aspect-[3/4] bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-2 hover:border-primary-500 transition-colors cursor-pointer"
+                    >
+                      <div className="h-full flex flex-col gap-1.5">
+                        <div className="h-2 bg-gray-300 dark:bg-gray-700 rounded-full w-3/4"></div>
+                        <div className="h-1.5 bg-gray-200 dark:bg-gray-800 rounded-full w-full"></div>
+                        <div className="h-1.5 bg-gray-200 dark:bg-gray-800 rounded-full w-5/6"></div>
+                        <div className="mt-2 space-y-1">
+                          <div className="h-1 bg-gray-200 dark:bg-gray-800 rounded-full"></div>
+                          <div className="h-1 bg-gray-200 dark:bg-gray-800 rounded-full"></div>
+                          <div className="h-1 bg-gray-200 dark:bg-gray-800 rounded-full w-4/5"></div>
+                        </div>
+                        <div className="mt-2 space-y-1">
+                          <div className="h-1 bg-gray-200 dark:bg-gray-800 rounded-full"></div>
+                          <div className="h-1 bg-gray-200 dark:bg-gray-800 rounded-full w-3/4"></div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-3 text-center">
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    + 5 more templates available
+                  </span>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section className="relative py-20 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+              How It Works
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-400">
+              Five simple steps. One powerful result.
+            </p>
+          </div>
+
+          {/* Desktop Timeline */}
+          <div className="hidden lg:block relative">
+            {/* Connection Line */}
+            <div className="absolute top-16 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 via-purple-500 to-green-500"></div>
+
+            <div className="grid grid-cols-5 gap-4">
+              {howItWorks.map((step, idx) => {
+                const Icon = step.icon;
+                return (
+                  <motion.div
+                    key={idx}
+                    initial={{opacity: 0, y: 20}}
+                    whileInView={{opacity: 1, y: 0}}
+                    viewport={{once: true}}
+                    transition={{duration: 0.5, delay: idx * 0.1}}
+                    className="relative flex flex-col items-center"
+                  >
+                    {/* Icon Container */}
+                    <div className="relative z-10 w-16 h-16 bg-white dark:bg-gray-800 rounded-full border-4 border-gray-100 dark:border-gray-700 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                      <Icon className={`w-7 h-7 text-${step.color}-600`} />
+                    </div>
+
+                    {/* Step Number */}
+                    <div className="absolute top-0 right-0 w-6 h-6 bg-primary-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                      {step.step}
+                    </div>
+
+                    {/* Content */}
+                    <div className="text-center">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                        {step.title}
+                      </h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                        {step.description}
+                      </p>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Mobile Vertical Layout */}
+          <div className="lg:hidden space-y-8">
+            {howItWorks.map((step, idx) => {
+              const Icon = step.icon;
+              return (
+                <motion.div
+                  key={idx}
+                  initial={{opacity: 0, x: -20}}
+                  whileInView={{opacity: 1, x: 0}}
+                  viewport={{once: true}}
+                  transition={{duration: 0.5, delay: idx * 0.1}}
+                  className="flex gap-4"
+                >
+                  <div className="flex-shrink-0">
+                    <div className="relative w-14 h-14 bg-white dark:bg-gray-800 rounded-full border-4 border-gray-100 dark:border-gray-700 flex items-center justify-center">
+                      <Icon className={`w-6 h-6 text-${step.color}-600`} />
+                      <div className="absolute -top-1 -right-1 w-6 h-6 bg-primary-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                        {step.step}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex-1 pt-2">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                      {step.title}
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                      {step.description}
+                    </p>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          {/* CTA */}
+          <div className="text-center mt-16">
+            <Link
+              to="/upload"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-primary-600 hover:bg-primary-700 text-white text-lg font-semibold rounded-xl shadow-lg shadow-primary-500/25 hover:shadow-xl hover:shadow-primary-500/30 hover:scale-105 transition-all duration-200"
+            >
+              Start Building Now — It's Free!
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+            <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+              ✓ No credit card required • ✓ Takes only 5 minutes
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="relative py-16 px-4 bg-primary-600 text-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-3 gap-8 text-center">
+            <div>
+              <div className="text-5xl font-bold mb-2">5min</div>
+              <div className="text-primary-100">Average Time</div>
+            </div>
+            <div>
+              <div className="text-5xl font-bold mb-2">95%</div>
+              <div className="text-primary-100">ATS Pass Rate</div>
+            </div>
+            <div>
+              <div className="text-5xl font-bold mb-2">3x</div>
+              <div className="text-primary-100">More Interviews</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Why Choose Us Section */}
+      <section className="relative py-20 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+              Why Choose SmartNShine?
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-400">
+              Because your career deserves more than a generic template.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {whyChooseUs.map((item, idx) => {
+              const Icon = item.icon;
+              return (
+                <motion.div
+                  key={idx}
+                  initial={{opacity: 0, y: 20}}
+                  whileInView={{opacity: 1, y: 0}}
+                  viewport={{once: true}}
+                  transition={{duration: 0.5, delay: idx * 0.1}}
+                  className="text-center p-8 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-primary-500 dark:hover:border-primary-500 transition-all duration-300 hover:shadow-lg"
+                >
+                  <div className="mb-6 flex justify-center">
+                    <div className="w-14 h-14 rounded-xl bg-primary-500/10 flex items-center justify-center">
+                      <Icon className="w-7 h-7 text-primary-600 dark:text-primary-400" />
+                    </div>
+                  </div>
+                  <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-3">
+                    {item.title}
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                    {item.description}
+                  </p>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="relative py-20 px-4 bg-white dark:bg-gray-900">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+              Loved by Job Seekers
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-400">
+              Join thousands of successful professionals who landed their dream
+              roles
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {testimonials.map((testimonial, idx) => (
+              <motion.div
+                key={idx}
+                initial={{opacity: 0, y: 20}}
+                whileInView={{opacity: 1, y: 0}}
+                viewport={{once: true}}
+                transition={{duration: 0.5, delay: idx * 0.1}}
+                className="p-8 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700"
+              >
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary-400 to-purple-500 flex items-center justify-center text-white font-bold text-lg">
+                    {testimonial.initial}
+                  </div>
+                  <div>
+                    <div className="font-semibold text-gray-900 dark:text-white">
+                      {testimonial.name}
+                    </div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                      {testimonial.role}
+                    </div>
+                    <div className="text-sm text-primary-600 dark:text-primary-400 font-medium">
+                      {testimonial.company}
+                    </div>
+                  </div>
+                </div>
+                <p className="text-gray-600 dark:text-gray-400 italic leading-relaxed mb-4">
+                  "{testimonial.quote}"
+                </p>
+                <div className="flex gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className="w-4 h-4 fill-yellow-400 text-yellow-400"
+                    />
+                  ))}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="relative py-20 px-4">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl sm:text-5xl font-bold text-gray-900 dark:text-white text-center mb-12">
+            Frequently Asked Questions
+          </h2>
+
+          <div className="space-y-4">
+            {faqs.map((faq, idx) => (
+              <div
+                key={idx}
+                className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden bg-white dark:bg-gray-800"
+              >
+                <button
+                  onClick={() => setOpenFAQ(openFAQ === idx ? null : idx)}
+                  className="w-full px-6 py-5 flex justify-between items-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+                >
+                  <span className="text-lg font-semibold text-gray-900 dark:text-white text-left">
+                    {faq.question}
+                  </span>
+                  <ChevronDown
+                    className={`w-5 h-5 text-gray-600 dark:text-gray-400 transition-transform duration-300 ${
+                      openFAQ === idx ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+                <div
+                  className={`overflow-hidden transition-all duration-300 ${
+                    openFAQ === idx ? "max-h-96" : "max-h-0"
+                  }`}
+                >
+                  <div className="px-6 py-4 text-gray-600 dark:text-gray-400 leading-relaxed border-t border-gray-100 dark:border-gray-700">
+                    {faq.answer}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA Section */}
+      <section className="relative py-20 px-4 bg-gradient-to-br from-primary-600 to-purple-600 text-white overflow-hidden">
+        {/* Decorative blurs */}
+        <div className="absolute top-0 left-0 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+
+        <div className="relative max-w-4xl mx-auto text-center">
+          <h2 className="text-4xl sm:text-6xl font-bold mb-6">
+            Ready to Shine in Your Next Interview?
+          </h2>
+          <p className="text-xl sm:text-2xl mb-8 text-primary-100">
+            Join 10,000+ professionals who transformed their careers with
+            SmartNShine.
+          </p>
+
+          <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
+            <Link
+              to="/upload"
+              className="inline-flex items-center gap-2 px-10 py-5 bg-white text-primary-600 text-xl font-bold rounded-xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300"
+            >
+              Build My Resume — Free Forever
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+          </div>
+
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-6 text-sm text-primary-100">
+            <div className="flex items-center gap-2">
+              <Check className="w-5 h-5" />
+              <span>Takes only 5 minutes</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Check className="w-5 h-5" />
+              <span>No credit card needed</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Check className="w-5 h-5" />
+              <span>Cancel anytime</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default Home;

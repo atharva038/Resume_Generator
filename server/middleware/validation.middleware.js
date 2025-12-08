@@ -309,6 +309,28 @@ export const validateResumeCreate = [
     .isArray()
     .withMessage("Certifications must be an array"),
 
+  body("customSections")
+    .optional()
+    .isArray()
+    .withMessage("Custom sections must be an array"),
+
+  body("customSections.*.id")
+    .optional()
+    .trim()
+    .isLength({max: 100})
+    .withMessage("Custom section ID must not exceed 100 characters"),
+
+  body("customSections.*.title")
+    .optional()
+    .trim()
+    .isLength({max: 200})
+    .withMessage("Custom section title must not exceed 200 characters"),
+
+  body("customSections.*.items")
+    .optional()
+    .isArray()
+    .withMessage("Custom section items must be an array"),
+
   handleValidationErrors,
 ];
 
@@ -462,6 +484,28 @@ export const validateResumeUpdate = [
     .isArray()
     .withMessage("Certifications must be an array"),
 
+  body("customSections")
+    .optional()
+    .isArray()
+    .withMessage("Custom sections must be an array"),
+
+  body("customSections.*.id")
+    .optional()
+    .trim()
+    .isLength({max: 100})
+    .withMessage("Custom section ID must not exceed 100 characters"),
+
+  body("customSections.*.title")
+    .optional()
+    .trim()
+    .isLength({max: 200})
+    .withMessage("Custom section title must not exceed 200 characters"),
+
+  body("customSections.*.items")
+    .optional()
+    .isArray()
+    .withMessage("Custom section items must be an array"),
+
   handleValidationErrors,
 ];
 
@@ -527,6 +571,44 @@ export const validateSkillsCategorize = [
     .withMessage("Skills must be a string")
     .isLength({min: 1, max: 5000})
     .withMessage("Skills text must be between 1 and 5000 characters"),
+
+  handleValidationErrors,
+];
+
+/**
+ * Validation rules for achievements segregation
+ */
+export const validateAchievementsSegregation = [
+  body("achievements")
+    .trim()
+    .notEmpty()
+    .withMessage("Achievements text is required")
+    .isString()
+    .withMessage("Achievements must be a string")
+    .isLength({min: 1, max: 5000})
+    .withMessage("Achievements text must be between 1 and 5000 characters"),
+
+  handleValidationErrors,
+];
+
+/**
+ * Validation rules for custom section processing
+ */
+export const validateCustomSectionProcessing = [
+  body("content")
+    .trim()
+    .notEmpty()
+    .withMessage("Content is required")
+    .isString()
+    .withMessage("Content must be a string")
+    .isLength({min: 1, max: 5000})
+    .withMessage("Content must be between 1 and 5000 characters"),
+
+  body("title")
+    .optional()
+    .trim()
+    .isLength({max: 200})
+    .withMessage("Title must not exceed 200 characters"),
 
   handleValidationErrors,
 ];

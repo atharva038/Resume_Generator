@@ -69,7 +69,7 @@ const AIAnalytics = () => {
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
           AI Usage Analytics
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">
+        <p className="text-gray-600 dark:text-gray-600 dark:text-gray-400 mt-1">
           Monitor AI API usage, costs, and performance
         </p>
       </div>
@@ -115,7 +115,7 @@ const AIAnalytics = () => {
               <Activity className="w-6 h-6 text-white" />
             </div>
             <div>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
+              <p className="text-gray-600 dark:text-gray-600 dark:text-gray-400 text-sm">
                 Total API Calls
               </p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -172,13 +172,13 @@ const AIAnalytics = () => {
               <DollarSign className="w-6 h-6 text-white" />
             </div>
             <div>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
+              <p className="text-gray-600 dark:text-gray-600 dark:text-gray-400 text-sm">
                 Total Cost
               </p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 ${(analytics?.totals?.totalCost || 0).toFixed(2)}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              <p className="text-xs text-gray-500 dark:text-gray-500 dark:text-gray-600 dark:text-gray-400 mt-1">
                 {analytics?.totals?.totalTokens?.toLocaleString() || 0} tokens
               </p>
             </div>
@@ -188,7 +188,7 @@ const AIAnalytics = () => {
 
       {/* Provider Comparison */}
       <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
           AI Provider Comparison
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -199,7 +199,7 @@ const AIAnalytics = () => {
             <p className="text-3xl font-bold text-gray-900 dark:text-white">
               {analytics?.totals?.openaiCalls || 0}
             </p>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <p className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-400 mt-1">
               {((analytics?.totals?.openaiTokens || 0) / 1000).toFixed(1)}K
               tokens
             </p>
@@ -215,7 +215,7 @@ const AIAnalytics = () => {
             <p className="text-3xl font-bold text-gray-900 dark:text-white">
               {analytics?.totals?.geminiCalls || 0}
             </p>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <p className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-400 mt-1">
               {((analytics?.totals?.geminiTokens || 0) / 1000).toFixed(1)}K
               tokens
             </p>
@@ -225,16 +225,16 @@ const AIAnalytics = () => {
           </div>
 
           <div className="text-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-700">
-            <p className="text-sm text-gray-700 dark:text-gray-300 font-semibold mb-2">
+            <p className="text-sm text-gray-700 dark:text-gray-700 dark:text-gray-300 font-semibold mb-2">
               🔄 Hybrid
             </p>
             <p className="text-3xl font-bold text-gray-900 dark:text-white">
               {analytics?.totals?.hybridCalls || 0}
             </p>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <p className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-400 mt-1">
               Mixed usage
             </p>
-            <p className="text-lg font-semibold text-gray-600 dark:text-gray-400 mt-2">
+            <p className="text-lg font-semibold text-gray-600 dark:text-gray-600 dark:text-gray-400 mt-2">
               -
             </p>
           </div>
@@ -245,7 +245,7 @@ const AIAnalytics = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Usage Over Time */}
         <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
             API Calls Over Time
           </h3>
           <ResponsiveContainer width="100%" height={300}>
@@ -267,7 +267,7 @@ const AIAnalytics = () => {
 
         {/* Usage by Feature */}
         <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
             Usage by Feature
           </h3>
           <ResponsiveContainer width="100%" height={300}>
@@ -299,17 +299,17 @@ const AIAnalytics = () => {
 
       {/* Top Users */}
       <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
           Top Users by API Usage
         </h3>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50 dark:bg-gray-700">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-500 dark:text-gray-700 dark:text-gray-300 uppercase">
                   User
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-500 dark:text-gray-700 dark:text-gray-300 uppercase">
                   Total Calls
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-green-600 dark:text-green-400 uppercase">
@@ -318,7 +318,7 @@ const AIAnalytics = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-purple-600 dark:text-purple-400 uppercase">
                   Gemini
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-500 dark:text-gray-700 dark:text-gray-300 uppercase">
                   Total Cost
                 </th>
               </tr>
@@ -334,7 +334,7 @@ const AIAnalytics = () => {
                       <div className="text-sm font-medium text-gray-900 dark:text-white">
                         {user.userName}
                       </div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">
+                      <div className="text-sm text-gray-500 dark:text-gray-500 dark:text-gray-400">
                         {user.userEmail}
                       </div>
                     </div>
@@ -343,7 +343,7 @@ const AIAnalytics = () => {
                     <div className="text-sm font-semibold text-gray-900 dark:text-white">
                       {user.count}
                     </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                    <div className="text-xs text-gray-500 dark:text-gray-500 dark:text-gray-400">
                       {((user.totalTokens || 0) / 1000).toFixed(1)}K tokens
                     </div>
                   </td>
@@ -377,29 +377,29 @@ const AIAnalytics = () => {
 
       {/* Recent Logs */}
       <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
           Recent API Calls
         </h3>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50 dark:bg-gray-700">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-500 dark:text-gray-700 dark:text-gray-300 uppercase">
                   Time
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-500 dark:text-gray-700 dark:text-gray-300 uppercase">
                   User
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-500 dark:text-gray-700 dark:text-gray-300 uppercase">
                   Feature
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-500 dark:text-gray-700 dark:text-gray-300 uppercase">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-500 dark:text-gray-700 dark:text-gray-300 uppercase">
                   Tokens
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-500 dark:text-gray-700 dark:text-gray-300 uppercase">
                   Cost
                 </th>
               </tr>
@@ -410,7 +410,7 @@ const AIAnalytics = () => {
                   key={index}
                   className="hover:bg-gray-50 dark:hover:bg-gray-700/50"
                 >
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-500 dark:text-gray-400">
                     {new Date(log.createdAt).toLocaleString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">

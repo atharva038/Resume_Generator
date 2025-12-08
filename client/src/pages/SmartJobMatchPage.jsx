@@ -121,7 +121,7 @@ const SmartJobMatchPage = () => {
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-16 h-16 animate-spin text-purple-600 mx-auto mb-4" />
-          <p className="text-gray-600 dark:text-gray-400 text-lg">
+          <p className="text-gray-600 dark:text-gray-600 dark:text-gray-400 text-lg">
             Loading your resumes...
           </p>
         </div>
@@ -135,25 +135,25 @@ const SmartJobMatchPage = () => {
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         <div className="container mx-auto px-4 py-20">
           <div className="max-w-2xl mx-auto text-center">
-            <AlertCircle className="w-20 h-20 text-gray-400 mx-auto mb-6" />
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+            <AlertCircle className="w-20 h-20 text-gray-600 dark:text-gray-400 mx-auto mb-6" />
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
               No Resumes Found
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-8 text-lg">
+            <p className="text-gray-600 dark:text-gray-600 dark:text-gray-400 mb-8 text-lg">
               To use Smart Job Match, you need to create a resume first. Our AI
               will analyze your resume and find the perfect job matches for you!
             </p>
             <div className="flex gap-4 justify-center">
               <button
                 onClick={() => navigate("/dashboard")}
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-3 px-8 rounded-lg transition-all duration-200 flex items-center gap-2"
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-gray-900 dark:text-white font-bold py-3 px-8 rounded-lg transition-all duration-200 flex items-center gap-2"
               >
                 <Plus className="w-5 h-5" />
                 Create Resume
               </button>
               <button
                 onClick={() => navigate("/dashboard")}
-                className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 font-semibold py-3 px-8 rounded-lg transition-all"
+                className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 font-semibold py-3 px-8 rounded-lg transition-all"
               >
                 Go to Dashboard
               </button>
@@ -192,7 +192,7 @@ const SmartJobMatchPage = () => {
                     loadResumeDetails(e.target.value);
                   }
                 }}
-                className="flex-1 max-w-md px-4 py-2.5 border-2 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:text-white font-medium transition-all hover:border-purple-400 cursor-pointer"
+                className="flex-1 max-w-md px-4 py-2.5 border-2 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:text-gray-900 dark:text-white font-medium transition-all hover:border-purple-400 cursor-pointer"
                 style={{
                   backgroundPosition: "right 0.5rem center",
                   paddingBottom: "0.625rem",
@@ -215,7 +215,7 @@ const SmartJobMatchPage = () => {
             <div className="flex gap-2">
               <button
                 onClick={() => navigate("/dashboard")}
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-2 px-6 rounded-lg transition-all shadow-md hover:shadow-lg flex items-center gap-2"
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-gray-900 dark:text-white font-semibold py-2 px-6 rounded-lg transition-all shadow-md hover:shadow-lg flex items-center gap-2"
               >
                 {resumes.length === 1 ? (
                   <>

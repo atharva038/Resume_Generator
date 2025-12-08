@@ -77,7 +77,7 @@ const Footer = () => {
   return (
     <footer
       ref={footerRef}
-      className={`bg-gradient-to-b from-slate-900 to-slate-800 text-gray-300 transition-all duration-1000 no-print ${
+      className={`bg-white dark:bg-black border-t border-gray-200 dark:border-zinc-800 text-gray-600 dark:text-gray-400 transition-all duration-1000 no-print ${
         isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
       }`}
     >
@@ -86,21 +86,18 @@ const Footer = () => {
           {/* Brand Section */}
           <div className="space-y-4">
             <Link to="/" className="flex items-center gap-2 group">
-              <div className="relative">
-                <Sparkles className="w-6 h-6 text-blue-400 group-hover:scale-110 transition-transform duration-300" />
-                <div className="absolute inset-0 blur-md bg-blue-500/30 group-hover:bg-blue-500/50 transition-all duration-300"></div>
-              </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent group-hover:from-blue-300 group-hover:via-purple-300 group-hover:to-pink-300 transition-all duration-300">
+              <Sparkles className="w-5 h-5 text-primary-600 dark:text-primary-400 group-hover:rotate-12 transition-transform duration-300" />
+              <span className="text-lg font-bold bg-gradient-to-r from-primary-600 to-purple-600 bg-clip-text text-transparent tracking-tight">
                 SmartNShine
               </span>
             </Link>
-            <p className="text-sm text-gray-400 leading-relaxed max-w-xs">
+            <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed max-w-xs">
               Build resumes that shine in every interview. Powered by AI to help
               you land your dream job.
             </p>
             {/* Social Media Icons - Hidden until connected to real data */}
             {socialLinks.length > 0 && (
-              <div className="flex items-center gap-4 pt-2">
+              <div className="flex items-center gap-3 pt-2">
                 {socialLinks.map((social) => {
                   const Icon = social.icon;
                   return (
@@ -109,10 +106,10 @@ const Footer = () => {
                       href={social.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`p-2 bg-slate-800 rounded-lg text-gray-400 ${social.color} transition-all duration-300 hover:bg-slate-700 hover:scale-110 hover:shadow-lg`}
+                      className="p-2 border border-gray-200 dark:border-zinc-800 rounded-lg text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 hover:border-primary-500 transition-all duration-200"
                       aria-label={social.name}
                     >
-                      <Icon className="w-5 h-5" />
+                      <Icon className="w-4 h-4" />
                     </a>
                   );
                 })}
@@ -122,21 +119,17 @@ const Footer = () => {
 
           {/* Product Column */}
           <div>
-            <h3 className="text-white font-semibold text-lg mb-4 flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-purple-400" />
+            <h3 className="text-gray-900 dark:text-white font-semibold text-sm mb-4 tracking-tight">
               Product
             </h3>
-            <ul className="space-y-3">
+            <ul className="space-y-2.5">
               {productLinks.map((link) => (
                 <li key={link.name}>
                   <Link
                     to={link.path}
-                    className="text-gray-400 hover:text-white transition-colors duration-200 inline-flex items-center group"
+                    className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-200"
                   >
-                    <span className="relative">
-                      {link.name}
-                      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300"></span>
-                    </span>
+                    {link.name}
                   </Link>
                 </li>
               ))}
@@ -146,11 +139,10 @@ const Footer = () => {
           {/* Legal & Policies Column (REQUIRED FOR RAZORPAY) */}
           {resourceLinks.length > 0 && (
             <div>
-              <h3 className="text-white font-semibold text-lg mb-4 flex items-center gap-2">
-                <Shield className="w-4 h-4 text-green-400" />
+              <h3 className="text-gray-900 dark:text-white font-semibold text-sm mb-4 tracking-tight">
                 Legal & Policies
               </h3>
-              <ul className="space-y-3">
+              <ul className="space-y-2.5">
                 {resourceLinks.map((link) => {
                   const isHash = link.path.startsWith("/#");
                   return (
@@ -158,22 +150,16 @@ const Footer = () => {
                       {isHash ? (
                         <a
                           href={link.path}
-                          className="text-gray-400 hover:text-white transition-colors duration-200 inline-flex items-center group"
+                          className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-200"
                         >
-                          <span className="relative">
-                            {link.name}
-                            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300"></span>
-                          </span>
+                          {link.name}
                         </a>
                       ) : (
                         <Link
                           to={link.path}
-                          className="text-gray-400 hover:text-white transition-colors duration-200 inline-flex items-center group"
+                          className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-200"
                         >
-                          <span className="relative">
-                            {link.name}
-                            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300"></span>
-                          </span>
+                          {link.name}
                         </Link>
                       )}
                     </li>
@@ -185,32 +171,25 @@ const Footer = () => {
 
           {/* Contact Column */}
           <div>
-            <h3 className="text-white font-semibold text-lg mb-4 flex items-center gap-2">
-              <MessageCircle className="w-4 h-4 text-pink-400" />
+            <h3 className="text-gray-900 dark:text-white font-semibold text-sm mb-4 tracking-tight">
               Contact
             </h3>
-            <ul className="space-y-3">
+            <ul className="space-y-2.5">
               <li>
                 <Link
                   to="/contact"
-                  className="text-gray-400 hover:text-white transition-colors duration-200 inline-flex items-center group"
+                  className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-900 dark:text-white transition-colors duration-200"
                 >
-                  <span className="relative">
-                    Contact Us
-                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300"></span>
-                  </span>
+                  Contact Us
                 </Link>
               </li>
               <li>
                 <a
                   href="mailto:support@smartnshine.app"
-                  className="text-gray-400 hover:text-white transition-colors duration-200 inline-flex items-center gap-2 group"
+                  className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-900 dark:text-white transition-colors duration-200 inline-flex items-center gap-2 group"
                 >
-                  <Mail className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
-                  <span className="relative">
-                    support@smartnshine.app
-                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300"></span>
-                  </span>
+                  <Mail className="w-4 h-4" />
+                  <span>support@smartnshine.app</span>
                 </a>
               </li>
               {/* Hidden until connected to real data */}
@@ -219,7 +198,7 @@ const Footer = () => {
                   href="https://discord.gg/smartnshine"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-white transition-colors duration-200 inline-flex items-center gap-2 group"
+                  className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-white transition-colors duration-200 inline-flex items-center gap-2 group"
                 >
                   <MessageCircle className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
                   <span className="relative">
@@ -233,17 +212,17 @@ const Footer = () => {
         </div>
 
         {/* Divider */}
-        <div className="border-t border-gray-700 mt-8 lg:mt-12 pt-8">
+        <div className="border-t border-gray-200 dark:border-zinc-800 mt-10 lg:mt-12 pt-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             {/* Copyright */}
-            <p className="text-sm text-gray-400 text-center md:text-left">
+            <p className="text-xs text-gray-500 dark:text-gray-500 dark:text-gray-500 dark:text-gray-500 text-center md:text-left">
               © {new Date().getFullYear()} SmartNShine. All rights reserved.
             </p>
 
             {/* Built with Love */}
-            <p className="text-sm text-gray-400 flex items-center gap-2">
+            <p className="text-xs text-gray-500 dark:text-gray-500 dark:text-gray-500 dark:text-gray-500 flex items-center gap-1.5">
               Built with
-              <span className="text-red-400 animate-pulse">❤️</span>
+              <span className="text-red-500">❤️</span>
               for job seekers worldwide
             </p>
           </div>

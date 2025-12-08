@@ -39,12 +39,9 @@ export const DarkModeProvider = ({children}) => {
     } catch (error) {
       console.error("Error saving darkMode to localStorage:", error);
     }
-
-    console.log("Dark mode changed to:", isDarkMode);
   }, [isDarkMode]);
 
   const toggleDarkMode = () => {
-    console.log("Toggling dark mode from:", isDarkMode);
     setIsDarkMode((prev) => !prev);
   };
 
@@ -54,4 +51,3 @@ export const DarkModeProvider = ({children}) => {
     </DarkModeContext.Provider>
   );
 };
- 

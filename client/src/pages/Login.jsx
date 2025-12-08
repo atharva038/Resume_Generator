@@ -5,11 +5,10 @@ import {parseValidationErrors} from "../utils/errorHandler";
 import {
   Mail,
   Lock,
-  LogIn,
-  Sparkles,
   ArrowRight,
   AlertCircle,
-  Shield,
+  Eye,
+  EyeOff,
   Github,
 } from "lucide-react";
 import {FcGoogle} from "react-icons/fc";
@@ -17,6 +16,7 @@ import {FcGoogle} from "react-icons/fc";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const {login} = useAuth();
@@ -30,16 +30,13 @@ const Login = () => {
 
     try {
       await login(email, password);
-      // Redirect to the page they tried to visit or dashboard
       const from = location.state?.from?.pathname || "/dashboard";
       navigate(from, {replace: true});
     } catch (err) {
-      // Check if it's a rate limit error
       if (
         err.response?.status === 429 ||
         err.response?.data?.type === "AUTH_RATE_LIMIT_EXCEEDED"
       ) {
-        // Redirect to rate limit exceeded page
         navigate("/rate-limit-exceeded", {
           state: {
             errorDetails: {
@@ -59,53 +56,34 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-indigo-950 dark:to-purple-950 flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
-        {/* Header Badge */}
+        {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-full mb-4">
-            <Shield className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-            <span className="text-sm font-semibold text-indigo-700 dark:text-indigo-300">
-              Secure Login
-            </span>
-          </div>
-          <h1 className="text-4xl sm:text-5xl font-bold mb-3 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-            Welcome Back
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2 tracking-tight">
+            Welcome back
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Login to access your AI-powered resume builder
+            Log in to your SmartNShine account
           </p>
         </div>
 
         {/* Login Card */}
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-8 transition-all duration-300 hover:shadow-2xl">
+        <div className="bg-white dark:bg-zinc-950 rounded-2xl border border-gray-200 dark:border-zinc-800 p-8 shadow-sm">
           {/* Auth Required Message */}
           {location.state?.from && (
-            <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
-              <div className="flex items-start gap-3">
-                <Shield className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="font-semibold text-blue-700 dark:text-blue-300 mb-1">
-                    🔒 Authentication Required
-                  </p>
-                  <p className="text-sm text-blue-600 dark:text-blue-400">
-                    Please log in to access this feature. You'll be redirected
-                    after login.
-                  </p>
-                </div>
-              </div>
+            <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/50 rounded-lg">
+              <p className="text-sm text-blue-900 dark:text-blue-300">
+                Please log in to access this feature
+              </p>
             </div>
           )}
 
           {/* Error Message */}
           {error && (
-            <div className="mb-6 p-4 bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 border border-red-200 dark:border-red-800 rounded-xl">
-              <div className="flex items-start gap-3">
-                <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
-                <p className="text-sm text-red-600 dark:text-red-400">
-                  {error}
-                </p>
-              </div>
+            <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 rounded-lg flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
+              <p className="text-sm text-red-900 dark:text-red-300">{error}</p>
             </div>
           )}
 
@@ -113,18 +91,19 @@ const Login = () => {
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email Field */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                Email Address
+              <label className="block text-sm font-medium text-gray-900 dark:text-gray-300 mb-2">
+                Email
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
-                  className="w-full pl-11 pr-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:text-white placeholder-gray-400 transition-all duration-200"
+                  placeholder="name@company.com"
+                  className="w-full pl-11 pr-4 py-2.5 bg-white dark:bg-black border border-gray-300 dark:border-zinc-800 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 transition-all duration-200 text-sm"
                   required
+                  autoComplete="email"
                 />
               </div>
             </div>
@@ -132,26 +111,38 @@ const Login = () => {
             {/* Password Field */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                <label className="block text-sm font-medium text-gray-900 dark:text-gray-300">
                   Password
                 </label>
                 <Link
                   to="/forgot-password"
-                  className="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
+                  className="text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors"
                 >
                   Forgot password?
                 </Link>
               </div>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
-                  className="w-full pl-11 pr-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:text-white placeholder-gray-400 transition-all duration-200"
+                  className="w-full pl-11 pr-11 py-2.5 bg-white dark:bg-black border border-gray-300 dark:border-zinc-800 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 transition-all duration-200 text-sm"
                   required
+                  autoComplete="current-password"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 transition-colors"
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
               </div>
             </div>
 
@@ -159,30 +150,29 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700 text-white font-bold py-3.5 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98]"
+              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md text-sm"
             >
               {loading ? (
                 <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                   <span>Logging in...</span>
                 </>
               ) : (
                 <>
-                  <LogIn className="w-5 h-5" />
-                  <span>Login to Dashboard</span>
-                  <ArrowRight className="w-5 h-5" />
+                  <span>Log in</span>
+                  <ArrowRight className="w-4 h-4" />
                 </>
               )}
             </button>
           </form>
 
-          {/* OAuth Divider */}
+          {/* Divider */}
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+              <div className="w-full border-t border-gray-200 dark:border-zinc-800"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 font-medium">
+              <span className="px-2 bg-white dark:bg-zinc-950 text-gray-500">
                 Or continue with
               </span>
             </div>
@@ -195,7 +185,7 @@ const Login = () => {
               href={`${
                 import.meta.env.VITE_SERVER_URL || "http://localhost:5000"
               }/api/auth/google`}
-              className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md font-medium text-gray-700 dark:text-gray-300 group"
+              className="w-full flex items-center justify-center gap-3 px-4 py-2.5 bg-white dark:bg-black border border-gray-300 dark:border-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-lg transition-all duration-200 font-medium text-gray-700 dark:text-gray-300 text-sm"
             >
               <FcGoogle className="w-5 h-5" />
               <span>Continue with Google</span>
@@ -206,7 +196,7 @@ const Login = () => {
               href={`${
                 import.meta.env.VITE_SERVER_URL || "http://localhost:5000"
               }/api/auth/github`}
-              className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-gray-900 dark:bg-gray-700 border-2 border-gray-800 dark:border-gray-600 hover:bg-gray-800 dark:hover:bg-gray-600 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md font-medium text-white group"
+              className="w-full flex items-center justify-center gap-3 px-4 py-2.5 bg-white dark:bg-black border border-gray-300 dark:border-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-lg transition-all duration-200 font-medium text-gray-700 dark:text-gray-300 text-sm"
             >
               <Github className="w-5 h-5" />
               <span>Continue with GitHub</span>
@@ -216,35 +206,41 @@ const Login = () => {
           {/* Divider */}
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+              <div className="w-full border-t border-gray-200 dark:border-zinc-800"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">
-                New to our platform?
+              <span className="px-2 bg-white dark:bg-zinc-950 text-gray-500">
+                New to SmartNShine?
               </span>
             </div>
           </div>
 
           {/* Sign Up Link */}
-          <div className="text-center">
-            <p className="text-gray-600 dark:text-gray-400 mb-3">
-              Don't have an account yet?
-            </p>
-            <Link
-              to="/register"
-              className="inline-flex items-center gap-2 text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-semibold transition-colors duration-200 group"
-            >
-              <Sparkles className="w-4 h-4 group-hover:scale-110 transition-transform" />
-              <span>Create a free account</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
+          <Link
+            to="/register"
+            className="block w-full text-center px-4 py-2.5 bg-gray-100 dark:bg-zinc-900 hover:bg-gray-200 dark:hover:bg-zinc-800 text-gray-900 dark:text-white font-medium rounded-lg transition-all duration-200 text-sm"
+          >
+            Create an account
+          </Link>
         </div>
 
-        {/* Bottom Info */}
-        <div className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
-          <p>Protected by industry-standard encryption 🔒</p>
-        </div>
+        {/* Footer Text */}
+        <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-500">
+          By logging in, you agree to our{" "}
+          <Link
+            to="/terms"
+            className="text-primary-600 dark:text-primary-400 hover:underline"
+          >
+            Terms
+          </Link>{" "}
+          and{" "}
+          <Link
+            to="/privacy"
+            className="text-primary-600 dark:text-primary-400 hover:underline"
+          >
+            Privacy Policy
+          </Link>
+        </p>
       </div>
     </div>
   );

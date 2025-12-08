@@ -107,8 +107,8 @@ const RecommendationsPanel = ({resumeData, onEnhanceAll}) => {
 
       {/* Priority Actions */}
       {totalScore < 90 && (
-        <div className="mb-6 p-4 bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-900/20 dark:to-blue-900/20 border border-primary-200 dark:border-primary-800 rounded-lg">
-          <h4 className="font-semibold text-primary-900 dark:text-primary-300 mb-2 flex items-center gap-2">
+        <div className="mb-6 p-4 bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-lg">
+          <h4 className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
             <span>🚀</span>
             Quick Wins to Gain {Math.min(90 - totalScore, 20)} Points
           </h4>
@@ -116,7 +116,7 @@ const RecommendationsPanel = ({resumeData, onEnhanceAll}) => {
             {recommendations.slice(0, 3).map((rec, index) => (
               <li
                 key={index}
-                className="text-sm text-primary-800 dark:text-primary-300 flex items-start gap-2"
+                className="text-sm text-gray-700 dark:text-gray-300 flex items-start gap-2"
               >
                 <span className="text-primary-600 dark:text-primary-400 font-bold mt-0.5">
                   {index + 1}.

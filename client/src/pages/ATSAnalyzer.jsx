@@ -156,21 +156,14 @@ const ATSAnalyzer = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-indigo-950 dark:to-purple-950">
+    <div className="min-h-screen bg-white dark:bg-black">
       <div className="container mx-auto px-4 py-8 sm:py-12">
         {/* Header */}
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-full mb-4">
-            <Target className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-            <span className="text-sm font-semibold text-indigo-700 dark:text-indigo-300">
-              AI-Powered Analysis
-            </span>
-          </div>
-
-          <h1 className="text-4xl sm:text-5xl font-bold mb-3 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+        <div className="mb-10">
+          <h1 className="text-4xl sm:text-5xl font-bold mb-3 text-gray-900 dark:text-white tracking-tight">
             ATS Resume Analyzer
           </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 dark:text-gray-400">
             Upload your resume and paste a job description to get AI-powered ATS
             compatibility insights
           </p>
@@ -179,12 +172,12 @@ const ATSAnalyzer = () => {
         {/* Tab Switcher */}
         {/* TEMPORARILY HIDDEN FOR RAZORPAY COMPLIANCE - ML Job Match Tab */}
         {/* <div className="max-w-7xl mx-auto mb-8">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-2 flex gap-2">
+          <div className="bg-white dark:bg-zinc-950 rounded-2xl shadow-lg p-2 flex gap-2">
             <button
               onClick={() => setActiveTab("ats")}
               className={`flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold transition-all duration-300 ${
                 activeTab === "ats"
-                  ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg"
+                  ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-gray-900 dark:text-white shadow-lg"
                   : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
               }`}
             >
@@ -195,7 +188,7 @@ const ATSAnalyzer = () => {
               onClick={() => setActiveTab("ml")}
               className={`flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold transition-all duration-300 ${
                 activeTab === "ml"
-                  ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg"
+                  ? "bg-gradient-to-r from-purple-600 to-pink-600 text-gray-900 dark:text-white shadow-lg"
                   : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
               }`}
             >
@@ -215,12 +208,12 @@ const ATSAnalyzer = () => {
             {/* Left Side - Input Section */}
             <div className="space-y-6">
               {/* Job Description */}
-              <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+              <div className="bg-white dark:bg-zinc-950 rounded-xl p-6 border border-gray-200 dark:border-zinc-800">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
+                  <div className="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center">
                     <FileText className="w-5 h-5 text-white" />
                   </div>
-                  <label className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                  <label className="text-lg font-bold text-gray-900 dark:text-white">
                     Job Description
                   </label>
                 </div>
@@ -228,7 +221,7 @@ const ATSAnalyzer = () => {
                   value={jobDescription}
                   onChange={(e) => setJobDescription(e.target.value)}
                   placeholder="Paste the complete job description here...&#10;&#10;Include:&#10;• Required skills and technologies&#10;• Qualifications and experience&#10;• Job responsibilities&#10;• Nice-to-have skills"
-                  className="w-full h-64 px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:focus:border-indigo-400 transition-all resize-none"
+                  className="w-full h-64 px-4 py-3 rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors resize-none"
                 />
                 <div className="flex items-center justify-between mt-3">
                   <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -244,20 +237,20 @@ const ATSAnalyzer = () => {
               </div>
 
               {/* Resume Selection */}
-              <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+              <div className="bg-white dark:bg-zinc-950 rounded-xl p-6 border border-gray-200 dark:border-zinc-800">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center">
-                    <Upload className="w-5 h-5 text-white" />
+                  <div className="w-10 h-10 bg-gray-900 dark:bg-white rounded-lg flex items-center justify-center">
+                    <Upload className="w-5 h-5 text-white dark:text-gray-900" />
                   </div>
-                  <label className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                  <label className="text-lg font-bold text-gray-900 dark:text-white">
                     Your Resume
                   </label>
                 </div>
 
                 {/* Existing Resumes Dropdown */}
                 {loadingResumes ? (
-                  <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl">
-                    <div className="w-5 h-5 border-2 border-indigo-200 dark:border-indigo-800 border-t-indigo-600 dark:border-t-indigo-400 rounded-full animate-spin"></div>
+                  <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-zinc-900 rounded-lg">
+                    <div className="w-5 h-5 border-2 border-gray-200 dark:border-zinc-800 border-t-primary-600 rounded-full animate-spin"></div>
                     <p className="text-gray-600 dark:text-gray-400">
                       Loading your resumes...
                     </p>
@@ -269,7 +262,7 @@ const ATSAnalyzer = () => {
                       setSelectedResume(e.target.value);
                       setUploadedFile(null);
                     }}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all mb-4"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors mb-4"
                   >
                     <option value="">Choose from your saved resumes...</option>
                     {userResumes.map((resume) => (
@@ -280,7 +273,7 @@ const ATSAnalyzer = () => {
                     ))}
                   </select>
                 ) : (
-                  <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800 mb-4">
+                  <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800 mb-4">
                     <p className="text-sm text-amber-800 dark:text-amber-300 flex items-center gap-2">
                       <AlertCircle className="w-4 h-4" />
                       No saved resumes found. Upload a file below.
@@ -291,10 +284,10 @@ const ATSAnalyzer = () => {
                 {/* Divider */}
                 <div className="relative my-6">
                   <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+                    <div className="w-full border-t border-gray-200 dark:border-zinc-800"></div>
                   </div>
                   <div className="relative flex justify-center">
-                    <span className="px-4 bg-white dark:bg-gray-800 text-sm text-gray-500 dark:text-gray-400 font-medium">
+                    <span className="px-4 bg-white dark:bg-zinc-950 text-sm text-gray-500 dark:text-gray-400 font-medium">
                       OR
                     </span>
                   </div>
@@ -308,14 +301,14 @@ const ATSAnalyzer = () => {
                     onChange={handleFileUpload}
                     className="hidden"
                   />
-                  <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-8 text-center hover:border-indigo-500 dark:hover:border-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all group">
+                  <div className="border-2 border-dashed border-gray-300 dark:border-zinc-700 rounded-lg p-8 text-center hover:border-primary-500 hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
                     {uploadedFile ? (
                       <div className="space-y-3">
-                        <div className="w-16 h-16 mx-auto bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
-                          <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
+                        <div className="w-12 h-12 mx-auto bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+                          <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400" />
                         </div>
                         <div>
-                          <p className="text-green-600 dark:text-green-400 font-semibold">
+                          <p className="text-green-600 dark:text-green-400 font-medium">
                             {uploadedFile.name}
                           </p>
                           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -328,11 +321,11 @@ const ATSAnalyzer = () => {
                       </div>
                     ) : (
                       <div className="space-y-3">
-                        <div className="w-16 h-16 mx-auto bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                          <Upload className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+                        <div className="w-12 h-12 mx-auto bg-gray-100 dark:bg-zinc-800 rounded-lg flex items-center justify-center">
+                          <Upload className="w-6 h-6 text-gray-600 dark:text-gray-400" />
                         </div>
                         <div>
-                          <p className="text-gray-700 dark:text-gray-300 font-semibold">
+                          <p className="text-gray-900 dark:text-white font-medium">
                             Upload Resume File
                           </p>
                           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -353,7 +346,7 @@ const ATSAnalyzer = () => {
                   !jobDescription.trim() ||
                   (!selectedResume && !uploadedFile)
                 }
-                className="w-full py-4 px-6 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-3"
+                className="w-full py-4 px-6 bg-primary-600 text-gray-900 dark:text-white font-bold text-lg rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
               >
                 {analyzing ? (
                   <>
@@ -364,7 +357,6 @@ const ATSAnalyzer = () => {
                   <>
                     <Brain className="w-6 h-6" />
                     Analyze Job Match
-                    <Sparkles className="w-5 h-5" />
                   </>
                 )}
               </button>
@@ -373,11 +365,11 @@ const ATSAnalyzer = () => {
             {/* Right Side - Analysis Results */}
             <div className="lg:sticky lg:top-8 h-fit">
               {!analysisResult && !analyzing && (
-                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-12 text-center shadow-lg border border-gray-200 dark:border-gray-700">
-                  <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30 rounded-full flex items-center justify-center">
-                    <Target className="w-12 h-12 text-indigo-600 dark:text-indigo-400" />
+                <div className="bg-white dark:bg-zinc-950 rounded-xl p-12 text-center border border-gray-200 dark:border-zinc-800">
+                  <div className="w-20 h-20 mx-auto mb-6 bg-gray-100 dark:bg-zinc-800 rounded-lg flex items-center justify-center">
+                    <Target className="w-10 h-10 text-gray-600 dark:text-gray-400" />
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-3">
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
                     Ready to Analyze
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400 mb-6">
@@ -386,15 +378,15 @@ const ATSAnalyzer = () => {
                   </p>
                   <div className="space-y-2 text-sm text-gray-500 dark:text-gray-400">
                     <div className="flex items-center justify-center gap-2">
-                      <Zap className="w-4 h-4 text-indigo-500" />
+                      <Zap className="w-4 h-4 text-primary-500" />
                       <span>Instant keyword matching</span>
                     </div>
                     <div className="flex items-center justify-center gap-2">
-                      <Brain className="w-4 h-4 text-purple-500" />
+                      <Brain className="w-4 h-4 text-purple-500 dark:text-purple-400" />
                       <span>AI-powered suggestions</span>
                     </div>
                     <div className="flex items-center justify-center gap-2">
-                      <Award className="w-4 h-4 text-pink-500" />
+                      <Award className="w-4 h-4 text-yellow-500 dark:text-yellow-400" />
                       <span>ATS compatibility score</span>
                     </div>
                   </div>
@@ -402,33 +394,23 @@ const ATSAnalyzer = () => {
               )}
 
               {analyzing && (
-                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-12 text-center shadow-lg border border-gray-200 dark:border-gray-700">
-                  <div className="relative w-24 h-24 mx-auto mb-6">
-                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full animate-pulse"></div>
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <Brain className="w-12 h-12 text-white animate-pulse" />
-                    </div>
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-3">
+                <div className="bg-white dark:bg-zinc-950 rounded-xl p-12 text-center border border-gray-200 dark:border-zinc-800">
+                  <div className="w-12 h-12 mx-auto mb-6 border-2 border-gray-200 dark:border-zinc-800 border-t-primary-600 rounded-full animate-spin"></div>
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
                     Analyzing Your Resume...
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-400 mb-4">
+                  <p className="text-gray-400">
                     AI is comparing keywords, skills, and experience
                   </p>
-                  <div className="flex items-center justify-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                    <div className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce delay-100"></div>
-                    <div className="w-2 h-2 bg-pink-500 rounded-full animate-bounce delay-200"></div>
-                  </div>
                 </div>
               )}
 
               {analysisResult && (
                 <div className="space-y-6">
                   {/* Match Score Card */}
-                  <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-gray-200 dark:border-gray-700">
+                  <div className="bg-white dark:bg-zinc-950 rounded-xl p-8 border border-gray-200 dark:border-zinc-800">
                     <div className="text-center">
-                      <h3 className="text-lg font-semibold mb-6 text-gray-800 dark:text-gray-200">
+                      <h3 className="text-lg font-semibold mb-6 text-white">
                         ATS Match Score
                       </h3>
                       <div className="relative w-48 h-48 mx-auto mb-6">
@@ -510,7 +492,7 @@ const ATSAnalyzer = () => {
                       </div>
 
                       <div
-                        className={`inline-flex items-center gap-2 px-4 py-2 rounded-full font-semibold ${
+                        className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium ${
                           analysisResult.eligible
                             ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
                             : "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300"
@@ -534,9 +516,9 @@ const ATSAnalyzer = () => {
                   {/* Strengths */}
                   {analysisResult.strengths &&
                     analysisResult.strengths.length > 0 && (
-                      <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-green-200 dark:border-green-800">
+                      <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-6 border border-green-200 dark:border-green-800">
                         <div className="flex items-center gap-3 mb-4">
-                          <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
+                          <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
                             <CheckCircle className="w-6 h-6 text-white" />
                           </div>
                           <h3 className="text-lg font-bold text-green-800 dark:text-green-300">
@@ -547,10 +529,10 @@ const ATSAnalyzer = () => {
                           {analysisResult.strengths.map((strength, index) => (
                             <li
                               key={index}
-                              className="flex items-start gap-3 p-3 bg-white/50 dark:bg-gray-900/30 rounded-lg"
+                              className="flex items-start gap-3 p-3 bg-black/30 rounded-lg"
                             >
-                              <div className="flex-shrink-0 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mt-0.5">
-                                <CheckCircle className="w-4 h-4 text-white" />
+                              <div className="flex-shrink-0 w-5 h-5 text-green-600 dark:text-green-400 mt-0.5">
+                                <CheckCircle className="w-5 h-5" />
                               </div>
                               <span className="text-gray-800 dark:text-gray-200 font-medium">
                                 {strength}
@@ -564,9 +546,9 @@ const ATSAnalyzer = () => {
                   {/* Missing Keywords */}
                   {analysisResult.missing_keywords &&
                     analysisResult.missing_keywords.length > 0 && (
-                      <div className="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-orange-200 dark:border-orange-800">
+                      <div className="bg-orange-50 dark:bg-orange-900/20 rounded-xl p-6 border border-orange-200 dark:border-orange-800">
                         <div className="flex items-center gap-3 mb-4">
-                          <div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center">
+                          <div className="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center">
                             <XCircle className="w-6 h-6 text-white" />
                           </div>
                           <h3 className="text-lg font-bold text-orange-800 dark:text-orange-300">
@@ -581,7 +563,7 @@ const ATSAnalyzer = () => {
                             (keyword, index) => (
                               <span
                                 key={index}
-                                className="px-4 py-2 bg-white dark:bg-gray-900/50 text-orange-700 dark:text-orange-300 rounded-lg text-sm font-semibold border border-orange-300 dark:border-orange-700 shadow-sm"
+                                className="px-4 py-2 bg-black text-orange-700 dark:text-orange-300 rounded-lg text-sm font-medium border border-orange-300 dark:border-orange-700"
                               >
                                 {keyword}
                               </span>
@@ -594,12 +576,12 @@ const ATSAnalyzer = () => {
                   {/* AI Improvement Tips */}
                   {analysisResult.improvements &&
                     analysisResult.improvements.length > 0 && (
-                      <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-indigo-900/20 dark:via-purple-900/20 dark:to-pink-900/20 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-indigo-200 dark:border-indigo-800">
+                      <div className="bg-zinc-900 rounded-xl p-6 border border-gray-200 dark:border-zinc-800">
                         <div className="flex items-center gap-3 mb-4">
-                          <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
+                          <div className="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center">
                             <Brain className="w-6 h-6 text-white" />
                           </div>
-                          <h3 className="text-lg font-bold text-indigo-800 dark:text-indigo-300">
+                          <h3 className="text-lg font-bold text-white">
                             AI Improvement Tips
                           </h3>
                         </div>
@@ -607,9 +589,9 @@ const ATSAnalyzer = () => {
                           {analysisResult.improvements.map((tip, index) => (
                             <li
                               key={index}
-                              className="flex items-start gap-3 p-4 bg-white/60 dark:bg-gray-900/30 rounded-lg border border-indigo-200 dark:border-indigo-800"
+                              className="flex items-start gap-3 p-4 bg-black rounded-lg border border-gray-200 dark:border-zinc-800"
                             >
-                              <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center mt-0.5">
+                              <div className="flex-shrink-0 w-6 h-6 bg-primary-600 rounded-full flex items-center justify-center mt-0.5">
                                 <TrendingUp className="w-4 h-4 text-white" />
                               </div>
                               <span className="text-gray-800 dark:text-gray-200 font-medium">
@@ -618,7 +600,7 @@ const ATSAnalyzer = () => {
                             </li>
                           ))}
                         </ul>
-                        <button className="w-full py-3 px-6 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-2">
+                        <button className="w-full py-3 px-6 bg-primary-600 text-gray-900 dark:text-white font-bold rounded-lg hover:bg-primary-700 transition-colors flex items-center justify-center gap-2">
                           <Sparkles className="w-5 h-5" />
                           Apply AI Suggestions to Resume
                         </button>
@@ -634,17 +616,17 @@ const ATSAnalyzer = () => {
           // AI Job Match Analysis content
           <div className="max-w-7xl mx-auto">
             {loadingResumeData ? (
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-12 text-center">
+              <div className="bg-white dark:bg-zinc-950 rounded-2xl shadow-xl p-12 text-center">
                 <div className="animate-spin w-16 h-16 border-4 border-purple-600 border-t-transparent rounded-full mx-auto mb-4"></div>
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                   Loading Resume Data...
                 </h3>
-                <p className="text-gray-600 dark:text-gray-400">
+                <p className="text-gray-400">
                   Please wait while we prepare your resume for analysis
                 </p>
               </div>
             ) : !selectedResumeData ? (
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 text-center">
+              <div className="bg-white dark:bg-zinc-950 rounded-2xl shadow-xl p-8 text-center">
                 <Brain className="w-16 h-16 text-purple-600 dark:text-purple-400 mx-auto mb-4" />
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
                   Select a Resume to Analyze
@@ -657,7 +639,7 @@ const ATSAnalyzer = () => {
                   <select
                     value={selectedResume || ""}
                     onChange={(e) => setSelectedResume(e.target.value)}
-                    className="max-w-md mx-auto px-6 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
+                    className="max-w-md mx-auto px-6 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-black text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
                   >
                     <option value="">Select a resume...</option>
                     {userResumes.map((resume) => (
@@ -667,13 +649,13 @@ const ATSAnalyzer = () => {
                     ))}
                   </select>
                 ) : (
-                  <div className="text-gray-600 dark:text-gray-400">
+                  <div className="text-gray-400">
                     <p className="mb-4">
                       You don't have any saved resumes yet.
                     </p>
                     <a
                       href="/upload"
-                      className="inline-block px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-xl hover:shadow-lg transition-all"
+                      className="inline-block px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-gray-900 dark:text-white font-semibold rounded-xl hover:shadow-lg transition-all"
                     >
                       Create Your First Resume
                     </a>

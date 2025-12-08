@@ -84,8 +84,9 @@ const resumeSchema = new mongoose.Schema(
     },
     customSections: [
       {
+        id: String,
         title: String,
-        content: [String],
+        items: [String],
       },
     ],
     rawText: {

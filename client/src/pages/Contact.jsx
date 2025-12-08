@@ -293,46 +293,40 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-900 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-white dark:bg-black py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30 rounded-full mb-4 shadow-md">
-            <MessageSquare className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-            <span className="text-sm font-semibold text-indigo-700 dark:text-indigo-300">
-              Get In Touch
-            </span>
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent mb-4">
+        <div className="mb-12">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-3 tracking-tight">
             Contact & Feedback
           </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+          <p className="text-gray-600 dark:text-gray-400 max-w-2xl">
             Have a question or feedback? We'd love to hear from you.
           </p>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex gap-3 mb-8 bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl p-2 shadow-xl border border-white/20">
+        <div className="flex gap-2 mb-8 border-b border-gray-200 dark:border-zinc-800">
           <button
             onClick={() => setActiveTab("contact")}
-            className={`flex-1 flex items-center justify-center gap-2 py-4 px-6 rounded-xl font-semibold transition-all duration-300 ${
+            className={`flex items-center gap-2 py-3 px-4 font-medium transition-all duration-200 border-b-2 ${
               activeTab === "contact"
-                ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/50 scale-105"
-                : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                ? "border-primary-600 text-primary-600 dark:text-primary-400"
+                : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
             }`}
           >
-            <Mail className="w-5 h-5" />
+            <Mail className="w-4 h-4" />
             <span>Contact Us</span>
           </button>
           <button
             onClick={() => setActiveTab("feedback")}
-            className={`flex-1 flex items-center justify-center gap-2 py-4 px-6 rounded-xl font-semibold transition-all duration-300 ${
+            className={`flex items-center gap-2 py-3 px-4 font-medium transition-all duration-200 border-b-2 ${
               activeTab === "feedback"
-                ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/50 scale-105"
-                : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                ? "border-primary-600 text-primary-600 dark:text-primary-400"
+                : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
             }`}
           >
-            <MessageSquare className="w-5 h-5" />
+            <MessageSquare className="w-4 h-4" />
             <span>Feedback</span>
           </button>
         </div>
@@ -341,26 +335,25 @@ const Contact = () => {
         {activeTab === "contact" && (
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Contact Information */}
-            <div className="lg:col-span-1 space-y-6">
-              <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-6 shadow-2xl border border-white/20">
-                <h3 className="text-xl font-bold mb-6 text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+            <div className="lg:col-span-1 space-y-4">
+              <div className="bg-zinc-900 rounded-xl p-6 border border-gray-200 dark:border-zinc-800">
+                <h3 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white tracking-tight">
                   Contact Information
                 </h3>
 
-                <div className="space-y-4">
+                <div className="space-y-5">
                   {/* Email */}
-                  <div className="flex items-start gap-4 group">
-                    <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                      <Mail className="w-6 h-6 text-white" />
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Mail className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                     </div>
                     <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-1 font-medium">
+                      <p className="text-xs text-gray-500 dark:text-gray-500 dark:text-gray-500 dark:text-gray-500 mb-1 font-medium">
                         Email
                       </p>
                       <a
                         href="mailto:support@smartnshine.app"
-                        className="text-gray-900 dark:text-gray-100 font-semibold hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                        className="text-sm text-gray-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
                       >
                         support@smartnshine.app
                       </a>
@@ -368,17 +361,17 @@ const Contact = () => {
                   </div>
 
                   {/* Phone */}
-                  <div className="flex items-start gap-4 group">
-                    <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                      <Phone className="w-6 h-6 text-white" />
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 bg-green-100 dark:bg-green-900/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Phone className="w-5 h-5 text-green-600 dark:text-green-400" />
                     </div>
                     <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-1 font-medium">
+                      <p className="text-xs text-gray-500 dark:text-gray-500 dark:text-gray-500 dark:text-gray-500 mb-1 font-medium">
                         Phone
                       </p>
                       <a
                         href="tel:+919156906881"
-                        className="text-gray-900 dark:text-gray-100 font-semibold hover:text-green-600 dark:hover:text-green-400 transition-colors"
+                        className="text-sm text-gray-900 dark:text-white hover:text-green-600 dark:hover:text-green-400 transition-colors"
                       >
                         +91 9156906881
                       </a>
@@ -386,15 +379,15 @@ const Contact = () => {
                   </div>
 
                   {/* Location */}
-                  <div className="flex items-start gap-4 group">
-                    <div className="w-12 h-12 bg-gradient-to-br from-pink-500 to-red-600 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                      <MapPin className="w-6 h-6 text-white" />
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <MapPin className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                     </div>
                     <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-1 font-medium">
+                      <p className="text-xs text-gray-500 dark:text-gray-500 dark:text-gray-500 dark:text-gray-500 mb-1 font-medium">
                         Location
                       </p>
-                      <p className="text-gray-900 dark:text-gray-100 font-semibold">
+                      <p className="text-sm text-white">
                         Cidco, Nanded
                         <br />
                         Maharashtra, India
@@ -404,14 +397,14 @@ const Contact = () => {
 
                   {/* Working Hours */}
                   <div className="flex items-start gap-4 group">
-                    <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-yellow-600 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                      <Clock className="w-6 h-6 text-white" />
+                    <div className="w-10 h-10 bg-gray-900 dark:bg-white rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Clock className="w-5 h-5 text-gray-900 dark:text-white dark:text-gray-900" />
                     </div>
                     <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-1 font-medium">
+                      <p className="text-sm text-gray-500 dark:text-gray-500 dark:text-gray-600 dark:text-gray-400 mb-1 font-medium">
                         Working Hours
                       </p>
-                      <p className="text-gray-900 dark:text-gray-100 font-semibold">
+                      <p className="text-gray-900 dark:text-white font-medium">
                         Mon - Fri: 9:00 AM - 6:00 PM
                         <br />
                         Sat - Sun: Closed
@@ -424,19 +417,19 @@ const Contact = () => {
 
             {/* Contact Form */}
             <div className="lg:col-span-2">
-              <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20">
-                <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                  <Send className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+              <div className="bg-white dark:bg-zinc-950 rounded-xl p-8 border border-gray-200 dark:border-zinc-800">
+                <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white flex items-center gap-2">
+                  <Send className="w-6 h-6 text-primary-600" />
                   Send us a Message
                 </h2>
 
                 {/* Success Message */}
                 {status.success && (
-                  <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl animate-fade-in">
+                  <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
                     <div className="flex items-start gap-3">
                       <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
                       <div>
-                        <h4 className="font-semibold text-green-800 dark:text-green-300 mb-1">
+                        <h4 className="font-medium text-green-800 dark:text-green-300 mb-1">
                           Message Sent Successfully!
                         </h4>
                         <p className="text-sm text-green-700 dark:text-green-400">
@@ -449,11 +442,11 @@ const Contact = () => {
 
                 {/* Error Message */}
                 {status.error && (
-                  <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
+                  <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
                     <div className="flex items-start gap-3">
                       <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
                       <div>
-                        <h4 className="font-semibold text-red-800 dark:text-red-300 mb-1">
+                        <h4 className="font-medium text-red-800 dark:text-red-300 mb-1">
                           Error
                         </h4>
                         <p className="text-sm text-red-700 dark:text-red-400">
@@ -467,7 +460,7 @@ const Contact = () => {
                 <form onSubmit={handleSubmit} className="space-y-6">
                   {/* Category Selection */}
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                       Category
                     </label>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -478,16 +471,16 @@ const Contact = () => {
                           onClick={() =>
                             setFormData({...formData, category: cat.value})
                           }
-                          className={`p-4 rounded-xl border-2 transition-all duration-200 hover:scale-105 ${
+                          className={`p-4 rounded-lg border transition-colors ${
                             formData.category === cat.value
-                              ? "border-indigo-600 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 shadow-lg"
-                              : "border-gray-200 dark:border-gray-700 hover:border-indigo-300 bg-white dark:bg-gray-700/50"
+                              ? "border-primary-600 bg-primary-50 dark:bg-primary-900/20"
+                              : "border-gray-300 dark:border-gray-700 hover:border-primary-400 bg-white dark:bg-zinc-950"
                           }`}
                         >
                           <span className="text-2xl mb-1 block">
                             {cat.icon}
                           </span>
-                          <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
+                          <span className="text-xs font-medium text-gray-300">
                             {cat.label}
                           </span>
                         </button>
@@ -498,7 +491,7 @@ const Contact = () => {
                   {/* Name & Email */}
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Name *
                       </label>
                       <div className="relative">
@@ -509,11 +502,11 @@ const Contact = () => {
                           required
                           value={formData.name}
                           onChange={handleChange}
-                          className={`w-full pl-12 pr-4 py-3 rounded-xl border ${
+                          className={`w-full pl-12 pr-4 py-3 rounded-lg border ${
                             errors.name
                               ? "border-red-500 focus:ring-red-500"
-                              : "border-gray-300 dark:border-gray-600 focus:ring-indigo-500"
-                          } bg-white dark:bg-gray-700 focus:ring-2 dark:text-white transition-all`}
+                              : "border-gray-300 dark:border-gray-700 focus:ring-primary-500"
+                          } bg-black focus:ring-2 dark:text-gray-900 dark:text-white transition-colors`}
                           placeholder="John Doe"
                         />
                       </div>
@@ -525,7 +518,7 @@ const Contact = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Email *
                       </label>
                       <div className="relative">
@@ -536,11 +529,11 @@ const Contact = () => {
                           required
                           value={formData.email}
                           onChange={handleChange}
-                          className={`w-full pl-12 pr-4 py-3 rounded-xl border ${
+                          className={`w-full pl-12 pr-4 py-3 rounded-lg border ${
                             errors.email
                               ? "border-red-500 focus:ring-red-500"
-                              : "border-gray-300 dark:border-gray-600 focus:ring-indigo-500"
-                          } bg-white dark:bg-gray-700 focus:ring-2 dark:text-white transition-all`}
+                              : "border-gray-300 dark:border-gray-700 focus:ring-primary-500"
+                          } bg-black focus:ring-2 dark:text-gray-900 dark:text-white transition-colors`}
                           placeholder="john@example.com"
                         />
                       </div>
@@ -555,7 +548,7 @@ const Contact = () => {
                   {/* Phone & Company */}
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Phone
                       </label>
                       <div className="relative">
@@ -565,14 +558,14 @@ const Contact = () => {
                           name="phone"
                           value={formData.phone}
                           onChange={handleChange}
-                          className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-indigo-500 dark:text-white transition-all"
+                          className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-black focus:ring-2 focus:ring-primary-500 dark:text-gray-900 dark:text-white transition-colors"
                           placeholder="+1 234 567 8900"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Company
                       </label>
                       <div className="relative">
@@ -582,7 +575,7 @@ const Contact = () => {
                           name="company"
                           value={formData.company}
                           onChange={handleChange}
-                          className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-indigo-500 dark:text-white transition-all"
+                          className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-black focus:ring-2 focus:ring-primary-500 dark:text-gray-900 dark:text-white transition-colors"
                           placeholder="Your Company"
                         />
                       </div>
@@ -591,7 +584,7 @@ const Contact = () => {
 
                   {/* Subject */}
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Subject *
                     </label>
                     <input
@@ -600,11 +593,11 @@ const Contact = () => {
                       required
                       value={formData.subject}
                       onChange={handleChange}
-                      className={`w-full px-4 py-3 rounded-xl border ${
+                      className={`w-full px-4 py-3 rounded-lg border ${
                         errors.subject
                           ? "border-red-500 focus:ring-red-500"
-                          : "border-gray-300 dark:border-gray-600 focus:ring-indigo-500"
-                      } bg-white dark:bg-gray-700 focus:ring-2 dark:text-white transition-all`}
+                          : "border-gray-300 dark:border-gray-700 focus:ring-primary-500"
+                      } bg-black focus:ring-2 dark:text-gray-900 dark:text-white transition-colors`}
                       placeholder="How can we help?"
                     />
                     {errors.subject && (
@@ -616,7 +609,7 @@ const Contact = () => {
 
                   {/* Message */}
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Message *
                     </label>
                     <textarea
@@ -625,11 +618,11 @@ const Contact = () => {
                       rows={6}
                       value={formData.message}
                       onChange={handleChange}
-                      className={`w-full px-4 py-3 rounded-xl border ${
+                      className={`w-full px-4 py-3 rounded-lg border ${
                         errors.message
                           ? "border-red-500 focus:ring-red-500"
-                          : "border-gray-300 dark:border-gray-600 focus:ring-indigo-500"
-                      } bg-white dark:bg-gray-700 focus:ring-2 dark:text-white transition-all resize-none`}
+                          : "border-gray-300 dark:border-gray-700 focus:ring-primary-500"
+                      } bg-black focus:ring-2 dark:text-gray-900 dark:text-white transition-colors resize-none`}
                       placeholder="Tell us more about your inquiry..."
                     />
                     {errors.message && (
@@ -643,7 +636,7 @@ const Contact = () => {
                   <button
                     type="submit"
                     disabled={status.loading}
-                    className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-4 rounded-xl shadow-lg shadow-indigo-500/50 transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2"
+                    className="w-full bg-primary-600 hover:bg-primary-700 text-gray-900 dark:text-white font-medium py-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {status.loading ? (
                       <>
@@ -669,15 +662,15 @@ const Contact = () => {
             {/* Feedback Stats */}
             {stats && (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl p-6 shadow-lg border border-white/20">
-                  <div className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                <div className="bg-white dark:bg-zinc-950 rounded-xl p-6 border border-gray-200 dark:border-zinc-800">
+                  <div className="text-3xl font-bold text-white">
                     {stats.total || 0}
                   </div>
                   <div className="text-sm text-gray-600 dark:text-gray-400 mt-1 font-medium">
                     Total Submitted
                   </div>
                 </div>
-                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl p-6 shadow-lg border border-white/20">
+                <div className="bg-white dark:bg-zinc-950 rounded-xl p-6 border border-gray-200 dark:border-zinc-800">
                   <div className="text-3xl font-bold text-yellow-600">
                     {stats.open || 0}
                   </div>
@@ -685,7 +678,7 @@ const Contact = () => {
                     Open
                   </div>
                 </div>
-                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl p-6 shadow-lg border border-white/20">
+                <div className="bg-white dark:bg-zinc-950 rounded-xl p-6 border border-gray-200 dark:border-zinc-800">
                   <div className="text-3xl font-bold text-blue-600">
                     {stats.inProgress || 0}
                   </div>
@@ -693,7 +686,7 @@ const Contact = () => {
                     In Progress
                   </div>
                 </div>
-                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl p-6 shadow-lg border border-white/20">
+                <div className="bg-white dark:bg-zinc-950 rounded-xl p-6 border border-gray-200 dark:border-zinc-800">
                   <div className="text-3xl font-bold text-green-600">
                     {stats.resolved || 0}
                   </div>
@@ -705,8 +698,8 @@ const Contact = () => {
             )}
 
             {/* Feedback Type Selection */}
-            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/20">
-              <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-6">
+            <div className="bg-white dark:bg-zinc-950 rounded-xl p-8 border border-gray-200 dark:border-zinc-800">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
                 What would you like to share?
               </h3>
               <div className="grid md:grid-cols-3 gap-4 mb-8">
@@ -719,10 +712,10 @@ const Contact = () => {
                       onClick={() =>
                         setFeedbackForm({...feedbackForm, type: type.id})
                       }
-                      className={`p-6 rounded-2xl border-2 transition-all duration-300 hover:scale-105 ${
+                      className={`p-6 rounded-lg border transition-colors ${
                         feedbackForm.type === type.id
-                          ? `border-${type.color}-500 bg-gradient-to-br from-${type.color}-50 to-${type.color}-100 dark:from-${type.color}-900/20 dark:to-${type.color}-900/10 shadow-xl shadow-${type.color}-500/20`
-                          : "border-gray-200 dark:border-gray-700 hover:border-gray-300 bg-white dark:bg-gray-700/50"
+                          ? `border-${type.color}-500 bg-${type.color}-50 dark:bg-${type.color}-900/20`
+                          : "border-gray-300 dark:border-gray-700 hover:border-gray-400 bg-white dark:bg-zinc-950"
                       }`}
                     >
                       <Icon
@@ -732,10 +725,10 @@ const Contact = () => {
                             : "text-gray-400"
                         }`}
                       />
-                      <h4 className="font-semibold text-gray-800 dark:text-white mb-1">
+                      <h4 className="font-medium text-gray-900 dark:text-white mb-1">
                         {type.label}
                       </h4>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                      <p className="text-xs text-gray-500 dark:text-gray-500 dark:text-gray-400">
                         {type.description}
                       </p>
                     </button>
@@ -747,7 +740,7 @@ const Contact = () => {
               <form onSubmit={handleFeedbackSubmit} className="space-y-6">
                 {/* Title */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Title *
                   </label>
                   <input
@@ -758,14 +751,14 @@ const Contact = () => {
                     onChange={(e) =>
                       setFeedbackForm({...feedbackForm, title: e.target.value})
                     }
-                    className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-indigo-500 dark:text-white transition-all"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-black focus:ring-2 focus:ring-primary-500 dark:text-gray-900 dark:text-white transition-colors"
                     placeholder="Brief summary of your feedback"
                   />
                 </div>
 
                 {/* Description */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Description *
                   </label>
                   <textarea
@@ -779,7 +772,7 @@ const Contact = () => {
                         description: e.target.value,
                       })
                     }
-                    className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-indigo-500 dark:text-white transition-all resize-none"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-black focus:ring-2 focus:ring-primary-500 dark:text-gray-900 dark:text-white transition-colors resize-none"
                     placeholder="Provide detailed information..."
                   />
                 </div>
@@ -787,7 +780,7 @@ const Contact = () => {
                 {/* Priority & Category */}
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Priority
                     </label>
                     <select
@@ -798,7 +791,7 @@ const Contact = () => {
                           priority: e.target.value,
                         })
                       }
-                      className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-indigo-500 dark:text-white transition-all"
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-black focus:ring-2 focus:ring-primary-500 dark:text-gray-900 dark:text-white transition-colors"
                     >
                       <option value="low">Low</option>
                       <option value="medium">Medium</option>
@@ -807,7 +800,7 @@ const Contact = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Category
                     </label>
                     <select
@@ -818,7 +811,7 @@ const Contact = () => {
                           category: e.target.value,
                         })
                       }
-                      className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-indigo-500 dark:text-white transition-all"
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-black focus:ring-2 focus:ring-primary-500 dark:text-gray-900 dark:text-white transition-colors"
                     >
                       {feedbackCategories.map((cat) => (
                         <option key={cat.value} value={cat.value}>
@@ -833,7 +826,7 @@ const Contact = () => {
                 <button
                   type="submit"
                   disabled={feedbackLoading}
-                  className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-4 rounded-xl shadow-lg shadow-indigo-500/50 transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2"
+                  className="w-full bg-primary-600 hover:bg-primary-700 text-gray-900 dark:text-white font-medium py-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {feedbackLoading ? (
                     <>
@@ -853,26 +846,26 @@ const Contact = () => {
             {/* My Feedback List */}
             {loadingFeedback ? (
               <div className="flex justify-center py-12">
-                <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+                <Loader2 className="w-8 h-8 animate-spin text-primary-600" />
               </div>
             ) : myFeedback.length > 0 ? (
               <div className="space-y-4">
-                <h3 className="text-xl font-bold text-gray-800 dark:text-white">
+                <h3 className="text-xl font-bold text-white">
                   Your Feedback History
                 </h3>
                 {myFeedback.map((item) => (
                   <div
                     key={item._id}
-                    className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl p-6 shadow-lg border border-white/20 hover:shadow-xl transition-shadow duration-300"
+                    className="bg-white dark:bg-zinc-950 rounded-xl p-6 border border-gray-200 dark:border-zinc-800"
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2 flex-wrap">
-                          <h4 className="font-semibold text-gray-800 dark:text-white">
+                          <h4 className="font-medium text-white">
                             {item.title}
                           </h4>
                           <span
-                            className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            className={`px-3 py-1 rounded-lg text-xs font-medium ${
                               item.type === "bug"
                                 ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
                                 : item.type === "improvement"
@@ -884,19 +877,19 @@ const Contact = () => {
                           </span>
                           <div className="flex items-center gap-1">
                             {getStatusIcon(item.status)}
-                            <span className="text-xs text-gray-500 dark:text-gray-400 capitalize">
+                            <span className="text-xs text-gray-500 dark:text-gray-500 dark:text-gray-600 dark:text-gray-400 capitalize">
                               {item.status}
                             </span>
                           </div>
                         </div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                        <p className="text-sm text-gray-400">
                           {item.description}
                         </p>
                       </div>
                       <div className="flex items-center gap-2 ml-4">
                         <button
                           onClick={() => handleUpvote(item._id)}
-                          className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition-colors"
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                         >
                           <ThumbsUp className="w-4 h-4" />
                           <span className="text-sm font-medium">
@@ -912,11 +905,11 @@ const Contact = () => {
                       </div>
                     </div>
                     {item.adminResponse && (
-                      <div className="mt-4 p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl border border-indigo-200 dark:border-indigo-800">
-                        <p className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 mb-2">
+                      <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-zinc-800">
+                        <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
                           Admin Response:
                         </p>
-                        <p className="text-sm text-gray-700 dark:text-gray-300">
+                        <p className="text-sm text-gray-300">
                           {item.adminResponse}
                         </p>
                       </div>

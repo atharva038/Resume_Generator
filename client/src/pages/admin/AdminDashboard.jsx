@@ -131,7 +131,7 @@ const AdminDashboard = () => {
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
           Dashboard Overview
         </h1>
-        <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1">
+        <p className="text-sm sm:text-base text-gray-600 dark:text-gray-600 dark:text-gray-400 mt-1">
           Welcome back! Here's what's happening with SmartNShine today.
         </p>
       </div>
@@ -160,10 +160,10 @@ const AdminDashboard = () => {
                   <span>{stat.change}</span>
                 </div>
               </div>
-              <h3 className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm font-medium">
+              <h3 className="text-gray-600 dark:text-gray-600 dark:text-gray-400 text-xs sm:text-sm font-medium">
                 {stat.title}
               </h3>
-              <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mt-1">
+              <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mt-1">
                 {stat.value}
               </p>
             </div>
@@ -175,7 +175,7 @@ const AdminDashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Users Growth Chart */}
         <div className="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-          <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-3 sm:mb-4">
             Users Growth (Last 7 Days)
           </h3>
           <ResponsiveContainer width="100%" height={250}>
@@ -198,7 +198,7 @@ const AdminDashboard = () => {
 
         {/* Resumes Growth Chart */}
         <div className="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-          <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-3 sm:mb-4">
             Resumes Created (Last 7 Days)
           </h3>
           <ResponsiveContainer width="100%" height={250}>
@@ -217,7 +217,7 @@ const AdminDashboard = () => {
       {/* AI Usage by Feature */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <div className="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-          <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-3 sm:mb-4">
             AI Usage by Feature
           </h3>
           <ResponsiveContainer width="100%" height={250}>
@@ -246,7 +246,7 @@ const AdminDashboard = () => {
 
         {/* Recent Activity */}
         <div className="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-          <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-3 sm:mb-4">
             Recent Users
           </h3>
           <div className="space-y-2 sm:space-y-3 max-h-64 overflow-y-auto">
@@ -256,21 +256,21 @@ const AdminDashboard = () => {
                 className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg"
               >
                 <div className="min-w-0 flex-1 mr-2">
-                  <p className="font-medium text-sm sm:text-base text-gray-900 dark:text-white truncate">
+                  <p className="font-medium text-sm sm:text-base text-gray-900 dark:text-gray-900 dark:text-white truncate">
                     {user.name}
                   </p>
-                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 truncate">
+                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-600 dark:text-gray-400 truncate">
                     {user.email}
                   </p>
                 </div>
-                <span className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                <span className="text-xs text-gray-500 dark:text-gray-500 dark:text-gray-600 dark:text-gray-400 whitespace-nowrap">
                   {new Date(user.createdAt).toLocaleDateString()}
                 </span>
               </div>
             ))}
             {(!stats?.recentActivity?.users ||
               stats.recentActivity.users.length === 0) && (
-              <p className="text-gray-500 dark:text-gray-400 text-center py-4 text-sm">
+              <p className="text-gray-500 dark:text-gray-500 dark:text-gray-600 dark:text-gray-400 text-center py-4 text-sm">
                 No recent users
               </p>
             )}
@@ -280,7 +280,7 @@ const AdminDashboard = () => {
 
       {/* System Status */}
       <div className="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-        <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">
+        <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-3 sm:mb-4">
           System Status
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
@@ -288,7 +288,7 @@ const AdminDashboard = () => {
             <div className="text-xl sm:text-2xl font-bold text-green-600 dark:text-green-400">
               {stats?.stats?.activeUsers || 0}
             </div>
-            <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-600 dark:text-gray-400 mt-1">
               Active Users
             </div>
           </div>
@@ -296,7 +296,7 @@ const AdminDashboard = () => {
             <div className="text-xl sm:text-2xl font-bold text-red-600 dark:text-red-400">
               {stats?.stats?.disabledUsers || 0}
             </div>
-            <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-600 dark:text-gray-400 mt-1">
               Disabled Users
             </div>
           </div>
@@ -304,7 +304,7 @@ const AdminDashboard = () => {
             <div className="text-xl sm:text-2xl font-bold text-blue-600 dark:text-blue-400">
               99.9%
             </div>
-            <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-600 dark:text-gray-400 mt-1">
               Uptime
             </div>
           </div>

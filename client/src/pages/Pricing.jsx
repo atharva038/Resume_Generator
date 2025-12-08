@@ -20,7 +20,6 @@ const Pricing = () => {
   const navigate = useNavigate();
   const [pricing, setPricing] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [billingCycle, setBillingCycle] = useState("monthly"); // monthly or yearly
   const [selectedTier, setSelectedTier] = useState(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [paymentData, setPaymentData] = useState(null);
@@ -61,21 +60,19 @@ const Pricing = () => {
   // Tier configurations with icons and highlights
   const tierConfig = {
     free: {
-      icon: <FaStar className="text-4xl text-gray-400 dark:text-gray-300" />,
+      icon: <FaStar className="text-4xl text-gray-600 dark:text-gray-300" />,
       color: "gray",
       popular: false,
-      bgGradient:
-        "from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600",
-      borderColor: "border-gray-200",
+      bgGradient: "bg-gray-50 dark:bg-zinc-900/30",
+      borderColor: "border-gray-200 dark:border-white/10",
       buttonColor: "bg-gray-600 hover:bg-gray-700",
     },
     "one-time": {
       icon: <FaRocket className="text-4xl text-blue-500 dark:text-blue-400" />,
       color: "blue",
       popular: false,
-      bgGradient:
-        "from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-800",
-      borderColor: "border-blue-200",
+      bgGradient: "bg-blue-50 dark:bg-zinc-900/30",
+      borderColor: "border-blue-200 dark:border-white/10",
       buttonColor: "bg-blue-600 hover:bg-blue-700",
     },
     pro: {
@@ -84,9 +81,8 @@ const Pricing = () => {
       ),
       color: "purple",
       popular: true,
-      bgGradient:
-        "from-purple-50 to-purple-100 dark:from-purple-900 dark:to-purple-800",
-      borderColor: "border-purple-300",
+      bgGradient: "bg-purple-50 dark:bg-zinc-900/30",
+      borderColor: "border-purple-300 dark:border-white/10",
       buttonColor: "bg-purple-600 hover:bg-purple-700",
     },
   };
@@ -104,13 +100,16 @@ const Pricing = () => {
       return;
     }
 
-    // Prevent Pro users from purchasing Pro again
-    if (
-      tier === "pro" &&
-      currentSubscription?.tier === "pro" &&
-      currentSubscription?.status === "active"
-    ) {
-      toast.error("You already have an active Pro subscription!");
+    // Prevent users from purchasing their current active plan
+    const isCurrentActivePlan =
+      currentSubscription?.tier === tier &&
+      (tier === "one-time" ||
+        (tier === "pro" && currentSubscription?.status === "active"));
+
+    if (isCurrentActivePlan) {
+      toast.error(
+        `You already have an active ${tier.replace("-", " ")} subscription!`
+      );
       return;
     }
 
@@ -131,29 +130,18 @@ const Pricing = () => {
     if (tier === "free") return "Free";
     if (tier === "one-time") return formatPrice(tierData.amount);
 
-    // Pro has monthly/yearly options
-    if (tier === "pro") {
-      if (billingCycle === "yearly" && tierData.yearly) {
-        const monthlyEquivalent = tierData.yearly.amount / 12;
-        return (
-          <>
-            <span className="text-2xl">{formatPrice(monthlyEquivalent)}</span>
-            <span className="text-base text-gray-600">/mo</span>
-            <div className="text-sm text-green-600 mt-1">
-              Billed {formatPrice(tierData.yearly.amount)}/year
-            </div>
-          </>
-        );
-      } else if (tierData.monthly) {
-        return (
-          <>
-            <span className="text-2xl">
-              {formatPrice(tierData.monthly.amount)}
-            </span>
-            <span className="text-base text-gray-600">/mo</span>
-          </>
-        );
-      }
+    // Pro has monthly pricing
+    if (tier === "pro" && tierData.monthly) {
+      return (
+        <>
+          <span className="text-2xl">
+            {formatPrice(tierData.monthly.amount)}
+          </span>
+          <span className="text-base text-gray-600 dark:text-gray-400">
+            /mo
+          </span>
+        </>
+      );
     }
 
     return formatPrice(tierData.amount || 0);
@@ -161,7 +149,7 @@ const Pricing = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 flex items-center justify-center">
+      <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-600 mx-auto"></div>
           <p className="mt-4 text-gray-600 dark:text-gray-400">
@@ -173,7 +161,7 @@ const Pricing = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 py-12 px-4">
+    <div className="min-h-screen bg-white dark:bg-black py-12 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
@@ -183,33 +171,6 @@ const Pricing = () => {
           <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
             Get the perfect plan for your resume building needs
           </p>
-
-          {/* Billing Cycle Toggle */}
-          <div className="inline-flex bg-white dark:bg-gray-800 rounded-full p-1 shadow-md">
-            <button
-              onClick={() => setBillingCycle("monthly")}
-              className={`px-6 py-2 rounded-full transition-all ${
-                billingCycle === "monthly"
-                  ? "bg-purple-600 text-white shadow-lg"
-                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
-              }`}
-            >
-              Monthly
-            </button>
-            <button
-              onClick={() => setBillingCycle("yearly")}
-              className={`px-6 py-2 rounded-full transition-all ${
-                billingCycle === "yearly"
-                  ? "bg-purple-600 text-white shadow-lg"
-                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
-              }`}
-            >
-              Yearly
-              <span className="ml-2 text-sm bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 px-2 py-1 rounded-full">
-                Save 16%
-              </span>
-            </button>
-          </div>
         </div>
 
         {/* Pricing Cards Grid */}
@@ -220,28 +181,40 @@ const Pricing = () => {
               if (!config) return null;
 
               const isPopular = config.popular;
-              const showYearlyPrice =
-                billingCycle === "yearly" && tier === "pro";
+              const isCurrentPlan = currentSubscription?.tier === tier;
+              const isActivePlan =
+                isCurrentPlan &&
+                (tier === "free" ||
+                  tier === "one-time" ||
+                  (tier === "pro" && currentSubscription?.status === "active"));
 
               return (
                 <div
                   key={tier}
-                  className={`relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden transform transition-all duration-300 hover:scale-105 ${
+                  className={`relative bg-white dark:bg-zinc-900/50 dark:backdrop-blur-xl rounded-2xl shadow-sm dark:shadow-lg border border-gray-200 dark:border-white/10 overflow-hidden transform transition-all duration-300 hover:scale-105 ${
                     isPopular
-                      ? "ring-4 ring-purple-400 dark:ring-purple-500"
+                      ? "ring-4 ring-purple-400 dark:ring-purple-600 -mt-4 lg:scale-105"
                       : ""
                   }`}
                 >
+                  {/* Current Plan Badge */}
+                  {isActivePlan && (
+                    <div className="absolute top-0 left-0 bg-green-600 text-white px-4 py-1 rounded-br-lg font-semibold text-sm z-10 flex items-center gap-1">
+                      <FaCheck className="text-sm" />
+                      CURRENT PLAN
+                    </div>
+                  )}
+
                   {/* Popular Badge */}
-                  {isPopular && (
-                    <div className="absolute top-0 right-0 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-1 rounded-bl-lg font-semibold text-sm">
+                  {isPopular && !isActivePlan && (
+                    <div className="absolute top-0 right-0 bg-purple-600 text-white px-4 py-1 rounded-bl-lg font-semibold text-sm">
                       MOST POPULAR
                     </div>
                   )}
 
                   {/* Card Header */}
                   <div
-                    className={`bg-gradient-to-br ${config.bgGradient} p-6 text-center`}
+                    className={`${config.bgGradient} p-6 text-center border-b ${config.borderColor}`}
                   >
                     <div className="mb-4 flex justify-center">
                       {config.icon}
@@ -249,7 +222,7 @@ const Pricing = () => {
                     <h3 className="text-2xl font-bold text-gray-900 dark:text-white uppercase mb-2">
                       {tier.replace("-", " ")}
                     </h3>
-                    <div className="text-4xl font-extrabold text-gray-900 dark:text-white mb-2">
+                    <div className="text-4xl font-extrabold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
                       {getDisplayPrice(tier, tierData)}
                     </div>
                     {tier === "one-time" && (
@@ -260,7 +233,7 @@ const Pricing = () => {
                   </div>
 
                   {/* Features List */}
-                  <div className="p-6">
+                  <div className="p-6 bg-white dark:bg-zinc-900/50 dark:backdrop-blur-xl">
                     <ul className="space-y-3 mb-6">
                       {tierData.features?.map((feature, index) => (
                         <li key={index} className="flex items-start">
@@ -274,49 +247,32 @@ const Pricing = () => {
 
                     {/* CTA Button */}
                     <button
-                      onClick={() =>
-                        handleSelectPlan(
-                          tier,
-                          showYearlyPrice ? "yearly" : tierData.plan
-                        )
-                      }
-                      className={`w-full py-3 rounded-lg font-semibold text-white transition-all transform hover:scale-105 shadow-lg ${
-                        (tier === "free" &&
-                          currentSubscription?.tier === "free") ||
-                        (tier === "pro" &&
-                          currentSubscription?.tier === "pro" &&
-                          currentSubscription?.status === "active")
-                          ? "bg-gray-400 cursor-not-allowed"
+                      onClick={() => handleSelectPlan(tier, tierData.plan)}
+                      className={`w-full py-3 rounded-lg font-semibold text-white transition-all shadow-md hover:shadow-lg ${
+                        isActivePlan
+                          ? "bg-gray-400 dark:bg-zinc-700 cursor-not-allowed"
                           : config.buttonColor
                       }`}
-                      disabled={
-                        (tier === "free" &&
-                          currentSubscription?.tier === "free") ||
-                        (tier === "pro" &&
-                          currentSubscription?.tier === "pro" &&
-                          currentSubscription?.status === "active")
-                      }
+                      disabled={isActivePlan}
                     >
-                      {tier === "free" && currentSubscription?.tier === "free"
-                        ? "Current Plan"
-                        : tier === "pro" &&
-                          currentSubscription?.tier === "pro" &&
-                          currentSubscription?.status === "active"
-                        ? "Already Subscribed ✓"
+                      {isActivePlan
+                        ? "Current Plan ✓"
+                        : tier === "free"
+                        ? "Get Started Free"
                         : "Choose Plan"}
                     </button>
 
-                    {/* Show message for Pro subscribers */}
-                    {tier === "pro" &&
-                      currentSubscription?.tier === "pro" &&
-                      currentSubscription?.status === "active" && (
-                        <div className="mt-3 text-center">
-                          <p className="text-sm text-purple-600 dark:text-purple-400 font-medium flex items-center justify-center">
-                            <FaCrown className="mr-2" />
-                            You're on our best plan!
-                          </p>
-                        </div>
-                      )}
+                    {/* Show message for active subscribers */}
+                    {isActivePlan && tier !== "free" && (
+                      <div className="mt-3 text-center">
+                        <p className="text-sm text-green-600 dark:text-green-400 font-medium flex items-center justify-center">
+                          <FaCheck className="mr-2" />
+                          {tier === "pro"
+                            ? "You're on our best plan!"
+                            : "You have access to premium features"}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
               );
@@ -324,14 +280,14 @@ const Pricing = () => {
         </div>
 
         {/* Feature Comparison Table */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 mb-12">
+        <div className="bg-white dark:bg-zinc-900/50 dark:backdrop-blur-xl rounded-2xl shadow-sm dark:shadow-lg border border-gray-200 dark:border-white/10 p-8 mb-12">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6 text-center">
             Compare All Features
           </h2>
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
-                <tr className="border-b-2 border-gray-200 dark:border-gray-700">
+                <tr className="border-b-2 border-gray-200 dark:border-white/10">
                   <th className="py-4 px-4 text-gray-700 dark:text-gray-300 font-semibold">
                     Feature
                   </th>
@@ -361,10 +317,11 @@ const Pricing = () => {
                   //   name: "Job Matches per Day",
                   //   values: ["0", "3", "∞"],
                   // },
-                  {
-                    name: "Cover Letters",
-                    values: ["✗", "✗", "∞"],
-                  },
+                  // TEMPORARILY HIDDEN - Cover Letters feature not yet implemented
+                  // {
+                  //   name: "Cover Letters",
+                  //   values: ["✗", "✗", "∞"],
+                  // },
                   {
                     name: "AI Model",
                     values: ["Gemini", "GPT-4o", "GPT-4o"],
@@ -381,10 +338,11 @@ const Pricing = () => {
                     name: "Portfolio Builder",
                     values: ["✗", "✗", "✓"],
                   },
-                  {
-                    name: "Advanced Analytics",
-                    values: ["✗", "✗", "✓"],
-                  },
+                  // TEMPORARILY HIDDEN - Analytics feature to be enabled later
+                  // {
+                  //   name: "Advanced Analytics",
+                  //   values: ["✗", "✗", "✓"],
+                  // },
                   {
                     name: "Priority Support",
                     values: ["✗", "✗", "✓"],
@@ -392,7 +350,7 @@ const Pricing = () => {
                 ].map((row, index) => (
                   <tr
                     key={index}
-                    className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                    className="border-b border-gray-100 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-white/5"
                   >
                     <td className="py-4 px-4 font-medium text-gray-700 dark:text-gray-300">
                       {row.name}
@@ -402,7 +360,7 @@ const Pricing = () => {
                         {value === "✓" ? (
                           <FaCheck className="text-green-500 dark:text-green-400 mx-auto" />
                         ) : value === "✗" ? (
-                          <span className="text-gray-300 dark:text-gray-600">
+                          <span className="text-gray-400 dark:text-gray-600">
                             ✗
                           </span>
                         ) : (
@@ -420,7 +378,7 @@ const Pricing = () => {
         </div>
 
         {/* FAQ Section */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
+        <div className="bg-white dark:bg-black rounded-2xl shadow-sm dark:shadow-lg border border-gray-200 dark:border-zinc-800 p-8">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6 text-center">
             Frequently Asked Questions
           </h2>
@@ -434,8 +392,10 @@ const Pricing = () => {
                 resumes, GPT-4o AI (premium quality), unlimited ATS scans,
                 {/* TEMPORARILY HIDDEN FOR RAZORPAY COMPLIANCE */}
                 {/* unlimited job matches, */}
-                advanced analytics, and priority support. It's the best value
-                for serious job seekers.
+                {/* TEMPORARILY HIDDEN - Analytics feature */}
+                {/* advanced analytics, and */}
+                and priority support. It's the best value for serious job
+                seekers.
               </p>
             </div>
             <div>
@@ -471,7 +431,7 @@ const Pricing = () => {
 
         {/* CTA Section */}
         <div className="text-center mt-12">
-          <p className="text-gray-600 dark:text-gray-400 mb-4">
+          <p className="text-gray-600 dark:text-gray-600 dark:text-gray-400 mb-4">
             Need help choosing?{" "}
             <a
               href="/contact"

@@ -16,6 +16,8 @@ import {
   validateResumeId,
   validateContentEnhance,
   validateSkillsCategorize,
+  validateAchievementsSegregation,
+  validateCustomSectionProcessing,
   validateFileUpload,
 } from "../middleware/validation.middleware.js";
 import {
@@ -89,7 +91,7 @@ router.post(
   checkUsageLimit("aiGenerationsPerMonth"),
   aiLimiter,
   checkAIQuota,
-  validateContentEnhance,
+  validateAchievementsSegregation,
   segregateAchievements
 );
 
@@ -101,7 +103,7 @@ router.post(
   checkUsageLimit("aiGenerationsPerMonth"),
   aiLimiter,
   checkAIQuota,
-  validateContentEnhance,
+  validateCustomSectionProcessing,
   processCustomSection
 );
 

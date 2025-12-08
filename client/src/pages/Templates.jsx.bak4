@@ -1,0 +1,633 @@
+import {useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {
+  Target,
+  Sparkles,
+  Palette,
+  Zap,
+  CheckCircle,
+  Layout,
+  Eye,
+  ArrowRight,
+  X,
+  Filter,
+} from "lucide-react";
+import ClassicTemplate from "../components/templates/ClassicTemplate";
+import ModernTemplate from "../components/templates/ModernTemplate";
+import MinimalTemplate from "../components/templates/MinimalTemplate";
+import ProfessionalTemplate from "../components/templates/ProfessionalTemplate";
+import ExecutiveTemplate from "../components/templates/ExecutiveTemplate";
+import TechTemplate from "../components/templates/TechTemplate";
+import CreativeTemplate from "../components/templates/CreativeTemplate";
+import AcademicTemplate from "../components/templates/AcademicTemplate";
+import CorporateEliteTemplate from "../components/templates/CorporateEliteTemplate";
+import StrategicLeaderTemplate from "../components/templates/StrategicLeaderTemplate";
+import ImpactProTemplate from "../components/templates/ImpactProTemplate";
+
+// Sample resume data for preview - matches template structure
+const sampleResumeData = {
+  name: "John Doe",
+  contact: {
+    email: "john.doe@email.com",
+    phone: "+1 (234) 567-8900",
+    location: "San Francisco, CA",
+    linkedin: "https://linkedin.com/in/johndoe",
+    github: "https://github.com/johndoe",
+  },
+  summary:
+    "Experienced professional with 5+ years in the field, dedicated to excellence and innovation. Proven track record of delivering high-quality solutions and leading successful teams.",
+  skills: [
+    {
+      category: "Technical Skills",
+      items: ["JavaScript", "React", "Node.js", "Python", "AWS"],
+    },
+    {
+      category: "Soft Skills",
+      items: [
+        "Leadership",
+        "Communication",
+        "Problem Solving",
+        "Team Collaboration",
+      ],
+    },
+  ],
+  experience: [
+    {
+      position: "Senior Software Engineer",
+      company: "Tech Corp",
+      location: "San Francisco, CA",
+      startDate: "Jan 2020",
+      endDate: "Present",
+      bullets: [
+        "Led team of 5 developers in building scalable web applications serving 100K+ users",
+        "Improved system performance by 40% through code optimization and architecture redesign",
+        "Mentored junior developers and conducted technical interviews",
+      ],
+    },
+    {
+      position: "Software Engineer",
+      company: "StartupXYZ",
+      location: "Remote",
+      startDate: "Jun 2018",
+      endDate: "Dec 2019",
+      bullets: [
+        "Developed RESTful APIs and microservices using Node.js and Express",
+        "Collaborated with cross-functional teams to deliver features on time",
+      ],
+    },
+  ],
+  education: [
+    {
+      degree: "Bachelor of Science",
+      field: "Computer Science",
+      institution: "University of California",
+      location: "Berkeley, CA",
+      graduationDate: "2018",
+      gpa: "3.8/4.0",
+      bullets: ["Dean's List", "CS Club President"],
+    },
+  ],
+  projects: [
+    {
+      name: "E-commerce Platform",
+      description:
+        "Built a full-stack e-commerce solution with payment integration",
+      technologies: ["React", "Node.js", "MongoDB", "Stripe"],
+      date: "2023",
+      url: "https://github.com/johndoe/ecommerce",
+    },
+  ],
+  certifications: [
+    {
+      name: "AWS Certified Developer - Associate",
+      issuer: "Amazon Web Services",
+      date: "2022",
+    },
+    {name: "React Professional Certification", issuer: "Meta", date: "2023"},
+  ],
+  achievements: [
+    "Employee of the Year 2022 - Tech Corp",
+    "Published 3 technical articles with 10K+ views",
+    "Speaker at React Conference 2023",
+  ],
+};
+
+const templates = [
+  {
+    id: "classic",
+    name: "Classic",
+    component: ClassicTemplate,
+    category: "Professional",
+    atsScore: 95,
+    description:
+      "Traditional layout with clean structure, perfect for corporate roles",
+    features: ["ATS-Optimized", "Clean Design", "Easy to Read"],
+    colors: ["#000000", "#ffffff"],
+  },
+  {
+    id: "modern",
+    name: "Modern",
+    component: ModernTemplate,
+    category: "Professional",
+    atsScore: 92,
+    description:
+      "Contemporary design with modern aesthetics for forward-thinking companies",
+    features: ["Modern Layout", "Professional", "Eye-catching"],
+    colors: ["#2563eb", "#ffffff"],
+  },
+  {
+    id: "minimal",
+    name: "Minimal",
+    component: MinimalTemplate,
+    category: "Professional",
+    atsScore: 98,
+    description:
+      "Minimalist approach focusing on content clarity and readability",
+    features: ["Ultra-Clean", "Maximum ATS", "Simple"],
+    colors: ["#1f2937", "#ffffff"],
+  },
+  {
+    id: "professional",
+    name: "Professional",
+    component: ProfessionalTemplate,
+    category: "Professional",
+    atsScore: 94,
+    description: "Balanced professional design suitable for all industries",
+    features: ["Versatile", "Professional", "Balanced"],
+    colors: ["#059669", "#ffffff"],
+  },
+  {
+    id: "executive",
+    name: "Executive",
+    component: ExecutiveTemplate,
+    category: "Leadership",
+    atsScore: 96,
+    description:
+      "Premium formal template for senior leadership and executive positions",
+    features: ["Formal", "Leadership-Focused", "Achievement-Driven"],
+    colors: ["#2c3e50", "#ffffff"],
+  },
+  {
+    id: "tech",
+    name: "Tech Developer",
+    component: TechTemplate,
+    category: "Tech",
+    atsScore: 93,
+    description:
+      "Developer-focused design with code aesthetics and tech-friendly layout",
+    features: ["Tech-Focused", "Projects First", "Modern Code Style"],
+    colors: ["#0ea5e9", "#0f172a"],
+  },
+  {
+    id: "creative",
+    name: "Creative Designer",
+    component: CreativeTemplate,
+    category: "Creative",
+    atsScore: 88,
+    description:
+      "Vibrant creative template with visual appeal while maintaining ATS compatibility",
+    features: ["Colorful", "Visual Appeal", "Portfolio Ready"],
+    colors: ["#8b5cf6", "#ec4899", "#ffffff"],
+  },
+  {
+    id: "academic",
+    name: "Academic Research",
+    component: AcademicTemplate,
+    category: "Academic",
+    atsScore: 97,
+    description:
+      "Scholarly CV format for academics, researchers, and PhD candidates",
+    features: ["Publication-Ready", "Research-Focused", "Extended Format"],
+    colors: ["#1a202c", "#ffffff"],
+  },
+  {
+    id: "corporate-elite",
+    name: "Corporate Elite",
+    component: CorporateEliteTemplate,
+    category: "Professional",
+    atsScore: 99,
+    description:
+      "Ultra-professional Fortune 500 template with sophisticated navy accents",
+    features: ["Fortune 500 Ready", "Maximum ATS", "Executive Polish"],
+    colors: ["#1e3a5f", "#ffffff"],
+  },
+  {
+    id: "strategic-leader",
+    name: "Strategic Leader",
+    component: StrategicLeaderTemplate,
+    category: "Leadership",
+    atsScore: 97,
+    description:
+      "Leadership-focused layout emphasizing strategic impact and results",
+    features: ["Impact-Driven", "Two-Column Layout", "Achievement Focus"],
+    colors: ["#0d7377", "#f7fafc"],
+  },
+  {
+    id: "impact-pro",
+    name: "Impact Pro",
+    component: ImpactProTemplate,
+    category: "Professional",
+    atsScore: 98,
+    description:
+      "Bold results-driven template highlighting quantifiable achievements",
+    features: ["Metrics-First", "Bold Design", "Results-Focused"],
+    colors: ["#047857", "#ffffff"],
+  },
+];
+
+// Color theme configurations (same as Editor.jsx)
+const TEMPLATE_COLOR_THEMES = {
+  classic: [
+    {id: "navy", name: "Navy Blue", primary: "#0066cc"},
+    {id: "burgundy", name: "Burgundy", primary: "#8b1a1a"},
+    {id: "forest", name: "Forest Green", primary: "#1b5e20"},
+    {id: "charcoal", name: "Charcoal", primary: "#2d3748"},
+  ],
+  modern: [
+    {id: "blue", name: "Blue", primary: "#2563eb"},
+    {id: "purple", name: "Purple", primary: "#7c3aed"},
+    {id: "teal", name: "Teal", primary: "#0d9488"},
+    {id: "orange", name: "Orange", primary: "#ea580c"},
+  ],
+  minimal: [
+    {id: "charcoal", name: "Charcoal", primary: "#2d3748"},
+    {id: "navy", name: "Navy", primary: "#1e40af"},
+    {id: "slate", name: "Slate", primary: "#475569"},
+    {id: "graphite", name: "Graphite", primary: "#18181b"},
+  ],
+  professional: [
+    {id: "navy", name: "Navy Blue", primary: "#1e3a8a"},
+    {id: "burgundy", name: "Burgundy", primary: "#881337"},
+    {id: "forest", name: "Forest Green", primary: "#065f46"},
+    {id: "gray", name: "Gray", primary: "#374151"},
+  ],
+  "professional-v2": [
+    {id: "blue", name: "Blue", primary: "#1d4ed8"},
+    {id: "purple", name: "Purple", primary: "#7e22ce"},
+    {id: "teal", name: "Teal", primary: "#0f766e"},
+    {id: "burgundy", name: "Burgundy", primary: "#9f1239"},
+  ],
+  "corporate-elite": [
+    {id: "navy", name: "Navy Blue", primary: "#1e3a5f"},
+    {id: "burgundy", name: "Burgundy", primary: "#7c2d41"},
+    {id: "forest", name: "Forest Green", primary: "#1e5f4d"},
+    {id: "charcoal", name: "Charcoal", primary: "#2d3748"},
+  ],
+  "strategic-leader": [
+    {id: "teal", name: "Teal", primary: "#0d7377"},
+    {id: "purple", name: "Purple", primary: "#6b46c1"},
+    {id: "burgundy", name: "Burgundy", primary: "#9b2c2c"},
+    {id: "navy", name: "Navy Blue", primary: "#2c5282"},
+  ],
+  "impact-pro": [
+    {id: "emerald", name: "Emerald", primary: "#047857"},
+    {id: "blue", name: "Blue", primary: "#1e40af"},
+    {id: "purple", name: "Purple", primary: "#7e22ce"},
+    {id: "orange", name: "Orange", primary: "#c2410c"},
+  ],
+  tech: [
+    {id: "black", name: "Tech Black", primary: "#0f172a"},
+    {id: "blue", name: "Solid Blue", primary: "#1e40af"},
+    {id: "purple", name: "Solid Purple", primary: "#7e22ce"},
+    {id: "teal", name: "Solid Teal", primary: "#0f766e"},
+  ],
+};
+
+const Templates = () => {
+  const navigate = useNavigate();
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedTemplate, setSelectedTemplate] = useState(null);
+  const [selectedColorTheme, setSelectedColorTheme] = useState(null);
+
+  const categories = [
+    "All",
+    "Professional",
+    "Leadership",
+    "Tech",
+    "Creative",
+    "Academic",
+  ];
+
+  const filteredTemplates =
+    selectedCategory === "All"
+      ? templates
+      : templates.filter((t) => t.category === selectedCategory);
+
+  const handleSelectTemplate = (templateId) => {
+    // Store selected template and color theme in localStorage
+    localStorage.setItem("selectedTemplate", templateId);
+    if (selectedColorTheme) {
+      localStorage.setItem("selectedColorTheme", selectedColorTheme);
+    }
+    // Navigate to editor
+    navigate("/editor");
+  };
+
+  return (
+    <div className="min-h-screen bg-black">
+      <div className="container mx-auto px-4 py-8 sm:py-12">
+        {/* Header */}
+        <div className="mb-10">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 text-white tracking-tight">
+            Choose Your Template
+          </h1>
+          <p className="text-base sm:text-lg text-gray-400 max-w-3xl">
+            Select from {templates.length} professionally designed templates,
+            each optimized for ATS systems and tailored to different career
+            paths
+          </p>
+        </div>
+
+        {/* Category Filter */}
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-4">
+            <Filter className="w-5 h-5 text-gray-400" />
+            <span className="font-medium text-white">
+              Filter by Category
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors text-sm ${
+                  selectedCategory === category
+                    ? "bg-primary-600 text-white"
+                    : "bg-gray-100 dark:bg-gray-800 text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+                }`}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Templates Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
+          {filteredTemplates.map((template) => (
+            <div
+              key={template.id}
+              className="group bg-zinc-950 rounded-xl border border-zinc-800 overflow-hidden hover:border-primary-600 dark:hover:border-primary-500 transition-all duration-200 cursor-pointer"
+              onClick={() => {
+                setSelectedTemplate(template);
+                // Set default color theme for this template
+                const themes = TEMPLATE_COLOR_THEMES[template.id];
+                if (themes && themes.length > 0) {
+                  setSelectedColorTheme(themes[0].id);
+                } else {
+                  setSelectedColorTheme(null);
+                }
+              }}
+            >
+              {/* Template Preview */}
+              <div
+                className="relative bg-gray-50 dark:bg-gray-900 overflow-hidden"
+                style={{height: "240px"}}
+              >
+                {/* Scaled Template Preview */}
+                <div
+                  className="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none"
+                  style={{
+                    width: "210mm",
+                    height: "297mm",
+                    transform: "translateX(-50%) scale(0.21)",
+                    transformOrigin: "top center",
+                  }}
+                >
+                  <template.component resumeData={sampleResumeData} />
+                </div>
+
+                {/* Hover Overlay */}
+                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+                  <button className="flex items-center gap-2 bg-white text-gray-900 px-5 py-2.5 rounded-lg font-medium">
+                    <Eye className="w-4 h-4" />
+                    Preview
+                  </button>
+                </div>
+
+                {/* ATS Score Badge */}
+                <div className="absolute top-3 right-3 bg-zinc-950 px-3 py-1.5 rounded-lg border border-zinc-800">
+                  <div className="flex items-center gap-1.5">
+                    <Target className="w-3.5 h-3.5 text-gray-400" />
+                    <span
+                      className={`text-sm font-bold ${
+                        template.atsScore >= 95
+                          ? "text-green-600"
+                          : template.atsScore >= 90
+                          ? "text-blue-600"
+                          : "text-orange-600"
+                      }`}
+                    >
+                      {template.atsScore}%
+                    </span>
+                  </div>
+                </div>
+
+                {/* Category Badge */}
+                <div className="absolute top-3 left-3">
+                  <span className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-medium px-2.5 py-1 rounded-lg">
+                    {template.category}
+                  </span>
+                </div>
+              </div>
+
+              {/* Template Info */}
+              <div className="p-4">
+                <h3 className="text-lg font-bold text-white mb-2">
+                  {template.name}
+                </h3>
+                <p className="text-sm text-gray-400 mb-3 line-clamp-2 min-h-[40px]">
+                  {template.description}
+                </p>
+
+                {/* Features */}
+                <div className="flex flex-wrap gap-1.5 mb-3">
+                  {template.features.slice(0, 2).map((feature, idx) => (
+                    <span
+                      key={idx}
+                      className="inline-flex items-center gap-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-300 px-2 py-1 rounded-md"
+                    >
+                      <CheckCircle className="w-3 h-3" />
+                      {feature}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Select Button */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleSelectTemplate(template.id);
+                  }}
+                  className="w-full flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-medium py-2.5 rounded-lg transition-colors"
+                >
+                  Use Template
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Template Preview Modal */}
+        {selectedTemplate && (
+          <div
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setSelectedTemplate(null)}
+          >
+            <div
+              className="bg-zinc-950 rounded-xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-hidden border border-zinc-800"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal Header */}
+              <div className="bg-primary-600 p-4 sm:p-6 flex justify-between items-start sm:items-center">
+                <div className="flex-1 pr-4">
+                  <h2 className="text-xl sm:text-2xl font-bold text-white mb-1">
+                    {selectedTemplate.name}
+                  </h2>
+                  <p className="text-sm text-primary-100 line-clamp-2">
+                    {selectedTemplate.description}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setSelectedTemplate(null)}
+                  className="text-white hover:bg-white/20 p-2 rounded-lg transition-colors flex-shrink-0"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              {/* Color Theme Selector - Show if template supports color themes */}
+              {TEMPLATE_COLOR_THEMES[selectedTemplate.id] && (
+                <div className="px-4 sm:px-6 py-4 bg-gray-50 dark:bg-gray-900 border-b border-zinc-800">
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <span className="text-sm font-medium text-gray-300">
+                      Color Theme:
+                    </span>
+                    {TEMPLATE_COLOR_THEMES[selectedTemplate.id].map((theme) => (
+                      <button
+                        key={theme.id}
+                        onClick={() => setSelectedColorTheme(theme.id)}
+                        className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all text-sm ${
+                          selectedColorTheme === theme.id
+                            ? "bg-primary-600 text-white"
+                            : "bg-zinc-950 text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-zinc-800"
+                        }`}
+                      >
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{backgroundColor: theme.primary}}
+                        />
+                        <span className="font-medium">{theme.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Modal Body - Template Preview */}
+              <div className="overflow-auto max-h-[50vh] sm:max-h-[60vh] p-4 sm:p-6 bg-gray-50 dark:bg-gray-900">
+                <div
+                  className="scale-50 sm:scale-75 origin-top mx-auto"
+                  style={{width: "210mm"}}
+                >
+                  <selectedTemplate.component
+                    resumeData={{
+                      ...sampleResumeData,
+                      colorTheme: selectedColorTheme,
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Modal Footer */}
+              <div className="p-4 sm:p-6 bg-zinc-950 border-t border-zinc-800 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
+                <div className="flex items-center gap-3 flex-wrap">
+                  <div className="flex items-center gap-2 px-3 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                    <Target className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+                    <span className="text-sm font-medium text-gray-400">
+                      ATS:
+                    </span>
+                    <span
+                      className={`text-lg font-bold ${
+                        selectedTemplate.atsScore >= 95
+                          ? "text-green-600"
+                          : selectedTemplate.atsScore >= 90
+                          ? "text-blue-600"
+                          : "text-orange-600"
+                      }`}
+                    >
+                      {selectedTemplate.atsScore}%
+                    </span>
+                  </div>
+                  <span className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-medium px-3 py-2 rounded-lg">
+                    {selectedTemplate.category}
+                  </span>
+                </div>
+                <button
+                  onClick={() => handleSelectTemplate(selectedTemplate.id)}
+                  className="flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-bold px-6 py-3 rounded-lg transition-colors"
+                >
+                  Use This Template
+                  <ArrowRight className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Info Section */}
+        <div className="mt-12 sm:mt-16 bg-zinc-950 rounded-xl border border-zinc-800 p-6 sm:p-12">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 text-center text-white">
+            Why Our Templates Stand Out
+          </h2>
+          <p className="text-center text-gray-400 mb-8 sm:mb-10 max-w-2xl mx-auto text-sm sm:text-base">
+            Professionally crafted templates designed to help you land your
+            dream job
+          </p>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            <div className="text-center group">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-4 bg-green-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <Target className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
+              </div>
+              <h3 className="text-lg sm:text-xl font-bold text-white mb-2">
+                ATS-Optimized
+              </h3>
+              <p className="text-sm sm:text-base text-gray-400">
+                All templates score 85%+ on ATS systems, ensuring your resume
+                gets past automated screening
+              </p>
+            </div>
+            <div className="text-center group">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-4 bg-purple-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <Palette className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
+              </div>
+              <h3 className="text-lg sm:text-xl font-bold text-white mb-2">
+                Diverse Designs
+              </h3>
+              <p className="text-sm sm:text-base text-gray-400">
+                From corporate executive to creative designer, find the perfect
+                match for your career path
+              </p>
+            </div>
+            <div className="text-center group sm:col-span-2 lg:col-span-1">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-4 bg-blue-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <Zap className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
+              </div>
+              <h3 className="text-lg sm:text-xl font-bold text-white mb-2">
+                Instant Switching
+              </h3>
+              <p className="text-sm sm:text-base text-gray-400">
+                Try different templates with one click - your content stays,
+                only the design changes
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Templates;

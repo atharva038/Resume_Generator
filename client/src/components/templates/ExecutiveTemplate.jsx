@@ -388,7 +388,10 @@ const ExecutiveTemplate = forwardRef(({resumeData}, ref) => {
         resumeData.customSections.length > 0 && (
           <>
             {resumeData.customSections.map((section, index) => (
-              <section key={`custom-${index}`} style={{marginBottom: "18px"}}>
+              <section
+                key={section.id || `custom-${index}`}
+                style={{marginBottom: "18px"}}
+              >
                 <h2
                   style={{
                     fontFamily: "'Georgia', serif",
@@ -404,16 +407,34 @@ const ExecutiveTemplate = forwardRef(({resumeData}, ref) => {
                 >
                   {section.title}
                 </h2>
-                <div
-                  style={{
-                    fontSize: "10pt",
-                    lineHeight: "1.5",
-                    color: "#333",
-                    whiteSpace: "pre-wrap",
-                  }}
-                >
-                  {section.content}
-                </div>
+                {section.items && section.items.length > 0 ? (
+                  <ul style={{paddingLeft: "20px", margin: "0"}}>
+                    {section.items.map((item, itemIndex) => (
+                      <li
+                        key={`${section.id || index}-item-${itemIndex}`}
+                        style={{
+                          fontSize: "10pt",
+                          lineHeight: "1.5",
+                          color: "#333",
+                          marginBottom: "4px",
+                        }}
+                      >
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div
+                    style={{
+                      fontSize: "10pt",
+                      lineHeight: "1.5",
+                      color: "#333",
+                      whiteSpace: "pre-wrap",
+                    }}
+                  >
+                    {section.content}
+                  </div>
+                )}
               </section>
             ))}
           </>
