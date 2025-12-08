@@ -15,7 +15,7 @@ const TermsAndConditions = () => {
               <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
                 Terms & Conditions
               </h1>
-              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mt-2">
+              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-600 dark:text-gray-400 mt-2">
                 <Calendar className="w-4 h-4" />
                 <span>Last Updated: December 1, 2025</span>
               </div>
@@ -31,10 +31,10 @@ const TermsAndConditions = () => {
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 space-y-8">
           {/* Section 1 */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
               1. Acceptance of Terms
             </h2>
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+            <p className="text-gray-700 dark:text-gray-700 dark:text-gray-300 leading-relaxed">
               By accessing and using SmartNShine Resume Generator ("the
               Service"), you accept and agree to be bound by these Terms and
               Conditions. If you do not agree to these terms, please do not use
@@ -44,14 +44,14 @@ const TermsAndConditions = () => {
 
           {/* Section 2 */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
               2. Service Description
             </h2>
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
+            <p className="text-gray-700 dark:text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
               SmartNShine provides an online resume building platform that
               includes:
             </p>
-            <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300 ml-4">
+            <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-700 dark:text-gray-300 ml-4">
               <li>Professional resume templates</li>
               <li>AI-powered content enhancement</li>
               <li>ATS optimization tools</li>
@@ -64,7 +64,7 @@ const TermsAndConditions = () => {
 
           {/* Section 3 */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
               3. User Accounts
             </h2>
             <div className="space-y-3 text-gray-700 dark:text-gray-300">
@@ -93,7 +93,7 @@ const TermsAndConditions = () => {
 
           {/* Section 4 */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
               4. Subscription Plans & Payments
             </h2>
             <div className="space-y-3 text-gray-700 dark:text-gray-300">
@@ -129,10 +129,10 @@ const TermsAndConditions = () => {
 
           {/* Section 5 */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
               5. Refund & Cancellation Policy
             </h2>
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+            <p className="text-gray-700 dark:text-gray-700 dark:text-gray-300 leading-relaxed">
               Please refer to our{" "}
               <Link
                 to="/refund-policy"
@@ -147,7 +147,7 @@ const TermsAndConditions = () => {
 
           {/* Section 6 */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
               6. Intellectual Property Rights
             </h2>
             <div className="space-y-3 text-gray-700 dark:text-gray-300">
@@ -177,13 +177,13 @@ const TermsAndConditions = () => {
 
           {/* Section 7 */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
               7. User Conduct
             </h2>
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
+            <p className="text-gray-700 dark:text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
               You agree NOT to:
             </p>
-            <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300 ml-4">
+            <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-700 dark:text-gray-300 ml-4">
               <li>Use the Service for any illegal or unauthorized purpose</li>
               <li>Attempt to gain unauthorized access to our systems</li>
               <li>Share your account credentials with others</li>
@@ -195,10 +195,10 @@ const TermsAndConditions = () => {
 
           {/* Section 8 */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
               8. Data Privacy
             </h2>
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+            <p className="text-gray-700 dark:text-gray-700 dark:text-gray-300 leading-relaxed">
               Your privacy is important to us. Please review our{" "}
               <Link
                 to="/privacy-policy"
@@ -213,7 +213,7 @@ const TermsAndConditions = () => {
 
           {/* Section 9 */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
               9. Limitation of Liability
             </h2>
             <div className="space-y-3 text-gray-700 dark:text-gray-300">
@@ -232,10 +232,10 @@ const TermsAndConditions = () => {
 
           {/* Section 10 */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
               10. Termination
             </h2>
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+            <p className="text-gray-700 dark:text-gray-700 dark:text-gray-300 leading-relaxed">
               We reserve the right to suspend or terminate your account if you
               violate these Terms. You may cancel your subscription at any time
               through your account settings.
@@ -244,10 +244,10 @@ const TermsAndConditions = () => {
 
           {/* Section 11 */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
               11. Changes to Terms
             </h2>
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+            <p className="text-gray-700 dark:text-gray-700 dark:text-gray-300 leading-relaxed">
               We may update these Terms from time to time. Continued use of the
               Service after changes constitutes acceptance of the new Terms.
             </p>
@@ -255,10 +255,10 @@ const TermsAndConditions = () => {
 
           {/* Section 12 */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
               12. Governing Law
             </h2>
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+            <p className="text-gray-700 dark:text-gray-700 dark:text-gray-300 leading-relaxed">
               These Terms are governed by the laws of India. Any disputes will
               be resolved in the courts of [Your City], India.
             </p>
@@ -286,7 +286,7 @@ const TermsAndConditions = () => {
         <div className="mt-8 text-center">
           <Link
             to="/"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors duration-300"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-gray-900 dark:text-white rounded-lg font-semibold transition-colors duration-300"
           >
             Back to Home
           </Link>

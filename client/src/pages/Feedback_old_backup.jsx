@@ -227,10 +227,10 @@ const Feedback = () => {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
             We Value Your Feedback
           </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 dark:text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
             Help us improve SmartNShine by sharing your suggestions, feedback,
             or reporting bugs. Every submission matters!
           </p>
@@ -275,7 +275,7 @@ const Feedback = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Submit Feedback Form */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 border border-gray-200 dark:border-gray-700">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-6">
               Submit Feedback
             </h2>
 
@@ -290,7 +290,7 @@ const Feedback = () => {
                     className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all whitespace-nowrap ${
                       activeTab === tab.id
                         ? `${tab.bgColor} ${tab.color} border-2 ${tab.borderColor}`
-                        : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-2 border-transparent"
+                        : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-600 dark:text-gray-400 border-2 border-transparent"
                     }`}
                   >
                     <Icon className="w-4 h-4" />
@@ -324,7 +324,7 @@ const Feedback = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Title */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-700 dark:text-gray-300 mb-2">
                   Title *
                 </label>
                 <input
@@ -342,7 +342,7 @@ const Feedback = () => {
 
               {/* Description */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-700 dark:text-gray-300 mb-2">
                   Description *
                 </label>
                 <textarea
@@ -354,9 +354,9 @@ const Feedback = () => {
                   required
                   maxLength={2000}
                   rows={5}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white resize-none"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-900 dark:text-white resize-none"
                 />
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-500 dark:text-gray-600 dark:text-gray-400 mt-1">
                   {formData.description.length}/2000 characters
                 </p>
               </div>
@@ -365,7 +365,7 @@ const Feedback = () => {
               <div className="grid grid-cols-2 gap-4">
                 {/* Priority */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-700 dark:text-gray-300 mb-2">
                     Priority
                   </label>
                   <select
@@ -385,7 +385,7 @@ const Feedback = () => {
 
                 {/* Category */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-700 dark:text-gray-300 mb-2">
                     Category
                   </label>
                   <select
@@ -408,7 +408,7 @@ const Feedback = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-gray-900 dark:text-white font-semibold py-3 px-6 rounded-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
               >
                 {loading ? (
                   <>
@@ -427,7 +427,7 @@ const Feedback = () => {
 
           {/* My Feedback List */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 border border-gray-200 dark:border-gray-700">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-6">
               My Feedback
             </h2>
 
@@ -437,7 +437,7 @@ const Feedback = () => {
               </div>
             ) : myFeedback.length === 0 ? (
               <div className="text-center py-12">
-                <AlertCircle className="w-16 h-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
+                <AlertCircle className="w-16 h-16 text-gray-600 dark:text-gray-400 dark:text-gray-600 mx-auto mb-4" />
                 <p className="text-gray-600 dark:text-gray-400">
                   No feedback submitted yet
                 </p>
@@ -465,11 +465,11 @@ const Feedback = () => {
                         </span>
                       </div>
 
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
+                      <p className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
                         {item.description}
                       </p>
 
-                      <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                      <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-500 dark:text-gray-400">
                         <div className="flex items-center gap-4">
                           <span className="flex items-center gap-1">
                             <Clock className="w-3 h-3" />

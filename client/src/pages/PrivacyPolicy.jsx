@@ -5,7 +5,7 @@ const PrivacyPolicy = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-800 dark:to-purple-800 text-white py-16">
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-800 dark:to-purple-800 text-gray-900 dark:text-white py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <Shield className="w-16 h-16 mx-auto mb-4" />
@@ -33,7 +33,7 @@ const PrivacyPolicy = () => {
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 md:p-12 space-y-8">
           {/* Introduction */}
           <section>
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+            <p className="text-gray-700 dark:text-gray-700 dark:text-gray-300 leading-relaxed">
               Welcome to SmartNShine. This Privacy Policy explains how we
               collect, use, disclose, and safeguard your information when you
               use our AI-powered resume builder service. Please read this
@@ -54,7 +54,7 @@ const PrivacyPolicy = () => {
             </div>
             <div className="space-y-4 text-gray-700 dark:text-gray-300">
               <div>
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
                   1.1 Personal Information
                 </h3>
                 <p className="leading-relaxed">
@@ -74,7 +74,7 @@ const PrivacyPolicy = () => {
               </div>
 
               <div>
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
                   1.2 Automatically Collected Information
                 </h3>
                 <p className="leading-relaxed">
@@ -89,7 +89,7 @@ const PrivacyPolicy = () => {
               </div>
 
               <div>
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
                   1.3 AI-Generated Content
                 </h3>
                 <p className="leading-relaxed">
@@ -147,7 +147,7 @@ const PrivacyPolicy = () => {
             </div>
             <div className="space-y-4 text-gray-700 dark:text-gray-300">
               <div>
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
                   3.1 Data Storage
                 </h3>
                 <p className="leading-relaxed">
@@ -159,7 +159,7 @@ const PrivacyPolicy = () => {
               </div>
 
               <div>
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
                   3.2 Security Measures
                 </h3>
                 <p className="leading-relaxed">
@@ -176,7 +176,7 @@ const PrivacyPolicy = () => {
               </div>
 
               <div>
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
                   3.3 Data Retention
                 </h3>
                 <p className="leading-relaxed">
@@ -204,7 +204,7 @@ const PrivacyPolicy = () => {
               </p>
               <div className="space-y-3">
                 <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-1">
+                  <h4 className="font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-1">
                     Google Gemini AI
                   </h4>
                   <p className="text-sm">
@@ -222,7 +222,7 @@ const PrivacyPolicy = () => {
                   </p>
                 </div>
                 <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-1">
+                  <h4 className="font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-1">
                     OpenAI GPT-4o
                   </h4>
                   <p className="text-sm">
@@ -239,7 +239,7 @@ const PrivacyPolicy = () => {
                   </p>
                 </div>
                 <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-1">
+                  <h4 className="font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-1">
                     Razorpay
                   </h4>
                   <p className="text-sm">
@@ -256,7 +256,7 @@ const PrivacyPolicy = () => {
                   </p>
                 </div>
                 <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-1">
+                  <h4 className="font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-1">
                     Google OAuth & GitHub OAuth
                   </h4>
                   <p className="text-sm">
@@ -348,7 +348,7 @@ const PrivacyPolicy = () => {
 
           {/* 7. Children's Privacy */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
               7. Children's Privacy
             </h2>
             <div className="text-gray-700 dark:text-gray-300">
@@ -364,7 +364,7 @@ const PrivacyPolicy = () => {
 
           {/* 8. Changes to Privacy Policy */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
               8. Changes to This Privacy Policy
             </h2>
             <div className="text-gray-700 dark:text-gray-300">
@@ -422,7 +422,7 @@ const PrivacyPolicy = () => {
           <div className="pt-8 border-t border-gray-200 dark:border-gray-700">
             <Link
               to="/"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-gray-900 dark:text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
             >
               <Shield className="w-5 h-5" />
               Back to Home

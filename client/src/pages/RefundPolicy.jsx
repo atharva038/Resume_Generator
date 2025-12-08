@@ -15,7 +15,7 @@ const RefundPolicy = () => {
               <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
                 Refund & Cancellation Policy
               </h1>
-              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mt-2">
+              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-600 dark:text-gray-400 mt-2">
                 <Calendar className="w-4 h-4" />
                 <span>Last Updated: December 1, 2025</span>
               </div>
@@ -31,11 +31,11 @@ const RefundPolicy = () => {
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 space-y-8">
           {/* Section 1 */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
               1. Refund Policy Overview
             </h2>
             <div className="bg-yellow-50 dark:bg-gray-700 rounded-lg p-5 mb-4">
-              <p className="text-gray-700 dark:text-gray-300 leading-relaxed font-semibold">
+              <p className="text-gray-700 dark:text-gray-700 dark:text-gray-300 leading-relaxed font-semibold">
                 ⚠️{" "}
                 <strong className="text-gray-900 dark:text-white">
                   Important:
@@ -46,7 +46,7 @@ const RefundPolicy = () => {
                 service delivery.
               </p>
             </div>
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+            <p className="text-gray-700 dark:text-gray-700 dark:text-gray-300 leading-relaxed">
               At SmartNShine, we provide instant digital access to our resume
               building platform. Since our service is delivered immediately upon
               payment, we maintain a limited refund window. Please ensure you
@@ -56,7 +56,7 @@ const RefundPolicy = () => {
 
           {/* Section 2 */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
               2. Eligibility for Refunds
             </h2>
 
@@ -66,10 +66,10 @@ const RefundPolicy = () => {
                 <div className="flex items-start gap-3">
                   <CheckCircle className="w-6 h-6 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-1" />
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
                       One-Time Plan (₹49 for 21 days)
                     </h3>
-                    <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300 ml-4">
+                    <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-700 dark:text-gray-300 ml-4">
                       <li>
                         <strong>24-Hour Refund Window:</strong> Full refund
                         available within 24 hours of purchase ONLY
@@ -96,10 +96,10 @@ const RefundPolicy = () => {
                 <div className="flex items-start gap-3">
                   <CheckCircle className="w-6 h-6 text-purple-600 dark:text-purple-400 flex-shrink-0 mt-1" />
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
                       Pro Monthly Plan (₹199/month)
                     </h3>
-                    <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300 ml-4">
+                    <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-700 dark:text-gray-300 ml-4">
                       <li>
                         <strong>24-Hour Refund Window:</strong> Full refund
                         within 24 hours of first payment ONLY
@@ -120,9 +120,9 @@ const RefundPolicy = () => {
               {/* Free Plan */}
               <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-5">
                 <div className="flex items-start gap-3">
-                  <XCircle className="w-6 h-6 text-gray-600 dark:text-gray-400 flex-shrink-0 mt-1" />
+                  <XCircle className="w-6 h-6 text-gray-600 dark:text-gray-600 dark:text-gray-400 flex-shrink-0 mt-1" />
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
                       Free Plan (₹0)
                     </h3>
                     <p className="text-gray-700 dark:text-gray-300">
@@ -137,10 +137,10 @@ const RefundPolicy = () => {
                 <div className="flex items-start gap-3">
                   <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400 flex-shrink-0 mt-1" />
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
                       Payment Failures & Technical Issues
                     </h3>
-                    <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300 ml-4">
+                    <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-700 dark:text-gray-300 ml-4">
                       <li>
                         <strong>ALWAYS REFUNDED:</strong> Money deducted but
                         service not activated
@@ -163,17 +163,17 @@ const RefundPolicy = () => {
 
           {/* Section 3 */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
               3. Non-Refundable Situations
             </h2>
             <div className="bg-red-50 dark:bg-gray-700 rounded-lg p-5">
-              <p className="text-gray-700 dark:text-gray-300 mb-3 font-semibold">
+              <p className="text-gray-700 dark:text-gray-700 dark:text-gray-300 mb-3 font-semibold">
                 <strong className="text-red-600 dark:text-red-400">
                   NO REFUNDS
                 </strong>{" "}
                 will be provided in the following cases:
               </p>
-              <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300 ml-4">
+              <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-700 dark:text-gray-300 ml-4">
                 <li>
                   <strong>After 24 hours:</strong> Request made after the
                   24-hour window
@@ -212,12 +212,12 @@ const RefundPolicy = () => {
 
           {/* Section 4 */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
               4. Cancellation Policy
             </h2>
             <div className="space-y-4 text-gray-700 dark:text-gray-300">
               <div>
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
                   4.1 How to Cancel
                 </h3>
                 <p className="mb-2">You can cancel your subscription:</p>
@@ -229,7 +229,7 @@ const RefundPolicy = () => {
               </div>
 
               <div>
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
                   4.2 When Cancellation Takes Effect
                 </h3>
                 <ul className="list-disc list-inside space-y-1 ml-4">
@@ -256,7 +256,7 @@ const RefundPolicy = () => {
               </div>
 
               <div>
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
                   4.3 One-Time Plan Cancellation
                 </h3>
                 <p>
@@ -282,15 +282,15 @@ const RefundPolicy = () => {
 
           {/* Section 5 */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
               5. Refund Process & Timeline
             </h2>
 
             <div className="bg-blue-50 dark:bg-gray-700 rounded-lg p-5 mb-4">
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
+              <h3 className="font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-3">
                 📋 Information Needed for Refund Request:
               </h3>
-              <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300 ml-4">
+              <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-700 dark:text-gray-300 ml-4">
                 <li>
                   <strong>Your registered email address</strong>
                 </li>
@@ -306,7 +306,7 @@ const RefundPolicy = () => {
                   <strong>Transaction date</strong> (if you remember)
                 </li>
               </ul>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-3 italic">
+              <p className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-400 mt-3 italic">
                 💡 Tip: Check your email for "Payment Successful" notification
                 from Razorpay - it contains your Payment ID
               </p>
@@ -361,7 +361,7 @@ const RefundPolicy = () => {
 
           {/* Section 6 */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
               6. Payment Method & Currency
             </h2>
             <div className="space-y-3 text-gray-700 dark:text-gray-300">
@@ -394,17 +394,17 @@ const RefundPolicy = () => {
 
           {/* Section 7 */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
               7. Subscription Renewal
             </h2>
             <div className="bg-yellow-50 dark:bg-gray-700 rounded-lg p-5">
-              <p className="text-gray-700 dark:text-gray-300 mb-3">
+              <p className="text-gray-700 dark:text-gray-700 dark:text-gray-300 mb-3">
                 <strong className="text-gray-900 dark:text-white">
                   Important:
                 </strong>{" "}
                 Pro Monthly subscriptions auto-renew unless cancelled.
               </p>
-              <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300 ml-4">
+              <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-700 dark:text-gray-300 ml-4">
                 <li>You will receive an email reminder before renewal</li>
                 <li>
                   <strong>
@@ -424,19 +424,19 @@ const RefundPolicy = () => {
 
           {/* Section 8 */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
               8. Disputes & Chargebacks
             </h2>
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
+            <p className="text-gray-700 dark:text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
               Please contact us before initiating a chargeback with your bank.
               Chargebacks may result in:
             </p>
-            <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300 ml-4">
+            <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-700 dark:text-gray-300 ml-4">
               <li>Immediate account suspension</li>
               <li>Loss of access to all features and data</li>
               <li>Inability to create new accounts</li>
             </ul>
-            <p className="text-gray-700 dark:text-gray-300 mt-3">
+            <p className="text-gray-700 dark:text-gray-700 dark:text-gray-300 mt-3">
               We're committed to resolving issues amicably through our refund
               process.
             </p>
@@ -444,10 +444,10 @@ const RefundPolicy = () => {
 
           {/* Section 9 */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
               9. Service Modifications
             </h2>
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+            <p className="text-gray-700 dark:text-gray-700 dark:text-gray-300 leading-relaxed">
               We reserve the right to modify pricing, features, or discontinue
               services with 30 days notice. Active subscribers will be notified
               and given the option to cancel for a pro-rated refund if
@@ -457,13 +457,13 @@ const RefundPolicy = () => {
 
           {/* Section 10 */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
               10. Questions & Support
             </h2>
-            <p className="text-gray-700 dark:text-gray-300 mb-3">
+            <p className="text-gray-700 dark:text-gray-700 dark:text-gray-300 mb-3">
               If you have questions about refunds or cancellations:
             </p>
-            <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300 ml-4">
+            <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-700 dark:text-gray-300 ml-4">
               <li>Check your subscription status in account settings</li>
               <li>Review our FAQ section</li>
               <li>Contact support before requesting refund</li>
@@ -478,7 +478,7 @@ const RefundPolicy = () => {
                 Contact Us
               </h3>
             </div>
-            <p className="text-gray-700 dark:text-gray-300 mb-3">
+            <p className="text-gray-700 dark:text-gray-700 dark:text-gray-300 mb-3">
               For refund requests and cancellation support:
             </p>
             <div className="space-y-2">
@@ -499,19 +499,19 @@ const RefundPolicy = () => {
         <div className="mt-8 flex flex-wrap gap-4 justify-center">
           <Link
             to="/terms-and-conditions"
-            className="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-semibold transition-colors duration-300"
+            className="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-gray-900 dark:text-white rounded-lg font-semibold transition-colors duration-300"
           >
             Terms & Conditions
           </Link>
           <Link
             to="/pricing"
-            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors duration-300"
+            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-gray-900 dark:text-white rounded-lg font-semibold transition-colors duration-300"
           >
             View Pricing
           </Link>
           <Link
             to="/"
-            className="px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-semibold transition-colors duration-300"
+            className="px-6 py-3 bg-orange-600 hover:bg-orange-700 text-gray-900 dark:text-white rounded-lg font-semibold transition-colors duration-300"
           >
             Back to Home
           </Link>

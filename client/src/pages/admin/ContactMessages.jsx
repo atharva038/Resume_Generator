@@ -155,7 +155,7 @@ const ContactMessages = () => {
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
           Contact Messages
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-2">
+        <p className="text-gray-600 dark:text-gray-600 dark:text-gray-400 mt-2">
           Manage and respond to user contact messages
         </p>
       </div>
@@ -236,7 +236,7 @@ const ContactMessages = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {/* Search */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-700 dark:text-gray-300 mb-2">
               Search
             </label>
             <div className="relative">
@@ -255,7 +255,7 @@ const ContactMessages = () => {
 
           {/* Status Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-700 dark:text-gray-300 mb-2">
               Status
             </label>
             <select
@@ -275,7 +275,7 @@ const ContactMessages = () => {
 
           {/* Category Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-700 dark:text-gray-300 mb-2">
               Category
             </label>
             <select
@@ -297,7 +297,7 @@ const ContactMessages = () => {
 
           {/* Per Page */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-700 dark:text-gray-300 mb-2">
               Per Page
             </label>
             <select
@@ -327,7 +327,7 @@ const ContactMessages = () => {
           </div>
         ) : messages.length === 0 ? (
           <div className="text-center py-12">
-            <MessageSquare className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <MessageSquare className="w-16 h-16 text-gray-600 dark:text-gray-400 mx-auto mb-4" />
             <p className="text-gray-600 dark:text-gray-400">
               No contact messages found
             </p>
@@ -337,22 +337,22 @@ const ContactMessages = () => {
             <table className="w-full">
               <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-500 dark:text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                     Contact Info
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-500 dark:text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                     Subject
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-500 dark:text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                     Category
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-500 dark:text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-500 dark:text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                     Date
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-500 dark:text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -368,18 +368,18 @@ const ContactMessages = () => {
                         <div className="font-medium text-gray-900 dark:text-white">
                           {message.name}
                         </div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                        <div className="text-sm text-gray-500 dark:text-gray-500 dark:text-gray-400">
                           {message.email}
                         </div>
                         {message.company && (
-                          <div className="text-xs text-gray-400 dark:text-gray-500">
+                          <div className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500">
                             {message.company}
                           </div>
                         )}
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900 dark:text-white max-w-md truncate">
+                      <div className="text-sm text-gray-900 dark:text-gray-900 dark:text-white max-w-md truncate">
                         {message.subject}
                       </div>
                     </td>
@@ -401,7 +401,7 @@ const ContactMessages = () => {
                         {message.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-500 dark:text-gray-400">
                       {new Date(message.createdAt).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4">
@@ -470,7 +470,7 @@ const ContactMessages = () => {
                 </h3>
                 <button
                   onClick={() => setShowModal(false)}
-                  className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
+                  className="text-gray-600 dark:text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-300"
                 >
                   <X className="w-6 h-6" />
                 </button>
@@ -481,9 +481,9 @@ const ContactMessages = () => {
                 {/* Contact Info */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex items-start gap-3">
-                    <User className="w-5 h-5 text-gray-400 mt-0.5" />
+                    <User className="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5" />
                     <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                      <p className="text-sm text-gray-500 dark:text-gray-500 dark:text-gray-400">
                         Name
                       </p>
                       <p className="font-medium text-gray-900 dark:text-white">
@@ -493,9 +493,9 @@ const ContactMessages = () => {
                   </div>
 
                   <div className="flex items-start gap-3">
-                    <Mail className="w-5 h-5 text-gray-400 mt-0.5" />
+                    <Mail className="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5" />
                     <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                      <p className="text-sm text-gray-500 dark:text-gray-500 dark:text-gray-400">
                         Email
                       </p>
                       <p className="font-medium text-gray-900 dark:text-white">
@@ -506,9 +506,9 @@ const ContactMessages = () => {
 
                   {selectedMessage.phone && (
                     <div className="flex items-start gap-3">
-                      <Phone className="w-5 h-5 text-gray-400 mt-0.5" />
+                      <Phone className="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5" />
                       <div>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                        <p className="text-sm text-gray-500 dark:text-gray-500 dark:text-gray-400">
                           Phone
                         </p>
                         <p className="font-medium text-gray-900 dark:text-white">
@@ -520,9 +520,9 @@ const ContactMessages = () => {
 
                   {selectedMessage.company && (
                     <div className="flex items-start gap-3">
-                      <Building className="w-5 h-5 text-gray-400 mt-0.5" />
+                      <Building className="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5" />
                       <div>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                        <p className="text-sm text-gray-500 dark:text-gray-500 dark:text-gray-400">
                           Company
                         </p>
                         <p className="font-medium text-gray-900 dark:text-white">
@@ -533,9 +533,9 @@ const ContactMessages = () => {
                   )}
 
                   <div className="flex items-start gap-3">
-                    <Calendar className="w-5 h-5 text-gray-400 mt-0.5" />
+                    <Calendar className="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5" />
                     <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                      <p className="text-sm text-gray-500 dark:text-gray-500 dark:text-gray-400">
                         Received
                       </p>
                       <p className="font-medium text-gray-900 dark:text-white">
@@ -545,9 +545,9 @@ const ContactMessages = () => {
                   </div>
 
                   <div className="flex items-start gap-3">
-                    <Tag className="w-5 h-5 text-gray-400 mt-0.5" />
+                    <Tag className="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5" />
                     <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                      <p className="text-sm text-gray-500 dark:text-gray-500 dark:text-gray-400">
                         Category
                       </p>
                       <span
@@ -563,7 +563,7 @@ const ContactMessages = () => {
 
                 {/* Subject */}
                 <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                  <p className="text-sm text-gray-500 dark:text-gray-500 dark:text-gray-600 dark:text-gray-400 mb-2">
                     Subject
                   </p>
                   <p className="text-lg font-medium text-gray-900 dark:text-white">
@@ -573,11 +573,11 @@ const ContactMessages = () => {
 
                 {/* Message */}
                 <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                  <p className="text-sm text-gray-500 dark:text-gray-500 dark:text-gray-600 dark:text-gray-400 mb-2">
                     Message
                   </p>
                   <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                    <p className="text-gray-900 dark:text-white whitespace-pre-wrap">
+                    <p className="text-gray-900 dark:text-gray-900 dark:text-white whitespace-pre-wrap">
                       {selectedMessage.message}
                     </p>
                   </div>
@@ -585,7 +585,7 @@ const ContactMessages = () => {
 
                 {/* Current Status */}
                 <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                  <p className="text-sm text-gray-500 dark:text-gray-500 dark:text-gray-600 dark:text-gray-400 mb-2">
                     Current Status
                   </p>
                   <span
@@ -600,7 +600,7 @@ const ContactMessages = () => {
                 {/* Notes */}
                 {selectedMessage.notes && (
                   <div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                    <p className="text-sm text-gray-500 dark:text-gray-500 dark:text-gray-600 dark:text-gray-400 mb-2">
                       Admin Notes
                     </p>
                     <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4 border border-yellow-200 dark:border-yellow-800">
@@ -620,7 +620,7 @@ const ContactMessages = () => {
                       handleStatusUpdate(selectedMessage._id, "read")
                     }
                     disabled={updating}
-                    className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 flex items-center gap-2"
+                    className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 flex items-center gap-2"
                   >
                     {updating ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -637,7 +637,7 @@ const ContactMessages = () => {
                       handleStatusUpdate(selectedMessage._id, "replied")
                     }
                     disabled={updating}
-                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+                    className="px-4 py-2 bg-green-600 text-gray-900 dark:text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 flex items-center gap-2"
                   >
                     {updating ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -654,7 +654,7 @@ const ContactMessages = () => {
                       handleStatusUpdate(selectedMessage._id, "archived")
                     }
                     disabled={updating}
-                    className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+                    className="px-4 py-2 bg-purple-600 text-gray-900 dark:text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 flex items-center gap-2"
                   >
                     {updating ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -667,7 +667,7 @@ const ContactMessages = () => {
 
                 <button
                   onClick={() => handleDelete(selectedMessage._id)}
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2 ml-auto"
+                  className="px-4 py-2 bg-red-600 text-gray-900 dark:text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2 ml-auto"
                 >
                   <Trash2 className="w-4 h-4" />
                   Delete

@@ -6,6 +6,9 @@ import {AuthProvider} from "./context/AuthContext";
 import {ErrorBoundary} from "./components/common";
 import "./index.css";
 
+// Import token debug utilities (only in development)
+import "./utils/tokenDebug.js";
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>

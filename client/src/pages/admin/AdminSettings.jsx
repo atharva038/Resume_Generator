@@ -189,14 +189,14 @@ const AdminSettings = () => {
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
             System Settings
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
+          <p className="text-gray-600 dark:text-gray-600 dark:text-gray-400 mt-1">
             Configure system-wide settings and preferences
           </p>
         </div>
         <div className="flex gap-3">
           <button
             onClick={fetchData}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-gray-900 dark:text-white rounded-lg hover:bg-gray-700 transition-colors"
           >
             <RefreshCw className="w-4 h-4" />
             Refresh
@@ -204,7 +204,7 @@ const AdminSettings = () => {
           <button
             onClick={handleResetSettings}
             disabled={saving}
-            className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-gray-900 dark:text-white rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50"
           >
             <AlertCircle className="w-4 h-4" />
             Reset to Defaults
@@ -212,7 +212,7 @@ const AdminSettings = () => {
           <button
             onClick={handleSaveSettings}
             disabled={saving}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-gray-900 dark:text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
             {saving ? "Saving..." : "Save Changes"}
@@ -244,10 +244,10 @@ const AdminSettings = () => {
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Active Users
                 </p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+                <p className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mt-1">
                   {systemStats.users.active}
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-500 dark:text-gray-600 dark:text-gray-400 mt-1">
                   of {systemStats.users.total} total
                 </p>
               </div>
@@ -261,10 +261,10 @@ const AdminSettings = () => {
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   AI Usage Today
                 </p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+                <p className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mt-1">
                   {systemStats.ai.todayUsage}
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-500 dark:text-gray-600 dark:text-gray-400 mt-1">
                   {systemStats.ai.totalUsage} total
                 </p>
               </div>
@@ -278,7 +278,7 @@ const AdminSettings = () => {
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Avg Response Time
                 </p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+                <p className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mt-1">
                   {systemStats.ai.avgResponseTime}ms
                 </p>
               </div>
@@ -292,7 +292,7 @@ const AdminSettings = () => {
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Storage Used
                 </p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+                <p className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mt-1">
                   {systemStats.storage.used} MB
                 </p>
               </div>
@@ -305,17 +305,17 @@ const AdminSettings = () => {
       {/* Settings Panel */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
         <div className="text-center py-12">
-          <SettingsIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+          <SettingsIcon className="w-16 h-16 text-gray-600 dark:text-gray-400 mx-auto mb-4" />
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
             Settings Management
           </h3>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
+          <p className="text-gray-600 dark:text-gray-600 dark:text-gray-400 mb-6">
             Configure system-wide settings and preferences
           </p>
           {settings && (
             <div className="text-left max-w-2xl mx-auto space-y-4">
               <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+                <h4 className="font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
                   General Settings
                 </h4>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -327,7 +327,7 @@ const AdminSettings = () => {
               </div>
 
               <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+                <h4 className="font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
                   AI Quotas
                 </h4>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -341,7 +341,7 @@ const AdminSettings = () => {
               </div>
 
               <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+                <h4 className="font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
                   Features
                 </h4>
                 <div className="grid grid-cols-2 gap-2 text-sm text-gray-600 dark:text-gray-400">

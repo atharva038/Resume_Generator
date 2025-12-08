@@ -10,6 +10,7 @@ import {
   processCustomSectionWithAI,
 } from "../services/gemini.service.js";
 import {parseResumeWithAI as parseResumeWithOpenAI} from "../services/openai.service.js";
+import {trackAIUsage} from "../middleware/aiUsageTracker.middleware.js";
 
 /**
  * Upload and parse resume file
@@ -141,9 +142,10 @@ export const enhanceContent = async (req, res) => {
     );
     const responseTime = Date.now() - startTime;
 
-    // Track AI usage
+    // Track AI usage - Use _id from MongoDB user object or userId from JWT
+    const userId = req.user._id || req.user.userId;
     await trackAIUsage(
-      req.user.userId,
+      userId,
       "resume_enhancement",
       tokenUsage?.totalTokens || 0,
       responseTime,
@@ -151,7 +153,6 @@ export const enhanceContent = async (req, res) => {
     );
 
     // Increment AI generation counter
-    const userId = req.user._id || req.user.userId;
     await User.findByIdAndUpdate(userId, {
       $inc: {
         "usage.aiGenerationsUsed": 1,
@@ -167,9 +168,10 @@ export const enhanceContent = async (req, res) => {
     console.error("Enhance error:", error);
 
     // Track failed AI usage
-    if (req.user?.userId) {
+    const userId = req.user?._id || req.user?.userId;
+    if (userId) {
       await trackAIUsage(
-        req.user.userId,
+        userId,
         "resume_enhancement",
         0,
         0,
@@ -203,7 +205,7 @@ export const generateSummary = async (req, res) => {
 
     // Track AI usage
     await trackAIUsage(
-      req.user.userId,
+      req.user._id || req.user.userId,
       "ai_suggestions",
       tokenUsage?.totalTokens || 0,
       responseTime,
@@ -227,9 +229,10 @@ export const generateSummary = async (req, res) => {
     console.error("Generate summary error:", error);
 
     // Track failed AI usage
-    if (req.user?.userId) {
+    const userId = req.user?._id || req.user?.userId;
+    if (userId) {
       await trackAIUsage(
-        req.user.userId,
+        userId,
         "ai_suggestions",
         0,
         0,
@@ -444,7 +447,7 @@ export const categorizeSkills = async (req, res) => {
 
     // Track AI usage
     await trackAIUsage(
-      req.user.userId,
+      req.user._id || req.user.userId,
       "ai_suggestions",
       tokenUsage?.totalTokens || 0,
       responseTime,
@@ -468,9 +471,9 @@ export const categorizeSkills = async (req, res) => {
     console.error("Categorize skills error:", error);
 
     // Track failed AI usage
-    if (req.user?.userId) {
+    if (req.user?.userId || req.user?._id) {
       await trackAIUsage(
-        req.user.userId,
+        req.user._id || req.user.userId,
         "ai_suggestions",
         0,
         0,
@@ -509,7 +512,7 @@ export const segregateAchievements = async (req, res) => {
 
     // Track AI usage
     await trackAIUsage(
-      req.user.userId,
+      req.user._id || req.user.userId,
       "ai_suggestions",
       tokenUsage?.totalTokens || 0,
       responseTime,
@@ -533,9 +536,9 @@ export const segregateAchievements = async (req, res) => {
     console.error("Segregate achievements error:", error);
 
     // Track failed AI usage
-    if (req.user?.userId) {
+    if (req.user?.userId || req.user?._id) {
       await trackAIUsage(
-        req.user.userId,
+        req.user._id || req.user.userId,
         "ai_suggestions",
         0,
         0,
@@ -574,7 +577,7 @@ export const processCustomSection = async (req, res) => {
 
     // Track AI usage
     await trackAIUsage(
-      req.user.userId,
+      req.user._id || req.user.userId,
       "ai_suggestions",
       tokenUsage?.totalTokens || 0,
       responseTime,
@@ -598,9 +601,9 @@ export const processCustomSection = async (req, res) => {
     console.error("Process custom section error:", error);
 
     // Track failed AI usage
-    if (req.user?.userId) {
+    if (req.user?.userId || req.user?._id) {
       await trackAIUsage(
-        req.user.userId,
+        req.user._id || req.user.userId,
         "ai_suggestions",
         0,
         0,

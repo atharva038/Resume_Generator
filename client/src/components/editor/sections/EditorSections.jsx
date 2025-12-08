@@ -194,10 +194,10 @@ export const SkillsSection = ({resumeData, updateField}) => {
           <button
             onClick={handleCategorize}
             disabled={isLoading || !skillsInput.trim()}
-            className={`w-full py-3 px-4 rounded-lg font-medium transition-all ${
+            className={`py-2 px-6 rounded-lg text-sm font-medium transition-all ${
               isLoading || !skillsInput.trim()
-                ? "bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
-                : "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-md hover:shadow-lg"
+                ? "bg-gray-200 dark:bg-zinc-800 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                : "bg-purple-600 hover:bg-purple-700 text-white shadow-md hover:shadow-lg"
             }`}
           >
             {isLoading ? (
@@ -245,7 +245,7 @@ export const SkillsSection = ({resumeData, updateField}) => {
               {resumeData.skills.map((skillGroup, index) => (
                 <div
                   key={index}
-                  className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800"
+                  className="p-4 border border-gray-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-black"
                 >
                   <div className="flex gap-2 mb-2">
                     <input
@@ -535,7 +535,7 @@ export const ProjectsSection = ({
             ? () => moveItem("projects", index, index + 1)
             : null
         }
-        sectionType="project"
+        sectionType="projects"
         resumeData={resumeData}
         projectData={project}
         onUpdateProject={(field, value) =>
@@ -892,14 +892,14 @@ export const CustomSectionsManager = ({resumeData, updateField}) => {
         <h2 className="section-title mb-0">Custom Sections</h2>
         <button
           onClick={addCustomSection}
-          className="text-primary-600 hover:text-primary-700 font-medium"
+          className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors"
         >
           + Add Custom Section
         </button>
       </div>
 
       {customSections.length === 0 ? (
-        <div className="text-center py-8 px-4 bg-gray-50 dark:bg-gray-800 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
+        <div className="text-center py-8 px-4 bg-gray-50 dark:bg-black rounded-lg border-2 border-dashed border-gray-300 dark:border-zinc-800">
           <p className="text-gray-500 dark:text-gray-400 mb-2">
             No custom sections yet
           </p>
@@ -912,7 +912,7 @@ export const CustomSectionsManager = ({resumeData, updateField}) => {
         <div className="space-y-4">
           {customSections.map((section, index) => (
             <CustomSectionItem
-              key={section.id}
+              key={section.id || `section-${index}`}
               section={section}
               index={index}
               onUpdate={updateCustomSection}
@@ -994,7 +994,7 @@ const CustomSectionItem = ({section, index, onUpdate, onRemove}) => {
   };
 
   return (
-    <div className="p-4 border-2 border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900">
+    <div className="p-4 border border-gray-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-black">
       {/* Header */}
       <div className="flex items-center gap-2 mb-3">
         <button
@@ -1118,7 +1118,10 @@ const CustomSectionItem = ({section, index, onUpdate, onRemove}) => {
               </div>
 
               {section.items.map((item, itemIndex) => (
-                <div key={itemIndex} className="flex gap-2">
+                <div
+                  key={`${section.id}-item-${itemIndex}`}
+                  className="flex gap-2"
+                >
                   <input
                     type="text"
                     value={item}

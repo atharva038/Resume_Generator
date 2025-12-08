@@ -495,7 +495,7 @@ const JobSearch = () => {
               Job Search in India 🇮🇳
             </h1>
           </div>
-          <p className="text-lg text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+          <p className="text-lg text-gray-600 dark:text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
             Find your dream job or internship in India - Remote, On-site, or
             Hybrid positions
           </p>
@@ -519,8 +519,8 @@ const JobSearch = () => {
                   }}
                   className={`flex-1 min-w-[150px] px-6 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${
                     activeJobType === type.value
-                      ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg scale-105"
-                      : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                      ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-gray-900 dark:text-white shadow-lg scale-105"
+                      : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                   }`}
                 >
                   <span className="text-xl">{type.icon}</span>
@@ -549,8 +549,8 @@ const JobSearch = () => {
                   }}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
                     activeTab === type.value
-                      ? "bg-blue-600 text-white shadow-md"
-                      : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                      ? "bg-blue-600 text-gray-900 dark:text-white shadow-md"
+                      : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                   }`}
                 >
                   <span>{type.icon}</span>
@@ -570,7 +570,7 @@ const JobSearch = () => {
             <div className="grid grid-cols-1 gap-4 mb-4">
               {/* Job Title Input */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-700 dark:text-gray-300 mb-2">
                   <Search className="inline w-4 h-4 mr-2" />
                   Job Title or Keywords (Optional)
                 </label>
@@ -603,7 +603,7 @@ const JobSearch = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                 {/* City Filter */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-700 dark:text-gray-300 mb-2">
                     <MapPin className="inline w-4 h-4 mr-2" />
                     City
                   </label>
@@ -624,7 +624,7 @@ const JobSearch = () => {
 
                 {/* Category Filter */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-700 dark:text-gray-300 mb-2">
                     <Briefcase className="inline w-4 h-4 mr-2" />
                     Category
                   </label>
@@ -653,7 +653,7 @@ const JobSearch = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02]"
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-gray-900 dark:text-white font-bold py-4 px-6 rounded-xl transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02]"
             >
               {loading ? (
                 <>
@@ -700,7 +700,7 @@ const JobSearch = () => {
           {/* Top Companies - More Compact */}
           {topCompanies.length > 0 && (
             <div className="mt-6 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-gray-600">
-              <h3 className="text-base font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+              <h3 className="text-base font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                 <Building2 className="w-5 h-5 text-blue-600" />
                 Top Hiring Companies
               </h3>
@@ -743,12 +743,12 @@ const JobSearch = () => {
                     <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                       <div className="flex-1">
                         {/* Job Title */}
-                        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
                           {job.title}
                         </h3>
 
                         {/* Company */}
-                        <div className="flex items-center text-gray-600 dark:text-gray-400 mb-2">
+                        <div className="flex items-center text-gray-600 dark:text-gray-600 dark:text-gray-400 mb-2">
                           <Building2 className="w-4 h-4 mr-2" />
                           <span className="font-medium">
                             {job.company?.display_name ||
@@ -757,7 +757,7 @@ const JobSearch = () => {
                         </div>
 
                         {/* Location */}
-                        <div className="flex items-center text-gray-600 dark:text-gray-400 mb-3">
+                        <div className="flex items-center text-gray-600 dark:text-gray-600 dark:text-gray-400 mb-3">
                           <MapPin className="w-4 h-4 mr-2" />
                           <span>
                             {job.location?.display_name ||
@@ -768,7 +768,7 @@ const JobSearch = () => {
                         {/* Description */}
                         <div className="mb-4">
                           <p
-                            className={`text-gray-700 dark:text-gray-300 ${
+                            className={`text-gray-700 dark:text-gray-700 dark:text-gray-300 ${
                               expandedJobs[job.id] ? "" : "line-clamp-3"
                             }`}
                           >
@@ -882,7 +882,7 @@ const JobSearch = () => {
                         </div>
 
                         {/* Date Posted */}
-                        <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm">
+                        <div className="flex items-center text-gray-500 dark:text-gray-500 dark:text-gray-600 dark:text-gray-400 text-sm">
                           <Calendar className="w-4 h-4 mr-2" />
                           {formatDate(job.created)}
                         </div>
@@ -892,7 +892,7 @@ const JobSearch = () => {
                           {/* View Details Button */}
                           <button
                             onClick={() => openJobModal(job)}
-                            className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-200 flex items-center justify-center"
+                            className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-gray-900 dark:text-white font-semibold py-2 px-6 rounded-lg transition-all duration-200 flex items-center justify-center"
                           >
                             <Eye className="w-4 h-4 mr-2" />
                             View Details
@@ -903,7 +903,7 @@ const JobSearch = () => {
                             href={job.redirect_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-200 flex items-center justify-center"
+                            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-gray-900 dark:text-white font-semibold py-2 px-6 rounded-lg transition-all duration-200 flex items-center justify-center"
                           >
                             Apply Now
                             <ExternalLink className="w-4 h-4 ml-2" />
@@ -918,8 +918,8 @@ const JobSearch = () => {
             {/* No Results */}
             {jobs.length === 0 && !loading && (
               <div className="text-center py-20">
-                <Briefcase className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                <Briefcase className="w-16 h-16 mx-auto text-gray-600 dark:text-gray-400 mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
                   No jobs found
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400">
@@ -940,7 +940,7 @@ const JobSearch = () => {
                     }
                   }}
                   disabled={currentPage === 1}
-                  className="px-4 py-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  className="px-4 py-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-700 dark:text-gray-300 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
                   Previous
                 </button>
@@ -958,8 +958,8 @@ const JobSearch = () => {
                     }}
                     className={`px-4 py-2 rounded-lg border transition-all ${
                       currentPage === pageNum
-                        ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white border-transparent font-semibold shadow-md"
-                        : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                        ? "bg-gradient-to-r from-blue-600 to-purple-600 text-gray-900 dark:text-white border-transparent font-semibold shadow-md"
+                        : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
                     }`}
                   >
                     {pageNum}
@@ -976,7 +976,7 @@ const JobSearch = () => {
                     }
                   }}
                   disabled={currentPage >= Math.ceil(jobs.length / 10)}
-                  className="px-4 py-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  className="px-4 py-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-700 dark:text-gray-300 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
                   Next
                 </button>
@@ -986,7 +986,7 @@ const JobSearch = () => {
         )}
 
         {/* Footer Info */}
-        <div className="max-w-5xl mx-auto mt-12 text-center text-sm text-gray-500 dark:text-gray-400">
+        <div className="max-w-5xl mx-auto mt-12 text-center text-sm text-gray-500 dark:text-gray-500 dark:text-gray-400">
           <p>
             Powered by{" "}
             <a
@@ -1012,7 +1012,7 @@ const JobSearch = () => {
               onClick={(e) => e.stopPropagation()}
             >
               {/* Modal Header - Fixed */}
-              <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 flex justify-between items-start flex-shrink-0">
+              <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-gray-900 dark:text-white p-6 flex justify-between items-start flex-shrink-0">
                 <div className="flex-1 pr-4">
                   <h2 className="text-2xl font-bold mb-2">
                     {selectedJob.title}
@@ -1036,7 +1036,7 @@ const JobSearch = () => {
                 </div>
                 <button
                   onClick={closeJobModal}
-                  className="text-white hover:bg-white/20 rounded-full p-2 transition-all"
+                  className="text-gray-900 dark:text-white hover:bg-white/20 rounded-full p-2 transition-all"
                 >
                   <X className="w-6 h-6" />
                 </button>
@@ -1071,7 +1071,7 @@ const JobSearch = () => {
 
                 {/* Job Tags */}
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-3">
                     Job Type
                   </h3>
                   <div className="flex flex-wrap gap-2">
@@ -1123,11 +1123,11 @@ const JobSearch = () => {
 
                 {/* Full Description */}
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-3">
                     Job Description Preview
                   </h3>
                   <div
-                    className="text-gray-700 dark:text-gray-300 leading-relaxed bg-gray-50 dark:bg-gray-900/50 rounded-lg p-6 border-2 border-gray-200 dark:border-gray-700"
+                    className="text-gray-700 dark:text-gray-700 dark:text-gray-300 leading-relaxed bg-gray-50 dark:bg-gray-900/50 rounded-lg p-6 border-2 border-gray-200 dark:border-gray-700"
                     style={{
                       wordBreak: "break-word",
                       overflowWrap: "break-word",
@@ -1144,7 +1144,7 @@ const JobSearch = () => {
                         }}
                       />
                     ) : (
-                      <p className="text-gray-500 dark:text-gray-400 italic">
+                      <p className="text-gray-500 dark:text-gray-500 dark:text-gray-600 dark:text-gray-400 italic">
                         No description available
                       </p>
                     )}
@@ -1168,14 +1168,14 @@ const JobSearch = () => {
                     href={selectedJob.redirect_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-4 px-6 rounded-lg transition-all duration-200 flex items-center justify-center text-lg shadow-lg hover:shadow-xl"
+                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-gray-900 dark:text-white font-bold py-4 px-6 rounded-lg transition-all duration-200 flex items-center justify-center text-lg shadow-lg hover:shadow-xl"
                   >
                     <ExternalLink className="w-6 h-6 mr-3" />
                     View Complete Job Details & Apply on Adzuna
                   </a>
                   <button
                     onClick={closeJobModal}
-                    className="w-full px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-all"
+                    className="w-full px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-700 dark:text-gray-300 font-semibold rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-all"
                   >
                     Close
                   </button>

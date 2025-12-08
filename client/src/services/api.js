@@ -24,6 +24,20 @@ api.interceptors.request.use(
   }
 );
 
+// Add response interceptor to handle 401 errors
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Token is invalid or expired
+      console.error("Authentication failed - token may be expired");
+      // Optionally redirect to login page
+      // window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
 // Auth API
 export const authAPI = {
   register: (data) => api.post("/auth/register", data),

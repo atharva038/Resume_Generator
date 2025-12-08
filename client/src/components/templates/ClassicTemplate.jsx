@@ -1,6 +1,55 @@
-import {forwardRef} from "react";
+import {forwardRef, useRef, useEffect, useState} from "react";
 
-const ClassicTemplate = forwardRef(({resumeData}, ref) => {
+const ClassicTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
+  // Page overflow detection state
+  const containerRef = useRef(null);
+  const [pageOverflowInfo, setPageOverflowInfo] = useState({
+    isOverflowing: false,
+    currentHeight: 0,
+    maxHeight: 1056, // Standard A4 page height at 96 DPI (11 inches * 96)
+    overflowPercentage: 0,
+    templateName: "ClassicTemplate",
+  });
+
+  // Detect page overflow whenever resumeData changes
+  useEffect(() => {
+    if (containerRef.current) {
+      const currentHeight = containerRef.current.scrollHeight;
+      const maxHeight = 1056; // A4 page height
+      const isOverflowing = currentHeight > maxHeight;
+      const overflowPercentage = isOverflowing
+        ? Math.round(((currentHeight - maxHeight) / maxHeight) * 100)
+        : 0;
+
+      const usageInfo = {
+        isOverflowing,
+        currentHeight,
+        maxHeight,
+        overflowPercentage,
+        percentage: Math.round((currentHeight / maxHeight) * 100), // Allow > 100% for overflow
+        templateName: "ClassicTemplate",
+      };
+
+      setPageOverflowInfo(usageInfo);
+
+      // Log overflow information for testing - TEMPLATE SPECIFIC
+      if (isOverflowing) {
+        console.log(
+          `⚠️ ClassicTemplate: Page overflow detected! Current height: ${currentHeight}px, Max: ${maxHeight}px, Overflow: ${overflowPercentage}%`
+        );
+      } else {
+        console.log(
+          `✅ ClassicTemplate: Content fits on one page. Height: ${currentHeight}px / ${maxHeight}px (${usageInfo.percentage}% filled)`
+        );
+      }
+
+      // Pass data to parent component if callback provided
+      if (onPageUsageChange) {
+        onPageUsageChange(usageInfo);
+      }
+    }
+  }, [resumeData]); // Don't include onPageUsageChange to avoid infinite loops
+
   // Color Themes - Multiple professional palettes
   const colorThemes = {
     navy: {
@@ -60,9 +109,16 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
 
   // Render section helper function
   const renderSection = (sectionId) => {
+    // Common style to prevent page breaks inside sections
+    const sectionStyle = {
+      marginBottom: "12px",
+      pageBreakInside: "avoid",
+      breakInside: "avoid",
+    };
+
     const sections = {
       summary: resumeData.summary && (
-        <section key="summary" style={{marginBottom: "12px"}}>
+        <section key="summary" style={sectionStyle}>
           <h2
             className="font-bold uppercase"
             style={{
@@ -79,7 +135,7 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
       ),
 
       skills: resumeData.skills && resumeData.skills.length > 0 && (
-        <section key="skills" style={{marginBottom: "12px"}}>
+        <section key="skills" style={sectionStyle}>
           <h2
             className="font-bold uppercase"
             style={{
@@ -101,7 +157,7 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
       ),
 
       experience: resumeData.experience && resumeData.experience.length > 0 && (
-        <section key="experience" style={{marginBottom: "12px"}}>
+        <section key="experience" style={sectionStyle}>
           <h2
             className="font-bold uppercase"
             style={{
@@ -161,7 +217,7 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
       ),
 
       projects: resumeData.projects && resumeData.projects.length > 0 && (
-        <section key="projects" style={{marginBottom: "12px"}}>
+        <section key="projects" style={sectionStyle}>
           <h2
             className="font-bold uppercase"
             style={{
@@ -231,7 +287,7 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
       ),
 
       education: resumeData.education && resumeData.education.length > 0 && (
-        <section key="education" style={{marginBottom: "12px"}}>
+        <section key="education" style={sectionStyle}>
           <h2
             className="font-bold uppercase"
             style={{
@@ -279,7 +335,7 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
 
       certifications: resumeData.certifications &&
         resumeData.certifications.length > 0 && (
-          <section key="certifications" style={{marginBottom: "12px"}}>
+          <section key="certifications" style={sectionStyle}>
             <h2
               className="font-bold uppercase"
               style={{
@@ -305,7 +361,7 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
 
       achievements: resumeData.achievements &&
         resumeData.achievements.length > 0 && (
-          <section key="achievements" style={{marginBottom: "12px"}}>
+          <section key="achievements" style={sectionStyle}>
             <h2
               className="font-bold uppercase"
               style={{
@@ -339,7 +395,7 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
                 return (
                   <section
                     key={`customSection_${sectionIndex}`}
-                    style={{marginBottom: "12px"}}
+                    style={sectionStyle}
                   >
                     <h2
                       className="font-bold uppercase"
@@ -358,7 +414,9 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
                     >
                       {section.items.map((item, itemIndex) => (
                         <li
-                          key={itemIndex}
+                          key={`${
+                            section.id || sectionIndex
+                          }-item-${itemIndex}`}
                           style={{fontSize: "10pt", marginBottom: "3px"}}
                         >
                           {item}
@@ -379,7 +437,14 @@ const ClassicTemplate = forwardRef(({resumeData}, ref) => {
 
   return (
     <div
-      ref={ref}
+      ref={(node) => {
+        containerRef.current = node;
+        if (typeof ref === "function") {
+          ref(node);
+        } else if (ref) {
+          ref.current = node;
+        }
+      }}
       className="resume-preview !bg-white !text-black shadow-lg border border-gray-300 font-resume"
       style={{
         minHeight: "11in",

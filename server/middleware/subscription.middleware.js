@@ -15,14 +15,18 @@ export async function checkSubscription(req, res, next) {
     // Get userId from JWT payload (set by authenticateToken middleware)
     const userId = req.user.userId || req.user._id;
 
-    console.log("checkSubscription middleware - userId:", userId);
-    console.log("checkSubscription middleware - req.user:", req.user);
+    console.log("🔍 checkSubscription middleware:");
+    console.log("  - userId:", userId);
+    console.log("  - req.user:", JSON.stringify(req.user, null, 2));
 
     // Fetch user with subscription details
     const user = await User.findById(userId);
     if (!user) {
       console.error("❌ User not found with ID:", userId);
-      return res.status(404).json({message: "User not found"});
+      return res.status(404).json({
+        error: "User not found",
+        message: "Your account could not be found. Please contact support.",
+      });
     }
 
     // Check subscription status and expiry
@@ -31,13 +35,18 @@ export async function checkSubscription(req, res, next) {
     // Attach updated user to request
     req.user = user;
 
-    console.log("✅ User found and attached to request:", user.email);
+    console.log("✅ Subscription check passed for:", user.email);
+    console.log("  - Tier:", user.subscription?.tier || "free");
+    console.log("  - Status:", user.subscription?.status || "N/A");
 
     next();
   } catch (error) {
     console.error("❌ Subscription check error:", error.message);
     console.error("❌ Error stack:", error.stack);
-    res.status(500).json({message: "Failed to check subscription status"});
+    res.status(500).json({
+      error: "Subscription check failed",
+      message: "Failed to check subscription status. Please try again.",
+    });
   }
 }
 
@@ -51,13 +60,26 @@ export function checkUsageLimit(limitType) {
       const user = req.user;
 
       if (!user) {
-        return res.status(401).json({message: "User not authenticated"});
+        console.error("❌ checkUsageLimit: User not authenticated");
+        return res.status(401).json({
+          error: "Authentication required",
+          message: "Please log in to use this feature",
+        });
       }
+
+      console.log(`🔍 Checking usage limit for ${limitType}:`, {
+        userId: user._id,
+        tier: user.subscription?.tier || "free",
+        current: user.usage?.[limitType] || 0,
+        limit: user.getUsageLimit(limitType),
+      });
 
       // Check if limit reached
       if (user.hasReachedLimit(limitType)) {
         const limit = user.getUsageLimit(limitType);
         const tier = user.subscription?.tier || "free";
+
+        console.log(`⚠️ User has reached limit for ${limitType}`);
 
         // Customize messages based on limit type and tier
         const limitMessages = {
@@ -168,13 +190,17 @@ export function checkUsageLimit(limitType) {
         });
       }
 
+      console.log(`✅ Usage limit check passed for ${limitType}`);
       next();
     } catch (error) {
       console.error(
         `❌ Usage limit check error (${limitType}):`,
         error.message
       );
-      res.status(500).json({message: "Failed to check usage limit"});
+      res.status(500).json({
+        error: "Usage check failed",
+        message: "Failed to check usage limit. Please try again.",
+      });
     }
   };
 }

@@ -227,7 +227,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
         className={
           embedded
             ? "flex items-center justify-center py-12"
-            : "min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center"
+            : "min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center"
         }
       >
         <div className="text-center">
@@ -244,14 +244,16 @@ const SubscriptionDashboard = ({embedded = false}) => {
 
   // Content component (without outer wrapper)
   const DashboardContent = () => (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div
+      className={`max-w-7xl mx-auto ${embedded ? "" : "px-4 sm:px-6 lg:px-8"}`}
+    >
       {/* Header - only show if not embedded */}
       {!embedded && (
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-1">
             Subscription Dashboard
           </h1>
-          <p className="text-gray-600 dark:text-gray-300 text-sm">
+          <p className="text-gray-600 dark:text-gray-700 dark:text-gray-300 text-sm">
             Manage your subscription and track your usage
           </p>
         </div>
@@ -280,7 +282,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
             </div>
             <button
               onClick={() => navigate("/pricing")}
-              className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-5 py-2.5 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all transform hover:scale-105 shadow-lg text-sm"
+              className="bg-purple-600 text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-purple-700 transition-all shadow-md hover:shadow-lg text-sm"
             >
               Upgrade Now
             </button>
@@ -326,9 +328,9 @@ const SubscriptionDashboard = ({embedded = false}) => {
                 return (
                   <div
                     key={plan._id || index}
-                    className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden"
+                    className="bg-white dark:bg-black rounded-xl shadow-sm dark:shadow-lg border border-gray-200 dark:border-zinc-800 overflow-hidden"
                   >
-                    <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900 dark:to-pink-800 p-4 border-2 border-purple-200 dark:border-purple-700">
+                    <div className="bg-purple-50 dark:bg-purple-900/10 p-4 border-b border-purple-200 dark:border-purple-800/30">
                       <div className="flex justify-between items-start mb-3">
                         <div>
                           <h3 className="text-base font-bold text-gray-900 dark:text-white">
@@ -342,7 +344,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
                             Started: {formatDate(plan.startDate)}
                           </p>
                         </div>
-                        <span className="bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-xs font-semibold">
+                        <span className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 px-2 py-0.5 rounded-full text-xs font-semibold">
                           Active
                         </span>
                       </div>
@@ -360,7 +362,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
                           <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">
                             Days Until Renewal
                           </p>
-                          <p className="text-2xl font-bold text-purple-600">
+                          <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
                             {daysRemaining}
                           </p>
                         </div>
@@ -372,15 +374,15 @@ const SubscriptionDashboard = ({embedded = false}) => {
                           <span>Billing Cycle Progress</span>
                           <span>{Math.round(progressPercentage)}%</span>
                         </div>
-                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                        <div className="w-full bg-gray-200 dark:bg-zinc-800 rounded-full h-2">
                           <div
-                            className="h-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all"
+                            className="h-2 rounded-full bg-purple-600 transition-all"
                             style={{width: `${progressPercentage}%`}}
                           ></div>
                         </div>
                       </div>
 
-                      <div className="bg-white dark:bg-gray-800 rounded-lg p-3 mb-4">
+                      <div className="bg-white dark:bg-black rounded-lg p-3 mb-4 border border-gray-200 dark:border-zinc-800">
                         <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">
                           💳 Auto-renewal on {formatDate(plan.endDate)}
                         </p>
@@ -399,7 +401,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
                     </div>
 
                     {/* Action Buttons for Pro Plan */}
-                    <div className="p-3 bg-gray-50 dark:bg-gray-700 flex flex-wrap gap-2">
+                    <div className="p-3 bg-gray-50 dark:bg-zinc-900 flex flex-wrap gap-2 border-t border-gray-200 dark:border-zinc-800">
                       <button
                         onClick={() => navigate("/pricing")}
                         className="flex-1 bg-purple-600 text-white px-3 py-1.5 rounded-lg font-semibold hover:bg-purple-700 transition-all text-xs"
@@ -424,8 +426,8 @@ const SubscriptionDashboard = ({embedded = false}) => {
               })}
             </div>
 
-            <div className="mt-4 bg-purple-50 dark:bg-purple-900 border-l-4 border-purple-600 p-3 rounded-r-lg">
-              <p className="text-xs text-purple-800 dark:text-purple-200">
+            <div className="mt-4 bg-purple-50 dark:bg-purple-900/10 border-l-4 border-purple-600 p-3 rounded-r-lg">
+              <p className="text-xs text-purple-800 dark:text-purple-300">
                 🎉 <strong>Pro Member:</strong> Enjoy unlimited resumes, premium
                 AI models, and priority support!
               </p>
@@ -471,9 +473,9 @@ const SubscriptionDashboard = ({embedded = false}) => {
                 return (
                   <div
                     key={plan._id || index}
-                    className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden"
+                    className="bg-white dark:bg-black rounded-xl shadow-sm dark:shadow-lg border border-gray-200 dark:border-zinc-800 overflow-hidden"
                   >
-                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-800 p-4 border-2 border-blue-200 dark:border-blue-700">
+                    <div className="bg-blue-50 dark:bg-blue-900/10 p-4 border-b border-blue-200 dark:border-blue-800/30">
                       <div className="flex justify-between items-start mb-3">
                         <div>
                           <h3 className="text-base font-bold text-gray-900 dark:text-white">
@@ -483,7 +485,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
                             Started: {formatDate(plan.startDate)}
                           </p>
                         </div>
-                        <span className="bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-xs font-semibold">
+                        <span className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 px-2 py-0.5 rounded-full text-xs font-semibold">
                           Active
                         </span>
                       </div>
@@ -501,7 +503,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
                           <p className="text-xs text-gray-600 dark:text-gray-400 mb-0.5">
                             Days Left
                           </p>
-                          <p className="text-xl font-bold text-blue-600">
+                          <p className="text-xl font-bold text-blue-600 dark:text-blue-400">
                             {daysRemaining}
                           </p>
                         </div>
@@ -513,7 +515,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
                           <span>Time Used</span>
                           <span>{Math.round(progressPercentage)}%</span>
                         </div>
-                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                        <div className="w-full bg-gray-200 dark:bg-zinc-800 rounded-full h-1.5">
                           <div
                             className={`h-1.5 rounded-full transition-all ${
                               progressPercentage >= 90
@@ -535,7 +537,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
                     </div>
 
                     {/* Action Buttons for One-Time Plan */}
-                    <div className="p-3 bg-gray-50 dark:bg-gray-700 flex flex-wrap gap-2">
+                    <div className="p-3 bg-gray-50 dark:bg-zinc-900 flex flex-wrap gap-2 border-t border-gray-200 dark:border-zinc-800">
                       <button
                         onClick={() => navigate("/pricing")}
                         className="flex-1 bg-purple-600 text-white px-3 py-1.5 rounded-lg font-semibold hover:bg-purple-700 transition-all text-xs"
@@ -554,8 +556,8 @@ const SubscriptionDashboard = ({embedded = false}) => {
               })}
             </div>
 
-            <div className="mt-4 bg-blue-50 dark:bg-blue-900 border-l-4 border-blue-600 p-3 rounded-r-lg">
-              <p className="text-xs text-blue-800 dark:text-blue-200">
+            <div className="mt-4 bg-blue-50 dark:bg-blue-900/10 border-l-4 border-blue-600 p-3 rounded-r-lg">
+              <p className="text-xs text-blue-800 dark:text-blue-300">
                 💡 <strong>Tip:</strong> Each one-time plan gives you 21 days of
                 access from its purchase date. You can buy multiple plans to
                 extend your access period!
@@ -588,7 +590,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
                     {stats.total}
                   </span>
                 </div>
-                <p className="text-xs text-gray-600 dark:text-gray-300 font-medium">
+                <p className="text-xs text-gray-600 dark:text-gray-700 dark:text-gray-300 font-medium">
                   Total Purchases
                 </p>
               </div>
@@ -602,7 +604,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
                       {stats.oneTimePlans}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-600 dark:text-gray-300 font-medium">
+                  <p className="text-xs text-gray-600 dark:text-gray-700 dark:text-gray-300 font-medium">
                     One-Time Plans
                   </p>
                 </div>
@@ -617,7 +619,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
                       {stats.proPlans}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-600 dark:text-gray-300 font-medium">
+                  <p className="text-xs text-gray-600 dark:text-gray-700 dark:text-gray-300 font-medium">
                     Pro Plans
                   </p>
                 </div>
@@ -631,7 +633,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
                     {formatPrice(stats.totalSpent)}
                   </span>
                 </div>
-                <p className="text-xs text-gray-700 dark:text-gray-300 font-medium">
+                <p className="text-xs text-gray-700 dark:text-gray-700 dark:text-gray-300 font-medium">
                   Total Investment
                 </p>
               </div>
@@ -734,7 +736,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
 
       {/* Usage Statistics */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-6">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
           Usage Statistics
         </h2>
 
@@ -753,7 +755,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
                   </span>
                 </div>
                 {usage.resumesLimit !== Infinity && (
-                  <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="w-full bg-gray-200 dark:bg-zinc-700 rounded-full h-2 shadow-inner">
                     <div
                       className={`h-2 rounded-full transition-all ${getProgressColor(
                         (usage.resumesUsed / usage.resumesLimit) * 100
@@ -785,7 +787,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
                   </span>
                 </div>
                 {usage.atsScansLimit !== Infinity && (
-                  <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="w-full bg-gray-200 dark:bg-zinc-700 rounded-full h-2 shadow-inner">
                     <div
                       className={`h-2 rounded-full transition-all ${getProgressColor(
                         (usage.atsScansUsed / usage.atsScansLimit) * 100
@@ -852,7 +854,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
                     </span>
                   </div>
                   {usage.coverLettersLimit !== Infinity && (
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="w-full bg-gray-200 dark:bg-zinc-700 rounded-full h-2 shadow-inner">
                       <div
                         className={`h-2 rounded-full transition-all ${getProgressColor(
                           (usage.coverLettersUsed / usage.coverLettersLimit) *
@@ -891,7 +893,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
 
       {/* Payment History */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
           Payment History
         </h2>
 
@@ -947,7 +949,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
                       {formatPrice(payment.amount)}
                     </td>
                     <td className="px-3 py-2">
-                      <span className="font-mono text-xs text-gray-500 dark:text-gray-400 break-all">
+                      <span className="font-mono text-xs text-gray-500 dark:text-gray-500 dark:text-gray-600 dark:text-gray-400 break-all">
                         {payment.paymentId ? payment.paymentId : "N/A"}
                       </span>
                     </td>
@@ -971,7 +973,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
           </div>
         ) : (
           <div className="text-center py-6">
-            <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
+            <p className="text-sm text-gray-600 dark:text-gray-700 dark:text-gray-300 mb-3">
               No payment history yet
             </p>
             <button
@@ -988,10 +990,10 @@ const SubscriptionDashboard = ({embedded = false}) => {
       {showCancelModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full p-5">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-3">
               Cancel Subscription
             </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
+            <p className="text-sm text-gray-600 dark:text-gray-700 dark:text-gray-300 mb-3">
               Are you sure you want to cancel your subscription? You'll continue
               to have access until {formatDate(subscription?.endDate)}.
             </p>
@@ -999,19 +1001,19 @@ const SubscriptionDashboard = ({embedded = false}) => {
               placeholder="Tell us why you're cancelling (optional)"
               value={cancelReason}
               onChange={(e) => setCancelReason(e.target.value)}
-              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg p-2.5 mb-3 focus:ring-2 focus:ring-purple-600 focus:border-transparent text-sm"
+              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-900 dark:text-white rounded-lg p-2.5 mb-3 focus:ring-2 focus:ring-purple-600 focus:border-transparent text-sm"
               rows="3"
             />
             <div className="flex gap-3">
               <button
                 onClick={() => setShowCancelModal(false)}
-                className="flex-1 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-white py-1.5 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-all text-sm"
+                className="flex-1 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-900 dark:text-white py-1.5 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-all text-sm"
               >
                 Keep Subscription
               </button>
               <button
                 onClick={handleCancelSubscription}
-                className="flex-1 bg-red-600 text-white py-1.5 rounded-lg hover:bg-red-700 transition-all text-sm"
+                className="flex-1 bg-red-600 text-gray-900 dark:text-white py-1.5 rounded-lg hover:bg-red-700 transition-all text-sm"
               >
                 Cancel Subscription
               </button>

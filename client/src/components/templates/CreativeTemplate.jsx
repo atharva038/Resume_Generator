@@ -581,7 +581,10 @@ const CreativeTemplate = forwardRef(({resumeData}, ref) => {
         resumeData.customSections.length > 0 && (
           <>
             {resumeData.customSections.map((section, index) => (
-              <section key={`custom-${index}`} style={{marginBottom: "16px"}}>
+              <section
+                key={section.id || `custom-${index}`}
+                style={{marginBottom: "16px"}}
+              >
                 <div style={{position: "relative"}}>
                   <div
                     style={{
@@ -608,17 +611,35 @@ const CreativeTemplate = forwardRef(({resumeData}, ref) => {
                   >
                     {section.title}
                   </h2>
-                  <div
-                    style={{
-                      fontSize: "9.5pt",
-                      lineHeight: "1.5",
-                      color: "#4b5563",
-                      whiteSpace: "pre-wrap",
-                      paddingLeft: "8px",
-                    }}
-                  >
-                    {section.content}
-                  </div>
+                  {section.items && section.items.length > 0 ? (
+                    <ul style={{paddingLeft: "28px", margin: "0"}}>
+                      {section.items.map((item, itemIndex) => (
+                        <li
+                          key={`${section.id || index}-item-${itemIndex}`}
+                          style={{
+                            fontSize: "9.5pt",
+                            lineHeight: "1.5",
+                            color: "#4b5563",
+                            marginBottom: "4px",
+                          }}
+                        >
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <div
+                      style={{
+                        fontSize: "9.5pt",
+                        lineHeight: "1.5",
+                        color: "#4b5563",
+                        whiteSpace: "pre-wrap",
+                        paddingLeft: "8px",
+                      }}
+                    >
+                      {section.content}
+                    </div>
+                  )}
                 </div>
               </section>
             ))}

@@ -51,13 +51,24 @@ const EditableSection = ({
   const handleEnhance = async () => {
     setEnhancing(true);
     try {
+      // Check if user is authenticated
+      const token = localStorage.getItem("token");
+      if (!token) {
+        toast.error("Please log in to use AI enhancement", {
+          icon: "🔒",
+          duration: 3000,
+        });
+        setEnhancing(false);
+        return;
+      }
+
       let contentToEnhance;
 
       if (sectionType === "summary") {
         contentToEnhance = content;
       } else if (sectionType === "experience" && experienceData) {
         contentToEnhance = experienceData.bullets;
-      } else if (sectionType === "project" && projectData) {
+      } else if (sectionType === "projects" && projectData) {
         contentToEnhance = projectData.bullets;
       } else {
         contentToEnhance = content;
@@ -87,10 +98,49 @@ const EditableSection = ({
         duration: 2000,
       });
     } catch (err) {
-      toast.error("Failed to enhance content: " + parseValidationErrors(err), {
-        icon: "❌",
-        duration: 3000,
-      });
+      // Handle 401 Unauthorized specifically
+      if (err.response?.status === 401) {
+        const errorCode = err.response?.data?.code;
+        const errorMessage = err.response?.data?.error;
+
+        if (errorCode === "TOKEN_EXPIRED") {
+          toast.error(
+            "Your session has expired. Please refresh the page and log in again.",
+            {
+              icon: "⏰",
+              duration: 5000,
+            }
+          );
+        } else {
+          toast.error(
+            errorMessage || "Authentication required. Please log in.",
+            {
+              icon: "🔒",
+              duration: 4000,
+            }
+          );
+        }
+      } else if (err.response?.status === 403) {
+        // Handle subscription/limit errors
+        const errorMessage =
+          err.response?.data?.error || err.response?.data?.message;
+        toast.error(
+          errorMessage ||
+            "You've reached your usage limit. Please upgrade your plan.",
+          {
+            icon: "⚠️",
+            duration: 5000,
+          }
+        );
+      } else {
+        toast.error(
+          "Failed to enhance content: " + parseValidationErrors(err),
+          {
+            icon: "❌",
+            duration: 3000,
+          }
+        );
+      }
     } finally {
       setEnhancing(false);
     }
@@ -181,7 +231,9 @@ const EditableSection = ({
               type="text"
               value={experienceData.endDate || ""}
               onChange={(e) => onUpdateExperience("endDate", e.target.value)}
-              placeholder={experienceData.current ? "Present" : "End Date (MM/YYYY)"}
+              placeholder={
+                experienceData.current ? "Present" : "End Date (MM/YYYY)"
+              }
               className="input-field"
               autoComplete="off"
               disabled={experienceData.current}
@@ -204,7 +256,7 @@ const EditableSection = ({
       )}
 
       {/* Project-specific fields */}
-      {sectionType === "project" && projectData && onUpdateProject && (
+      {sectionType === "projects" && projectData && onUpdateProject && (
         <div className="space-y-2 mb-4">
           <input
             type="text"
