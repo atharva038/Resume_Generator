@@ -32,10 +32,14 @@ export const uploadResume = async (req, res) => {
     // Check if user can use AI resume extraction (Pro/Premium/Lifetime only)
     const canUseAIExtraction = ["pro", "premium", "lifetime"].includes(tier);
 
+    // Get usage limits for response
+    let limit = null;
+    let used = null;
+
     // If using AI extraction, check daily limit
     if (canUseAIExtraction) {
-      const limit = user.getUsageLimit("aiResumeExtractionsPerDay");
-      const used = user.usage?.aiResumeExtractionsToday || 0;
+      limit = user.getUsageLimit("aiResumeExtractionsPerDay");
+      used = user.usage?.aiResumeExtractionsToday || 0;
 
       if (used >= limit) {
         return res.status(403).json({
@@ -110,6 +114,30 @@ export const uploadResume = async (req, res) => {
     }
 
     console.error("Upload error:", error);
+
+    // Check if it's a Gemini quota error (more comprehensive check)
+    const errorMsg = error.message?.toLowerCase() || "";
+    const isQuotaError =
+      errorMsg.includes("429") ||
+      errorMsg.includes("quota") ||
+      errorMsg.includes("too many requests") ||
+      errorMsg.includes("rate limit");
+
+    if (isQuotaError) {
+      console.log(
+        "🚫 Detected quota error - sending upgrade required response"
+      );
+      return res.status(403).json({
+        error: "AI Parsing Limit Reached",
+        message:
+          "The free AI resume parsing service has reached its daily limit. Upgrade to Pro, Premium, or Lifetime to get unlimited AI-powered resume parsing!",
+        upgradeRequired: true,
+        feature: "AI Resume Parsing",
+        availableIn: ["pro", "premium", "lifetime"],
+        quotaExceeded: true,
+      });
+    }
+
     res.status(500).json({
       error: error.message || "Failed to process resume",
     });
@@ -132,6 +160,23 @@ export const enhanceContent = async (req, res) => {
       return res.status(400).json({error: "Section type is required"});
     }
 
+    // Check user's subscription tier
+    const userId = req.user._id || req.user.userId;
+    const user = await User.findById(userId);
+    const tier = user?.subscription?.tier || "free";
+
+    // AI Enhancement is only available for paid users
+    if (tier === "free") {
+      return res.status(403).json({
+        error: "Subscription Required",
+        message:
+          "AI content enhancement is available for Pro, Premium, and Lifetime subscribers only. Upgrade your plan to access this feature!",
+        upgradeRequired: true,
+        feature: "AI Content Enhancement",
+        availableIn: ["pro", "premium", "lifetime"],
+      });
+    }
+
     // Enhance content using Gemini AI with full resume context and custom prompt
     const startTime = Date.now();
     const {data: enhancedContent, tokenUsage} = await enhanceContentWithAI(
@@ -142,8 +187,7 @@ export const enhanceContent = async (req, res) => {
     );
     const responseTime = Date.now() - startTime;
 
-    // Track AI usage - Use _id from MongoDB user object or userId from JWT
-    const userId = req.user._id || req.user.userId;
+    // Track AI usage
     await trackAIUsage(
       userId,
       "resume_enhancement",
@@ -180,6 +224,17 @@ export const enhanceContent = async (req, res) => {
       );
     }
 
+    // Handle quota exceeded errors specifically
+    if (error.code === "QUOTA_EXCEEDED" || error.statusCode === 429) {
+      return res.status(429).json({
+        error: "AI service quota exceeded",
+        message:
+          "The AI enhancement service has reached its daily limit. Please try again later or contact support.",
+        quotaExceeded: true,
+        retryAfter: "1 hour", // Generic retry time
+      });
+    }
+
     res.status(500).json({
       error: error.message || "Failed to enhance content",
     });
@@ -198,6 +253,23 @@ export const generateSummary = async (req, res) => {
       return res.status(400).json({error: "Resume data is required"});
     }
 
+    // Check user's subscription tier
+    const userId = req.user._id || req.user.userId;
+    const user = await User.findById(userId);
+    const tier = user?.subscription?.tier || "free";
+
+    // AI Summary generation is only available for paid users
+    if (tier === "free") {
+      return res.status(403).json({
+        error: "Subscription Required",
+        message:
+          "AI summary generation is available for Pro, Premium, and Lifetime subscribers only. Upgrade your plan to access this feature!",
+        upgradeRequired: true,
+        feature: "AI Summary Generation",
+        availableIn: ["pro", "premium", "lifetime"],
+      });
+    }
+
     // Generate summary using Gemini AI
     const startTime = Date.now();
     const {data: summary, tokenUsage} = await generateSummaryWithAI(resumeData);
@@ -205,7 +277,7 @@ export const generateSummary = async (req, res) => {
 
     // Track AI usage
     await trackAIUsage(
-      req.user._id || req.user.userId,
+      userId,
       "ai_suggestions",
       tokenUsage?.totalTokens || 0,
       responseTime,
@@ -213,7 +285,6 @@ export const generateSummary = async (req, res) => {
     );
 
     // Increment AI generation counter
-    const userId = req.user._id || req.user.userId;
     await User.findByIdAndUpdate(userId, {
       $inc: {
         "usage.aiGenerationsUsed": 1,
@@ -239,6 +310,17 @@ export const generateSummary = async (req, res) => {
         "error",
         error.message
       );
+    }
+
+    // Handle quota exceeded errors specifically
+    if (error.code === "QUOTA_EXCEEDED" || error.statusCode === 429) {
+      return res.status(429).json({
+        error: "AI service quota exceeded",
+        message:
+          "The AI summary generation service has reached its daily limit. Please try again later or contact support.",
+        quotaExceeded: true,
+        retryAfter: "1 hour",
+      });
     }
 
     res.status(500).json({
@@ -438,6 +520,23 @@ export const categorizeSkills = async (req, res) => {
       return res.status(400).json({error: "Skills must be a string"});
     }
 
+    // Check user's subscription tier
+    const userId = req.user._id || req.user.userId;
+    const user = await User.findById(userId);
+    const tier = user?.subscription?.tier || "free";
+
+    // AI Skills categorization is only available for paid users
+    if (tier === "free") {
+      return res.status(403).json({
+        error: "Subscription Required",
+        message:
+          "AI skills categorization is available for Pro, Premium, and Lifetime subscribers only. Upgrade your plan to access this feature!",
+        upgradeRequired: true,
+        feature: "AI Skills Categorization",
+        availableIn: ["pro", "premium", "lifetime"],
+      });
+    }
+
     // Categorize skills using Gemini AI
     const startTime = Date.now();
     const {data: categorizedSkills, tokenUsage} = await categorizeSkillsWithAI(
@@ -447,7 +546,7 @@ export const categorizeSkills = async (req, res) => {
 
     // Track AI usage
     await trackAIUsage(
-      req.user._id || req.user.userId,
+      userId,
       "ai_suggestions",
       tokenUsage?.totalTokens || 0,
       responseTime,
@@ -455,7 +554,6 @@ export const categorizeSkills = async (req, res) => {
     );
 
     // Increment AI generation counter
-    const userId = req.user._id || req.user.userId;
     await User.findByIdAndUpdate(userId, {
       $inc: {
         "usage.aiGenerationsUsed": 1,
@@ -504,6 +602,23 @@ export const segregateAchievements = async (req, res) => {
       return res.status(400).json({error: "Achievements must be a string"});
     }
 
+    // Check user's subscription tier
+    const userId = req.user._id || req.user.userId;
+    const user = await User.findById(userId);
+    const tier = user?.subscription?.tier || "free";
+
+    // AI Achievements segregation is only available for paid users
+    if (tier === "free") {
+      return res.status(403).json({
+        error: "Subscription Required",
+        message:
+          "AI achievements organization is available for Pro, Premium, and Lifetime subscribers only. Upgrade your plan to access this feature!",
+        upgradeRequired: true,
+        feature: "AI Achievements Organization",
+        availableIn: ["pro", "premium", "lifetime"],
+      });
+    }
+
     // Segregate achievements using Gemini AI
     const startTime = Date.now();
     const {data: segregatedAchievements, tokenUsage} =
@@ -512,7 +627,7 @@ export const segregateAchievements = async (req, res) => {
 
     // Track AI usage
     await trackAIUsage(
-      req.user._id || req.user.userId,
+      userId,
       "ai_suggestions",
       tokenUsage?.totalTokens || 0,
       responseTime,
@@ -520,7 +635,6 @@ export const segregateAchievements = async (req, res) => {
     );
 
     // Increment AI generation counter
-    const userId = req.user._id || req.user.userId;
     await User.findByIdAndUpdate(userId, {
       $inc: {
         "usage.aiGenerationsUsed": 1,
@@ -569,6 +683,23 @@ export const processCustomSection = async (req, res) => {
       return res.status(400).json({error: "Content must be a string"});
     }
 
+    // Check user's subscription tier
+    const userId = req.user._id || req.user.userId;
+    const user = await User.findById(userId);
+    const tier = user?.subscription?.tier || "free";
+
+    // AI Custom section processing is only available for paid users
+    if (tier === "free") {
+      return res.status(403).json({
+        error: "Subscription Required",
+        message:
+          "AI custom section processing is available for Pro, Premium, and Lifetime subscribers only. Upgrade your plan to access this feature!",
+        upgradeRequired: true,
+        feature: "AI Custom Section Processing",
+        availableIn: ["pro", "premium", "lifetime"],
+      });
+    }
+
     // Process custom section using Gemini AI
     const startTime = Date.now();
     const {data: processedContent, tokenUsage} =
@@ -577,7 +708,7 @@ export const processCustomSection = async (req, res) => {
 
     // Track AI usage
     await trackAIUsage(
-      req.user._id || req.user.userId,
+      userId,
       "ai_suggestions",
       tokenUsage?.totalTokens || 0,
       responseTime,
@@ -585,7 +716,6 @@ export const processCustomSection = async (req, res) => {
     );
 
     // Increment AI generation counter
-    const userId = req.user._id || req.user.userId;
     await User.findByIdAndUpdate(userId, {
       $inc: {
         "usage.aiGenerationsUsed": 1,
