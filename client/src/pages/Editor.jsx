@@ -25,6 +25,7 @@ import {
   GitHubImportModal,
   PageLimitExceededModal,
 } from "../components/common/modals";
+import UpgradeRequiredModal from "../components/common/modals/UpgradeRequiredModal";
 import {getJobCategories, getJobsByCategory} from "../utils/jobProfiles";
 import {calculateContentMetrics} from "../utils/resumeLimits";
 import {PageUtilizationIndicator} from "../components/common/LimitedInputs";
@@ -271,6 +272,10 @@ const Editor = () => {
   const [showPageLimitModal, setShowPageLimitModal] = useState(false);
   const [twoPageMode, setTwoPageMode] = useState(false);
   const [lastContentMetrics, setLastContentMetrics] = useState(null);
+
+  // Upgrade modal states
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [upgradeMessage, setUpgradeMessage] = useState("");
 
   // Template-specific page usage (from TechTemplate and ClassicTemplate)
   const [templatePageUsage, setTemplatePageUsage] = useState(null);
@@ -620,18 +625,18 @@ const Editor = () => {
     } catch (err) {
       console.error("Save error:", err);
 
-      // Check if it's a subscription limit error (403 with upgradeRequired)
-      if (err.response?.status === 403 && err.response?.data?.upgradeRequired) {
+      // Check if it's a subscription/upgrade error (403 with upgradeRequired or quotaExceeded)
+      if (
+        err.response?.status === 403 &&
+        (err.response?.data?.upgradeRequired ||
+          err.response?.data?.quotaExceeded)
+      ) {
         const errorData = err.response.data;
-        toast.error(errorData.message || "Upgrade required", {
-          icon: "⭐",
-          duration: 2000,
-        });
-
-        // Navigate to pricing page after a short delay
-        setTimeout(() => {
-          navigate("/pricing");
-        }, 2000);
+        setUpgradeMessage(
+          errorData.message ||
+            "Upgrade required to access this premium feature!"
+        );
+        setShowUpgradeModal(true);
       } else {
         toast.error("Failed to save resume: " + parseValidationErrors(err), {
           icon: "❌",
@@ -2436,6 +2441,17 @@ const Editor = () => {
 
       {/* Toast Notifications */}
       <Toaster position="bottom-right" />
+
+      {/* Upgrade Modal */}
+      {showUpgradeModal && (
+        <UpgradeRequiredModal
+          isOpen={showUpgradeModal}
+          onClose={() => setShowUpgradeModal(false)}
+          message={upgradeMessage}
+          title="Upgrade Required"
+          feature="AI-Powered Features"
+        />
+      )}
     </div>
   );
 };

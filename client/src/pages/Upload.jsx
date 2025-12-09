@@ -3,6 +3,7 @@ import {useNavigate} from "react-router-dom";
 import {useDropzone} from "react-dropzone";
 import {resumeAPI} from "../services/api";
 import {parseValidationErrors} from "../utils/errorHandler";
+import UpgradeRequiredModal from "../components/common/modals/UpgradeRequiredModal";
 import {
   Upload as UploadIcon,
   FileText,
@@ -16,6 +17,8 @@ import {
 const Upload = () => {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [upgradeMessage, setUpgradeMessage] = useState("");
   const navigate = useNavigate();
 
   const onDrop = async (acceptedFiles) => {
@@ -35,7 +38,23 @@ const Upload = () => {
       navigate("/editor", {state: {resumeData: response.data.data}});
     } catch (err) {
       console.error("Upload error:", err);
-      setError(parseValidationErrors(err));
+      console.log("Error response data:", err.response?.data);
+      console.log("Error status:", err.response?.status);
+
+      // Check if it's a subscription/upgrade required error
+      if (
+        err.response?.data?.upgradeRequired ||
+        err.response?.data?.quotaExceeded
+      ) {
+        console.log("🎯 Detected upgrade/quota error - showing modal");
+        setUpgradeMessage(
+          err.response.data.message || "Upgrade to access this premium feature!"
+        );
+        setShowUpgradeModal(true);
+      } else {
+        console.log("⚠️ Not an upgrade error - showing regular error");
+        setError(parseValidationErrors(err));
+      }
     } finally {
       setUploading(false);
     }
@@ -293,6 +312,17 @@ const Upload = () => {
           </div>
         </div>
       </div>
+
+      {/* Upgrade Modal */}
+      {showUpgradeModal && (
+        <UpgradeRequiredModal
+          isOpen={showUpgradeModal}
+          onClose={() => setShowUpgradeModal(false)}
+          message={upgradeMessage}
+          title="Upgrade Required"
+          feature="AI Resume Parsing"
+        />
+      )}
     </div>
   );
 };

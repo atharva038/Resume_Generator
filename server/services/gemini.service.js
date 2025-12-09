@@ -329,6 +329,21 @@ YOU MUST follow these custom instructions while maintaining all the critical rul
     return {data: enhancedContent, tokenUsage};
   } catch (error) {
     console.error("❌ Gemini enhancement error:", error.message);
+
+    // Check if it's a quota exceeded error
+    if (
+      error.message.includes("429") ||
+      error.message.includes("quota") ||
+      error.message.includes("Too Many Requests")
+    ) {
+      const quotaError = new Error(
+        "AI service quota exceeded. Please try again later or upgrade your plan."
+      );
+      quotaError.code = "QUOTA_EXCEEDED";
+      quotaError.statusCode = 429;
+      throw quotaError;
+    }
+
     throw new Error(`Failed to enhance content with AI: ${error.message}`);
   }
 }
@@ -363,6 +378,21 @@ Return only the summary text without any additional formatting or explanations.`
     return {data: text, tokenUsage};
   } catch (error) {
     console.error("❌ Gemini summary generation error:", error.message);
+
+    // Check if it's a quota exceeded error
+    if (
+      error.message.includes("429") ||
+      error.message.includes("quota") ||
+      error.message.includes("Too Many Requests")
+    ) {
+      const quotaError = new Error(
+        "AI service quota exceeded. Please try again later or upgrade your plan."
+      );
+      quotaError.code = "QUOTA_EXCEEDED";
+      quotaError.statusCode = 429;
+      throw quotaError;
+    }
+
     throw new Error(`Failed to generate summary with AI: ${error.message}`);
   }
 }
