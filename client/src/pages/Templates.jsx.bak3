@@ -23,6 +23,7 @@ import AcademicTemplate from "../components/templates/AcademicTemplate";
 import CorporateEliteTemplate from "../components/templates/CorporateEliteTemplate";
 import StrategicLeaderTemplate from "../components/templates/StrategicLeaderTemplate";
 import ImpactProTemplate from "../components/templates/ImpactProTemplate";
+import GitHubStyleTemplate from "../components/templates/GitHubStyleTemplate"
 
 // Sample resume data for preview - matches template structure
 const sampleResumeData = {
