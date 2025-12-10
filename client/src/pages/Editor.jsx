@@ -41,6 +41,7 @@ import AcademicTemplate from "../components/templates/AcademicTemplate";
 import CorporateEliteTemplate from "../components/templates/CorporateEliteTemplate";
 import StrategicLeaderTemplate from "../components/templates/StrategicLeaderTemplate";
 import ImpactProTemplate from "../components/templates/ImpactProTemplate";
+import GitHubStyleTemplate from "../components/templates/GitHubStyleTemplate";
 
 // Default section order (only editable resume sections)
 const DEFAULT_SECTION_ORDER = [
@@ -109,6 +110,14 @@ const TEMPLATES = [
     id: "tech",
     name: "Tech Developer",
     component: TechTemplate,
+    category: "Tech",
+    emoji: "💻",
+    atsScore: 93,
+  },
+  {
+    id: "GitHubStyle",
+    name: "GitHub Style",
+    component: GitHubStyleTemplate,
     category: "Tech",
     emoji: "💻",
     atsScore: 93,

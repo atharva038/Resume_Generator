@@ -6,7 +6,7 @@
     "type": "module",
     "scripts": {
         "dev-v": "node --env-file=.env --watch server.js",
-        "dev": "nodemon --exec 'node --env-file=.env' server.js",
+        "dev": "nodemon --exec \"node --env-file=.env\" server.js",
         "dev:native": "node --env-file=.env --watch-path=./routes --watch-path=./controllers --watch-path=./models --watch-path=./middleware --watch-path=./services --watch-path=./utils --watch-path=./config --watch-path=./server.js --watch-preserve-output server.js",
         "start": "node server.js",
         "create-admin": "node --env-file=.env scripts/createAdmin.js",
