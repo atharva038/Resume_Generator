@@ -41,6 +41,8 @@ const router = express.Router();
 router.post(
   "/upload",
   authenticateToken,
+  checkSubscription,
+  checkUsageLimit("aiResumeExtractionsPerDay"),
   uploadLimiter, // Rate limit file uploads
   upload.single("resume"),
   validateFileUpload,

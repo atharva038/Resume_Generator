@@ -3,20 +3,22 @@ import {Link} from "react-router-dom";
 
 const PrivacyPolicy = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-purple-50/30 to-blue-50/30 dark:from-gray-900 dark:via-purple-900/10 dark:to-blue-900/10">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-800 dark:to-purple-800 text-gray-900 dark:text-white py-16">
+      <div className="bg-gradient-to-r from-purple-600 via-violet-600 to-blue-600 dark:from-purple-900 dark:via-violet-900 dark:to-blue-900 text-white py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <Shield className="w-16 h-16 mx-auto mb-4" />
+            <div className="inline-block p-4 bg-white/10 backdrop-blur-xl rounded-2xl mb-6">
+              <Shield className="w-16 h-16" />
+            </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
               Privacy Policy
             </h1>
-            <p className="text-xl text-blue-100 dark:text-blue-200">
+            <p className="text-xl text-purple-100 dark:text-purple-200">
               Your privacy is important to us. Learn how we collect, use, and
               protect your data.
             </p>
-            <p className="text-sm text-blue-100 dark:text-blue-200 mt-4">
+            <p className="text-sm text-purple-100 dark:text-purple-200 mt-4">
               Last Updated:{" "}
               {new Date().toLocaleDateString("en-US", {
                 year: "numeric",
@@ -30,10 +32,10 @@ const PrivacyPolicy = () => {
 
       {/* Content Section */}
       <div className="container mx-auto px-4 py-12 max-w-4xl">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 md:p-12 space-y-8">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-8 md:p-12 space-y-8">
           {/* Introduction */}
           <section>
-            <p className="text-gray-700 dark:text-gray-700 dark:text-gray-300 leading-relaxed">
+            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
               Welcome to SmartNShine. This Privacy Policy explains how we
               collect, use, disclose, and safeguard your information when you
               use our AI-powered resume builder service. Please read this

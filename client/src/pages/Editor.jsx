@@ -1,9 +1,10 @@
-import {useState, useEffect, useRef} from "react";
+import {useState, useEffect, useRef, useCallback} from "react";
 import {useLocation, useNavigate} from "react-router-dom";
-import {useAuth} from "../context/AuthContext";
-import {useNavigationBlocker} from "../context/NavigationBlockerContext";
-import {resumeAPI} from "../services/api";
-import {parseValidationErrors} from "../utils/errorHandler";
+import {useAuth} from "@/context/AuthContext";
+import {useNavigationBlocker} from "@/context/NavigationBlockerContext";
+import {useLocalStorage, useToggle, useMediaQuery} from "@/hooks";
+import {resumeAPI} from "@/api/api";
+import {parseValidationErrors} from "@/utils/errorHandler";
 import toast, {Toaster} from "react-hot-toast";
 import {
   ResumePreview,
@@ -19,28 +20,28 @@ import {
   AchievementsSection,
   CustomSectionsManager,
   ResumeWizard,
-} from "../components/editor";
-import {ScoreCard, JobSpecificScoreCard} from "../components/common/cards";
+} from "@/components/editor";
+import {ScoreCard, JobSpecificScoreCard} from "@/components/common/cards";
 import {
   GitHubImportModal,
   PageLimitExceededModal,
-} from "../components/common/modals";
-import UpgradeRequiredModal from "../components/common/modals/UpgradeRequiredModal";
-import {getJobCategories, getJobsByCategory} from "../utils/jobProfiles";
-import {calculateContentMetrics} from "../utils/resumeLimits";
-import {PageUtilizationIndicator} from "../components/common/LimitedInputs";
-import ClassicTemplate from "../components/templates/ClassicTemplate";
-import ModernTemplate from "../components/templates/ModernTemplate";
-import MinimalTemplate from "../components/templates/MinimalTemplate";
-import ProfessionalTemplate from "../components/templates/ProfessionalTemplate";
-import ProfessionalV2Template from "../components/templates/ProfessionalV2Template";
-import ExecutiveTemplate from "../components/templates/ExecutiveTemplate";
-import TechTemplate from "../components/templates/TechTemplate";
-import CreativeTemplate from "../components/templates/CreativeTemplate";
-import AcademicTemplate from "../components/templates/AcademicTemplate";
-import CorporateEliteTemplate from "../components/templates/CorporateEliteTemplate";
-import StrategicLeaderTemplate from "../components/templates/StrategicLeaderTemplate";
-import ImpactProTemplate from "../components/templates/ImpactProTemplate";
+} from "@/components/common/modals";
+import UpgradeRequiredModal from "@/components/common/modals/UpgradeRequiredModal";
+import {getJobCategories, getJobsByCategory} from "@/utils/jobProfiles";
+import {calculateContentMetrics} from "@/utils/resumeLimits";
+import {PageUtilizationIndicator} from "@/components/common/LimitedInputs";
+import ClassicTemplate from "@/components/templates/ClassicTemplate";
+import ModernTemplate from "@/components/templates/ModernTemplate";
+import MinimalTemplate from "@/components/templates/MinimalTemplate";
+import ProfessionalTemplate from "@/components/templates/ProfessionalTemplate";
+import ProfessionalV2Template from "@/components/templates/ProfessionalV2Template";
+import Professional2Template from "@/components/templates/Professional2Template";
+import TechTemplate from "@/components/templates/TechTemplate";
+import Creative2Template from "@/components/templates/Creative2Template";
+import AcademicTemplate from "@/components/templates/AcademicTemplate";
+import CorporateEliteTemplate from "@/components/templates/CorporateEliteTemplate";
+import StrategicLeaderTemplate from "@/components/templates/StrategicLeaderTemplate";
+import ImpactProTemplate from "@/components/templates/ImpactProTemplate";
 
 // Default section order (only editable resume sections)
 const DEFAULT_SECTION_ORDER = [
@@ -98,12 +99,12 @@ const TEMPLATES = [
     atsScore: 96,
   },
   {
-    id: "executive",
-    name: "Executive",
-    component: ExecutiveTemplate,
-    category: "Leadership",
-    emoji: "👔",
-    atsScore: 96,
+    id: "professional2",
+    name: "Professional Elite",
+    component: Professional2Template,
+    category: "Professional",
+    emoji: "🏆",
+    atsScore: 98,
   },
   {
     id: "tech",
@@ -114,12 +115,12 @@ const TEMPLATES = [
     atsScore: 93,
   },
   {
-    id: "creative",
-    name: "Creative Designer",
-    component: CreativeTemplate,
+    id: "creative2",
+    name: "Creative Designer Pro",
+    component: Creative2Template,
     category: "Creative",
     emoji: "🎨",
-    atsScore: 88,
+    atsScore: 94,
   },
   {
     id: "academic",
@@ -199,11 +200,13 @@ const TEMPLATE_COLOR_THEMES = {
     {id: "purple", name: "Purple", primary: "#6d28d9", emoji: "🔮"},
     {id: "teal", name: "Teal", primary: "#0e7490", emoji: "🌊"},
   ],
-  creative: [
-    {id: "purple", name: "Purple", primary: "#a21caf", emoji: "💜"},
-    {id: "orange", name: "Orange", primary: "#ea580c", emoji: "🧡"},
-    {id: "pink", name: "Pink", primary: "#db2777", emoji: "💗"},
-    {id: "teal", name: "Teal", primary: "#0891b2", emoji: "🌊"},
+  creative2: [
+    {id: "purple", name: "Purple", primary: "#8b5cf6", emoji: "💜"},
+    {id: "coral", name: "Coral", primary: "#f97316", emoji: "🧡"},
+    {id: "teal", name: "Teal", primary: "#14b8a6", emoji: "🌊"},
+    {id: "rose", name: "Rose", primary: "#e11d48", emoji: "🌹"},
+    {id: "indigo", name: "Indigo", primary: "#4f46e5", emoji: "�"},
+    {id: "cyan", name: "Cyan", primary: "#0891b2", emoji: "💎"},
   ],
   academic: [
     {id: "navy", name: "Navy Blue", primary: "#1e3a8a", emoji: "📘"},
@@ -221,7 +224,7 @@ const TEMPLATE_COLOR_THEMES = {
     {id: "teal", name: "Teal", primary: "#0d7377", emoji: "🌊"},
     {id: "purple", name: "Purple", primary: "#6b46c1", emoji: "🔮"},
     {id: "burgundy", name: "Burgundy", primary: "#9b2c2c", emoji: "🍷"},
-    {id: "navy", name: "Navy Blue", primary: "#2c5282", emoji: "💼"},
+    {id: "navy", name: "Navy", primary: "#1e3a8a", emoji: "💼"},
   ],
   "impact-pro": [
     {id: "emerald", name: "Emerald", primary: "#047857", emoji: "💚"},
@@ -240,51 +243,95 @@ const Editor = () => {
   const previewSectionRef = useRef(null);
   const [resumeData, setResumeData] = useState(null);
   const [originalResumeData, setOriginalResumeData] = useState(null); // Track original data
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [showUnsavedModal, setShowUnsavedModal] = useState(false);
+  const [
+    hasUnsavedChanges,
+    toggleUnsavedChanges,
+    setHasUnsavedChangesTrue,
+    setHasUnsavedChangesFalse,
+  ] = useToggle(false);
+  const [
+    showUnsavedModal,
+    toggleUnsavedModal,
+    showUnsavedModalTrue,
+    showUnsavedModalFalse,
+  ] = useToggle(false);
   const [pendingNavigation, setPendingNavigation] = useState(null);
-  const [saving, setSaving] = useState(false);
-  const [autoSaving, setAutoSaving] = useState(false);
-  const [showPreview, setShowPreview] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState(() => {
-    // Load template from localStorage (set by Templates page) or default to "classic"
-    const savedTemplate = localStorage.getItem("selectedTemplate");
-    return savedTemplate || "classic";
-  });
-  const [showTemplateSelector, setShowTemplateSelector] = useState(false);
-  const [showColorThemeSelector, setShowColorThemeSelector] = useState(false);
-  const [sectionOrder, setSectionOrder] = useState(() => {
-    // Load section order from localStorage or use default
-    const saved = localStorage.getItem("resumeSectionOrder");
-    return saved ? JSON.parse(saved) : DEFAULT_SECTION_ORDER;
-  });
+  const [saving, toggleSaving, setSavingTrue, setSavingFalse] =
+    useToggle(false);
+  const [autoSaving, toggleAutoSaving, setAutoSavingTrue, setAutoSavingFalse] =
+    useToggle(false);
+  const [showPreview, togglePreview, setShowPreviewTrue, setShowPreviewFalse] =
+    useToggle(false);
+  const isMobile = useMediaQuery("(max-width: 1023px)");
+  const [selectedTemplate, setSelectedTemplate] = useLocalStorage(
+    "selectedTemplate",
+    "classic"
+  );
+  const [
+    showTemplateSelector,
+    toggleTemplateSelector,
+    showTemplateSelectorTrue,
+    showTemplateSelectorFalse,
+  ] = useToggle(false);
+  const [
+    showColorThemeSelector,
+    toggleColorThemeSelector,
+    showColorThemeSelectorTrue,
+    showColorThemeSelectorFalse,
+  ] = useToggle(false);
+  const [sectionOrder, setSectionOrder] = useLocalStorage(
+    "resumeSectionOrder",
+    DEFAULT_SECTION_ORDER
+  );
   const [draggedSection, setDraggedSection] = useState(null);
-  const [isAnalysisExpanded, setIsAnalysisExpanded] = useState(() => {
-    // Load analysis section state from localStorage or default to true
-    const saved = localStorage.getItem("analysisExpanded");
-    return saved !== null ? JSON.parse(saved) : true;
-  });
-  const [showGitHubImportModal, setShowGitHubImportModal] = useState(false);
-  const [githubImportSuccess, setGithubImportSuccess] = useState(false);
+  const [isAnalysisExpanded, setIsAnalysisExpanded] = useLocalStorage(
+    "analysisExpanded",
+    true
+  );
+  const [
+    showGitHubImportModal,
+    toggleGitHubImportModal,
+    showGitHubImportModalTrue,
+    showGitHubImportModalFalse,
+  ] = useToggle(false);
+  const [
+    githubImportSuccess,
+    toggleGithubImportSuccess,
+    setGithubImportSuccessTrue,
+    setGithubImportSuccessFalse,
+  ] = useToggle(false);
 
   // Page limit states
-  const [showPageLimitModal, setShowPageLimitModal] = useState(false);
-  const [twoPageMode, setTwoPageMode] = useState(false);
+  const [
+    showPageLimitModal,
+    togglePageLimitModal,
+    showPageLimitModalTrue,
+    showPageLimitModalFalse,
+  ] = useToggle(false);
+  const [
+    twoPageMode,
+    toggleTwoPageMode,
+    setTwoPageModeTrue,
+    setTwoPageModeFalse,
+  ] = useToggle(false);
   const [lastContentMetrics, setLastContentMetrics] = useState(null);
 
   // Upgrade modal states
-  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [
+    showUpgradeModal,
+    toggleUpgradeModal,
+    showUpgradeModalTrue,
+    showUpgradeModalFalse,
+  ] = useToggle(false);
   const [upgradeMessage, setUpgradeMessage] = useState("");
 
   // Template-specific page usage (from TechTemplate and ClassicTemplate)
   const [templatePageUsage, setTemplatePageUsage] = useState(null);
 
-  // Callback to receive page usage from templates
-  const handleTemplatePageUsage = (usageInfo) => {
-    console.log("🎯 Editor.jsx received template page usage:", usageInfo);
+  // Callback to receive page usage from templates (memoized to prevent infinite loops)
+  const handleTemplatePageUsage = useCallback((usageInfo) => {
     setTemplatePageUsage(usageInfo);
-  };
+  }, []); // Empty deps - function doesn't need to change
 
   // Reset page usage when switching to non-supported templates
   useEffect(() => {
@@ -301,32 +348,19 @@ const Editor = () => {
   }, [selectedTemplate]);
 
   // Wizard mode for new resumes
-  const [isWizardMode, setIsWizardMode] = useState(false);
-
-  // Save analysis section state to localStorage when it changes
-  useEffect(() => {
-    localStorage.setItem(
-      "analysisExpanded",
-      JSON.stringify(isAnalysisExpanded)
-    );
-  }, [isAnalysisExpanded]);
-
-  // Detect if device is mobile
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 1024); // lg breakpoint
-    };
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
+  const [
+    isWizardMode,
+    toggleWizardMode,
+    setIsWizardModeTrue,
+    setIsWizardModeFalse,
+  ] = useToggle(false);
 
   // Setup navigation blocker when there are unsaved changes
   useEffect(() => {
     if (hasUnsavedChanges) {
       blockNavigation((to) => {
         // Show modal and store pending navigation
-        setShowUnsavedModal(true);
+        showUnsavedModalTrue();
         setPendingNavigation(to);
         return false; // Block navigation
       });
@@ -345,8 +379,17 @@ const Editor = () => {
 
     const hasChanges =
       JSON.stringify(resumeData) !== JSON.stringify(originalResumeData);
-    setHasUnsavedChanges(hasChanges);
-  }, [resumeData, originalResumeData]);
+    if (hasChanges) {
+      setHasUnsavedChangesTrue();
+    } else {
+      setHasUnsavedChangesFalse();
+    }
+  }, [
+    resumeData,
+    originalResumeData,
+    setHasUnsavedChangesTrue,
+    setHasUnsavedChangesFalse,
+  ]);
 
   // Monitor content size and show warning if exceeds one page
   useEffect(() => {
@@ -360,7 +403,7 @@ const Editor = () => {
     if (metrics.exceedsOnePage) {
       // Show modal after a short delay to allow user to see what they typed
       const timer = setTimeout(() => {
-        setShowPageLimitModal(true);
+        showPageLimitModalTrue();
       }, 500);
 
       return () => clearTimeout(timer);
@@ -386,7 +429,7 @@ const Editor = () => {
 
     // Set up auto-save timer (30 seconds after last change)
     const autoSaveTimer = setTimeout(async () => {
-      setAutoSaving(true);
+      setAutoSavingTrue();
 
       try {
         const response = await resumeAPI.update(resumeData._id, resumeData);
@@ -395,7 +438,7 @@ const Editor = () => {
         // Update state with saved data
         setResumeData(savedResume);
         setOriginalResumeData(JSON.parse(JSON.stringify(savedResume)));
-        setHasUnsavedChanges(false);
+        setHasUnsavedChangesFalse();
 
         // Show success toast
         toast.success("Auto-saved ✓", {
@@ -414,7 +457,7 @@ const Editor = () => {
         // Don't show error toast for auto-save failures to avoid annoying users
         // They can still manually save if needed
       } finally {
-        setAutoSaving(false);
+        setAutoSavingFalse();
       }
     }, 30000); // 30 seconds
 
@@ -446,7 +489,7 @@ const Editor = () => {
         // Store the current state before showing modal
         const currentPath = window.location.pathname;
 
-        setShowUnsavedModal(true);
+        showUnsavedModalTrue();
         setPendingNavigation("back");
 
         // Push a new state to prevent navigation
@@ -483,11 +526,15 @@ const Editor = () => {
 
       if (stateData) {
         // Set wizard mode for new resumes
-        setIsWizardMode(isNewResume);
+        if (isNewResume) {
+          setIsWizardModeTrue();
+        } else {
+          setIsWizardModeFalse();
+        }
 
         // Auto-enable preview for wizard mode
         if (isNewResume && !isMobile) {
-          setShowPreview(true);
+          setShowPreviewTrue();
         }
 
         // Initialize data from location state
@@ -509,7 +556,7 @@ const Editor = () => {
           const response = await resumeAPI.getById(savedResumeId);
           const loadedData = response.data;
           // Existing resumes should not show wizard
-          setIsWizardMode(false);
+          setIsWizardModeFalse();
           initializeResumeData(loadedData);
         } catch (err) {
           console.error("❌ Error loading resume:", err);
@@ -593,7 +640,7 @@ const Editor = () => {
       return;
     }
 
-    setSaving(true);
+    setSavingTrue();
     try {
       let savedResume;
       if (resumeData._id) {
@@ -620,7 +667,7 @@ const Editor = () => {
         localStorage.setItem("currentResumeId", savedResume._id);
         // Update original data to current state after successful save
         setOriginalResumeData(JSON.parse(JSON.stringify(savedResume)));
-        setHasUnsavedChanges(false);
+        setHasUnsavedChangesFalse();
       }
     } catch (err) {
       console.error("Save error:", err);
@@ -636,7 +683,7 @@ const Editor = () => {
           errorData.message ||
             "Upgrade required to access this premium feature!"
         );
-        setShowUpgradeModal(true);
+        showUpgradeModalTrue();
       } else {
         toast.error("Failed to save resume: " + parseValidationErrors(err), {
           icon: "❌",
@@ -644,7 +691,70 @@ const Editor = () => {
         });
       }
     } finally {
-      setSaving(false);
+      setSavingFalse();
+    }
+  };
+
+  // Handle PDF download with subscription and limit validation
+  const handleDownloadPDF = async () => {
+    if (!user) {
+      toast.error("Please login to download your resume", {
+        icon: "🔒",
+        duration: 3000,
+      });
+      navigate("/login");
+      return;
+    }
+
+    try {
+      // First, call track-download API to check subscription and limits
+      await resumeAPI.trackDownload();
+
+      // If successful, proceed with PDF download
+      if (!showPreview) {
+        setShowPreviewTrue();
+        setTimeout(() => {
+          if (
+            resumePreviewRef.current &&
+            resumePreviewRef.current.downloadPDF
+          ) {
+            resumePreviewRef.current.downloadPDF();
+          }
+        }, 300);
+      } else {
+        if (resumePreviewRef.current && resumePreviewRef.current.downloadPDF) {
+          resumePreviewRef.current.downloadPDF();
+        }
+      }
+
+      toast.success("Resume download started!", {
+        icon: "📥",
+        duration: 2000,
+      });
+    } catch (err) {
+      console.error("Download error:", err);
+      console.error("Download error response:", err.response?.data);
+
+      // Check if it's a subscription/upgrade error (403 with upgradeRequired)
+      if (err.response?.status === 403) {
+        const errorData = err.response.data;
+
+        // Show upgrade modal for any 403 error
+        setUpgradeMessage(
+          errorData.message ||
+            errorData.error ||
+            "You need an active subscription to download your resume!"
+        );
+        showUpgradeModalTrue();
+      } else {
+        toast.error(
+          "Failed to download resume: " + parseValidationErrors(err),
+          {
+            icon: "❌",
+            duration: 4000,
+          }
+        );
+      }
     }
   };
 
@@ -653,39 +763,39 @@ const Editor = () => {
     await handleSave();
     // Temporarily unblock navigation
     unblockNavigation();
-    setHasUnsavedChanges(false);
+    setHasUnsavedChangesFalse();
 
     if (pendingNavigation === "back") {
       window.history.back();
     } else if (pendingNavigation) {
       navigate(pendingNavigation);
     }
-    setShowUnsavedModal(false);
+    showUnsavedModalFalse();
     setPendingNavigation(null);
   };
 
   const handleDiscardAndNavigate = () => {
     // Temporarily unblock navigation
     unblockNavigation();
-    setHasUnsavedChanges(false);
+    setHasUnsavedChangesFalse();
 
     if (pendingNavigation === "back") {
       window.history.back();
     } else if (pendingNavigation) {
       navigate(pendingNavigation);
     }
-    setShowUnsavedModal(false);
+    showUnsavedModalFalse();
     setPendingNavigation(null);
   };
 
   const handleCancelNavigation = () => {
-    setShowUnsavedModal(false);
+    showUnsavedModalFalse();
     setPendingNavigation(null);
   };
 
   // Handle wizard completion
   const handleWizardComplete = () => {
-    setIsWizardMode(false);
+    setIsWizardModeFalse();
     toast.success("Resume setup complete! You can now edit all sections.", {
       icon: "🎉",
       duration: 3000,
@@ -694,8 +804,8 @@ const Editor = () => {
 
   // Page limit handlers
   const handleEnableTwoPages = () => {
-    setTwoPageMode(true);
-    setShowPageLimitModal(false);
+    setTwoPageModeTrue();
+    showPageLimitModalFalse();
     toast.success("Two-page mode enabled", {
       icon: "📄",
       duration: 3000,
@@ -703,7 +813,7 @@ const Editor = () => {
   };
 
   const handleContinueEditing = () => {
-    setShowPageLimitModal(false);
+    showPageLimitModalFalse();
     toast.info("Please reduce content to fit one page", {
       icon: "✏️",
       duration: 3000,
@@ -786,8 +896,6 @@ const Editor = () => {
       newOrder.splice(targetIndex, 0, draggedSection);
 
       setSectionOrder(newOrder);
-      // Save to localStorage
-      localStorage.setItem("resumeSectionOrder", JSON.stringify(newOrder));
 
       // Also update resumeData with section order for templates
       setResumeData((prev) => ({
@@ -971,18 +1079,18 @@ const Editor = () => {
     });
 
     // Close modal
-    setShowGitHubImportModal(false);
+    showGitHubImportModalFalse();
 
     // Show success message
-    setGithubImportSuccess(true);
-    setTimeout(() => setGithubImportSuccess(false), 3000);
+    setGithubImportSuccessTrue();
+    setTimeout(() => setGithubImportSuccessFalse(), 3000);
 
     // Auto-save with the updated data (wait for state to settle)
     setTimeout(async () => {
       if (updatedResumeData && user) {
         console.log("💾 Auto-saving imported data...", updatedResumeData);
         try {
-          setSaving(true);
+          setSavingTrue();
           let savedResume;
           if (updatedResumeData._id) {
             // Update existing resume
@@ -1014,7 +1122,7 @@ const Editor = () => {
             }
           );
         } finally {
-          setSaving(false);
+          setSavingFalse();
         }
       }
     }, 1000);
@@ -1026,7 +1134,6 @@ const Editor = () => {
       window.confirm("Reset section order to default? This cannot be undone.")
     ) {
       setSectionOrder(DEFAULT_SECTION_ORDER);
-      localStorage.removeItem("resumeSectionOrder");
       setResumeData((prev) => ({
         ...prev,
         sectionOrder: DEFAULT_SECTION_ORDER,
@@ -1506,7 +1613,7 @@ const Editor = () => {
             )}
             {/* GitHub Import Button */}
             <button
-              onClick={() => setShowGitHubImportModal(true)}
+              onClick={() => showGitHubImportModalTrue()}
               className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 border border-gray-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-black text-gray-900 dark:text-gray-300 text-xs sm:text-sm font-semibold hover:bg-gray-50 dark:hover:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-zinc-600 transition-all flex items-center justify-center gap-2"
               title="Import from GitHub"
             >
@@ -1526,7 +1633,7 @@ const Editor = () => {
             )}
             {/* Template Selector Button */}
             <button
-              onClick={() => setShowTemplateSelector(true)}
+              onClick={() => showTemplateSelectorTrue()}
               className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 border border-gray-300 dark:border-zinc-700 rounded-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs sm:text-sm font-semibold hover:bg-gray-800 dark:hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-700 dark:focus:ring-gray-300 transition-all flex items-center justify-center gap-1.5"
               title="Change template"
             >
@@ -1538,7 +1645,7 @@ const Editor = () => {
             {/* Color Theme Selector Button - Only show for templates with color themes */}
             {TEMPLATE_COLOR_THEMES[selectedTemplate] && (
               <button
-                onClick={() => setShowColorThemeSelector(true)}
+                onClick={() => showColorThemeSelectorTrue()}
                 className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 border border-gray-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-900 text-gray-900 dark:text-white text-xs sm:text-sm font-semibold hover:bg-gray-50 dark:hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-gray-400 dark:focus:ring-zinc-600 transition-all flex items-center justify-center gap-1.5"
                 title="Change color theme"
               >
@@ -1554,7 +1661,7 @@ const Editor = () => {
           <div className="flex gap-2 justify-between items-stretch">
             {/* Preview Toggle - Mobile */}
             <button
-              onClick={() => setShowPreview(!showPreview)}
+              onClick={togglePreview}
               className={`flex-1 px-3 py-2 rounded-lg font-semibold transition-all duration-200 text-xs flex items-center justify-center ${
                 showPreview
                   ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900"
@@ -1572,26 +1679,7 @@ const Editor = () => {
 
             {/* Download PDF - Mobile */}
             <button
-              onClick={() => {
-                if (!showPreview) {
-                  setShowPreview(true);
-                  setTimeout(() => {
-                    if (
-                      resumePreviewRef.current &&
-                      resumePreviewRef.current.downloadPDF
-                    ) {
-                      resumePreviewRef.current.downloadPDF();
-                    }
-                  }, 300);
-                } else {
-                  if (
-                    resumePreviewRef.current &&
-                    resumePreviewRef.current.downloadPDF
-                  ) {
-                    resumePreviewRef.current.downloadPDF();
-                  }
-                }
-              }}
+              onClick={handleDownloadPDF}
               className="flex-1 px-3 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white font-semibold transition-all duration-200 text-xs flex items-center justify-center"
             >
               <span className="text-base mr-1.5">📥</span>
@@ -1606,8 +1694,8 @@ const Editor = () => {
                 saving || autoSaving
                   ? "bg-gray-300 dark:bg-gray-700 cursor-not-allowed text-gray-500"
                   : hasUnsavedChanges
-                  ? "bg-orange-600 hover:bg-orange-700 text-white"
-                  : "bg-blue-600 hover:bg-blue-700 text-white"
+                    ? "bg-orange-600 hover:bg-orange-700 text-white"
+                    : "bg-blue-600 hover:bg-blue-700 text-white"
               }`}
             >
               {hasUnsavedChanges && !saving && !autoSaving && (
@@ -1620,10 +1708,10 @@ const Editor = () => {
                 {saving
                   ? "Saving..."
                   : autoSaving
-                  ? "Auto-saving..."
-                  : hasUnsavedChanges
-                  ? "Save*"
-                  : "Saved"}
+                    ? "Auto-saving..."
+                    : hasUnsavedChanges
+                      ? "Save*"
+                      : "Saved"}
               </span>
               <span className="xs:hidden">
                 {saving || autoSaving ? "..." : hasUnsavedChanges ? "*" : "✓"}
@@ -1636,7 +1724,7 @@ const Editor = () => {
         <div className="hidden lg:flex fixed right-6 top-32 z-50 flex-col gap-4 no-print">
           {/* Preview Toggle Button */}
           <button
-            onClick={() => setShowPreview(!showPreview)}
+            onClick={togglePreview}
             className={`group relative w-14 h-14 rounded-full font-medium transition-all duration-200 hover:scale-105 ${
               showPreview
                 ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100"
@@ -1655,26 +1743,7 @@ const Editor = () => {
 
           {/* Download PDF Button */}
           <button
-            onClick={() => {
-              if (!showPreview) {
-                setShowPreview(true);
-                setTimeout(() => {
-                  if (
-                    resumePreviewRef.current &&
-                    resumePreviewRef.current.downloadPDF
-                  ) {
-                    resumePreviewRef.current.downloadPDF();
-                  }
-                }, 300);
-              } else {
-                if (
-                  resumePreviewRef.current &&
-                  resumePreviewRef.current.downloadPDF
-                ) {
-                  resumePreviewRef.current.downloadPDF();
-                }
-              }
-            }}
+            onClick={handleDownloadPDF}
             className="group relative w-14 h-14 rounded-full bg-green-600 hover:bg-green-700 text-white shadow-lg font-medium transition-all duration-200 hover:scale-105 hover:shadow-xl"
           >
             <div className="flex items-center justify-center">
@@ -1695,8 +1764,8 @@ const Editor = () => {
               saving || autoSaving
                 ? "bg-gray-300 dark:bg-gray-700 cursor-not-allowed"
                 : hasUnsavedChanges
-                ? "bg-orange-600 hover:bg-orange-700 text-white"
-                : "bg-blue-600 hover:bg-blue-700 text-white"
+                  ? "bg-orange-600 hover:bg-orange-700 text-white"
+                  : "bg-blue-600 hover:bg-blue-700 text-white"
             }`}
           >
             {hasUnsavedChanges && !saving && !autoSaving && (
@@ -1878,6 +1947,7 @@ const Editor = () => {
                     template={selectedTemplate}
                     twoPageMode={twoPageMode}
                     onPageUsageChange={handleTemplatePageUsage}
+                    onDownload={handleDownloadPDF}
                   />
                 </div>
               </div>
@@ -1909,6 +1979,7 @@ const Editor = () => {
                       template={selectedTemplate}
                       twoPageMode={twoPageMode}
                       onPageUsageChange={handleTemplatePageUsage}
+                      onDownload={handleDownloadPDF}
                     />
                   </div>
                 )}
@@ -1959,8 +2030,8 @@ const Editor = () => {
                           templatePageUsage.percentage >= 100
                             ? "bg-gradient-to-r from-red-500 via-orange-500 to-red-600"
                             : templatePageUsage.percentage >= 80
-                            ? "bg-gradient-to-r from-yellow-400 via-orange-400 to-orange-500"
-                            : "bg-gradient-to-r from-green-400 via-blue-400 to-blue-500"
+                              ? "bg-gradient-to-r from-yellow-400 via-orange-400 to-orange-500"
+                              : "bg-gradient-to-r from-green-400 via-blue-400 to-blue-500"
                         }`}
                         style={{
                           width: `${Math.min(
@@ -2034,7 +2105,7 @@ const Editor = () => {
                       <span>Resume Preview</span>
                     </h3>
                     <button
-                      onClick={() => setShowPreview(false)}
+                      onClick={setShowPreviewFalse}
                       className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-zinc-900 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all duration-200"
                     >
                       <svg
@@ -2058,6 +2129,7 @@ const Editor = () => {
                     template={selectedTemplate}
                     twoPageMode={twoPageMode}
                     onPageUsageChange={handleTemplatePageUsage}
+                    onDownload={handleDownloadPDF}
                   />
                 </div>
               </div>
@@ -2069,7 +2141,7 @@ const Editor = () => {
         {showTemplateSelector && (
           <div
             className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-2 sm:p-4 no-print"
-            onClick={() => setShowTemplateSelector(false)}
+            onClick={() => showTemplateSelectorFalse()}
           >
             <div
               className="bg-white dark:bg-zinc-950 rounded-xl w-full max-w-6xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden border border-gray-200 dark:border-zinc-800"
@@ -2086,7 +2158,7 @@ const Editor = () => {
                   </p>
                 </div>
                 <button
-                  onClick={() => setShowTemplateSelector(false)}
+                  onClick={() => showTemplateSelectorFalse()}
                   className="text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-900 p-2 rounded-lg transition-colors flex-shrink-0"
                 >
                   <svg
@@ -2113,8 +2185,7 @@ const Editor = () => {
                       key={template.id}
                       onClick={() => {
                         setSelectedTemplate(template.id);
-                        localStorage.setItem("selectedTemplate", template.id);
-                        setShowTemplateSelector(false);
+                        showTemplateSelectorFalse();
                       }}
                       className={`group relative bg-white dark:bg-zinc-900 rounded-xl hover:shadow-lg transition-all duration-200 overflow-hidden cursor-pointer border-2 ${
                         selectedTemplate === template.id
@@ -2156,8 +2227,8 @@ const Editor = () => {
                               template.atsScore >= 95
                                 ? "text-green-500"
                                 : template.atsScore >= 90
-                                ? "text-blue-500"
-                                : "text-orange-500"
+                                  ? "text-blue-500"
+                                  : "text-orange-500"
                             }`}
                           >
                             {template.atsScore}%
@@ -2192,7 +2263,7 @@ const Editor = () => {
                   💡 Your resume content stays the same, only the design changes
                 </div>
                 <button
-                  onClick={() => setShowTemplateSelector(false)}
+                  onClick={() => showTemplateSelectorFalse()}
                   className="w-full sm:w-auto px-4 sm:px-6 py-2 bg-gray-200 dark:bg-zinc-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-700 transition-colors font-medium text-sm"
                 >
                   Close
@@ -2205,7 +2276,7 @@ const Editor = () => {
         {/* GitHub Import Modal */}
         <GitHubImportModal
           isOpen={showGitHubImportModal}
-          onClose={() => setShowGitHubImportModal(false)}
+          onClose={() => showGitHubImportModalFalse()}
           onImport={handleGitHubImport}
           currentResume={resumeData}
         />
@@ -2213,7 +2284,7 @@ const Editor = () => {
         {/* Page Limit Exceeded Modal */}
         <PageLimitExceededModal
           isOpen={showPageLimitModal}
-          onClose={() => setShowPageLimitModal(false)}
+          onClose={() => showPageLimitModalFalse()}
           resumeData={resumeData}
           onEnableTwoPages={handleEnableTwoPages}
           onContinueEditing={handleContinueEditing}
@@ -2223,7 +2294,7 @@ const Editor = () => {
         {showColorThemeSelector && TEMPLATE_COLOR_THEMES[selectedTemplate] && (
           <div
             className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-2 sm:p-4 no-print"
-            onClick={() => setShowColorThemeSelector(false)}
+            onClick={() => showColorThemeSelectorFalse()}
           >
             <div
               className="bg-white dark:bg-zinc-950 rounded-xl w-full max-w-2xl overflow-hidden border border-gray-200 dark:border-zinc-800"
@@ -2240,7 +2311,7 @@ const Editor = () => {
                   </p>
                 </div>
                 <button
-                  onClick={() => setShowColorThemeSelector(false)}
+                  onClick={() => showColorThemeSelectorFalse()}
                   className="text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-900 p-2 rounded-lg transition-colors flex-shrink-0"
                 >
                   <svg
@@ -2270,7 +2341,7 @@ const Editor = () => {
                           ...prev,
                           colorTheme: theme.id,
                         }));
-                        setShowColorThemeSelector(false);
+                        showColorThemeSelectorFalse();
                         toast.success(
                           `${theme.emoji} ${theme.name} theme applied!`,
                           {
@@ -2342,7 +2413,7 @@ const Editor = () => {
                   🎨 Choose a color that matches your industry
                 </div>
                 <button
-                  onClick={() => setShowColorThemeSelector(false)}
+                  onClick={() => showColorThemeSelectorFalse()}
                   className="px-4 sm:px-6 py-2 bg-gray-200 dark:bg-zinc-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-700 transition-colors font-medium text-sm"
                 >
                   Close
@@ -2446,7 +2517,7 @@ const Editor = () => {
       {showUpgradeModal && (
         <UpgradeRequiredModal
           isOpen={showUpgradeModal}
-          onClose={() => setShowUpgradeModal(false)}
+          onClose={() => showUpgradeModalFalse()}
           message={upgradeMessage}
           title="Upgrade Required"
           feature="AI-Powered Features"

@@ -105,6 +105,42 @@ export const getDashboardStats = async (req, res) => {
       },
     ]);
 
+    // Get AI extraction statistics
+    const aiExtractionStats = await User.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalExtractionsToday: {$sum: "$usage.aiResumeExtractionsToday"},
+          totalExtractionUsers: {
+            $sum: {
+              $cond: [{$gt: ["$usage.aiResumeExtractionsToday", 0]}, 1, 0],
+            },
+          },
+        },
+      },
+    ]);
+
+    // Get users who hit extraction limit today
+    const usersAtExtractionLimit = await User.countDocuments({
+      $expr: {
+        $gte: [
+          "$usage.aiResumeExtractionsToday",
+          {
+            $switch: {
+              branches: [
+                {case: {$eq: ["$subscription.tier", "free"]}, then: 1},
+                {case: {$eq: ["$subscription.tier", "one-time"]}, then: 10},
+                {case: {$eq: ["$subscription.tier", "pro"]}, then: 10},
+                {case: {$eq: ["$subscription.tier", "premium"]}, then: 10},
+                {case: {$eq: ["$subscription.tier", "lifetime"]}, then: 10},
+              ],
+              default: 1,
+            },
+          },
+        ],
+      },
+    });
+
     res.json({
       success: true,
       data: {
@@ -117,6 +153,11 @@ export const getDashboardStats = async (req, res) => {
           activeUsers,
           disabledUsers,
           totalAICost: totalAICost[0]?.total || 0,
+          aiExtractions: {
+            today: aiExtractionStats[0]?.totalExtractionsToday || 0,
+            activeUsers: aiExtractionStats[0]?.totalExtractionUsers || 0,
+            usersAtLimit: usersAtExtractionLimit,
+          },
         },
         charts: {
           usersGrowth,
@@ -254,6 +295,46 @@ export const getUserDetails = async (req, res) => {
         resumes,
         aiUsage,
         aiStats,
+        usageLimits: {
+          resumesPerMonth: {
+            used: user.usage?.resumesThisMonth || 0,
+            limit: user.getUsageLimit("resumesPerMonth"),
+            unlimited: user.getUsageLimit("resumesPerMonth") === Infinity,
+          },
+          resumeDownloadsPerMonth: {
+            used: user.usage?.resumesDownloadedThisMonth || 0,
+            limit: user.getUsageLimit("resumeDownloadsPerMonth"),
+            unlimited:
+              user.getUsageLimit("resumeDownloadsPerMonth") === Infinity,
+          },
+          atsScansPerMonth: {
+            used: user.usage?.atsScansThisMonth || 0,
+            limit: user.getUsageLimit("atsScansPerMonth"),
+            unlimited: user.getUsageLimit("atsScansPerMonth") === Infinity,
+          },
+          jobMatchesPerDay: {
+            used: user.usage?.jobMatchesToday || 0,
+            limit: user.getUsageLimit("jobMatchesPerDay"),
+            unlimited: user.getUsageLimit("jobMatchesPerDay") === Infinity,
+          },
+          coverLettersPerMonth: {
+            used: user.usage?.coverLettersThisMonth || 0,
+            limit: user.getUsageLimit("coverLettersPerMonth"),
+            unlimited: user.getUsageLimit("coverLettersPerMonth") === Infinity,
+          },
+          aiGenerationsPerMonth: {
+            used: user.usage?.aiGenerationsThisMonth || 0,
+            limit: user.getUsageLimit("aiGenerationsPerMonth"),
+            unlimited: user.getUsageLimit("aiGenerationsPerMonth") === Infinity,
+          },
+          aiResumeExtractionsPerDay: {
+            used: user.usage?.aiResumeExtractionsToday || 0,
+            limit: user.getUsageLimit("aiResumeExtractionsPerDay"),
+            unlimited:
+              user.getUsageLimit("aiResumeExtractionsPerDay") === Infinity,
+            lastReset: user.usage?.lastDailyReset,
+          },
+        },
       },
     });
   } catch (error) {
@@ -1972,5 +2053,199 @@ export const updateRateLimits = async (req, res) => {
   } catch (error) {
     console.error("Update rate limits error:", error);
     res.status(500).json({error: "Failed to update rate limits"});
+  }
+};
+
+/**
+ * Get AI Resume Extraction Usage Overview
+ * GET /api/admin/ai-extraction-usage
+ */
+export const getAIExtractionUsage = async (req, res) => {
+  try {
+    const {
+      page = 1,
+      limit = 20,
+      tier = "",
+      sortBy = "aiResumeExtractionsToday",
+      order = "desc",
+    } = req.query;
+
+    // Build filter
+    const filter = {};
+    if (tier) {
+      filter["subscription.tier"] = tier;
+    }
+
+    // Build sort
+    const sort = {};
+    const sortField =
+      sortBy === "aiResumeExtractionsToday"
+        ? "usage.aiResumeExtractionsToday"
+        : sortBy;
+    sort[sortField] = order === "asc" ? 1 : -1;
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    // Get users with extraction usage
+    const [users, total] = await Promise.all([
+      User.find(filter)
+        .select(
+          "name email subscription.tier usage.aiResumeExtractionsToday usage.lastDailyReset status"
+        )
+        .sort(sort)
+        .skip(skip)
+        .limit(parseInt(limit)),
+      User.countDocuments(filter),
+    ]);
+
+    // Add limit information to each user
+    const usersWithLimits = users.map((user) => {
+      const limit = user.getUsageLimit("aiResumeExtractionsPerDay");
+      const used = user.usage?.aiResumeExtractionsToday || 0;
+      const percentage =
+        limit === Infinity ? 0 : Math.round((used / limit) * 100);
+      const isAtLimit = limit !== Infinity && used >= limit;
+
+      return {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        tier: user.subscription?.tier || "free",
+        status: user.status,
+        extractionsToday: used,
+        dailyLimit: limit,
+        limitPercentage: percentage,
+        isAtLimit,
+        lastReset: user.usage?.lastDailyReset,
+      };
+    });
+
+    // Get overview statistics
+    const allUsers = await User.find(filter).select(
+      "subscription.tier usage.aiResumeExtractionsToday"
+    );
+
+    const overview = {
+      total: allUsers.length,
+      byTier: {
+        free: {
+          count: 0,
+          totalExtractions: 0,
+          atLimit: 0,
+        },
+        "one-time": {
+          count: 0,
+          totalExtractions: 0,
+          atLimit: 0,
+        },
+        pro: {
+          count: 0,
+          totalExtractions: 0,
+          atLimit: 0,
+        },
+        premium: {
+          count: 0,
+          totalExtractions: 0,
+          atLimit: 0,
+        },
+        lifetime: {
+          count: 0,
+          totalExtractions: 0,
+          atLimit: 0,
+        },
+      },
+      totalExtractionsToday: 0,
+      totalUsersAtLimit: 0,
+    };
+
+    allUsers.forEach((user) => {
+      const tier = user.subscription?.tier || "free";
+      const used = user.usage?.aiResumeExtractionsToday || 0;
+      const limit = user.getUsageLimit("aiResumeExtractionsPerDay");
+      const isAtLimit = limit !== Infinity && used >= limit;
+
+      if (overview.byTier[tier]) {
+        overview.byTier[tier].count++;
+        overview.byTier[tier].totalExtractions += used;
+        if (isAtLimit) {
+          overview.byTier[tier].atLimit++;
+          overview.totalUsersAtLimit++;
+        }
+      }
+      overview.totalExtractionsToday += used;
+    });
+
+    res.json({
+      success: true,
+      data: {
+        users: usersWithLimits,
+        overview,
+        pagination: {
+          total,
+          page: parseInt(page),
+          limit: parseInt(limit),
+          totalPages: Math.ceil(total / parseInt(limit)),
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Get AI extraction usage error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch AI extraction usage",
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * Reset AI Extraction Counter for a User (Admin Override)
+ * POST /api/admin/users/:userId/reset-extraction-counter
+ */
+export const resetUserExtractionCounter = async (req, res) => {
+  try {
+    const {userId} = req.params;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Reset the counter
+    user.usage.aiResumeExtractionsToday = 0;
+    user.usage.lastDailyReset = new Date();
+    await user.save();
+
+    // Log admin action
+    await AdminLog.create({
+      adminId: req.user.userId || req.user._id,
+      action: "reset_ai_extraction_counter",
+      targetType: "user",
+      targetId: userId,
+      details: {
+        userEmail: user.email,
+        userName: user.name,
+        resetAt: new Date(),
+      },
+    });
+
+    res.json({
+      success: true,
+      message: `AI extraction counter reset for user: ${user.email}`,
+      data: {
+        extractionsToday: user.usage.aiResumeExtractionsToday,
+        lastReset: user.usage.lastDailyReset,
+      },
+    });
+  } catch (error) {
+    console.error("Reset extraction counter error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to reset extraction counter",
+      error: error.message,
+    });
   }
 };

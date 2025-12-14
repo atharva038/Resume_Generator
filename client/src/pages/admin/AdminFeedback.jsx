@@ -20,12 +20,14 @@ import {
   getFeedbackStatistics,
   updateFeedbackStatus,
   deleteFeedbackAdmin,
-} from "../../services/admin.api";
-import {parseValidationErrors} from "../../utils/errorHandler";
+} from "@/api/admin.api";
+import {parseValidationErrors} from "@/utils/errorHandler";
+import {useToggle} from "@/hooks";
 
 const AdminFeedback = () => {
   const [feedbacks, setFeedbacks] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, toggleLoading, setLoadingTrue, setLoadingFalse] =
+    useToggle(false);
   const [stats, setStats] = useState(null);
   const [filters, setFilters] = useState({
     type: "",
@@ -36,7 +38,8 @@ const AdminFeedback = () => {
     limit: 20,
   });
   const [selectedFeedback, setSelectedFeedback] = useState(null);
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, toggleModal, setShowModalTrue, setShowModalFalse] =
+    useToggle(false);
   const [responseText, setResponseText] = useState("");
   const [statusUpdate, setStatusUpdate] = useState("");
 
@@ -47,13 +50,13 @@ const AdminFeedback = () => {
 
   const fetchFeedbacks = async () => {
     try {
-      setLoading(true);
+      setLoadingTrue();
       const response = await getAllFeedback(filters);
       setFeedbacks(response.data.feedbacks);
     } catch (error) {
       console.error("Error fetching feedbacks:", error);
     } finally {
-      setLoading(false);
+      setLoadingFalse();
     }
   };
 
@@ -92,7 +95,7 @@ const AdminFeedback = () => {
         adminResponse: responseText,
         status: statusUpdate || selectedFeedback.status,
       });
-      setShowModal(false);
+      setShowModalFalse();
       setSelectedFeedback(null);
       setResponseText("");
       setStatusUpdate("");
@@ -409,7 +412,7 @@ const AdminFeedback = () => {
                           setSelectedFeedback(feedback);
                           setResponseText(feedback.adminResponse || "");
                           setStatusUpdate(feedback.status);
-                          setShowModal(true);
+                          setShowModalTrue();
                         }}
                         className="p-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg text-indigo-600 dark:text-indigo-400"
                         title="Add Response"
@@ -490,7 +493,7 @@ const AdminFeedback = () => {
                 </button>
                 <button
                   onClick={() => {
-                    setShowModal(false);
+                    setShowModalFalse();
                     setSelectedFeedback(null);
                     setResponseText("");
                     setStatusUpdate("");

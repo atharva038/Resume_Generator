@@ -307,6 +307,7 @@ userSchema.methods.getUsageLimit = function (limitType) {
       jobMatchesPerDay: 0,
       coverLettersPerMonth: 0,
       aiGenerationsPerMonth: 1, // Only 1 AI feature usage for free users
+      aiResumeExtractionsPerDay: 1, // 1 AI resume extraction per day for free users
     },
     "one-time": {
       resumesPerMonth: Infinity,
@@ -315,6 +316,7 @@ userSchema.methods.getUsageLimit = function (limitType) {
       jobMatchesPerDay: 3,
       coverLettersPerMonth: 5,
       aiGenerationsPerMonth: 10,
+      aiResumeExtractionsPerDay: 10, // 10 AI resume extractions per day
     },
     pro: {
       resumesPerMonth: Infinity,
@@ -322,7 +324,7 @@ userSchema.methods.getUsageLimit = function (limitType) {
       atsScansPerMonth: Infinity,
       jobMatchesPerDay: 10,
       coverLettersPerMonth: Infinity,
-      aiResumeExtractionsPerDay: 2, // New: AI resume extraction limit
+      aiResumeExtractionsPerDay: 10, // 10 AI resume extractions per day
       aiGenerationsPerMonth: Infinity,
     },
     premium: {
@@ -331,7 +333,7 @@ userSchema.methods.getUsageLimit = function (limitType) {
       atsScansPerMonth: Infinity,
       jobMatchesPerDay: Infinity,
       coverLettersPerMonth: Infinity,
-      aiResumeExtractionsPerDay: 2, // New: AI resume extraction limit
+      aiResumeExtractionsPerDay: 10, // 10 AI resume extractions per day
       aiGenerationsPerMonth: Infinity,
     },
     lifetime: {
@@ -340,7 +342,7 @@ userSchema.methods.getUsageLimit = function (limitType) {
       atsScansPerMonth: Infinity,
       jobMatchesPerDay: 10,
       coverLettersPerMonth: Infinity,
-      aiResumeExtractionsPerDay: 2, // New: AI resume extraction limit
+      aiResumeExtractionsPerDay: 10, // 10 AI resume extractions per day
       aiGenerationsPerMonth: Infinity,
     },
   };
@@ -359,6 +361,7 @@ userSchema.methods.hasReachedLimit = function (limitType) {
     jobMatchesPerDay: this.usage.jobMatchesToday,
     coverLettersPerMonth: this.usage.coverLettersThisMonth,
     aiGenerationsPerMonth: this.usage.aiGenerationsThisMonth,
+    aiResumeExtractionsPerDay: this.usage.aiResumeExtractionsToday,
   };
 
   return (usageMap[limitType] || 0) >= limit;
@@ -401,6 +404,7 @@ userSchema.methods.resetMonthlyUsage = async function () {
 
 userSchema.methods.resetDailyUsage = async function () {
   this.usage.jobMatchesToday = 0;
+  this.usage.aiResumeExtractionsToday = 0;
   this.usage.lastDailyReset = new Date();
   await this.save();
 };

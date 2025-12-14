@@ -9,17 +9,19 @@ import {
   Shield,
 } from "lucide-react";
 import {useEffect, useRef, useState} from "react";
+import {useToggle} from "@/hooks";
 
 const Footer = () => {
   const footerRef = useRef(null);
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, toggleVisible, setIsVisibleTrue, setIsVisibleFalse] =
+    useToggle(false);
 
   // Intersection Observer for fade-in animation
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setIsVisible(true);
+          setIsVisibleTrue();
         }
       },
       {threshold: 0.1}
@@ -34,7 +36,7 @@ const Footer = () => {
         observer.unobserve(footerRef.current);
       }
     };
-  }, []);
+  }, [setIsVisibleTrue]);
 
   const productLinks = [
     {name: "AI Resume Builder", path: "/upload"},

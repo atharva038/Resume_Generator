@@ -1,4 +1,4 @@
-import {useDarkMode} from "../../context/DarkModeContext";
+import {useDarkMode} from "@/context/DarkModeContext";
 
 const DarkModeToggle = () => {
   const {isDarkMode, toggleDarkMode} = useDarkMode();

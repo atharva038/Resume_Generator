@@ -6,7 +6,11 @@
     "scripts": {
         "dev": "vite",
         "build": "vite build",
-        "preview": "vite preview"
+        "preview": "vite preview",
+        "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+        "lint:fix": "eslint . --ext js,jsx --fix",
+        "format": "prettier --write \"src/**/*.{js,jsx,css,md}\"",
+        "format:check": "prettier --check \"src/**/*.{js,jsx,css,md}\""
     },
     "dependencies": {
         "@tiptap/react": "^2.10.4",
@@ -23,7 +27,8 @@
         "react-icons": "^5.5.0",
         "react-router-dom": "^7.1.3",
         "react-to-print": "^3.0.2",
-        "recharts": "^3.5.1"
+        "recharts": "^3.5.1",
+        "yup": "^1.7.1"
     },
     "devDependencies": {
         "@eslint/js": "^9.39.1",
@@ -31,12 +36,14 @@
         "@types/react-dom": "^18.3.5",
         "@vitejs/plugin-react": "^4.3.4",
         "autoprefixer": "^10.4.20",
+        "baseline-browser-mapping": "^2.9.7",
         "eslint": "^9.39.1",
         "eslint-plugin-react": "^7.37.5",
         "eslint-plugin-react-hooks": "^7.0.1",
         "eslint-plugin-react-refresh": "^0.4.24",
         "globals": "^16.5.0",
         "postcss": "^8.4.49",
+        "prettier": "^3.7.4",
         "tailwindcss": "^3.4.17",
         "vite": "^6.0.7"
     }

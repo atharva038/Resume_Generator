@@ -1,9 +1,10 @@
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {useDropzone} from "react-dropzone";
-import {resumeAPI} from "../services/api";
-import {parseValidationErrors} from "../utils/errorHandler";
-import UpgradeRequiredModal from "../components/common/modals/UpgradeRequiredModal";
+import {resumeAPI} from "@/api/api";
+import {parseValidationErrors} from "@/utils/errorHandler";
+import UpgradeRequiredModal from "@/components/common/modals/UpgradeRequiredModal";
+import {useToggle} from "@/hooks";
 import {
   Upload as UploadIcon,
   FileText,
@@ -15,9 +16,15 @@ import {
 } from "lucide-react";
 
 const Upload = () => {
-  const [uploading, setUploading] = useState(false);
+  const [uploading, toggleUploading, setUploadingTrue, setUploadingFalse] =
+    useToggle(false);
   const [error, setError] = useState("");
-  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [
+    showUpgradeModal,
+    toggleUpgradeModal,
+    setShowUpgradeModalTrue,
+    setShowUpgradeModalFalse,
+  ] = useToggle(false);
   const [upgradeMessage, setUpgradeMessage] = useState("");
   const navigate = useNavigate();
 
@@ -26,7 +33,7 @@ const Upload = () => {
 
     const file = acceptedFiles[0];
     setError("");
-    setUploading(true);
+    setUploadingTrue();
 
     try {
       const formData = new FormData();
@@ -50,13 +57,13 @@ const Upload = () => {
         setUpgradeMessage(
           err.response.data.message || "Upgrade to access this premium feature!"
         );
-        setShowUpgradeModal(true);
+        setShowUpgradeModalTrue();
       } else {
         console.log("⚠️ Not an upgrade error - showing regular error");
         setError(parseValidationErrors(err));
       }
     } finally {
-      setUploading(false);
+      setUploadingFalse();
     }
   };
 
@@ -317,7 +324,7 @@ const Upload = () => {
       {showUpgradeModal && (
         <UpgradeRequiredModal
           isOpen={showUpgradeModal}
-          onClose={() => setShowUpgradeModal(false)}
+          onClose={setShowUpgradeModalFalse}
           message={upgradeMessage}
           title="Upgrade Required"
           feature="AI Resume Parsing"

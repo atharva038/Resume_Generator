@@ -1,6 +1,6 @@
 import {useState, useEffect} from "react";
 import {Activity} from "lucide-react";
-import {getAdminLogs} from "../../services/admin.api";
+import {getAdminLogs} from "@/api/admin.api";
 
 const AdminLogs = () => {
   const [logs, setLogs] = useState([]);

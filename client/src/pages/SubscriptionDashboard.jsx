@@ -19,8 +19,9 @@ import {
   cancelSubscription,
   getAIConfig,
   updateAIPreference,
-} from "../services/subscription.api";
+} from "@/api/subscription.api";
 import toast from "react-hot-toast";
+import {useToggle} from "@/hooks";
 
 /**
  * Subscription Dashboard Component
@@ -35,9 +36,19 @@ const SubscriptionDashboard = ({embedded = false}) => {
   const [usage, setUsage] = useState(null);
   const [history, setHistory] = useState([]);
   const [aiConfig, setAiConfig] = useState(null);
-  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [
+    showCancelModal,
+    toggleCancelModal,
+    setShowCancelModalTrue,
+    setShowCancelModalFalse,
+  ] = useToggle(false);
   const [cancelReason, setCancelReason] = useState("");
-  const [showAISettings, setShowAISettings] = useState(false);
+  const [
+    showAISettings,
+    toggleAISettings,
+    setShowAISettingsTrue,
+    setShowAISettingsFalse,
+  ] = useToggle(false);
   const [selectedAI, setSelectedAI] = useState("auto");
 
   useEffect(() => {
@@ -83,7 +94,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
       toast.success(
         "Subscription cancelled. Access until " + subscription.endDate
       );
-      setShowCancelModal(false);
+      setShowCancelModalFalse();
       fetchDashboardData();
     } catch (error) {
       toast.error(error.error || "Failed to cancel subscription");
@@ -117,7 +128,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
       await updateAIPreference(preference);
       setSelectedAI(preference);
       toast.success(`AI preference updated to ${preference.toUpperCase()}`);
-      setShowAISettings(false);
+      setShowAISettingsFalse();
       fetchDashboardData();
     } catch (error) {
       toast.error(error.error || "Failed to update AI preference");
@@ -415,7 +426,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
                         Renew Now
                       </button>
                       <button
-                        onClick={() => setShowCancelModal(true)}
+                        onClick={setShowCancelModalTrue}
                         className="flex-1 bg-red-600 text-white px-3 py-1.5 rounded-lg font-semibold hover:bg-red-700 transition-all text-xs"
                       >
                         Cancel
@@ -521,8 +532,8 @@ const SubscriptionDashboard = ({embedded = false}) => {
                               progressPercentage >= 90
                                 ? "bg-red-500"
                                 : progressPercentage >= 70
-                                ? "bg-yellow-500"
-                                : "bg-green-500"
+                                  ? "bg-yellow-500"
+                                  : "bg-green-500"
                             }`}
                             style={{width: `${progressPercentage}%`}}
                           ></div>
@@ -670,7 +681,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
               </p>
             </div>
             <button
-              onClick={() => setShowAISettings(!showAISettings)}
+              onClick={toggleAISettings}
               className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-all flex items-center text-xs"
             >
               <FaCog className="mr-1.5" /> Configure
@@ -959,8 +970,8 @@ const SubscriptionDashboard = ({embedded = false}) => {
                           payment.status === "active"
                             ? "bg-green-100 text-green-800"
                             : payment.status === "expired"
-                            ? "bg-gray-100 text-gray-800"
-                            : "bg-yellow-100 text-yellow-800"
+                              ? "bg-gray-100 text-gray-800"
+                              : "bg-yellow-100 text-yellow-800"
                         }`}
                       >
                         {payment.status}
@@ -1006,7 +1017,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
             />
             <div className="flex gap-3">
               <button
-                onClick={() => setShowCancelModal(false)}
+                onClick={setShowCancelModalFalse}
                 className="flex-1 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-900 dark:text-white py-1.5 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-all text-sm"
               >
                 Keep Subscription

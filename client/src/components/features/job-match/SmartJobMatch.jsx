@@ -22,13 +22,20 @@ import {
   Globe,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import {useToggle} from "@/hooks";
 
 const SmartJobMatch = ({resumeData}) => {
   const [matchedJobs, setMatchedJobs] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, toggleLoading, setLoadingTrue, setLoadingFalse] =
+    useToggle(false);
   const [savedJobs, setSavedJobs] = useState(new Set());
   const [selectedJob, setSelectedJob] = useState(null);
-  const [showJobModal, setShowJobModal] = useState(false);
+  const [
+    showJobModal,
+    toggleJobModal,
+    setShowJobModalTrue,
+    setShowJobModalFalse,
+  ] = useToggle(false);
   const [searchKeywords, setSearchKeywords] = useState([]);
 
   // New state for filters and pagination
@@ -48,7 +55,7 @@ const SmartJobMatch = ({resumeData}) => {
       return;
     }
 
-    setLoading(true);
+    setLoadingTrue();
     console.log("🚀 Starting smart job match...");
 
     // Ensure specificJobType is a string or null (not an event object)
@@ -115,7 +122,7 @@ const SmartJobMatch = ({resumeData}) => {
       console.error("Error fetching smart matches:", error);
       toast.error("Failed to fetch job matches. Please try again.");
     } finally {
-      setLoading(false);
+      setLoadingFalse();
     }
   };
 
@@ -136,13 +143,13 @@ const SmartJobMatch = ({resumeData}) => {
   // Open job modal
   const openJobModal = (job) => {
     setSelectedJob(job);
-    setShowJobModal(true);
+    setShowJobModalTrue();
     document.body.style.overflow = "hidden";
   };
 
   // Close job modal
   const closeJobModal = () => {
-    setShowJobModal(false);
+    setShowJobModalFalse();
     setSelectedJob(null);
     document.body.style.overflow = "unset";
   };

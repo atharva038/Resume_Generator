@@ -1,5 +1,5 @@
 import {useState, useEffect} from "react";
-import {calculateResumeScore} from "../../../utils/resumeScoring";
+import {calculateResumeScore} from "@/utils/resumeScoring";
 
 const ScoreCard = ({resumeData, expanded = false}) => {
   const [scoreData, setScoreData] = useState(null);

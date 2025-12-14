@@ -51,7 +51,7 @@ const ResumeWizard = ({
         }
         break;
 
-      case "summary":
+      case "summary": {
         // Check if summary has content
         if (
           !resumeData.summary ||
@@ -69,12 +69,13 @@ const ResumeWizard = ({
           return false;
         }
         break;
+      }
 
       case "skills":
         // No validation for skills - allow proceeding regardless
         break;
 
-      case "experience":
+      case "experience": {
         // Check if at least one experience is added
         if (!resumeData.experience || resumeData.experience.length === 0) {
           setValidationError("Please add at least one work experience");
@@ -95,8 +96,9 @@ const ResumeWizard = ({
           return false;
         }
         break;
+      }
 
-      case "education":
+      case "education": {
         // Check if at least one education entry is added
         if (!resumeData.education || resumeData.education.length === 0) {
           setValidationError("Please add at least one education entry");
@@ -117,6 +119,7 @@ const ResumeWizard = ({
           return false;
         }
         break;
+      }
 
       default:
         return true;
@@ -339,10 +342,10 @@ const ResumeWizard = ({
                   isCurrent
                     ? "border-gray-900 dark:border-white bg-gray-50 dark:bg-zinc-900"
                     : isCompleted
-                    ? "border-green-500 bg-green-50 dark:bg-green-900/20 cursor-pointer hover:border-green-600"
-                    : isLocked
-                    ? "border-gray-300 dark:border-zinc-700 bg-gray-100 dark:bg-zinc-900 cursor-not-allowed opacity-60"
-                    : "border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 cursor-pointer hover:bg-gray-50 dark:hover:bg-zinc-900 hover:border-gray-400 dark:hover:border-zinc-600"
+                      ? "border-green-500 bg-green-50 dark:bg-green-900/20 cursor-pointer hover:border-green-600"
+                      : isLocked
+                        ? "border-gray-300 dark:border-zinc-700 bg-gray-100 dark:bg-zinc-900 cursor-not-allowed opacity-60"
+                        : "border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 cursor-pointer hover:bg-gray-50 dark:hover:bg-zinc-900 hover:border-gray-400 dark:hover:border-zinc-600"
                 }`}
                 title={isLocked ? `Complete previous steps first` : step.title}
               >

@@ -12,8 +12,9 @@ import {
   createPaymentOrder,
   verifyPayment,
   getPricing,
-} from "../../services/subscription.api";
+} from "@/api/subscription.api";
 import toast from "react-hot-toast";
+import {useToggle} from "@/hooks";
 
 /**
  * Payment Modal Component
@@ -26,7 +27,8 @@ const PaymentModal = ({tier: propTier, plan: propPlan, onClose}) => {
   const tier = propTier;
   const plan = propPlan;
 
-  const [loading, setLoading] = useState(false);
+  const [loading, toggleLoading, setLoadingTrue, setLoadingFalse] =
+    useToggle(false);
   const [pricing, setPricing] = useState(null);
   const [orderDetails, setOrderDetails] = useState(null);
 
@@ -76,7 +78,7 @@ const PaymentModal = ({tier: propTier, plan: propPlan, onClose}) => {
 
   const handlePayment = async () => {
     try {
-      setLoading(true);
+      setLoadingTrue();
 
       // Load Razorpay script
       const scriptLoaded = await loadRazorpayScript();
@@ -115,7 +117,7 @@ const PaymentModal = ({tier: propTier, plan: propPlan, onClose}) => {
         },
         modal: {
           ondismiss: () => {
-            setLoading(false);
+            setLoadingFalse();
             toast.info("Payment cancelled");
           },
         },
@@ -237,14 +239,14 @@ const PaymentModal = ({tier: propTier, plan: propPlan, onClose}) => {
         toast.error(
           `Payment failed: ${response.error.description || "Please try again"}`
         );
-        setLoading(false);
+        setLoadingFalse();
       });
     } catch (error) {
       console.error("Payment error:", error);
       toast.error(
         error.error || "Failed to initiate payment. Please try again."
       );
-      setLoading(false);
+      setLoadingFalse();
     }
   };
 

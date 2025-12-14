@@ -13,20 +13,33 @@ import {
   Brain,
   Award,
 } from "lucide-react";
-import {resumeAPI} from "../services/api";
-import {JobMatchAnalyzer} from "../components/features";
+import {resumeAPI} from "@/api/api";
+import {JobMatchAnalyzer} from "@/components/features";
+import {useToggle} from "@/hooks";
+import {handleApiError} from "@/utils/errorHandler";
 
 const ATSAnalyzer = () => {
   const [activeTab, setActiveTab] = useState("ats"); // "ats" or "ml"
   const [jobDescription, setJobDescription] = useState("");
   const [selectedResume, setSelectedResume] = useState(null);
   const [uploadedFile, setUploadedFile] = useState(null);
-  const [analyzing, setAnalyzing] = useState(false);
+  const [analyzing, toggleAnalyzing, setAnalyzingTrue, setAnalyzingFalse] =
+    useToggle(false);
   const [analysisResult, setAnalysisResult] = useState(null);
   const [userResumes, setUserResumes] = useState([]);
-  const [loadingResumes, setLoadingResumes] = useState(true);
+  const [
+    loadingResumes,
+    toggleLoadingResumes,
+    setLoadingResumesTrue,
+    setLoadingResumesFalse,
+  ] = useToggle(true);
   const [selectedResumeData, setSelectedResumeData] = useState(null);
-  const [loadingResumeData, setLoadingResumeData] = useState(false);
+  const [
+    loadingResumeData,
+    toggleLoadingResumeData,
+    setLoadingResumeDataTrue,
+    setLoadingResumeDataFalse,
+  ] = useToggle(false);
 
   // Load user's resumes on component mount
   useEffect(() => {
@@ -37,17 +50,17 @@ const ATSAnalyzer = () => {
       } catch (error) {
         console.error("Failed to load resumes:", error);
       } finally {
-        setLoadingResumes(false);
+        setLoadingResumesFalse();
       }
     };
     loadResumes();
-  }, []);
+  }, [setLoadingResumesFalse]);
 
   // Load selected resume data for ML analysis
   useEffect(() => {
     const loadResumeData = async () => {
       if (selectedResume && activeTab === "ml") {
-        setLoadingResumeData(true);
+        setLoadingResumeDataTrue();
         try {
           const response = await resumeAPI.getById(selectedResume);
           // Backend returns resume directly, not wrapped in {data: {resume: ...}}
@@ -66,7 +79,7 @@ const ATSAnalyzer = () => {
           toast.error("Failed to load resume data");
           setSelectedResumeData(null);
         } finally {
-          setLoadingResumeData(false);
+          setLoadingResumeDataFalse();
         }
       } else if (!selectedResume) {
         setSelectedResumeData(null);
@@ -110,7 +123,7 @@ const ATSAnalyzer = () => {
       return;
     }
 
-    setAnalyzing(true);
+    setAnalyzingTrue();
     setAnalysisResult(null);
 
     try {
@@ -131,15 +144,9 @@ const ATSAnalyzer = () => {
         duration: 2000,
       });
     } catch (error) {
-      toast.error(
-        "Analysis failed: " + (error.response?.data?.error || error.message),
-        {
-          icon: "❌",
-          duration: 4000,
-        }
-      );
+      handleApiError(error, "Failed to analyze resume", toast);
     } finally {
-      setAnalyzing(false);
+      setAnalyzingFalse();
     }
   };
 
@@ -458,8 +465,8 @@ const ATSAnalyzer = () => {
                                   analysisResult.match_score >= 75
                                     ? "#10b981"
                                     : analysisResult.match_score >= 50
-                                    ? "#f59e0b"
-                                    : "#ef4444"
+                                      ? "#f59e0b"
+                                      : "#ef4444"
                                 }
                               />
                               <stop
@@ -468,8 +475,8 @@ const ATSAnalyzer = () => {
                                   analysisResult.match_score >= 75
                                     ? "#059669"
                                     : analysisResult.match_score >= 50
-                                    ? "#d97706"
-                                    : "#dc2626"
+                                      ? "#d97706"
+                                      : "#dc2626"
                                 }
                               />
                             </linearGradient>

@@ -15,10 +15,12 @@ import {
   Eye,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import {useToggle} from "@/hooks";
 
 const JobSearch = () => {
   const [jobs, setJobs] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, toggleLoading, setLoadingTrue, setLoadingFalse] =
+    useToggle(false);
   const [searchParams, setSearchParams] = useState({
     query: "software developer",
     location: "in", // Default to India
@@ -35,10 +37,15 @@ const JobSearch = () => {
   const [totalPages] = useState(3); // Load 3 pages to avoid rate limiting
   const [categories, setCategories] = useState([]);
   const [topCompanies, setTopCompanies] = useState([]);
-  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showAdvanced, toggleShowAdvanced] = useToggle(false);
   const [expandedJobs, setExpandedJobs] = useState({}); // Track which job descriptions are expanded
   const [selectedJob, setSelectedJob] = useState(null); // Track selected job for modal
-  const [showJobModal, setShowJobModal] = useState(false); // Modal visibility
+  const [
+    showJobModal,
+    toggleJobModal,
+    setShowJobModalTrue,
+    setShowJobModalFalse,
+  ] = useToggle(false); // Modal visibility
 
   // Backend API URL
   const API_BASE_URL =
@@ -104,7 +111,7 @@ const JobSearch = () => {
   };
 
   const searchJobs = async () => {
-    setLoading(true);
+    setLoadingTrue();
     setCurrentPage(1); // Reset to page 1 when searching
 
     try {
@@ -213,7 +220,7 @@ const JobSearch = () => {
         }
       );
     } finally {
-      setLoading(false);
+      setLoadingFalse();
     }
   };
 
@@ -280,7 +287,7 @@ const JobSearch = () => {
     setSearchParams(newParams);
 
     // Immediately trigger search with new company name
-    setLoading(true);
+    setLoadingTrue();
     setCurrentPage(1);
 
     try {
@@ -372,7 +379,7 @@ const JobSearch = () => {
       console.error("Error searching company jobs:", error);
       toast.error("Failed to search jobs. Please try again.");
     } finally {
-      setLoading(false);
+      setLoadingFalse();
     }
   };
 
@@ -471,13 +478,13 @@ const JobSearch = () => {
   // Open job details modal
   const openJobModal = (job) => {
     setSelectedJob(job);
-    setShowJobModal(true);
+    setShowJobModalTrue();
     document.body.style.overflow = "hidden"; // Prevent background scrolling
   };
 
   // Close job details modal
   const closeJobModal = () => {
-    setShowJobModal(false);
+    setShowJobModalFalse();
     setSelectedJob(null);
     document.body.style.overflow = "unset"; // Re-enable scrolling
   };
@@ -589,7 +596,7 @@ const JobSearch = () => {
             {/* Advanced Filters Toggle */}
             <button
               type="button"
-              onClick={() => setShowAdvanced(!showAdvanced)}
+              onClick={toggleShowAdvanced}
               className="text-blue-600 dark:text-blue-400 text-sm font-medium mb-4 flex items-center gap-2 hover:underline"
             >
               <Filter className="w-4 h-4" />

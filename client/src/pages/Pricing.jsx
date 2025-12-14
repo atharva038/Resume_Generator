@@ -8,9 +8,10 @@ import {
   FaGraduationCap,
   FaInfinity,
 } from "react-icons/fa";
-import {getPricing, getSubscriptionStatus} from "../services/subscription.api";
-import PaymentModal from "../components/common/PaymentModal";
+import {getPricing, getSubscriptionStatus} from "@/api/subscription.api";
+import PaymentModal from "@/components/common/PaymentModal";
 import toast from "react-hot-toast";
+import {useToggle} from "@/hooks";
 
 /**
  * Pricing Page Component
@@ -21,7 +22,12 @@ const Pricing = () => {
   const [pricing, setPricing] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedTier, setSelectedTier] = useState(null);
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [
+    showPaymentModal,
+    togglePaymentModal,
+    setShowPaymentModalTrue,
+    setShowPaymentModalFalse,
+  ] = useToggle(false);
   const [paymentData, setPaymentData] = useState(null);
   const [currentSubscription, setCurrentSubscription] = useState(null);
 
@@ -115,7 +121,7 @@ const Pricing = () => {
 
     // Open payment modal instead of navigating
     setPaymentData({tier, plan});
-    setShowPaymentModal(true);
+    setShowPaymentModalTrue();
   };
 
   const formatPrice = (amount) => {
@@ -258,8 +264,8 @@ const Pricing = () => {
                       {isActivePlan
                         ? "Current Plan ✓"
                         : tier === "free"
-                        ? "Get Started Free"
-                        : "Choose Plan"}
+                          ? "Get Started Free"
+                          : "Choose Plan"}
                     </button>
 
                     {/* Show message for active subscribers */}
@@ -449,7 +455,7 @@ const Pricing = () => {
           tier={paymentData.tier}
           plan={paymentData.plan}
           onClose={() => {
-            setShowPaymentModal(false);
+            setShowPaymentModalFalse();
             setPaymentData(null);
           }}
         />

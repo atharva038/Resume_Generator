@@ -2,8 +2,10 @@ import {useState} from "react";
 import {useEditor, EditorContent} from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import toast from "react-hot-toast";
-import {resumeAPI} from "../../../services/api";
-import {parseValidationErrors} from "../../../utils/errorHandler";
+import {resumeAPI} from "@/api/api";
+import {parseValidationErrors} from "@/utils/errorHandler";
+import {authStorage} from "@/utils/storage";
+import {useToggle} from "@/hooks";
 
 const EditableSection = ({
   title,
@@ -19,8 +21,10 @@ const EditableSection = ({
   projectData,
   onUpdateProject,
 }) => {
-  const [enhancing, setEnhancing] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+  const [enhancing, toggleEnhancing, setEnhancingTrue, setEnhancingFalse] =
+    useToggle(false);
+  const [isEditing, toggleEditing, setIsEditingTrue, setIsEditingFalse] =
+    useToggle(false);
 
   // Initialize TipTap editor for bullet points
   const editor = useEditor({
@@ -28,10 +32,10 @@ const EditableSection = ({
     content: Array.isArray(content)
       ? `<ul>${content.map((bullet) => `<li>${bullet}</li>`).join("")}</ul>`
       : typeof content === "object"
-      ? `<ul>${(content.bullets || [])
-          .map((bullet) => `<li>${bullet}</li>`)
-          .join("")}</ul>`
-      : `<p>${content || ""}</p>`,
+        ? `<ul>${(content.bullets || [])
+            .map((bullet) => `<li>${bullet}</li>`)
+            .join("")}</ul>`
+        : `<p>${content || ""}</p>`,
     onUpdate: ({editor}) => {
       if (sectionType === "summary") {
         onUpdate(editor.getText());
@@ -49,16 +53,15 @@ const EditableSection = ({
   });
 
   const handleEnhance = async () => {
-    setEnhancing(true);
+    setEnhancingTrue();
     try {
       // Check if user is authenticated
-      const token = localStorage.getItem("token");
-      if (!token) {
+      if (!authStorage.hasToken()) {
         toast.error("Please log in to use AI enhancement", {
           icon: "🔒",
           duration: 3000,
         });
-        setEnhancing(false);
+        setEnhancingFalse();
         return;
       }
 
@@ -142,7 +145,7 @@ const EditableSection = ({
         );
       }
     } finally {
-      setEnhancing(false);
+      setEnhancingFalse();
     }
   };
 

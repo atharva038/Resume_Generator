@@ -1,6 +1,6 @@
 import {useState, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
-import {SmartJobMatch} from "../components/features/job-match";
+import {SmartJobMatch} from "@/components/features/job-match";
 import {
   Loader2,
   AlertCircle,

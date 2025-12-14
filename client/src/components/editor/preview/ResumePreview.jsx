@@ -6,18 +6,19 @@ import React, {
   useEffect,
 } from "react";
 import {useReactToPrint} from "react-to-print";
-import ClassicTemplate from "../../templates/ClassicTemplate";
-import ModernTemplate from "../../templates/ModernTemplate";
-import MinimalTemplate from "../../templates/MinimalTemplate";
-import ProfessionalTemplate from "../../templates/ProfessionalTemplate";
-import ProfessionalV2Template from "../../templates/ProfessionalV2Template";
-import ExecutiveTemplate from "../../templates/ExecutiveTemplate";
-import TechTemplate from "../../templates/TechTemplate";
-import CreativeTemplate from "../../templates/CreativeTemplate";
-import AcademicTemplate from "../../templates/AcademicTemplate";
-import CorporateEliteTemplate from "../../templates/CorporateEliteTemplate";
-import StrategicLeaderTemplate from "../../templates/StrategicLeaderTemplate";
-import ImpactProTemplate from "../../templates/ImpactProTemplate";
+import {useToggle, useMediaQuery} from "@/hooks";
+import ClassicTemplate from "@/components/templates/ClassicTemplate";
+import ModernTemplate from "@/components/templates/ModernTemplate";
+import MinimalTemplate from "@/components/templates/MinimalTemplate";
+import ProfessionalTemplate from "@/components/templates/ProfessionalTemplate";
+import ProfessionalV2Template from "@/components/templates/ProfessionalV2Template";
+import ExecutiveTemplate from "@/components/templates/ExecutiveTemplate";
+import TechTemplate from "@/components/templates/TechTemplate";
+import Creative2Template from "@/components/templates/Creative2Template";
+import AcademicTemplate from "@/components/templates/AcademicTemplate";
+import CorporateEliteTemplate from "@/components/templates/CorporateEliteTemplate";
+import StrategicLeaderTemplate from "@/components/templates/StrategicLeaderTemplate";
+import ImpactProTemplate from "@/components/templates/ImpactProTemplate";
 import FullPreviewModal from "./FullPreviewModal";
 
 const ResumePreview = forwardRef(
@@ -27,7 +28,12 @@ const ResumePreview = forwardRef(
   ) => {
     const componentRef = useRef();
     const containerRef = useRef();
-    const [hasOverflow, setHasOverflow] = useState(false);
+    const [
+      hasOverflow,
+      toggleOverflow,
+      setHasOverflowTrue,
+      setHasOverflowFalse,
+    ] = useToggle(false);
 
     // Template-specific page usage from individual templates
     const [pageUsage, setPageUsage] = useState({
@@ -38,8 +44,13 @@ const ResumePreview = forwardRef(
       templateName: "",
     });
 
-    const [showFullPreview, setShowFullPreview] = useState(false);
-    const [isMobile, setIsMobile] = useState(false);
+    const [
+      showFullPreview,
+      toggleFullPreview,
+      setShowFullPreviewTrue,
+      setShowFullPreviewFalse,
+    ] = useToggle(false);
+    const isMobile = useMediaQuery("(max-width: 1023px)"); // lg breakpoint
     const [numberOfPages, setNumberOfPages] = useState(1);
 
     // Callback to receive page usage data from individual templates
@@ -49,7 +60,11 @@ const ResumePreview = forwardRef(
         usageInfo
       );
       setPageUsage(usageInfo);
-      setHasOverflow(usageInfo.isOverflowing);
+      if (usageInfo.isOverflowing) {
+        setHasOverflowTrue();
+      } else {
+        setHasOverflowFalse();
+      }
 
       // Calculate number of pages needed
       if (usageInfo.currentHeight > 0) {
@@ -73,19 +88,9 @@ const ResumePreview = forwardRef(
           isOverflowing: false,
           templateName: "",
         });
-        setHasOverflow(false);
+        setHasOverflowFalse();
       }
-    }, [template, twoPageMode]);
-
-    // Detect if device is mobile
-    useEffect(() => {
-      const checkMobile = () => {
-        setIsMobile(window.innerWidth < 1024); // lg breakpoint
-      };
-      checkMobile();
-      window.addEventListener("resize", checkMobile);
-      return () => window.removeEventListener("resize", checkMobile);
-    }, []);
+    }, [template, twoPageMode, setHasOverflowFalse]);
 
     // Check for content overflow in single-page mode
     // COMMENTED OUT: Universal page usage calculator
@@ -126,7 +131,7 @@ const ResumePreview = forwardRef(
       "professional-v2": ProfessionalV2Template,
       executive: ExecutiveTemplate,
       tech: TechTemplate,
-      creative: CreativeTemplate,
+      creative2: Creative2Template,
       academic: AcademicTemplate,
       "corporate-elite": CorporateEliteTemplate,
       "strategic-leader": StrategicLeaderTemplate,
@@ -217,7 +222,7 @@ const ResumePreview = forwardRef(
                   // Multi-page view CSS
                   position: "relative",
                 }}
-                onClick={isMobile ? () => setShowFullPreview(true) : undefined}
+                onClick={isMobile ? setShowFullPreviewTrue : undefined}
               >
                 {/* Page break indicators - visual guides at every A4 page boundary */}
                 {!twoPageMode &&
@@ -306,7 +311,7 @@ const ResumePreview = forwardRef(
         {/* Full Preview Modal */}
         <FullPreviewModal
           isOpen={showFullPreview}
-          onClose={() => setShowFullPreview(false)}
+          onClose={setShowFullPreviewFalse}
         >
           <div
             className="bg-white dark:bg-gray-50 shadow-2xl"

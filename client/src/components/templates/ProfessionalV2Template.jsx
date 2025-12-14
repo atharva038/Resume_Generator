@@ -1,4 +1,5 @@
 import {forwardRef, useRef, useEffect, useState} from "react";
+import {Mail, Phone, MapPin, Linkedin, Github, Globe} from "lucide-react";
 
 const ProfessionalV2Template = forwardRef(
   ({resumeData, onPageUsageChange}, ref) => {
@@ -547,8 +548,13 @@ const ProfessionalV2Template = forwardRef(
         {/* Styles */}
         <style jsx>{`
           .professional-v2-template {
-            font-family: "Inter", "Roboto", "Source Sans Pro", -apple-system,
-              BlinkMacSystemFont, sans-serif;
+            font-family:
+              "Inter",
+              "Roboto",
+              "Source Sans Pro",
+              -apple-system,
+              BlinkMacSystemFont,
+              sans-serif;
             background: white;
             color: #1a1a1a;
             line-height: 1.5;

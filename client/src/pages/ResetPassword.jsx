@@ -2,6 +2,8 @@ import React, {useState, useEffect} from "react";
 import {Link, useNavigate, useSearchParams} from "react-router-dom";
 import {Lock, Eye, EyeOff, CheckCircle, AlertCircle, Key} from "lucide-react";
 import axios from "axios";
+import {useToggle} from "@/hooks";
+import {resetPasswordSchema, validateWithSchema} from "@/utils/validation";
 
 const ResetPassword = () => {
   const [searchParams] = useSearchParams();
@@ -12,10 +14,12 @@ const ResetPassword = () => {
     password: "",
     confirmPassword: "",
   });
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [showPassword, toggleShowPassword] = useToggle(false);
+  const [showConfirmPassword, toggleShowConfirmPassword] = useToggle(false);
+  const [loading, toggleLoading, setLoadingTrue, setLoadingFalse] =
+    useToggle(false);
+  const [success, toggleSuccess, setSuccessTrue, setSuccessFalse] =
+    useToggle(false);
   const [error, setError] = useState("");
   const [passwordStrength, setPasswordStrength] = useState({
     score: 0,
@@ -72,14 +76,14 @@ const ResetPassword = () => {
     e.preventDefault();
     setError("");
 
-    // Validation
-    if (formData.password.length < 6) {
-      setError("Password must be at least 6 characters long");
-      return;
-    }
+    // Validate with Yup
+    const {isValid, errors} = await validateWithSchema(resetPasswordSchema, {
+      password: formData.password,
+      confirmPassword: formData.confirmPassword,
+    });
 
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
+    if (!isValid) {
+      setError(Object.values(errors)[0]);
       return;
     }
 
@@ -88,7 +92,7 @@ const ResetPassword = () => {
       return;
     }
 
-    setLoading(true);
+    setLoadingTrue();
 
     try {
       const API_URL =
@@ -98,7 +102,7 @@ const ResetPassword = () => {
         newPassword: formData.password,
       });
 
-      setSuccess(true);
+      setSuccessTrue();
 
       // Redirect to login after 3 seconds
       setTimeout(() => {
@@ -110,7 +114,7 @@ const ResetPassword = () => {
           "Failed to reset password. The token may be invalid or expired."
       );
     } finally {
-      setLoading(false);
+      setLoadingFalse();
     }
   };
 
@@ -190,7 +194,7 @@ const ResetPassword = () => {
                     />
                     <button
                       type="button"
-                      onClick={() => setShowPassword(!showPassword)}
+                      onClick={toggleShowPassword}
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                     >
                       {showPassword ? (
@@ -213,8 +217,8 @@ const ResetPassword = () => {
                             passwordStrength.score <= 2
                               ? "text-red-600 dark:text-red-400"
                               : passwordStrength.score <= 3
-                              ? "text-yellow-600 dark:text-yellow-400"
-                              : "text-green-600 dark:text-green-400"
+                                ? "text-yellow-600 dark:text-yellow-400"
+                                : "text-green-600 dark:text-green-400"
                           }`}
                         >
                           {passwordStrength.label}
@@ -300,9 +304,7 @@ const ResetPassword = () => {
                     />
                     <button
                       type="button"
-                      onClick={() =>
-                        setShowConfirmPassword(!showConfirmPassword)
-                      }
+                      onClick={toggleShowConfirmPassword}
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                     >
                       {showConfirmPassword ? (

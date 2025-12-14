@@ -1,5 +1,5 @@
 import {Link, useLocation} from "react-router-dom";
-import {BlockableLink} from "../auth";
+import {BlockableLink} from "@/components/auth";
 import {useState} from "react";
 import {
   Home,
@@ -15,7 +15,7 @@ import {
   Shield,
   TrendingUp,
 } from "lucide-react";
-import {useAuth} from "../../context/AuthContext";
+import {useAuth} from "@/context/AuthContext";
 
 const Sidebar = ({isOpen, setIsOpen}) => {
   const location = useLocation();

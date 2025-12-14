@@ -1,7 +1,9 @@
 import {useState} from "react";
 import {useNavigate, useLocation, Link} from "react-router-dom";
-import {useAuth} from "../context/AuthContext";
-import {parseValidationErrors} from "../utils/errorHandler";
+import {useAuth} from "@/context/AuthContext";
+import {parseValidationErrors} from "@/utils/errorHandler";
+import {useToggle} from "@/hooks";
+import {loginSchema, validateWithSchema} from "@/utils/validation";
 import {
   Mail,
   Lock,
@@ -16,9 +18,10 @@ import {FcGoogle} from "react-icons/fc";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, toggleShowPassword] = useToggle(false);
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, toggleLoading, setLoadingTrue, setLoadingFalse] =
+    useToggle(false);
   const {login} = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -26,7 +29,19 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    setLoading(true);
+
+    // Validate with Yup
+    const {isValid, errors} = await validateWithSchema(loginSchema, {
+      email,
+      password,
+    });
+
+    if (!isValid) {
+      setError(Object.values(errors)[0]); // Show first error
+      return;
+    }
+
+    setLoadingTrue();
 
     try {
       await login(email, password);
@@ -51,7 +66,7 @@ const Login = () => {
         setError(parseValidationErrors(err));
       }
     } finally {
-      setLoading(false);
+      setLoadingFalse();
     }
   };
 
@@ -134,7 +149,7 @@ const Login = () => {
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
+                  onClick={toggleShowPassword}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 transition-colors"
                 >
                   {showPassword ? (

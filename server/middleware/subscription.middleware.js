@@ -32,6 +32,23 @@ export async function checkSubscription(req, res, next) {
     // Check subscription status and expiry
     await user.checkSubscriptionExpiry();
 
+    // Check if daily usage needs to be reset (for job matches and AI extractions)
+    const now = new Date();
+    const lastReset = user.usage.lastDailyReset;
+
+    if (lastReset) {
+      const hoursSinceReset = (now - new Date(lastReset)) / (1000 * 60 * 60);
+      // Reset if more than 24 hours have passed
+      if (hoursSinceReset >= 24) {
+        console.log("🔄 Resetting daily usage counters for user:", user.email);
+        await user.resetDailyUsage();
+      }
+    } else {
+      // First time - initialize the reset date
+      user.usage.lastDailyReset = now;
+      await user.save();
+    }
+
     // Attach updated user to request
     req.user = user;
 
@@ -165,6 +182,38 @@ export function checkUsageLimit(limitType) {
               message:
                 "You've used your cover letters. Upgrade to Pro for unlimited cover letters!",
               action: "Upgrade to Pro",
+            },
+          },
+          aiResumeExtractionsPerDay: {
+            free: {
+              title: "Daily AI Extraction Limit Reached",
+              message:
+                "You've used your 1 free AI resume extraction for today. Upgrade to extract more resumes!",
+              action: "Upgrade Now",
+            },
+            "one-time": {
+              title: "Daily AI Extraction Limit Reached",
+              message:
+                "You've used your 10 AI resume extractions for today. Try again tomorrow or upgrade to Pro!",
+              action: "Upgrade to Pro",
+            },
+            pro: {
+              title: "Daily AI Extraction Limit Reached",
+              message:
+                "You've used your 10 AI resume extractions for today. This limit resets at midnight!",
+              action: "Try Tomorrow",
+            },
+            premium: {
+              title: "Daily AI Extraction Limit Reached",
+              message:
+                "You've used your 10 AI resume extractions for today. This limit resets at midnight!",
+              action: "Try Tomorrow",
+            },
+            lifetime: {
+              title: "Daily AI Extraction Limit Reached",
+              message:
+                "You've used your 10 AI resume extractions for today. This limit resets at midnight!",
+              action: "Try Tomorrow",
             },
           },
         };

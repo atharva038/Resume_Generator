@@ -12,17 +12,17 @@ import {
   X,
   Filter,
 } from "lucide-react";
-import ClassicTemplate from "../components/templates/ClassicTemplate";
-import ModernTemplate from "../components/templates/ModernTemplate";
-import MinimalTemplate from "../components/templates/MinimalTemplate";
-import ProfessionalTemplate from "../components/templates/ProfessionalTemplate";
-import ExecutiveTemplate from "../components/templates/ExecutiveTemplate";
-import TechTemplate from "../components/templates/TechTemplate";
-import CreativeTemplate from "../components/templates/CreativeTemplate";
-import AcademicTemplate from "../components/templates/AcademicTemplate";
-import CorporateEliteTemplate from "../components/templates/CorporateEliteTemplate";
-import StrategicLeaderTemplate from "../components/templates/StrategicLeaderTemplate";
-import ImpactProTemplate from "../components/templates/ImpactProTemplate";
+import ClassicTemplate from "@/components/templates/ClassicTemplate";
+import ModernTemplate from "@/components/templates/ModernTemplate";
+import MinimalTemplate from "@/components/templates/MinimalTemplate";
+import ProfessionalTemplate from "@/components/templates/ProfessionalTemplate";
+import Professional2Template from "@/components/templates/Professional2Template";
+import TechTemplate from "@/components/templates/TechTemplate";
+import Creative2Template from "@/components/templates/Creative2Template";
+import AcademicTemplate from "@/components/templates/AcademicTemplate";
+import CorporateEliteTemplate from "@/components/templates/CorporateEliteTemplate";
+import StrategicLeaderTemplate from "@/components/templates/StrategicLeaderTemplate";
+import ImpactProTemplate from "@/components/templates/ImpactProTemplate";
 
 // Sample resume data for preview - matches template structure
 const sampleResumeData = {
@@ -157,15 +157,20 @@ const templates = [
     colors: ["#059669", "#ffffff"],
   },
   {
-    id: "executive",
-    name: "Executive",
-    component: ExecutiveTemplate,
-    category: "Leadership",
-    atsScore: 96,
+    id: "professional2",
+    name: "Professional Elite",
+    component: Professional2Template,
+    category: "Professional",
+    atsScore: 98,
     description:
-      "Premium formal template for senior leadership and executive positions",
-    features: ["Formal", "Leadership-Focused", "Achievement-Driven"],
-    colors: ["#2c3e50", "#ffffff"],
+      "Premium ATS-optimized template with dynamic content density and all sections included",
+    features: [
+      "Highest ATS Score",
+      "All Sections",
+      "Dynamic Layout",
+      "6 Color Themes",
+    ],
+    colors: ["#1e3a8a", "#ffffff"],
   },
   {
     id: "tech",
@@ -179,14 +184,19 @@ const templates = [
     colors: ["#0ea5e9", "#0f172a"],
   },
   {
-    id: "creative",
-    name: "Creative Designer",
-    component: CreativeTemplate,
+    id: "creative2",
+    name: "Creative Designer Pro",
+    component: Creative2Template,
     category: "Creative",
-    atsScore: 88,
+    atsScore: 94,
     description:
-      "Vibrant creative template with visual appeal while maintaining ATS compatibility",
-    features: ["Colorful", "Visual Appeal", "Portfolio Ready"],
+      "Vibrant modern creative template with dynamic layouts and ATS optimization",
+    features: [
+      "6 Color Themes",
+      "Dynamic Layout",
+      "All Sections",
+      "Visual Appeal",
+    ],
     colors: ["#8b5cf6", "#ec4899", "#ffffff"],
   },
   {
@@ -419,8 +429,8 @@ const Templates = () => {
                         template.atsScore >= 95
                           ? "text-green-500"
                           : template.atsScore >= 90
-                          ? "text-blue-500"
-                          : "text-orange-500"
+                            ? "text-blue-500"
+                            : "text-orange-500"
                       }`}
                     >
                       {template.atsScore}%
@@ -574,8 +584,8 @@ const Templates = () => {
                         selectedTemplate.atsScore >= 95
                           ? "text-green-500"
                           : selectedTemplate.atsScore >= 90
-                          ? "text-blue-500"
-                          : "text-orange-500"
+                            ? "text-blue-500"
+                            : "text-orange-500"
                       }`}
                     >
                       {selectedTemplate.atsScore}%

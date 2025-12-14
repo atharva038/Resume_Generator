@@ -16,13 +16,20 @@ import {
   Award,
 } from "lucide-react";
 import axios from "axios";
+import {useToggle} from "@/hooks";
 
 const GitHubExtractor = ({onDataExtracted}) => {
   const [username, setUsername] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, toggleLoading, setLoadingTrue, setLoadingFalse] =
+    useToggle(false);
   const [error, setError] = useState(null);
   const [githubData, setGithubData] = useState(null);
-  const [showResults, setShowResults] = useState(false);
+  const [
+    showResults,
+    toggleShowResults,
+    setShowResultsTrue,
+    setShowResultsFalse,
+  ] = useToggle(false);
 
   const handleFetch = async () => {
     if (!username.trim()) {
@@ -30,9 +37,9 @@ const GitHubExtractor = ({onDataExtracted}) => {
       return;
     }
 
-    setLoading(true);
+    setLoadingTrue();
     setError(null);
-    setShowResults(false);
+    setShowResultsFalse();
     setGithubData(null);
 
     try {
@@ -44,7 +51,7 @@ const GitHubExtractor = ({onDataExtracted}) => {
 
       if (response.data.success) {
         setGithubData(response.data.data);
-        setShowResults(true);
+        setShowResultsTrue();
       }
     } catch (err) {
       if (err.response?.status === 404) {
@@ -55,7 +62,7 @@ const GitHubExtractor = ({onDataExtracted}) => {
         setError("Failed to fetch GitHub data. Please try again.");
       }
     } finally {
-      setLoading(false);
+      setLoadingFalse();
     }
   };
 

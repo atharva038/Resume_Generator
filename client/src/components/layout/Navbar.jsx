@@ -1,8 +1,9 @@
 import {Link, useNavigate} from "react-router-dom";
-import {useAuth} from "../../context/AuthContext";
-import {BlockableLink} from "../auth";
-import {DarkModeToggle} from "../common";
+import {useAuth} from "@/context/AuthContext";
+import {BlockableLink} from "@/components/auth";
+import {DarkModeToggle} from "@/components/common";
 import {useState, useEffect} from "react";
+import {useToggle} from "@/hooks";
 import {
   Menu,
   Sparkles,
@@ -17,16 +18,21 @@ import {
 const Navbar = ({toggleSidebar, isSidebarOpen}) => {
   const {user, logout} = useAuth();
   const navigate = useNavigate();
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [isScrolled, toggleScrolled, setIsScrolledTrue, setIsScrolledFalse] =
+    useToggle(false);
 
   // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+      if (window.scrollY > 10) {
+        setIsScrolledTrue();
+      } else {
+        setIsScrolledFalse();
+      }
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [setIsScrolledTrue, setIsScrolledFalse]);
 
   const handleLogout = () => {
     logout();

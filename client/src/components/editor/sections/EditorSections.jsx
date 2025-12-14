@@ -4,11 +4,12 @@
  */
 
 import {useState, useEffect} from "react";
+import {useToggle} from "@/hooks";
 import EditableSection from "./EditableSection";
-import {ScoreCard} from "../../common/cards";
-import {RecommendationsPanel} from "../panels";
-import {resumeAPI} from "../../../services/api";
-import {LimitedTextarea} from "../../common/LimitedInputs";
+import {ScoreCard} from "@/components/common/cards";
+import {RecommendationsPanel} from "@/components/editor/panels";
+import {resumeAPI} from "@/api/api";
+import {LimitedTextarea} from "@/components/common/LimitedInputs";
 
 export const PersonalInfoSection = ({
   resumeData,
@@ -39,7 +40,7 @@ export const PersonalInfoSection = ({
         onChange={(e) => {
           const value = e.target.value;
           // Only allow numbers, spaces, hyphens, parentheses, and plus sign
-          if (/^[0-9\s\-\(\)\+]*$/.test(value)) {
+          if (/^[0-9\s\-()+ ]*$/.test(value)) {
             updateContact("phone", value);
           }
         }}
@@ -80,7 +81,8 @@ export const PersonalInfoSection = ({
 
 export const SkillsSection = ({resumeData, updateField}) => {
   const [skillsInput, setSkillsInput] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, toggleLoading, setIsLoadingTrue, setIsLoadingFalse] =
+    useToggle(false);
   const [error, setError] = useState("");
   const [initialized, setInitialized] = useState(false);
 
@@ -111,7 +113,7 @@ export const SkillsSection = ({resumeData, updateField}) => {
       return;
     }
 
-    setIsLoading(true);
+    setIsLoadingTrue();
     setError("");
 
     try {
@@ -131,7 +133,7 @@ export const SkillsSection = ({resumeData, updateField}) => {
           "Failed to categorize skills. Please try again."
       );
     } finally {
-      setIsLoading(false);
+      setIsLoadingFalse();
     }
   };
 
@@ -271,8 +273,8 @@ export const SkillsSection = ({resumeData, updateField}) => {
                       Array.isArray(skillGroup.items)
                         ? skillGroup.items.join(", ")
                         : typeof skillGroup.items === "string"
-                        ? skillGroup.items
-                        : ""
+                          ? skillGroup.items
+                          : ""
                     }
                     onChange={(e) => {
                       // Allow free-form editing, store as string temporarily
@@ -647,7 +649,8 @@ export const CertificationsSection = ({
 export const AchievementsSection = ({resumeData, updateField}) => {
   const achievements = resumeData.achievements || [];
   const [achievementsInput, setAchievementsInput] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, toggleLoading, setIsLoadingTrue, setIsLoadingFalse] =
+    useToggle(false);
   const [error, setError] = useState("");
   const [initialized, setInitialized] = useState(false);
 
@@ -666,7 +669,7 @@ export const AchievementsSection = ({resumeData, updateField}) => {
       return;
     }
 
-    setIsLoading(true);
+    setIsLoadingTrue();
     setError("");
 
     try {
@@ -686,7 +689,7 @@ export const AchievementsSection = ({resumeData, updateField}) => {
           "Failed to segregate achievements. Please try again."
       );
     } finally {
-      setIsLoading(false);
+      setIsLoadingFalse();
     }
   };
 
@@ -927,7 +930,8 @@ export const CustomSectionsManager = ({resumeData, updateField}) => {
 
 const CustomSectionItem = ({section, index, onUpdate, onRemove}) => {
   const [contentInput, setContentInput] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, toggleLoading, setIsLoadingTrue, setIsLoadingFalse] =
+    useToggle(false);
   const [error, setError] = useState("");
   const [isExpanded, setIsExpanded] = useState(true);
 
@@ -951,7 +955,7 @@ const CustomSectionItem = ({section, index, onUpdate, onRemove}) => {
       return;
     }
 
-    setIsLoading(true);
+    setIsLoadingTrue();
     setError("");
 
     try {
@@ -974,7 +978,7 @@ const CustomSectionItem = ({section, index, onUpdate, onRemove}) => {
           "Failed to process content. Please try again."
       );
     } finally {
-      setIsLoading(false);
+      setIsLoadingFalse();
     }
   };
 
