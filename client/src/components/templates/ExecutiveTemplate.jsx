@@ -1,5 +1,36 @@
 import {forwardRef, useRef, useEffect, useState} from "react";
 
+/**
+ * ExecutiveTemplate - Premium resume template for senior leadership positions
+ *
+ * Features:
+ * - Executive-level professional formatting
+ * - Emphasis on leadership achievements and strategic impact
+ * - Multiple sophisticated color themes (navy, burgundy, forest, charcoal, slate)
+ * - Clean, authoritative layout suitable for C-suite roles
+ * - Automatic page overflow detection with logging
+ * - ATS-compatible structure
+ *
+ * Best for: Executive, Director, VP, C-Suite positions
+ *
+ * @component
+ * @param {Object} props - Component props
+ * @param {Object} props.resumeData - Complete resume data object (same structure as ClassicTemplate)
+ * @param {string} [props.resumeData.selectedTheme] - Color theme (navy, burgundy, forest, charcoal, slate)
+ * @param {Function} [props.onPageUsageChange] - Callback for page overflow detection
+ * @param {React.Ref} ref - Forwarded ref for PDF generation
+ *
+ * @example
+ * <ExecutiveTemplate
+ *   ref={templateRef}
+ *   resumeData={{
+ *     name: "Morgan Executive",
+ *     contact: { email: "morgan@company.com" },
+ *     summary: "Seasoned executive with 15+ years of leadership experience...",
+ *     selectedTheme: "burgundy"
+ *   }}
+ * />
+ */
 const ExecutiveTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
   // Page overflow detection state
   const containerRef = useRef(null);

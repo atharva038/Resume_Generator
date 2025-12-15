@@ -1,9 +1,10 @@
 import axios from "axios";
 import {authStorage} from "@/utils/storage";
 import {handleErrorByStatus} from "@/utils/errorHandler";
+import {config} from "@/utils/constants";
 import toast from "react-hot-toast";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_URL = config.apiUrl;
 
 // Create axios instance
 const adminAPI = axios.create({
@@ -61,7 +62,7 @@ adminAPI.interceptors.response.use(
       },
       default: (err) => {
         // For other errors, log in development
-        if (import.meta.env.DEV) {
+        if (config.isDev) {
           console.error("Admin API Error:", err);
         }
       },

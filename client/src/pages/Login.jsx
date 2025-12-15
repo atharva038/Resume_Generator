@@ -4,6 +4,7 @@ import {useAuth} from "@/context/AuthContext";
 import {parseValidationErrors} from "@/utils/errorHandler";
 import {useToggle} from "@/hooks";
 import {loginSchema, validateWithSchema} from "@/utils/validation";
+import {config} from "@/utils/constants";
 import {
   Mail,
   Lock,
@@ -197,9 +198,7 @@ const Login = () => {
           <div className="space-y-3">
             {/* Google OAuth Button */}
             <a
-              href={`${
-                import.meta.env.VITE_SERVER_URL || "http://localhost:5000"
-              }/api/auth/google`}
+              href={`${config.serverUrl}/api/auth/google`}
               className="w-full flex items-center justify-center gap-3 px-4 py-2.5 bg-white dark:bg-black border border-gray-300 dark:border-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-lg transition-all duration-200 font-medium text-gray-700 dark:text-gray-300 text-sm"
             >
               <FcGoogle className="w-5 h-5" />
@@ -208,9 +207,7 @@ const Login = () => {
 
             {/* GitHub OAuth Button */}
             <a
-              href={`${
-                import.meta.env.VITE_SERVER_URL || "http://localhost:5000"
-              }/api/auth/github`}
+              href={`${config.serverUrl}/api/auth/github`}
               className="w-full flex items-center justify-center gap-3 px-4 py-2.5 bg-white dark:bg-black border border-gray-300 dark:border-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-lg transition-all duration-200 font-medium text-gray-700 dark:text-gray-300 text-sm"
             >
               <Github className="w-5 h-5" />

@@ -1,5 +1,34 @@
 import {forwardRef, useRef, useEffect, useState} from "react";
 
+/**
+ * TechTemplate - Technology-focused resume template for developers and engineers
+ *
+ * Features:
+ * - Tech-industry optimized layout
+ * - Emphasis on skills, projects, and technical experience
+ * - Multiple color themes (blue, purple, green, orange, cyan, gray)
+ * - Clean, code-like aesthetic
+ * - Automatic page overflow detection with logging
+ * - ATS-compatible structure
+ *
+ * @component
+ * @param {Object} props - Component props
+ * @param {Object} props.resumeData - Complete resume data object (same structure as ClassicTemplate)
+ * @param {string} [props.resumeData.selectedTheme] - Color theme (blue, purple, green, orange, cyan, gray)
+ * @param {Function} [props.onPageUsageChange] - Callback for page overflow detection
+ * @param {React.Ref} ref - Forwarded ref for PDF generation
+ *
+ * @example
+ * <TechTemplate
+ *   ref={templateRef}
+ *   resumeData={{
+ *     name: "Jordan Dev",
+ *     contact: { email: "jordan@example.com", github: "github.com/jordandev" },
+ *     skills: [{ category: "Languages", items: ["Python", "JavaScript", "Go"] }],
+ *     selectedTheme: "blue"
+ *   }}
+ * />
+ */
 const TechTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
   // Page overflow detection state
   const containerRef = useRef(null);

@@ -1,12 +1,23 @@
+/**
+ * Subscription and Payment API Service Module
+ *
+ * Handles all subscription and Razorpay payment operations:
+ * - Fetch pricing plans and comparisons
+ * - Create payment orders via Razorpay
+ * - Verify payment signatures
+ * - Manage subscriptions (create, cancel, status)
+ * - Get payment history and analytics
+ *
+ * Payment Gateway: Razorpay
+ * Authentication: JWT token from localStorage
+ *
+ * @module subscription.api
+ */
+
 import axios from "axios";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-
-/**
- * Subscription API Service
- * Handles all subscription-related API calls
- */
 
 // Create axios instance with auth token
 const getAuthHeader = () => {

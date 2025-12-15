@@ -1,5 +1,102 @@
 import {forwardRef, useRef, useEffect, useState, useMemo} from "react";
 
+/**
+ * ClassicTemplate - Professional ATS-optimized resume template with clean formatting
+ *
+ * Features:
+ * - Single-column layout optimized for ATS parsing
+ * - Professional color themes (navy, burgundy, forest, charcoal, slate)
+ * - Automatic page overflow detection for A4 size
+ * - Customizable section order and visibility
+ * - Two-column skills layout option
+ * - LinkedIn/GitHub links with proper formatting
+ *
+ * @component
+ * @param {Object} props - Component props
+ * @param {Object} props.resumeData - Complete resume data object
+ * @param {string} props.resumeData.name - Candidate's full name
+ * @param {Object} props.resumeData.contact - Contact information
+ * @param {string} props.resumeData.contact.email - Email address
+ * @param {string} [props.resumeData.contact.phone] - Phone number
+ * @param {string} [props.resumeData.contact.location] - City, State or full address
+ * @param {string} [props.resumeData.contact.linkedin] - LinkedIn profile URL
+ * @param {string} [props.resumeData.contact.github] - GitHub profile URL
+ * @param {string} [props.resumeData.contact.website] - Personal website URL
+ * @param {string} [props.resumeData.summary] - Professional summary/objective
+ * @param {Array<Object>} [props.resumeData.experience] - Work experience entries
+ * @param {string} props.resumeData.experience[].title - Job title
+ * @param {string} props.resumeData.experience[].company - Company name
+ * @param {string} [props.resumeData.experience[].location] - Job location
+ * @param {string} props.resumeData.experience[].startDate - Start date (MM/YYYY or text)
+ * @param {string} [props.resumeData.experience[].endDate] - End date (MM/YYYY, "Present", or text)
+ * @param {Array<string>} [props.resumeData.experience[].bullets] - Achievement bullets
+ * @param {Array<Object>} [props.resumeData.education] - Education entries
+ * @param {string} props.resumeData.education[].degree - Degree name
+ * @param {string} props.resumeData.education[].institution - School name
+ * @param {string} props.resumeData.education[].graduationDate - Graduation date
+ * @param {string} [props.resumeData.education[].gpa] - GPA (e.g., "3.8/4.0")
+ * @param {Array<Object>} [props.resumeData.skills] - Skills grouped by category
+ * @param {string} props.resumeData.skills[].category - Skill category name
+ * @param {Array<string>} props.resumeData.skills[].items - Skills in category
+ * @param {Array<Object>} [props.resumeData.projects] - Project entries
+ * @param {string} props.resumeData.projects[].name - Project name
+ * @param {Array<string>} [props.resumeData.projects[].bullets] - Project descriptions
+ * @param {string} [props.resumeData.projects[].technologies] - Technologies used
+ * @param {Array<Object>} [props.resumeData.certifications] - Certification entries
+ * @param {string} props.resumeData.certifications[].name - Certification name
+ * @param {string} [props.resumeData.certifications[].issuer] - Issuing organization
+ * @param {string} [props.resumeData.certifications[].date] - Date obtained
+ * @param {Array<string>} [props.resumeData.achievements] - Achievement/award entries
+ * @param {Array<Object>} [props.resumeData.customSections] - Custom sections
+ * @param {string} props.resumeData.customSections[].title - Section title
+ * @param {string} props.resumeData.customSections[].content - Section content
+ * @param {string} [props.resumeData.selectedTheme] - Color theme (navy, burgundy, forest, charcoal, slate)
+ * @param {Array<string>} [props.resumeData.sectionOrder] - Custom section ordering
+ * @param {Function} [props.onPageUsageChange] - Callback when page overflow is detected
+ * @param {React.Ref} ref - Forwarded ref for PDF generation (DO NOT use forwardedRef prop)
+ *
+ * @example
+ * // Basic usage with required fields only
+ * <ClassicTemplate
+ *   ref={templateRef}
+ *   resumeData={{
+ *     name: "John Doe",
+ *     contact: { email: "john@example.com" }
+ *   }}
+ * />
+ *
+ * @example
+ * // Full usage with all features
+ * <ClassicTemplate
+ *   ref={templateRef}
+ *   resumeData={{
+ *     name: "Jane Smith",
+ *     contact: {
+ *       email: "jane@example.com",
+ *       phone: "+1-555-0100",
+ *       location: "San Francisco, CA",
+ *       linkedin: "linkedin.com/in/janesmith",
+ *       github: "github.com/janesmith"
+ *     },
+ *     summary: "Experienced software engineer...",
+ *     experience: [{
+ *       title: "Senior Developer",
+ *       company: "Tech Corp",
+ *       location: "Remote",
+ *       startDate: "01/2020",
+ *       endDate: "Present",
+ *       bullets: ["Led team of 5 engineers", "Increased performance by 40%"]
+ *     }],
+ *     selectedTheme: "navy",
+ *     sectionOrder: ["summary", "experience", "skills", "education"]
+ *   }}
+ *   onPageUsageChange={(info) => {
+ *     if (info.isOverflowing) {
+ *       console.warn(`Resume overflows by ${info.overflowPercentage}%`);
+ *     }
+ *   }}
+ * />
+ */
 const ClassicTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
   // Page overflow detection state
   const containerRef = useRef(null);

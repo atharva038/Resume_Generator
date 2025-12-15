@@ -1,6 +1,30 @@
 import {forwardRef, useRef, useEffect, useState} from "react";
 import {Mail, Phone, MapPin, Linkedin, Github, Globe} from "lucide-react";
 
+/**
+ * ProfessionalV2Template - Enhanced version of ProfessionalTemplate with improved spacing
+ *
+ * Features:
+ * - Refined professional layout with optimized whitespace
+ * - Lucide React icons for contact information
+ * - Multiple color themes (blue, teal, purple, green, orange, gray)
+ * - Improved section spacing for better readability
+ * - Automatic page overflow detection
+ * - ATS-compatible structure with enhanced visual hierarchy
+ *
+ * @component
+ * @param {Object} props - Component props
+ * @param {Object} props.resumeData - Complete resume data object (same structure as ClassicTemplate)
+ * @param {string} [props.resumeData.selectedTheme] - Color theme (blue, teal, purple, green, orange, gray)
+ * @param {Function} [props.onPageUsageChange] - Callback for page overflow detection
+ * @param {React.Ref} ref - Forwarded ref for PDF generation
+ *
+ * @example
+ * <ProfessionalV2Template
+ *   ref={templateRef}
+ *   resumeData={{ name: "Riley Kim", contact: { email: "riley@example.com" }, selectedTheme: "teal" }}
+ * />
+ */
 const ProfessionalV2Template = forwardRef(
   ({resumeData, onPageUsageChange}, ref) => {
     // Page overflow detection state

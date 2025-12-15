@@ -1,5 +1,29 @@
 import {forwardRef, useRef, useEffect, useState} from "react";
 
+/**
+ * MinimalTemplate - Clean, minimalist resume template with maximum readability
+ *
+ * Features:
+ * - Ultra-clean single-column layout
+ * - Subtle color accents for visual organization
+ * - Excellent whitespace and typography
+ * - Optimized for ATS parsing
+ * - Professional color themes (slate, indigo, rose, amber, emerald, neutral)
+ * - Automatic page overflow detection
+ *
+ * @component
+ * @param {Object} props - Component props
+ * @param {Object} props.resumeData - Complete resume data object (same structure as ClassicTemplate)
+ * @param {string} [props.resumeData.selectedTheme] - Color theme (slate, indigo, rose, amber, emerald, neutral)
+ * @param {Function} [props.onPageUsageChange] - Callback for page overflow detection
+ * @param {React.Ref} ref - Forwarded ref for PDF generation
+ *
+ * @example
+ * <MinimalTemplate
+ *   ref={templateRef}
+ *   resumeData={{ name: "Sam Lee", contact: { email: "sam@example.com" }, selectedTheme: "neutral" }}
+ * />
+ */
 const MinimalTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
   // Page overflow detection state
   const containerRef = useRef(null);

@@ -2,9 +2,31 @@ import {useState, useEffect} from "react";
 
 /**
  * Custom hook for syncing state with localStorage
+ * Automatically persists state to localStorage and retrieves it on mount
+ *
  * @param {string} key - The localStorage key
- * @param {*} initialValue - The initial value if key doesn't exist
- * @returns {[*, function]} - The current value and a setter function
+ * @param {*} initialValue - The initial value if key doesn't exist in localStorage
+ * @returns {[*, function]} Tuple containing the current value and a setter function
+ *
+ * @example
+ * // Persist user preferences
+ * function Settings() {
+ *   const [theme, setTheme] = useLocalStorage('app-theme', 'light');
+ *   const [fontSize, setFontSize] = useLocalStorage('font-size', 14);
+ *
+ *   return (
+ *     <div>
+ *       <button onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
+ *         Toggle Theme (Current: {theme})
+ *       </button>
+ *       <input
+ *         type="number"
+ *         value={fontSize}
+ *         onChange={(e) => setFontSize(parseInt(e.target.value))}
+ *       />
+ *     </div>
+ *   );
+ * }
  */
 export const useLocalStorage = (key, initialValue) => {
   // Get initial value from localStorage or use initialValue

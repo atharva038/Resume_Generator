@@ -1,6 +1,30 @@
 import {forwardRef, useRef, useEffect, useState} from "react";
 import {Mail, Phone, MapPin, Linkedin, Github, Globe} from "lucide-react";
 
+/**
+ * ProfessionalTemplate - Corporate-style resume template with icon accents
+ *
+ * Features:
+ * - Professional single-column layout
+ * - Lucide React icons for contact information
+ * - Multiple color themes (blue, teal, purple, green, orange, gray)
+ * - Clean section headers with subtle borders
+ * - Automatic page overflow detection with console logging
+ * - ATS-compatible structure
+ *
+ * @component
+ * @param {Object} props - Component props
+ * @param {Object} props.resumeData - Complete resume data object (same structure as ClassicTemplate)
+ * @param {string} [props.resumeData.selectedTheme] - Color theme (blue, teal, purple, green, orange, gray)
+ * @param {Function} [props.onPageUsageChange] - Callback for page overflow detection
+ * @param {React.Ref} ref - Forwarded ref for PDF generation
+ *
+ * @example
+ * <ProfessionalTemplate
+ *   ref={templateRef}
+ *   resumeData={{ name: "Pat Chen", contact: { email: "pat@example.com", linkedin: "linkedin.com/in/patchen" } }}
+ * />
+ */
 const ProfessionalTemplate = forwardRef(
   ({resumeData, onPageUsageChange}, ref) => {
     // Debug: Log resume data structure

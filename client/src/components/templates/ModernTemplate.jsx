@@ -1,5 +1,45 @@
 import {forwardRef, useRef, useEffect, useState} from "react";
 
+/**
+ * ModernTemplate - Contemporary resume template with bold design elements
+ *
+ * Features:
+ * - Modern single-column layout with visual hierarchy
+ * - Multiple color themes (blue, teal, purple, amber, emerald)
+ * - Automatic page overflow detection and logging
+ * - Clean section separators with color accents
+ * - Professional typography with modern spacing
+ * - ATS-compatible structure
+ *
+ * @component
+ * @param {Object} props - Component props
+ * @param {Object} props.resumeData - Complete resume data object (same structure as ClassicTemplate)
+ * @param {string} props.resumeData.name - Candidate's full name
+ * @param {Object} props.resumeData.contact - Contact information
+ * @param {string} [props.resumeData.summary] - Professional summary
+ * @param {Array<Object>} [props.resumeData.experience] - Work experience entries
+ * @param {Array<Object>} [props.resumeData.education] - Education entries
+ * @param {Array<Object>} [props.resumeData.skills] - Skills grouped by category
+ * @param {Array<Object>} [props.resumeData.projects] - Project entries
+ * @param {Array<Object>} [props.resumeData.certifications] - Certifications
+ * @param {Array<string>} [props.resumeData.achievements] - Achievements
+ * @param {Array<Object>} [props.resumeData.customSections] - Custom sections
+ * @param {string} [props.resumeData.selectedTheme] - Color theme (blue, teal, purple, amber, emerald)
+ * @param {Array<string>} [props.resumeData.sectionOrder] - Custom section ordering
+ * @param {Function} [props.onPageUsageChange] - Callback for page overflow detection
+ * @param {React.Ref} ref - Forwarded ref for PDF generation
+ *
+ * @example
+ * <ModernTemplate
+ *   ref={templateRef}
+ *   resumeData={{
+ *     name: "Alex Johnson",
+ *     contact: { email: "alex@example.com" },
+ *     selectedTheme: "teal"
+ *   }}
+ *   onPageUsageChange={(info) => console.log(info)}
+ * />
+ */
 const ModernTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
   // Page overflow detection state
   const containerRef = useRef(null);
