@@ -27,7 +27,7 @@ import RefundPolicy from "./pages/RefundPolicy";
 import ShippingPolicy from "./pages/ShippingPolicy";
 import PaymentModal from "./components/common/PaymentModal";
 import SubscriptionDashboard from "./pages/SubscriptionDashboard";
-import AdvancedAnalytics from "./pages/AdvancedAnalytics";
+// import AdvancedAnalytics from "./pages/AdvancedAnalytics"; // Temporarily disabled
 import Profile from "./pages/Profile";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import UserManagement from "./pages/admin/UserManagement";
@@ -202,14 +202,15 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route
+            {/* Temporarily disabled - Advanced Analytics */}
+            {/* <Route
               path="analytics"
               element={
                 <ProtectedRoute>
                   <AdvancedAnalytics />
                 </ProtectedRoute>
               }
-            />
+            /> */}
             <Route
               path="profile"
               element={

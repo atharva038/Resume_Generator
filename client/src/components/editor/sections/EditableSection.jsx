@@ -65,16 +65,49 @@ const EditableSection = ({
         return;
       }
 
+      // Validate resumeData and resumeId
+      if (!resumeData?._id) {
+        console.warn(
+          "⚠️  Resume not saved yet. Please save before using AI enhancement."
+        );
+        toast.error(
+          "Please save your resume first before using AI enhancement",
+          {
+            icon: "💾",
+            duration: 4000,
+          }
+        );
+        setEnhancingFalse();
+        return;
+      }
+
+      console.log("🔍 Enhancing with resumeId:", resumeData._id);
+
       let contentToEnhance;
 
       if (sectionType === "summary") {
         contentToEnhance = content;
       } else if (sectionType === "experience" && experienceData) {
-        contentToEnhance = experienceData.bullets;
+        // Ensure we're sending bullets as array of strings
+        contentToEnhance = Array.isArray(experienceData.bullets)
+          ? experienceData.bullets
+          : [experienceData.bullets].filter(Boolean);
       } else if (sectionType === "projects" && projectData) {
-        contentToEnhance = projectData.bullets;
+        // Ensure we're sending bullets as array of strings
+        contentToEnhance = Array.isArray(projectData.bullets)
+          ? projectData.bullets
+          : [projectData.bullets].filter(Boolean);
       } else {
         contentToEnhance = content;
+      }
+
+      // Ensure contentToEnhance is serializable (no complex objects)
+      if (
+        typeof contentToEnhance === "object" &&
+        !Array.isArray(contentToEnhance)
+      ) {
+        console.warn("⚠️  Content is an object, converting to string");
+        contentToEnhance = JSON.stringify(contentToEnhance);
       }
 
       // Pass full resumeData for context-aware enhancement
@@ -90,9 +123,21 @@ const EditableSection = ({
         editor?.commands.setContent(`<p>${enhanced}</p>`);
       } else {
         const bullets = Array.isArray(enhanced) ? enhanced : [enhanced];
-        onUpdate(bullets);
+
+        // Convert bullets to strings (handle objects like project data)
+        const bulletStrings = bullets.map((b) => {
+          if (typeof b === "string") {
+            return b;
+          } else if (typeof b === "object" && b !== null) {
+            // If it's an object (like a project), convert to string representation
+            return JSON.stringify(b);
+          }
+          return String(b);
+        });
+
+        onUpdate(bulletStrings);
         editor?.commands.setContent(
-          `<ul>${bullets.map((b) => `<li>${b}</li>`).join("")}</ul>`
+          `<ul>${bulletStrings.map((b) => `<li>${b}</li>`).join("")}</ul>`
         );
       }
 

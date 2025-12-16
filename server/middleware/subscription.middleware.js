@@ -84,15 +84,35 @@ export function checkUsageLimit(limitType) {
         });
       }
 
+      // Map limitType to actual usage field
+      const usageFieldMap = {
+        resumesPerMonth: "resumesThisMonth",
+        resumeDownloadsPerMonth: "resumesDownloadedThisMonth",
+        atsScansPerMonth: "atsScansThisMonth",
+        jobMatchesPerDay: "jobMatchesToday",
+        coverLettersPerMonth: "coverLettersThisMonth",
+        aiGenerationsPerMonth: "aiGenerationsThisMonth",
+        aiResumeExtractionsPerDay: "aiResumeExtractionsToday",
+      };
+
+      const usageField = usageFieldMap[limitType];
+      const actualUsage = user.usage?.[usageField] || 0;
+      const usageLimit = user.getUsageLimit(limitType);
+      const hasReached = user.hasReachedLimit(limitType);
+
       console.log(`🔍 Checking usage limit for ${limitType}:`, {
         userId: user._id,
         tier: user.subscription?.tier || "free",
-        current: user.usage?.[limitType] || 0,
-        limit: user.getUsageLimit(limitType),
+        usageField: usageField,
+        actualUsage: actualUsage,
+        limit: usageLimit,
+        hasReached: hasReached,
+        comparison: `${actualUsage} >= ${usageLimit} = ${hasReached}`,
+        rawUsageObject: user.usage, // Show full usage object for debugging
       });
 
       // Check if limit reached
-      if (user.hasReachedLimit(limitType)) {
+      if (hasReached) {
         const limit = user.getUsageLimit(limitType);
         const tier = user.subscription?.tier || "free";
 
@@ -528,6 +548,187 @@ export async function getUserUsageStats(req, res) {
   }
 }
 
+/**
+ * Check if the resume's subscription is still active
+ * This middleware ensures that resumes created with one-time subscriptions
+ * can only be used while that subscription is active
+ * Pro users can access ALL resumes regardless of when they were created
+ */
+export async function checkResumeSubscriptionAccess(req, res, next) {
+  try {
+    const user = req.user;
+
+    // Get resumeId from body or params
+    const resumeId = req.body.resumeId || req.params.id || req.params.resumeId;
+
+    if (!resumeId) {
+      return res.status(400).json({
+        error: "Resume ID required",
+        message: "Please provide a resume ID",
+      });
+    }
+
+    // Import Resume model
+    const Resume = (await import("../models/Resume.model.js")).default;
+
+    // Get the resume
+    const resume = await Resume.findById(resumeId);
+    if (!resume) {
+      return res.status(404).json({
+        error: "Resume not found",
+        message: "The requested resume could not be found",
+      });
+    }
+
+    // Verify ownership
+    if (resume.userId.toString() !== user._id.toString()) {
+      return res.status(403).json({
+        error: "Access denied",
+        message: "You don't have permission to access this resume",
+      });
+    }
+
+    console.log(`🔍 Checking resume subscription access:`, {
+      resumeId: resume._id,
+      resumeTier: resume.subscriptionInfo?.createdWithTier || "free",
+      resumeSubId: resume.subscriptionInfo?.subscriptionId || "none",
+      userTier: user.subscription?.tier || "free",
+      userStatus: user.subscription?.status || "N/A",
+    });
+
+    // PRO/PREMIUM/LIFETIME USERS: Can access ALL resumes (even old resumes without tracking)
+    if (
+      ["pro", "premium", "lifetime"].includes(user.subscription?.tier) &&
+      user.subscription?.status === "active"
+    ) {
+      console.log(
+        `✅ ${user.subscription.tier.toUpperCase()} user - access granted to all resumes`
+      );
+      req.resume = resume;
+      return next();
+    }
+
+    // OLD RESUMES (no subscription tracking): Allow access based on user's CURRENT subscription
+    // These are resumes created before the tracking system was implemented
+    if (!resume.subscriptionInfo?.createdWithSubscription) {
+      console.log(
+        "⚠️ Old resume without subscription tracking - allowing access for current user"
+      );
+
+      // Allow all users (including free tier) to access their old resumes
+      // Usage limits will be enforced by checkUsageLimit middleware
+      console.log(
+        `✅ User with ${
+          user.subscription?.tier || "free"
+        } tier - access granted to old resume (usage limits will be checked separately)`
+      );
+      req.resume = resume;
+      return next();
+    }
+
+    // FREE TIER RESUMES (explicitly marked as free): Always accessible
+    if (resume.subscriptionInfo?.createdWithTier === "free") {
+      console.log("✅ Free tier resume - access granted");
+      req.resume = resume;
+      return next();
+    }
+
+    // ONE-TIME/PRO/OTHER PREMIUM USERS: Check subscription status again for safety
+    if (
+      ["pro", "premium", "lifetime"].includes(user.subscription?.tier) &&
+      user.subscription?.status === "active"
+    ) {
+      console.log(
+        `✅ ${user.subscription.tier.toUpperCase()} user - access granted to all resumes`
+      );
+      req.resume = resume;
+      return next();
+    }
+
+    // ONE-TIME SUBSCRIPTION RESUMES: Check if the specific subscription is still active
+    if (resume.subscriptionInfo?.createdWithTier === "one-time") {
+      const subscriptionId = resume.subscriptionInfo.subscriptionId;
+
+      if (!subscriptionId) {
+        console.log(
+          "⚠️ One-time resume without subscription ID - denying access"
+        );
+        return res.status(403).json({
+          error: "Subscription expired",
+          message:
+            "This resume was created with a one-time subscription that has expired. Upgrade to Pro to access all your resumes, or purchase a new one-time subscription.",
+          requiresUpgrade: true,
+          resumeTier: "one-time",
+          suggestedAction: "upgrade_to_pro",
+        });
+      }
+
+      // Check if that specific subscription is still active
+      const subscription = await Subscription.findById(subscriptionId);
+
+      if (
+        !subscription ||
+        subscription.status !== "active" ||
+        (subscription.endDate && subscription.endDate < new Date())
+      ) {
+        console.log(`❌ One-time subscription expired for resume ${resumeId}`);
+        return res.status(403).json({
+          error: "Subscription expired",
+          message:
+            "Your one-time subscription for this resume has expired. Upgrade to Pro for unlimited access to all resumes, or purchase a new one-time subscription for a new resume.",
+          requiresUpgrade: true,
+          resumeTier: "one-time",
+          subscriptionExpired: true,
+          expiryDate: subscription?.endDate || null,
+          suggestedAction: "upgrade_to_pro",
+        });
+      }
+
+      console.log("✅ One-time subscription still active - access granted");
+      req.resume = resume;
+      return next();
+    }
+
+    // STUDENT/OTHER PREMIUM TIERS: Check if user still has that tier active
+    if (["student"].includes(resume.subscriptionInfo?.createdWithTier)) {
+      if (
+        user.subscription?.tier === resume.subscriptionInfo.createdWithTier &&
+        user.subscription?.status === "active"
+      ) {
+        console.log(
+          `✅ ${resume.subscriptionInfo.createdWithTier.toUpperCase()} subscription active - access granted`
+        );
+        req.resume = resume;
+        return next();
+      } else {
+        return res.status(403).json({
+          error: "Subscription required",
+          message: `This resume requires an active ${resume.subscriptionInfo.createdWithTier} subscription. Please upgrade to continue.`,
+          requiresUpgrade: true,
+          resumeTier: resume.subscriptionInfo.createdWithTier,
+          suggestedAction: "upgrade_to_pro",
+        });
+      }
+    }
+
+    // DEFAULT: If we reach here, deny access
+    console.log("❌ No valid subscription found for resume access");
+    return res.status(403).json({
+      error: "Subscription required",
+      message:
+        "You need an active subscription to access this resume. Upgrade to Pro for unlimited access.",
+      requiresUpgrade: true,
+      suggestedAction: "upgrade_to_pro",
+    });
+  } catch (error) {
+    console.error("❌ Resume subscription access check error:", error);
+    return res.status(500).json({
+      error: "Access check failed",
+      message: "Failed to verify subscription access. Please try again.",
+    });
+  }
+}
+
 export default {
   checkSubscription,
   checkUsageLimit,
@@ -537,4 +738,5 @@ export default {
   trackUsage,
   tierBasedRateLimit,
   getUserUsageStats,
+  checkResumeSubscriptionAccess,
 };

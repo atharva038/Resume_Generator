@@ -22,16 +22,25 @@ import AIUsage from "../models/AIUsage.model.js";
 // Configuration: User tier limits
 const QUOTA_LIMITS = {
   free: {
-    daily: 10, // 10 AI requests per day for free users
-    monthly: 200, // 200 AI requests per month
+    daily: Infinity, // No daily limit for free users (only monthly)
+    monthly: 10, // 10 AI requests per month for free users
   },
   "one-time": {
-    daily: 30, // 30 AI requests per day for one-time purchase users
-    monthly: 200, // 200 AI requests during 21-day access period
+    daily: Infinity, // No daily limit
+    period: 21, // 21-day period instead of monthly
+    periodLimit: 150, // 150 AI requests for 21-day period from purchase date
+  },
+  pro: {
+    daily: Infinity, // No daily limit
+    monthly: Infinity, // Unlimited for pro users
   },
   premium: {
-    daily: 100, // 100 AI requests per day for premium users
-    monthly: 2000, // 2000 AI requests per month
+    daily: Infinity, // No daily limit
+    monthly: Infinity, // Unlimited for premium users
+  },
+  lifetime: {
+    daily: Infinity, // No daily limit
+    monthly: Infinity, // Unlimited for lifetime users
   },
   admin: {
     daily: Infinity, // Unlimited for admins
@@ -79,17 +88,14 @@ const getUsageCount = async (userId, startDate) => {
 };
 
 /**
- * Get user's tier (free/premium/admin)
- * For now, defaults to 'free' for regular users
- * TODO: Add tier field to User model when implementing paid plans
+ * Get user's tier (free/one-time/pro/premium/lifetime/admin)
  * @param {Object} user - User object from req.user
- * @returns {string} User tier ('free', 'premium', or 'admin')
+ * @returns {string} User tier
  */
 const getUserTier = (user) => {
   if (user.role === "admin") return "admin";
-  // TODO: Check user.tier when premium plans are implemented
-  // return user.tier || 'free';
-  return "free";
+  // Get tier from user's subscription
+  return user.subscription?.tier || "free";
 };
 
 /**
@@ -125,6 +131,100 @@ export const checkAIQuota = async (req, res, next) => {
 
     // Calculate time boundaries
     const now = new Date();
+
+    // Special handling for one-time subscriptions: 21-day period from purchase date
+    if (userTier === "one-time") {
+      const subscriptionStartDate = req.user.subscription?.startDate;
+
+      if (!subscriptionStartDate) {
+        console.error("❌ One-time user has no subscription start date");
+        return res.status(400).json({
+          success: false,
+          error: "Invalid subscription",
+          message: "Subscription start date not found. Please contact support.",
+        });
+      }
+
+      // Calculate 21-day period start (from subscription purchase date)
+      const periodStart = new Date(subscriptionStartDate);
+      const periodEnd = new Date(
+        periodStart.getTime() + limits.period * 24 * 60 * 60 * 1000
+      );
+
+      // Get usage count for the 21-day period
+      const periodUsage = await getUsageCount(userId, periodStart);
+
+      // Check if subscription period has ended
+      if (now > periodEnd) {
+        console.log(
+          `[AI Quota] User ${userId} subscription period ended: ${periodEnd.toISOString()}`
+        );
+        return res.status(403).json({
+          success: false,
+          error: "Subscription expired",
+          message: `Your 21-day subscription period ended on ${periodEnd.toLocaleDateString()}. Please purchase a new subscription to continue using AI features.`,
+          quota: {
+            tier: userTier,
+            period: {
+              used: periodUsage,
+              limit: limits.periodLimit,
+              remaining: 0,
+              daysRemaining: 0,
+            },
+            startDate: periodStart.toISOString(),
+            endDate: periodEnd.toISOString(),
+            expired: true,
+          },
+        });
+      }
+
+      // Check 21-day period quota
+      if (periodUsage >= limits.periodLimit) {
+        console.log(
+          `[AI Quota] User ${userId} exceeded 21-day period limit: ${periodUsage}/${limits.periodLimit}`
+        );
+        return res.status(429).json({
+          success: false,
+          error: "AI quota exceeded",
+          message: `You have used all ${limits.periodLimit} AI requests from your 21-day subscription. Upgrade to Pro for unlimited AI requests.`,
+          quota: {
+            tier: userTier,
+            period: {
+              used: periodUsage,
+              limit: limits.periodLimit,
+              remaining: 0,
+              daysRemaining: Math.ceil(
+                (periodEnd - now) / (24 * 60 * 60 * 1000)
+              ),
+            },
+            startDate: periodStart.toISOString(),
+            endDate: periodEnd.toISOString(),
+            expired: false,
+          },
+        });
+      }
+
+      // Quota check passed for one-time user
+      const daysRemaining = Math.ceil(
+        (periodEnd - now) / (24 * 60 * 60 * 1000)
+      );
+      req.aiUsageInfo = {
+        userId,
+        userTier,
+        periodUsage,
+        periodRemaining: limits.periodLimit - periodUsage,
+        daysRemaining,
+        periodStart: periodStart.toISOString(),
+        periodEnd: periodEnd.toISOString(),
+      };
+
+      console.log(
+        `✅ AI quota check passed for user ${userId}: ${periodUsage}/${limits.periodLimit} in 21-day period (${daysRemaining} days remaining)`
+      );
+      return next();
+    }
+
+    // For other tiers (free, pro, premium, lifetime): monthly quota
     const startOfDay = new Date(
       now.getFullYear(),
       now.getMonth(),
@@ -138,8 +238,8 @@ export const checkAIQuota = async (req, res, next) => {
       getUsageCount(userId, startOfMonth),
     ]);
 
-    // Check daily quota
-    if (dailyUsage >= limits.daily) {
+    // Check daily quota (only if not Infinity)
+    if (limits.daily !== Infinity && dailyUsage >= limits.daily) {
       console.log(
         `[AI Quota] User ${userId} exceeded daily limit: ${dailyUsage}/${limits.daily}`
       );
@@ -166,8 +266,8 @@ export const checkAIQuota = async (req, res, next) => {
       });
     }
 
-    // Check monthly quota
-    if (monthlyUsage >= limits.monthly) {
+    // Check monthly quota (only if not Infinity)
+    if (limits.monthly !== Infinity && monthlyUsage >= limits.monthly) {
       console.log(
         `[AI Quota] User ${userId} exceeded monthly limit: ${monthlyUsage}/${limits.monthly}`
       );
@@ -202,8 +302,10 @@ export const checkAIQuota = async (req, res, next) => {
       userTier,
       dailyUsage,
       monthlyUsage,
-      dailyRemaining: limits.daily - dailyUsage,
-      monthlyRemaining: limits.monthly - monthlyUsage,
+      dailyRemaining:
+        limits.daily === Infinity ? Infinity : limits.daily - dailyUsage,
+      monthlyRemaining:
+        limits.monthly === Infinity ? Infinity : limits.monthly - monthlyUsage,
     };
 
     console.log(

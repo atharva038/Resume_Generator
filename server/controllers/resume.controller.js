@@ -1,15 +1,16 @@
 import Resume from "../models/Resume.model.js";
 import User from "../models/User.model.js";
+import Subscription from "../models/Subscription.model.js";
 import {extractTextFromFile, deleteFile} from "../utils/fileExtractor.js";
+// Import ALL AI functions from OpenAI (Gemini has quota limits)
 import {
-  parseResumeWithAI as parseResumeWithGemini,
+  parseResumeWithAI as parseResumeWithOpenAI,
   enhanceContentWithAI,
   generateSummaryWithAI,
   categorizeSkillsWithAI,
   segregateAchievementsWithAI,
   processCustomSectionWithAI,
-} from "../services/gemini.service.js";
-import {parseResumeWithAI as parseResumeWithOpenAI} from "../services/openai.service.js";
+} from "../services/openai.service.js";
 import {trackAIUsage} from "../middleware/aiUsageTracker.middleware.js";
 
 /**
@@ -65,11 +66,9 @@ export const uploadResume = async (req, res) => {
       );
     }
 
-    // Use OpenAI for premium tiers, Gemini for free/one-time
-    const parseResumeWithAI = canUseAIExtraction
-      ? parseResumeWithOpenAI
-      : parseResumeWithGemini;
-    const aiProvider = canUseAIExtraction ? "OpenAI" : "Gemini";
+    // Use OpenAI for all parsing operations
+    const parseResumeWithAI = parseResumeWithOpenAI;
+    const aiProvider = "OpenAI";
 
     // Parse resume using AI
     console.log(`🤖 Using ${aiProvider} for ${tier} user's resume extraction`);
@@ -160,22 +159,13 @@ export const enhanceContent = async (req, res) => {
       return res.status(400).json({error: "Section type is required"});
     }
 
-    // Check user's subscription tier
+    // Get user ID for tracking
     const userId = req.user._id || req.user.userId;
-    const user = await User.findById(userId);
-    const tier = user?.subscription?.tier || "free";
 
-    // AI Enhancement is only available for paid users
-    if (tier === "free") {
-      return res.status(403).json({
-        error: "Subscription Required",
-        message:
-          "AI content enhancement is available for Pro, Premium, and Lifetime subscribers only. Upgrade your plan to access this feature!",
-        upgradeRequired: true,
-        feature: "AI Content Enhancement",
-        availableIn: ["pro", "premium", "lifetime"],
-      });
-    }
+    // Usage limits are now checked by checkUsageLimit middleware
+    // Free users get 10 AI generations per month
+    // One-time users get 100 AI generations per month
+    // Pro/Premium/Lifetime users get unlimited
 
     // Enhance content using Gemini AI with full resume context and custom prompt
     const startTime = Date.now();
@@ -253,22 +243,11 @@ export const generateSummary = async (req, res) => {
       return res.status(400).json({error: "Resume data is required"});
     }
 
-    // Check user's subscription tier
+    // Get user ID for tracking
     const userId = req.user._id || req.user.userId;
-    const user = await User.findById(userId);
-    const tier = user?.subscription?.tier || "free";
 
-    // AI Summary generation is only available for paid users
-    if (tier === "free") {
-      return res.status(403).json({
-        error: "Subscription Required",
-        message:
-          "AI summary generation is available for Pro, Premium, and Lifetime subscribers only. Upgrade your plan to access this feature!",
-        upgradeRequired: true,
-        feature: "AI Summary Generation",
-        availableIn: ["pro", "premium", "lifetime"],
-      });
-    }
+    // Usage limits are checked by checkUsageLimit middleware
+    // Free users: 10 AI generations/month, One-time: 100/month, Pro+: Unlimited
 
     // Generate summary using Gemini AI
     const startTime = Date.now();
@@ -351,15 +330,54 @@ export const saveResume = async (req, res) => {
       resumeData.resumeTitle = "Untitled Resume";
     }
 
-    // Create new resume document
+    // Get user's subscription info for linking
+    const user = req.user; // Full user object from checkSubscription middleware
+    const userTier = user.subscription?.tier || "free";
+    const userStatus = user.subscription?.status || "expired";
+
+    // Find active subscription if user has premium tier
+    let subscriptionInfo = {
+      subscriptionId: null,
+      createdWithTier: userTier,
+      createdWithSubscription: false,
+      linkedAt: null,
+    };
+
+    if (
+      ["one-time", "pro", "premium", "student", "lifetime"].includes(
+        userTier
+      ) &&
+      userStatus === "active"
+    ) {
+      const activeSubscription = await Subscription.findOne({
+        userId: user._id,
+        tier: userTier,
+        status: "active",
+      }).sort({createdAt: -1}); // Get the latest active subscription
+
+      if (activeSubscription) {
+        subscriptionInfo = {
+          subscriptionId: activeSubscription._id,
+          createdWithTier: userTier,
+          createdWithSubscription: true,
+          linkedAt: new Date(),
+        };
+        console.log(
+          `🔗 Linking resume to subscription: ${activeSubscription._id} (${userTier})`
+        );
+      }
+    }
+
+    // Create new resume document with subscription info
     const resume = new Resume({
       ...resumeData,
       userId,
+      subscriptionInfo,
     });
 
     await resume.save();
     console.log(
-      `💾 Resume saved to database: ID ${resume._id}, Title: "${resume.resumeTitle}"`
+      `💾 Resume saved to database: ID ${resume._id}, Title: "${resume.resumeTitle}", Tier: ${subscriptionInfo.createdWithTier}`
     );
 
     // Increment user's resume creation counters
@@ -520,22 +538,11 @@ export const categorizeSkills = async (req, res) => {
       return res.status(400).json({error: "Skills must be a string"});
     }
 
-    // Check user's subscription tier
+    // Get user ID for tracking
     const userId = req.user._id || req.user.userId;
-    const user = await User.findById(userId);
-    const tier = user?.subscription?.tier || "free";
 
-    // AI Skills categorization is only available for paid users
-    if (tier === "free") {
-      return res.status(403).json({
-        error: "Subscription Required",
-        message:
-          "AI skills categorization is available for Pro, Premium, and Lifetime subscribers only. Upgrade your plan to access this feature!",
-        upgradeRequired: true,
-        feature: "AI Skills Categorization",
-        availableIn: ["pro", "premium", "lifetime"],
-      });
-    }
+    // Usage limits are checked by checkUsageLimit middleware
+    // Free users: 10 AI generations/month, One-time: 100/month, Pro+: Unlimited
 
     // Categorize skills using Gemini AI
     const startTime = Date.now();
@@ -602,22 +609,11 @@ export const segregateAchievements = async (req, res) => {
       return res.status(400).json({error: "Achievements must be a string"});
     }
 
-    // Check user's subscription tier
+    // Get user ID for tracking
     const userId = req.user._id || req.user.userId;
-    const user = await User.findById(userId);
-    const tier = user?.subscription?.tier || "free";
 
-    // AI Achievements segregation is only available for paid users
-    if (tier === "free") {
-      return res.status(403).json({
-        error: "Subscription Required",
-        message:
-          "AI achievements organization is available for Pro, Premium, and Lifetime subscribers only. Upgrade your plan to access this feature!",
-        upgradeRequired: true,
-        feature: "AI Achievements Organization",
-        availableIn: ["pro", "premium", "lifetime"],
-      });
-    }
+    // Usage limits are checked by checkUsageLimit middleware
+    // Free users: 10 AI generations/month, One-time: 100/month, Pro+: Unlimited
 
     // Segregate achievements using Gemini AI
     const startTime = Date.now();
@@ -683,22 +679,11 @@ export const processCustomSection = async (req, res) => {
       return res.status(400).json({error: "Content must be a string"});
     }
 
-    // Check user's subscription tier
+    // Get user ID for tracking
     const userId = req.user._id || req.user.userId;
-    const user = await User.findById(userId);
-    const tier = user?.subscription?.tier || "free";
 
-    // AI Custom section processing is only available for paid users
-    if (tier === "free") {
-      return res.status(403).json({
-        error: "Subscription Required",
-        message:
-          "AI custom section processing is available for Pro, Premium, and Lifetime subscribers only. Upgrade your plan to access this feature!",
-        upgradeRequired: true,
-        feature: "AI Custom Section Processing",
-        availableIn: ["pro", "premium", "lifetime"],
-      });
-    }
+    // Usage limits are checked by checkUsageLimit middleware
+    // Free users: 10 AI generations/month, One-time: 100/month, Pro+: Unlimited
 
     // Process custom section using Gemini AI
     const startTime = Date.now();

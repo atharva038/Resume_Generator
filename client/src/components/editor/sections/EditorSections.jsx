@@ -117,7 +117,10 @@ export const SkillsSection = ({resumeData, updateField}) => {
     setError("");
 
     try {
-      const response = await resumeAPI.categorizeSkills(skillsInput);
+      const response = await resumeAPI.categorizeSkills(
+        skillsInput,
+        resumeData._id
+      );
 
       if (response.data && response.data.skills) {
         // Update the skills in resumeData
@@ -673,7 +676,10 @@ export const AchievementsSection = ({resumeData, updateField}) => {
     setError("");
 
     try {
-      const response = await resumeAPI.segregateAchievements(achievementsInput);
+      const response = await resumeAPI.segregateAchievements(
+        achievementsInput,
+        resumeData._id
+      );
 
       if (response.data && response.data.achievements) {
         updateField("achievements", response.data.achievements);
@@ -961,7 +967,8 @@ const CustomSectionItem = ({section, index, onUpdate, onRemove}) => {
     try {
       const response = await resumeAPI.processCustomSection(
         contentInput,
-        section.title
+        section.title,
+        resumeData._id
       );
 
       if (response.data && response.data.content) {

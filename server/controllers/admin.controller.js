@@ -1774,6 +1774,20 @@ export const resetUserDailyQuota = async (req, res) => {
       return res.status(404).json({error: "User not found"});
     }
 
+    // Reset ALL usage counters in the User model
+    user.usage.resumesThisMonth = 0;
+    user.usage.resumesDownloadedThisMonth = 0;
+    user.usage.atsScansThisMonth = 0;
+    user.usage.jobMatchesToday = 0;
+    user.usage.coverLettersThisMonth = 0;
+    user.usage.aiGenerationsThisMonth = 0; // ← This is what was missing!
+    user.usage.aiResumeExtractionsToday = 0;
+    user.usage.lastResetDate = new Date();
+    user.usage.lastDailyReset = new Date();
+
+    await user.save();
+    console.log(`✅ Reset all usage counters for user: ${user.email}`);
+
     // Mark today's usage records as not counting towards quota
     // This preserves the data for analytics while resetting the quota
     const startOfDay = new Date();
@@ -1792,9 +1806,18 @@ export const resetUserDailyQuota = async (req, res) => {
     );
 
     res.json({
-      message: `Daily quota reset successfully for ${user.name}`,
+      message: `All usage counters reset successfully for ${user.name}`,
       resetRecords: result.modifiedCount,
-      note: "Usage records preserved for analytics",
+      countersReset: {
+        resumesThisMonth: 0,
+        resumesDownloadedThisMonth: 0,
+        atsScansThisMonth: 0,
+        jobMatchesToday: 0,
+        coverLettersThisMonth: 0,
+        aiGenerationsThisMonth: 0,
+        aiResumeExtractionsToday: 0,
+      },
+      note: "All usage counters reset to 0, usage records preserved for analytics",
     });
   } catch (error) {
     console.error("Reset user daily quota error:", error);

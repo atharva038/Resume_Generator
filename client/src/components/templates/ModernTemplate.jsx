@@ -198,7 +198,9 @@ const ModernTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
             {getSectionTitle("summary")}
           </h2>
           <p style={{fontSize: "10pt", textAlign: "justify"}}>
-            {resumeData.summary}
+            {typeof resumeData.summary === "string"
+              ? resumeData.summary
+              : resumeData.summary?.summary || ""}
           </p>
         </section>
       ),

@@ -306,16 +306,16 @@ userSchema.methods.getUsageLimit = function (limitType) {
       atsScansPerMonth: 0,
       jobMatchesPerDay: 0,
       coverLettersPerMonth: 0,
-      aiGenerationsPerMonth: 1, // Only 1 AI feature usage for free users
+      aiGenerationsPerMonth: 10, // 10 AI feature usage for free users
       aiResumeExtractionsPerDay: 1, // 1 AI resume extraction per day for free users
     },
     "one-time": {
-      resumesPerMonth: Infinity,
-      resumeDownloadsPerMonth: Infinity,
+      resumesPerMonth: 1, // One-time purchase allows creating only 1 NEW resume
+      resumeDownloadsPerMonth: Infinity, // Unlimited downloads
       atsScansPerMonth: 5,
       jobMatchesPerDay: 3,
       coverLettersPerMonth: 5,
-      aiGenerationsPerMonth: 10,
+      aiGenerationsPerMonth: 150, // 150 AI requests for 21-day period (not monthly!)
       aiResumeExtractionsPerDay: 10, // 10 AI resume extractions per day
     },
     pro: {

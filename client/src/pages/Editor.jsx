@@ -717,7 +717,8 @@ const Editor = () => {
 
     try {
       // First, call track-download API to check subscription and limits
-      await resumeAPI.trackDownload();
+      // Pass resumeId for subscription validation
+      await resumeAPI.trackDownload(resumeData?._id);
 
       // If successful, proceed with PDF download
       if (!showPreview) {

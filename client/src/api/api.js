@@ -185,11 +185,15 @@ export const resumeAPI = {
    * @returns {Promise} Axios response with enhanced content
    */
   enhance: (content, sectionType, resumeData = null, customPrompt = "") => {
+    // Extract resumeId from resumeData
+    const resumeId = resumeData?._id;
+
     return api.post("/resume/enhance", {
       content,
       sectionType,
       resumeData,
       customPrompt,
+      resumeId, // Required by checkResumeSubscriptionAccess middleware
     });
   },
 
@@ -199,35 +203,52 @@ export const resumeAPI = {
    * @returns {Promise} Axios response with generated summary text
    */
   generateSummary: (resumeData) => {
-    return api.post("/resume/generate-summary", {resumeData});
+    const resumeId = resumeData?._id;
+    return api.post("/resume/generate-summary", {
+      resumeData,
+      resumeId, // Required by checkResumeSubscriptionAccess middleware
+    });
   },
 
   /**
    * Automatically categorize skills into groups using AI
    * @param {Array<string>} skills - Flat list of skills
+   * @param {string} resumeId - Resume ID for subscription check
    * @returns {Promise} Axios response with categorized skills array
    */
-  categorizeSkills: (skills) => {
-    return api.post("/resume/categorize-skills", {skills});
+  categorizeSkills: (skills, resumeId) => {
+    return api.post("/resume/categorize-skills", {
+      skills,
+      resumeId, // Required by checkResumeSubscriptionAccess middleware
+    });
   },
 
   /**
    * Organize achievements into categories using AI
    * @param {Array<string>} achievements - List of achievement strings
+   * @param {string} resumeId - Resume ID for subscription check
    * @returns {Promise} Axios response with categorized achievements
    */
-  segregateAchievements: (achievements) => {
-    return api.post("/resume/segregate-achievements", {achievements});
+  segregateAchievements: (achievements, resumeId) => {
+    return api.post("/resume/segregate-achievements", {
+      achievements,
+      resumeId, // Required by checkResumeSubscriptionAccess middleware
+    });
   },
 
   /**
    * Process and format custom resume section using AI
    * @param {string} content - Raw section content
    * @param {string} title - Section title/header
+   * @param {string} resumeId - Resume ID for subscription check
    * @returns {Promise} Axios response with processed section
    */
-  processCustomSection: (content, title) => {
-    return api.post("/resume/process-custom-section", {content, title});
+  processCustomSection: (content, title, resumeId) => {
+    return api.post("/resume/process-custom-section", {
+      content,
+      title,
+      resumeId, // Required by checkResumeSubscriptionAccess middleware
+    });
   },
 
   /**
@@ -280,9 +301,10 @@ export const resumeAPI = {
 
   /**
    * Track resume download for analytics
+   * @param {string} resumeId - Resume ID to track download for
    * @returns {Promise} Axios response confirming tracking
    */
-  trackDownload: () => api.post("/resume/track-download"),
+  trackDownload: (resumeId) => api.post("/resume/track-download", {resumeId}),
 };
 
 /**

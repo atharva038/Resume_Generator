@@ -9,6 +9,7 @@ import {checkAIQuota} from "../middleware/aiUsageTracker.middleware.js";
 import {
   checkSubscription,
   checkUsageLimit,
+  checkResumeSubscriptionAccess,
 } from "../middleware/subscription.middleware.js";
 import {
   validateResumeCreate,
@@ -54,6 +55,7 @@ router.post(
   "/enhance",
   authenticateToken,
   checkSubscription,
+  checkResumeSubscriptionAccess, // NEW: Check if resume's subscription is active
   checkUsageLimit("aiGenerationsPerMonth"),
   aiLimiter,
   checkAIQuota,
@@ -66,6 +68,7 @@ router.post(
   "/generate-summary",
   authenticateToken,
   checkSubscription,
+  checkResumeSubscriptionAccess, // NEW: Check if resume's subscription is active
   checkUsageLimit("aiGenerationsPerMonth"),
   aiLimiter,
   checkAIQuota,
@@ -78,6 +81,7 @@ router.post(
   "/categorize-skills",
   authenticateToken,
   checkSubscription,
+  checkResumeSubscriptionAccess, // NEW: Check if resume's subscription is active
   checkUsageLimit("aiGenerationsPerMonth"),
   aiLimiter,
   checkAIQuota,
@@ -90,6 +94,7 @@ router.post(
   "/segregate-achievements",
   authenticateToken,
   checkSubscription,
+  checkResumeSubscriptionAccess, // NEW: Check if resume's subscription is active
   checkUsageLimit("aiGenerationsPerMonth"),
   aiLimiter,
   checkAIQuota,
@@ -102,6 +107,7 @@ router.post(
   "/process-custom-section",
   authenticateToken,
   checkSubscription,
+  checkResumeSubscriptionAccess, // NEW: Check if resume's subscription is active
   checkUsageLimit("aiGenerationsPerMonth"),
   aiLimiter,
   checkAIQuota,
@@ -124,6 +130,7 @@ router.post(
   "/track-download",
   authenticateToken,
   checkSubscription,
+  checkResumeSubscriptionAccess, // NEW: Check if resume's subscription is active
   checkUsageLimit("resumeDownloadsPerMonth"),
   trackDownload
 );
