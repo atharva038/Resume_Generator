@@ -250,6 +250,24 @@ const Editor = () => {
   const {blockNavigation, unblockNavigation} = useNavigationBlocker();
   const resumePreviewRef = useRef(null);
   const previewSectionRef = useRef(null);
+
+  // Helper function to check if subscription is expired
+  const isSubscriptionExpired = () => {
+    if (!user || !user.subscription) return false;
+
+    const {status, endDate, tier} = user.subscription;
+
+    // Free users don't have expiration
+    if (tier === "free") return false;
+
+    // Check if status is expired
+    if (status === "expired") return true;
+
+    // Check if endDate has passed
+    if (endDate && new Date(endDate) < new Date()) return true;
+
+    return false;
+  };
   const [resumeData, setResumeData] = useState(null);
   const [originalResumeData, setOriginalResumeData] = useState(null); // Track original data
   const [
@@ -712,6 +730,15 @@ const Editor = () => {
         duration: 3000,
       });
       navigate("/login");
+      return;
+    }
+
+    // Check if subscription is expired
+    if (isSubscriptionExpired()) {
+      setUpgradeMessage(
+        "Your subscription has expired. Please renew or upgrade to download your resume."
+      );
+      showUpgradeModalTrue();
       return;
     }
 
@@ -1690,10 +1717,17 @@ const Editor = () => {
             {/* Download PDF - Mobile */}
             <button
               onClick={handleDownloadPDF}
-              className="flex-1 px-3 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white font-semibold transition-all duration-200 text-xs flex items-center justify-center"
+              disabled={isSubscriptionExpired()}
+              className={`flex-1 px-3 py-2 rounded-lg font-semibold transition-all duration-200 text-xs flex items-center justify-center ${
+                isSubscriptionExpired()
+                  ? "bg-gray-300 dark:bg-gray-700 cursor-not-allowed text-gray-500"
+                  : "bg-green-600 hover:bg-green-700 text-white"
+              }`}
             >
-              <span className="text-base mr-1.5">📥</span>
-              Download
+              <span className="text-base mr-1.5">
+                {isSubscriptionExpired() ? "🔒" : "📥"}
+              </span>
+              {isSubscriptionExpired() ? "Expired" : "Download"}
             </button>
 
             {/* Save Button - Mobile */}
@@ -1754,14 +1788,23 @@ const Editor = () => {
           {/* Download PDF Button */}
           <button
             onClick={handleDownloadPDF}
-            className="group relative w-14 h-14 rounded-full bg-green-600 hover:bg-green-700 text-white shadow-lg font-medium transition-all duration-200 hover:scale-105 hover:shadow-xl"
+            disabled={isSubscriptionExpired()}
+            className={`group relative w-14 h-14 rounded-full shadow-lg font-medium transition-all duration-200 ${
+              isSubscriptionExpired()
+                ? "bg-gray-300 dark:bg-gray-700 cursor-not-allowed"
+                : "bg-green-600 hover:bg-green-700 text-white hover:scale-105 hover:shadow-xl"
+            }`}
           >
             <div className="flex items-center justify-center">
-              <span className="text-2xl">📥</span>
+              <span className="text-2xl">
+                {isSubscriptionExpired() ? "🔒" : "📥"}
+              </span>
             </div>
             {/* Hover Tooltip */}
             <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-gray-900 dark:text-white text-xs font-semibold rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
-              Download PDF
+              {isSubscriptionExpired()
+                ? "Subscription Expired"
+                : "Download PDF"}
               <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-1 border-4 border-transparent border-l-gray-900 dark:border-l-gray-700"></span>
             </span>
           </button>
