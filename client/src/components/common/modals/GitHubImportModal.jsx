@@ -15,11 +15,14 @@ import {
   Award,
 } from "lucide-react";
 import axios from "axios";
+import {useToggle} from "@/hooks";
+import {storage, STORAGE_KEYS} from "@/utils/storage";
 
 const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
   const [step, setStep] = useState("confirm"); // confirm, fetch, select, merge
   const [username, setUsername] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, toggleLoading, setLoadingTrue, setLoadingFalse] =
+    useToggle(false);
   const [error, setError] = useState(null);
   const [githubData, setGithubData] = useState(null);
   const [selectedItems, setSelectedItems] = useState({
@@ -37,15 +40,14 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
     certifications: "add",
   });
 
-  // Load cached GitHub data from localStorage
+  // Load cached GitHub data from storage
   useEffect(() => {
-    const cachedData = localStorage.getItem("githubData");
-    const cachedUsername = localStorage.getItem("githubUsername");
+    const cachedData = storage.get("githubData");
+    const cachedUsername = storage.get("githubUsername");
 
     if (cachedData && cachedUsername) {
       try {
-        const parsed = JSON.parse(cachedData);
-        setGithubData(parsed);
+        setGithubData(cachedData);
         setUsername(cachedUsername);
         // Auto-proceed to selection if data exists
         if (isOpen && step === "confirm") {
@@ -53,8 +55,8 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
         }
       } catch (error) {
         console.error("Error loading cached GitHub data:", error);
-        localStorage.removeItem("githubData");
-        localStorage.removeItem("githubUsername");
+        storage.remove("githubData");
+        storage.remove("githubUsername");
       }
     }
   }, [isOpen]);
@@ -80,7 +82,7 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
       return;
     }
 
-    setLoading(true);
+    setLoadingTrue();
     setError(null);
 
     try {
@@ -126,7 +128,7 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
         setError("Failed to fetch GitHub data. Please try again.");
       }
     } finally {
-      setLoading(false);
+      setLoadingFalse();
     }
   };
 

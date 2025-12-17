@@ -3,16 +3,16 @@ import {FileText, Calendar, Mail} from "lucide-react";
 
 const TermsAndConditions = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-gray-900 py-12 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 mb-8">
+        <div className="bg-white/80 backdrop-blur-xl dark:bg-gray-800/80 rounded-2xl shadow-xl p-8 mb-8 border border-purple-100 dark:border-purple-900/30">
           <div className="flex items-center gap-4 mb-4">
-            <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
-              <FileText className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+            <div className="p-3 bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900 dark:to-blue-900 rounded-lg">
+              <FileText className="w-8 h-8 text-purple-600 dark:text-purple-400" />
             </div>
             <div>
-              <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400">
                 Terms & Conditions
               </h1>
               <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mt-2">
@@ -28,10 +28,10 @@ const TermsAndConditions = () => {
         </div>
 
         {/* Content */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 space-y-8">
+        <div className="bg-white/80 backdrop-blur-xl dark:bg-gray-800/80 rounded-2xl shadow-xl p-8 space-y-8 border border-purple-100 dark:border-purple-900/30">
           {/* Section 1 */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400 mb-4">
               1. Acceptance of Terms
             </h2>
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
@@ -44,7 +44,7 @@ const TermsAndConditions = () => {
 
           {/* Section 2 */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400 mb-4">
               2. Service Description
             </h2>
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
@@ -64,7 +64,7 @@ const TermsAndConditions = () => {
 
           {/* Section 3 */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400 mb-4">
               3. User Accounts
             </h2>
             <div className="space-y-3 text-gray-700 dark:text-gray-300">
@@ -93,7 +93,7 @@ const TermsAndConditions = () => {
 
           {/* Section 4 */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400 mb-4">
               4. Subscription Plans & Payments
             </h2>
             <div className="space-y-3 text-gray-700 dark:text-gray-300">
@@ -129,14 +129,14 @@ const TermsAndConditions = () => {
 
           {/* Section 5 */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400 mb-4">
               5. Refund & Cancellation Policy
             </h2>
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
               Please refer to our{" "}
               <Link
                 to="/refund-policy"
-                className="text-blue-600 dark:text-blue-400 hover:underline"
+                className="text-purple-600 dark:text-purple-400 hover:underline font-semibold"
               >
                 Refund & Cancellation Policy
               </Link>{" "}
@@ -147,7 +147,7 @@ const TermsAndConditions = () => {
 
           {/* Section 6 */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400 mb-4">
               6. Intellectual Property Rights
             </h2>
             <div className="space-y-3 text-gray-700 dark:text-gray-300">
@@ -177,7 +177,7 @@ const TermsAndConditions = () => {
 
           {/* Section 7 */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400 mb-4">
               7. User Conduct
             </h2>
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
@@ -195,14 +195,14 @@ const TermsAndConditions = () => {
 
           {/* Section 8 */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400 mb-4">
               8. Data Privacy
             </h2>
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
               Your privacy is important to us. Please review our{" "}
               <Link
                 to="/privacy-policy"
-                className="text-blue-600 dark:text-blue-400 hover:underline"
+                className="text-purple-600 dark:text-purple-400 hover:underline font-semibold"
               >
                 Privacy Policy
               </Link>{" "}
@@ -213,7 +213,7 @@ const TermsAndConditions = () => {
 
           {/* Section 9 */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400 mb-4">
               9. Limitation of Liability
             </h2>
             <div className="space-y-3 text-gray-700 dark:text-gray-300">
@@ -232,7 +232,7 @@ const TermsAndConditions = () => {
 
           {/* Section 10 */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400 mb-4">
               10. Termination
             </h2>
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
@@ -244,7 +244,7 @@ const TermsAndConditions = () => {
 
           {/* Section 11 */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400 mb-4">
               11. Changes to Terms
             </h2>
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
@@ -255,7 +255,7 @@ const TermsAndConditions = () => {
 
           {/* Section 12 */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400 mb-4">
               12. Governing Law
             </h2>
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
@@ -265,9 +265,9 @@ const TermsAndConditions = () => {
           </section>
 
           {/* Contact Section */}
-          <section className="bg-blue-50 dark:bg-gray-700 rounded-lg p-6">
+          <section className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-lg p-6 border border-purple-200 dark:border-purple-800">
             <div className="flex items-center gap-3 mb-3">
-              <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              <Mail className="w-5 h-5 text-purple-600 dark:text-purple-400" />
               <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                 Contact Us
               </h3>
@@ -276,7 +276,7 @@ const TermsAndConditions = () => {
               If you have any questions about these Terms & Conditions, please
               contact us at:
             </p>
-            <p className="text-blue-600 dark:text-blue-400 font-semibold mt-2">
+            <p className="text-purple-600 dark:text-purple-400 font-semibold mt-2">
               support@smartnshine.app
             </p>
           </section>
@@ -286,7 +286,7 @@ const TermsAndConditions = () => {
         <div className="mt-8 text-center">
           <Link
             to="/"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors duration-300"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
           >
             Back to Home
           </Link>

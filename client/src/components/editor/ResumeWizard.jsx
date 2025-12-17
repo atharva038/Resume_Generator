@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { ChevronLeft, ChevronRight, Check } from "lucide-react";
+import {useState} from "react";
+import {ChevronLeft, ChevronRight, Check} from "lucide-react";
 import {
   PersonalInfoSection,
   SkillsSection,
@@ -9,7 +9,7 @@ import {
   CertificationsSection,
   AchievementsSection,
 } from "./sections/EditorSections";
-import { EditableSection } from "./sections";
+import {EditableSection} from "./sections";
 
 const ResumeWizard = ({
   resumeData,
@@ -28,7 +28,7 @@ const ResumeWizard = ({
   // Validation function for each step
   const validateStep = (stepIndex) => {
     const step = steps[stepIndex];
-    
+
     // Skip validation for optional steps
     if (step.optional) {
       return true;
@@ -41,65 +41,85 @@ const ResumeWizard = ({
           setValidationError("Please enter your full name");
           return false;
         }
-        if ((!resumeData.contact?.email || resumeData.contact.email.trim() === "") && 
-            (!resumeData.contact?.phone || resumeData.contact.phone.trim() === "")) {
+        if (
+          (!resumeData.contact?.email ||
+            resumeData.contact.email.trim() === "") &&
+          (!resumeData.contact?.phone || resumeData.contact.phone.trim() === "")
+        ) {
           setValidationError("Please enter at least email or phone number");
           return false;
         }
         break;
 
-      case "summary":
+      case "summary": {
         // Check if summary has content
-        if (!resumeData.summary || resumeData.summary.trim() === "" || 
-            resumeData.summary === "<p></p>" || resumeData.summary === "<p><br></p>") {
+        if (
+          !resumeData.summary ||
+          resumeData.summary.trim() === "" ||
+          resumeData.summary === "<p></p>" ||
+          resumeData.summary === "<p><br></p>"
+        ) {
           setValidationError("Please add a professional summary");
           return false;
         }
         // Remove HTML tags to check actual text content
-        const summaryText = resumeData.summary.replace(/<[^>]*>/g, '').trim();
+        const summaryText = resumeData.summary.replace(/<[^>]*>/g, "").trim();
         if (summaryText.length === 0) {
           setValidationError("Please add a professional summary");
           return false;
         }
         break;
+      }
 
       case "skills":
         // No validation for skills - allow proceeding regardless
         break;
 
-      case "experience":
+      case "experience": {
         // Check if at least one experience is added
         if (!resumeData.experience || resumeData.experience.length === 0) {
           setValidationError("Please add at least one work experience");
           return false;
         }
         // Check if experience has required fields
-        const hasValidExperience = resumeData.experience.some(exp => 
-          exp.company && exp.company.trim() !== "" && 
-          exp.title && exp.title.trim() !== ""
+        const hasValidExperience = resumeData.experience.some(
+          (exp) =>
+            exp.company &&
+            exp.company.trim() !== "" &&
+            exp.title &&
+            exp.title.trim() !== ""
         );
         if (!hasValidExperience) {
-          setValidationError("Please fill in company name and job title for at least one experience");
+          setValidationError(
+            "Please fill in company name and job title for at least one experience"
+          );
           return false;
         }
         break;
+      }
 
-      case "education":
+      case "education": {
         // Check if at least one education entry is added
         if (!resumeData.education || resumeData.education.length === 0) {
           setValidationError("Please add at least one education entry");
           return false;
         }
         // Check if education has required fields
-        const hasValidEducation = resumeData.education.some(edu => 
-          edu.institution && edu.institution.trim() !== "" && 
-          edu.degree && edu.degree.trim() !== ""
+        const hasValidEducation = resumeData.education.some(
+          (edu) =>
+            edu.institution &&
+            edu.institution.trim() !== "" &&
+            edu.degree &&
+            edu.degree.trim() !== ""
         );
         if (!hasValidEducation) {
-          setValidationError("Please fill in institution and degree for at least one education entry");
+          setValidationError(
+            "Please fill in institution and degree for at least one education entry"
+          );
           return false;
         }
         break;
+      }
 
       default:
         return true;
@@ -143,10 +163,7 @@ const ResumeWizard = ({
       icon: "🎯",
       description: "Your technical and professional skills",
       component: (
-        <SkillsSection
-          resumeData={resumeData}
-          updateField={updateField}
-        />
+        <SkillsSection resumeData={resumeData} updateField={updateField} />
       ),
     },
     {
@@ -232,7 +249,7 @@ const ResumeWizard = ({
   const handleNext = () => {
     // Clear any previous validation errors
     setValidationError("");
-    
+
     // Validate current step before proceeding
     if (!validateStep(currentStep)) {
       return; // Don't proceed if validation fails
@@ -273,15 +290,15 @@ const ResumeWizard = ({
   return (
     <div className="space-y-6">
       {/* Step Progress Indicator */}
-      <div className="bg-gradient-to-br from-white via-blue-50/30 to-purple-50/30 dark:from-gray-800 dark:via-indigo-900/20 dark:to-purple-900/20 rounded-xl shadow-lg border-2 border-blue-200/50 dark:border-blue-700/50 p-6">
+      <div className="bg-white dark:bg-zinc-950 rounded-xl border border-gray-200 dark:border-zinc-800 p-6">
         <div className="mb-6">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-3">
-              <div className="bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl p-3 shadow-md">
+              <div className="bg-gray-900 dark:bg-white rounded-xl p-3">
                 <span className="text-2xl">🚀</span>
               </div>
               <div>
-                <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                   Create Your Resume
                 </h2>
                 <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
@@ -290,7 +307,7 @@ const ResumeWizard = ({
               </div>
             </div>
             <div className="flex flex-col items-end">
-              <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">
+              <span className="text-sm font-semibold text-gray-900 dark:text-white">
                 Step {currentStep + 1}/{steps.length}
               </span>
               <span className="text-xs text-gray-500 dark:text-gray-400">
@@ -298,9 +315,9 @@ const ResumeWizard = ({
               </span>
             </div>
           </div>
-          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 shadow-inner">
+          <div className="w-full bg-gray-200 dark:bg-zinc-800 rounded-full h-3">
             <div
-              className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 h-3 rounded-full transition-all duration-500 ease-out shadow-md"
+              className="bg-gray-900 dark:bg-white h-3 rounded-full transition-all duration-500 ease-out"
               style={{
                 width: `${((currentStep + 1) / steps.length) * 100}%`,
               }}
@@ -315,32 +332,40 @@ const ResumeWizard = ({
             const isCompleted = index < currentStep;
             const isCurrent = index === currentStep;
             const isLocked = index > highestReachedStep;
-            
+
             return (
               <button
                 key={step.id}
                 onClick={() => handleStepClick(index)}
                 disabled={isLocked}
-                className={`relative flex flex-col items-center p-4 rounded-xl border-2 transition-all duration-300 min-h-[110px] ${
+                className={`relative flex flex-col items-center p-4 rounded-xl border-2 transition-all duration-200 min-h-[110px] ${
                   isCurrent
-                    ? "border-blue-500 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 shadow-lg scale-105 transform"
+                    ? "border-gray-900 dark:border-white bg-gray-50 dark:bg-zinc-900"
                     : isCompleted
-                    ? "border-green-500 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 cursor-pointer hover:shadow-md hover:border-green-600 hover:scale-105 transform"
-                    : isLocked
-                    ? "border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 cursor-not-allowed opacity-60"
-                    : "border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-400 hover:shadow-md hover:scale-105 transform"
+                      ? "border-green-500 bg-green-50 dark:bg-green-900/20 cursor-pointer hover:border-green-600"
+                      : isLocked
+                        ? "border-gray-300 dark:border-zinc-700 bg-gray-100 dark:bg-zinc-900 cursor-not-allowed opacity-60"
+                        : "border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 cursor-pointer hover:bg-gray-50 dark:hover:bg-zinc-900 hover:border-gray-400 dark:hover:border-zinc-600"
                 }`}
                 title={isLocked ? `Complete previous steps first` : step.title}
               >
                 {isCompleted && (
-                  <div className="absolute -top-2 -right-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full p-1 shadow-md">
+                  <div className="absolute -top-2 -right-2 bg-green-500 rounded-full p-1">
                     <Check className="w-3 h-3 text-white" />
                   </div>
                 )}
                 {isLocked && (
                   <div className="absolute -top-2 -right-2 bg-gray-400 dark:bg-gray-600 rounded-full p-1 shadow-md">
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                    <svg
+                      className="w-3 h-3 text-white"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                   </div>
                 )}
@@ -384,13 +409,21 @@ const ResumeWizard = ({
 
         {/* Step Component */}
         <div className="min-h-[300px]">{currentStepData.component}</div>
-        
+
         {/* Validation Error Message */}
         {validationError && (
           <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border-2 border-red-300 dark:border-red-700 rounded-xl flex items-start gap-3 animate-shake">
             <div className="flex-shrink-0 mt-0.5">
-              <svg className="w-5 h-5 text-red-600 dark:text-red-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              <svg
+                className="w-5 h-5 text-red-600 dark:text-red-400"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                  clipRule="evenodd"
+                />
               </svg>
             </div>
             <div className="flex-1">
@@ -459,7 +492,9 @@ const ResumeWizard = ({
               💪 Pro Tip: Fill in required information!
             </p>
             <p className="text-xs text-blue-800 dark:text-blue-200 leading-relaxed mb-2">
-              Fill in the required details to unlock the next step. Required steps must have at least basic information filled. You can always go back to edit any completed step by clicking on it above.
+              Fill in the required details to unlock the next step. Required
+              steps must have at least basic information filled. You can always
+              go back to edit any completed step by clicking on it above.
             </p>
             <div className="flex items-center gap-2 text-xs text-blue-700 dark:text-blue-300 flex-wrap">
               <span className="inline-flex items-center gap-1">
@@ -474,8 +509,16 @@ const ResumeWizard = ({
               </span>
               <span className="inline-flex items-center gap-1">
                 <span className="w-4 h-4 rounded border-2 border-gray-400 bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                  <svg className="w-2.5 h-2.5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                  <svg
+                    className="w-2.5 h-2.5 text-gray-500"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                 </span>
                 Locked

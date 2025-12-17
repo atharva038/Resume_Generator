@@ -2,8 +2,10 @@ import {useState} from "react";
 import {useEditor, EditorContent} from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import toast from "react-hot-toast";
-import {resumeAPI} from "../../../services/api";
-import {parseValidationErrors} from "../../../utils/errorHandler";
+import {resumeAPI} from "@/api/api";
+import {parseValidationErrors} from "@/utils/errorHandler";
+import {authStorage} from "@/utils/storage";
+import {useToggle} from "@/hooks";
 
 const EditableSection = ({
   title,
@@ -19,8 +21,10 @@ const EditableSection = ({
   projectData,
   onUpdateProject,
 }) => {
-  const [enhancing, setEnhancing] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+  const [enhancing, toggleEnhancing, setEnhancingTrue, setEnhancingFalse] =
+    useToggle(false);
+  const [isEditing, toggleEditing, setIsEditingTrue, setIsEditingFalse] =
+    useToggle(false);
 
   // Initialize TipTap editor for bullet points
   const editor = useEditor({
@@ -28,10 +32,10 @@ const EditableSection = ({
     content: Array.isArray(content)
       ? `<ul>${content.map((bullet) => `<li>${bullet}</li>`).join("")}</ul>`
       : typeof content === "object"
-      ? `<ul>${(content.bullets || [])
-          .map((bullet) => `<li>${bullet}</li>`)
-          .join("")}</ul>`
-      : `<p>${content || ""}</p>`,
+        ? `<ul>${(content.bullets || [])
+            .map((bullet) => `<li>${bullet}</li>`)
+            .join("")}</ul>`
+        : `<p>${content || ""}</p>`,
     onUpdate: ({editor}) => {
       if (sectionType === "summary") {
         onUpdate(editor.getText());
@@ -49,18 +53,61 @@ const EditableSection = ({
   });
 
   const handleEnhance = async () => {
-    setEnhancing(true);
+    setEnhancingTrue();
     try {
+      // Check if user is authenticated
+      if (!authStorage.hasToken()) {
+        toast.error("Please log in to use AI enhancement", {
+          icon: "🔒",
+          duration: 3000,
+        });
+        setEnhancingFalse();
+        return;
+      }
+
+      // Validate resumeData and resumeId
+      if (!resumeData?._id) {
+        console.warn(
+          "⚠️  Resume not saved yet. Please save before using AI enhancement."
+        );
+        toast.error(
+          "Please save your resume first before using AI enhancement",
+          {
+            icon: "💾",
+            duration: 4000,
+          }
+        );
+        setEnhancingFalse();
+        return;
+      }
+
+      console.log("🔍 Enhancing with resumeId:", resumeData._id);
+
       let contentToEnhance;
 
       if (sectionType === "summary") {
         contentToEnhance = content;
       } else if (sectionType === "experience" && experienceData) {
-        contentToEnhance = experienceData.bullets;
-      } else if (sectionType === "project" && projectData) {
-        contentToEnhance = projectData.bullets;
+        // Ensure we're sending bullets as array of strings
+        contentToEnhance = Array.isArray(experienceData.bullets)
+          ? experienceData.bullets
+          : [experienceData.bullets].filter(Boolean);
+      } else if (sectionType === "projects" && projectData) {
+        // Ensure we're sending bullets as array of strings
+        contentToEnhance = Array.isArray(projectData.bullets)
+          ? projectData.bullets
+          : [projectData.bullets].filter(Boolean);
       } else {
         contentToEnhance = content;
+      }
+
+      // Ensure contentToEnhance is serializable (no complex objects)
+      if (
+        typeof contentToEnhance === "object" &&
+        !Array.isArray(contentToEnhance)
+      ) {
+        console.warn("⚠️  Content is an object, converting to string");
+        contentToEnhance = JSON.stringify(contentToEnhance);
       }
 
       // Pass full resumeData for context-aware enhancement
@@ -76,9 +123,21 @@ const EditableSection = ({
         editor?.commands.setContent(`<p>${enhanced}</p>`);
       } else {
         const bullets = Array.isArray(enhanced) ? enhanced : [enhanced];
-        onUpdate(bullets);
+
+        // Convert bullets to strings (handle objects like project data)
+        const bulletStrings = bullets.map((b) => {
+          if (typeof b === "string") {
+            return b;
+          } else if (typeof b === "object" && b !== null) {
+            // If it's an object (like a project), convert to string representation
+            return JSON.stringify(b);
+          }
+          return String(b);
+        });
+
+        onUpdate(bulletStrings);
         editor?.commands.setContent(
-          `<ul>${bullets.map((b) => `<li>${b}</li>`).join("")}</ul>`
+          `<ul>${bulletStrings.map((b) => `<li>${b}</li>`).join("")}</ul>`
         );
       }
 
@@ -87,12 +146,51 @@ const EditableSection = ({
         duration: 2000,
       });
     } catch (err) {
-      toast.error("Failed to enhance content: " + parseValidationErrors(err), {
-        icon: "❌",
-        duration: 3000,
-      });
+      // Handle 401 Unauthorized specifically
+      if (err.response?.status === 401) {
+        const errorCode = err.response?.data?.code;
+        const errorMessage = err.response?.data?.error;
+
+        if (errorCode === "TOKEN_EXPIRED") {
+          toast.error(
+            "Your session has expired. Please refresh the page and log in again.",
+            {
+              icon: "⏰",
+              duration: 5000,
+            }
+          );
+        } else {
+          toast.error(
+            errorMessage || "Authentication required. Please log in.",
+            {
+              icon: "🔒",
+              duration: 4000,
+            }
+          );
+        }
+      } else if (err.response?.status === 403) {
+        // Handle subscription/limit errors
+        const errorMessage =
+          err.response?.data?.error || err.response?.data?.message;
+        toast.error(
+          errorMessage ||
+            "You've reached your usage limit. Please upgrade your plan.",
+          {
+            icon: "⚠️",
+            duration: 5000,
+          }
+        );
+      } else {
+        toast.error(
+          "Failed to enhance content: " + parseValidationErrors(err),
+          {
+            icon: "❌",
+            duration: 3000,
+          }
+        );
+      }
     } finally {
-      setEnhancing(false);
+      setEnhancingFalse();
     }
   };
 
@@ -181,7 +279,9 @@ const EditableSection = ({
               type="text"
               value={experienceData.endDate || ""}
               onChange={(e) => onUpdateExperience("endDate", e.target.value)}
-              placeholder={experienceData.current ? "Present" : "End Date (MM/YYYY)"}
+              placeholder={
+                experienceData.current ? "Present" : "End Date (MM/YYYY)"
+              }
               className="input-field"
               autoComplete="off"
               disabled={experienceData.current}
@@ -204,7 +304,7 @@ const EditableSection = ({
       )}
 
       {/* Project-specific fields */}
-      {sectionType === "project" && projectData && onUpdateProject && (
+      {sectionType === "projects" && projectData && onUpdateProject && (
         <div className="space-y-2 mb-4">
           <input
             type="text"

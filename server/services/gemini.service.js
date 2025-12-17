@@ -6,26 +6,134 @@ if (!process.env.GEMINI_API_KEY) {
   dotenv.config();
 }
 
-// Validate GEMINI_API_KEY after attempting to load
-if (!process.env.GEMINI_API_KEY) {
-  console.error("❌ GEMINI_API_KEY is not set in environment variables");
-  console.error("💡 Please add GEMINI_API_KEY=your_key_here to your .env file");
-  console.error("📚 Get your key from: https://aistudio.google.com/app/apikey");
-  throw new Error(
-    "GEMINI_API_KEY is required. Please set it in your .env file."
+// Make Gemini optional: if GEMINI_API_KEY is not provided, the service will
+// be loaded but guarded so the server doesn't crash at import time. Calls to
+// Gemini functions will throw a clear error if attempted without configuration.
+const GEMINI_API_KEY_RAW = process.env.GEMINI_API_KEY;
+const GEMINI_API_KEY = GEMINI_API_KEY_RAW ? GEMINI_API_KEY_RAW.trim() : null;
+const GEMINI_ENABLED = Boolean(GEMINI_API_KEY);
+
+if (!GEMINI_ENABLED) {
+  console.warn(
+    "⚠️  GEMINI_API_KEY not set — Gemini service is disabled. The app will run using OpenAI where configured."
   );
 }
 
-// Trim the API key to remove any whitespace
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY.trim();
+// Initialize Gemini client only when enabled
+const genAI = GEMINI_ENABLED ? new GoogleGenerativeAI(GEMINI_API_KEY) : null;
 
-// Validate key format
-if (GEMINI_API_KEY.length < 20) {
-  console.warn("⚠️  Warning: GEMINI_API_KEY seems too short");
+/**
+ * Retry configuration for Gemini API calls
+ */
+const RETRY_CONFIG = {
+  maxRetries: 3,
+  baseDelay: 1000, // 1 second
+  maxDelay: 10000, // 10 seconds
+  retryableErrors: [503, 429, 500, 502, 504], // Service unavailable, rate limit, server errors
+};
+
+/**
+ * Sleep utility for retry delays
+ * @param {number} ms - Milliseconds to sleep
+ * @returns {Promise<void>}
+ */
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-// Initialize Gemini AI with validated key
-const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+/**
+ * Calculate exponential backoff delay
+ * @param {number} attempt - Current attempt number (0-indexed)
+ * @returns {number} Delay in milliseconds
+ */
+function calculateBackoff(attempt) {
+  const delay = RETRY_CONFIG.baseDelay * Math.pow(2, attempt);
+  // Add jitter (randomness) to prevent thundering herd
+  const jitter = Math.random() * 1000;
+  return Math.min(delay + jitter, RETRY_CONFIG.maxDelay);
+}
+
+/**
+ * Check if error is retryable
+ * @param {Error} error - Error object
+ * @returns {boolean}
+ */
+function isRetryableError(error) {
+  const errorMessage = error.message || "";
+
+  // Check for HTTP status codes
+  for (const code of RETRY_CONFIG.retryableErrors) {
+    if (errorMessage.includes(`[${code}`)) {
+      return true;
+    }
+  }
+
+  // Check for specific error messages
+  const retryableMessages = [
+    "overloaded",
+    "rate limit",
+    "try again",
+    "timeout",
+    "temporarily unavailable",
+  ];
+
+  return retryableMessages.some((msg) =>
+    errorMessage.toLowerCase().includes(msg)
+  );
+}
+
+function ensureGeminiEnabled() {
+  if (!GEMINI_ENABLED) {
+    throw new Error(
+      "Gemini API is not configured (GEMINI_API_KEY missing). Set GEMINI_API_KEY or configure the router to use OpenAI."
+    );
+  }
+}
+
+/**
+ * Retry wrapper for Gemini API calls with exponential backoff
+ * @param {Function} fn - Async function to retry
+ * @param {string} operation - Name of the operation (for logging)
+ * @returns {Promise<any>} Result of the function
+ */
+async function retryWithBackoff(fn, operation = "API call") {
+  let lastError;
+
+  for (let attempt = 0; attempt < RETRY_CONFIG.maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error;
+
+      // Check if error is retryable
+      if (!isRetryableError(error)) {
+        console.error(`❌ Non-retryable error in ${operation}:`, error.message);
+        throw error;
+      }
+
+      // Check if we have more retries left
+      if (attempt < RETRY_CONFIG.maxRetries - 1) {
+        const delay = calculateBackoff(attempt);
+        console.warn(
+          `⚠️  ${operation} failed (attempt ${attempt + 1}/${
+            RETRY_CONFIG.maxRetries
+          }): ${error.message}`
+        );
+        console.log(`⏳ Retrying in ${Math.round(delay / 1000)}s...`);
+        await sleep(delay);
+      }
+    }
+  }
+
+  // All retries exhausted
+  console.error(
+    `❌ ${operation} failed after ${RETRY_CONFIG.maxRetries} attempts:`,
+    lastError.message
+  );
+  throw new Error(
+    `${operation} failed after ${RETRY_CONFIG.maxRetries} retries: ${lastError.message}`
+  );
+}
 
 /**
  * Extract token usage from Gemini API response
@@ -175,7 +283,8 @@ Return ONLY the enhanced content without explanations or additional formatting.`
  * @returns {Promise<Object>} - Structured resume data
  */
 export async function parseResumeWithAI(resumeText) {
-  try {
+  return await retryWithBackoff(async () => {
+    ensureGeminiEnabled();
     const model = genAI.getGenerativeModel({model: "gemini-2.5-flash"});
 
     const prompt = PARSE_RESUME_PROMPT.replace("{resumeText}", resumeText);
@@ -203,10 +312,7 @@ export async function parseResumeWithAI(resumeText) {
       `✅ Resume parsed successfully by AI (Tokens: ${tokenUsage.totalTokens})`
     );
     return {data: parsedData, tokenUsage};
-  } catch (error) {
-    console.error("❌ Gemini parsing error:", error.message);
-    throw new Error(`Failed to parse resume with AI: ${error.message}`);
-  }
+  }, "Resume parsing");
 }
 
 /**
@@ -221,7 +327,8 @@ export async function enhanceContentWithAI(
   resumeData = null,
   customPrompt = ""
 ) {
-  try {
+  return await retryWithBackoff(async () => {
+    ensureGeminiEnabled();
     const model = genAI.getGenerativeModel({model: "gemini-2.5-flash"});
 
     // Format content for the prompt
@@ -327,10 +434,7 @@ YOU MUST follow these custom instructions while maintaining all the critical rul
       `✅ Content enhanced successfully for ${sectionType} (Tokens: ${tokenUsage.totalTokens})`
     );
     return {data: enhancedContent, tokenUsage};
-  } catch (error) {
-    console.error("❌ Gemini enhancement error:", error.message);
-    throw new Error(`Failed to enhance content with AI: ${error.message}`);
-  }
+  }, `Content enhancement (${sectionType})`);
 }
 
 /**
@@ -339,7 +443,8 @@ YOU MUST follow these custom instructions while maintaining all the critical rul
  * @returns {Promise<string>} - Generated professional summary
  */
 export async function generateSummaryWithAI(resumeData) {
-  try {
+  return await retryWithBackoff(async () => {
+    ensureGeminiEnabled();
     const model = genAI.getGenerativeModel({model: "gemini-2.5-flash"});
 
     const prompt = `Generate a concise, impactful professional summary (3-4 lines) for this resume. Focus on key skills, experience, and value proposition. Use third person and avoid personal pronouns.
@@ -361,10 +466,7 @@ Return only the summary text without any additional formatting or explanations.`
       `✅ Summary generated successfully (Tokens: ${tokenUsage.totalTokens})`
     );
     return {data: text, tokenUsage};
-  } catch (error) {
-    console.error("❌ Gemini summary generation error:", error.message);
-    throw new Error(`Failed to generate summary with AI: ${error.message}`);
-  }
+  }, "Summary generation");
 }
 
 /**
@@ -373,7 +475,8 @@ Return only the summary text without any additional formatting or explanations.`
  * @returns {Promise<Array>} - Categorized skills array
  */
 export async function categorizeSkillsWithAI(skillsText) {
-  try {
+  return await retryWithBackoff(async () => {
+    ensureGeminiEnabled();
     const model = genAI.getGenerativeModel({model: "gemini-2.5-flash"});
 
     const prompt = `You are an expert technical recruiter. Categorize the following skills into relevant categories.
@@ -430,10 +533,7 @@ Return ONLY valid JSON with no additional text, explanations, or markdown format
       `✅ Skills categorized successfully: ${categorizedSkills.length} categories (Tokens: ${tokenUsage.totalTokens})`
     );
     return {data: categorizedSkills, tokenUsage};
-  } catch (error) {
-    console.error("❌ Gemini skill categorization error:", error.message);
-    throw new Error(`Failed to categorize skills with AI: ${error.message}`);
-  }
+  }, "Skills categorization");
 }
 
 /**
@@ -442,7 +542,8 @@ Return ONLY valid JSON with no additional text, explanations, or markdown format
  * @returns {Promise<Array>} - Array of achievement bullet points
  */
 export async function segregateAchievementsWithAI(achievementsText) {
-  try {
+  return await retryWithBackoff(async () => {
+    ensureGeminiEnabled();
     const model = genAI.getGenerativeModel({model: "gemini-2.5-flash"});
 
     const prompt = `You are an expert resume writer. Convert the following achievements text into clear, impactful bullet points.
@@ -493,12 +594,7 @@ Return ONLY valid JSON with no additional text, explanations, or markdown format
       `✅ Achievements segregated successfully: ${achievements.length} items (Tokens: ${tokenUsage.totalTokens})`
     );
     return {data: achievements, tokenUsage};
-  } catch (error) {
-    console.error("❌ Gemini achievement segregation error:", error.message);
-    throw new Error(
-      `Failed to segregate achievements with AI: ${error.message}`
-    );
-  }
+  }, "Achievement segregation");
 }
 
 /**
@@ -511,7 +607,8 @@ export async function processCustomSectionWithAI(
   content,
   sectionTitle = "Custom Section"
 ) {
-  try {
+  return await retryWithBackoff(async () => {
+    ensureGeminiEnabled();
     const model = genAI.getGenerativeModel({model: "gemini-2.5-flash"});
 
     const prompt = `You are an expert resume writer. Format the following content from a resume section titled "${sectionTitle}" into clear, professional bullet points.
@@ -565,12 +662,7 @@ Return ONLY valid JSON with no additional text, explanations, or markdown format
       `✅ Custom section processed successfully: ${formattedContent.length} items (Tokens: ${tokenUsage.totalTokens})`
     );
     return {data: formattedContent, tokenUsage};
-  } catch (error) {
-    console.error("❌ Gemini custom section processing error:", error.message);
-    throw new Error(
-      `Failed to process custom section with AI: ${error.message}`
-    );
-  }
+  }, `Custom section processing (${sectionTitle})`);
 }
 
 /**
@@ -580,7 +672,8 @@ Return ONLY valid JSON with no additional text, explanations, or markdown format
  * @returns {Promise<Object>} - Analysis result with match score, keywords, strengths, improvements
  */
 export async function analyzeResumeJobMatch(resumeText, jobDescription) {
-  try {
+  return await retryWithBackoff(async () => {
+    ensureGeminiEnabled();
     const model = genAI.getGenerativeModel({model: "gemini-2.5-flash"});
 
     const prompt = `You are an expert ATS (Applicant Tracking System) analyzer and career coach.
@@ -675,12 +768,7 @@ Return ONLY valid JSON with no additional text, explanations, or markdown format
       `✅ Resume-job match analyzed: ${analysis.match_score}% match (Tokens: ${tokenUsage.totalTokens})`
     );
     return {data: analysis, tokenUsage};
-  } catch (error) {
-    console.error("❌ Gemini resume-job match analysis error:", error.message);
-    throw new Error(
-      `Failed to analyze resume-job match with AI: ${error.message}`
-    );
-  }
+  }, "Resume-job match analysis");
 }
 
 export default {

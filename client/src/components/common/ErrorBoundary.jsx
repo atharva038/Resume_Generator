@@ -110,7 +110,7 @@ function ErrorFallback({error, errorInfo, resetError}) {
               </div>
 
               {/* Error Stack (Collapsible) */}
-              {process.env.NODE_ENV === "development" && errorInfo && (
+              {import.meta.env.DEV && errorInfo && (
                 <details className="group">
                   <summary className="cursor-pointer text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 flex items-center gap-2">
                     <svg

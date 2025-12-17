@@ -306,15 +306,17 @@ userSchema.methods.getUsageLimit = function (limitType) {
       atsScansPerMonth: 0,
       jobMatchesPerDay: 0,
       coverLettersPerMonth: 0,
-      aiGenerationsPerMonth: 1, // Only 1 AI feature usage for free users
+      aiGenerationsPerMonth: 10, // 10 AI feature usage for free users
+      aiResumeExtractionsPerDay: 1, // 1 AI resume extraction per day for free users
     },
     "one-time": {
-      resumesPerMonth: Infinity,
-      resumeDownloadsPerMonth: Infinity,
+      resumesPerMonth: 1, // One-time purchase allows creating only 1 NEW resume
+      resumeDownloadsPerMonth: Infinity, // Unlimited downloads
       atsScansPerMonth: 5,
       jobMatchesPerDay: 3,
       coverLettersPerMonth: 5,
-      aiGenerationsPerMonth: 10,
+      aiGenerationsPerMonth: 150, // 150 AI requests for 21-day period (not monthly!)
+      aiResumeExtractionsPerDay: 10, // 10 AI resume extractions per day
     },
     pro: {
       resumesPerMonth: Infinity,
@@ -322,7 +324,7 @@ userSchema.methods.getUsageLimit = function (limitType) {
       atsScansPerMonth: Infinity,
       jobMatchesPerDay: 10,
       coverLettersPerMonth: Infinity,
-      aiResumeExtractionsPerDay: 2, // New: AI resume extraction limit
+      aiResumeExtractionsPerDay: 10, // 10 AI resume extractions per day
       aiGenerationsPerMonth: Infinity,
     },
     premium: {
@@ -331,7 +333,7 @@ userSchema.methods.getUsageLimit = function (limitType) {
       atsScansPerMonth: Infinity,
       jobMatchesPerDay: Infinity,
       coverLettersPerMonth: Infinity,
-      aiResumeExtractionsPerDay: 2, // New: AI resume extraction limit
+      aiResumeExtractionsPerDay: 10, // 10 AI resume extractions per day
       aiGenerationsPerMonth: Infinity,
     },
     lifetime: {
@@ -340,7 +342,7 @@ userSchema.methods.getUsageLimit = function (limitType) {
       atsScansPerMonth: Infinity,
       jobMatchesPerDay: 10,
       coverLettersPerMonth: Infinity,
-      aiResumeExtractionsPerDay: 2, // New: AI resume extraction limit
+      aiResumeExtractionsPerDay: 10, // 10 AI resume extractions per day
       aiGenerationsPerMonth: Infinity,
     },
   };
@@ -359,6 +361,7 @@ userSchema.methods.hasReachedLimit = function (limitType) {
     jobMatchesPerDay: this.usage.jobMatchesToday,
     coverLettersPerMonth: this.usage.coverLettersThisMonth,
     aiGenerationsPerMonth: this.usage.aiGenerationsThisMonth,
+    aiResumeExtractionsPerDay: this.usage.aiResumeExtractionsToday,
   };
 
   return (usageMap[limitType] || 0) >= limit;
@@ -401,6 +404,7 @@ userSchema.methods.resetMonthlyUsage = async function () {
 
 userSchema.methods.resetDailyUsage = async function () {
   this.usage.jobMatchesToday = 0;
+  this.usage.aiResumeExtractionsToday = 0;
   this.usage.lastDailyReset = new Date();
   await this.save();
 };

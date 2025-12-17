@@ -1,27 +1,27 @@
-import {forwardRef} from "react";
+import React, {forwardRef, useRef, useEffect, useState} from "react";
 
 /**
- * Impact Pro Template
+ * ImpactProTemplate - Results-Driven Resume Template with Dynamic Features
  *
- * Professional Prompt:
- * "Design a high-impact, results-driven resume template featuring:
- * - Bold, confident layout that immediately draws attention to achievements
- * - Vibrant emerald green accent color representing growth and success
- * - Metrics-first approach with numerical achievements highlighted
- * - Strategic use of bold typography for key accomplishments
- * - Clean single-column layout with optimal white space for ATS parsing
- * - Professional sans-serif typography for modern corporate appeal
- * - Emphasis on action verbs and quantifiable results
- * - Section dividers that create clear visual separation
- * - Perfect for high-performers showcasing measurable impact
- * - 98% ATS compatibility with semantic HTML structure"
- *
- * ATS Score: 98/100
- * Best for: Sales, Marketing, Operations, Project Management, Business Analytics
+ * Key Features:
+ * - 98% ATS Compatibility Score
+ * - Minimal border margins for maximum content space
+ * - Compact section headings with small background bars
+ * - Dynamic content density (3 modes: low, medium, high)
+ * - Page overflow tracking and warnings
+ * - 4 bold color themes (emerald, blue, purple, orange)
+ * - All resume sections supported
+ * - Inline styles for consistent rendering
+ * - Metrics-first approach for achievements
+ * - Two-column skills layout for space efficiency
  */
 
-const ImpactProTemplate = forwardRef(({resumeData}, ref) => {
-  // Color Themes - Multiple professional palettes
+const ImpactProTemplate = forwardRef((props, ref) => {
+  const {resumeData, scale = 1, onPageUsageChange} = props;
+  const contentRef = useRef(null);
+  const [pages, setPages] = useState([]);
+
+  // Color Themes - Bold, results-driven palettes
   const colorThemes = {
     emerald: {
       primary: "#047857",
@@ -29,9 +29,10 @@ const ImpactProTemplate = forwardRef(({resumeData}, ref) => {
       accent: "#10b981",
       light: "#d1fae5",
       text: "#1e293b",
-      textSecondary: "#334155",
+      textLight: "#334155",
       textMuted: "#64748b",
       border: "#cbd5e1",
+      linkColor: "#059669",
     },
     blue: {
       primary: "#1e40af",
@@ -39,9 +40,10 @@ const ImpactProTemplate = forwardRef(({resumeData}, ref) => {
       accent: "#3b82f6",
       light: "#dbeafe",
       text: "#1e293b",
-      textSecondary: "#334155",
+      textLight: "#334155",
       textMuted: "#64748b",
       border: "#cbd5e1",
+      linkColor: "#2563eb",
     },
     purple: {
       primary: "#7e22ce",
@@ -49,9 +51,10 @@ const ImpactProTemplate = forwardRef(({resumeData}, ref) => {
       accent: "#a855f7",
       light: "#f3e8ff",
       text: "#1e293b",
-      textSecondary: "#334155",
+      textLight: "#334155",
       textMuted: "#64748b",
       border: "#cbd5e1",
+      linkColor: "#9333ea",
     },
     orange: {
       primary: "#c2410c",
@@ -59,37 +62,328 @@ const ImpactProTemplate = forwardRef(({resumeData}, ref) => {
       accent: "#f97316",
       light: "#ffedd5",
       text: "#1e293b",
-      textSecondary: "#334155",
+      textLight: "#334155",
       textMuted: "#64748b",
       border: "#cbd5e1",
+      linkColor: "#ea580c",
     },
   };
 
-  // Select theme based on resumeData or default to emerald
   const selectedTheme =
     colorThemes[resumeData?.colorTheme] || colorThemes.emerald;
 
-  // Helper function to safely format skills
-  const formatSkills = (items) => {
-    if (Array.isArray(items)) {
-      return items.join(" • ");
+  // Calculate content density for dynamic styling
+  const calculateContentDensity = () => {
+    let score = 0;
+
+    // Experience scoring (3 points + 1 per bullet)
+    if (resumeData?.experience?.length > 0) {
+      resumeData.experience.forEach((exp) => {
+        score += 3;
+        if (exp.bullets?.length > 0) {
+          score += exp.bullets.length;
+        }
+        if (exp.description) score += 2;
+        if (exp.achievements?.length > 0) {
+          score += exp.achievements.length;
+        }
+      });
     }
-    if (typeof items === "string") {
-      return items;
+
+    // Projects scoring (2 points + bullets)
+    if (resumeData?.projects?.length > 0) {
+      resumeData.projects.forEach((proj) => {
+        score += 2;
+        if (proj.bullets?.length > 0) {
+          score += proj.bullets.length;
+        }
+        if (proj.description) score += 1;
+      });
     }
-    return "";
+
+    // Other sections
+    if (resumeData?.education?.length > 0) {
+      score += resumeData.education.length * 2;
+    }
+    if (resumeData?.skills?.length > 0) {
+      score += resumeData.skills.length * 1.5;
+    }
+    if (resumeData?.certifications?.length > 0) {
+      score += resumeData.certifications.length;
+    }
+    if (resumeData?.achievements?.length > 0) {
+      score += resumeData.achievements.length;
+    }
+    if (resumeData?.languages?.length > 0) {
+      score += resumeData.languages.length * 0.5;
+    }
+    if (resumeData?.volunteer?.length > 0) {
+      score += resumeData.volunteer.length * 1.5;
+    }
+    if (resumeData?.summary && resumeData.summary.length > 150) {
+      score += 3;
+    } else if (resumeData?.summary) {
+      score += 2;
+    }
+
+    return score;
   };
+
+  const contentDensity = calculateContentDensity();
+
+  // Dynamic styles based on content density
+  const getDynamicStyles = () => {
+    // LOW DENSITY: < 15 points (spacious layout)
+    if (contentDensity < 15) {
+      return {
+        // Page margins - minimal borders
+        pageMarginTop: "18px",
+        pageMarginBottom: "18px",
+        pageMarginLeft: "28px",
+        pageMarginRight: "28px",
+
+        // Header - compact
+        nameSize: "33px",
+        nameMarginBottom: "5px",
+        contactSize: "12px",
+        contactGap: "10px",
+        contactMarginBottom: "12px",
+        headerBorderWidth: "3px",
+
+        // Section headings - small background
+        sectionHeadingSize: "17.5px",
+        sectionHeadingMarginBottom: "7px",
+        sectionHeadingPaddingV: "4px",
+        sectionHeadingPaddingH: "10px",
+        sectionMarginBottom: "13px",
+
+        // Summary
+        summarySize: "12.5px",
+        summaryLineHeight: "1.45",
+
+        // Experience
+        experienceTitleSize: "14.5px",
+        experienceCompanySize: "13.5px",
+        experienceDateSize: "12px",
+        experienceLocationSize: "12px",
+        experienceMarginBottom: "10px",
+        experienceBulletSize: "12px",
+        experienceBulletMarginBottom: "2.5px",
+        experienceBulletLineHeight: "1.45",
+
+        // Projects
+        projectTitleSize: "14px",
+        projectTechSize: "11.5px",
+        projectLinkSize: "11px",
+        projectMarginBottom: "9px",
+        projectBulletSize: "12px",
+        projectBulletMarginBottom: "2.5px",
+        projectBulletLineHeight: "1.45",
+        projectTechMarginBottom: "3px",
+
+        // Education
+        educationDegreeSize: "14px",
+        educationInstitutionSize: "13px",
+        educationDateSize: "12px",
+        educationMarginBottom: "9px",
+        educationGpaSize: "12px",
+
+        // Skills
+        skillCategorySize: "13px",
+        skillItemSize: "12px",
+        skillMarginBottom: "7px",
+
+        // Certifications
+        certificationNameSize: "13px",
+        certificationIssuerSize: "12px",
+        certificationMarginBottom: "7px",
+
+        // Other items
+        itemMarginBottom: "7px",
+        itemTitleSize: "13px",
+        itemDetailSize: "12px",
+      };
+    }
+    // MEDIUM DENSITY: 15-30 points (balanced)
+    else if (contentDensity < 30) {
+      return {
+        pageMarginTop: "16px",
+        pageMarginBottom: "16px",
+        pageMarginLeft: "26px",
+        pageMarginRight: "26px",
+
+        nameSize: "30px",
+        nameMarginBottom: "4px",
+        contactSize: "11.5px",
+        contactGap: "8px",
+        contactMarginBottom: "10px",
+        headerBorderWidth: "2.5px",
+
+        sectionHeadingSize: "16.5px",
+        sectionHeadingMarginBottom: "6px",
+        sectionHeadingPaddingV: "3px",
+        sectionHeadingPaddingH: "9px",
+        sectionMarginBottom: "11px",
+
+        summarySize: "12px",
+        summaryLineHeight: "1.4",
+
+        experienceTitleSize: "14px",
+        experienceCompanySize: "13px",
+        experienceDateSize: "11.5px",
+        experienceLocationSize: "11.5px",
+        experienceMarginBottom: "9px",
+        experienceBulletSize: "11.5px",
+        experienceBulletMarginBottom: "2px",
+        experienceBulletLineHeight: "1.4",
+
+        projectTitleSize: "13.5px",
+        projectTechSize: "11px",
+        projectLinkSize: "10.5px",
+        projectMarginBottom: "8px",
+        projectBulletSize: "11.5px",
+        projectBulletMarginBottom: "2px",
+        projectBulletLineHeight: "1.4",
+        projectTechMarginBottom: "2.5px",
+
+        educationDegreeSize: "13.5px",
+        educationInstitutionSize: "12.5px",
+        educationDateSize: "11.5px",
+        educationMarginBottom: "8px",
+        educationGpaSize: "11.5px",
+
+        skillCategorySize: "12.5px",
+        skillItemSize: "11.5px",
+        skillMarginBottom: "6px",
+
+        certificationNameSize: "12.5px",
+        certificationIssuerSize: "11.5px",
+        certificationMarginBottom: "6px",
+
+        itemMarginBottom: "6px",
+        itemTitleSize: "12.5px",
+        itemDetailSize: "11.5px",
+      };
+    }
+    // HIGH DENSITY: 30+ points (compact)
+    else {
+      return {
+        pageMarginTop: "14px",
+        pageMarginBottom: "14px",
+        pageMarginLeft: "24px",
+        pageMarginRight: "24px",
+
+        nameSize: "28px",
+        nameMarginBottom: "3px",
+        contactSize: "11px",
+        contactGap: "7px",
+        contactMarginBottom: "9px",
+        headerBorderWidth: "2px",
+
+        sectionHeadingSize: "15.5px",
+        sectionHeadingMarginBottom: "5px",
+        sectionHeadingPaddingV: "2.5px",
+        sectionHeadingPaddingH: "8px",
+        sectionMarginBottom: "9px",
+
+        summarySize: "11.5px",
+        summaryLineHeight: "1.35",
+
+        experienceTitleSize: "13.5px",
+        experienceCompanySize: "12.5px",
+        experienceDateSize: "11px",
+        experienceLocationSize: "11px",
+        experienceMarginBottom: "7px",
+        experienceBulletSize: "11px",
+        experienceBulletMarginBottom: "2px",
+        experienceBulletLineHeight: "1.35",
+
+        projectTitleSize: "13px",
+        projectTechSize: "10.5px",
+        projectLinkSize: "10px",
+        projectMarginBottom: "7px",
+        projectBulletSize: "11px",
+        projectBulletMarginBottom: "2px",
+        projectBulletLineHeight: "1.35",
+        projectTechMarginBottom: "2px",
+
+        educationDegreeSize: "13px",
+        educationInstitutionSize: "12px",
+        educationDateSize: "11px",
+        educationMarginBottom: "7px",
+        educationGpaSize: "11px",
+
+        skillCategorySize: "12px",
+        skillItemSize: "11px",
+        skillMarginBottom: "5px",
+
+        certificationNameSize: "12px",
+        certificationIssuerSize: "11px",
+        certificationMarginBottom: "5px",
+
+        itemMarginBottom: "5px",
+        itemTitleSize: "12px",
+        itemDetailSize: "11px",
+      };
+    }
+  };
+
+  const dynamicStyles = getDynamicStyles();
+
+  // Page tracking for overflow detection
+  useEffect(() => {
+    if (!contentRef.current || !onPageUsageChange) return;
+
+    const updatePageUsage = () => {
+      const element = contentRef.current;
+      if (!element) return;
+
+      const currentHeight = element.scrollHeight;
+      const maxHeight = 1056; // A4 page height in pixels at 96 DPI
+
+      const percentage = Math.round((currentHeight / maxHeight) * 100);
+      const isOverflowing = currentHeight > maxHeight;
+      const overflowPercentage = isOverflowing
+        ? Math.round(((currentHeight - maxHeight) / maxHeight) * 100)
+        : 0;
+
+      onPageUsageChange({
+        isOverflowing,
+        currentHeight,
+        maxHeight,
+        percentage,
+        overflowPercentage,
+        templateName: "Impact Pro",
+      });
+    };
+
+    // Initial check
+    updatePageUsage();
+
+    // Re-check after a short delay to account for font loading
+    const timer = setTimeout(updatePageUsage, 100);
+
+    // Observe size changes
+    const resizeObserver = new ResizeObserver(updatePageUsage);
+    resizeObserver.observe(contentRef.current);
+
+    return () => {
+      clearTimeout(timer);
+      resizeObserver.disconnect();
+    };
+  }, [resumeData]); // Don't include onPageUsageChange to prevent infinite loops
 
   // Default section order
   const DEFAULT_SECTION_ORDER = [
     "summary",
     "skills",
     "experience",
-    "achievements",
     "projects",
     "education",
     "certifications",
-    "customSections",
+    "achievements",
+    "languages",
+    "volunteer",
   ];
 
   const sectionOrder =
@@ -99,33 +393,35 @@ const ImpactProTemplate = forwardRef(({resumeData}, ref) => {
         )
       : DEFAULT_SECTION_ORDER;
 
-  // Render section helper
+  // Render section helper function
   const renderSection = (sectionId) => {
     const sections = {
       summary: resumeData.summary && (
-        <section key="summary" style={{marginBottom: "18px"}}>
+        <section
+          key="summary"
+          style={{marginBottom: dynamicStyles.sectionMarginBottom}}
+        >
           <div
             style={{
-              backgroundColor: `${selectedTheme.primary}`,
-              color: "white",
-              padding: "6px 12px",
-              fontSize: "11pt",
-              fontWeight: "700",
+              display: "inline-block",
+              backgroundColor: selectedTheme.primary,
+              color: "#ffffff",
+              fontSize: dynamicStyles.sectionHeadingSize,
+              fontWeight: "bold",
+              marginBottom: dynamicStyles.sectionHeadingMarginBottom,
+              padding: `${dynamicStyles.sectionHeadingPaddingV} ${dynamicStyles.sectionHeadingPaddingH}`,
               textTransform: "uppercase",
               letterSpacing: "1px",
-              marginBottom: "10px",
             }}
           >
-            Professional Impact Summary
+            Professional Summary
           </div>
           <p
             style={{
-              fontSize: "10.5pt",
-              lineHeight: "1.7",
-              color: `${selectedTheme.text}`,
-              textAlign: "justify",
-              paddingLeft: "8px",
-              borderLeft: `3px solid ${selectedTheme.primary}`,
+              fontSize: dynamicStyles.summarySize,
+              lineHeight: dynamicStyles.summaryLineHeight,
+              color: selectedTheme.textLight,
+              margin: "0",
             }}
           >
             {resumeData.summary}
@@ -134,49 +430,61 @@ const ImpactProTemplate = forwardRef(({resumeData}, ref) => {
       ),
 
       skills: resumeData.skills && resumeData.skills.length > 0 && (
-        <section key="skills" style={{marginBottom: "18px"}}>
+        <section
+          key="skills"
+          style={{marginBottom: dynamicStyles.sectionMarginBottom}}
+        >
           <div
             style={{
-              backgroundColor: `${selectedTheme.primary}`,
-              color: "white",
-              padding: "6px 12px",
-              fontSize: "11pt",
-              fontWeight: "700",
+              display: "inline-block",
+              backgroundColor: selectedTheme.primary,
+              color: "#ffffff",
+              fontSize: dynamicStyles.sectionHeadingSize,
+              fontWeight: "bold",
+              marginBottom: dynamicStyles.sectionHeadingMarginBottom,
+              padding: `${dynamicStyles.sectionHeadingPaddingV} ${dynamicStyles.sectionHeadingPaddingH}`,
               textTransform: "uppercase",
               letterSpacing: "1px",
-              marginBottom: "10px",
             }}
           >
-            Core Competencies & Skills
+            Core Skills
           </div>
           <div
             style={{
               display: "grid",
               gridTemplateColumns: "repeat(2, 1fr)",
-              gap: "10px",
-              paddingLeft: "8px",
+              gap: "8px 18px",
+              columnGap: "18px",
             }}
           >
             {resumeData.skills.map((skillGroup, index) => (
-              <div key={index}>
+              <div
+                key={index}
+                style={{
+                  marginBottom: dynamicStyles.skillMarginBottom,
+                  breakInside: "avoid",
+                }}
+              >
                 <div
                   style={{
-                    fontSize: "10.5pt",
+                    fontSize: dynamicStyles.skillCategorySize,
                     fontWeight: "700",
-                    color: `${selectedTheme.primary}`,
-                    marginBottom: "4px",
+                    color: selectedTheme.primary,
+                    marginBottom: "3px",
                   }}
                 >
                   {skillGroup.category}
                 </div>
                 <div
                   style={{
-                    fontSize: "10pt",
-                    color: `${selectedTheme.textSecondary}`,
+                    fontSize: dynamicStyles.skillItemSize,
+                    color: selectedTheme.textLight,
                     lineHeight: "1.5",
                   }}
                 >
-                  {formatSkills(skillGroup.items)}
+                  {Array.isArray(skillGroup.items)
+                    ? skillGroup.items.join(" • ")
+                    : skillGroup.items}
                 </div>
               </div>
             ))}
@@ -185,290 +493,410 @@ const ImpactProTemplate = forwardRef(({resumeData}, ref) => {
       ),
 
       experience: resumeData.experience && resumeData.experience.length > 0 && (
-        <section key="experience" style={{marginBottom: "18px"}}>
+        <section
+          key="experience"
+          style={{marginBottom: dynamicStyles.sectionMarginBottom}}
+        >
           <div
             style={{
-              backgroundColor: `${selectedTheme.primary}`,
-              color: "white",
-              padding: "6px 12px",
-              fontSize: "11pt",
-              fontWeight: "700",
+              display: "inline-block",
+              backgroundColor: selectedTheme.primary,
+              color: "#ffffff",
+              fontSize: dynamicStyles.sectionHeadingSize,
+              fontWeight: "bold",
+              marginBottom: dynamicStyles.sectionHeadingMarginBottom,
+              padding: `${dynamicStyles.sectionHeadingPaddingV} ${dynamicStyles.sectionHeadingPaddingH}`,
               textTransform: "uppercase",
               letterSpacing: "1px",
-              marginBottom: "10px",
             }}
           >
-            Professional Experience & Results
+            Professional Experience
           </div>
-          {resumeData.experience.map((exp, index) => (
-            <div
-              key={index}
-              style={{
-                marginBottom: "16px",
-                paddingLeft: "8px",
-                borderLeft: `3px solid ${selectedTheme.light}`,
-              }}
-            >
-              <div style={{marginBottom: "6px"}}>
+          <div>
+            {resumeData.experience.map((exp, index) => (
+              <div
+                key={index}
+                style={{
+                  marginBottom: dynamicStyles.experienceMarginBottom,
+                }}
+              >
                 <div
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
-                    alignItems: "baseline",
-                    flexWrap: "wrap",
-                    gap: "8px",
+                    alignItems: "flex-start",
+                    marginBottom: "2px",
                   }}
                 >
-                  <div>
-                    <span
+                  <div style={{flex: 1}}>
+                    <div
                       style={{
-                        fontSize: "12pt",
+                        fontSize: dynamicStyles.experienceTitleSize,
                         fontWeight: "700",
-                        color: `${selectedTheme.primary}`,
+                        color: selectedTheme.text,
                       }}
                     >
-                      {exp.title}
-                    </span>
-                    <span
+                      {exp.position}
+                    </div>
+                    <div
                       style={{
-                        fontSize: "11pt",
+                        fontSize: dynamicStyles.experienceCompanySize,
                         fontWeight: "600",
-                        color: `${selectedTheme.text}`,
-                        marginLeft: "8px",
+                        color: selectedTheme.primary,
+                        marginTop: "1px",
                       }}
                     >
-                      @ {exp.company}
-                    </span>
+                      {exp.company}
+                      {exp.location && ` • ${exp.location}`}
+                    </div>
                   </div>
                   <div
                     style={{
-                      fontSize: "10pt",
-                      color: `${selectedTheme.textMuted}`,
-                      fontWeight: "600",
-                    }}
-                  >
-                    {exp.startDate} – {exp.endDate || "Present"}
-                  </div>
-                </div>
-                {exp.location && (
-                  <div
-                    style={{
-                      fontSize: "9.5pt",
-                      color: `${selectedTheme.textMuted}`,
-                      marginTop: "2px",
-                    }}
-                  >
-                    📍 {exp.location}
-                  </div>
-                )}
-              </div>
-              {exp.responsibilities && exp.responsibilities.length > 0 && (
-                <ul
-                  style={{
-                    margin: "8px 0 0 18px",
-                    padding: 0,
-                    fontSize: "10pt",
-                    lineHeight: "1.6",
-                  }}
-                >
-                  {exp.responsibilities.map((resp, i) => (
-                    <li
-                      key={i}
-                      style={{
-                        marginBottom: "4px",
-                        color: `${selectedTheme.textSecondary}`,
-                      }}
-                    >
-                      {resp}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          ))}
-        </section>
-      ),
-
-      achievements: resumeData.achievements &&
-        resumeData.achievements.length > 0 && (
-          <section key="achievements" style={{marginBottom: "18px"}}>
-            <div
-              style={{
-                backgroundColor: `${selectedTheme.primary}`,
-                color: "white",
-                padding: "6px 12px",
-                fontSize: "11pt",
-                fontWeight: "700",
-                textTransform: "uppercase",
-                letterSpacing: "1px",
-                marginBottom: "10px",
-              }}
-            >
-              Key Achievements & Recognition
-            </div>
-            <div
-              style={{
-                paddingLeft: "8px",
-                borderLeft: `3px solid ${selectedTheme.light}`,
-              }}
-            >
-              <ul
-                style={{
-                  margin: "0",
-                  padding: "0 0 0 18px",
-                  fontSize: "10pt",
-                  lineHeight: "1.6",
-                }}
-              >
-                {resumeData.achievements.map((achievement, index) => (
-                  <li
-                    key={index}
-                    style={{
-                      marginBottom: "5px",
-                      color: `${selectedTheme.textSecondary}`,
+                      fontSize: dynamicStyles.experienceDateSize,
+                      color: selectedTheme.textMuted,
+                      whiteSpace: "nowrap",
+                      marginLeft: "15px",
                       fontWeight: "500",
                     }}
                   >
-                    <span
-                      style={{
-                        color: `${selectedTheme.primary}`,
-                        fontWeight: "700",
-                      }}
-                    >
-                      ▸
-                    </span>{" "}
-                    {achievement}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </section>
-        ),
+                    {exp.startDate} - {exp.endDate || "Present"}
+                  </div>
+                </div>
+                {exp.description && (
+                  <p
+                    style={{
+                      fontSize: dynamicStyles.experienceBulletSize,
+                      lineHeight: dynamicStyles.experienceBulletLineHeight,
+                      color: selectedTheme.textLight,
+                      marginTop: "3px",
+                      marginBottom: "3px",
+                    }}
+                  >
+                    {exp.description}
+                  </p>
+                )}
+                {exp.bullets && exp.bullets.length > 0 && (
+                  <ul
+                    style={{
+                      marginTop: "3px",
+                      marginBottom: "0",
+                      paddingLeft: "0",
+                      listStyleType: "none",
+                    }}
+                  >
+                    {exp.bullets
+                      .filter((bullet) => bullet && bullet.trim())
+                      .map((bullet, bulletIndex) => (
+                        <li
+                          key={bulletIndex}
+                          style={{
+                            fontSize: dynamicStyles.experienceBulletSize,
+                            lineHeight:
+                              dynamicStyles.experienceBulletLineHeight,
+                            color: selectedTheme.textLight,
+                            marginBottom:
+                              dynamicStyles.experienceBulletMarginBottom,
+                            marginLeft: "18px",
+                            listStyleType: "disc",
+                            listStylePosition: "outside",
+                            display: "list-item",
+                          }}
+                        >
+                          {bullet}
+                        </li>
+                      ))}
+                  </ul>
+                )}
+                {exp.achievements && exp.achievements.length > 0 && (
+                  <ul
+                    style={{
+                      marginTop: "3px",
+                      marginBottom: "0",
+                      paddingLeft: "0",
+                      listStyleType: "none",
+                    }}
+                  >
+                    {exp.achievements
+                      .filter(
+                        (achievement) => achievement && achievement.trim()
+                      )
+                      .map((achievement, achIndex) => (
+                        <li
+                          key={achIndex}
+                          style={{
+                            fontSize: dynamicStyles.experienceBulletSize,
+                            lineHeight:
+                              dynamicStyles.experienceBulletLineHeight,
+                            color: selectedTheme.textLight,
+                            marginBottom:
+                              dynamicStyles.experienceBulletMarginBottom,
+                            marginLeft: "18px",
+                            listStyleType: "disc",
+                            listStylePosition: "outside",
+                            display: "list-item",
+                          }}
+                        >
+                          {achievement}
+                        </li>
+                      ))}
+                  </ul>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      ),
 
       projects: resumeData.projects && resumeData.projects.length > 0 && (
-        <section key="projects" style={{marginBottom: "18px"}}>
+        <section
+          key="projects"
+          style={{marginBottom: dynamicStyles.sectionMarginBottom}}
+        >
           <div
             style={{
-              backgroundColor: `${selectedTheme.primary}`,
-              color: "white",
-              padding: "6px 12px",
-              fontSize: "11pt",
-              fontWeight: "700",
+              display: "inline-block",
+              backgroundColor: selectedTheme.primary,
+              color: "#ffffff",
+              fontSize: dynamicStyles.sectionHeadingSize,
+              fontWeight: "bold",
+              marginBottom: dynamicStyles.sectionHeadingMarginBottom,
+              padding: `${dynamicStyles.sectionHeadingPaddingV} ${dynamicStyles.sectionHeadingPaddingH}`,
               textTransform: "uppercase",
               letterSpacing: "1px",
-              marginBottom: "10px",
             }}
           >
-            Notable Projects & Initiatives
+            Key Projects
           </div>
-          {resumeData.projects.map((project, index) => (
-            <div
-              key={index}
-              style={{
-                marginBottom: "14px",
-                paddingLeft: "8px",
-                borderLeft: `3px solid ${selectedTheme.light}`,
-              }}
-            >
+          <div>
+            {resumeData.projects.map((project, index) => (
               <div
+                key={index}
                 style={{
-                  fontSize: "11pt",
-                  fontWeight: "700",
-                  color: `${selectedTheme.primary}`,
-                  marginBottom: "4px",
+                  marginBottom: dynamicStyles.projectMarginBottom,
                 }}
               >
-                {project.name}
-              </div>
-              {project.description && (
-                <p
-                  style={{
-                    fontSize: "10pt",
-                    color: `${selectedTheme.textSecondary}`,
-                    margin: "4px 0",
-                    lineHeight: "1.6",
-                  }}
-                >
-                  {project.description}
-                </p>
-              )}
-              {project.technologies && (
                 <div
                   style={{
-                    fontSize: "9.5pt",
-                    color: `${selectedTheme.textMuted}`,
-                    marginTop: "4px",
-                    fontWeight: "600",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                    marginBottom: "2px",
                   }}
                 >
-                  <span style={{color: `${selectedTheme.primary}`}}>
-                    Tech Stack:
-                  </span>{" "}
-                  {project.technologies}
+                  <div style={{flex: 1}}>
+                    <div
+                      style={{
+                        fontSize: dynamicStyles.projectTitleSize,
+                        fontWeight: "700",
+                        color: selectedTheme.text,
+                      }}
+                    >
+                      {project.name}
+                      {project.url && (
+                        <span
+                          style={{
+                            fontSize: dynamicStyles.projectLinkSize,
+                            color: selectedTheme.linkColor,
+                            marginLeft: "8px",
+                            fontWeight: "normal",
+                          }}
+                        >
+                          ({project.url})
+                        </span>
+                      )}
+                    </div>
+                    {project.technologies &&
+                      project.technologies.length > 0 && (
+                        <div
+                          style={{
+                            fontSize: dynamicStyles.projectTechSize,
+                            color: selectedTheme.primary,
+                            marginTop: "2px",
+                            fontWeight: "600",
+                          }}
+                        >
+                          {Array.isArray(project.technologies)
+                            ? project.technologies.join(" • ")
+                            : project.technologies}
+                        </div>
+                      )}
+                  </div>
+                  {project.date && (
+                    <div
+                      style={{
+                        fontSize: dynamicStyles.experienceDateSize,
+                        color: selectedTheme.textMuted,
+                        whiteSpace: "nowrap",
+                        marginLeft: "15px",
+                        fontWeight: "500",
+                      }}
+                    >
+                      {project.date}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          ))}
+                {project.description && (
+                  <p
+                    style={{
+                      fontSize: dynamicStyles.projectBulletSize,
+                      lineHeight: dynamicStyles.projectBulletLineHeight,
+                      color: selectedTheme.textLight,
+                      marginTop: dynamicStyles.projectTechMarginBottom,
+                      marginBottom: "3px",
+                    }}
+                  >
+                    {project.description}
+                  </p>
+                )}
+                {project.bullets && project.bullets.length > 0 && (
+                  <ul
+                    style={{
+                      marginTop: dynamicStyles.projectTechMarginBottom,
+                      marginBottom: "0",
+                      paddingLeft: "0",
+                      listStyleType: "none",
+                    }}
+                  >
+                    {project.bullets
+                      .filter((bullet) => bullet && bullet.trim())
+                      .map((bullet, bulletIndex) => (
+                        <li
+                          key={bulletIndex}
+                          style={{
+                            fontSize: dynamicStyles.projectBulletSize,
+                            lineHeight: dynamicStyles.projectBulletLineHeight,
+                            color: selectedTheme.textLight,
+                            marginBottom:
+                              dynamicStyles.projectBulletMarginBottom,
+                            marginLeft: "18px",
+                            listStyleType: "disc",
+                            listStylePosition: "outside",
+                            display: "list-item",
+                          }}
+                        >
+                          {bullet}
+                        </li>
+                      ))}
+                  </ul>
+                )}
+              </div>
+            ))}
+          </div>
         </section>
       ),
 
       education: resumeData.education && resumeData.education.length > 0 && (
-        <section key="education" style={{marginBottom: "18px"}}>
+        <section
+          key="education"
+          style={{marginBottom: dynamicStyles.sectionMarginBottom}}
+        >
           <div
             style={{
-              backgroundColor: `${selectedTheme.primary}`,
-              color: "white",
-              padding: "6px 12px",
-              fontSize: "11pt",
-              fontWeight: "700",
+              display: "inline-block",
+              backgroundColor: selectedTheme.primary,
+              color: "#ffffff",
+              fontSize: dynamicStyles.sectionHeadingSize,
+              fontWeight: "bold",
+              marginBottom: dynamicStyles.sectionHeadingMarginBottom,
+              padding: `${dynamicStyles.sectionHeadingPaddingV} ${dynamicStyles.sectionHeadingPaddingH}`,
               textTransform: "uppercase",
               letterSpacing: "1px",
-              marginBottom: "10px",
             }}
           >
-            Education & Academic Background
+            Education
           </div>
-          <div
-            style={{
-              paddingLeft: "8px",
-              borderLeft: `3px solid ${selectedTheme.light}`,
-            }}
-          >
+          <div>
             {resumeData.education.map((edu, index) => (
-              <div key={index} style={{marginBottom: "12px"}}>
+              <div
+                key={index}
+                style={{
+                  marginBottom: dynamicStyles.educationMarginBottom,
+                }}
+              >
                 <div
                   style={{
-                    fontSize: "11pt",
-                    fontWeight: "700",
-                    color: `${selectedTheme.primary}`,
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
                   }}
                 >
-                  {edu.degree}
+                  <div style={{flex: 1}}>
+                    <div
+                      style={{
+                        fontSize: dynamicStyles.educationDegreeSize,
+                        fontWeight: "700",
+                        color: selectedTheme.text,
+                      }}
+                    >
+                      {edu.degree}
+                      {edu.field && ` in ${edu.field}`}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: dynamicStyles.educationInstitutionSize,
+                        color: selectedTheme.primary,
+                        marginTop: "1px",
+                        fontWeight: "600",
+                      }}
+                    >
+                      {edu.institution}
+                      {edu.location && ` • ${edu.location}`}
+                    </div>
+                    {edu.gpa && (
+                      <div
+                        style={{
+                          fontSize: dynamicStyles.educationGpaSize,
+                          color: selectedTheme.textLight,
+                          marginTop: "2px",
+                        }}
+                      >
+                        GPA: {edu.gpa}
+                      </div>
+                    )}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: dynamicStyles.educationDateSize,
+                      color: selectedTheme.textMuted,
+                      whiteSpace: "nowrap",
+                      marginLeft: "15px",
+                      fontWeight: "500",
+                    }}
+                  >
+                    {edu.graduationDate}
+                  </div>
                 </div>
-                <div
-                  style={{
-                    fontSize: "10.5pt",
-                    fontWeight: "600",
-                    color: `${selectedTheme.text}`,
-                    marginTop: "2px",
-                  }}
-                >
-                  {edu.institution}
-                </div>
-                <div
-                  style={{
-                    fontSize: "10pt",
-                    color: `${selectedTheme.textMuted}`,
-                    marginTop: "2px",
-                  }}
-                >
-                  {edu.graduationDate}
-                  {edu.gpa && (
-                    <span style={{marginLeft: "12px", fontWeight: "600"}}>
-                      GPA: {edu.gpa}
-                    </span>
-                  )}
-                </div>
+                {edu.bullets && edu.bullets.length > 0 && (
+                  <ul
+                    style={{
+                      marginTop: "3px",
+                      marginBottom: "0",
+                      paddingLeft: "0",
+                      listStyleType: "none",
+                    }}
+                  >
+                    {edu.bullets
+                      .filter((bullet) => bullet && bullet.trim())
+                      .map((bullet, bulletIndex) => (
+                        <li
+                          key={bulletIndex}
+                          style={{
+                            fontSize: dynamicStyles.projectBulletSize,
+                            lineHeight: dynamicStyles.projectBulletLineHeight,
+                            color: selectedTheme.textLight,
+                            marginBottom:
+                              dynamicStyles.projectBulletMarginBottom,
+                            marginLeft: "18px",
+                            listStyleType: "disc",
+                            listStylePosition: "outside",
+                            display: "list-item",
+                          }}
+                        >
+                          {bullet}
+                        </li>
+                      ))}
+                  </ul>
+                )}
               </div>
             ))}
           </div>
@@ -477,109 +905,278 @@ const ImpactProTemplate = forwardRef(({resumeData}, ref) => {
 
       certifications: resumeData.certifications &&
         resumeData.certifications.length > 0 && (
-          <section key="certifications" style={{marginBottom: "18px"}}>
+          <section
+            key="certifications"
+            style={{marginBottom: dynamicStyles.sectionMarginBottom}}
+          >
             <div
               style={{
-                backgroundColor: `${selectedTheme.primary}`,
-                color: "white",
-                padding: "6px 12px",
-                fontSize: "11pt",
-                fontWeight: "700",
+                display: "inline-block",
+                backgroundColor: selectedTheme.primary,
+                color: "#ffffff",
+                fontSize: dynamicStyles.sectionHeadingSize,
+                fontWeight: "bold",
+                marginBottom: dynamicStyles.sectionHeadingMarginBottom,
+                padding: `${dynamicStyles.sectionHeadingPaddingV} ${dynamicStyles.sectionHeadingPaddingH}`,
                 textTransform: "uppercase",
                 letterSpacing: "1px",
-                marginBottom: "10px",
               }}
             >
-              Professional Certifications
+              Certifications
             </div>
-            <div
-              style={{
-                paddingLeft: "8px",
-                borderLeft: `3px solid ${selectedTheme.light}`,
-                display: "grid",
-                gridTemplateColumns: "repeat(2, 1fr)",
-                gap: "8px",
-              }}
-            >
+            <div>
               {resumeData.certifications.map((cert, index) => (
                 <div
                   key={index}
                   style={{
-                    fontSize: "10pt",
-                    color: `${selectedTheme.textSecondary}`,
+                    marginBottom: dynamicStyles.certificationMarginBottom,
                   }}
                 >
                   <div
                     style={{
-                      fontWeight: "700",
-                      color: `${selectedTheme.primary}`,
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "flex-start",
                     }}
                   >
-                    {cert.name}
+                    <div style={{flex: 1}}>
+                      <div
+                        style={{
+                          fontSize: dynamicStyles.certificationNameSize,
+                          fontWeight: "700",
+                          color: selectedTheme.text,
+                        }}
+                      >
+                        {cert.name}
+                      </div>
+                      <div
+                        style={{
+                          fontSize: dynamicStyles.certificationIssuerSize,
+                          color: selectedTheme.primary,
+                          marginTop: "1px",
+                          fontWeight: "600",
+                        }}
+                      >
+                        {cert.issuer}
+                      </div>
+                    </div>
+                    {cert.date && (
+                      <div
+                        style={{
+                          fontSize: dynamicStyles.certificationIssuerSize,
+                          color: selectedTheme.textMuted,
+                          whiteSpace: "nowrap",
+                          marginLeft: "15px",
+                          fontWeight: "500",
+                        }}
+                      >
+                        {cert.date}
+                      </div>
+                    )}
                   </div>
-                  {cert.issuer && (
-                    <div
-                      style={{
-                        fontSize: "9.5pt",
-                        color: `${selectedTheme.textMuted}`,
-                      }}
-                    >
-                      {cert.issuer}
-                    </div>
-                  )}
-                  {cert.date && (
-                    <div
-                      style={{
-                        fontSize: "9pt",
-                        color: "#9ca3af",
-                        fontWeight: "600",
-                      }}
-                    >
-                      {cert.date}
-                    </div>
-                  )}
                 </div>
               ))}
             </div>
           </section>
         ),
 
-      customSections:
-        resumeData.customSections && resumeData.customSections.length > 0
-          ? resumeData.customSections.map((section, index) => (
-              <section key={`custom-${index}`} style={{marginBottom: "18px"}}>
-                <div
+      achievements: resumeData.achievements &&
+        resumeData.achievements.length > 0 && (
+          <section
+            key="achievements"
+            style={{marginBottom: dynamicStyles.sectionMarginBottom}}
+          >
+            <div
+              style={{
+                display: "inline-block",
+                backgroundColor: selectedTheme.primary,
+                color: "#ffffff",
+                fontSize: dynamicStyles.sectionHeadingSize,
+                fontWeight: "bold",
+                marginBottom: dynamicStyles.sectionHeadingMarginBottom,
+                padding: `${dynamicStyles.sectionHeadingPaddingV} ${dynamicStyles.sectionHeadingPaddingH}`,
+                textTransform: "uppercase",
+                letterSpacing: "1px",
+              }}
+            >
+              Key Achievements
+            </div>
+            <ul
+              style={{
+                marginTop: "3px",
+                marginBottom: "0",
+                paddingLeft: "0",
+                listStyleType: "none",
+              }}
+            >
+              {resumeData.achievements
+                .filter((achievement) => achievement && achievement.trim())
+                .map((achievement, index) => (
+                  <li
+                    key={index}
+                    style={{
+                      fontSize: dynamicStyles.itemTitleSize,
+                      lineHeight: "1.5",
+                      color: selectedTheme.textLight,
+                      marginBottom: dynamicStyles.itemMarginBottom,
+                      marginLeft: "18px",
+                      listStyleType: "disc",
+                      listStylePosition: "outside",
+                      display: "list-item",
+                    }}
+                  >
+                    {achievement}
+                  </li>
+                ))}
+            </ul>
+          </section>
+        ),
+
+      languages: resumeData.languages && resumeData.languages.length > 0 && (
+        <section
+          key="languages"
+          style={{marginBottom: dynamicStyles.sectionMarginBottom}}
+        >
+          <div
+            style={{
+              display: "inline-block",
+              backgroundColor: selectedTheme.primary,
+              color: "#ffffff",
+              fontSize: dynamicStyles.sectionHeadingSize,
+              fontWeight: "bold",
+              marginBottom: dynamicStyles.sectionHeadingMarginBottom,
+              padding: `${dynamicStyles.sectionHeadingPaddingV} ${dynamicStyles.sectionHeadingPaddingH}`,
+              textTransform: "uppercase",
+              letterSpacing: "1px",
+            }}
+          >
+            Languages
+          </div>
+          <div>
+            {resumeData.languages.map((lang, index) => (
+              <div
+                key={index}
+                style={{
+                  marginBottom: dynamicStyles.itemMarginBottom,
+                }}
+              >
+                <span
                   style={{
-                    backgroundColor: `${selectedTheme.primary}`,
-                    color: "white",
-                    padding: "6px 12px",
-                    fontSize: "11pt",
+                    fontSize: dynamicStyles.itemTitleSize,
                     fontWeight: "700",
-                    textTransform: "uppercase",
-                    letterSpacing: "1px",
-                    marginBottom: "10px",
+                    color: selectedTheme.text,
                   }}
                 >
-                  {section.title}
-                </div>
+                  {lang.language}
+                </span>
+                {lang.proficiency && (
+                  <span
+                    style={{
+                      fontSize: dynamicStyles.itemDetailSize,
+                      color: selectedTheme.textLight,
+                      marginLeft: "8px",
+                    }}
+                  >
+                    — {lang.proficiency}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      ),
+
+      volunteer: resumeData.volunteer && resumeData.volunteer.length > 0 && (
+        <section
+          key="volunteer"
+          style={{marginBottom: dynamicStyles.sectionMarginBottom}}
+        >
+          <div
+            style={{
+              display: "inline-block",
+              backgroundColor: selectedTheme.primary,
+              color: "#ffffff",
+              fontSize: dynamicStyles.sectionHeadingSize,
+              fontWeight: "bold",
+              marginBottom: dynamicStyles.sectionHeadingMarginBottom,
+              padding: `${dynamicStyles.sectionHeadingPaddingV} ${dynamicStyles.sectionHeadingPaddingH}`,
+              textTransform: "uppercase",
+              letterSpacing: "1px",
+            }}
+          >
+            Volunteer Experience
+          </div>
+          <div>
+            {resumeData.volunteer.map((vol, index) => (
+              <div
+                key={index}
+                style={{
+                  marginBottom: dynamicStyles.itemMarginBottom,
+                }}
+              >
                 <div
                   style={{
-                    fontSize: "10pt",
-                    color: `${selectedTheme.textSecondary}`,
-                    lineHeight: "1.6",
-                    whiteSpace: "pre-wrap",
-                    paddingLeft: "8px",
-                    borderLeft: `3px solid ${selectedTheme.light}`,
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
                   }}
                 >
-                  {section.content}
+                  <div style={{flex: 1}}>
+                    <div
+                      style={{
+                        fontSize: dynamicStyles.itemTitleSize,
+                        fontWeight: "700",
+                        color: selectedTheme.text,
+                      }}
+                    >
+                      {vol.role}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: dynamicStyles.itemDetailSize,
+                        color: selectedTheme.primary,
+                        marginTop: "1px",
+                        fontWeight: "600",
+                      }}
+                    >
+                      {vol.organization}
+                    </div>
+                  </div>
+                  {vol.date && (
+                    <div
+                      style={{
+                        fontSize: dynamicStyles.itemDetailSize,
+                        color: selectedTheme.textMuted,
+                        whiteSpace: "nowrap",
+                        marginLeft: "15px",
+                        fontWeight: "500",
+                      }}
+                    >
+                      {vol.date}
+                    </div>
+                  )}
                 </div>
-              </section>
-            ))
-          : null,
+                {vol.description && (
+                  <p
+                    style={{
+                      fontSize: dynamicStyles.itemDetailSize,
+                      lineHeight: "1.5",
+                      color: selectedTheme.textLight,
+                      marginTop: "3px",
+                      marginBottom: "0",
+                    }}
+                  >
+                    {vol.description}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      ),
     };
 
-    return sections[sectionId] || null;
+    return sections[sectionId];
   };
 
   return (
@@ -588,91 +1185,96 @@ const ImpactProTemplate = forwardRef(({resumeData}, ref) => {
       style={{
         width: "210mm",
         minHeight: "297mm",
-        padding: "18mm 22mm",
-        backgroundColor: "white",
+        backgroundColor: "#ffffff",
         fontFamily:
-          '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif',
-        color: "#000000",
+          '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+        color: selectedTheme.text,
+        padding: `${dynamicStyles.pageMarginTop} ${dynamicStyles.pageMarginRight} ${dynamicStyles.pageMarginBottom} ${dynamicStyles.pageMarginLeft}`,
         boxSizing: "border-box",
+        transform: `scale(${scale})`,
+        transformOrigin: "top left",
+        position: "relative",
       }}
     >
-      {/* Header */}
-      <header
-        style={{
-          marginBottom: "20px",
-          paddingBottom: "16px",
-          borderBottom: `4px solid ${selectedTheme.primary}`,
-        }}
-      >
-        <h1
+      <div ref={contentRef}>
+        {/* Header Section */}
+        <header
           style={{
-            fontSize: "28pt",
-            fontWeight: "700",
-            margin: "0 0 10px 0",
-            color: `${selectedTheme.primary}`,
-            letterSpacing: "0.5px",
+            marginBottom: "12px",
+            paddingBottom: "8px",
+            borderBottom: `${dynamicStyles.headerBorderWidth} solid ${selectedTheme.primary}`,
           }}
         >
-          {resumeData.name || "Your Name"}
-        </h1>
+          <h1
+            style={{
+              fontSize: dynamicStyles.nameSize,
+              fontWeight: "800",
+              margin: "0 0 " + dynamicStyles.nameMarginBottom + " 0",
+              color: selectedTheme.primary,
+              letterSpacing: "0.3px",
+            }}
+          >
+            {resumeData.name || "Your Name"}
+          </h1>
 
-        {/* Contact Information */}
-        <div
-          style={{
-            fontSize: "10pt",
-            color: "#4b5563",
-            display: "flex",
-            flexWrap: "wrap",
-            gap: "12px",
-            fontWeight: "500",
-          }}
-        >
-          {resumeData.contact?.email && (
-            <span>✉️ {resumeData.contact.email}</span>
+          {/* Contact Information */}
+          {resumeData.contact && (
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: dynamicStyles.contactGap,
+                fontSize: dynamicStyles.contactSize,
+                color: selectedTheme.textLight,
+                fontWeight: "500",
+              }}
+            >
+              {resumeData.contact.email && (
+                <span>{resumeData.contact.email}</span>
+              )}
+              {resumeData.contact.phone && (
+                <>
+                  <span style={{color: selectedTheme.border}}>•</span>
+                  <span>{resumeData.contact.phone}</span>
+                </>
+              )}
+              {resumeData.contact.location && (
+                <>
+                  <span style={{color: selectedTheme.border}}>•</span>
+                  <span>{resumeData.contact.location}</span>
+                </>
+              )}
+              {resumeData.contact.linkedin && (
+                <>
+                  <span style={{color: selectedTheme.border}}>•</span>
+                  <span>{resumeData.contact.linkedin}</span>
+                </>
+              )}
+              {resumeData.contact.github && (
+                <>
+                  <span style={{color: selectedTheme.border}}>•</span>
+                  <span>{resumeData.contact.github}</span>
+                </>
+              )}
+              {resumeData.contact.website && (
+                <>
+                  <span style={{color: selectedTheme.border}}>•</span>
+                  <span>{resumeData.contact.website}</span>
+                </>
+              )}
+              {resumeData.contact.portfolio && (
+                <>
+                  <span style={{color: selectedTheme.border}}>•</span>
+                  <span>{resumeData.contact.portfolio}</span>
+                </>
+              )}
+            </div>
           )}
-          {resumeData.contact?.phone && (
-            <>
-              <span style={{color: `${selectedTheme.border}`}}>|</span>
-              <span>📱 {resumeData.contact.phone}</span>
-            </>
-          )}
-          {resumeData.contact?.location && (
-            <>
-              <span style={{color: `${selectedTheme.border}`}}>|</span>
-              <span>📍 {resumeData.contact.location}</span>
-            </>
-          )}
-          {resumeData.contact?.linkedin && (
-            <>
-              <span style={{color: `${selectedTheme.border}`}}>|</span>
-              <span>💼 {resumeData.contact.linkedin}</span>
-            </>
-          )}
-          {resumeData.contact?.github && (
-            <>
-              <span style={{color: `${selectedTheme.border}`}}>|</span>
-              <span>🔗 {resumeData.contact.github}</span>
-            </>
-          )}
-        </div>
-      </header>
+        </header>
 
-      {/* Main Content */}
-      <main>{sectionOrder.map((sectionId) => renderSection(sectionId))}</main>
-
-      {/* Footer Watermark */}
-      <footer
-        style={{
-          marginTop: "20px",
-          paddingTop: "10px",
-          borderTop: "2px solid #e5e7eb",
-          fontSize: "8pt",
-          color: "#9ca3af",
-          textAlign: "center",
-        }}
-      >
-        Impact-Driven Professional | Results-Oriented Leader
-      </footer>
+        {/* Dynamic Sections */}
+        {sectionOrder.map((sectionId) => renderSection(sectionId))}
+      </div>
     </div>
   );
 });

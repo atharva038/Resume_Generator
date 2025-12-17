@@ -1,6 +1,6 @@
 import {useState, useEffect} from "react";
 import {Activity} from "lucide-react";
-import {getAdminLogs} from "../../services/admin.api";
+import {getAdminLogs} from "@/api/admin.api";
 
 const AdminLogs = () => {
   const [logs, setLogs] = useState([]);
@@ -35,7 +35,7 @@ const AdminLogs = () => {
           </div>
         ) : logs.length === 0 ? (
           <div className="text-center py-12">
-            <Activity className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <Activity className="w-16 h-16 text-gray-600 dark:text-gray-400 mx-auto mb-4" />
             <p className="text-gray-600 dark:text-gray-400">
               No activity logs yet
             </p>
@@ -55,7 +55,7 @@ const AdminLogs = () => {
                     by {log.adminId?.name || "Unknown Admin"}
                   </p>
                 </div>
-                <span className="text-sm text-gray-500 dark:text-gray-400">
+                <span className="text-sm text-gray-500 dark:text-gray-500 dark:text-gray-400">
                   {new Date(log.createdAt).toLocaleString()}
                 </span>
               </div>

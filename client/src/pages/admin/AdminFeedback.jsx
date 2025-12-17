@@ -20,12 +20,14 @@ import {
   getFeedbackStatistics,
   updateFeedbackStatus,
   deleteFeedbackAdmin,
-} from "../../services/admin.api";
-import {parseValidationErrors} from "../../utils/errorHandler";
+} from "@/api/admin.api";
+import {parseValidationErrors} from "@/utils/errorHandler";
+import {useToggle} from "@/hooks";
 
 const AdminFeedback = () => {
   const [feedbacks, setFeedbacks] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, toggleLoading, setLoadingTrue, setLoadingFalse] =
+    useToggle(false);
   const [stats, setStats] = useState(null);
   const [filters, setFilters] = useState({
     type: "",
@@ -36,7 +38,8 @@ const AdminFeedback = () => {
     limit: 20,
   });
   const [selectedFeedback, setSelectedFeedback] = useState(null);
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, toggleModal, setShowModalTrue, setShowModalFalse] =
+    useToggle(false);
   const [responseText, setResponseText] = useState("");
   const [statusUpdate, setStatusUpdate] = useState("");
 
@@ -47,13 +50,13 @@ const AdminFeedback = () => {
 
   const fetchFeedbacks = async () => {
     try {
-      setLoading(true);
+      setLoadingTrue();
       const response = await getAllFeedback(filters);
       setFeedbacks(response.data.feedbacks);
     } catch (error) {
       console.error("Error fetching feedbacks:", error);
     } finally {
-      setLoading(false);
+      setLoadingFalse();
     }
   };
 
@@ -92,7 +95,7 @@ const AdminFeedback = () => {
         adminResponse: responseText,
         status: statusUpdate || selectedFeedback.status,
       });
-      setShowModal(false);
+      setShowModalFalse();
       setSelectedFeedback(null);
       setResponseText("");
       setStatusUpdate("");
@@ -193,7 +196,7 @@ const AdminFeedback = () => {
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
           User Feedback Management
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">
+        <p className="text-gray-600 dark:text-gray-600 dark:text-gray-400 mt-1">
           View and manage user feedback, suggestions, and bug reports
         </p>
       </div>
@@ -311,7 +314,7 @@ const AdminFeedback = () => {
           </div>
         ) : feedbacks.length === 0 ? (
           <div className="text-center py-12">
-            <MessageSquare className="w-16 h-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
+            <MessageSquare className="w-16 h-16 text-gray-600 dark:text-gray-400 dark:text-gray-600 mx-auto mb-4" />
             <p className="text-gray-600 dark:text-gray-400">
               No feedback found
             </p>
@@ -329,7 +332,7 @@ const AdminFeedback = () => {
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
                         {getTypeIcon(feedback.type)}
-                        <h3 className="font-semibold text-gray-900 dark:text-white text-lg">
+                        <h3 className="font-semibold text-gray-900 dark:text-gray-900 dark:text-white text-lg">
                           {feedback.title}
                         </h3>
                         <span
@@ -347,11 +350,11 @@ const AdminFeedback = () => {
                         </span>
                       </div>
 
-                      <p className="text-gray-600 dark:text-gray-400 mb-3">
+                      <p className="text-gray-600 dark:text-gray-600 dark:text-gray-400 mb-3">
                         {feedback.description}
                       </p>
 
-                      <div className="flex items-center gap-6 text-sm text-gray-500 dark:text-gray-400">
+                      <div className="flex items-center gap-6 text-sm text-gray-500 dark:text-gray-500 dark:text-gray-400">
                         <span>
                           By: {feedback.userId?.name || "Unknown"} (
                           {feedback.userId?.email})
@@ -385,7 +388,7 @@ const AdminFeedback = () => {
                           onClick={() =>
                             handleStatusUpdate(feedback._id, "in-progress")
                           }
-                          className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white text-sm rounded-lg transition-colors"
+                          className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-gray-900 dark:text-white text-sm rounded-lg transition-colors"
                           title="Mark as In Progress"
                         >
                           In Progress
@@ -397,7 +400,7 @@ const AdminFeedback = () => {
                           onClick={() =>
                             handleStatusUpdate(feedback._id, "resolved")
                           }
-                          className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-sm rounded-lg transition-colors"
+                          className="px-3 py-1 bg-green-500 hover:bg-green-600 text-gray-900 dark:text-white text-sm rounded-lg transition-colors"
                           title="Mark as Resolved"
                         >
                           Resolve
@@ -409,7 +412,7 @@ const AdminFeedback = () => {
                           setSelectedFeedback(feedback);
                           setResponseText(feedback.adminResponse || "");
                           setStatusUpdate(feedback.status);
-                          setShowModal(true);
+                          setShowModalTrue();
                         }}
                         className="p-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg text-indigo-600 dark:text-indigo-400"
                         title="Add Response"
@@ -437,12 +440,12 @@ const AdminFeedback = () => {
       {showModal && selectedFeedback && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-2xl w-full p-6 shadow-2xl">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
               Respond to Feedback
             </h3>
 
             <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-              <p className="font-semibold text-gray-900 dark:text-white mb-2">
+              <p className="font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
                 {selectedFeedback.title}
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -452,7 +455,7 @@ const AdminFeedback = () => {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-700 dark:text-gray-300 mb-2">
                   Status
                 </label>
                 <select
@@ -469,7 +472,7 @@ const AdminFeedback = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-700 dark:text-gray-300 mb-2">
                   Response
                 </label>
                 <textarea
@@ -477,20 +480,20 @@ const AdminFeedback = () => {
                   onChange={(e) => setResponseText(e.target.value)}
                   rows={4}
                   placeholder="Write your response to the user..."
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white resize-none"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-900 dark:text-white resize-none"
                 />
               </div>
 
               <div className="flex gap-3">
                 <button
                   onClick={handleResponseSubmit}
-                  className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-lg transition-colors"
+                  className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-gray-900 dark:text-white py-2 px-4 rounded-lg transition-colors"
                 >
                   Submit Response
                 </button>
                 <button
                   onClick={() => {
-                    setShowModal(false);
+                    setShowModalFalse();
                     setSelectedFeedback(null);
                     setResponseText("");
                     setStatusUpdate("");

@@ -1,5 +1,5 @@
 import {Link, useNavigate} from "react-router-dom";
-import {useNavigationBlocker} from "../../context/NavigationBlockerContext";
+import {useNavigationBlocker} from "@/context/NavigationBlockerContext";
 
 /**
  * BlockableLink - A Link component that respects navigation blocking

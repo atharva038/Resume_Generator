@@ -33,7 +33,8 @@ dotenv.config();
 // =========================================
 
 // Validate critical environment variables
-const requiredEnvVars = ["MONGODB_URI", "JWT_SECRET", "GEMINI_API_KEY"];
+// NOTE: GEMINI_API_KEY is optional. The app can run with OpenAI only.
+const requiredEnvVars = ["MONGODB_URI", "JWT_SECRET"];
 const missingEnvVars = requiredEnvVars.filter((envVar) => !process.env[envVar]);
 
 if (missingEnvVars.length > 0) {

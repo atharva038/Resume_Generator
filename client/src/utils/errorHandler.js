@@ -86,3 +86,85 @@ export const getRetryAfter = (error) => {
   if (!isRateLimitError(error)) return null;
   return error.response?.data?.retryAfter || "a few minutes";
 };
+
+/**
+ * Get user-friendly error message
+ * @param {Object} error - Error object
+ * @returns {string} User-friendly message
+ */
+export const getErrorMessage = (error) => {
+  if (error.response) {
+    // Server responded with error status
+    return error.response.data?.message || parseValidationErrors(error);
+  } else if (error.request) {
+    // Request made but no response
+    return "Network error. Please check your connection.";
+  } else {
+    // Something else went wrong
+    return error.message || "An unexpected error occurred";
+  }
+};
+
+/**
+ * Handle API errors with toast notifications
+ * @param {Object} error - Error object
+ * @param {string} fallbackMessage - Default message if none found
+ * @param {Object} toastInstance - Optional toast instance (to avoid circular dependencies)
+ * @returns {string} Error message
+ *
+ * Note: If using in a component, pass toast as third parameter:
+ * handleApiError(error, "Failed to load data", toast);
+ */
+export const handleApiError = (
+  error,
+  fallbackMessage = "An error occurred",
+  toastInstance = null
+) => {
+  const message = getErrorMessage(error) || fallbackMessage;
+
+  // Don't show toast for 401 (handled by interceptor)
+  if (error.response?.status !== 401 && toastInstance) {
+    toastInstance.error(message);
+  }
+
+  // Log to console in development
+  if (import.meta.env.DEV) {
+    console.error("API Error:", error);
+  }
+
+  return message;
+};
+
+/**
+ * Handle specific HTTP error codes
+ * @param {Object} error - Error object
+ * @param {Object} handlers - Object with handler functions for specific status codes
+ */
+export const handleErrorByStatus = (error, handlers = {}) => {
+  const status = error.response?.status;
+
+  if (handlers[status]) {
+    handlers[status](error);
+  } else if (handlers.default) {
+    handlers.default(error);
+  } else {
+    handleApiError(error);
+  }
+};
+
+/**
+ * Async error boundary wrapper
+ * @param {Function} fn - Async function to wrap
+ * @param {string} errorMessage - Custom error message
+ * @returns {Function} Wrapped function with error handling
+ */
+export const withErrorHandling = (fn, errorMessage) => {
+  return async (...args) => {
+    try {
+      return await fn(...args);
+    } catch (error) {
+      handleApiError(error, errorMessage);
+      throw error;
+    }
+  };
+};

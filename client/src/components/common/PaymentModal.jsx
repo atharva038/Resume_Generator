@@ -1,12 +1,20 @@
 import {useState, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
-import {FaTimes, FaCreditCard, FaShieldAlt, FaLock} from "react-icons/fa";
+import {
+  FaTimes,
+  FaCreditCard,
+  FaShieldAlt,
+  FaLock,
+  FaCheckCircle,
+} from "react-icons/fa";
+import {Sparkles} from "lucide-react";
 import {
   createPaymentOrder,
   verifyPayment,
   getPricing,
-} from "../../services/subscription.api";
+} from "@/api/subscription.api";
 import toast from "react-hot-toast";
+import {useToggle} from "@/hooks";
 
 /**
  * Payment Modal Component
@@ -19,7 +27,8 @@ const PaymentModal = ({tier: propTier, plan: propPlan, onClose}) => {
   const tier = propTier;
   const plan = propPlan;
 
-  const [loading, setLoading] = useState(false);
+  const [loading, toggleLoading, setLoadingTrue, setLoadingFalse] =
+    useToggle(false);
   const [pricing, setPricing] = useState(null);
   const [orderDetails, setOrderDetails] = useState(null);
 
@@ -69,7 +78,7 @@ const PaymentModal = ({tier: propTier, plan: propPlan, onClose}) => {
 
   const handlePayment = async () => {
     try {
-      setLoading(true);
+      setLoadingTrue();
 
       // Load Razorpay script
       const scriptLoaded = await loadRazorpayScript();
@@ -108,7 +117,7 @@ const PaymentModal = ({tier: propTier, plan: propPlan, onClose}) => {
         },
         modal: {
           ondismiss: () => {
-            setLoading(false);
+            setLoadingFalse();
             toast.info("Payment cancelled");
           },
         },
@@ -230,14 +239,14 @@ const PaymentModal = ({tier: propTier, plan: propPlan, onClose}) => {
         toast.error(
           `Payment failed: ${response.error.description || "Please try again"}`
         );
-        setLoading(false);
+        setLoadingFalse();
       });
     } catch (error) {
       console.error("Payment error:", error);
       toast.error(
         error.error || "Failed to initiate payment. Please try again."
       );
-      setLoading(false);
+      setLoadingFalse();
     }
   };
 
@@ -283,49 +292,61 @@ const PaymentModal = ({tier: propTier, plan: propPlan, onClose}) => {
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
+    <div className="fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn">
+      <div className="bg-white dark:bg-zinc-900/90 dark:backdrop-blur-2xl rounded-2xl shadow-2xl dark:shadow-[0_20px_70px_rgba(0,0,0,0.6)] max-w-lg w-full max-h-[90vh] overflow-y-auto border dark:border-white/10 transform transition-all animate-slideUp">
         {/* Header */}
-        <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-6 text-white relative">
+        <div className="bg-white dark:bg-zinc-900 border-b border-gray-200 dark:border-white/10 p-5 sticky top-0 z-10 backdrop-blur-xl">
           <button
             onClick={onClose || (() => navigate("/pricing"))}
-            className="absolute top-4 right-4 text-white hover:bg-white hover:bg-opacity-20 rounded-full p-2 transition-all"
+            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 rounded-full p-2 transition-all"
             aria-label="Close"
           >
-            <FaTimes size={20} />
+            <FaTimes size={18} />
           </button>
-          <div className="flex items-center mb-2">
-            <FaCreditCard className="text-3xl mr-3" />
-            <h2 className="text-2xl font-bold">Complete Payment</h2>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
+              <FaCreditCard className="text-white text-xl" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                Complete Payment
+              </h2>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Secure payment via Razorpay
+              </p>
+            </div>
           </div>
-          <p className="text-purple-100">Secure payment powered by Razorpay</p>
         </div>
 
         {/* Order Details */}
-        <div className="p-6">
-          <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-6">
-            <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">
+        <div className="p-5">
+          <div className="bg-gradient-to-br from-gray-50 to-gray-100/50 dark:from-zinc-800/50 dark:to-zinc-800/30 dark:backdrop-blur-xl rounded-xl p-4 mb-5 border border-gray-200 dark:border-white/10 shadow-sm">
+            <h3 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2 text-sm">
+              <div className="w-1 h-4 bg-gradient-to-b from-purple-500 to-pink-500 rounded-full"></div>
               Order Summary
             </h3>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">Plan:</span>
-                <span className="font-semibold text-gray-900 dark:text-gray-100">
+            <div className="space-y-2.5">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600 dark:text-gray-400">
+                  Plan:
+                </span>
+                <span className="font-semibold text-sm text-gray-900 dark:text-white bg-white dark:bg-white/5 px-3 py-1.5 rounded-lg border dark:border-white/10">
                   {tier.toUpperCase()} - {getPlanName()}
                 </span>
               </div>
               {pricing && (
                 <>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">
-                      Amount:
+                  <div className="flex justify-between items-baseline pt-2 border-t border-gray-200 dark:border-white/10">
+                    <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                      Total Amount:
                     </span>
-                    <span className="font-bold text-2xl text-purple-600 dark:text-purple-400">
+                    <span className="font-bold text-2xl bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
                       {formatPrice(getAmount())}
                     </span>
                   </div>
                   {plan === "yearly" && (
-                    <div className="text-sm text-green-600 dark:text-green-400 font-semibold">
+                    <div className="text-xs text-green-600 dark:text-green-400 font-semibold bg-green-50 dark:bg-green-900/20 px-3 py-1.5 rounded-lg flex items-center gap-2 border border-green-200 dark:border-green-700">
+                      <Sparkles size={14} />
                       Save 16% with yearly billing!
                     </div>
                   )}
@@ -336,20 +357,23 @@ const PaymentModal = ({tier: propTier, plan: propPlan, onClose}) => {
 
           {/* Features */}
           {pricing?.features && (
-            <div className="mb-6">
-              <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
+            <div className="mb-4">
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2.5 flex items-center gap-2 text-sm">
+                <div className="w-1 h-4 bg-gradient-to-b from-purple-500 to-pink-500 rounded-full"></div>
                 What you'll get:
               </h3>
-              <ul className="space-y-1">
-                {pricing.features.slice(0, 5).map((feature, index) => (
+              <ul className="space-y-2">
+                {pricing.features.slice(0, 4).map((feature, index) => (
                   <li
                     key={index}
-                    className="text-sm text-gray-600 dark:text-gray-400 flex items-start"
+                    className="text-xs text-gray-700 dark:text-gray-300 flex items-start gap-2 group"
                   >
-                    <span className="text-green-500 dark:text-green-400 mr-2">
-                      ✓
+                    <span className="text-green-500 dark:text-green-400 mt-0.5 flex-shrink-0">
+                      <FaCheckCircle size={14} />
                     </span>
-                    {feature}
+                    <span className="group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
+                      {feature}
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -357,35 +381,41 @@ const PaymentModal = ({tier: propTier, plan: propPlan, onClose}) => {
           )}
 
           {/* Security Info */}
-          <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-3 mb-6">
+          <div className="bg-gradient-to-br from-blue-50 to-cyan-50/50 dark:from-blue-900/20 dark:to-cyan-900/10 dark:backdrop-blur-xl border border-blue-200 dark:border-blue-700/50 rounded-lg p-3 mb-4 shadow-sm">
             <div className="flex items-center text-blue-800 dark:text-blue-300">
-              <FaShieldAlt className="mr-2" />
-              <span className="text-sm font-medium">Secure Payment</span>
+              <div className="w-7 h-7 bg-blue-100 dark:bg-blue-800/50 rounded-lg flex items-center justify-center mr-2">
+                <FaShieldAlt size={14} />
+              </div>
+              <div>
+                <span className="text-xs font-semibold block">
+                  Secure Payment
+                </span>
+                <p className="text-[10px] text-blue-700 dark:text-blue-400">
+                  Encrypted and secure
+                </p>
+              </div>
             </div>
-            <p className="text-xs text-blue-600 dark:text-blue-400 mt-1 ml-6">
-              Your payment information is encrypted and secure
-            </p>
           </div>
 
           {/* Payment Button */}
           <button
             onClick={handlePayment}
             disabled={loading}
-            className={`w-full py-4 rounded-lg font-semibold text-white transition-all transform shadow-lg ${
+            className={`w-full py-3 rounded-xl font-semibold text-white transition-all transform shadow-lg text-sm ${
               loading
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 hover:scale-105"
+                ? "bg-gray-400 dark:bg-gray-600 cursor-not-allowed"
+                : "bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 dark:from-purple-500 dark:via-pink-500 dark:to-purple-500 hover:from-purple-700 hover:via-pink-700 hover:to-purple-700 dark:hover:from-purple-600 dark:hover:via-pink-600 dark:hover:to-purple-600 hover:scale-[1.02] active:scale-[0.98] hover:shadow-xl dark:hover:shadow-purple-500/30"
             }`}
           >
             {loading ? (
               <div className="flex items-center justify-center">
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                 Processing...
               </div>
             ) : (
-              <div className="flex items-center justify-center">
-                <FaLock className="mr-2" />
-                Pay {formatPrice(getAmount())}
+              <div className="flex items-center justify-center gap-2">
+                <FaLock className="text-xs" />
+                <span>Pay {formatPrice(getAmount())}</span>
               </div>
             )}
           </button>
@@ -393,7 +423,7 @@ const PaymentModal = ({tier: propTier, plan: propPlan, onClose}) => {
           {/* Cancel */}
           <button
             onClick={onClose || (() => navigate("/pricing"))}
-            className="w-full mt-3 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-all"
+            className="w-full mt-2.5 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 font-medium"
             disabled={loading}
           >
             Cancel
@@ -401,19 +431,19 @@ const PaymentModal = ({tier: propTier, plan: propPlan, onClose}) => {
         </div>
 
         {/* Footer */}
-        <div className="bg-gray-50 dark:bg-gray-700 px-6 py-4 border-t border-gray-200 dark:border-gray-600">
-          <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+        <div className="bg-gray-50 dark:bg-zinc-800/50 dark:backdrop-blur-xl px-5 py-3 border-t border-gray-200 dark:border-white/10">
+          <p className="text-[10px] text-gray-500 dark:text-gray-400 text-center leading-relaxed">
             By completing this payment, you agree to our{" "}
             <a
               href="/terms"
-              className="text-purple-600 dark:text-purple-400 hover:underline"
+              className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 hover:underline font-medium transition-colors"
             >
               Terms of Service
             </a>{" "}
             and{" "}
             <a
               href="/privacy"
-              className="text-purple-600 dark:text-purple-400 hover:underline"
+              className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 hover:underline font-medium transition-colors"
             >
               Privacy Policy
             </a>

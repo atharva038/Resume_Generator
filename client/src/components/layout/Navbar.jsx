@@ -1,8 +1,9 @@
 import {Link, useNavigate} from "react-router-dom";
-import {useAuth} from "../../context/AuthContext";
-import {BlockableLink} from "../auth";
-import {DarkModeToggle} from "../common";
+import {useAuth} from "@/context/AuthContext";
+import {BlockableLink} from "@/components/auth";
+import {DarkModeToggle} from "@/components/common";
 import {useState, useEffect} from "react";
+import {useToggle} from "@/hooks";
 import {
   Menu,
   Sparkles,
@@ -11,21 +12,27 @@ import {
   LayoutDashboard,
   Tag,
   UserCircle,
+  ArrowRight,
 } from "lucide-react";
 
 const Navbar = ({toggleSidebar, isSidebarOpen}) => {
   const {user, logout} = useAuth();
   const navigate = useNavigate();
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [isScrolled, toggleScrolled, setIsScrolledTrue, setIsScrolledFalse] =
+    useToggle(false);
 
   // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+      if (window.scrollY > 10) {
+        setIsScrolledTrue();
+      } else {
+        setIsScrolledFalse();
+      }
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [setIsScrolledTrue, setIsScrolledFalse]);
 
   const handleLogout = () => {
     logout();
@@ -38,110 +45,115 @@ const Navbar = ({toggleSidebar, isSidebarOpen}) => {
         isSidebarOpen ? "left-0 lg:left-64" : "left-0 lg:left-20"
       } ${
         isScrolled
-          ? "bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-lg py-2"
-          : "bg-white/70 dark:bg-gray-900/70 backdrop-blur-sm shadow-sm py-3 sm:py-4"
+          ? "bg-white/95 dark:bg-black/95 backdrop-blur-xl border-b border-gray-200 dark:border-zinc-800/50 shadow-sm"
+          : "bg-white/80 dark:bg-black/80 backdrop-blur-md border-b border-transparent"
       }`}
     >
-      <div className="container mx-auto px-3 sm:px-4 lg:px-6">
-        <div className="flex items-center justify-between gap-2">
-          {/* Mobile Menu Button & Logo */}
-          <div className="flex items-center gap-2 sm:gap-3">
+      <div className="mx-auto px-4 lg:px-6">
+        <div className="flex items-center justify-between h-16">
+          {/* Left Section: Menu Button & Logo */}
+          <div className="flex items-center gap-3">
+            {/* Mobile Menu Button */}
             <button
               onClick={toggleSidebar}
-              className="lg:hidden p-1.5 sm:p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200"
+              className="lg:hidden p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-lg transition-colors duration-200"
               aria-label="Toggle sidebar"
             >
-              <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
+              <Menu className="w-5 h-5" />
             </button>
 
-            <Link
-              to="/"
-              className="flex items-center gap-1.5 sm:gap-2 text-lg sm:text-xl lg:text-2xl font-bold group"
-            >
-              <div className="relative">
-                <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform duration-300" />
-                <div className="absolute inset-0 blur-md bg-blue-500/30 group-hover:bg-blue-500/50 transition-all duration-300"></div>
-              </div>
-              {/* Desktop/Tablet: SmartNShine, Mobile: SNS */}
-              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent group-hover:from-blue-500 group-hover:via-purple-500 group-hover:to-pink-500 transition-all duration-300 hidden sm:inline">
+            {/* Logo */}
+            <Link to="/" className="flex items-center text-xl font-bold group">
+              <img
+                src="/Logo_Main.png"
+                alt="SmartNShine"
+                className="h-16 w-auto object-contain group-hover:scale-105 transition-transform duration-300 -mr-1"
+              />
+              <span className="bg-gradient-to-r from-primary-600 to-purple-600 bg-clip-text text-transparent hidden sm:inline tracking-tight">
                 SmartNShine
-              </span>
-              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent sm:hidden">
-                SNS
               </span>
             </Link>
           </div>
 
-          {/* Desktop Auth Buttons */}
-          <div className="flex items-center gap-1 sm:gap-2 lg:gap-4">
+          {/* Right Section: Actions */}
+          <div className="flex items-center gap-2">
+            {/* Dark Mode Toggle */}
             <DarkModeToggle />
 
             {user ? (
               <>
+                {/* My Resumes */}
                 <BlockableLink
                   to="/dashboard"
-                  className="flex items-center gap-1 sm:gap-2 p-1.5 sm:p-2 lg:px-4 lg:py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 font-medium"
+                  className="hidden md:flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-lg transition-all duration-200"
                   title="My Dashboard"
                 >
-                  <LayoutDashboard className="w-4 h-4 sm:w-5 sm:h-5" />
-                  <span className="hidden lg:inline text-sm">My Resumes</span>
+                  <LayoutDashboard className="w-4 h-4" />
+                  <span>Dashboard</span>
                 </BlockableLink>
+
+                {/* Profile */}
                 <BlockableLink
                   to="/profile"
-                  className="flex items-center gap-1 sm:gap-2 p-1.5 sm:p-2 lg:px-4 lg:py-2 text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 font-medium"
+                  className="hidden lg:flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-lg transition-all duration-200"
                   title="Profile & Subscription"
                 >
-                  <UserCircle className="w-4 h-4 sm:w-5 sm:h-5" />
-                  <span className="hidden lg:inline text-sm">Profile</span>
+                  <UserCircle className="w-4 h-4" />
+                  <span>Profile</span>
                 </BlockableLink>
+
+                {/* Pricing */}
                 <BlockableLink
                   to="/pricing"
-                  className="flex items-center gap-1 sm:gap-2 p-1.5 sm:p-2 lg:px-4 lg:py-2 text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 font-medium"
+                  className="hidden lg:flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-lg transition-all duration-200"
                   title="View Pricing"
                 >
-                  <Tag className="w-4 h-4 sm:w-5 sm:h-5" />
-                  <span className="hidden lg:inline text-sm">Pricing</span>
+                  <Tag className="w-4 h-4" />
+                  <span>Pricing</span>
                 </BlockableLink>
+
+                {/* Logout Button */}
                 <button
                   onClick={handleLogout}
-                  className="flex items-center gap-1 sm:gap-2 px-2 py-1.5 sm:px-3 sm:py-2 lg:px-4 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:border-red-500 hover:text-red-500 dark:hover:text-red-400 transition-all duration-200 font-medium text-xs sm:text-sm"
+                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-red-400 hover:bg-red-950/30 rounded-lg transition-all duration-200"
                   title="Logout"
                 >
-                  <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <LogOut className="w-4 h-4" />
                   <span className="hidden md:inline">Logout</span>
                 </button>
               </>
             ) : (
               <>
+                {/* Pricing Link */}
                 <BlockableLink
                   to="/pricing"
-                  className="flex items-center gap-1 sm:gap-1.5 p-1.5 sm:p-2 lg:px-3 lg:py-2 text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 font-medium"
+                  className="hidden sm:flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-lg transition-all duration-200"
                   title="View Pricing"
                 >
-                  <Tag className="w-4 h-4 sm:w-5 sm:h-5" />
-                  <span className="hidden md:inline text-sm">Pricing</span>
+                  <Tag className="w-4 h-4" />
+                  <span>Pricing</span>
                 </BlockableLink>
+
+                {/* Login Button */}
                 <BlockableLink
                   to="/login"
-                  className="flex items-center gap-1 sm:gap-1.5 p-1.5 sm:p-2 lg:px-4 lg:py-2 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 font-medium text-xs sm:text-sm"
+                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-lg transition-all duration-200"
                   title="Login"
                 >
-                  <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 lg:w-5 lg:h-5" />
-                  <span className="hidden md:inline">Login</span>
+                  <User className="w-4 h-4" />
+                  <span className="hidden sm:inline">Login</span>
                 </BlockableLink>
+
+                {/* CTA: Build Resume */}
                 <BlockableLink
                   to="/upload"
-                  className="group relative flex items-center gap-1 sm:gap-1.5 p-1.5 sm:p-2 lg:px-5 lg:py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 overflow-hidden text-xs sm:text-sm"
+                  className="group inline-flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-gray-900 dark:text-white text-sm font-medium rounded-lg transition-all duration-200 shadow-sm shadow-primary-500/25 hover:shadow-md hover:shadow-primary-500/30"
                   title="Build My Resume"
                 >
-                  <span className="relative z-10 flex items-center gap-1 sm:gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 lg:w-5 lg:h-5" />
-                    <span className="hidden sm:inline whitespace-nowrap">
-                      Build Resume
-                    </span>
-                    <span className="sm:hidden">Build</span>
-                  </span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <Sparkles className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
+                  <span className="hidden sm:inline">Build Resume</span>
+                  <span className="sm:hidden">Build</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform duration-200" />
                 </BlockableLink>
               </>
             )}

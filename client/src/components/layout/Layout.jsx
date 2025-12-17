@@ -1,33 +1,39 @@
 import {Outlet, useLocation} from "react-router-dom";
 import {useState, useEffect} from "react";
+import {useToggle} from "@/hooks";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
-import {PageTransition} from "../common";
+import {PageTransition} from "@/components/common";
 
 const Layout = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [
+    isSidebarOpen,
+    toggleSidebar,
+    setIsSidebarOpenTrue,
+    setIsSidebarOpenFalse,
+  ] = useToggle(false);
   const location = useLocation();
 
   // Auto-open sidebar on desktop
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1024) {
-        setIsSidebarOpen(true);
+        setIsSidebarOpenTrue();
       } else {
-        setIsSidebarOpen(false);
+        setIsSidebarOpenFalse();
       }
     };
 
     handleResize(); // Set initial state
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  }, [setIsSidebarOpenTrue, setIsSidebarOpenFalse]);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-950">
       {/* Sidebar */}
-      <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
+      <Sidebar isOpen={isSidebarOpen} setIsOpen={toggleSidebar} />
 
       {/* Main Content Area */}
       <div
@@ -36,10 +42,7 @@ const Layout = () => {
         }`}
       >
         {/* Top Navbar */}
-        <Navbar
-          toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
-          isSidebarOpen={isSidebarOpen}
-        />
+        <Navbar toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
 
         {/* Page Content with Transition */}
         <main className="flex-1 pt-16 md:pt-20 w-full">

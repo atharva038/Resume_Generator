@@ -59,7 +59,7 @@ const RateLimitExceeded = () => {
             <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full mb-4 animate-pulse">
               <AlertTriangle className="w-10 h-10 text-white" />
             </div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">
+            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-2">
               Rate Limit Exceeded
             </h1>
             <p className="text-red-100 text-lg">
@@ -74,10 +74,10 @@ const RateLimitExceeded = () => {
               <div className="flex items-start gap-4 p-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
                 <Shield className="w-6 h-6 text-red-600 dark:text-red-400 mt-1 flex-shrink-0" />
                 <div>
-                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
                     Security Protection Activated
                   </h2>
-                  <p className="text-gray-700 dark:text-gray-300 mb-2">
+                  <p className="text-gray-700 dark:text-gray-700 dark:text-gray-300 mb-2">
                     {errorDetails.message}
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -92,7 +92,7 @@ const RateLimitExceeded = () => {
             <div className="mb-8">
               <div className="bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-orange-900/20 dark:to-yellow-900/20 border-2 border-orange-300 dark:border-orange-700 rounded-xl p-6 text-center">
                 <Clock className="w-8 h-8 text-orange-600 dark:text-orange-400 mx-auto mb-3" />
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
                   Please Wait
                 </h3>
                 <div className="flex items-center justify-center gap-3 mb-2">
@@ -122,7 +122,7 @@ const RateLimitExceeded = () => {
 
             {/* What You Can Do */}
             <div className="mb-8">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
                 What you can do:
               </h3>
               <div className="space-y-3">
@@ -182,7 +182,7 @@ const RateLimitExceeded = () => {
             <div className="flex flex-col sm:flex-row gap-4">
               <button
                 onClick={handleGoBack}
-                className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-2"
+                className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-gray-900 dark:text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-2"
               >
                 <ArrowLeft className="w-5 h-5" />
                 Back to Login
@@ -190,7 +190,7 @@ const RateLimitExceeded = () => {
 
               <button
                 onClick={handleContactSupport}
-                className="flex-1 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-all flex items-center justify-center gap-2"
+                className="flex-1 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-900 dark:text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-all flex items-center justify-center gap-2"
               >
                 <Mail className="w-5 h-5" />
                 Contact Support

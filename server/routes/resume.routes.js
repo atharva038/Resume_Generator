@@ -9,6 +9,7 @@ import {checkAIQuota} from "../middleware/aiUsageTracker.middleware.js";
 import {
   checkSubscription,
   checkUsageLimit,
+  checkResumeSubscriptionAccess,
 } from "../middleware/subscription.middleware.js";
 import {
   validateResumeCreate,
@@ -16,6 +17,8 @@ import {
   validateResumeId,
   validateContentEnhance,
   validateSkillsCategorize,
+  validateAchievementsSegregation,
+  validateCustomSectionProcessing,
   validateFileUpload,
 } from "../middleware/validation.middleware.js";
 import {
@@ -39,6 +42,8 @@ const router = express.Router();
 router.post(
   "/upload",
   authenticateToken,
+  checkSubscription,
+  checkUsageLimit("aiResumeExtractionsPerDay"),
   uploadLimiter, // Rate limit file uploads
   upload.single("resume"),
   validateFileUpload,
@@ -50,6 +55,7 @@ router.post(
   "/enhance",
   authenticateToken,
   checkSubscription,
+  checkResumeSubscriptionAccess, // NEW: Check if resume's subscription is active
   checkUsageLimit("aiGenerationsPerMonth"),
   aiLimiter,
   checkAIQuota,
@@ -62,6 +68,7 @@ router.post(
   "/generate-summary",
   authenticateToken,
   checkSubscription,
+  checkResumeSubscriptionAccess, // NEW: Check if resume's subscription is active
   checkUsageLimit("aiGenerationsPerMonth"),
   aiLimiter,
   checkAIQuota,
@@ -74,6 +81,7 @@ router.post(
   "/categorize-skills",
   authenticateToken,
   checkSubscription,
+  checkResumeSubscriptionAccess, // NEW: Check if resume's subscription is active
   checkUsageLimit("aiGenerationsPerMonth"),
   aiLimiter,
   checkAIQuota,
@@ -86,10 +94,11 @@ router.post(
   "/segregate-achievements",
   authenticateToken,
   checkSubscription,
+  checkResumeSubscriptionAccess, // NEW: Check if resume's subscription is active
   checkUsageLimit("aiGenerationsPerMonth"),
   aiLimiter,
   checkAIQuota,
-  validateContentEnhance,
+  validateAchievementsSegregation,
   segregateAchievements
 );
 
@@ -98,10 +107,11 @@ router.post(
   "/process-custom-section",
   authenticateToken,
   checkSubscription,
+  checkResumeSubscriptionAccess, // NEW: Check if resume's subscription is active
   checkUsageLimit("aiGenerationsPerMonth"),
   aiLimiter,
   checkAIQuota,
-  validateContentEnhance,
+  validateCustomSectionProcessing,
   processCustomSection
 );
 
@@ -120,6 +130,7 @@ router.post(
   "/track-download",
   authenticateToken,
   checkSubscription,
+  checkResumeSubscriptionAccess, // NEW: Check if resume's subscription is active
   checkUsageLimit("resumeDownloadsPerMonth"),
   trackDownload
 );

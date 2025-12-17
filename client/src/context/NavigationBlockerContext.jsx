@@ -1,20 +1,25 @@
 import {createContext, useContext, useState, useCallback} from "react";
+import {useToggle} from "@/hooks";
 
 const NavigationBlockerContext = createContext(null);
 
 export const NavigationBlockerProvider = ({children}) => {
-  const [isBlocked, setIsBlocked] = useState(false);
+  const [isBlocked, toggleBlocked, setIsBlockedTrue, setIsBlockedFalse] =
+    useToggle(false);
   const [onNavigateCallback, setOnNavigateCallback] = useState(null);
 
-  const blockNavigation = useCallback((callback) => {
-    setIsBlocked(true);
-    setOnNavigateCallback(() => callback);
-  }, []);
+  const blockNavigation = useCallback(
+    (callback) => {
+      setIsBlockedTrue();
+      setOnNavigateCallback(() => callback);
+    },
+    [setIsBlockedTrue]
+  );
 
   const unblockNavigation = useCallback(() => {
-    setIsBlocked(false);
+    setIsBlockedFalse();
     setOnNavigateCallback(null);
-  }, []);
+  }, [setIsBlockedFalse]);
 
   const attemptNavigation = useCallback(
     (to) => {

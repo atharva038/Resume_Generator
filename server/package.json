@@ -6,7 +6,7 @@
     "type": "module",
     "scripts": {
         "dev-v": "node --env-file=.env --watch server.js",
-        "dev": "nodemon --exec 'node --env-file=.env' server.js",
+        "dev": "nodemon --exec \"node --env-file=.env\" server.js",
         "dev:native": "node --env-file=.env --watch-path=./routes --watch-path=./controllers --watch-path=./models --watch-path=./middleware --watch-path=./services --watch-path=./utils --watch-path=./config --watch-path=./server.js --watch-preserve-output server.js",
         "start": "node server.js",
         "create-admin": "node --env-file=.env scripts/createAdmin.js",
@@ -16,7 +16,10 @@
         "dedupe:templates": "node --env-file=.env scripts/dedupeTemplates.js",
         "migrate:resume-titles": "node --env-file=.env scripts/migrateResumeTitles.js",
         "migrate:users": "node --env-file=.env scripts/migrateUsers.js",
-        "test:models": "node --env-file=.env scripts/testModels.js"
+        "test:models": "node --env-file=.env scripts/testModels.js",
+        "cleanup:plans:dry": "node scripts/cleanup-production-plans.js --dry-run",
+        "cleanup:plans:backup": "node scripts/cleanup-production-plans.js --backup --force",
+        "cleanup:plans": "node scripts/cleanup-production-plans.js --force"
     },
     "keywords": [
         "resume",

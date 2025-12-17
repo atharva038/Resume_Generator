@@ -30,7 +30,8 @@ router.post("/renew", subscriptionController.renewSubscription);
 router.get("/status", subscriptionController.getSubscriptionStatus);
 router.get("/history", subscriptionController.getSubscriptionHistory);
 router.get("/usage", subscriptionController.getUsageStats);
-router.get("/analytics", subscriptionController.getAdvancedAnalytics); // Advanced analytics for Pro users
+// Temporarily disabled - Advanced Analytics
+// router.get("/analytics", subscriptionController.getAdvancedAnalytics); // Advanced analytics for Pro users
 router.get("/compare", subscriptionController.comparePlans);
 
 // AI Configuration

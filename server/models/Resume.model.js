@@ -84,8 +84,9 @@ const resumeSchema = new mongoose.Schema(
     },
     customSections: [
       {
+        id: String,
         title: String,
-        content: [String],
+        items: [String],
       },
     ],
     rawText: {
@@ -99,6 +100,27 @@ const resumeSchema = new mongoose.Schema(
     colorTheme: {
       type: String,
       default: null, // Will use template's default if not specified
+    },
+    // Subscription tracking for access control
+    subscriptionInfo: {
+      subscriptionId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Subscription",
+        default: null,
+      },
+      createdWithTier: {
+        type: String,
+        enum: ["free", "one-time", "pro", "premium", "student", "lifetime"],
+        default: "free",
+      },
+      createdWithSubscription: {
+        type: Boolean,
+        default: false,
+      },
+      linkedAt: {
+        type: Date,
+        default: null,
+      },
     },
   },
   {

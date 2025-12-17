@@ -1203,7 +1203,7 @@ export const JOB_PROFILES = {
     ],
     minExperience: 1,
   },
-  
+
   // Additional Frontend Frameworks & Stacks
   "nextjs-developer": {
     label: "Next.js Developer",
@@ -1221,10 +1221,16 @@ export const JOB_PROFILES = {
       projects: 0.2,
       education: 0.1,
     },
-    experienceKeywords: ["built", "developed", "deployed", "optimized", "implemented SSR"],
+    experienceKeywords: [
+      "built",
+      "developed",
+      "deployed",
+      "optimized",
+      "implemented SSR",
+    ],
     minExperience: 0,
   },
-  
+
   "svelte-developer": {
     label: "Svelte/SvelteKit Developer",
     category: "Engineering",
@@ -1244,7 +1250,7 @@ export const JOB_PROFILES = {
     experienceKeywords: ["built", "developed", "created", "optimized"],
     minExperience: 0,
   },
-  
+
   "remix-developer": {
     label: "Remix Developer",
     category: "Engineering",
@@ -1253,7 +1259,12 @@ export const JOB_PROFILES = {
       frameworks: ["Remix", "React", "React Router"],
       databases: ["PostgreSQL", "MongoDB", "Prisma"],
       tools: ["Git", "npm", "Fly.io", "Vercel"],
-      concepts: ["Progressive Enhancement", "Nested Routing", "Data Loading", "SSR"],
+      concepts: [
+        "Progressive Enhancement",
+        "Nested Routing",
+        "Data Loading",
+        "SSR",
+      ],
     },
     weights: {
       technical: 0.45,
@@ -1264,7 +1275,7 @@ export const JOB_PROFILES = {
     experienceKeywords: ["built", "developed", "optimized", "implemented"],
     minExperience: 0,
   },
-  
+
   "solidjs-developer": {
     label: "Solid.js Developer",
     category: "Engineering",
@@ -1284,7 +1295,7 @@ export const JOB_PROFILES = {
     experienceKeywords: ["built", "developed", "optimized", "created"],
     minExperience: 0,
   },
-  
+
   // Backend Frameworks & Specializations
   "nestjs-developer": {
     label: "NestJS Developer",
@@ -1294,7 +1305,12 @@ export const JOB_PROFILES = {
       frameworks: ["NestJS", "Express", "TypeORM", "Prisma"],
       databases: ["PostgreSQL", "MongoDB", "MySQL", "Redis"],
       tools: ["Git", "Docker", "Jest", "Swagger", "RabbitMQ"],
-      concepts: ["Dependency Injection", "Microservices", "REST API", "GraphQL"],
+      concepts: [
+        "Dependency Injection",
+        "Microservices",
+        "REST API",
+        "GraphQL",
+      ],
     },
     weights: {
       technical: 0.45,
@@ -1302,10 +1318,15 @@ export const JOB_PROFILES = {
       projects: 0.2,
       education: 0.1,
     },
-    experienceKeywords: ["developed", "built", "architected", "implemented APIs"],
+    experienceKeywords: [
+      "developed",
+      "built",
+      "architected",
+      "implemented APIs",
+    ],
     minExperience: 0,
   },
-  
+
   "fastapi-developer": {
     label: "FastAPI Developer",
     category: "Engineering",
@@ -1314,7 +1335,12 @@ export const JOB_PROFILES = {
       frameworks: ["FastAPI", "Pydantic", "SQLAlchemy", "Alembic"],
       databases: ["PostgreSQL", "MongoDB", "MySQL", "Redis"],
       tools: ["Git", "Docker", "Uvicorn", "Pytest", "Swagger"],
-      concepts: ["Async Programming", "REST API", "Type Hints", "Dependency Injection"],
+      concepts: [
+        "Async Programming",
+        "REST API",
+        "Type Hints",
+        "Dependency Injection",
+      ],
     },
     weights: {
       technical: 0.45,
@@ -1325,7 +1351,7 @@ export const JOB_PROFILES = {
     experienceKeywords: ["developed", "built", "implemented", "optimized APIs"],
     minExperience: 0,
   },
-  
+
   "spring-boot-developer": {
     label: "Spring Boot Developer",
     category: "Engineering",
@@ -1334,7 +1360,13 @@ export const JOB_PROFILES = {
       frameworks: ["Spring Boot", "Spring MVC", "Spring Security", "Hibernate"],
       databases: ["PostgreSQL", "MySQL", "Oracle", "MongoDB"],
       tools: ["Git", "Maven", "Gradle", "Docker", "Jenkins"],
-      concepts: ["Microservices", "REST API", "JPA", "Security", "Cloud Native"],
+      concepts: [
+        "Microservices",
+        "REST API",
+        "JPA",
+        "Security",
+        "Cloud Native",
+      ],
     },
     weights: {
       technical: 0.45,
@@ -1345,7 +1377,7 @@ export const JOB_PROFILES = {
     experienceKeywords: ["developed", "built", "architected", "implemented"],
     minExperience: 0,
   },
-  
+
   "laravel-developer": {
     label: "Laravel Developer",
     category: "Engineering",
@@ -1365,7 +1397,7 @@ export const JOB_PROFILES = {
     experienceKeywords: ["developed", "built", "created", "implemented"],
     minExperience: 0,
   },
-  
+
   "django-developer": {
     label: "Django Developer",
     category: "Engineering",
@@ -1385,7 +1417,7 @@ export const JOB_PROFILES = {
     experienceKeywords: ["developed", "built", "implemented", "deployed"],
     minExperience: 0,
   },
-  
+
   "rails-developer": {
     label: "Ruby on Rails Developer",
     category: "Engineering",
@@ -1394,7 +1426,12 @@ export const JOB_PROFILES = {
       frameworks: ["Rails", "Active Record", "Hotwire", "Stimulus"],
       databases: ["PostgreSQL", "MySQL", "Redis"],
       tools: ["Git", "Bundler", "Heroku", "RSpec"],
-      concepts: ["MVC", "Active Record", "Convention over Configuration", "RESTful"],
+      concepts: [
+        "MVC",
+        "Active Record",
+        "Convention over Configuration",
+        "RESTful",
+      ],
     },
     weights: {
       technical: 0.45,
@@ -1405,7 +1442,7 @@ export const JOB_PROFILES = {
     experienceKeywords: ["developed", "built", "implemented", "deployed"],
     minExperience: 0,
   },
-  
+
   "express-developer": {
     label: "Express.js Developer",
     category: "Engineering",
@@ -1414,7 +1451,12 @@ export const JOB_PROFILES = {
       frameworks: ["Express.js", "Mongoose", "Passport.js"],
       databases: ["MongoDB", "PostgreSQL", "MySQL", "Redis"],
       tools: ["Git", "npm", "Docker", "PM2", "Nginx"],
-      concepts: ["Middleware", "REST API", "Authentication", "Session Management"],
+      concepts: [
+        "Middleware",
+        "REST API",
+        "Authentication",
+        "Session Management",
+      ],
     },
     weights: {
       technical: 0.45,
@@ -1425,7 +1467,7 @@ export const JOB_PROFILES = {
     experienceKeywords: ["developed", "built", "implemented", "created APIs"],
     minExperience: 0,
   },
-  
+
   "graphql-developer": {
     label: "GraphQL Developer",
     category: "Engineering",
@@ -1442,10 +1484,15 @@ export const JOB_PROFILES = {
       projects: 0.2,
       education: 0.1,
     },
-    experienceKeywords: ["designed schemas", "implemented", "built APIs", "optimized"],
+    experienceKeywords: [
+      "designed schemas",
+      "implemented",
+      "built APIs",
+      "optimized",
+    ],
     minExperience: 0,
   },
-  
+
   // Full Stack Variations
   "t3-stack-developer": {
     label: "T3 Stack Developer (Next.js + tRPC + Prisma)",
@@ -1466,7 +1513,7 @@ export const JOB_PROFILES = {
     experienceKeywords: ["built", "developed", "implemented", "deployed"],
     minExperience: 0,
   },
-  
+
   "jamstack-developer": {
     label: "JAMstack Developer",
     category: "Engineering",
@@ -1486,7 +1533,7 @@ export const JOB_PROFILES = {
     experienceKeywords: ["built", "developed", "deployed", "optimized"],
     minExperience: 0,
   },
-  
+
   "serverless-developer": {
     label: "Serverless Developer",
     category: "Engineering",
@@ -1506,7 +1553,7 @@ export const JOB_PROFILES = {
     experienceKeywords: ["developed", "deployed", "architected", "implemented"],
     minExperience: 0,
   },
-  
+
   // Mobile Development Variations
   "kotlin-developer": {
     label: "Kotlin Developer (Android)",
@@ -1516,7 +1563,12 @@ export const JOB_PROFILES = {
       frameworks: ["Android SDK", "Jetpack Compose", "Coroutines", "Room"],
       databases: ["SQLite", "Room", "Realm"],
       tools: ["Android Studio", "Git", "Gradle", "Firebase"],
-      concepts: ["Material Design", "MVVM", "Lifecycle", "Dependency Injection"],
+      concepts: [
+        "Material Design",
+        "MVVM",
+        "Lifecycle",
+        "Dependency Injection",
+      ],
     },
     weights: {
       technical: 0.45,
@@ -1527,7 +1579,7 @@ export const JOB_PROFILES = {
     experienceKeywords: ["developed", "built", "published", "implemented"],
     minExperience: 0,
   },
-  
+
   "swiftui-developer": {
     label: "SwiftUI Developer (iOS)",
     category: "Engineering",
@@ -1547,7 +1599,7 @@ export const JOB_PROFILES = {
     experienceKeywords: ["developed", "built", "published", "implemented"],
     minExperience: 0,
   },
-  
+
   "ionic-developer": {
     label: "Ionic Developer",
     category: "Engineering",
@@ -1567,7 +1619,7 @@ export const JOB_PROFILES = {
     experienceKeywords: ["developed", "built", "deployed", "published"],
     minExperience: 0,
   },
-  
+
   // DevOps & Cloud Specializations
   "aws-devops-engineer": {
     label: "AWS DevOps Engineer",
@@ -1588,7 +1640,7 @@ export const JOB_PROFILES = {
     experienceKeywords: ["deployed", "automated", "architected", "optimized"],
     minExperience: 1,
   },
-  
+
   "azure-devops-engineer": {
     label: "Azure DevOps Engineer",
     category: "Engineering",
@@ -1596,7 +1648,13 @@ export const JOB_PROFILES = {
       programming: ["PowerShell", "Python", "C#"],
       frameworks: ["Azure Resource Manager", "Bicep", "Terraform"],
       databases: ["Azure SQL", "Cosmos DB"],
-      tools: ["Azure", "Docker", "Kubernetes", "Azure DevOps", "GitHub Actions"],
+      tools: [
+        "Azure",
+        "Docker",
+        "Kubernetes",
+        "Azure DevOps",
+        "GitHub Actions",
+      ],
       concepts: ["CI/CD", "IaC", "Azure Services", "Monitoring"],
     },
     weights: {
@@ -1608,7 +1666,7 @@ export const JOB_PROFILES = {
     experienceKeywords: ["deployed", "automated", "architected", "managed"],
     minExperience: 1,
   },
-  
+
   "kubernetes-engineer": {
     label: "Kubernetes Engineer",
     category: "Engineering",
@@ -1625,10 +1683,15 @@ export const JOB_PROFILES = {
       projects: 0.15,
       education: 0.1,
     },
-    experienceKeywords: ["deployed", "managed clusters", "orchestrated", "automated"],
+    experienceKeywords: [
+      "deployed",
+      "managed clusters",
+      "orchestrated",
+      "automated",
+    ],
     minExperience: 1,
   },
-  
+
   "terraform-engineer": {
     label: "Terraform/IaC Engineer",
     category: "Engineering",
@@ -1648,14 +1711,20 @@ export const JOB_PROFILES = {
     experienceKeywords: ["provisioned", "automated", "managed infrastructure"],
     minExperience: 1,
   },
-  
+
   // AI/ML Specializations
   "nlp-engineer": {
     label: "NLP Engineer",
     category: "Engineering",
     requiredSkills: {
       programming: ["Python"],
-      frameworks: ["Transformers", "spaCy", "NLTK", "Hugging Face", "LangChain"],
+      frameworks: [
+        "Transformers",
+        "spaCy",
+        "NLTK",
+        "Hugging Face",
+        "LangChain",
+      ],
       databases: ["Vector DB", "Pinecone", "Weaviate"],
       tools: ["PyTorch", "TensorFlow", "Git", "Jupyter"],
       concepts: ["Language Models", "Embeddings", "Text Classification", "NER"],
@@ -1666,10 +1735,15 @@ export const JOB_PROFILES = {
       projects: 0.15,
       education: 0.1,
     },
-    experienceKeywords: ["developed models", "trained", "fine-tuned", "implemented"],
+    experienceKeywords: [
+      "developed models",
+      "trained",
+      "fine-tuned",
+      "implemented",
+    ],
     minExperience: 0,
   },
-  
+
   "computer-vision-engineer": {
     label: "Computer Vision Engineer",
     category: "Engineering",
@@ -1678,7 +1752,12 @@ export const JOB_PROFILES = {
       frameworks: ["OpenCV", "PyTorch", "TensorFlow", "YOLO", "Detectron2"],
       databases: [],
       tools: ["Git", "CUDA", "Docker", "Jupyter"],
-      concepts: ["Image Processing", "Object Detection", "Segmentation", "CNNs"],
+      concepts: [
+        "Image Processing",
+        "Object Detection",
+        "Segmentation",
+        "CNNs",
+      ],
     },
     weights: {
       technical: 0.45,
@@ -1686,10 +1765,15 @@ export const JOB_PROFILES = {
       projects: 0.15,
       education: 0.1,
     },
-    experienceKeywords: ["developed", "trained models", "implemented", "optimized"],
+    experienceKeywords: [
+      "developed",
+      "trained models",
+      "implemented",
+      "optimized",
+    ],
     minExperience: 0,
   },
-  
+
   "mlops-engineer": {
     label: "MLOps Engineer",
     category: "Engineering",
@@ -1706,10 +1790,14 @@ export const JOB_PROFILES = {
       projects: 0.2,
       education: 0.1,
     },
-    experienceKeywords: ["deployed models", "automated", "implemented pipelines"],
+    experienceKeywords: [
+      "deployed models",
+      "automated",
+      "implemented pipelines",
+    ],
     minExperience: 1,
   },
-  
+
   "deep-learning-engineer": {
     label: "Deep Learning Engineer",
     category: "Engineering",
@@ -1726,10 +1814,15 @@ export const JOB_PROFILES = {
       projects: 0.15,
       education: 0.1,
     },
-    experienceKeywords: ["trained", "developed models", "optimized", "implemented"],
+    experienceKeywords: [
+      "trained",
+      "developed models",
+      "optimized",
+      "implemented",
+    ],
     minExperience: 0,
   },
-  
+
   // Database Specialists
   "mongodb-developer": {
     label: "MongoDB Developer",
@@ -1747,10 +1840,14 @@ export const JOB_PROFILES = {
       projects: 0.2,
       education: 0.1,
     },
-    experienceKeywords: ["designed schemas", "optimized queries", "implemented"],
+    experienceKeywords: [
+      "designed schemas",
+      "optimized queries",
+      "implemented",
+    ],
     minExperience: 0,
   },
-  
+
   "postgresql-developer": {
     label: "PostgreSQL Developer",
     category: "Engineering",
@@ -1767,10 +1864,14 @@ export const JOB_PROFILES = {
       projects: 0.2,
       education: 0.1,
     },
-    experienceKeywords: ["optimized queries", "designed schemas", "tuned performance"],
+    experienceKeywords: [
+      "optimized queries",
+      "designed schemas",
+      "tuned performance",
+    ],
     minExperience: 0,
   },
-  
+
   "redis-developer": {
     label: "Redis Developer",
     category: "Engineering",
@@ -1790,7 +1891,7 @@ export const JOB_PROFILES = {
     experienceKeywords: ["implemented caching", "optimized", "designed"],
     minExperience: 0,
   },
-  
+
   // Game Development
   "unity-developer": {
     label: "Unity Game Developer",
@@ -1800,7 +1901,13 @@ export const JOB_PROFILES = {
       frameworks: ["Unity", "Unity ML-Agents"],
       databases: [],
       tools: ["Git", "Blender", "Photoshop", "Visual Studio"],
-      concepts: ["Game Physics", "Animation", "Scripting", "UI/UX", "Optimization"],
+      concepts: [
+        "Game Physics",
+        "Animation",
+        "Scripting",
+        "UI/UX",
+        "Optimization",
+      ],
     },
     weights: {
       technical: 0.4,
@@ -1808,10 +1915,14 @@ export const JOB_PROFILES = {
       projects: 0.25,
       education: 0.1,
     },
-    experienceKeywords: ["developed games", "implemented mechanics", "published"],
+    experienceKeywords: [
+      "developed games",
+      "implemented mechanics",
+      "published",
+    ],
     minExperience: 0,
   },
-  
+
   "unreal-developer": {
     label: "Unreal Engine Developer",
     category: "Engineering",
@@ -1820,7 +1931,13 @@ export const JOB_PROFILES = {
       frameworks: ["Unreal Engine"],
       databases: [],
       tools: ["Git", "Blender", "Perforce", "Visual Studio"],
-      concepts: ["Game Development", "3D Graphics", "Physics", "AI", "Multiplayer"],
+      concepts: [
+        "Game Development",
+        "3D Graphics",
+        "Physics",
+        "AI",
+        "Multiplayer",
+      ],
     },
     weights: {
       technical: 0.45,
@@ -1831,7 +1948,7 @@ export const JOB_PROFILES = {
     experienceKeywords: ["developed", "implemented", "optimized", "shipped"],
     minExperience: 0,
   },
-  
+
   "godot-developer": {
     label: "Godot Developer",
     category: "Engineering",
@@ -1848,10 +1965,15 @@ export const JOB_PROFILES = {
       projects: 0.25,
       education: 0.1,
     },
-    experienceKeywords: ["developed games", "implemented", "created", "published"],
+    experienceKeywords: [
+      "developed games",
+      "implemented",
+      "created",
+      "published",
+    ],
     minExperience: 0,
   },
-  
+
   // Embedded Systems
   "embedded-systems-engineer": {
     label: "Embedded Systems Engineer",
@@ -1869,10 +1991,15 @@ export const JOB_PROFILES = {
       projects: 0.15,
       education: 0.1,
     },
-    experienceKeywords: ["developed firmware", "implemented", "debugged", "optimized"],
+    experienceKeywords: [
+      "developed firmware",
+      "implemented",
+      "debugged",
+      "optimized",
+    ],
     minExperience: 0,
   },
-  
+
   "iot-developer": {
     label: "IoT Developer",
     category: "Engineering",
@@ -1892,7 +2019,7 @@ export const JOB_PROFILES = {
     experienceKeywords: ["developed", "implemented", "integrated", "deployed"],
     minExperience: 0,
   },
-  
+
   // Blockchain
   "blockchain-developer": {
     label: "Blockchain Developer",
@@ -1902,7 +2029,13 @@ export const JOB_PROFILES = {
       frameworks: ["Ethereum", "Web3.js", "Hardhat", "Truffle"],
       databases: [],
       tools: ["Git", "MetaMask", "Ganache", "Remix"],
-      concepts: ["Smart Contracts", "DeFi", "NFTs", "Consensus", "Cryptography"],
+      concepts: [
+        "Smart Contracts",
+        "DeFi",
+        "NFTs",
+        "Consensus",
+        "Cryptography",
+      ],
     },
     weights: {
       technical: 0.45,
@@ -1913,7 +2046,7 @@ export const JOB_PROFILES = {
     experienceKeywords: ["developed smart contracts", "deployed", "audited"],
     minExperience: 0,
   },
-  
+
   "web3-developer": {
     label: "Web3 Developer",
     category: "Engineering",
@@ -1933,7 +2066,7 @@ export const JOB_PROFILES = {
     experienceKeywords: ["built dApps", "integrated", "developed", "deployed"],
     minExperience: 0,
   },
-  
+
   // Testing & QA
   "test-automation-engineer": {
     label: "Test Automation Engineer",
@@ -1951,10 +2084,14 @@ export const JOB_PROFILES = {
       projects: 0.2,
       education: 0.1,
     },
-    experienceKeywords: ["automated tests", "implemented", "developed frameworks"],
+    experienceKeywords: [
+      "automated tests",
+      "implemented",
+      "developed frameworks",
+    ],
     minExperience: 0,
   },
-  
+
   "qa-engineer": {
     label: "QA Engineer",
     category: "Engineering",
@@ -1963,7 +2100,12 @@ export const JOB_PROFILES = {
       frameworks: ["Selenium", "Cypress", "TestNG", "JUnit"],
       databases: [],
       tools: ["Git", "JIRA", "Postman", "TestRail"],
-      concepts: ["Testing Methodologies", "Bug Tracking", "Test Planning", "QA"],
+      concepts: [
+        "Testing Methodologies",
+        "Bug Tracking",
+        "Test Planning",
+        "QA",
+      ],
     },
     weights: {
       technical: 0.35,
@@ -1971,7 +2113,12 @@ export const JOB_PROFILES = {
       projects: 0.25,
       education: 0.1,
     },
-    experienceKeywords: ["tested", "identified bugs", "improved quality", "automated"],
+    experienceKeywords: [
+      "tested",
+      "identified bugs",
+      "improved quality",
+      "automated",
+    ],
     minExperience: 0,
   },
 };

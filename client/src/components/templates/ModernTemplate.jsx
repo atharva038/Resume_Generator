@@ -1,6 +1,95 @@
-import {forwardRef} from "react";
+import {forwardRef, useRef, useEffect, useState} from "react";
 
-const ModernTemplate = forwardRef(({resumeData}, ref) => {
+/**
+ * ModernTemplate - Contemporary resume template with bold design elements
+ *
+ * Features:
+ * - Modern single-column layout with visual hierarchy
+ * - Multiple color themes (blue, teal, purple, amber, emerald)
+ * - Automatic page overflow detection and logging
+ * - Clean section separators with color accents
+ * - Professional typography with modern spacing
+ * - ATS-compatible structure
+ *
+ * @component
+ * @param {Object} props - Component props
+ * @param {Object} props.resumeData - Complete resume data object (same structure as ClassicTemplate)
+ * @param {string} props.resumeData.name - Candidate's full name
+ * @param {Object} props.resumeData.contact - Contact information
+ * @param {string} [props.resumeData.summary] - Professional summary
+ * @param {Array<Object>} [props.resumeData.experience] - Work experience entries
+ * @param {Array<Object>} [props.resumeData.education] - Education entries
+ * @param {Array<Object>} [props.resumeData.skills] - Skills grouped by category
+ * @param {Array<Object>} [props.resumeData.projects] - Project entries
+ * @param {Array<Object>} [props.resumeData.certifications] - Certifications
+ * @param {Array<string>} [props.resumeData.achievements] - Achievements
+ * @param {Array<Object>} [props.resumeData.customSections] - Custom sections
+ * @param {string} [props.resumeData.selectedTheme] - Color theme (blue, teal, purple, amber, emerald)
+ * @param {Array<string>} [props.resumeData.sectionOrder] - Custom section ordering
+ * @param {Function} [props.onPageUsageChange] - Callback for page overflow detection
+ * @param {React.Ref} ref - Forwarded ref for PDF generation
+ *
+ * @example
+ * <ModernTemplate
+ *   ref={templateRef}
+ *   resumeData={{
+ *     name: "Alex Johnson",
+ *     contact: { email: "alex@example.com" },
+ *     selectedTheme: "teal"
+ *   }}
+ *   onPageUsageChange={(info) => console.log(info)}
+ * />
+ */
+const ModernTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
+  // Page overflow detection state
+  const containerRef = useRef(null);
+  const [pageOverflowInfo, setPageOverflowInfo] = useState({
+    isOverflowing: false,
+    currentHeight: 0,
+    maxHeight: 1056, // Standard A4 page height at 96 DPI (11 inches * 96)
+    overflowPercentage: 0,
+    templateName: "ModernTemplate",
+  });
+
+  // Detect page overflow whenever resumeData changes
+  useEffect(() => {
+    if (containerRef.current) {
+      const currentHeight = containerRef.current.scrollHeight;
+      const maxHeight = 1056; // A4 page height
+      const isOverflowing = currentHeight > maxHeight;
+      const overflowPercentage = isOverflowing
+        ? Math.round(((currentHeight - maxHeight) / maxHeight) * 100)
+        : 0;
+
+      const usageInfo = {
+        isOverflowing,
+        currentHeight,
+        maxHeight,
+        overflowPercentage,
+        percentage: Math.round((currentHeight / maxHeight) * 100), // Allow > 100% for overflow
+        templateName: "ModernTemplate",
+      };
+
+      setPageOverflowInfo(usageInfo);
+
+      // Log overflow information for testing
+      if (isOverflowing) {
+        console.log(
+          `⚠️ ModernTemplate: Page overflow detected! Current height: ${currentHeight}px, Max: ${maxHeight}px, Overflow: ${overflowPercentage}%`
+        );
+      } else {
+        console.log(
+          `✅ ModernTemplate: Content fits on one page. Height: ${currentHeight}px / ${maxHeight}px (${usageInfo.percentage}% filled)`
+        );
+      }
+
+      // Pass data to parent component if callback provided
+      if (onPageUsageChange) {
+        onPageUsageChange(usageInfo);
+      }
+    }
+  }, [resumeData]);
+
   // Color Themes - Multiple professional palettes
   const colorThemes = {
     blue: {
@@ -87,9 +176,16 @@ const ModernTemplate = forwardRef(({resumeData}, ref) => {
 
   // Render section helper function
   const renderSection = (sectionId) => {
+    // Common style to prevent page breaks inside sections
+    const sectionStyle = {
+      marginBottom: "14px",
+      pageBreakInside: "avoid",
+      breakInside: "avoid",
+    };
+
     const sections = {
       summary: resumeData.summary && (
-        <section key="summary" style={{marginBottom: "14px"}}>
+        <section key="summary" style={sectionStyle}>
           <h2
             className="font-bold uppercase"
             style={{
@@ -102,13 +198,15 @@ const ModernTemplate = forwardRef(({resumeData}, ref) => {
             {getSectionTitle("summary")}
           </h2>
           <p style={{fontSize: "10pt", textAlign: "justify"}}>
-            {resumeData.summary}
+            {typeof resumeData.summary === "string"
+              ? resumeData.summary
+              : resumeData.summary?.summary || ""}
           </p>
         </section>
       ),
 
       skills: resumeData.skills && resumeData.skills.length > 0 && (
-        <section key="skills" style={{marginBottom: "14px"}}>
+        <section key="skills" style={sectionStyle}>
           <h2
             className="font-bold uppercase"
             style={{
@@ -145,7 +243,7 @@ const ModernTemplate = forwardRef(({resumeData}, ref) => {
       ),
 
       experience: resumeData.experience && resumeData.experience.length > 0 && (
-        <section key="experience" style={{marginBottom: "14px"}}>
+        <section key="experience" style={sectionStyle}>
           <h2
             className="font-bold uppercase"
             style={{
@@ -213,7 +311,7 @@ const ModernTemplate = forwardRef(({resumeData}, ref) => {
       ),
 
       projects: resumeData.projects && resumeData.projects.length > 0 && (
-        <section key="projects" style={{marginBottom: "14px"}}>
+        <section key="projects" style={sectionStyle}>
           <h2
             className="font-bold uppercase"
             style={{
@@ -286,7 +384,7 @@ const ModernTemplate = forwardRef(({resumeData}, ref) => {
       ),
 
       education: resumeData.education && resumeData.education.length > 0 && (
-        <section key="education" style={{marginBottom: "14px"}}>
+        <section key="education" style={sectionStyle}>
           <h2
             className="font-bold uppercase"
             style={{
@@ -326,7 +424,7 @@ const ModernTemplate = forwardRef(({resumeData}, ref) => {
 
       certifications: resumeData.certifications &&
         resumeData.certifications.length > 0 && (
-          <section key="certifications" style={{marginBottom: "12px"}}>
+          <section key="certifications" style={sectionStyle}>
             <h2
               className="font-bold uppercase"
               style={{
@@ -362,7 +460,7 @@ const ModernTemplate = forwardRef(({resumeData}, ref) => {
 
       achievements: resumeData.achievements &&
         resumeData.achievements.length > 0 && (
-          <section key="achievements" style={{marginBottom: "12px"}}>
+          <section key="achievements" style={sectionStyle}>
             <h2
               className="font-bold uppercase"
               style={{
@@ -393,7 +491,7 @@ const ModernTemplate = forwardRef(({resumeData}, ref) => {
             {resumeData.customSections.map((section, sectionIndex) => {
               if (section.title && section.items && section.items.length > 0) {
                 return (
-                  <section key={sectionIndex} style={{marginBottom: "12px"}}>
+                  <section key={sectionIndex} style={sectionStyle}>
                     <h2
                       className="font-bold uppercase"
                       style={{
@@ -432,7 +530,14 @@ const ModernTemplate = forwardRef(({resumeData}, ref) => {
 
   return (
     <div
-      ref={ref}
+      ref={(node) => {
+        containerRef.current = node;
+        if (typeof ref === "function") {
+          ref(node);
+        } else if (ref) {
+          ref.current = node;
+        }
+      }}
       className="resume-preview !bg-white !text-black shadow-lg border border-gray-300 font-resume"
       style={{
         minHeight: "11in",

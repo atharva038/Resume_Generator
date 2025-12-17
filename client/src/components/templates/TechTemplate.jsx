@@ -1,6 +1,84 @@
-import {forwardRef} from "react";
+import {forwardRef, useRef, useEffect, useState} from "react";
 
-const TechTemplate = forwardRef(({resumeData}, ref) => {
+/**
+ * TechTemplate - Technology-focused resume template for developers and engineers
+ *
+ * Features:
+ * - Tech-industry optimized layout
+ * - Emphasis on skills, projects, and technical experience
+ * - Multiple color themes (blue, purple, green, orange, cyan, gray)
+ * - Clean, code-like aesthetic
+ * - Automatic page overflow detection with logging
+ * - ATS-compatible structure
+ *
+ * @component
+ * @param {Object} props - Component props
+ * @param {Object} props.resumeData - Complete resume data object (same structure as ClassicTemplate)
+ * @param {string} [props.resumeData.selectedTheme] - Color theme (blue, purple, green, orange, cyan, gray)
+ * @param {Function} [props.onPageUsageChange] - Callback for page overflow detection
+ * @param {React.Ref} ref - Forwarded ref for PDF generation
+ *
+ * @example
+ * <TechTemplate
+ *   ref={templateRef}
+ *   resumeData={{
+ *     name: "Jordan Dev",
+ *     contact: { email: "jordan@example.com", github: "github.com/jordandev" },
+ *     skills: [{ category: "Languages", items: ["Python", "JavaScript", "Go"] }],
+ *     selectedTheme: "blue"
+ *   }}
+ * />
+ */
+const TechTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
+  // Page overflow detection state
+  const containerRef = useRef(null);
+  const [pageOverflowInfo, setPageOverflowInfo] = useState({
+    isOverflowing: false,
+    currentHeight: 0,
+    maxHeight: 1056, // Standard A4 page height at 96 DPI (11 inches * 96)
+    overflowPercentage: 0,
+    templateName: "TechTemplate",
+  });
+
+  // Detect page overflow whenever resumeData changes
+  useEffect(() => {
+    if (containerRef.current) {
+      const currentHeight = containerRef.current.scrollHeight;
+      const maxHeight = 1056; // A4 page height
+      const isOverflowing = currentHeight > maxHeight;
+      const overflowPercentage = isOverflowing
+        ? Math.round(((currentHeight - maxHeight) / maxHeight) * 100)
+        : 0;
+
+      const usageInfo = {
+        isOverflowing,
+        currentHeight,
+        maxHeight,
+        overflowPercentage,
+        percentage: Math.round((currentHeight / maxHeight) * 100), // Allow > 100% for overflow
+        templateName: "TechTemplate",
+      };
+
+      setPageOverflowInfo(usageInfo);
+
+      // Log overflow information for testing - TEMPLATE SPECIFIC
+      if (isOverflowing) {
+        console.log(
+          `⚠️ TechTemplate: Page overflow detected! Current height: ${currentHeight}px, Max: ${maxHeight}px, Overflow: ${overflowPercentage}%`
+        );
+      } else {
+        console.log(
+          `✅ TechTemplate: Content fits on one page. Height: ${currentHeight}px / ${maxHeight}px (${usageInfo.percentage}% filled)`
+        );
+      }
+
+      // Pass data to parent component if callback provided
+      if (onPageUsageChange) {
+        onPageUsageChange(usageInfo);
+      }
+    }
+  }, [resumeData]); // Don't include onPageUsageChange to avoid infinite loops
+
   // Color themes for the template
   const colorThemes = {
     black: {
@@ -81,15 +159,22 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
 
   // Render section helper function
   const renderSection = (sectionId) => {
+    // Common style to prevent page breaks inside sections
+    const sectionStyle = {
+      marginBottom: "10px",
+      pageBreakInside: "avoid",
+      breakInside: "avoid",
+    };
+
     const sections = {
       skills: resumeData.skills && resumeData.skills.length > 0 && (
-        <section key="skills" style={{marginBottom: "16px"}}>
+        <section key="skills" style={sectionStyle}>
           <h2
             style={{
               fontSize: "13pt",
               fontWeight: "bold",
               color: selectedTheme.primary,
-              marginBottom: "10px",
+              marginBottom: "8px",
               paddingBottom: "4px",
               borderBottom: `2px solid ${selectedTheme.border}`,
               fontFamily: "'Courier New', monospace",
@@ -136,13 +221,13 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
       ),
 
       experience: resumeData.experience && resumeData.experience.length > 0 && (
-        <section key="experience" style={{marginBottom: "16px"}}>
+        <section key="experience" style={sectionStyle}>
           <h2
             style={{
               fontSize: "13pt",
               fontWeight: "bold",
               color: selectedTheme.primary,
-              marginBottom: "10px",
+              marginBottom: "8px",
               paddingBottom: "4px",
               borderBottom: `2px solid ${selectedTheme.border}`,
               fontFamily: "'Courier New', monospace",
@@ -155,7 +240,7 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
             <div
               key={index}
               style={{
-                marginBottom: "12px",
+                marginBottom: "8px",
                 borderLeft: `3px solid ${selectedTheme.border}`,
                 paddingLeft: "12px",
               }}
@@ -192,12 +277,12 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
                   fontSize: "10pt",
                   color: selectedTheme.textLight,
                   fontWeight: "600",
-                  marginBottom: "5px",
+                  marginBottom: "4px",
                 }}
               >
                 {exp.company} {exp.location && `| ${exp.location}`}
               </div>
-              {exp.achievements && exp.achievements.length > 0 && (
+              {exp.bullets && exp.bullets.length > 0 && (
                 <ul
                   style={{
                     margin: 0,
@@ -205,13 +290,13 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
                     listStyleType: "none",
                   }}
                 >
-                  {exp.achievements.map((achievement, idx) => (
+                  {exp.bullets.map((bullet, idx) => (
                     <li
                       key={idx}
                       style={{
                         fontSize: "9.5pt",
-                        marginBottom: "4px",
-                        lineHeight: "1.5",
+                        marginBottom: "3px",
+                        lineHeight: "1.4",
                         color: selectedTheme.text,
                         position: "relative",
                         paddingLeft: "10px",
@@ -227,7 +312,7 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
                       >
                         ▹
                       </span>
-                      {achievement}
+                      {bullet}
                     </li>
                   ))}
                 </ul>
@@ -238,13 +323,13 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
       ),
 
       projects: resumeData.projects && resumeData.projects.length > 0 && (
-        <section key="projects" style={{marginBottom: "16px"}}>
+        <section key="projects" style={sectionStyle}>
           <h2
             style={{
               fontSize: "13pt",
               fontWeight: "bold",
               color: selectedTheme.primary,
-              marginBottom: "10px",
+              marginBottom: "8px",
               paddingBottom: "4px",
               borderBottom: `2px solid ${selectedTheme.border}`,
               fontFamily: "'Courier New', monospace",
@@ -257,7 +342,7 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
             <div
               key={index}
               style={{
-                marginBottom: "12px",
+                marginBottom: "8px",
                 backgroundColor: `${selectedTheme.primary}10`,
                 padding: "10px",
                 borderRadius: "4px",
@@ -297,12 +382,47 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
                   style={{
                     fontSize: "9.5pt",
                     margin: "4px 0",
-                    color: selectedTheme.textLight,
+                    color: selectedTheme.text,
                     lineHeight: "1.5",
                   }}
                 >
                   {project.description}
                 </p>
+              )}
+              {project.bullets && project.bullets.length > 0 && (
+                <ul
+                  style={{
+                    margin: "5px 0 0 0",
+                    paddingLeft: "18px",
+                    listStyleType: "none",
+                  }}
+                >
+                  {project.bullets.map((bullet, idx) => (
+                    <li
+                      key={idx}
+                      style={{
+                        fontSize: "9.5pt",
+                        marginBottom: "3px",
+                        lineHeight: "1.5",
+                        color: selectedTheme.text,
+                        position: "relative",
+                        paddingLeft: "10px",
+                      }}
+                    >
+                      <span
+                        style={{
+                          position: "absolute",
+                          left: "-10px",
+                          color: selectedTheme.primary,
+                          fontWeight: "bold",
+                        }}
+                      >
+                        ▹
+                      </span>
+                      {bullet}
+                    </li>
+                  ))}
+                </ul>
               )}
               {project.technologies && (
                 <div
@@ -337,13 +457,13 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
       ),
 
       education: resumeData.education && resumeData.education.length > 0 && (
-        <section key="education" style={{marginBottom: "16px"}}>
+        <section key="education" style={sectionStyle}>
           <h2
             style={{
               fontSize: "13pt",
               fontWeight: "bold",
               color: selectedTheme.primary,
-              marginBottom: "10px",
+              marginBottom: "8px",
               paddingBottom: "4px",
               borderBottom: `2px solid ${selectedTheme.border}`,
               fontFamily: "'Courier New', monospace",
@@ -353,7 +473,7 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
             {"<Education />"}
           </h2>
           {resumeData.education.map((edu, index) => (
-            <div key={index} style={{marginBottom: "10px"}}>
+            <div key={index} style={{marginBottom: "8px"}}>
               <div
                 style={{
                   display: "flex",
@@ -405,13 +525,13 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
 
       certifications: resumeData.certifications &&
         resumeData.certifications.length > 0 && (
-          <section key="certifications" style={{marginBottom: "16px"}}>
+          <section key="certifications" style={sectionStyle}>
             <h2
               style={{
                 fontSize: "13pt",
                 fontWeight: "bold",
                 color: selectedTheme.primary,
-                marginBottom: "10px",
+                marginBottom: "8px",
                 paddingBottom: "4px",
                 borderBottom: `2px solid ${selectedTheme.border}`,
                 fontFamily: "'Courier New', monospace",
@@ -468,13 +588,13 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
 
       achievements: resumeData.achievements &&
         resumeData.achievements.length > 0 && (
-          <section key="achievements" style={{marginBottom: "16px"}}>
+          <section key="achievements" style={sectionStyle}>
             <h2
               style={{
                 fontSize: "13pt",
                 fontWeight: "bold",
                 color: selectedTheme.primary,
-                marginBottom: "10px",
+                marginBottom: "8px",
                 paddingBottom: "4px",
                 borderBottom: `2px solid ${selectedTheme.border}`,
                 fontFamily: "'Courier New', monospace",
@@ -516,34 +636,49 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
       customSections: resumeData.customSections &&
         resumeData.customSections.length > 0 && (
           <>
-            {resumeData.customSections.map((section, index) => (
-              <section key={`custom-${index}`} style={{marginBottom: "16px"}}>
-                <h2
-                  style={{
-                    fontSize: "13pt",
-                    fontWeight: "bold",
-                    color: selectedTheme.primary,
-                    marginBottom: "10px",
-                    paddingBottom: "4px",
-                    borderBottom: `2px solid ${selectedTheme.border}`,
-                    fontFamily: "'Courier New', monospace",
-                    letterSpacing: "1px",
-                  }}
-                >
-                  {"<" + section.title + " />"}
-                </h2>
-                <div
-                  style={{
-                    fontSize: "9.5pt",
-                    lineHeight: "1.5",
-                    color: selectedTheme.text,
-                    whiteSpace: "pre-wrap",
-                  }}
-                >
-                  {section.content}
-                </div>
-              </section>
-            ))}
+            {resumeData.customSections.map((section, index) => {
+              if (section.title && section.items && section.items.length > 0) {
+                return (
+                  <section key={`custom-${index}`} style={sectionStyle}>
+                    <h2
+                      style={{
+                        fontSize: "13pt",
+                        fontWeight: "bold",
+                        color: selectedTheme.primary,
+                        marginBottom: "8px",
+                        paddingBottom: "4px",
+                        borderBottom: `2px solid ${selectedTheme.border}`,
+                        fontFamily: "'Courier New', monospace",
+                        letterSpacing: "1px",
+                      }}
+                    >
+                      {"<" + section.title + " />"}
+                    </h2>
+                    <ul
+                      style={{
+                        fontSize: "9.5pt",
+                        lineHeight: "1.5",
+                        color: selectedTheme.text,
+                        paddingLeft: "20px",
+                        margin: "0",
+                      }}
+                    >
+                      {section.items.map((item, itemIndex) => (
+                        <li
+                          key={`${section.id || index}-item-${itemIndex}`}
+                          style={{
+                            marginBottom: "4px",
+                          }}
+                        >
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                );
+              }
+              return null;
+            })}
           </>
         ),
     };
@@ -553,7 +688,14 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
 
   return (
     <div
-      ref={ref}
+      ref={(node) => {
+        containerRef.current = node;
+        if (typeof ref === "function") {
+          ref(node);
+        } else if (ref) {
+          ref.current = node;
+        }
+      }}
       className="resume-preview"
       style={{
         minHeight: "11in",
@@ -567,10 +709,10 @@ const TechTemplate = forwardRef(({resumeData}, ref) => {
       {/* Header Section - Tech Style */}
       <header
         style={{
-          marginBottom: "18px",
+          marginBottom: "12px",
           backgroundColor: selectedTheme.headerBg || selectedTheme.primary,
           color: selectedTheme.headerText || "white",
-          padding: "20px",
+          padding: "14px",
           borderRadius: "6px",
         }}
       >

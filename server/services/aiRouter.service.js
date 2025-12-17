@@ -7,15 +7,25 @@ import AIUsage from "../models/AIUsage.model.js";
  * AI Router Service
  * Routes AI requests to appropriate service (Gemini or GPT-4o) based on user tier
  * Tracks usage and costs for analytics
+ * Falls back to OpenAI if Gemini is not configured
  */
+
+// Check if Gemini is available (GEMINI_API_KEY is set)
+const GEMINI_ENABLED = Boolean(process.env.GEMINI_API_KEY?.trim());
+
+if (!GEMINI_ENABLED) {
+  console.warn(
+    "⚠️  AI Router: GEMINI_API_KEY not configured — all requests will use OpenAI (GPT-4o)"
+  );
+}
 
 // Tier to AI Model mapping
 const TIER_AI_MAPPING = {
-  free: "gemini",
+  free: GEMINI_ENABLED ? "gemini" : "gpt4o", // Fallback to OpenAI if Gemini disabled
   "one-time": "gpt4o",
-  pro: "hybrid", // 70% Gemini, 30% GPT-4o
+  pro: GEMINI_ENABLED ? "hybrid" : "gpt4o", // Fallback to OpenAI if Gemini disabled
   premium: "gpt4o",
-  student: "hybrid",
+  student: GEMINI_ENABLED ? "hybrid" : "gpt4o", // Fallback to OpenAI if Gemini disabled
   lifetime: "gpt4o",
 };
 
@@ -35,7 +45,7 @@ const HYBRID_COMPATIBLE_ACTIONS = [
 function selectAIService(user, action = "resume_created") {
   // Get default model for user's tier
   const userTier = user.subscription?.tier || "free";
-  const tierModel = TIER_AI_MAPPING[userTier];
+  let tierModel = TIER_AI_MAPPING[userTier];
 
   console.log(
     `🎯 AI Selection: User tier "${userTier}" → Model "${tierModel}"`
@@ -53,6 +63,14 @@ function selectAIService(user, action = "resume_created") {
     // Use GPT-4o for critical actions like content enhancement
     console.log(`   Hybrid mode: ${action} → gpt4o (critical action)`);
     return "gpt4o";
+  }
+
+  // Safety check: if Gemini is selected but not available, use OpenAI
+  if (tierModel === "gemini" && !GEMINI_ENABLED) {
+    console.warn(
+      `   ⚠️  Gemini requested but not available, falling back to OpenAI`
+    );
+    tierModel = "gpt4o";
   }
 
   return tierModel;

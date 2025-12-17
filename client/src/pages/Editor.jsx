@@ -1,9 +1,11 @@
-import {useState, useEffect, useRef} from "react";
+import {useState, useEffect, useRef, useCallback} from "react";
 import {useLocation, useNavigate} from "react-router-dom";
-import {useAuth} from "../context/AuthContext";
-import {useNavigationBlocker} from "../context/NavigationBlockerContext";
-import {resumeAPI} from "../services/api";
-import {parseValidationErrors} from "../utils/errorHandler";
+import {useAuth} from "@/context/AuthContext";
+import {useNavigationBlocker} from "@/context/NavigationBlockerContext";
+import {useLocalStorage, useToggle, useMediaQuery} from "@/hooks";
+import {resumeAPI} from "@/api/api";
+import {parseValidationErrors} from "@/utils/errorHandler";
+import logger from "@/utils/logger";
 import toast, {Toaster} from "react-hot-toast";
 import {
   ResumePreview,
@@ -19,27 +21,29 @@ import {
   AchievementsSection,
   CustomSectionsManager,
   ResumeWizard,
-} from "../components/editor";
-import {ScoreCard, JobSpecificScoreCard} from "../components/common/cards";
+} from "@/components/editor";
+import {ScoreCard, JobSpecificScoreCard} from "@/components/common/cards";
 import {
   GitHubImportModal,
   PageLimitExceededModal,
-} from "../components/common/modals";
-import {getJobCategories, getJobsByCategory} from "../utils/jobProfiles";
-import {calculateContentMetrics} from "../utils/resumeLimits";
-import {PageUtilizationIndicator} from "../components/common/LimitedInputs";
-import ClassicTemplate from "../components/templates/ClassicTemplate";
-import ModernTemplate from "../components/templates/ModernTemplate";
-import MinimalTemplate from "../components/templates/MinimalTemplate";
-import ProfessionalTemplate from "../components/templates/ProfessionalTemplate";
-import ProfessionalV2Template from "../components/templates/ProfessionalV2Template";
-import ExecutiveTemplate from "../components/templates/ExecutiveTemplate";
-import TechTemplate from "../components/templates/TechTemplate";
-import CreativeTemplate from "../components/templates/CreativeTemplate";
-import AcademicTemplate from "../components/templates/AcademicTemplate";
-import CorporateEliteTemplate from "../components/templates/CorporateEliteTemplate";
-import StrategicLeaderTemplate from "../components/templates/StrategicLeaderTemplate";
-import ImpactProTemplate from "../components/templates/ImpactProTemplate";
+} from "@/components/common/modals";
+import UpgradeRequiredModal from "@/components/common/modals/UpgradeRequiredModal";
+import {getJobCategories, getJobsByCategory} from "@/utils/jobProfiles";
+import {calculateContentMetrics} from "@/utils/resumeLimits";
+import {PageUtilizationIndicator} from "@/components/common/LimitedInputs";
+import ClassicTemplate from "@/components/templates/ClassicTemplate";
+import ModernTemplate from "@/components/templates/ModernTemplate";
+import MinimalTemplate from "@/components/templates/MinimalTemplate";
+import ProfessionalTemplate from "@/components/templates/ProfessionalTemplate";
+import ProfessionalV2Template from "@/components/templates/ProfessionalV2Template";
+import Professional2Template from "@/components/templates/Professional2Template";
+import TechTemplate from "@/components/templates/TechTemplate";
+import Creative2Template from "@/components/templates/Creative2Template";
+import AcademicTemplate from "@/components/templates/AcademicTemplate";
+import CorporateEliteTemplate from "@/components/templates/CorporateEliteTemplate";
+import StrategicLeaderTemplate from "@/components/templates/StrategicLeaderTemplate";
+import ImpactProTemplate from "@/components/templates/ImpactProTemplate";
+import GitHubStyleTemplate from "@/components/templates/GitHubStyleTemplate";
 
 // Default section order (only editable resume sections)
 const DEFAULT_SECTION_ORDER = [
@@ -97,12 +101,12 @@ const TEMPLATES = [
     atsScore: 96,
   },
   {
-    id: "executive",
-    name: "Executive",
-    component: ExecutiveTemplate,
-    category: "Leadership",
-    emoji: "👔",
-    atsScore: 96,
+    id: "professional2",
+    name: "Professional Elite",
+    component: Professional2Template,
+    category: "Professional",
+    emoji: "🏆",
+    atsScore: 98,
   },
   {
     id: "tech",
@@ -113,12 +117,20 @@ const TEMPLATES = [
     atsScore: 93,
   },
   {
-    id: "creative",
-    name: "Creative Designer",
-    component: CreativeTemplate,
+    id: "GitHubStyle",
+    name: "GitHub Style",
+    component: GitHubStyleTemplate,
+    category: "Tech",
+    emoji: "💻",
+    atsScore: 93,
+  },
+  {
+    id: "creative2",
+    name: "Creative Designer Pro",
+    component: Creative2Template,
     category: "Creative",
     emoji: "🎨",
-    atsScore: 88,
+    atsScore: 94,
   },
   {
     id: "academic",
@@ -193,16 +205,18 @@ const TEMPLATE_COLOR_THEMES = {
     {id: "forest", name: "Forest Green", primary: "#14532d", emoji: "🌲"},
   ],
   tech: [
-    {id: "blue", name: "Tech Blue", primary: "#1e3a8a", emoji: "💻"},
+    {id: "black", name: "Black", primary: "#0f172a", emoji: "⚫"},
+    {id: "blue", name: "Tech Blue", primary: "#1e3a8a", emoji: "�"},
     {id: "purple", name: "Purple", primary: "#6d28d9", emoji: "🔮"},
     {id: "teal", name: "Teal", primary: "#0e7490", emoji: "🌊"},
-    {id: "green", name: "Green", primary: "#047857", emoji: "💚"},
   ],
-  creative: [
-    {id: "purple", name: "Purple", primary: "#a21caf", emoji: "💜"},
-    {id: "orange", name: "Orange", primary: "#ea580c", emoji: "🧡"},
-    {id: "pink", name: "Pink", primary: "#db2777", emoji: "💗"},
-    {id: "teal", name: "Teal", primary: "#0891b2", emoji: "🌊"},
+  creative2: [
+    {id: "purple", name: "Purple", primary: "#8b5cf6", emoji: "💜"},
+    {id: "coral", name: "Coral", primary: "#f97316", emoji: "🧡"},
+    {id: "teal", name: "Teal", primary: "#14b8a6", emoji: "🌊"},
+    {id: "rose", name: "Rose", primary: "#e11d48", emoji: "🌹"},
+    {id: "indigo", name: "Indigo", primary: "#4f46e5", emoji: "�"},
+    {id: "cyan", name: "Cyan", primary: "#0891b2", emoji: "💎"},
   ],
   academic: [
     {id: "navy", name: "Navy Blue", primary: "#1e3a8a", emoji: "📘"},
@@ -220,7 +234,7 @@ const TEMPLATE_COLOR_THEMES = {
     {id: "teal", name: "Teal", primary: "#0d7377", emoji: "🌊"},
     {id: "purple", name: "Purple", primary: "#6b46c1", emoji: "🔮"},
     {id: "burgundy", name: "Burgundy", primary: "#9b2c2c", emoji: "🍷"},
-    {id: "navy", name: "Navy Blue", primary: "#2c5282", emoji: "💼"},
+    {id: "navy", name: "Navy", primary: "#1e3a8a", emoji: "💼"},
   ],
   "impact-pro": [
     {id: "emerald", name: "Emerald", primary: "#047857", emoji: "💚"},
@@ -237,68 +251,144 @@ const Editor = () => {
   const {blockNavigation, unblockNavigation} = useNavigationBlocker();
   const resumePreviewRef = useRef(null);
   const previewSectionRef = useRef(null);
+
+  // Helper function to check if subscription is expired
+  const isSubscriptionExpired = () => {
+    if (!user || !user.subscription) return false;
+
+    const {status, endDate, tier} = user.subscription;
+
+    // Free users don't have expiration
+    if (tier === "free") return false;
+
+    // Check if status is expired
+    if (status === "expired") return true;
+
+    // Check if endDate has passed
+    if (endDate && new Date(endDate) < new Date()) return true;
+
+    return false;
+  };
   const [resumeData, setResumeData] = useState(null);
   const [originalResumeData, setOriginalResumeData] = useState(null); // Track original data
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [showUnsavedModal, setShowUnsavedModal] = useState(false);
+  const [
+    hasUnsavedChanges,
+    toggleUnsavedChanges,
+    setHasUnsavedChangesTrue,
+    setHasUnsavedChangesFalse,
+  ] = useToggle(false);
+  const [
+    showUnsavedModal,
+    toggleUnsavedModal,
+    showUnsavedModalTrue,
+    showUnsavedModalFalse,
+  ] = useToggle(false);
   const [pendingNavigation, setPendingNavigation] = useState(null);
-  const [saving, setSaving] = useState(false);
-  const [autoSaving, setAutoSaving] = useState(false);
-  const [showPreview, setShowPreview] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState(() => {
-    // Load template from localStorage (set by Templates page) or default to "classic"
-    const savedTemplate = localStorage.getItem("selectedTemplate");
-    return savedTemplate || "classic";
-  });
-  const [showTemplateSelector, setShowTemplateSelector] = useState(false);
-  const [showColorThemeSelector, setShowColorThemeSelector] = useState(false);
-  const [sectionOrder, setSectionOrder] = useState(() => {
-    // Load section order from localStorage or use default
-    const saved = localStorage.getItem("resumeSectionOrder");
-    return saved ? JSON.parse(saved) : DEFAULT_SECTION_ORDER;
-  });
+  const [saving, toggleSaving, setSavingTrue, setSavingFalse] =
+    useToggle(false);
+  const [autoSaving, toggleAutoSaving, setAutoSavingTrue, setAutoSavingFalse] =
+    useToggle(false);
+  const [showPreview, togglePreview, setShowPreviewTrue, setShowPreviewFalse] =
+    useToggle(false);
+  const isMobile = useMediaQuery("(max-width: 1023px)");
+  const [selectedTemplate, setSelectedTemplate] = useLocalStorage(
+    "selectedTemplate",
+    "classic"
+  );
+  const [
+    showTemplateSelector,
+    toggleTemplateSelector,
+    showTemplateSelectorTrue,
+    showTemplateSelectorFalse,
+  ] = useToggle(false);
+  const [
+    showColorThemeSelector,
+    toggleColorThemeSelector,
+    showColorThemeSelectorTrue,
+    showColorThemeSelectorFalse,
+  ] = useToggle(false);
+  const [sectionOrder, setSectionOrder] = useLocalStorage(
+    "resumeSectionOrder",
+    DEFAULT_SECTION_ORDER
+  );
   const [draggedSection, setDraggedSection] = useState(null);
-  const [isAnalysisExpanded, setIsAnalysisExpanded] = useState(() => {
-    // Load analysis section state from localStorage or default to true
-    const saved = localStorage.getItem("analysisExpanded");
-    return saved !== null ? JSON.parse(saved) : true;
-  });
-  const [showGitHubImportModal, setShowGitHubImportModal] = useState(false);
-  const [githubImportSuccess, setGithubImportSuccess] = useState(false);
+  const [isAnalysisExpanded, setIsAnalysisExpanded] = useLocalStorage(
+    "analysisExpanded",
+    true
+  );
+  const [
+    showGitHubImportModal,
+    toggleGitHubImportModal,
+    showGitHubImportModalTrue,
+    showGitHubImportModalFalse,
+  ] = useToggle(false);
+  const [
+    githubImportSuccess,
+    toggleGithubImportSuccess,
+    setGithubImportSuccessTrue,
+    setGithubImportSuccessFalse,
+  ] = useToggle(false);
 
   // Page limit states
-  const [showPageLimitModal, setShowPageLimitModal] = useState(false);
-  const [twoPageMode, setTwoPageMode] = useState(false);
+  const [
+    showPageLimitModal,
+    togglePageLimitModal,
+    showPageLimitModalTrue,
+    showPageLimitModalFalse,
+  ] = useToggle(false);
+  const [
+    twoPageMode,
+    toggleTwoPageMode,
+    setTwoPageModeTrue,
+    setTwoPageModeFalse,
+  ] = useToggle(false);
   const [lastContentMetrics, setLastContentMetrics] = useState(null);
 
+  // Upgrade modal states
+  const [
+    showUpgradeModal,
+    toggleUpgradeModal,
+    showUpgradeModalTrue,
+    showUpgradeModalFalse,
+  ] = useToggle(false);
+  const [upgradeMessage, setUpgradeMessage] = useState("");
+
+  // Template-specific page usage (from TechTemplate and ClassicTemplate)
+  const [templatePageUsage, setTemplatePageUsage] = useState(null);
+
+  // Callback to receive page usage from templates (memoized to prevent infinite loops)
+  const handleTemplatePageUsage = useCallback((usageInfo) => {
+    setTemplatePageUsage(usageInfo);
+  }, []); // Empty deps - function doesn't need to change
+
+  // Reset page usage when switching to non-supported templates
+  useEffect(() => {
+    const supportedTemplates = [
+      "tech",
+      "classic",
+      "modern",
+      "professional",
+      "professionalv2",
+    ];
+    if (!supportedTemplates.includes(selectedTemplate)) {
+      setTemplatePageUsage(null);
+    }
+  }, [selectedTemplate]);
+
   // Wizard mode for new resumes
-  const [isWizardMode, setIsWizardMode] = useState(false);
-
-  // Save analysis section state to localStorage when it changes
-  useEffect(() => {
-    localStorage.setItem(
-      "analysisExpanded",
-      JSON.stringify(isAnalysisExpanded)
-    );
-  }, [isAnalysisExpanded]);
-
-  // Detect if device is mobile
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 1024); // lg breakpoint
-    };
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
+  const [
+    isWizardMode,
+    toggleWizardMode,
+    setIsWizardModeTrue,
+    setIsWizardModeFalse,
+  ] = useToggle(false);
 
   // Setup navigation blocker when there are unsaved changes
   useEffect(() => {
     if (hasUnsavedChanges) {
       blockNavigation((to) => {
         // Show modal and store pending navigation
-        setShowUnsavedModal(true);
+        showUnsavedModalTrue();
         setPendingNavigation(to);
         return false; // Block navigation
       });
@@ -317,8 +407,17 @@ const Editor = () => {
 
     const hasChanges =
       JSON.stringify(resumeData) !== JSON.stringify(originalResumeData);
-    setHasUnsavedChanges(hasChanges);
-  }, [resumeData, originalResumeData]);
+    if (hasChanges) {
+      setHasUnsavedChangesTrue();
+    } else {
+      setHasUnsavedChangesFalse();
+    }
+  }, [
+    resumeData,
+    originalResumeData,
+    setHasUnsavedChangesTrue,
+    setHasUnsavedChangesFalse,
+  ]);
 
   // Monitor content size and show warning if exceeds one page
   useEffect(() => {
@@ -332,7 +431,7 @@ const Editor = () => {
     if (metrics.exceedsOnePage) {
       // Show modal after a short delay to allow user to see what they typed
       const timer = setTimeout(() => {
-        setShowPageLimitModal(true);
+        showPageLimitModalTrue();
       }, 500);
 
       return () => clearTimeout(timer);
@@ -358,8 +457,7 @@ const Editor = () => {
 
     // Set up auto-save timer (30 seconds after last change)
     const autoSaveTimer = setTimeout(async () => {
-      console.log("🔄 Auto-saving resume...");
-      setAutoSaving(true);
+      setAutoSavingTrue();
 
       try {
         const response = await resumeAPI.update(resumeData._id, resumeData);
@@ -368,7 +466,7 @@ const Editor = () => {
         // Update state with saved data
         setResumeData(savedResume);
         setOriginalResumeData(JSON.parse(JSON.stringify(savedResume)));
-        setHasUnsavedChanges(false);
+        setHasUnsavedChangesFalse();
 
         // Show success toast
         toast.success("Auto-saved ✓", {
@@ -382,14 +480,12 @@ const Editor = () => {
           },
           icon: "💾",
         });
-
-        console.log("✅ Auto-save successful");
       } catch (error) {
-        console.error("❌ Auto-save failed:", error);
+        logger.error("❌ Auto-save failed:", error);
         // Don't show error toast for auto-save failures to avoid annoying users
         // They can still manually save if needed
       } finally {
-        setAutoSaving(false);
+        setAutoSavingFalse();
       }
     }, 30000); // 30 seconds
 
@@ -421,7 +517,7 @@ const Editor = () => {
         // Store the current state before showing modal
         const currentPath = window.location.pathname;
 
-        setShowUnsavedModal(true);
+        showUnsavedModalTrue();
         setPendingNavigation("back");
 
         // Push a new state to prevent navigation
@@ -452,24 +548,21 @@ const Editor = () => {
   // Load resume data on mount
   useEffect(() => {
     const loadResumeData = async () => {
-      console.log("🚀 Starting resume data load...");
-      console.log("📍 Location state:", location.state);
-      console.log("👤 User:", user);
-
       // First, try to get data from location state (when navigating from upload)
       const stateData = location.state?.resumeData;
       const isNewResume = location.state?.isNewResume || false;
 
       if (stateData) {
-        console.log("✅ Found data in location state");
-        console.log("🆕 Is new resume:", isNewResume);
-
         // Set wizard mode for new resumes
-        setIsWizardMode(isNewResume);
+        if (isNewResume) {
+          setIsWizardModeTrue();
+        } else {
+          setIsWizardModeFalse();
+        }
 
         // Auto-enable preview for wizard mode
         if (isNewResume && !isMobile) {
-          setShowPreview(true);
+          setShowPreviewTrue();
         }
 
         // Initialize data from location state
@@ -484,34 +577,28 @@ const Editor = () => {
 
       // If no state data, check if we have a saved resume ID
       const savedResumeId = localStorage.getItem("currentResumeId");
-      console.log("💾 Saved resume ID:", savedResumeId);
 
       if (savedResumeId && user) {
         // Fetch the resume from the database
         try {
-          console.log("📥 Fetching resume from database...");
           const response = await resumeAPI.getById(savedResumeId);
           const loadedData = response.data;
-          console.log("✅ Resume loaded from database:", loadedData);
           // Existing resumes should not show wizard
-          setIsWizardMode(false);
+          setIsWizardModeFalse();
           initializeResumeData(loadedData);
         } catch (err) {
-          console.error("❌ Error loading resume:", err);
+          logger.error("❌ Error loading resume:", err);
           // If error loading, clear the saved ID and redirect to upload
           localStorage.removeItem("currentResumeId");
           navigate("/upload");
         }
       } else {
-        console.log("⚠️ No data available, redirecting to upload");
         // No data available, redirect to upload
         navigate("/upload");
       }
     };
 
     const initializeResumeData = (data) => {
-      console.log("🔍 Initializing resume data:", data);
-
       // Initialize targetJobRole if it doesn't exist
       if (!data.targetJobRole) {
         data.targetJobRole = "software-engineer";
@@ -563,7 +650,6 @@ const Editor = () => {
         };
       }
 
-      console.log("✅ Resume data initialized:", data);
       setResumeData(data);
       // Store a deep copy as original data for change detection
       setOriginalResumeData(JSON.parse(JSON.stringify(data)));
@@ -582,7 +668,7 @@ const Editor = () => {
       return;
     }
 
-    setSaving(true);
+    setSavingTrue();
     try {
       let savedResume;
       if (resumeData._id) {
@@ -609,23 +695,23 @@ const Editor = () => {
         localStorage.setItem("currentResumeId", savedResume._id);
         // Update original data to current state after successful save
         setOriginalResumeData(JSON.parse(JSON.stringify(savedResume)));
-        setHasUnsavedChanges(false);
+        setHasUnsavedChangesFalse();
       }
     } catch (err) {
-      console.error("Save error:", err);
+      logger.error("Save error:", err);
 
-      // Check if it's a subscription limit error (403 with upgradeRequired)
-      if (err.response?.status === 403 && err.response?.data?.upgradeRequired) {
+      // Check if it's a subscription/upgrade error (403 with upgradeRequired or quotaExceeded)
+      if (
+        err.response?.status === 403 &&
+        (err.response?.data?.upgradeRequired ||
+          err.response?.data?.quotaExceeded)
+      ) {
         const errorData = err.response.data;
-        toast.error(errorData.message || "Upgrade required", {
-          icon: "⭐",
-          duration: 2000,
-        });
-
-        // Navigate to pricing page after a short delay
-        setTimeout(() => {
-          navigate("/pricing");
-        }, 2000);
+        setUpgradeMessage(
+          errorData.message ||
+            "Upgrade required to access this premium feature!"
+        );
+        showUpgradeModalTrue();
       } else {
         toast.error("Failed to save resume: " + parseValidationErrors(err), {
           icon: "❌",
@@ -633,7 +719,80 @@ const Editor = () => {
         });
       }
     } finally {
-      setSaving(false);
+      setSavingFalse();
+    }
+  };
+
+  // Handle PDF download with subscription and limit validation
+  const handleDownloadPDF = async () => {
+    if (!user) {
+      toast.error("Please login to download your resume", {
+        icon: "🔒",
+        duration: 3000,
+      });
+      navigate("/login");
+      return;
+    }
+
+    // Check if subscription is expired
+    if (isSubscriptionExpired()) {
+      setUpgradeMessage(
+        "Your subscription has expired. Please renew or upgrade to download your resume."
+      );
+      showUpgradeModalTrue();
+      return;
+    }
+
+    try {
+      // First, call track-download API to check subscription and limits
+      // Pass resumeId for subscription validation
+      await resumeAPI.trackDownload(resumeData?._id);
+
+      // If successful, proceed with PDF download
+      if (!showPreview) {
+        setShowPreviewTrue();
+        setTimeout(() => {
+          if (
+            resumePreviewRef.current &&
+            resumePreviewRef.current.downloadPDF
+          ) {
+            resumePreviewRef.current.downloadPDF();
+          }
+        }, 300);
+      } else {
+        if (resumePreviewRef.current && resumePreviewRef.current.downloadPDF) {
+          resumePreviewRef.current.downloadPDF();
+        }
+      }
+
+      toast.success("Resume download started!", {
+        icon: "📥",
+        duration: 2000,
+      });
+    } catch (err) {
+      logger.error("Download error:", err);
+      logger.error("Download error response:", err.response?.data);
+
+      // Check if it's a subscription/upgrade error (403 with upgradeRequired)
+      if (err.response?.status === 403) {
+        const errorData = err.response.data;
+
+        // Show upgrade modal for any 403 error
+        setUpgradeMessage(
+          errorData.message ||
+            errorData.error ||
+            "You need an active subscription to download your resume!"
+        );
+        showUpgradeModalTrue();
+      } else {
+        toast.error(
+          "Failed to download resume: " + parseValidationErrors(err),
+          {
+            icon: "❌",
+            duration: 4000,
+          }
+        );
+      }
     }
   };
 
@@ -642,39 +801,39 @@ const Editor = () => {
     await handleSave();
     // Temporarily unblock navigation
     unblockNavigation();
-    setHasUnsavedChanges(false);
+    setHasUnsavedChangesFalse();
 
     if (pendingNavigation === "back") {
       window.history.back();
     } else if (pendingNavigation) {
       navigate(pendingNavigation);
     }
-    setShowUnsavedModal(false);
+    showUnsavedModalFalse();
     setPendingNavigation(null);
   };
 
   const handleDiscardAndNavigate = () => {
     // Temporarily unblock navigation
     unblockNavigation();
-    setHasUnsavedChanges(false);
+    setHasUnsavedChangesFalse();
 
     if (pendingNavigation === "back") {
       window.history.back();
     } else if (pendingNavigation) {
       navigate(pendingNavigation);
     }
-    setShowUnsavedModal(false);
+    showUnsavedModalFalse();
     setPendingNavigation(null);
   };
 
   const handleCancelNavigation = () => {
-    setShowUnsavedModal(false);
+    showUnsavedModalFalse();
     setPendingNavigation(null);
   };
 
   // Handle wizard completion
   const handleWizardComplete = () => {
-    setIsWizardMode(false);
+    setIsWizardModeFalse();
     toast.success("Resume setup complete! You can now edit all sections.", {
       icon: "🎉",
       duration: 3000,
@@ -683,8 +842,8 @@ const Editor = () => {
 
   // Page limit handlers
   const handleEnableTwoPages = () => {
-    setTwoPageMode(true);
-    setShowPageLimitModal(false);
+    setTwoPageModeTrue();
+    showPageLimitModalFalse();
     toast.success("Two-page mode enabled", {
       icon: "📄",
       duration: 3000,
@@ -692,7 +851,7 @@ const Editor = () => {
   };
 
   const handleContinueEditing = () => {
-    setShowPageLimitModal(false);
+    showPageLimitModalFalse();
     toast.info("Please reduce content to fit one page", {
       icon: "✏️",
       duration: 3000,
@@ -775,8 +934,6 @@ const Editor = () => {
       newOrder.splice(targetIndex, 0, draggedSection);
 
       setSectionOrder(newOrder);
-      // Save to localStorage
-      localStorage.setItem("resumeSectionOrder", JSON.stringify(newOrder));
 
       // Also update resumeData with section order for templates
       setResumeData((prev) => ({
@@ -790,8 +947,6 @@ const Editor = () => {
 
   // GitHub Import Handler
   const handleGitHubImport = async (importedData) => {
-    console.log("🔥 GitHub Import Data:", importedData);
-
     let updatedResumeData = null;
 
     setResumeData((prev) => {
@@ -808,7 +963,6 @@ const Editor = () => {
         if (importedData.profile.bio) {
           updated.summary = importedData.profile.bio;
         }
-        console.log("✅ Profile imported:", updated.contact);
       }
 
       // Import Projects
@@ -823,25 +977,16 @@ const Editor = () => {
           highlights: [`⭐ ${repo.stars} stars`, `🔱 ${repo.forks} forks`],
         }));
 
-        console.log("📦 GitHub Projects to import:", githubProjects);
-        console.log("🔀 Merge option:", importedData.mergeOptions.projects);
-        console.log("📋 Existing projects:", updated.projects);
-
         if (importedData.mergeOptions.projects === "replace") {
           updated.projects = githubProjects;
         } else {
           // Add new projects
           updated.projects = [...(updated.projects || []), ...githubProjects];
         }
-
-        console.log("✅ Updated projects:", updated.projects);
       }
 
       // Import Skills
       if (importedData.skills && importedData.skills.length > 0) {
-        console.log("🎯 Importing skills:", importedData.skills);
-        console.log("📊 Existing skills structure:", updated.skills);
-
         // Check if skills are categorized (array of objects with category/items)
         const isCategorized =
           Array.isArray(updated.skills) &&
@@ -904,7 +1049,7 @@ const Editor = () => {
             updated.skills = [...(updated.skills || []), ...newSkills];
           }
         }
-        console.log("✅ Skills imported:", updated.skills);
+        logger.log("✅ Skills imported:", updated.skills);
       }
 
       // Import Experience
@@ -921,7 +1066,7 @@ const Editor = () => {
           description: exp.description,
         }));
 
-        console.log("💼 Experience to import:", githubExperience);
+        logger.log("💼 Experience to import:", githubExperience);
 
         if (importedData.mergeOptions.experience === "replace") {
           updated.experience = githubExperience;
@@ -932,7 +1077,7 @@ const Editor = () => {
             ...githubExperience,
           ];
         }
-        console.log("✅ Experience imported:", updated.experience);
+        logger.log("✅ Experience imported:", updated.experience);
       }
 
       // Import Certifications/Achievements
@@ -949,7 +1094,7 @@ const Editor = () => {
           })
         );
 
-        console.log("🏆 Certifications to import:", githubCertifications);
+        logger.log("🏆 Certifications to import:", githubCertifications);
 
         if (importedData.mergeOptions.certifications === "replace") {
           updated.certifications = githubCertifications;
@@ -960,10 +1105,10 @@ const Editor = () => {
             ...githubCertifications,
           ];
         }
-        console.log("✅ Certifications imported:", updated.certifications);
+        logger.log("✅ Certifications imported:", updated.certifications);
       }
 
-      console.log("🎉 Final updated resume data:", updated);
+      logger.log("🎉 Final updated resume data:", updated);
 
       // Store the updated data to save later
       updatedResumeData = updated;
@@ -972,18 +1117,18 @@ const Editor = () => {
     });
 
     // Close modal
-    setShowGitHubImportModal(false);
+    showGitHubImportModalFalse();
 
     // Show success message
-    setGithubImportSuccess(true);
-    setTimeout(() => setGithubImportSuccess(false), 3000);
+    setGithubImportSuccessTrue();
+    setTimeout(() => setGithubImportSuccessFalse(), 3000);
 
     // Auto-save with the updated data (wait for state to settle)
     setTimeout(async () => {
       if (updatedResumeData && user) {
-        console.log("💾 Auto-saving imported data...", updatedResumeData);
+        logger.log("💾 Auto-saving imported data...", updatedResumeData);
         try {
-          setSaving(true);
+          setSavingTrue();
           let savedResume;
           if (updatedResumeData._id) {
             // Update existing resume
@@ -992,12 +1137,12 @@ const Editor = () => {
               updatedResumeData
             );
             savedResume = response.data;
-            console.log("✅ Resume auto-saved successfully!");
+            logger.log("✅ Resume auto-saved successfully!");
           } else {
             // Save new resume
             const response = await resumeAPI.save(updatedResumeData);
             savedResume = response.data;
-            console.log("✅ Resume auto-saved successfully!");
+            logger.log("✅ Resume auto-saved successfully!");
           }
 
           // Update the resumeData with the saved version
@@ -1006,7 +1151,7 @@ const Editor = () => {
             localStorage.setItem("currentResumeId", savedResume._id);
           }
         } catch (err) {
-          console.error("❌ Auto-save error:", err);
+          logger.error("❌ Auto-save error:", err);
           toast.error(
             "Failed to auto-save imported data: " + parseValidationErrors(err),
             {
@@ -1015,7 +1160,7 @@ const Editor = () => {
             }
           );
         } finally {
-          setSaving(false);
+          setSavingFalse();
         }
       }
     }, 1000);
@@ -1027,7 +1172,6 @@ const Editor = () => {
       window.confirm("Reset section order to default? This cannot be undone.")
     ) {
       setSectionOrder(DEFAULT_SECTION_ORDER);
-      localStorage.removeItem("resumeSectionOrder");
       setResumeData((prev) => ({
         ...prev,
         sectionOrder: DEFAULT_SECTION_ORDER,
@@ -1507,8 +1651,8 @@ const Editor = () => {
             )}
             {/* GitHub Import Button */}
             <button
-              onClick={() => setShowGitHubImportModal(true)}
-              className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 border border-purple-600 dark:border-purple-500 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs sm:text-sm font-semibold hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+              onClick={() => showGitHubImportModalTrue()}
+              className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 border border-gray-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-black text-gray-900 dark:text-gray-300 text-xs sm:text-sm font-semibold hover:bg-gray-50 dark:hover:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-zinc-600 transition-all flex items-center justify-center gap-2"
               title="Import from GitHub"
             >
               <span className="hidden sm:inline">💻</span>
@@ -1518,7 +1662,7 @@ const Editor = () => {
             {!isWizardMode && (
               <button
                 onClick={handleResetOrder}
-                className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-semibold hover:border-orange-500 hover:text-orange-600 dark:hover:text-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors flex items-center justify-center gap-1"
+                className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 border border-gray-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-black text-gray-900 dark:text-gray-300 text-xs sm:text-sm font-semibold hover:border-orange-500 hover:text-orange-600 dark:hover:text-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors flex items-center justify-center gap-1"
                 title="Reset section order to default"
               >
                 <span className="hidden sm:inline">🔄</span>
@@ -1527,8 +1671,8 @@ const Editor = () => {
             )}
             {/* Template Selector Button */}
             <button
-              onClick={() => setShowTemplateSelector(true)}
-              className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 border border-blue-600 dark:border-blue-500 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs sm:text-sm font-semibold hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-1.5"
+              onClick={() => showTemplateSelectorTrue()}
+              className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 border border-gray-300 dark:border-zinc-700 rounded-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs sm:text-sm font-semibold hover:bg-gray-800 dark:hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-700 dark:focus:ring-gray-300 transition-all flex items-center justify-center gap-1.5"
               title="Change template"
             >
               <span>
@@ -1539,8 +1683,8 @@ const Editor = () => {
             {/* Color Theme Selector Button - Only show for templates with color themes */}
             {TEMPLATE_COLOR_THEMES[selectedTemplate] && (
               <button
-                onClick={() => setShowColorThemeSelector(true)}
-                className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 border border-purple-600 dark:border-purple-500 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs sm:text-sm font-semibold hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-1.5"
+                onClick={() => showColorThemeSelectorTrue()}
+                className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 border border-gray-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-900 text-gray-900 dark:text-white text-xs sm:text-sm font-semibold hover:bg-gray-50 dark:hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-gray-400 dark:focus:ring-zinc-600 transition-all flex items-center justify-center gap-1.5"
                 title="Change color theme"
               >
                 <span>🎨</span>
@@ -1555,11 +1699,11 @@ const Editor = () => {
           <div className="flex gap-2 justify-between items-stretch">
             {/* Preview Toggle - Mobile */}
             <button
-              onClick={() => setShowPreview(!showPreview)}
-              className={`flex-1 px-3 py-2 rounded-lg font-semibold transition-all duration-300 text-xs flex items-center justify-center ${
+              onClick={togglePreview}
+              className={`flex-1 px-3 py-2 rounded-lg font-semibold transition-all duration-200 text-xs flex items-center justify-center ${
                 showPreview
-                  ? "bg-gradient-to-br from-purple-500 via-blue-500 to-indigo-600 text-white"
-                  : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600"
+                  ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900"
+                  : "bg-white dark:bg-zinc-900 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-zinc-700"
               }`}
             >
               <span className="text-base mr-1.5">
@@ -1573,42 +1717,30 @@ const Editor = () => {
 
             {/* Download PDF - Mobile */}
             <button
-              onClick={() => {
-                if (!showPreview) {
-                  setShowPreview(true);
-                  setTimeout(() => {
-                    if (
-                      resumePreviewRef.current &&
-                      resumePreviewRef.current.downloadPDF
-                    ) {
-                      resumePreviewRef.current.downloadPDF();
-                    }
-                  }, 300);
-                } else {
-                  if (
-                    resumePreviewRef.current &&
-                    resumePreviewRef.current.downloadPDF
-                  ) {
-                    resumePreviewRef.current.downloadPDF();
-                  }
-                }
-              }}
-              className="flex-1 px-3 py-2 rounded-lg bg-gradient-to-br from-green-400 via-emerald-500 to-teal-600 text-white font-semibold transition-all duration-300 text-xs flex items-center justify-center"
+              onClick={handleDownloadPDF}
+              disabled={isSubscriptionExpired()}
+              className={`flex-1 px-3 py-2 rounded-lg font-semibold transition-all duration-200 text-xs flex items-center justify-center ${
+                isSubscriptionExpired()
+                  ? "bg-gray-300 dark:bg-gray-700 cursor-not-allowed text-gray-500"
+                  : "bg-green-600 hover:bg-green-700 text-white"
+              }`}
             >
-              <span className="text-base mr-1.5">📥</span>
-              Download
+              <span className="text-base mr-1.5">
+                {isSubscriptionExpired() ? "🔒" : "📥"}
+              </span>
+              {isSubscriptionExpired() ? "Expired" : "Download"}
             </button>
 
             {/* Save Button - Mobile */}
             <button
               onClick={handleSave}
               disabled={saving || autoSaving}
-              className={`flex-1 px-3 py-2 rounded-lg font-semibold transition-all duration-300 text-xs relative flex items-center justify-center ${
+              className={`flex-1 px-3 py-2 rounded-lg font-semibold transition-all duration-200 text-xs relative flex items-center justify-center ${
                 saving || autoSaving
                   ? "bg-gray-300 dark:bg-gray-700 cursor-not-allowed text-gray-500"
                   : hasUnsavedChanges
-                  ? "bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 text-white"
-                  : "bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 text-white"
+                    ? "bg-orange-600 hover:bg-orange-700 text-white"
+                    : "bg-blue-600 hover:bg-blue-700 text-white"
               }`}
             >
               {hasUnsavedChanges && !saving && !autoSaving && (
@@ -1621,10 +1753,10 @@ const Editor = () => {
                 {saving
                   ? "Saving..."
                   : autoSaving
-                  ? "Auto-saving..."
-                  : hasUnsavedChanges
-                  ? "Save*"
-                  : "Saved"}
+                    ? "Auto-saving..."
+                    : hasUnsavedChanges
+                      ? "Save*"
+                      : "Saved"}
               </span>
               <span className="xs:hidden">
                 {saving || autoSaving ? "..." : hasUnsavedChanges ? "*" : "✓"}
@@ -1637,18 +1769,18 @@ const Editor = () => {
         <div className="hidden lg:flex fixed right-6 top-32 z-50 flex-col gap-4 no-print">
           {/* Preview Toggle Button */}
           <button
-            onClick={() => setShowPreview(!showPreview)}
-            className={`group relative w-14 h-14 rounded-full shadow-2xl font-medium transition-all duration-300 hover:scale-110 hover:shadow-3xl ${
+            onClick={togglePreview}
+            className={`group relative w-14 h-14 rounded-full font-medium transition-all duration-200 hover:scale-105 ${
               showPreview
-                ? "bg-gradient-to-br from-purple-500 via-blue-500 to-indigo-600 text-white hover:from-purple-600 hover:via-blue-600 hover:to-indigo-700"
-                : "bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 text-gray-700 dark:text-gray-300 hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-600 dark:hover:to-gray-700 border-2 border-gray-300 dark:border-gray-600"
-            }`}
+                ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100"
+                : "bg-white dark:bg-zinc-900 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 border-2 border-gray-300 dark:border-zinc-700"
+            } shadow-lg hover:shadow-xl`}
           >
             <div className="flex items-center justify-center">
               <span className="text-2xl">{showPreview ? "👁️" : "👁️‍🗨️"}</span>
             </div>
             {/* Hover Tooltip */}
-            <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-xs font-semibold rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+            <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-gray-900 dark:text-white text-xs font-semibold rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
               {showPreview ? "Hide Preview" : "Show Preview"}
               <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-1 border-4 border-transparent border-l-gray-900 dark:border-l-gray-700"></span>
             </span>
@@ -1656,34 +1788,24 @@ const Editor = () => {
 
           {/* Download PDF Button */}
           <button
-            onClick={() => {
-              if (!showPreview) {
-                setShowPreview(true);
-                setTimeout(() => {
-                  if (
-                    resumePreviewRef.current &&
-                    resumePreviewRef.current.downloadPDF
-                  ) {
-                    resumePreviewRef.current.downloadPDF();
-                  }
-                }, 300);
-              } else {
-                if (
-                  resumePreviewRef.current &&
-                  resumePreviewRef.current.downloadPDF
-                ) {
-                  resumePreviewRef.current.downloadPDF();
-                }
-              }
-            }}
-            className="group relative w-14 h-14 rounded-full bg-gradient-to-br from-green-400 via-emerald-500 to-teal-600 text-white shadow-2xl font-medium hover:from-green-500 hover:via-emerald-600 hover:to-teal-700 transition-all duration-300 hover:scale-110 hover:shadow-3xl hover:rotate-12"
+            onClick={handleDownloadPDF}
+            disabled={isSubscriptionExpired()}
+            className={`group relative w-14 h-14 rounded-full shadow-lg font-medium transition-all duration-200 ${
+              isSubscriptionExpired()
+                ? "bg-gray-300 dark:bg-gray-700 cursor-not-allowed"
+                : "bg-green-600 hover:bg-green-700 text-white hover:scale-105 hover:shadow-xl"
+            }`}
           >
             <div className="flex items-center justify-center">
-              <span className="text-2xl">📥</span>
+              <span className="text-2xl">
+                {isSubscriptionExpired() ? "🔒" : "📥"}
+              </span>
             </div>
             {/* Hover Tooltip */}
-            <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-xs font-semibold rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
-              Download PDF
+            <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-gray-900 dark:text-white text-xs font-semibold rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+              {isSubscriptionExpired()
+                ? "Subscription Expired"
+                : "Download PDF"}
               <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-1 border-4 border-transparent border-l-gray-900 dark:border-l-gray-700"></span>
             </span>
           </button>
@@ -1692,12 +1814,12 @@ const Editor = () => {
           <button
             onClick={handleSave}
             disabled={saving || autoSaving}
-            className={`group relative w-14 h-14 rounded-full shadow-2xl font-medium transition-all duration-300 ${
+            className={`group relative w-14 h-14 rounded-full shadow-lg font-medium transition-all duration-200 hover:scale-105 hover:shadow-xl ${
               saving || autoSaving
-                ? "bg-gradient-to-br from-gray-300 to-gray-400 cursor-not-allowed"
+                ? "bg-gray-300 dark:bg-gray-700 cursor-not-allowed"
                 : hasUnsavedChanges
-                ? "bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 text-white hover:from-orange-500 hover:via-orange-600 hover:to-orange-700 hover:scale-110 hover:shadow-3xl hover:-rotate-12"
-                : "bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 text-white hover:from-blue-500 hover:via-blue-600 hover:to-blue-700 hover:scale-110 hover:shadow-3xl hover:-rotate-12"
+                  ? "bg-orange-600 hover:bg-orange-700 text-white"
+                  : "bg-blue-600 hover:bg-blue-700 text-white"
             }`}
           >
             {hasUnsavedChanges && !saving && !autoSaving && (
@@ -1710,13 +1832,13 @@ const Editor = () => {
             </div>
             {/* Hover Tooltip */}
             {!saving && !autoSaving && (
-              <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-xs font-semibold rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+              <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-gray-900 dark:text-white text-xs font-semibold rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
                 {hasUnsavedChanges ? "Save Changes*" : "Resume Saved"}
                 <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-1 border-4 border-transparent border-l-gray-900 dark:border-l-gray-700"></span>
               </span>
             )}
             {(saving || autoSaving) && (
-              <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-xs font-semibold rounded-lg shadow-xl opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+              <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-gray-900 dark:text-white text-xs font-semibold rounded-lg shadow-xl opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
                 {autoSaving ? "Auto-saving..." : "Saving..."}
                 <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-1 border-4 border-transparent border-l-gray-900 dark:border-l-gray-700"></span>
               </span>
@@ -1726,7 +1848,7 @@ const Editor = () => {
           {/* Scroll to Top Button */}
           <button
             onClick={() => window.scrollTo({top: 0, behavior: "smooth"})}
-            className="group relative w-14 h-14 rounded-full bg-gradient-to-br from-orange-400 via-red-400 to-pink-500 text-white shadow-2xl font-medium hover:from-orange-500 hover:via-red-500 hover:to-pink-600 transition-all duration-300 hover:scale-110 hover:shadow-3xl"
+            className="group relative w-14 h-14 rounded-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 shadow-lg font-medium hover:bg-gray-800 dark:hover:bg-gray-100 transition-all duration-200 hover:scale-105 hover:shadow-xl"
           >
             <div className="flex items-center justify-center">
               <span className="text-2xl transition-transform duration-300 group-hover:-translate-y-1">
@@ -1734,7 +1856,7 @@ const Editor = () => {
               </span>
             </div>
             {/* Hover Tooltip */}
-            <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-xs font-semibold rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+            <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-gray-900 dark:text-white text-xs font-semibold rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
               Scroll to Top
               <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-1 border-4 border-transparent border-l-gray-900 dark:border-l-gray-700"></span>
             </span>
@@ -1742,8 +1864,8 @@ const Editor = () => {
         </div>
 
         {/* Info Banner */}
-        <div className="mb-6 p-3 sm:p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-          <div className="flex items-start gap-2 text-xs sm:text-sm text-blue-800 dark:text-blue-300">
+        <div className="mb-6 p-3 sm:p-4 bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-lg">
+          <div className="flex items-start gap-2 text-xs sm:text-sm text-gray-700 dark:text-gray-300">
             <span className="text-base sm:text-lg flex-shrink-0">💡</span>
             <span>
               <strong>Tip:</strong>{" "}
@@ -1759,11 +1881,11 @@ const Editor = () => {
 
         {/* Fixed Scores & Analysis Section - Collapsible */}
         <div className="mb-8">
-          <div className="bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-900/20 dark:to-blue-900/20 border-2 border-primary-200 dark:border-primary-800 rounded-xl overflow-hidden">
+          <div className="bg-white dark:bg-zinc-950 border border-gray-200 dark:border-zinc-800 rounded-xl overflow-hidden">
             {/* Collapsible Header */}
             <button
               onClick={() => setIsAnalysisExpanded(!isAnalysisExpanded)}
-              className="w-full p-4 sm:p-6 flex items-center justify-between hover:bg-primary-100/50 dark:hover:bg-primary-900/30 transition-colors"
+              className="w-full p-4 sm:p-6 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-zinc-900 transition-colors"
             >
               <h2 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2 sm:gap-3">
                 <span className="text-2xl sm:text-3xl">📊</span>
@@ -1796,15 +1918,15 @@ const Editor = () => {
 
             {/* Collapsible Content */}
             {isAnalysisExpanded && (
-              <div className="px-3 sm:px-6 pb-4 sm:pb-6 space-y-4 sm:space-y-6">
+              <div className="px-3 sm:px-6 pb-4 sm:pb-6 space-y-4 sm:space-y-6 bg-gray-50 dark:bg-zinc-900">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                   {/* ATS Score Card */}
-                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                  <div className="bg-white dark:bg-zinc-950 rounded-lg border border-gray-200 dark:border-zinc-800">
                     <ScoreCard resumeData={resumeData} expanded={false} />
                   </div>
 
                   {/* Job-Specific Score Card */}
-                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                  <div className="bg-white dark:bg-zinc-950 rounded-lg border border-gray-200 dark:border-zinc-800">
                     <JobSpecificScoreCard
                       resumeData={resumeData}
                       onUpdateField={updateField}
@@ -1813,7 +1935,7 @@ const Editor = () => {
                 </div>
 
                 {/* Recommendations Panel - Full Width */}
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                <div className="bg-white dark:bg-zinc-950 rounded-lg border border-gray-200 dark:border-zinc-800">
                   <div className="p-4 sm:p-6">
                     <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
                       <span className="text-lg sm:text-xl">💡</span>
@@ -1839,7 +1961,7 @@ const Editor = () => {
             <div className="w-full border-t-2 border-gray-300 dark:border-gray-600"></div>
           </div>
           <div className="relative flex justify-center">
-            <span className="bg-gray-50 dark:bg-gray-900 px-4 sm:px-6 py-2 text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 rounded-full border-2 border-gray-300 dark:border-gray-600">
+            <span className="bg-gray-50 dark:bg-gray-900 px-4 sm:px-6 py-2 text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-700 dark:text-gray-300 rounded-full border-2 border-gray-300 dark:border-gray-600">
               ✏️ Resume Content Editor
             </span>
           </div>
@@ -1872,12 +1994,14 @@ const Editor = () => {
                 ref={previewSectionRef}
                 className="xl:sticky xl:top-2 xl:h-[calc(100vh-3rem)] xl:overflow-auto order-1 xl:order-2"
               >
-                <div className="bg-gradient-to-br from-white via-blue-50/30 to-purple-50/30 dark:from-gray-800 dark:via-indigo-900/20 dark:to-purple-900/20 rounded-2xl shadow-2xl border-2 border-indigo-200/50 dark:border-indigo-700/50 backdrop-blur-sm p-6">
+                <div className="bg-white dark:bg-zinc-950 rounded-xl border border-gray-200 dark:border-zinc-800 p-6">
                   <ResumePreview
                     ref={resumePreviewRef}
                     resumeData={resumeData}
                     template={selectedTemplate}
                     twoPageMode={twoPageMode}
+                    onPageUsageChange={handleTemplatePageUsage}
+                    onDownload={handleDownloadPDF}
                   />
                 </div>
               </div>
@@ -1892,13 +2016,131 @@ const Editor = () => {
           >
             {/* Editor Panel - Dynamic Sections */}
             <div className="space-y-4 sm:space-y-6 order-2 xl:order-1">
-              {/* Page Utilization Indicator */}
-              {!twoPageMode && lastContentMetrics && (
-                <PageUtilizationIndicator
-                  metrics={lastContentMetrics}
-                  twoPageMode={twoPageMode}
-                />
+              {/* Hidden Template Renderer for Page Usage Calculation (when preview is hidden) */}
+              {!showPreview &&
+                !twoPageMode &&
+                (selectedTemplate === "tech" ||
+                  selectedTemplate === "classic" ||
+                  selectedTemplate === "modern" ||
+                  selectedTemplate === "professional" ||
+                  selectedTemplate === "professionalv2") && (
+                  <div
+                    className="fixed top-0 left-[-9999px] opacity-0 pointer-events-none"
+                    style={{width: "210mm", height: "auto"}}
+                  >
+                    <ResumePreview
+                      resumeData={resumeData}
+                      template={selectedTemplate}
+                      twoPageMode={twoPageMode}
+                      onPageUsageChange={handleTemplatePageUsage}
+                      onDownload={handleDownloadPDF}
+                    />
+                  </div>
+                )}
+
+              {/* DEBUG: Show template page usage state */}
+              {!twoPageMode && (
+                <div className="bg-blue-100 dark:bg-blue-900 p-2 rounded text-xs">
+                  <strong>Debug:</strong> Template: {selectedTemplate} | Has
+                  Data: {templatePageUsage ? "YES" : "NO"} | Template Name:{" "}
+                  {templatePageUsage?.templateName || "N/A"} | Preview Shown:{" "}
+                  {showPreview ? "YES" : "NO"}
+                </div>
               )}
+
+              {/* Template-Specific Page Usage Indicator */}
+              {!twoPageMode &&
+                templatePageUsage &&
+                templatePageUsage.templateName &&
+                templatePageUsage.percentage > 0 && (
+                  <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-zinc-800 dark:to-zinc-900 rounded-xl p-4 border-2 border-gray-200 dark:border-zinc-700 shadow-sm">
+                    {/* Header */}
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-bold text-gray-800 dark:text-gray-200">
+                          📄 Page Usage
+                        </span>
+                        <span className="text-xs font-mono font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 px-3 py-1 rounded-full shadow-sm">
+                          {templatePageUsage.templateName}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-mono text-gray-600 dark:text-gray-400 bg-white dark:bg-zinc-800 px-2 py-1 rounded border border-gray-300 dark:border-zinc-600">
+                          {templatePageUsage.currentHeight}px /{" "}
+                          {templatePageUsage.maxHeight}px
+                        </span>
+                        {templatePageUsage.isOverflowing && (
+                          <span className="text-xs font-bold text-orange-600 dark:text-orange-400 flex items-center gap-1 animate-pulse">
+                            ⚠️ Overflow!
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Progress Bar */}
+                    <div className="w-full bg-gray-300 dark:bg-zinc-700 rounded-full h-3 overflow-hidden shadow-inner">
+                      <div
+                        className={`h-full rounded-full transition-all duration-500 ${
+                          templatePageUsage.percentage >= 100
+                            ? "bg-gradient-to-r from-red-500 via-orange-500 to-red-600"
+                            : templatePageUsage.percentage >= 80
+                              ? "bg-gradient-to-r from-yellow-400 via-orange-400 to-orange-500"
+                              : "bg-gradient-to-r from-green-400 via-blue-400 to-blue-500"
+                        }`}
+                        style={{
+                          width: `${Math.min(
+                            templatePageUsage.percentage,
+                            100
+                          )}%`,
+                        }}
+                      />
+                    </div>
+
+                    {/* Stats */}
+                    <div className="mt-3 flex items-center justify-between">
+                      <div className="text-sm">
+                        <span className="font-bold text-gray-800 dark:text-gray-200">
+                          {templatePageUsage.percentage}%
+                        </span>
+                        <span className="text-gray-600 dark:text-gray-400 ml-1">
+                          filled
+                        </span>
+                      </div>
+                      {templatePageUsage.isOverflowing && (
+                        <div className="text-sm">
+                          <span className="font-bold text-orange-600 dark:text-orange-400">
+                            +{templatePageUsage.overflowPercentage}%
+                          </span>
+                          <span className="text-gray-600 dark:text-gray-400 ml-1">
+                            overflow
+                          </span>
+                        </div>
+                      )}
+                      {!templatePageUsage.isOverflowing && (
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                          ✅ Fits on one page
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Debug Info */}
+                    <div className="mt-2 pt-2 border-t border-gray-300 dark:border-zinc-700">
+                      <div className="text-xs text-gray-500 dark:text-gray-400 font-mono">
+                        Height: {templatePageUsage.currentHeight}px | Max:{" "}
+                        {templatePageUsage.maxHeight}px |
+                        {templatePageUsage.isOverflowing
+                          ? ` Over by: ${
+                              templatePageUsage.currentHeight -
+                              templatePageUsage.maxHeight
+                            }px`
+                          : ` Space left: ${
+                              templatePageUsage.maxHeight -
+                              templatePageUsage.currentHeight
+                            }px`}
+                      </div>
+                    </div>
+                  </div>
+                )}
 
               {sectionOrder.map((sectionId) => renderSection(sectionId))}
             </div>
@@ -1909,16 +2151,16 @@ const Editor = () => {
                 ref={previewSectionRef}
                 className="xl:sticky xl:top-2 xl:h-[calc(100vh-3rem)] xl:overflow-auto order-1 xl:order-2"
               >
-                <div className="bg-gradient-to-br from-white via-blue-50/30 to-purple-50/30 dark:from-gray-800 dark:via-indigo-900/20 dark:to-purple-900/20 rounded-2xl shadow-2xl border-2 border-indigo-200/50 dark:border-indigo-700/50 backdrop-blur-sm p-6">
+                <div className="bg-white dark:bg-zinc-950 rounded-xl border border-gray-200 dark:border-zinc-800 p-6">
                   {/* Stylish Header */}
                   <div className="flex justify-between items-center mb-4 xl:hidden">
-                    <h3 className="text-xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent flex items-center gap-2">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
                       <span className="text-2xl">👁️</span>
                       <span>Resume Preview</span>
                     </h3>
                     <button
-                      onClick={() => setShowPreview(false)}
-                      className="p-2 rounded-full hover:bg-indigo-100 dark:hover:bg-indigo-900/30 text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 transition-all duration-200"
+                      onClick={setShowPreviewFalse}
+                      className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-zinc-900 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all duration-200"
                     >
                       <svg
                         className="w-6 h-6"
@@ -1940,6 +2182,8 @@ const Editor = () => {
                     resumeData={resumeData}
                     template={selectedTemplate}
                     twoPageMode={twoPageMode}
+                    onPageUsageChange={handleTemplatePageUsage}
+                    onDownload={handleDownloadPDF}
                   />
                 </div>
               </div>
@@ -1950,26 +2194,26 @@ const Editor = () => {
         {/* Template Selector Modal */}
         {showTemplateSelector && (
           <div
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100] flex items-center justify-center p-2 sm:p-4 no-print"
-            onClick={() => setShowTemplateSelector(false)}
+            className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-2 sm:p-4 no-print"
+            onClick={() => showTemplateSelectorFalse()}
           >
             <div
-              className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-6xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden"
+              className="bg-white dark:bg-zinc-950 rounded-xl w-full max-w-6xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden border border-gray-200 dark:border-zinc-800"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Modal Header */}
-              <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-4 sm:p-6 flex justify-between items-center">
+              <div className="bg-white dark:bg-zinc-950 p-4 sm:p-6 flex justify-between items-center border-b border-gray-200 dark:border-zinc-800">
                 <div>
-                  <h2 className="text-xl sm:text-2xl font-bold text-white mb-1">
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1">
                     Choose Resume Template
                   </h2>
-                  <p className="text-xs sm:text-sm text-blue-100">
+                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                     Select a template and see changes instantly
                   </p>
                 </div>
                 <button
-                  onClick={() => setShowTemplateSelector(false)}
-                  className="text-white hover:bg-white/20 p-2 rounded-full transition-colors flex-shrink-0"
+                  onClick={() => showTemplateSelectorFalse()}
+                  className="text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-900 p-2 rounded-lg transition-colors flex-shrink-0"
                 >
                   <svg
                     className="w-6 h-6 sm:w-8 sm:h-8"
@@ -1995,24 +2239,23 @@ const Editor = () => {
                       key={template.id}
                       onClick={() => {
                         setSelectedTemplate(template.id);
-                        localStorage.setItem("selectedTemplate", template.id);
-                        setShowTemplateSelector(false);
+                        showTemplateSelectorFalse();
                       }}
-                      className={`group relative bg-white dark:bg-gray-700 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden cursor-pointer transform hover:scale-105 border-4 ${
+                      className={`group relative bg-white dark:bg-zinc-900 rounded-xl hover:shadow-lg transition-all duration-200 overflow-hidden cursor-pointer border-2 ${
                         selectedTemplate === template.id
-                          ? "border-blue-600 dark:border-blue-400 ring-4 ring-blue-200 dark:ring-blue-900"
-                          : "border-transparent hover:border-blue-300"
+                          ? "border-gray-900 dark:border-white ring-4 ring-gray-200 dark:ring-zinc-800"
+                          : "border-gray-200 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-700"
                       }`}
                     >
                       {/* Current Selection Badge */}
                       {selectedTemplate === template.id && (
-                        <div className="absolute top-2 left-2 z-10 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg flex items-center gap-1">
+                        <div className="absolute top-2 left-2 z-10 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-semibold px-3 py-1 rounded-lg flex items-center gap-1">
                           ✓ Current
                         </div>
                       )}
 
                       {/* Template Preview */}
-                      <div className="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-600">
+                      <div className="relative h-48 overflow-hidden bg-gray-50 dark:bg-zinc-800">
                         <div
                           className="absolute inset-0 scale-[0.2] origin-top-left pointer-events-none"
                           style={{
@@ -2025,21 +2268,21 @@ const Editor = () => {
                         </div>
 
                         {/* Hover Overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-blue-600/90 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
-                          <span className="text-white font-bold text-sm">
+                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end justify-center pb-4">
+                          <span className="text-white font-semibold text-sm">
                             Click to Apply
                           </span>
                         </div>
 
                         {/* ATS Score Badge */}
-                        <div className="absolute top-2 right-2 bg-white dark:bg-gray-800 px-2 py-1 rounded-full shadow-md">
+                        <div className="absolute top-2 right-2 bg-white dark:bg-zinc-900 px-2 py-1 rounded-lg border border-gray-200 dark:border-zinc-800">
                           <span
                             className={`text-xs font-bold ${
                               template.atsScore >= 95
                                 ? "text-green-500"
                                 : template.atsScore >= 90
-                                ? "text-blue-500"
-                                : "text-orange-500"
+                                  ? "text-blue-500"
+                                  : "text-orange-500"
                             }`}
                           >
                             {template.atsScore}%
@@ -2059,7 +2302,7 @@ const Editor = () => {
                             </span>
                           </h3>
                         </div>
-                        <span className="inline-block text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-1 rounded-full">
+                        <span className="inline-block text-xs bg-gray-100 dark:bg-zinc-900 text-gray-700 dark:text-gray-300 px-2 py-1 rounded-lg border border-gray-200 dark:border-zinc-800">
                           {template.category}
                         </span>
                       </div>
@@ -2069,13 +2312,13 @@ const Editor = () => {
               </div>
 
               {/* Modal Footer */}
-              <div className="p-3 sm:p-4 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row justify-between items-center gap-3">
+              <div className="p-3 sm:p-4 bg-gray-50 dark:bg-zinc-900 border-t border-gray-200 dark:border-zinc-800 flex flex-col sm:flex-row justify-between items-center gap-3">
                 <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 text-center sm:text-left">
                   💡 Your resume content stays the same, only the design changes
                 </div>
                 <button
-                  onClick={() => setShowTemplateSelector(false)}
-                  className="w-full sm:w-auto px-4 sm:px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium text-sm"
+                  onClick={() => showTemplateSelectorFalse()}
+                  className="w-full sm:w-auto px-4 sm:px-6 py-2 bg-gray-200 dark:bg-zinc-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-700 transition-colors font-medium text-sm"
                 >
                   Close
                 </button>
@@ -2087,7 +2330,7 @@ const Editor = () => {
         {/* GitHub Import Modal */}
         <GitHubImportModal
           isOpen={showGitHubImportModal}
-          onClose={() => setShowGitHubImportModal(false)}
+          onClose={() => showGitHubImportModalFalse()}
           onImport={handleGitHubImport}
           currentResume={resumeData}
         />
@@ -2095,7 +2338,7 @@ const Editor = () => {
         {/* Page Limit Exceeded Modal */}
         <PageLimitExceededModal
           isOpen={showPageLimitModal}
-          onClose={() => setShowPageLimitModal(false)}
+          onClose={() => showPageLimitModalFalse()}
           resumeData={resumeData}
           onEnableTwoPages={handleEnableTwoPages}
           onContinueEditing={handleContinueEditing}
@@ -2104,26 +2347,26 @@ const Editor = () => {
         {/* Color Theme Selector Modal */}
         {showColorThemeSelector && TEMPLATE_COLOR_THEMES[selectedTemplate] && (
           <div
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100] flex items-center justify-center p-2 sm:p-4 no-print"
-            onClick={() => setShowColorThemeSelector(false)}
+            className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-2 sm:p-4 no-print"
+            onClick={() => showColorThemeSelectorFalse()}
           >
             <div
-              className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden"
+              className="bg-white dark:bg-zinc-950 rounded-xl w-full max-w-2xl overflow-hidden border border-gray-200 dark:border-zinc-800"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Modal Header */}
-              <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-4 sm:p-6 flex justify-between items-center">
+              <div className="bg-white dark:bg-zinc-950 p-4 sm:p-6 flex justify-between items-center border-b border-gray-200 dark:border-zinc-800">
                 <div>
-                  <h2 className="text-xl sm:text-2xl font-bold text-white mb-1">
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1">
                     Choose Color Theme
                   </h2>
-                  <p className="text-xs sm:text-sm text-purple-100">
+                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                     Pick a professional color palette for your resume
                   </p>
                 </div>
                 <button
-                  onClick={() => setShowColorThemeSelector(false)}
-                  className="text-white hover:bg-white/20 p-2 rounded-full transition-colors flex-shrink-0"
+                  onClick={() => showColorThemeSelectorFalse()}
+                  className="text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-900 p-2 rounded-lg transition-colors flex-shrink-0"
                 >
                   <svg
                     className="w-6 h-6 sm:w-8 sm:h-8"
@@ -2152,7 +2395,7 @@ const Editor = () => {
                           ...prev,
                           colorTheme: theme.id,
                         }));
-                        setShowColorThemeSelector(false);
+                        showColorThemeSelectorFalse();
                         toast.success(
                           `${theme.emoji} ${theme.name} theme applied!`,
                           {
@@ -2161,15 +2404,15 @@ const Editor = () => {
                           }
                         );
                       }}
-                      className={`group relative bg-white dark:bg-gray-700 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden cursor-pointer transform hover:scale-105 border-4 p-6 ${
+                      className={`group relative bg-white dark:bg-zinc-900 rounded-xl hover:shadow-lg transition-all duration-200 overflow-hidden cursor-pointer border-2 p-6 ${
                         resumeData?.colorTheme === theme.id
-                          ? "border-purple-600 dark:border-purple-400 ring-4 ring-purple-200 dark:ring-purple-900"
-                          : "border-transparent hover:border-purple-300"
+                          ? "border-gray-900 dark:border-white ring-4 ring-gray-200 dark:ring-zinc-800"
+                          : "border-gray-200 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-700"
                       }`}
                     >
                       {/* Current Selection Badge */}
                       {resumeData?.colorTheme === theme.id && (
-                        <div className="absolute top-2 right-2 bg-purple-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                        <div className="absolute top-2 right-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-semibold px-3 py-1 rounded-lg">
                           ✓ Active
                         </div>
                       )}
@@ -2177,7 +2420,7 @@ const Editor = () => {
                       {/* Color Swatch */}
                       <div className="flex items-center gap-4 mb-4">
                         <div
-                          className="w-16 h-16 rounded-lg shadow-md border-2 border-gray-200 dark:border-gray-600"
+                          className="w-16 h-16 rounded-lg border-2 border-gray-200 dark:border-zinc-700"
                           style={{backgroundColor: theme.primary}}
                         />
                         <div>
@@ -2208,8 +2451,8 @@ const Editor = () => {
                       </div>
 
                       {/* Hover Overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-purple-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                        <span className="text-purple-600 dark:text-purple-300 font-bold text-sm bg-white dark:bg-gray-800 px-4 py-2 rounded-full shadow-lg">
+                      <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+                        <span className="text-gray-900 dark:text-white font-semibold text-sm bg-white dark:bg-zinc-900 px-4 py-2 rounded-lg border border-gray-200 dark:border-zinc-800">
                           Click to Apply
                         </span>
                       </div>
@@ -2219,13 +2462,13 @@ const Editor = () => {
               </div>
 
               {/* Modal Footer */}
-              <div className="p-4 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
+              <div className="p-4 bg-gray-50 dark:bg-zinc-900 border-t border-gray-200 dark:border-zinc-800 flex justify-between items-center">
                 <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                   🎨 Choose a color that matches your industry
                 </div>
                 <button
-                  onClick={() => setShowColorThemeSelector(false)}
-                  className="px-4 sm:px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium text-sm"
+                  onClick={() => showColorThemeSelectorFalse()}
+                  className="px-4 sm:px-6 py-2 bg-gray-200 dark:bg-zinc-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-700 transition-colors font-medium text-sm"
                 >
                   Close
                 </button>
@@ -2237,7 +2480,7 @@ const Editor = () => {
         {/* GitHub Import Success Notification */}
         {githubImportSuccess && (
           <div className="fixed bottom-6 right-6 z-50 animate-fade-in">
-            <div className="bg-green-600 text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3">
+            <div className="bg-green-600 text-gray-900 dark:text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3">
               <span className="text-2xl">✨</span>
               <div>
                 <p className="font-bold">Successfully Updated!</p>
@@ -2280,7 +2523,7 @@ const Editor = () => {
 
                 {/* Content */}
                 <div className="text-center mb-6">
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
                     Unsaved Changes
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400">
@@ -2294,7 +2537,7 @@ const Editor = () => {
                   <button
                     onClick={handleSaveAndNavigate}
                     disabled={saving}
-                    className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {saving ? "Saving..." : "Save Changes"}
                   </button>
@@ -2310,7 +2553,7 @@ const Editor = () => {
                   <button
                     onClick={handleCancelNavigation}
                     disabled={saving}
-                    className="w-full px-4 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full px-4 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Cancel
                   </button>
@@ -2323,6 +2566,17 @@ const Editor = () => {
 
       {/* Toast Notifications */}
       <Toaster position="bottom-right" />
+
+      {/* Upgrade Modal */}
+      {showUpgradeModal && (
+        <UpgradeRequiredModal
+          isOpen={showUpgradeModal}
+          onClose={() => showUpgradeModalFalse()}
+          message={upgradeMessage}
+          title="Upgrade Required"
+          feature="AI-Powered Features"
+        />
+      )}
     </div>
   );
 };

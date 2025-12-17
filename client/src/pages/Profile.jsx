@@ -1,5 +1,5 @@
 import {useState} from "react";
-import {useAuth} from "../context/AuthContext";
+import {useAuth} from "@/context/AuthContext";
 import {FaUser, FaCreditCard, FaHistory, FaKey} from "react-icons/fa";
 import SubscriptionDashboard from "./SubscriptionDashboard";
 
@@ -18,7 +18,7 @@ const Profile = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-20 pb-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -31,9 +31,9 @@ const Profile = () => {
         </div>
 
         {/* User Info Card */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-6">
+        <div className="bg-white dark:bg-black rounded-xl shadow-sm dark:shadow-lg border border-gray-200 dark:border-zinc-800 p-6 mb-6">
           <div className="flex items-center space-x-4">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold">
+            <div className="w-16 h-16 rounded-full bg-purple-600 flex items-center justify-center text-white text-2xl font-bold">
               {user?.name?.charAt(0).toUpperCase() || "U"}
             </div>
             <div>
@@ -46,9 +46,9 @@ const Profile = () => {
         </div>
 
         {/* Tabs */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+        <div className="bg-white dark:bg-black rounded-xl shadow-sm dark:shadow-lg border border-gray-200 dark:border-zinc-800 overflow-hidden">
           {/* Tab Headers */}
-          <div className="border-b border-gray-200 dark:border-gray-700">
+          <div className="border-b border-gray-200 dark:border-zinc-800">
             <nav className="flex space-x-1 overflow-x-auto">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
@@ -61,8 +61,8 @@ const Profile = () => {
                       transition-all duration-200 border-b-2
                       ${
                         activeTab === tab.id
-                          ? "border-blue-500 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20"
-                          : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300"
+                          ? "border-purple-600 text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/10"
+                          : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-zinc-700"
                       }
                     `}
                   >
@@ -75,10 +75,12 @@ const Profile = () => {
           </div>
 
           {/* Tab Content */}
-          <div>
+          <div className="min-h-[400px]">
             {activeTab === "subscription" && (
-              // Subscription Dashboard has its own styling, render directly without extra padding
-              <SubscriptionDashboard embedded={true} />
+              // Subscription Dashboard has its own styling, render with consistent padding
+              <div className="p-6">
+                <SubscriptionDashboard embedded={true} />
+              </div>
             )}
 
             {activeTab === "profile" && (
@@ -95,7 +97,7 @@ const Profile = () => {
                       type="text"
                       value={user?.name || ""}
                       disabled
-                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white"
+                      className="w-full px-4 py-2 border border-gray-200 dark:border-zinc-800 rounded-lg bg-gray-50 dark:bg-black text-gray-900 dark:text-white"
                     />
                   </div>
                   <div>
@@ -106,7 +108,7 @@ const Profile = () => {
                       type="email"
                       value={user?.email || ""}
                       disabled
-                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white"
+                      className="w-full px-4 py-2 border border-gray-200 dark:border-zinc-800 rounded-lg bg-gray-50 dark:bg-black text-gray-900 dark:text-white"
                     />
                   </div>
                   <div className="pt-4">
@@ -119,12 +121,12 @@ const Profile = () => {
             )}
 
             {activeTab === "security" && (
-              <div>
+              <div className="p-6">
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
                   Security Settings
                 </h3>
                 <div className="space-y-6">
-                  <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+                  <div className="bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 dark:border-yellow-800/30 rounded-lg p-4">
                     <p className="text-sm text-yellow-800 dark:text-yellow-200">
                       Security settings including password change and two-factor
                       authentication will be available soon.

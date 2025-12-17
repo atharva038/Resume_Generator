@@ -1,27 +1,21 @@
 import {useState, useRef, useEffect} from "react";
+import {useToggle, useMediaQuery} from "@/hooks";
 
 const FullPreviewModal = ({isOpen, onClose, children}) => {
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({x: 0, y: 0});
-  const [isDragging, setIsDragging] = useState(false);
+  const [isDragging, toggleDragging, setIsDraggingTrue, setIsDraggingFalse] =
+    useToggle(false);
   const [dragStart, setDragStart] = useState({x: 0, y: 0});
-  const [isMobile, setIsMobile] = useState(false);
+  const isMobile = useMediaQuery("(max-width: 1023px)"); // lg breakpoint
+  const [isPinching, togglePinching, setIsPinchingTrue, setIsPinchingFalse] =
+    useToggle(false);
   const containerRef = useRef(null);
   const lastTouchDistance = useRef(null);
   const rafRef = useRef(null); // For requestAnimationFrame
 
   // Check if content is zoomed beyond initial scale
   const isZoomed = isMobile ? scale > 0.45 : scale > 1;
-
-  // Detect if device is mobile
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 1024); // lg breakpoint
-    };
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
 
   // Reset zoom and position when modal opens/closes
   useEffect(() => {
@@ -77,9 +71,10 @@ const FullPreviewModal = ({isOpen, onClose, children}) => {
           e.touches[0].clientY - e.touches[1].clientY
         );
         lastTouchDistance.current = distance;
+        setIsPinchingTrue();
       } else if (e.touches.length === 1 && isZoomed) {
         // One finger and zoomed - enable dragging
-        setIsDragging(true);
+        setIsDraggingTrue();
         setDragStart({
           x: e.touches[0].clientX - position.x,
           y: e.touches[0].clientY - position.y,
@@ -122,7 +117,8 @@ const FullPreviewModal = ({isOpen, onClose, children}) => {
     };
 
     const handleTouchEndDom = () => {
-      setIsDragging(false);
+      setIsDraggingFalse();
+      setIsPinchingFalse();
       lastTouchDistance.current = null;
 
       // Clean up any pending RAF
@@ -223,9 +219,7 @@ const FullPreviewModal = ({isOpen, onClose, children}) => {
               : "none",
             transformOrigin: "center center",
             willChange:
-              isMobile && (isDragging || lastTouchDistance.current)
-                ? "transform"
-                : "auto",
+              isMobile && (isDragging || isPinching) ? "transform" : "auto",
             backfaceVisibility: "hidden", // Prevent flickering
             WebkitBackfaceVisibility: "hidden", // Safari
             perspective: 1000, // Enable 3D rendering

@@ -1,6 +1,6 @@
 import {useEffect} from "react";
 import {useNavigate, useSearchParams} from "react-router-dom";
-import {useAuth} from "../context/AuthContext";
+import {useAuth} from "@/context/AuthContext";
 import {Loader2} from "lucide-react";
 
 /**
@@ -73,7 +73,7 @@ const AuthCallback = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <div className="text-center">
         <Loader2 className="w-16 h-16 animate-spin text-indigo-600 dark:text-indigo-400 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
           Completing Sign In...
         </h2>
         <p className="text-gray-600 dark:text-gray-400">

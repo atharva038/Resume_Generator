@@ -1,28 +1,39 @@
 import {useEffect, useState} from "react";
 import {useLocation} from "react-router-dom";
+import {useToggle} from "@/hooks";
 
 const PageTransition = ({children}) => {
   const location = useLocation();
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [
+    isTransitioning,
+    toggleTransitioning,
+    setIsTransitioningTrue,
+    setIsTransitioningFalse,
+  ] = useToggle(false);
   const [displayLocation, setDisplayLocation] = useState(location);
 
   useEffect(() => {
     if (location.pathname !== displayLocation.pathname) {
       // Start exit animation
-      setIsTransitioning(true);
+      setIsTransitioningTrue();
 
       // After exit animation, update the location
       const exitTimeout = setTimeout(() => {
         setDisplayLocation(location);
         // Reset for enter animation
         setTimeout(() => {
-          setIsTransitioning(false);
+          setIsTransitioningFalse();
         }, 50);
       }, 200);
 
       return () => clearTimeout(exitTimeout);
     }
-  }, [location, displayLocation]);
+  }, [
+    location,
+    displayLocation,
+    setIsTransitioningTrue,
+    setIsTransitioningFalse,
+  ]);
 
   return (
     <div

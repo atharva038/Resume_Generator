@@ -27,12 +27,13 @@ import RefundPolicy from "./pages/RefundPolicy";
 import ShippingPolicy from "./pages/ShippingPolicy";
 import PaymentModal from "./components/common/PaymentModal";
 import SubscriptionDashboard from "./pages/SubscriptionDashboard";
-import AdvancedAnalytics from "./pages/AdvancedAnalytics";
+// import AdvancedAnalytics from "./pages/AdvancedAnalytics"; // Temporarily disabled
 import Profile from "./pages/Profile";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import UserManagement from "./pages/admin/UserManagement";
 import AIAnalytics from "./pages/admin/AIAnalytics";
 import AIQuotaManagement from "./pages/admin/AIQuotaManagement";
+import AIExtractionManagement from "./pages/admin/AIExtractionManagement";
 import ContactMessages from "./pages/admin/ContactMessages";
 import AdminFeedback from "./pages/admin/AdminFeedback";
 import AdminLogs from "./pages/admin/AdminLogs";
@@ -201,14 +202,15 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route
+            {/* Temporarily disabled - Advanced Analytics */}
+            {/* <Route
               path="analytics"
               element={
                 <ProtectedRoute>
                   <AdvancedAnalytics />
                 </ProtectedRoute>
               }
-            />
+            /> */}
             <Route
               path="profile"
               element={
@@ -236,6 +238,7 @@ function App() {
             <Route path="templates" element={<TemplateManagement />} />
             <Route path="ai-analytics" element={<AIAnalytics />} />
             <Route path="ai-quota" element={<AIQuotaManagement />} />
+            <Route path="ai-extraction" element={<AIExtractionManagement />} />
             <Route path="contacts" element={<ContactMessages />} />
             <Route path="feedback" element={<AdminFeedback />} />
             <Route path="logs" element={<AdminLogs />} />

@@ -1,5 +1,8 @@
 import {X, AlertTriangle, TrendingDown, FileText} from "lucide-react";
-import {calculateContentMetrics, getSuggestedReductions} from "../../../utils/resumeLimits";
+import {
+  calculateContentMetrics,
+  getSuggestedReductions,
+} from "@/utils/resumeLimits";
 
 /**
  * PageLimitExceededModal - Warning popup when resume exceeds one page
@@ -69,10 +72,12 @@ const PageLimitExceededModal = ({
                     metrics.utilizationPercent > 100
                       ? "bg-gradient-to-r from-red-500 to-red-600"
                       : metrics.utilizationPercent > 90
-                      ? "bg-gradient-to-r from-orange-500 to-orange-600"
-                      : "bg-gradient-to-r from-green-500 to-green-600"
+                        ? "bg-gradient-to-r from-orange-500 to-orange-600"
+                        : "bg-gradient-to-r from-green-500 to-green-600"
                   }`}
-                  style={{width: `${Math.min(metrics.utilizationPercent, 100)}%`}}
+                  style={{
+                    width: `${Math.min(metrics.utilizationPercent, 100)}%`,
+                  }}
                 />
               </div>
               <div className="text-xs text-gray-600 dark:text-gray-400 text-right">
@@ -142,8 +147,10 @@ const PageLimitExceededModal = ({
               <strong className="text-red-700 dark:text-red-400">
                 ⚠️ Important:
               </strong>{" "}
-              In single-page mode, any content that doesn't fit will be <strong>hidden</strong> from the final resume. 
-              The overflow content won't appear in the PDF download or be visible to recruiters.
+              In single-page mode, any content that doesn't fit will be{" "}
+              <strong>hidden</strong> from the final resume. The overflow
+              content won't appear in the PDF download or be visible to
+              recruiters.
             </p>
           </div>
 

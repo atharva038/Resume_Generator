@@ -1,5 +1,6 @@
 import {Link, useNavigate} from "react-router-dom";
 import {useState, useEffect, useRef} from "react";
+import {useToggle} from "@/hooks";
 import {
   CheckCircle2,
   Sparkles,
@@ -13,15 +14,16 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import ProfessionalTemplate from "../templates/ProfessionalTemplate";
-import ModernTemplate from "../templates/ModernTemplate";
-import CreativeTemplate from "../templates/CreativeTemplate";
-import ExecutiveTemplate from "../templates/ExecutiveTemplate";
-import MinimalTemplate from "../templates/MinimalTemplate";
-import TechTemplate from "../templates/TechTemplate";
+import ProfessionalTemplate from "@/components/templates/ProfessionalTemplate";
+import ModernTemplate from "@/components/templates/ModernTemplate";
+import Creative2Template from "@/components/templates/Creative2Template";
+import Professional2Template from "@/components/templates/Professional2Template";
+import MinimalTemplate from "@/components/templates/MinimalTemplate";
+import TechTemplate from "@/components/templates/TechTemplate";
 
 const HeroSection = () => {
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, toggleVisible, setIsVisibleTrue, setIsVisibleFalse] =
+    useToggle(false);
   const [scrollY, setScrollY] = useState(0);
   const [currentTemplateIndex, setCurrentTemplateIndex] = useState(0);
   const [laptopScrollPosition, setLaptopScrollPosition] = useState(0);
@@ -44,7 +46,7 @@ const HeroSection = () => {
   };
 
   useEffect(() => {
-    setIsVisible(true);
+    setIsVisibleTrue();
 
     let rafId = null;
     const handleScroll = () => {
@@ -307,15 +309,15 @@ const HeroSection = () => {
     },
     {
       id: 3,
-      name: "Creative",
-      component: CreativeTemplate,
-      color: "from-orange-500 to-red-600",
+      name: "Creative Designer Pro",
+      component: Creative2Template,
+      color: "from-purple-500 to-pink-600",
     },
     {
       id: 4,
-      name: "Executive",
-      component: ExecutiveTemplate,
-      color: "from-gray-700 to-gray-900",
+      name: "Professional Elite",
+      component: Professional2Template,
+      color: "from-blue-700 to-indigo-800",
     },
     {
       id: 5,
@@ -432,7 +434,7 @@ const HeroSection = () => {
 
                               {/* Template Info - Mobile Version */}
                               <div className="flex-1 min-w-0">
-                                <h3 className="font-bold text-gray-900 dark:text-white mb-1 text-xs sm:text-sm transition-colors duration-300 hover:text-blue-600 dark:hover:text-blue-400 truncate">
+                                <h3 className="font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-1 text-xs sm:text-sm transition-colors duration-300 hover:text-blue-600 dark:hover:text-blue-400 truncate">
                                   {template.name} Template
                                 </h3>
                                 <p className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">
@@ -511,7 +513,7 @@ const HeroSection = () => {
 
             {/* Description */}
             <p
-              className="text-base sm:text-lg md:text-base lg:text-xl text-gray-600 dark:text-gray-300 mb-6 sm:mb-8 leading-relaxed"
+              className="text-base sm:text-lg md:text-base lg:text-xl text-gray-600 dark:text-gray-700 dark:text-gray-300 mb-6 sm:mb-8 leading-relaxed"
               style={{
                 animation: "fadeInUp 0.6s ease-out 0.6s both",
               }}
@@ -533,7 +535,7 @@ const HeroSection = () => {
             >
               <button
                 onClick={handleBuildResumeClick}
-                className="group relative inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white font-semibold rounded-xl shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/50 transition-all duration-300 overflow-hidden transform hover:scale-105 hover:-translate-y-1 cursor-pointer text-sm sm:text-base"
+                className="group relative inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-gray-900 dark:text-white font-semibold rounded-xl shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/50 transition-all duration-300 overflow-hidden transform hover:scale-105 hover:-translate-y-1 cursor-pointer text-sm sm:text-base"
               >
                 <span className="relative z-10 flex items-center gap-2">
                   <Sparkles className="w-5 h-5" />
@@ -548,7 +550,7 @@ const HeroSection = () => {
 
               <Link
                 to="/templates"
-                className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-semibold rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-blue-600 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 shadow-sm hover:shadow-md transform hover:scale-105 hover:-translate-y-1 text-sm sm:text-base"
+                className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-900 dark:text-white font-semibold rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-blue-600 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 shadow-sm hover:shadow-md transform hover:scale-105 hover:-translate-y-1 text-sm sm:text-base"
               >
                 <Play className="w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:scale-110" />
                 See How It Works
@@ -633,7 +635,7 @@ const HeroSection = () => {
 
             {/* Description */}
             <p
-              className="text-xl text-gray-600 dark:text-gray-300 mb-8 leading-relaxed"
+              className="text-xl text-gray-600 dark:text-gray-700 dark:text-gray-300 mb-8 leading-relaxed"
               style={{
                 animation: "fadeInUp 0.6s ease-out 0.6s both",
               }}
@@ -655,7 +657,7 @@ const HeroSection = () => {
             >
               <button
                 onClick={handleBuildResumeClick}
-                className="group relative inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white font-semibold rounded-xl shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/50 transition-all duration-300 overflow-hidden transform hover:scale-105 hover:-translate-y-1 cursor-pointer"
+                className="group relative inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-gray-900 dark:text-white font-semibold rounded-xl shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/50 transition-all duration-300 overflow-hidden transform hover:scale-105 hover:-translate-y-1 cursor-pointer"
               >
                 <span className="relative z-10 flex items-center gap-2">
                   <Sparkles className="w-5 h-5" />
@@ -670,7 +672,7 @@ const HeroSection = () => {
 
               <Link
                 to="/templates"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-semibold rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-blue-600 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 shadow-sm hover:shadow-md transform hover:scale-105 hover:-translate-y-1"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-900 dark:text-white font-semibold rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-blue-600 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 shadow-sm hover:shadow-md transform hover:scale-105 hover:-translate-y-1"
               >
                 <Play className="w-5 h-5 transition-transform group-hover:scale-110" />
                 See How It Works
@@ -770,7 +772,7 @@ const HeroSection = () => {
 
                               {/* Template Info - Laptop Version */}
                               <div className="flex-1 min-w-0">
-                                <h3 className="font-bold text-gray-900 dark:text-white mb-1 text-sm transition-colors duration-300 hover:text-blue-600 dark:hover:text-blue-400 truncate">
+                                <h3 className="font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-1 text-sm transition-colors duration-300 hover:text-blue-600 dark:hover:text-blue-400 truncate">
                                   {template.name} Template
                                 </h3>
                                 <p className="text-xs text-gray-600 dark:text-gray-400">
@@ -813,7 +815,7 @@ const HeroSection = () => {
                   className="flex-shrink-0 p-1.5 sm:p-2 bg-white dark:bg-gray-800 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-xl transition-all duration-300 group"
                   aria-label="Previous templates"
                 >
-                  <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400" />
+                  <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-gray-700 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400" />
                 </button>
 
                 {/* Carousel */}
@@ -879,7 +881,7 @@ const HeroSection = () => {
                   className="flex-shrink-0 p-1.5 sm:p-2 bg-white dark:bg-gray-800 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-xl transition-all duration-300 group"
                   aria-label="Next templates"
                 >
-                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400" />
+                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-gray-700 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400" />
                 </button>
               </div>
             </div>

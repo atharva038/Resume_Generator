@@ -10,7 +10,7 @@ const NotFound = () => {
         <div className="mb-8">
           <div className="inline-flex items-center justify-center">
             <svg
-              className="w-64 h-64 text-gray-300 dark:text-gray-700"
+              className="w-64 h-64 text-gray-700 dark:text-gray-300 dark:text-gray-700"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -37,7 +37,7 @@ const NotFound = () => {
             Page Not Found
           </h2>
 
-          <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">
+          <p className="text-lg text-gray-600 dark:text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">
             Oops! The page you're looking for doesn't exist. It might have been
             moved or deleted.
           </p>
@@ -112,7 +112,7 @@ const NotFound = () => {
 
             <button
               onClick={() => navigate("/")}
-              className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2"
+              className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-gray-900 dark:text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2"
             >
               <svg
                 className="w-5 h-5"
@@ -132,7 +132,7 @@ const NotFound = () => {
 
             <button
               onClick={() => navigate("/dashboard")}
-              className="px-8 py-3 bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2"
+              className="px-8 py-3 bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-gray-900 dark:text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2"
             >
               <svg
                 className="w-5 h-5"

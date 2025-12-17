@@ -1,9 +1,12 @@
 import {useState} from "react";
-import {calculateResumeScore} from "../../../utils/resumeScoring";
+import {useToggle} from "@/hooks";
+import {calculateResumeScore} from "@/utils/resumeScoring";
 
 const RecommendationsPanel = ({resumeData, onEnhanceAll}) => {
-  const [expanded, setExpanded] = useState(true);
-  const [enhancing, setEnhancing] = useState(false);
+  const [expanded, toggleExpanded, setExpandedTrue, setExpandedFalse] =
+    useToggle(true);
+  const [enhancing, toggleEnhancing, setEnhancingTrue, setEnhancingFalse] =
+    useToggle(false);
   const [customPrompt, setCustomPrompt] = useState("");
 
   if (!resumeData) return null;
@@ -65,7 +68,7 @@ const RecommendationsPanel = ({resumeData, onEnhanceAll}) => {
     return (
       <div
         className="card p-4 cursor-pointer hover:shadow-md transition"
-        onClick={() => setExpanded(true)}
+        onClick={setExpandedTrue}
       >
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
@@ -98,7 +101,7 @@ const RecommendationsPanel = ({resumeData, onEnhanceAll}) => {
           </p>
         </div>
         <button
-          onClick={() => setExpanded(false)}
+          onClick={setExpandedFalse}
           className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
         >
           <span className="text-xl">×</span>
@@ -107,8 +110,8 @@ const RecommendationsPanel = ({resumeData, onEnhanceAll}) => {
 
       {/* Priority Actions */}
       {totalScore < 90 && (
-        <div className="mb-6 p-4 bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-900/20 dark:to-blue-900/20 border border-primary-200 dark:border-primary-800 rounded-lg">
-          <h4 className="font-semibold text-primary-900 dark:text-primary-300 mb-2 flex items-center gap-2">
+        <div className="mb-6 p-4 bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-lg">
+          <h4 className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
             <span>🚀</span>
             Quick Wins to Gain {Math.min(90 - totalScore, 20)} Points
           </h4>
@@ -116,7 +119,7 @@ const RecommendationsPanel = ({resumeData, onEnhanceAll}) => {
             {recommendations.slice(0, 3).map((rec, index) => (
               <li
                 key={index}
-                className="text-sm text-primary-800 dark:text-primary-300 flex items-start gap-2"
+                className="text-sm text-gray-700 dark:text-gray-300 flex items-start gap-2"
               >
                 <span className="text-primary-600 dark:text-primary-400 font-bold mt-0.5">
                   {index + 1}.
@@ -229,11 +232,11 @@ const RecommendationsPanel = ({resumeData, onEnhanceAll}) => {
           <button
             className="btn-primary w-full"
             onClick={async () => {
-              setEnhancing(true);
+              setEnhancingTrue();
               try {
                 await onEnhanceAll(customPrompt);
               } finally {
-                setEnhancing(false);
+                setEnhancingFalse();
               }
             }}
             disabled={enhancing}

@@ -12,21 +12,96 @@
   .btn-primary {
     @apply px-4 py-2 bg-primary-600 dark:bg-primary-500 text-white rounded-lg hover:bg-primary-700 dark:hover:bg-primary-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed;
   }
-  
+
   .btn-secondary {
     @apply px-4 py-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed;
   }
-  
+
   .input-field {
-    @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all;
+    @apply w-full px-3 py-2 border border-gray-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-black text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all placeholder:text-gray-400 dark:placeholder:text-gray-500;
   }
-  
+
   .card {
-    @apply bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700;
+    @apply bg-white dark:bg-black rounded-lg shadow-sm dark:shadow-lg border border-gray-200 dark:border-zinc-800;
   }
-  
+
   .section-title {
     @apply text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3;
+  }
+
+  /* Custom Horizontal Scrollbar Styling */
+  .scrollbar-thin::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply bg-zinc-700 rounded-full;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    @apply bg-zinc-600;
+  }
+
+  /* Smooth scrolling for horizontal containers */
+  .scrollbar-thin {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Hide scrollbar completely */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  /* Payment Modal Animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  .animate-fadeIn {
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  .animate-slideUp {
+    animation: slideUp 0.4s ease-out;
+  }
+
+  .animate-shimmer {
+    animation: shimmer 3s infinite;
   }
 }
 
@@ -35,11 +110,11 @@
   body {
     @apply bg-white;
   }
-  
+
   .no-print {
     display: none !important;
   }
-  
+
   .resume-preview {
     box-shadow: none !important;
     border: none !important;
@@ -110,7 +185,7 @@
 }
 
 .sidebar-link-hover::before {
-  content: '';
+  content: "";
   position: absolute;
   left: 0;
   top: 0;
