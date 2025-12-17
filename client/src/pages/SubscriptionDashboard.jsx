@@ -75,7 +75,25 @@ const SubscriptionDashboard = ({embedded = false}) => {
 
       // Extract subscription from response (API returns {success: true, subscription: {...}})
       setSubscription(subData?.subscription || subData);
-      setUsage(usageData);
+
+      // Transform usage data from nested structure to flat structure
+      const transformedUsage = usageData?.stats?.usage
+        ? {
+            resumesUsed: usageData.stats.usage.resumes?.used || 0,
+            resumesLimit: usageData.stats.usage.resumes?.limit || 0,
+            aiGenerationsUsed: usageData.stats.usage.aiGenerations?.used || 0,
+            aiGenerationsLimit: usageData.stats.usage.aiGenerations?.limit || 0,
+            atsScansUsed: usageData.stats.usage.atsScans?.used || 0,
+            atsScansLimit: usageData.stats.usage.atsScans?.limit || 0,
+            jobMatchesUsed: usageData.stats.usage.jobMatches?.used || 0,
+            jobMatchesLimit: usageData.stats.usage.jobMatches?.limit || 0,
+            coverLettersUsed: usageData.stats.usage.coverLetters?.used || 0,
+            coverLettersLimit: usageData.stats.usage.coverLetters?.limit || 0,
+            resetDate: usageData.stats.resetDate || null,
+          }
+        : usageData;
+
+      setUsage(transformedUsage);
       // Extract history from response (API returns {success: true, history: [...]})
       setHistory(historyData?.history || historyData || []);
       setAiConfig(aiData);
@@ -393,6 +411,18 @@ const SubscriptionDashboard = ({embedded = false}) => {
                         </div>
                       </div>
 
+                      <div className="bg-white dark:bg-black rounded-lg p-3 mb-3 border border-gray-200 dark:border-zinc-800">
+                        <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                          ✨ Your Pro Benefits:
+                        </p>
+                        <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
+                          <li>🤖 Unlimited AI Requests</li>
+                          <li>📄 5 Resumes per month</li>
+                          <li>🎯 Premium AI Models (GPT-4o)</li>
+                          <li>💎 Priority Support</li>
+                        </ul>
+                      </div>
+
                       <div className="bg-white dark:bg-black rounded-lg p-3 mb-4 border border-gray-200 dark:border-zinc-800">
                         <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">
                           💳 Auto-renewal on {formatDate(plan.endDate)}
@@ -538,6 +568,18 @@ const SubscriptionDashboard = ({embedded = false}) => {
                             style={{width: `${progressPercentage}%`}}
                           ></div>
                         </div>
+                      </div>
+
+                      <div className="bg-white dark:bg-black rounded-lg p-3 mb-3 border border-gray-200 dark:border-zinc-800">
+                        <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                          ✨ Your Plan Includes:
+                        </p>
+                        <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
+                          <li>🤖 150 AI Requests (21-day period)</li>
+                          <li>📄 1 Resume</li>
+                          <li>🎯 Premium AI Models (GPT-4o)</li>
+                          <li>⚡ Full Feature Access</li>
+                        </ul>
                       </div>
 
                       {plan.receiptId && (
@@ -778,6 +820,51 @@ const SubscriptionDashboard = ({embedded = false}) => {
                         )}%`,
                       }}
                     ></div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* AI Requests */}
+            {usage.aiGenerationsLimit !== undefined && (
+              <div>
+                <div className="flex justify-between mb-1.5">
+                  <span className="font-semibold text-sm text-gray-700 dark:text-gray-200">
+                    AI Requests{" "}
+                    {subscription?.tier === "one-time"
+                      ? "(21-day period)"
+                      : "(This Month)"}
+                  </span>
+                  <span className="text-sm text-gray-600 dark:text-gray-300">
+                    {usage.aiGenerationsUsed} /{" "}
+                    {usage.aiGenerationsLimit === Infinity
+                      ? "∞"
+                      : usage.aiGenerationsLimit}
+                  </span>
+                </div>
+                {usage.aiGenerationsLimit !== Infinity && (
+                  <div className="w-full bg-gray-200 dark:bg-zinc-700 rounded-full h-2 shadow-inner">
+                    <div
+                      className={`h-2 rounded-full transition-all ${getProgressColor(
+                        (usage.aiGenerationsUsed / usage.aiGenerationsLimit) *
+                          100
+                      )}`}
+                      style={{
+                        width: `${Math.min(
+                          (usage.aiGenerationsUsed / usage.aiGenerationsLimit) *
+                            100,
+                          100
+                        )}%`,
+                      }}
+                    ></div>
+                  </div>
+                )}
+                {usage.aiGenerationsLimit !== Infinity && (
+                  <div className="mt-1">
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      💡 AI features include: Resume parsing, content
+                      enhancement, summary generation, and skills categorization
+                    </p>
                   </div>
                 )}
               </div>

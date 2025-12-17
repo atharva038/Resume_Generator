@@ -5,6 +5,7 @@ import {useNavigationBlocker} from "@/context/NavigationBlockerContext";
 import {useLocalStorage, useToggle, useMediaQuery} from "@/hooks";
 import {resumeAPI} from "@/api/api";
 import {parseValidationErrors} from "@/utils/errorHandler";
+import logger from "@/utils/logger";
 import toast, {Toaster} from "react-hot-toast";
 import {
   ResumePreview,
@@ -480,7 +481,7 @@ const Editor = () => {
           icon: "💾",
         });
       } catch (error) {
-        console.error("❌ Auto-save failed:", error);
+        logger.error("❌ Auto-save failed:", error);
         // Don't show error toast for auto-save failures to avoid annoying users
         // They can still manually save if needed
       } finally {
@@ -586,7 +587,7 @@ const Editor = () => {
           setIsWizardModeFalse();
           initializeResumeData(loadedData);
         } catch (err) {
-          console.error("❌ Error loading resume:", err);
+          logger.error("❌ Error loading resume:", err);
           // If error loading, clear the saved ID and redirect to upload
           localStorage.removeItem("currentResumeId");
           navigate("/upload");
@@ -697,7 +698,7 @@ const Editor = () => {
         setHasUnsavedChangesFalse();
       }
     } catch (err) {
-      console.error("Save error:", err);
+      logger.error("Save error:", err);
 
       // Check if it's a subscription/upgrade error (403 with upgradeRequired or quotaExceeded)
       if (
@@ -769,8 +770,8 @@ const Editor = () => {
         duration: 2000,
       });
     } catch (err) {
-      console.error("Download error:", err);
-      console.error("Download error response:", err.response?.data);
+      logger.error("Download error:", err);
+      logger.error("Download error response:", err.response?.data);
 
       // Check if it's a subscription/upgrade error (403 with upgradeRequired)
       if (err.response?.status === 403) {
@@ -1048,7 +1049,7 @@ const Editor = () => {
             updated.skills = [...(updated.skills || []), ...newSkills];
           }
         }
-        console.log("✅ Skills imported:", updated.skills);
+        logger.log("✅ Skills imported:", updated.skills);
       }
 
       // Import Experience
@@ -1065,7 +1066,7 @@ const Editor = () => {
           description: exp.description,
         }));
 
-        console.log("💼 Experience to import:", githubExperience);
+        logger.log("💼 Experience to import:", githubExperience);
 
         if (importedData.mergeOptions.experience === "replace") {
           updated.experience = githubExperience;
@@ -1076,7 +1077,7 @@ const Editor = () => {
             ...githubExperience,
           ];
         }
-        console.log("✅ Experience imported:", updated.experience);
+        logger.log("✅ Experience imported:", updated.experience);
       }
 
       // Import Certifications/Achievements
@@ -1093,7 +1094,7 @@ const Editor = () => {
           })
         );
 
-        console.log("🏆 Certifications to import:", githubCertifications);
+        logger.log("🏆 Certifications to import:", githubCertifications);
 
         if (importedData.mergeOptions.certifications === "replace") {
           updated.certifications = githubCertifications;
@@ -1104,10 +1105,10 @@ const Editor = () => {
             ...githubCertifications,
           ];
         }
-        console.log("✅ Certifications imported:", updated.certifications);
+        logger.log("✅ Certifications imported:", updated.certifications);
       }
 
-      console.log("🎉 Final updated resume data:", updated);
+      logger.log("🎉 Final updated resume data:", updated);
 
       // Store the updated data to save later
       updatedResumeData = updated;
@@ -1125,7 +1126,7 @@ const Editor = () => {
     // Auto-save with the updated data (wait for state to settle)
     setTimeout(async () => {
       if (updatedResumeData && user) {
-        console.log("💾 Auto-saving imported data...", updatedResumeData);
+        logger.log("💾 Auto-saving imported data...", updatedResumeData);
         try {
           setSavingTrue();
           let savedResume;
@@ -1136,12 +1137,12 @@ const Editor = () => {
               updatedResumeData
             );
             savedResume = response.data;
-            console.log("✅ Resume auto-saved successfully!");
+            logger.log("✅ Resume auto-saved successfully!");
           } else {
             // Save new resume
             const response = await resumeAPI.save(updatedResumeData);
             savedResume = response.data;
-            console.log("✅ Resume auto-saved successfully!");
+            logger.log("✅ Resume auto-saved successfully!");
           }
 
           // Update the resumeData with the saved version
@@ -1150,7 +1151,7 @@ const Editor = () => {
             localStorage.setItem("currentResumeId", savedResume._id);
           }
         } catch (err) {
-          console.error("❌ Auto-save error:", err);
+          logger.error("❌ Auto-save error:", err);
           toast.error(
             "Failed to auto-save imported data: " + parseValidationErrors(err),
             {

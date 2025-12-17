@@ -311,6 +311,10 @@ const Pricing = () => {
               <tbody>
                 {[
                   {
+                    name: "AI Requests",
+                    values: ["10/month", "150/21 days", "∞"],
+                  },
+                  {
                     name: "Resumes per Month",
                     values: ["1", "1", "∞"],
                   },

@@ -6,26 +6,21 @@ if (!process.env.GEMINI_API_KEY) {
   dotenv.config();
 }
 
-// Validate GEMINI_API_KEY after attempting to load
-if (!process.env.GEMINI_API_KEY) {
-  console.error("❌ GEMINI_API_KEY is not set in environment variables");
-  console.error("💡 Please add GEMINI_API_KEY=your_key_here to your .env file");
-  console.error("📚 Get your key from: https://aistudio.google.com/app/apikey");
-  throw new Error(
-    "GEMINI_API_KEY is required. Please set it in your .env file."
+// Make Gemini optional: if GEMINI_API_KEY is not provided, the service will
+// be loaded but guarded so the server doesn't crash at import time. Calls to
+// Gemini functions will throw a clear error if attempted without configuration.
+const GEMINI_API_KEY_RAW = process.env.GEMINI_API_KEY;
+const GEMINI_API_KEY = GEMINI_API_KEY_RAW ? GEMINI_API_KEY_RAW.trim() : null;
+const GEMINI_ENABLED = Boolean(GEMINI_API_KEY);
+
+if (!GEMINI_ENABLED) {
+  console.warn(
+    "⚠️  GEMINI_API_KEY not set — Gemini service is disabled. The app will run using OpenAI where configured."
   );
 }
 
-// Trim the API key to remove any whitespace
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY.trim();
-
-// Validate key format
-if (GEMINI_API_KEY.length < 20) {
-  console.warn("⚠️  Warning: GEMINI_API_KEY seems too short");
-}
-
-// Initialize Gemini AI with validated key
-const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+// Initialize Gemini client only when enabled
+const genAI = GEMINI_ENABLED ? new GoogleGenerativeAI(GEMINI_API_KEY) : null;
 
 /**
  * Retry configuration for Gemini API calls
@@ -85,6 +80,14 @@ function isRetryableError(error) {
   return retryableMessages.some((msg) =>
     errorMessage.toLowerCase().includes(msg)
   );
+}
+
+function ensureGeminiEnabled() {
+  if (!GEMINI_ENABLED) {
+    throw new Error(
+      "Gemini API is not configured (GEMINI_API_KEY missing). Set GEMINI_API_KEY or configure the router to use OpenAI."
+    );
+  }
 }
 
 /**
@@ -281,6 +284,7 @@ Return ONLY the enhanced content without explanations or additional formatting.`
  */
 export async function parseResumeWithAI(resumeText) {
   return await retryWithBackoff(async () => {
+    ensureGeminiEnabled();
     const model = genAI.getGenerativeModel({model: "gemini-2.5-flash"});
 
     const prompt = PARSE_RESUME_PROMPT.replace("{resumeText}", resumeText);
@@ -324,6 +328,7 @@ export async function enhanceContentWithAI(
   customPrompt = ""
 ) {
   return await retryWithBackoff(async () => {
+    ensureGeminiEnabled();
     const model = genAI.getGenerativeModel({model: "gemini-2.5-flash"});
 
     // Format content for the prompt
@@ -439,6 +444,7 @@ YOU MUST follow these custom instructions while maintaining all the critical rul
  */
 export async function generateSummaryWithAI(resumeData) {
   return await retryWithBackoff(async () => {
+    ensureGeminiEnabled();
     const model = genAI.getGenerativeModel({model: "gemini-2.5-flash"});
 
     const prompt = `Generate a concise, impactful professional summary (3-4 lines) for this resume. Focus on key skills, experience, and value proposition. Use third person and avoid personal pronouns.
@@ -470,6 +476,7 @@ Return only the summary text without any additional formatting or explanations.`
  */
 export async function categorizeSkillsWithAI(skillsText) {
   return await retryWithBackoff(async () => {
+    ensureGeminiEnabled();
     const model = genAI.getGenerativeModel({model: "gemini-2.5-flash"});
 
     const prompt = `You are an expert technical recruiter. Categorize the following skills into relevant categories.
@@ -536,6 +543,7 @@ Return ONLY valid JSON with no additional text, explanations, or markdown format
  */
 export async function segregateAchievementsWithAI(achievementsText) {
   return await retryWithBackoff(async () => {
+    ensureGeminiEnabled();
     const model = genAI.getGenerativeModel({model: "gemini-2.5-flash"});
 
     const prompt = `You are an expert resume writer. Convert the following achievements text into clear, impactful bullet points.
@@ -600,6 +608,7 @@ export async function processCustomSectionWithAI(
   sectionTitle = "Custom Section"
 ) {
   return await retryWithBackoff(async () => {
+    ensureGeminiEnabled();
     const model = genAI.getGenerativeModel({model: "gemini-2.5-flash"});
 
     const prompt = `You are an expert resume writer. Format the following content from a resume section titled "${sectionTitle}" into clear, professional bullet points.
@@ -664,6 +673,7 @@ Return ONLY valid JSON with no additional text, explanations, or markdown format
  */
 export async function analyzeResumeJobMatch(resumeText, jobDescription) {
   return await retryWithBackoff(async () => {
+    ensureGeminiEnabled();
     const model = genAI.getGenerativeModel({model: "gemini-2.5-flash"});
 
     const prompt = `You are an expert ATS (Applicant Tracking System) analyzer and career coach.
