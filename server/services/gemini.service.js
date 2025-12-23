@@ -771,6 +771,45 @@ Return ONLY valid JSON with no additional text, explanations, or markdown format
   }, "Resume-job match analysis");
 }
 
+/**
+ * Generic chat completion for custom prompts (used by interview service)
+ * @param {string} systemPrompt - System instructions
+ * @param {string} userPrompt - User message
+ * @param {Object} options - Generation options
+ * @returns {Promise<Object>} - Response with text and token usage
+ */
+export async function chatCompletion(systemPrompt, userPrompt, options = {}) {
+  return await retryWithBackoff(async () => {
+    ensureGeminiEnabled();
+
+    const {temperature = 0.7, maxOutputTokens = 1000} = options;
+
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.5-flash",
+      generationConfig: {
+        temperature,
+        maxOutputTokens,
+      },
+      systemInstruction: systemPrompt,
+    });
+
+    console.log("🤖 Calling Gemini API for chat completion...");
+    const result = await model.generateContent(userPrompt);
+    const response = await result.response;
+    const text = response.text();
+    const tokenUsage = extractTokenUsage(response);
+
+    console.log(
+      `✅ Gemini chat completion successful (Tokens: ${tokenUsage.totalTokens})`
+    );
+
+    return {
+      text,
+      tokenUsage,
+    };
+  }, "Gemini chat completion");
+}
+
 export default {
   parseResumeWithAI,
   enhanceContentWithAI,
@@ -779,4 +818,5 @@ export default {
   segregateAchievementsWithAI,
   processCustomSectionWithAI,
   analyzeResumeJobMatch,
+  chatCompletion,
 };

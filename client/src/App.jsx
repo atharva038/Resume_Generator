@@ -39,6 +39,9 @@ import AdminFeedback from "./pages/admin/AdminFeedback";
 import AdminLogs from "./pages/admin/AdminLogs";
 import TemplateManagement from "./pages/admin/TemplateManagement";
 import AdminSettings from "./pages/admin/AdminSettings";
+import AIInterview from "./pages/AIInterview";
+import InterviewHistory from "./pages/InterviewHistory";
+import InterviewResult from "./pages/InterviewResult";
 import {DarkModeProvider} from "./context/DarkModeContext";
 import {NavigationBlockerProvider} from "./context/NavigationBlockerContext";
 
@@ -216,6 +219,32 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Profile />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* AI Interview Routes */}
+            <Route
+              path="interview"
+              element={
+                <ProtectedRoute>
+                  <AIInterview />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="interview/history"
+              element={
+                <ProtectedRoute>
+                  <InterviewHistory />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="interview/result/:sessionId"
+              element={
+                <ProtectedRoute>
+                  <InterviewResult />
                 </ProtectedRoute>
               }
             />

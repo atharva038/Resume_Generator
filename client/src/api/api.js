@@ -36,13 +36,19 @@ const api = axios.create({
   },
 });
 
-// Add auth token to requests
+// Add auth token to requests and handle FormData
 api.interceptors.request.use(
   (config) => {
     const token = authStorage.getToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
+    // If sending FormData, delete Content-Type so browser sets it with boundary
+    if (config.data instanceof FormData) {
+      delete config.headers["Content-Type"];
+    }
+
     return config;
   },
   (error) => {
@@ -368,46 +374,57 @@ export const contactAPI = {
 };
 
 /**
- * AI-powered job matching and skill analysis API (Google Gemini)
+ * ML/AI Services API
+ * Provides job matching and skill analysis functionality
  *
  * @namespace mlAPI
- * @example
- * import {mlAPI} from '@/api/api';
- *
- * // Calculate resume-job match score
- * const {data} = await mlAPI.calculateMatchScore(resumeData, jobDescription);
- * console.log(data.matchScore); // 0-100
- *
- * // Analyze skill gaps
- * const {data: gaps} = await mlAPI.analyzeSkillGaps(resumeData, jobDescription);
  */
 export const mlAPI = {
   /**
-   * Calculate match score between resume and job description
-   * @param {Object} resumeData - Complete resume data object
-   * @param {string} jobDescription - Job posting description text
-   * @returns {Promise} Axios response with match score (0-100) and analysis
+   * Calculate job match score between resume and job description
+   * @param {Object} resumeData - Resume data object
+   * @param {string} jobDescription - Job description text
+   * @returns {Promise} Axios response with match score and analysis
    */
   calculateMatchScore: (resumeData, jobDescription) =>
-    api.post("/ml/match-score", {resumeData, jobDescription}),
+    api.post("/ats/match-score", {resumeData, jobDescription}),
 
   /**
-   * Analyze skill gaps between resume and job requirements
-   * @param {Object} resumeData - Complete resume data object
-   * @param {string} jobDescription - Job posting description text
-   * @returns {Promise} Axios response with missing skills and recommendations
+   * Analyze skills from resume
+   * @param {Object} resumeData - Resume data object
+   * @returns {Promise} Axios response with skill analysis
    */
-  analyzeSkillGaps: (resumeData, jobDescription) =>
-    api.post("/ml/skill-gap-analysis", {resumeData, jobDescription}),
+  analyzeSkills: (resumeData) => api.post("/ats/analyze-skills", {resumeData}),
 
   /**
-   * Quick match based on skills only (faster than full resume match)
-   * @param {Array<string>} skills - List of candidate skills
-   * @param {string} jobDescription - Job posting description text
-   * @returns {Promise} Axios response with quick match score and key insights
+   * Check ML service health
+   * @returns {Promise} Axios response with service status
    */
-  quickMatch: (skills, jobDescription) =>
-    api.post("/ml/quick-match", {skills, jobDescription}),
+  checkHealth: () => api.get("/voice/health"),
+};
+
+/**
+ * Voice transcription service API (for AI Interview)
+ *
+ * @namespace voiceAPI
+ * @example
+ * import {voiceAPI} from '@/api/api';
+ *
+ * // Check if voice transcription is available
+ * const {data} = await voiceAPI.checkHealth();
+ */
+export const voiceAPI = {
+  /**
+   * Check voice transcription service health
+   * @returns {Promise} Axios response with service status
+   */
+  checkHealth: () => api.get("/voice/health"),
+
+  /**
+   * Check transcription capabilities and limits
+   * @returns {Promise} Axios response with transcription info
+   */
+  getTranscriptionInfo: () => api.get("/voice/transcribe/health"),
 };
 
 export default api;

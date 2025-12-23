@@ -16,6 +16,7 @@ import {
   TrendingUp,
   UserCircle,
   Tag,
+  Mic,
 } from "lucide-react";
 import {useAuth} from "@/context/AuthContext";
 
@@ -54,6 +55,13 @@ const Sidebar = ({isOpen, setIsOpen}) => {
       path: "/ats-analyzer",
       icon: Target,
       description: "Check ATS compatibility",
+    },
+    {
+      name: "AI Interview",
+      path: "/interview",
+      icon: Mic,
+      description: "Practice mock interviews",
+      badge: "NEW",
     },
     {
       name: "My Resumes",
