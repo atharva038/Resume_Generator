@@ -177,3 +177,140 @@ function convertResumeDataToText(resumeData) {
 
   return text;
 }
+
+/**
+ * Calculate match score between resume data and job description
+ * POST /api/ats/match-score
+ */
+export const calculateMatchScore = async (req, res) => {
+  try {
+    const {resumeData, jobDescription} = req.body;
+
+    if (!resumeData) {
+      return res.status(400).json({
+        success: false,
+        error: "Resume data is required",
+      });
+    }
+
+    if (!jobDescription || jobDescription.trim().length < 50) {
+      return res.status(400).json({
+        success: false,
+        error: "Job description is required (at least 50 characters)",
+      });
+    }
+
+    // Convert resume data to text
+    const resumeText = convertResumeDataToText(resumeData);
+
+    if (!resumeText || resumeText.trim().length < 50) {
+      return res.status(400).json({
+        success: false,
+        error: "Could not extract enough content from resume",
+      });
+    }
+
+    // Get user for AI routing
+    const User = (await import("../models/User.model.js")).default;
+    const user = await User.findById(req.user.userId);
+
+    if (!user) {
+      return res.status(401).json({success: false, error: "User not found"});
+    }
+
+    console.log(`🎯 Calculating match score for user ${user.email}...`);
+
+    // Use AI Router to analyze match
+    const {data: analysis, aiModel} = await aiRouter.analyzeJobMatch(
+      resumeText,
+      jobDescription,
+      user
+    );
+
+    console.log(`✅ Match score calculated using ${aiModel}`);
+
+    res.json({
+      success: true,
+      data: {
+        matchScore: analysis.atsScore || analysis.overallMatch || 0,
+        overallMatch: analysis.atsScore || analysis.overallMatch || 0,
+        keywordMatch: analysis.keywordMatch || 0,
+        skillsMatch: analysis.skillsMatch || 0,
+        experienceMatch: analysis.experienceMatch || 0,
+        matchingKeywords: analysis.matchingKeywords || [],
+        missingKeywords: analysis.missingKeywords || [],
+        suggestions: analysis.suggestions || [],
+        strengths: analysis.strengths || [],
+        improvements: analysis.improvements || [],
+        categoryScores: analysis.categoryScores || {},
+        aiModel,
+      },
+    });
+  } catch (error) {
+    console.error("❌ Match score calculation error:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message || "Failed to calculate match score",
+    });
+  }
+};
+
+/**
+ * Analyze skills from resume data
+ * POST /api/ats/analyze-skills
+ */
+export const analyzeSkills = async (req, res) => {
+  try {
+    const {resumeData} = req.body;
+
+    if (!resumeData) {
+      return res.status(400).json({
+        success: false,
+        error: "Resume data is required",
+      });
+    }
+
+    // Extract skills from resume data
+    const skills = [];
+
+    if (resumeData.skills && Array.isArray(resumeData.skills)) {
+      resumeData.skills.forEach((skillGroup) => {
+        if (skillGroup.items && Array.isArray(skillGroup.items)) {
+          skills.push(...skillGroup.items);
+        }
+      });
+    }
+
+    // Extract skills from experience bullets
+    const experienceText =
+      resumeData.experience
+        ?.map((exp) => exp.bullets?.join(" ") || "")
+        .join(" ") || "";
+
+    // Extract skills from projects
+    const projectSkills =
+      resumeData.projects?.flatMap((p) => p.technologies || []) || [];
+
+    res.json({
+      success: true,
+      data: {
+        skills: [...new Set([...skills, ...projectSkills])],
+        categories:
+          resumeData.skills?.map((s) => ({
+            name: s.category,
+            items: s.items,
+          })) || [],
+        experienceKeywords: experienceText
+          .split(/\s+/)
+          .filter((w) => w.length > 4)
+          .slice(0, 50),
+      },
+    });
+  } catch (error) {
+    console.error("❌ Skills analysis error:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message || "Failed to analyze skills",
+    });
+  }
+};

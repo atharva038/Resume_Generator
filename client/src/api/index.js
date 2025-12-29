@@ -1,12 +1,12 @@
 /**
  * API Barrel Export
- * 
+ *
  * Centralized exports for all API modules.
  * Use: import { authAPI, resumeAPI } from '@/api'
  */
 
 // Core API exports
-export { authAPI, resumeAPI, contactAPI, mlAPI } from './api';
+export {authAPI, resumeAPI, contactAPI, voiceAPI} from "./api";
 
 // Admin API exports
 export {
@@ -35,7 +35,7 @@ export {
   getSystemSettings,
   updateSystemSettings,
   updatePaymentSettings,
-} from './admin.api';
+} from "./admin.api";
 
 // Subscription API exports
 export {
@@ -50,7 +50,10 @@ export {
   getUsageStats,
   getAIConfig,
   updateAIPreference,
-} from './subscription.api';
+} from "./subscription.api";
 
 // Feedback API exports
-export { feedbackAPI } from './feedback.api';
+export {feedbackAPI} from "./feedback.api";
+
+// Interview API exports
+export {default as interviewAPI} from "./interview.api";

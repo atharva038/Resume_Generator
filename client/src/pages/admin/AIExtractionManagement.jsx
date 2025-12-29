@@ -101,10 +101,11 @@ const AIExtractionManagement = () => {
 
   if (loading && !data) {
     return (
-      <div className="flex items-center justify-center h-96">
+      <div className="flex items-center justify-center h-[60vh]">
         <div className="relative">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-t-2 border-purple-600"></div>
-          <Sparkles className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-6 w-6 text-purple-600 animate-pulse" />
+          <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-violet-600 rounded-2xl flex items-center justify-center animate-pulse">
+            <Sparkles className="w-8 h-8 text-white animate-bounce" />
+          </div>
         </div>
       </div>
     );
@@ -119,17 +120,20 @@ const AIExtractionManagement = () => {
         className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
       >
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 dark:from-purple-400 dark:to-blue-400 bg-clip-text text-transparent">
+          <span className="px-3 py-1 bg-purple-500/10 border border-purple-500/20 rounded-full text-purple-400 text-xs font-medium inline-block mb-3">
+            AI Extraction
+          </span>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-white via-purple-200 to-white bg-clip-text text-transparent">
             AI Extraction Usage
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
+          <p className="text-gray-400 mt-1">
             Monitor and manage daily AI resume extraction limits
           </p>
         </div>
         <button
           onClick={fetchExtractionData}
           disabled={loading}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-xl transition-all duration-200 shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
         >
           <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
           Refresh
@@ -142,20 +146,20 @@ const AIExtractionManagement = () => {
           initial={{opacity: 0, y: 20}}
           animate={{opacity: 1, y: 0}}
           transition={{delay: 0.1}}
-          className="relative overflow-hidden bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700"
+          className="relative overflow-hidden bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10"
         >
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500/10 to-blue-500/10 rounded-full blur-2xl"></div>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-full blur-2xl"></div>
           <div className="relative p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                <p className="text-sm font-medium text-gray-400">
                   Total Extractions Today
                 </p>
-                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
+                <p className="text-3xl font-bold text-white mt-2">
                   {data?.summary?.totalExtractionsToday || 0}
                 </p>
               </div>
-              <div className="p-3 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg">
+              <div className="p-3 bg-gradient-to-br from-purple-500 to-blue-600 rounded-xl">
                 <Sparkles className="h-6 w-6 text-white" />
               </div>
             </div>
@@ -166,20 +170,20 @@ const AIExtractionManagement = () => {
           initial={{opacity: 0, y: 20}}
           animate={{opacity: 1, y: 0}}
           transition={{delay: 0.2}}
-          className="relative overflow-hidden bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700"
+          className="relative overflow-hidden bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10"
         >
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-full blur-2xl"></div>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-full blur-2xl"></div>
           <div className="relative p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                <p className="text-sm font-medium text-gray-400">
                   Active Users
                 </p>
-                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
+                <p className="text-3xl font-bold text-white mt-2">
                   {data?.summary?.activeUsers || 0}
                 </p>
               </div>
-              <div className="p-3 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg">
+              <div className="p-3 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl">
                 <Users className="h-6 w-6 text-white" />
               </div>
             </div>
@@ -190,20 +194,20 @@ const AIExtractionManagement = () => {
           initial={{opacity: 0, y: 20}}
           animate={{opacity: 1, y: 0}}
           transition={{delay: 0.3}}
-          className="relative overflow-hidden bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700"
+          className="relative overflow-hidden bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10"
         >
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-500/10 to-red-500/10 rounded-full blur-2xl"></div>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-full blur-2xl"></div>
           <div className="relative p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                <p className="text-sm font-medium text-gray-400">
                   Users At Limit
                 </p>
-                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
+                <p className="text-3xl font-bold text-white mt-2">
                   {data?.summary?.usersAtLimit || 0}
                 </p>
               </div>
-              <div className="p-3 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg">
+              <div className="p-3 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl">
                 <AlertTriangle className="h-6 w-6 text-white" />
               </div>
             </div>
@@ -214,22 +218,22 @@ const AIExtractionManagement = () => {
           initial={{opacity: 0, y: 20}}
           animate={{opacity: 1, y: 0}}
           transition={{delay: 0.4}}
-          className="relative overflow-hidden bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700"
+          className="relative overflow-hidden bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10"
         >
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-full blur-2xl"></div>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-full blur-2xl"></div>
           <div className="relative p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                <p className="text-sm font-medium text-gray-400">
                   Average Usage
                 </p>
-                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
+                <p className="text-3xl font-bold text-white mt-2">
                   {data?.summary?.averageUsage
                     ? `${data.summary.averageUsage.toFixed(1)}%`
                     : "0%"}
                 </p>
               </div>
-              <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg">
+              <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl">
                 <TrendingUp className="h-6 w-6 text-white" />
               </div>
             </div>
@@ -242,24 +246,20 @@ const AIExtractionManagement = () => {
         initial={{opacity: 0, y: 20}}
         animate={{opacity: 1, y: 0}}
         transition={{delay: 0.5}}
-        className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6"
+        className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6"
       >
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-          Usage by Tier
-        </h2>
+        <h2 className="text-lg font-semibold text-white mb-4">Usage by Tier</h2>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           {data?.tierBreakdown?.map((tier, idx) => (
             <div
               key={tier._id}
-              className="text-center p-4 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600"
+              className="text-center p-4 rounded-xl bg-white/5 border border-white/10"
             >
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {tier.count}
-              </p>
-              <p className="text-sm text-gray-600 dark:text-gray-400 capitalize mt-1">
+              <p className="text-2xl font-bold text-white">{tier.count}</p>
+              <p className="text-sm text-gray-400 capitalize mt-1">
                 {tier._id}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 mt-1">
                 {tier.totalExtractions} extractions
               </p>
             </div>
@@ -272,12 +272,12 @@ const AIExtractionManagement = () => {
         initial={{opacity: 0, y: 20}}
         animate={{opacity: 1, y: 0}}
         transition={{delay: 0.6}}
-        className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6"
+        className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6"
       >
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Search */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
             <input
               type="text"
               placeholder="Search by name or email..."
@@ -286,45 +286,65 @@ const AIExtractionManagement = () => {
                 setSearchTerm(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
             />
           </div>
 
           {/* Tier Filter */}
           <div className="relative">
-            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
             <select
               value={filterTier}
               onChange={(e) => {
                 setFilterTier(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent appearance-none"
+              className="w-full pl-10 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all appearance-none"
             >
-              <option value="all">All Tiers</option>
-              <option value="free">Free</option>
-              <option value="one-time">One-Time</option>
-              <option value="pro">Pro</option>
-              <option value="premium">Premium</option>
-              <option value="lifetime">Lifetime</option>
+              <option value="all" className="bg-gray-900">
+                All Tiers
+              </option>
+              <option value="free" className="bg-gray-900">
+                Free
+              </option>
+              <option value="one-time" className="bg-gray-900">
+                One-Time
+              </option>
+              <option value="pro" className="bg-gray-900">
+                Pro
+              </option>
+              <option value="premium" className="bg-gray-900">
+                Premium
+              </option>
+              <option value="lifetime" className="bg-gray-900">
+                Lifetime
+              </option>
             </select>
           </div>
 
           {/* Status Filter */}
           <div className="relative">
-            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
             <select
               value={filterStatus}
               onChange={(e) => {
                 setFilterStatus(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent appearance-none"
+              className="w-full pl-10 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all appearance-none"
             >
-              <option value="all">All Status</option>
-              <option value="active">Active (Used Today)</option>
-              <option value="at-limit">At Limit</option>
-              <option value="unused">Unused</option>
+              <option value="all" className="bg-gray-900">
+                All Status
+              </option>
+              <option value="active" className="bg-gray-900">
+                Active (Used Today)
+              </option>
+              <option value="at-limit" className="bg-gray-900">
+                At Limit
+              </option>
+              <option value="unused" className="bg-gray-900">
+                Unused
+              </option>
             </select>
           </div>
         </div>
@@ -335,46 +355,44 @@ const AIExtractionManagement = () => {
         initial={{opacity: 0, y: 20}}
         animate={{opacity: 1, y: 0}}
         transition={{delay: 0.7}}
-        className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden"
+        className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden"
       >
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-600">
+            <thead className="bg-white/10 border-b border-white/10">
               <tr>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                   User
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                   Tier
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                   Usage Today
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                   Last Extraction
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody className="divide-y divide-white/10">
               {data?.users?.map((user, idx) => (
                 <motion.tr
                   key={user._id}
                   initial={{opacity: 0, x: -20}}
                   animate={{opacity: 1, x: 0}}
                   transition={{delay: idx * 0.05}}
-                  className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors"
+                  className="hover:bg-white/5 transition-colors"
                 >
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
-                      <div className="text-sm font-medium text-gray-900 dark:text-white">
+                      <div className="text-sm font-medium text-white">
                         {user.name}
                       </div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">
-                        {user.email}
-                      </div>
+                      <div className="text-sm text-gray-400">{user.email}</div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -401,7 +419,7 @@ const AIExtractionManagement = () => {
                             {user.usagePercentage}%
                           </span>
                         </div>
-                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                        <div className="w-full bg-white/10 rounded-full h-2">
                           <div
                             className={`h-2 rounded-full transition-all duration-300 ${
                               user.extractionsToday >= user.limit
@@ -421,19 +439,19 @@ const AIExtractionManagement = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {user.lastExtraction ? (
-                      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                      <div className="flex items-center gap-2 text-sm text-gray-400">
                         <Clock className="h-4 w-4" />
                         {new Date(user.lastExtraction).toLocaleString()}
                       </div>
                     ) : (
-                      <span className="text-sm text-gray-400">Never</span>
+                      <span className="text-sm text-gray-500">Never</span>
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <button
                       onClick={() => handleResetCounter(user._id, user.name)}
                       disabled={resetting === user._id}
-                      className="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-sm rounded-lg transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-sm rounded-xl transition-all duration-200 shadow-md shadow-purple-500/25 hover:shadow-purple-500/40 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                     >
                       <RefreshCw
                         className={`h-3.5 w-3.5 ${
@@ -451,9 +469,9 @@ const AIExtractionManagement = () => {
 
         {/* Pagination */}
         {data?.pagination && (
-          <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50">
+          <div className="px-6 py-4 border-t border-white/10 bg-white/5">
             <div className="flex items-center justify-between">
-              <div className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="text-sm text-gray-400">
                 Showing {(currentPage - 1) * data.pagination.limit + 1} to{" "}
                 {Math.min(
                   currentPage * data.pagination.limit,
@@ -465,7 +483,7 @@ const AIExtractionManagement = () => {
                 <button
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
-                  className="px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm font-medium text-gray-300 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   Previous
                 </button>
@@ -483,14 +501,14 @@ const AIExtractionManagement = () => {
                     .map((page, idx, arr) => (
                       <div key={page} className="flex items-center gap-2">
                         {idx > 0 && arr[idx - 1] !== page - 1 && (
-                          <span className="text-gray-400">...</span>
+                          <span className="text-gray-500">...</span>
                         )}
                         <button
                           onClick={() => setCurrentPage(page)}
-                          className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                          className={`px-3 py-2 rounded-xl text-sm font-medium transition-all ${
                             currentPage === page
-                              ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-md"
-                              : "bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600"
+                              ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-md shadow-purple-500/25"
+                              : "bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10"
                           }`}
                         >
                           {page}
@@ -505,7 +523,7 @@ const AIExtractionManagement = () => {
                     )
                   }
                   disabled={currentPage === data.pagination.totalPages}
-                  className="px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm font-medium text-gray-300 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   Next
                 </button>

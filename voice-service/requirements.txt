@@ -1,0 +1,11 @@
+# Voice Transcription Service Dependencies
+# For AI Interview voice-to-text functionality
+
+flask>=2.3.0
+flask-cors>=4.0.0
+openai-whisper>=20231117
+
+# Note: Whisper also requires ffmpeg to be installed on the system
+# On macOS: brew install ffmpeg
+# On Ubuntu: sudo apt install ffmpeg
+# On Windows: Download from https://ffmpeg.org/download.html

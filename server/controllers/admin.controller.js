@@ -6,6 +6,7 @@ import AdminLog from "../models/AdminLog.model.js";
 import Template from "../models/Template.model.js";
 import Feedback from "../models/Feedback.model.js";
 import Settings from "../models/Settings.model.js";
+import Subscription from "../models/Subscription.model.js";
 
 // Get Dashboard Statistics nicely
 export const getDashboardStats = async (req, res) => {
@@ -141,6 +142,81 @@ export const getDashboardStats = async (req, res) => {
       },
     });
 
+    // Get subscription earnings statistics
+    const [
+      totalEarnings,
+      earningsByTier,
+      earningsByMonth,
+      subscriptionCounts,
+      recentSubscriptions,
+    ] = await Promise.all([
+      // Total earnings from all successful subscriptions
+      Subscription.aggregate([
+        {$match: {status: {$in: ["active", "expired"]}}},
+        {
+          $group: {
+            _id: null,
+            totalRevenue: {$sum: "$amount"},
+            totalINR: {
+              $sum: {$cond: [{$eq: ["$currency", "INR"]}, "$amount", 0]},
+            },
+            totalUSD: {
+              $sum: {$cond: [{$eq: ["$currency", "USD"]}, "$amount", 0]},
+            },
+            count: {$sum: 1},
+          },
+        },
+      ]),
+      // Earnings breakdown by tier
+      Subscription.aggregate([
+        {$match: {status: {$in: ["active", "expired"]}}},
+        {
+          $group: {
+            _id: "$tier",
+            revenue: {$sum: "$amount"},
+            count: {$sum: 1},
+          },
+        },
+        {$sort: {revenue: -1}},
+      ]),
+      // Earnings by month (last 6 months)
+      Subscription.aggregate([
+        {
+          $match: {
+            status: {$in: ["active", "expired"]},
+            createdAt: {
+              $gte: new Date(new Date().setMonth(new Date().getMonth() - 6)),
+            },
+          },
+        },
+        {
+          $group: {
+            _id: {
+              $dateToString: {format: "%Y-%m", date: "$createdAt"},
+            },
+            revenue: {$sum: "$amount"},
+            count: {$sum: 1},
+          },
+        },
+        {$sort: {_id: 1}},
+      ]),
+      // Subscription counts by status
+      Subscription.aggregate([
+        {
+          $group: {
+            _id: "$status",
+            count: {$sum: 1},
+          },
+        },
+      ]),
+      // Recent subscriptions
+      Subscription.find({status: {$in: ["active", "expired"]}})
+        .populate("userId", "name email")
+        .sort({createdAt: -1})
+        .limit(5)
+        .select("userId tier plan amount currency status createdAt"),
+    ]);
+
     res.json({
       success: true,
       data: {
@@ -158,11 +234,26 @@ export const getDashboardStats = async (req, res) => {
             activeUsers: aiExtractionStats[0]?.totalExtractionUsers || 0,
             usersAtLimit: usersAtExtractionLimit,
           },
+          earnings: {
+            totalRevenue: totalEarnings[0]?.totalRevenue || 0,
+            totalINR: totalEarnings[0]?.totalINR || 0,
+            totalUSD: totalEarnings[0]?.totalUSD || 0,
+            totalSubscriptions: totalEarnings[0]?.count || 0,
+          },
         },
         charts: {
           usersGrowth,
           resumesGrowth,
           aiUsageByFeature,
+          earningsByMonth,
+          earningsByTier,
+        },
+        subscriptions: {
+          byStatus: subscriptionCounts.reduce((acc, item) => {
+            acc[item._id] = item.count;
+            return acc;
+          }, {}),
+          recent: recentSubscriptions,
         },
         recentActivity: {
           users: recentUsers,

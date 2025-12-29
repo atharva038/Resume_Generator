@@ -113,16 +113,26 @@ const AIQuotaManagement = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      <div className="flex items-center justify-center h-[60vh]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-yellow-500 via-orange-500 to-red-500 animate-pulse shadow-2xl shadow-yellow-500/30"></div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <TrendingUp className="w-8 h-8 text-white animate-pulse" />
+            </div>
+          </div>
+          <p className="text-gray-500 dark:text-gray-400 font-medium">
+            Loading quota data...
+          </p>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-        <p className="text-red-600 dark:text-red-400">{error}</p>
+      <div className="bg-gradient-to-br from-red-500/10 to-rose-500/10 border border-red-500/20 rounded-2xl p-6 backdrop-blur-xl">
+        <p className="text-red-400 font-medium">{error}</p>
       </div>
     );
   }
@@ -130,18 +140,24 @@ const AIQuotaManagement = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
         <div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-500/10 border border-yellow-500/20 rounded-full mb-3">
+            <TrendingUp className="w-3.5 h-3.5 text-yellow-400" />
+            <span className="text-xs font-medium text-yellow-400">
+              Quota Management
+            </span>
+          </div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
             AI Quota Management
           </h1>
-          <p className="text-gray-600 dark:text-gray-600 dark:text-gray-400 mt-1">
+          <p className="text-gray-600 dark:text-gray-400 mt-1">
             Monitor and manage user AI usage quotas
           </p>
         </div>
         <button
           onClick={fetchQuotaStatus}
-          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-gray-900 dark:text-white rounded-lg hover:bg-indigo-700 transition-colors"
+          className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-xl hover:opacity-90 transition-all"
         >
           <RefreshCw className="w-4 h-4" />
           Refresh
@@ -150,140 +166,124 @@ const AIQuotaManagement = () => {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+        <div className="group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:bg-white/[0.07] transition-all">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Total Users
-              </p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mt-1">
+              <p className="text-sm text-gray-400">Total Users</p>
+              <p className="text-2xl font-bold text-white mt-1">
                 {quotaData?.totalUsers || 0}
               </p>
             </div>
-            <Users className="w-10 h-10 text-blue-600" />
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
+              <Users className="w-6 h-6 text-white" />
+            </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+        <div className="group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:bg-white/[0.07] transition-all">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Daily Usage
-              </p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mt-1">
+              <p className="text-sm text-gray-400">Daily Usage</p>
+              <p className="text-2xl font-bold text-white mt-1">
                 {quotaData?.summary?.totalDailyUsage || 0}
               </p>
             </div>
-            <TrendingUp className="w-10 h-10 text-green-600" />
+            <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg shadow-green-500/25">
+              <TrendingUp className="w-6 h-6 text-white" />
+            </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+        <div className="group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:bg-white/[0.07] transition-all">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Monthly Cost
-              </p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mt-1">
+              <p className="text-sm text-gray-400">Monthly Cost</p>
+              <p className="text-2xl font-bold text-white mt-1">
                 ${quotaData?.summary?.totalMonthlyCost?.toFixed(4) || "0.00"}
               </p>
               <div className="flex gap-3 mt-2 text-xs">
-                <span className="text-green-600 dark:text-green-400">
+                <span className="text-green-400">
                   OpenAI: ${(quotaData?.summary?.openaiCost || 0).toFixed(4)}
                 </span>
-                <span className="text-purple-600 dark:text-purple-400">
+                <span className="text-purple-400">
                   Gemini: ${(quotaData?.summary?.geminiCost || 0).toFixed(4)}
                 </span>
               </div>
             </div>
-            <DollarSign className="w-10 h-10 text-yellow-600" />
+            <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-xl flex items-center justify-center shadow-lg shadow-yellow-500/25">
+              <DollarSign className="w-6 h-6 text-white" />
+            </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+        <div className="group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:bg-white/[0.07] transition-all">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Users Near Limit
-              </p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mt-1">
+              <p className="text-sm text-gray-400">Users Near Limit</p>
+              <p className="text-2xl font-bold text-white mt-1">
                 {quotaData?.summary?.usersNearLimit || 0}
               </p>
             </div>
-            <AlertTriangle className="w-10 h-10 text-orange-600" />
+            <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/25">
+              <AlertTriangle className="w-6 h-6 text-white" />
+            </div>
           </div>
         </div>
       </div>
 
       {/* Provider Breakdown Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-xl p-6 shadow-sm border border-green-200 dark:border-green-700">
+        <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 backdrop-blur-xl rounded-2xl p-6 border border-green-500/20">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-green-900 dark:text-green-300">
-              OpenAI
-            </h3>
-            <div className="w-3 h-3 bg-green-600 rounded-full"></div>
+            <h3 className="text-lg font-semibold text-green-400">OpenAI</h3>
+            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
           </div>
           <div className="space-y-2">
             <div>
-              <p className="text-sm text-green-700 dark:text-green-400">
-                Total Calls
-              </p>
-              <p className="text-2xl font-bold text-green-900 dark:text-green-200">
+              <p className="text-sm text-gray-400">Total Calls</p>
+              <p className="text-2xl font-bold text-white">
                 {quotaData?.summary?.openaiCalls?.toLocaleString() || 0}
               </p>
             </div>
             <div>
-              <p className="text-sm text-green-700 dark:text-green-400">
-                Total Cost
-              </p>
-              <p className="text-xl font-semibold text-green-900 dark:text-green-200">
+              <p className="text-sm text-gray-400">Total Cost</p>
+              <p className="text-xl font-semibold text-green-400">
                 ${(quotaData?.summary?.openaiCost || 0).toFixed(4)}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-xl p-6 shadow-sm border border-purple-200 dark:border-purple-700">
+        <div className="bg-gradient-to-br from-purple-500/10 to-violet-500/10 backdrop-blur-xl rounded-2xl p-6 border border-purple-500/20">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-purple-900 dark:text-purple-300">
-              Gemini
-            </h3>
-            <div className="w-3 h-3 bg-purple-600 rounded-full"></div>
+            <h3 className="text-lg font-semibold text-purple-400">Gemini</h3>
+            <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
           </div>
           <div className="space-y-2">
             <div>
-              <p className="text-sm text-purple-700 dark:text-purple-400">
-                Total Calls
-              </p>
-              <p className="text-2xl font-bold text-purple-900 dark:text-purple-200">
+              <p className="text-sm text-gray-400">Total Calls</p>
+              <p className="text-2xl font-bold text-white">
                 {quotaData?.summary?.geminiCalls?.toLocaleString() || 0}
               </p>
             </div>
             <div>
-              <p className="text-sm text-purple-700 dark:text-purple-400">
-                Total Cost
-              </p>
-              <p className="text-xl font-semibold text-purple-900 dark:text-purple-200">
+              <p className="text-sm text-gray-400">Total Cost</p>
+              <p className="text-xl font-semibold text-purple-400">
                 ${(quotaData?.summary?.geminiCost || 0).toFixed(4)}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800/50 dark:to-gray-700/50 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-600">
+        <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-300">
-              Cost Analysis
-            </h3>
-            <DollarSign className="w-5 h-5 text-gray-600" />
+            <h3 className="text-lg font-semibold text-white">Cost Analysis</h3>
+            <DollarSign className="w-5 h-5 text-gray-400" />
           </div>
           <div className="space-y-2">
             <div>
-              <p className="text-sm text-gray-700 dark:text-gray-400">
-                OpenAI %
-              </p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-gray-200">
+              <p className="text-sm text-gray-400">OpenAI %</p>
+              <p className="text-2xl font-bold text-white">
                 {quotaData?.summary?.totalMonthlyCost > 0
                   ? (
                       (quotaData?.summary?.openaiCost /
@@ -295,10 +295,8 @@ const AIQuotaManagement = () => {
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-700 dark:text-gray-400">
-                Gemini %
-              </p>
-              <p className="text-xl font-semibold text-gray-900 dark:text-gray-200">
+              <p className="text-sm text-gray-400">Gemini %</p>
+              <p className="text-xl font-semibold text-white">
                 {quotaData?.summary?.totalMonthlyCost > 0
                   ? (
                       (quotaData?.summary?.geminiCost /
@@ -314,7 +312,7 @@ const AIQuotaManagement = () => {
       </div>
 
       {/* Filters and Search */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+      <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -323,79 +321,92 @@ const AIQuotaManagement = () => {
               placeholder="Search by name or email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white"
+              className="w-full pl-10 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-purple-500/50 transition-all"
             />
           </div>
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white"
+            className="px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-purple-500/50 transition-all"
           >
-            <option value="usage">Sort by Usage</option>
-            <option value="cost">Sort by Cost</option>
-            <option value="percentage">Sort by Percentage</option>
-            <option value="name">Sort by Name</option>
+            <option value="usage" className="bg-[#1a1a1a]">
+              Sort by Usage
+            </option>
+            <option value="cost" className="bg-[#1a1a1a]">
+              Sort by Cost
+            </option>
+            <option value="percentage" className="bg-[#1a1a1a]">
+              Sort by Percentage
+            </option>
+            <option value="name" className="bg-[#1a1a1a]">
+              Sort by Name
+            </option>
           </select>
         </div>
       </div>
 
       {/* Users Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+            <thead className="bg-white/5 border-b border-white/10">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-500 dark:text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                   User
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-500 dark:text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                   Tier
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-500 dark:text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                   Daily Quota
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-500 dark:text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                   Monthly Usage
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-medium text-green-400 uppercase tracking-wider">
                   OpenAI
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-purple-600 dark:text-purple-400 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-medium text-purple-400 uppercase tracking-wider">
                   Gemini
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-500 dark:text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                   Total Cost
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-500 dark:text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-500 dark:text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody className="divide-y divide-white/5">
               {quotaData?.users?.map((user) => (
                 <tr
                   key={user.userId}
-                  className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  className="hover:bg-white/5 transition-colors"
                 >
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div>
-                      <div className="text-sm font-medium text-gray-900 dark:text-white">
-                        {user.name}
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white text-sm font-medium">
+                        {user.name?.charAt(0) || "U"}
                       </div>
-                      <div className="text-sm text-gray-500 dark:text-gray-500 dark:text-gray-400">
-                        {user.email}
+                      <div>
+                        <div className="text-sm font-medium text-white">
+                          {user.name}
+                        </div>
+                        <div className="text-xs text-gray-400">
+                          {user.email}
+                        </div>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
-                      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${
                         user.tier === "admin"
-                          ? "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300"
-                          : "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
+                          ? "bg-purple-500/10 text-purple-400 border border-purple-500/20"
+                          : "bg-blue-500/10 text-blue-400 border border-blue-500/20"
                       }`}
                     >
                       {user.tier === "admin" && <Shield className="w-3 h-3" />}
@@ -417,18 +428,18 @@ const AIQuotaManagement = () => {
                             : user.quota.daily.limit}
                         </span>
                       </div>
-                      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                      <div className="w-full bg-white/10 rounded-full h-2">
                         <div
                           className={`h-2 rounded-full transition-all ${
                             user.tier === "admin"
-                              ? "bg-purple-600"
+                              ? "bg-purple-500"
                               : user.quota.daily.percentage >= 100
-                                ? "bg-red-600"
+                                ? "bg-red-500"
                                 : user.quota.daily.percentage >= 80
-                                  ? "bg-orange-600"
+                                  ? "bg-orange-500"
                                   : user.quota.daily.percentage >= 50
-                                    ? "bg-yellow-600"
-                                    : "bg-green-600"
+                                    ? "bg-yellow-500"
+                                    : "bg-green-500"
                           }`}
                           style={{
                             width: `${Math.min(
@@ -441,13 +452,13 @@ const AIQuotaManagement = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900 dark:text-white">
+                    <div className="text-sm text-white">
                       {user.quota.monthly.used} /{" "}
                       {user.quota.monthly.limit === Infinity
                         ? "∞"
                         : user.quota.monthly.limit}
                     </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-500 dark:text-gray-400">
+                    <div className="text-xs text-gray-400">
                       {user.quota.monthly.totalTokens.toLocaleString()} tokens
                     </div>
                   </td>

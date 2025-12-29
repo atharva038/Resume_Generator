@@ -834,6 +834,51 @@ Return ONLY the cover letter text.`;
   }
 }
 
+/**
+ * Generic chat completion for custom prompts (used by interview service)
+ * @param {string} systemPrompt - System instructions
+ * @param {string} userPrompt - User message
+ * @param {Object} options - Generation options
+ * @returns {Promise<Object>} - Response with text and token usage
+ */
+export async function chatCompletion(systemPrompt, userPrompt, options = {}) {
+  return retryWithBackoff(async () => {
+    if (!openai) {
+      throw new Error("OpenAI API key not configured");
+    }
+
+    const {temperature = 0.7, maxTokens = 1000} = options;
+
+    console.log("🤖 Calling OpenAI GPT-4o for chat completion...");
+    const completion = await openai.chat.completions.create({
+      model: MODEL,
+      messages: [
+        {role: "system", content: systemPrompt},
+        {role: "user", content: userPrompt},
+      ],
+      temperature,
+      max_tokens: maxTokens,
+    });
+
+    const response = completion.choices[0];
+    const text = response.message.content;
+    const tokenUsage = extractTokenUsage(completion);
+    const cost = calculateCost(tokenUsage);
+
+    console.log(
+      `✅ GPT-4o chat completion successful (Tokens: ${
+        tokenUsage.totalTokens
+      }, Cost: ₹${cost.amountINR.toFixed(2)})`
+    );
+
+    return {
+      text,
+      tokenUsage,
+      cost,
+    };
+  }, "OpenAI chat completion");
+}
+
 export default {
   parseResumeWithAI,
   enhanceContentWithAI,
@@ -843,4 +888,5 @@ export default {
   processCustomSectionWithAI,
   analyzeResumeJobMatch,
   generateCoverLetter,
+  chatCompletion,
 };

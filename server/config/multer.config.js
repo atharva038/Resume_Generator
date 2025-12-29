@@ -50,4 +50,52 @@ const upload = multer({
   },
 });
 
+// Audio upload configuration for voice interviews
+const audioStorage = multer.memoryStorage(); // Store in memory for quick processing
+
+const audioFileFilter = (req, file, cb) => {
+  console.log("📎 Multer received file:");
+  console.log("  - fieldname:", file.fieldname);
+  console.log("  - originalname:", file.originalname);
+  console.log("  - mimetype:", file.mimetype);
+
+  const allowedTypes = [".wav", ".mp3", ".m4a", ".webm", ".ogg", ".flac"];
+  const ext = path.extname(file.originalname).toLowerCase();
+
+  // Also check MIME types
+  const allowedMimes = [
+    "audio/wav",
+    "audio/wave",
+    "audio/x-wav",
+    "audio/mpeg",
+    "audio/mp3",
+    "audio/m4a",
+    "audio/x-m4a",
+    "audio/webm",
+    "audio/ogg",
+    "audio/flac",
+  ];
+
+  if (allowedTypes.includes(ext) || allowedMimes.includes(file.mimetype)) {
+    console.log("  ✅ File accepted");
+    cb(null, true);
+  } else {
+    console.log("  ❌ File rejected - Invalid format");
+    cb(
+      new Error(
+        "Invalid audio format. Allowed: wav, mp3, m4a, webm, ogg, flac"
+      ),
+      false
+    );
+  }
+};
+
+export const audioUpload = multer({
+  storage: audioStorage,
+  fileFilter: audioFileFilter,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit for audio
+  },
+});
+
 export default upload;

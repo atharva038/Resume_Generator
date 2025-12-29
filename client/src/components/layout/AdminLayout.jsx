@@ -70,10 +70,16 @@ const AdminLayout = () => {
       color: "text-blue-500",
     },
     {
+      path: "/admin/earnings",
+      icon: TrendingUp,
+      label: "Earnings",
+      color: "text-green-500",
+    },
+    {
       path: "/admin/users",
       icon: Users,
       label: "User Management",
-      color: "text-green-500",
+      color: "text-cyan-500",
     },
     {
       path: "/admin/templates",
@@ -139,9 +145,17 @@ const AdminLayout = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-purple-50/30 to-blue-50/30 dark:from-gray-900 dark:via-purple-900/10 dark:to-blue-900/10">
+    <div className="min-h-screen bg-white dark:bg-[#0C0C0C] overflow-x-hidden">
+      {/* Subtle grid background pattern */}
+      <div className="fixed inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none"></div>
+
+      {/* Ambient gradient blur effects */}
+      <div className="fixed top-20 left-10 w-[400px] h-[400px] bg-purple-500/20 dark:bg-purple-500/10 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="fixed bottom-20 right-10 w-[350px] h-[350px] bg-blue-500/20 dark:bg-blue-500/10 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="fixed top-1/2 left-1/2 w-[300px] h-[300px] bg-cyan-500/10 dark:bg-cyan-500/5 rounded-full blur-[100px] pointer-events-none"></div>
+
       {/* Top Navigation Bar */}
-      <nav className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-b border-gray-200 dark:border-gray-700 fixed top-0 left-0 right-0 z-30 shadow-lg">
+      <nav className="bg-white/70 dark:bg-black/50 backdrop-blur-xl border-b border-gray-200/50 dark:border-white/10 fixed top-0 left-0 right-0 z-30">
         <div className="px-4 sm:px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4">
             {/* Single Menu Toggle for All Devices */}
@@ -153,19 +167,19 @@ const AdminLayout = () => {
                   toggleSidebarOpen();
                 }
               }}
-              className="p-2 hover:bg-gradient-to-r hover:from-purple-100 hover:to-blue-100 dark:hover:from-purple-900/30 dark:hover:to-blue-900/30 rounded-lg transition-all duration-200"
+              className="p-2 hover:bg-white/50 dark:hover:bg-white/10 rounded-lg transition-all duration-200"
               aria-label="Toggle menu"
             >
               <Menu className="w-5 h-5 text-gray-700 dark:text-gray-300" />
             </button>
 
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-purple-600 via-violet-600 to-blue-600 rounded-lg flex items-center justify-center shadow-lg">
+              <div className="w-9 h-9 bg-gradient-to-br from-purple-500 via-violet-500 to-blue-500 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/25">
                 <Shield className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1 className="text-lg font-bold bg-gradient-to-r from-purple-600 to-blue-600 dark:from-purple-400 dark:to-blue-400 bg-clip-text text-transparent">
-                  Admin Dashboard
+                <h1 className="text-lg font-bold bg-gradient-to-r from-purple-500 via-violet-500 to-blue-500 bg-clip-text text-transparent">
+                  Admin Panel
                 </h1>
               </div>
             </div>
@@ -173,11 +187,11 @@ const AdminLayout = () => {
 
           <div className="flex items-center gap-3">
             {/* User Info */}
-            <div className="text-right hidden md:block">
+            <div className="text-right hidden md:block px-3 py-1.5 bg-white/50 dark:bg-white/5 rounded-lg border border-gray-200/50 dark:border-white/10">
               <p className="text-sm font-medium text-gray-900 dark:text-white">
                 {user?.name || "Admin"}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-500 dark:text-gray-400">
+              <p className="text-xs text-gray-500 dark:text-gray-400">
                 Administrator
               </p>
             </div>
@@ -185,27 +199,27 @@ const AdminLayout = () => {
             {/* Dark Mode Toggle */}
             <button
               onClick={toggleDarkMode}
-              className="p-2 hover:bg-gradient-to-r hover:from-purple-100 hover:to-blue-100 dark:hover:from-purple-900/30 dark:hover:to-blue-900/30 rounded-lg transition-all duration-200"
+              className="p-2.5 bg-white/50 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 rounded-lg transition-all duration-200 border border-gray-200/50 dark:border-white/10"
               title={isDarkMode ? "Light Mode" : "Dark Mode"}
               aria-label={
                 isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"
               }
             >
               {isDarkMode ? (
-                <Sun className="w-5 h-5 text-yellow-500" />
+                <Sun className="w-5 h-5 text-yellow-400" />
               ) : (
-                <Moon className="w-5 h-5 text-gray-700" />
+                <Moon className="w-5 h-5 text-gray-600" />
               )}
             </button>
 
             {/* Logout Button */}
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
+              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white rounded-lg transition-all duration-200 shadow-lg shadow-red-500/25 hover:shadow-red-500/40"
               aria-label="Logout"
             >
               <LogOut className="w-4 h-4" />
-              <span className="hidden sm:inline">Logout</span>
+              <span className="hidden sm:inline font-medium">Logout</span>
             </button>
           </div>
         </div>
@@ -221,7 +235,7 @@ const AdminLayout = () => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-16 bottom-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-r border-gray-200 dark:border-gray-700 transition-all duration-300 overflow-hidden shadow-xl
+        className={`fixed top-16 bottom-0 bg-white/70 dark:bg-black/50 backdrop-blur-xl border-r border-gray-200/50 dark:border-white/10 transition-all duration-300 overflow-hidden
           ${isMobileMenuOpen ? "left-0 z-40" : "-left-full z-40"} 
           w-64 
           lg:z-20
@@ -241,10 +255,10 @@ const AdminLayout = () => {
                   key={item.path}
                   to={item.path}
                   onClick={closeMobileMenu}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
                     isActive
-                      ? "bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/30 dark:to-blue-900/30 text-purple-700 dark:text-purple-300 font-medium shadow-md border border-purple-200 dark:border-purple-700"
-                      : "text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-gray-100 hover:to-gray-50 dark:hover:from-gray-700/50 dark:hover:to-gray-700/30"
+                      ? "bg-gradient-to-r from-purple-500/20 to-blue-500/20 text-purple-600 dark:text-purple-300 font-medium border border-purple-500/30"
+                      : "text-gray-600 dark:text-gray-400 hover:bg-white/50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white"
                   }`}
                 >
                   <Icon
@@ -263,7 +277,7 @@ const AdminLayout = () => {
             <Link
               to="/"
               onClick={closeMobileMenu}
-              className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/30 dark:to-blue-900/30 text-purple-700 dark:text-purple-300 rounded-lg hover:from-purple-200 hover:to-blue-200 dark:hover:from-purple-800/40 dark:hover:to-blue-800/40 transition-all duration-200 border border-purple-200 dark:border-purple-700 shadow-sm hover:shadow-md"
+              className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-xl hover:from-purple-600 hover:to-blue-600 transition-all duration-200 shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40"
             >
               <FileText className="w-5 h-5 flex-shrink-0" />
               <span className="font-medium">Back to Site</span>

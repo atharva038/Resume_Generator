@@ -1,6 +1,10 @@
 import express from "express";
 import multer from "multer";
-import {analyzeResume} from "../controllers/ats.controller.js";
+import {
+  analyzeResume,
+  calculateMatchScore,
+  analyzeSkills,
+} from "../controllers/ats.controller.js";
 import {authenticateToken} from "../middleware/auth.middleware.js";
 import {
   aiLimiter,
@@ -39,6 +43,24 @@ router.post(
   checkAIQuota, // Check AI quota
   upload.single("resumeFile"),
   analyzeResume
+);
+
+// Calculate match score between resume data and job description (for JobMatchAnalyzer component)
+router.post(
+  "/match-score",
+  authenticateToken,
+  aiLimiter,
+  checkAIQuota,
+  calculateMatchScore
+);
+
+// Analyze skills from resume data
+router.post(
+  "/analyze-skills",
+  authenticateToken,
+  aiLimiter,
+  checkAIQuota,
+  analyzeSkills
 );
 
 export default router;

@@ -27,6 +27,7 @@ const aiUsageSchema = new mongoose.Schema(
         "ai_suggestions",
         "ml_job_matching",
         "ml_skill_gap_analysis",
+        "ai_interview",
       ],
       required: true,
     },

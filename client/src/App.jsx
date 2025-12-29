@@ -39,6 +39,10 @@ import AdminFeedback from "./pages/admin/AdminFeedback";
 import AdminLogs from "./pages/admin/AdminLogs";
 import TemplateManagement from "./pages/admin/TemplateManagement";
 import AdminSettings from "./pages/admin/AdminSettings";
+import Earnings from "./pages/admin/Earnings";
+import AIInterview from "./pages/AIInterview";
+import InterviewHistory from "./pages/InterviewHistory";
+import InterviewResult from "./pages/InterviewResult";
 import {DarkModeProvider} from "./context/DarkModeContext";
 import {NavigationBlockerProvider} from "./context/NavigationBlockerContext";
 
@@ -220,6 +224,32 @@ function App() {
               }
             />
 
+            {/* AI Interview Routes */}
+            <Route
+              path="interview"
+              element={
+                <ProtectedRoute>
+                  <AIInterview />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="interview/history"
+              element={
+                <ProtectedRoute>
+                  <InterviewHistory />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="interview/result/:sessionId"
+              element={
+                <ProtectedRoute>
+                  <InterviewResult />
+                </ProtectedRoute>
+              }
+            />
+
             {/* 404 Not Found - Must be last route in this Route group */}
             <Route path="*" element={<NotFound />} />
           </Route>
@@ -234,6 +264,7 @@ function App() {
             }
           >
             <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="earnings" element={<Earnings />} />
             <Route path="users" element={<UserManagement />} />
             <Route path="templates" element={<TemplateManagement />} />
             <Route path="ai-analytics" element={<AIAnalytics />} />
