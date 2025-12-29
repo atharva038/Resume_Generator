@@ -9,28 +9,10 @@ export const authenticateToken = (req, res, next) => {
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1]; // Bearer TOKEN
 
-    console.log("🔐 Auth middleware called for:", req.method, req.path);
-    console.log(
-      "  - Authorization header:",
-      authHeader ? "Present" : "Missing"
-    );
-    console.log("  - Token extracted:", token ? "Yes" : "No");
-    console.log(
-      "  - JWT_SECRET exists:",
-      process.env.JWT_SECRET ? "Yes" : "NO!"
-    );
-
     if (!token) {
       console.log("🔒 Auth failed: No token provided");
       return res.status(401).json({error: "Access token required"});
     }
-
-    // Log first and last few chars of token for debugging (never log full token)
-    console.log(
-      "  - Token preview:",
-      token.substring(0, 20) + "..." + token.substring(token.length - 10)
-    );
-
     // Verify token
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
       if (err) {
@@ -56,7 +38,7 @@ export const authenticateToken = (req, res, next) => {
         return res.status(403).json({error: "Invalid or expired token"});
       }
 
-      console.log("✅ Auth successful for user:", user.userId, user.email);
+      // console.log("✅ Auth successful for user:", user.userId, user.email);
       req.user = user;
       next();
     });

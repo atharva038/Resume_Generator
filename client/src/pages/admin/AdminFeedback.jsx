@@ -193,10 +193,13 @@ const AdminFeedback = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+        <span className="px-3 py-1 bg-purple-500/10 border border-purple-500/20 rounded-full text-purple-400 text-xs font-medium inline-block mb-3">
+          Feedback Center
+        </span>
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-white via-purple-200 to-white bg-clip-text text-transparent">
           User Feedback Management
         </h1>
-        <p className="text-gray-600 dark:text-gray-600 dark:text-gray-400 mt-1">
+        <p className="text-gray-400 mt-1">
           View and manage user feedback, suggestions, and bug reports
         </p>
       </div>
@@ -204,51 +207,80 @@ const AdminFeedback = () => {
       {/* Statistics Cards */}
       {stats && (
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm border border-gray-200 dark:border-gray-700">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Total Feedback
-            </p>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white">
-              {stats.total}
-            </p>
+          <div className="bg-white/5 dark:border-white/10 backdrop-blur-xl rounded-2xl p-5 border border-white/10">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-400">Total Feedback</p>
+                <p className="text-2xl font-bold text-white mt-1">
+                  {stats.total}
+                </p>
+              </div>
+              <div className="p-3 bg-gradient-to-br from-purple-500 to-violet-600 rounded-xl">
+                <MessageSquare className="w-5 h-5 text-white" />
+              </div>
+            </div>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm border border-gray-200 dark:border-gray-700">
-            <p className="text-sm text-gray-600 dark:text-gray-400">Open</p>
-            <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-              {stats.open}
-            </p>
+          <div className="bg-white/5 dark:border-white/10 backdrop-blur-xl rounded-2xl p-5 border border-white/10">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-400">Open</p>
+                <p className="text-2xl font-bold text-blue-400 mt-1">
+                  {stats.open}
+                </p>
+              </div>
+              <div className="p-3 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl">
+                <Clock className="w-5 h-5 text-white" />
+              </div>
+            </div>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm border border-gray-200 dark:border-gray-700">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              In Progress
-            </p>
-            <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
-              {stats.inProgress}
-            </p>
+          <div className="bg-white/5 dark:border-white/10 backdrop-blur-xl rounded-2xl p-5 border border-white/10">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-400">In Progress</p>
+                <p className="text-2xl font-bold text-yellow-400 mt-1">
+                  {stats.inProgress}
+                </p>
+              </div>
+              <div className="p-3 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl">
+                <Loader2 className="w-5 h-5 text-white" />
+              </div>
+            </div>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm border border-gray-200 dark:border-gray-700">
-            <p className="text-sm text-gray-600 dark:text-gray-400">Resolved</p>
-            <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-              {stats.resolved}
-            </p>
+          <div className="bg-white/5 dark:border-white/10 backdrop-blur-xl rounded-2xl p-5 border border-white/10">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-400">Resolved</p>
+                <p className="text-2xl font-bold text-green-400 mt-1">
+                  {stats.resolved}
+                </p>
+              </div>
+              <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl">
+                <CheckCircle className="w-5 h-5 text-white" />
+              </div>
+            </div>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm border border-gray-200 dark:border-gray-700">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Bugs Reported
-            </p>
-            <p className="text-2xl font-bold text-red-600 dark:text-red-400">
-              {stats.bugs}
-            </p>
+          <div className="bg-white/5 dark:border-white/10 backdrop-blur-xl rounded-2xl p-5 border border-white/10">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-400">Bugs Reported</p>
+                <p className="text-2xl font-bold text-red-400 mt-1">
+                  {stats.bugs}
+                </p>
+              </div>
+              <div className="p-3 bg-gradient-to-br from-red-500 to-rose-600 rounded-xl">
+                <Bug className="w-5 h-5 text-white" />
+              </div>
+            </div>
           </div>
         </div>
       )}
 
       {/* Filters */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700">
+      <div className="bg-white/5 dark:border-white/10 backdrop-blur-xl rounded-2xl p-5 border border-white/10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {/* Search */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
             <input
               type="text"
               placeholder="Search feedback..."
@@ -256,7 +288,7 @@ const AdminFeedback = () => {
               onChange={(e) =>
                 setFilters({...filters, search: e.target.value, page: 1})
               }
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white"
+              className="w-full pl-10 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
             />
           </div>
 
@@ -266,12 +298,20 @@ const AdminFeedback = () => {
             onChange={(e) =>
               setFilters({...filters, type: e.target.value, page: 1})
             }
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white"
+            className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
           >
-            <option value="">All Types</option>
-            <option value="improvement">Improvements</option>
-            <option value="feedback">Feedback</option>
-            <option value="bug">Bugs</option>
+            <option value="" className="bg-gray-900">
+              All Types
+            </option>
+            <option value="improvement" className="bg-gray-900">
+              Improvements
+            </option>
+            <option value="feedback" className="bg-gray-900">
+              Feedback
+            </option>
+            <option value="bug" className="bg-gray-900">
+              Bugs
+            </option>
           </select>
 
           {/* Status Filter */}
@@ -280,13 +320,23 @@ const AdminFeedback = () => {
             onChange={(e) =>
               setFilters({...filters, status: e.target.value, page: 1})
             }
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white"
+            className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
           >
-            <option value="">All Status</option>
-            <option value="open">Open</option>
-            <option value="in-progress">In Progress</option>
-            <option value="resolved">Resolved</option>
-            <option value="closed">Closed</option>
+            <option value="" className="bg-gray-900">
+              All Status
+            </option>
+            <option value="open" className="bg-gray-900">
+              Open
+            </option>
+            <option value="in-progress" className="bg-gray-900">
+              In Progress
+            </option>
+            <option value="resolved" className="bg-gray-900">
+              Resolved
+            </option>
+            <option value="closed" className="bg-gray-900">
+              Closed
+            </option>
           </select>
 
           {/* Priority Filter */}
@@ -295,48 +345,62 @@ const AdminFeedback = () => {
             onChange={(e) =>
               setFilters({...filters, priority: e.target.value, page: 1})
             }
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white"
+            className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
           >
-            <option value="">All Priorities</option>
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-            <option value="critical">Critical</option>
+            <option value="" className="bg-gray-900">
+              All Priorities
+            </option>
+            <option value="low" className="bg-gray-900">
+              Low
+            </option>
+            <option value="medium" className="bg-gray-900">
+              Medium
+            </option>
+            <option value="high" className="bg-gray-900">
+              High
+            </option>
+            <option value="critical" className="bg-gray-900">
+              Critical
+            </option>
           </select>
         </div>
       </div>
 
       {/* Feedback List */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white/5 dark:border-white/10 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden">
         {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+          <div className="flex items-center justify-center py-16">
+            <div className="relative">
+              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-violet-600 rounded-2xl flex items-center justify-center animate-pulse">
+                <Loader2 className="w-8 h-8 text-white animate-spin" />
+              </div>
+            </div>
           </div>
         ) : feedbacks.length === 0 ? (
-          <div className="text-center py-12">
-            <MessageSquare className="w-16 h-16 text-gray-600 dark:text-gray-400 dark:text-gray-600 mx-auto mb-4" />
-            <p className="text-gray-600 dark:text-gray-400">
-              No feedback found
-            </p>
+          <div className="text-center py-16">
+            <div className="w-16 h-16 bg-gradient-to-br from-gray-600 to-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <MessageSquare className="w-8 h-8 text-gray-400" />
+            </div>
+            <p className="text-gray-400">No feedback found</p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-200 dark:divide-gray-700">
+          <div className="divide-y divide-white/10">
             {feedbacks.map((feedback) => {
               const statusBadge = getStatusBadge(feedback.status);
               return (
                 <div
                   key={feedback._id}
-                  className="p-6 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                  className="p-6 hover:bg-white/5 transition-colors"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
                         {getTypeIcon(feedback.type)}
-                        <h3 className="font-semibold text-gray-900 dark:text-gray-900 dark:text-white text-lg">
+                        <h3 className="font-semibold text-white text-lg">
                           {feedback.title}
                         </h3>
                         <span
-                          className={`px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${statusBadge.class}`}
+                          className={`px-2.5 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${statusBadge.class}`}
                         >
                           {statusBadge.icon}
                           {statusBadge.label}
@@ -350,11 +414,11 @@ const AdminFeedback = () => {
                         </span>
                       </div>
 
-                      <p className="text-gray-600 dark:text-gray-600 dark:text-gray-400 mb-3">
+                      <p className="text-gray-400 mb-3">
                         {feedback.description}
                       </p>
 
-                      <div className="flex items-center gap-6 text-sm text-gray-500 dark:text-gray-500 dark:text-gray-400">
+                      <div className="flex items-center gap-6 text-sm text-gray-500">
                         <span>
                           By: {feedback.userId?.name || "Unknown"} (
                           {feedback.userId?.email})
@@ -370,11 +434,11 @@ const AdminFeedback = () => {
                       </div>
 
                       {feedback.adminResponse && (
-                        <div className="mt-4 p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg border border-indigo-200 dark:border-indigo-800">
-                          <p className="text-xs font-medium text-indigo-600 dark:text-indigo-400 mb-1">
+                        <div className="mt-4 p-4 bg-purple-500/10 rounded-xl border border-purple-500/20">
+                          <p className="text-xs font-medium text-purple-400 mb-1">
                             Admin Response:
                           </p>
-                          <p className="text-sm text-gray-700 dark:text-gray-300">
+                          <p className="text-sm text-gray-300">
                             {feedback.adminResponse}
                           </p>
                         </div>
@@ -388,7 +452,7 @@ const AdminFeedback = () => {
                           onClick={() =>
                             handleStatusUpdate(feedback._id, "in-progress")
                           }
-                          className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-gray-900 dark:text-white text-sm rounded-lg transition-colors"
+                          className="px-3 py-1.5 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white text-sm rounded-lg font-medium transition-all shadow-lg shadow-yellow-500/25"
                           title="Mark as In Progress"
                         >
                           In Progress
@@ -400,7 +464,7 @@ const AdminFeedback = () => {
                           onClick={() =>
                             handleStatusUpdate(feedback._id, "resolved")
                           }
-                          className="px-3 py-1 bg-green-500 hover:bg-green-600 text-gray-900 dark:text-white text-sm rounded-lg transition-colors"
+                          className="px-3 py-1.5 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white text-sm rounded-lg font-medium transition-all shadow-lg shadow-green-500/25"
                           title="Mark as Resolved"
                         >
                           Resolve
@@ -414,7 +478,7 @@ const AdminFeedback = () => {
                           setStatusUpdate(feedback.status);
                           setShowModalTrue();
                         }}
-                        className="p-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg text-indigo-600 dark:text-indigo-400"
+                        className="p-2 hover:bg-purple-500/20 rounded-xl text-purple-400 transition-colors"
                         title="Add Response"
                       >
                         <MessageCircle className="w-5 h-5" />
@@ -422,7 +486,7 @@ const AdminFeedback = () => {
 
                       <button
                         onClick={() => handleDelete(feedback._id)}
-                        className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-red-600 dark:text-red-400"
+                        className="p-2 hover:bg-red-500/20 rounded-xl text-red-400 transition-colors"
                         title="Delete"
                       >
                         <Trash2 className="w-5 h-5" />
@@ -438,41 +502,51 @@ const AdminFeedback = () => {
 
       {/* Response Modal */}
       {showModal && selectedFeedback && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-2xl w-full p-6 shadow-2xl">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-900/95 backdrop-blur-xl rounded-2xl max-w-2xl w-full p-6 border border-white/10 shadow-2xl">
+            <h3 className="text-xl font-bold text-white mb-4">
               Respond to Feedback
             </h3>
 
-            <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-              <p className="font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
+            <div className="mb-4 p-4 bg-white/5 rounded-xl border border-white/10">
+              <p className="font-semibold text-white mb-2">
                 {selectedFeedback.title}
               </p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-gray-400">
                 {selectedFeedback.description}
               </p>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Status
                 </label>
                 <select
                   value={statusUpdate}
                   onChange={(e) => setStatusUpdate(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white"
+                  className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
                 >
-                  <option value="open">Open</option>
-                  <option value="in-progress">In Progress</option>
-                  <option value="resolved">Resolved</option>
-                  <option value="closed">Closed</option>
-                  <option value="duplicate">Duplicate</option>
+                  <option value="open" className="bg-gray-900">
+                    Open
+                  </option>
+                  <option value="in-progress" className="bg-gray-900">
+                    In Progress
+                  </option>
+                  <option value="resolved" className="bg-gray-900">
+                    Resolved
+                  </option>
+                  <option value="closed" className="bg-gray-900">
+                    Closed
+                  </option>
+                  <option value="duplicate" className="bg-gray-900">
+                    Duplicate
+                  </option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Response
                 </label>
                 <textarea
@@ -480,14 +554,14 @@ const AdminFeedback = () => {
                   onChange={(e) => setResponseText(e.target.value)}
                   rows={4}
                   placeholder="Write your response to the user..."
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-900 dark:text-white resize-none"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all resize-none"
                 />
               </div>
 
-              <div className="flex gap-3">
+              <div className="flex gap-3 pt-2">
                 <button
                   onClick={handleResponseSubmit}
-                  className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-gray-900 dark:text-white py-2 px-4 rounded-lg transition-colors"
+                  className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-2.5 px-4 rounded-xl font-medium transition-all shadow-lg shadow-purple-500/25"
                 >
                   Submit Response
                 </button>
@@ -498,7 +572,7 @@ const AdminFeedback = () => {
                     setResponseText("");
                     setStatusUpdate("");
                   }}
-                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  className="px-6 py-2.5 bg-white/5 border border-white/10 text-gray-300 rounded-xl hover:bg-white/10 transition-all font-medium"
                 >
                   Cancel
                 </button>

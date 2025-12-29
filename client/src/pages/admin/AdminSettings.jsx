@@ -170,16 +170,26 @@ const AdminSettings = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      <div className="flex items-center justify-center h-[60vh]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-gray-500 via-slate-500 to-zinc-500 animate-pulse shadow-2xl shadow-gray-500/30"></div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <SettingsIcon className="w-8 h-8 text-white animate-pulse" />
+            </div>
+          </div>
+          <p className="text-gray-500 dark:text-gray-400 font-medium">
+            Loading settings...
+          </p>
+        </div>
       </div>
     );
   }
 
   if (error && !settings) {
     return (
-      <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-        <p className="text-red-600 dark:text-red-400">{error}</p>
+      <div className="bg-gradient-to-br from-red-500/10 to-rose-500/10 border border-red-500/20 rounded-2xl p-6 backdrop-blur-xl">
+        <p className="text-red-400 font-medium">{error}</p>
       </div>
     );
   }
@@ -187,19 +197,25 @@ const AdminSettings = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
         <div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-gray-500/10 border border-gray-500/20 rounded-full mb-3">
+            <SettingsIcon className="w-3.5 h-3.5 text-gray-400" />
+            <span className="text-xs font-medium text-gray-400">
+              System Config
+            </span>
+          </div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
             System Settings
           </h1>
-          <p className="text-gray-600 dark:text-gray-600 dark:text-gray-400 mt-1">
+          <p className="text-gray-600 dark:text-gray-400 mt-1">
             Configure system-wide settings and preferences
           </p>
         </div>
         <div className="flex gap-3">
           <button
             onClick={fetchData}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-gray-900 dark:text-white rounded-lg hover:bg-gray-700 transition-colors"
+            className="flex items-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-xl transition-all"
           >
             <RefreshCw className="w-4 h-4" />
             Refresh
@@ -207,15 +223,15 @@ const AdminSettings = () => {
           <button
             onClick={handleResetSettings}
             disabled={saving}
-            className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-gray-900 dark:text-white rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2.5 bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/20 text-orange-400 rounded-xl transition-all disabled:opacity-50"
           >
             <AlertCircle className="w-4 h-4" />
-            Reset to Defaults
+            Reset
           </button>
           <button
             onClick={handleSaveSettings}
             disabled={saving}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-gray-900 dark:text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-xl hover:opacity-90 transition-all disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
             {saving ? "Saving..." : "Save Changes"}
@@ -225,135 +241,133 @@ const AdminSettings = () => {
 
       {/* Success/Error Messages */}
       {success && (
-        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 flex items-center gap-3">
-          <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
-          <p className="text-green-600 dark:text-green-400">{success}</p>
+        <div className="bg-green-500/10 border border-green-500/20 rounded-2xl p-4 flex items-center gap-3">
+          <CheckCircle className="w-5 h-5 text-green-400" />
+          <p className="text-green-400">{success}</p>
         </div>
       )}
 
       {error && (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 flex items-center gap-3">
-          <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
-          <p className="text-red-600 dark:text-red-400">{error}</p>
+        <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 flex items-center gap-3">
+          <AlertCircle className="w-5 h-5 text-red-400" />
+          <p className="text-red-400">{error}</p>
         </div>
       )}
 
       {/* System Stats */}
       {systemStats && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:bg-white/[0.07] transition-all">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Active Users
-                </p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mt-1">
+                <p className="text-sm text-gray-400">Active Users</p>
+                <p className="text-2xl font-bold text-white mt-1">
                   {systemStats.users.active}
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-500 dark:text-gray-600 dark:text-gray-400 mt-1">
+                <p className="text-xs text-gray-500 mt-1">
                   of {systemStats.users.total} total
                 </p>
               </div>
-              <Users className="w-10 h-10 text-blue-600" />
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
+                <Users className="w-6 h-6 text-white" />
+              </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:bg-white/[0.07] transition-all">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  AI Usage Today
-                </p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mt-1">
+                <p className="text-sm text-gray-400">AI Usage Today</p>
+                <p className="text-2xl font-bold text-white mt-1">
                   {systemStats.ai.todayUsage}
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-500 dark:text-gray-600 dark:text-gray-400 mt-1">
+                <p className="text-xs text-gray-500 mt-1">
                   {systemStats.ai.totalUsage} total
                 </p>
               </div>
-              <Zap className="w-10 h-10 text-yellow-600" />
+              <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-xl flex items-center justify-center shadow-lg shadow-yellow-500/25">
+                <Zap className="w-6 h-6 text-white" />
+              </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:bg-white/[0.07] transition-all">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Avg Response Time
-                </p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mt-1">
+                <p className="text-sm text-gray-400">Avg Response Time</p>
+                <p className="text-2xl font-bold text-white mt-1">
                   {systemStats.ai.avgResponseTime}ms
                 </p>
               </div>
-              <Clock className="w-10 h-10 text-green-600" />
+              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg shadow-green-500/25">
+                <Clock className="w-6 h-6 text-white" />
+              </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:bg-white/[0.07] transition-all">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Storage Used
-                </p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mt-1">
+                <p className="text-sm text-gray-400">Storage Used</p>
+                <p className="text-2xl font-bold text-white mt-1">
                   {systemStats.storage.used} MB
                 </p>
               </div>
-              <HardDrive className="w-10 h-10 text-purple-600" />
+              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/25">
+                <HardDrive className="w-6 h-6 text-white" />
+              </div>
             </div>
           </div>
         </div>
       )}
 
       {/* Settings Panel */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <div className="text-center py-12">
-          <SettingsIcon className="w-16 h-16 text-gray-600 dark:text-gray-400 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
+      <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
+        <div className="text-center py-8">
+          <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <SettingsIcon className="w-8 h-8 text-gray-400" />
+          </div>
+          <h3 className="text-xl font-semibold text-white mb-2">
             Settings Management
           </h3>
-          <p className="text-gray-600 dark:text-gray-600 dark:text-gray-400 mb-6">
+          <p className="text-gray-400 mb-6">
             Configure system-wide settings and preferences
           </p>
           {settings && (
             <div className="text-left max-w-2xl mx-auto space-y-4">
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                <h4 className="font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
+              <div className="bg-white/5 rounded-xl p-4 border border-white/5">
+                <h4 className="font-semibold text-white mb-2">
                   General Settings
                 </h4>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-gray-400">
                   Site: {settings.siteName}
                 </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-gray-400">
                   Email: {settings.contactEmail}
                 </p>
               </div>
 
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                <h4 className="font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
-                  AI Quotas
-                </h4>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="bg-white/5 rounded-xl p-4 border border-white/5">
+                <h4 className="font-semibold text-white mb-2">AI Quotas</h4>
+                <p className="text-sm text-gray-400">
                   Free: {settings.aiQuota.free.daily} daily,{" "}
                   {settings.aiQuota.free.monthly} monthly
                 </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-gray-400">
                   Premium: {settings.aiQuota.premium.daily} daily,{" "}
                   {settings.aiQuota.premium.monthly} monthly
                 </p>
               </div>
 
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                <h4 className="font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
-                  Features
-                </h4>
-                <div className="grid grid-cols-2 gap-2 text-sm text-gray-600 dark:text-gray-400">
+              <div className="bg-white/5 rounded-xl p-4 border border-white/5">
+                <h4 className="font-semibold text-white mb-2">Features</h4>
+                <div className="grid grid-cols-2 gap-2 text-sm text-gray-400">
                   {Object.entries(settings.features).map(([key, value]) => (
                     <div key={key} className="flex items-center gap-2">
                       {value ? (
-                        <CheckCircle className="w-4 h-4 text-green-600" />
+                        <CheckCircle className="w-4 h-4 text-green-400" />
                       ) : (
-                        <AlertCircle className="w-4 h-4 text-red-600" />
+                        <AlertCircle className="w-4 h-4 text-red-400" />
                       )}
                       <span className="capitalize">
                         {key.replace(/([A-Z])/g, " $1").trim()}
@@ -363,8 +377,8 @@ const AdminSettings = () => {
                 </div>
               </div>
 
-              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-                <p className="text-sm text-blue-900 dark:text-blue-300">
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4">
+                <p className="text-sm text-blue-400">
                   <strong>Note:</strong> Full settings editor with tabs coming
                   soon. Current display shows read-only values.
                 </p>

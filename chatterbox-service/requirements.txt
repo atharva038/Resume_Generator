@@ -1,0 +1,17 @@
+# Chatterbox TTS Service Dependencies
+# For AI Interview text-to-speech functionality
+
+# Core dependencies
+setuptools>=65.0.0
+wheel>=0.38.0
+
+flask>=2.3.0
+flask-cors>=4.0.0
+chatterbox-tts>=0.1.2
+torch>=2.0.0
+torchaudio>=2.0.0
+
+# Note: Chatterbox requires:
+# - Python 3.11 recommended (works on 3.8-3.12, issues with 3.13)
+# - CUDA-capable GPU recommended for best performance
+# - CPU mode is also supported (slower)

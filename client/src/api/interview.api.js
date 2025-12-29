@@ -208,6 +208,43 @@ export const checkVoiceAvailability = async () => {
 };
 
 /**
+ * Transcribe audio to text only (no evaluation)
+ * Used for warm-up/intro phase where we don't need to evaluate the response
+ * @param {File} audioFile - Audio file to transcribe
+ * @returns {Promise<Object>} { success, data: { text, language, duration, wordCount } }
+ */
+export const transcribeAudioOnly = async (audioFile) => {
+  const formData = new FormData();
+  formData.append("audio", audioFile);
+
+  console.log("📤 Transcribing audio (no evaluation):");
+  console.log(
+    "  - audioFile:",
+    audioFile.name,
+    audioFile.size,
+    "bytes",
+    audioFile.type
+  );
+
+  // Call voice service directly for transcription only
+  const voiceServiceUrl =
+    import.meta.env.VITE_VOICE_SERVICE_URL || "http://localhost:5001";
+
+  const response = await fetch(`${voiceServiceUrl}/transcribe`, {
+    method: "POST",
+    body: formData,
+  });
+
+  const data = await response.json();
+
+  if (!response.ok || !data.success) {
+    throw new Error(data.error || "Failed to transcribe audio");
+  }
+
+  return data;
+};
+
+/**
  * Check if text-to-speech (TTS) is available for live mode
  * @returns {Promise<Object>} TTS availability info
  */
@@ -217,13 +254,33 @@ export const checkTTSAvailability = async () => {
 };
 
 /**
- * Synthesize text to speech
+ * Synthesize text to speech - returns binary audio blob (more efficient)
+ * @param {string} text - Text to convert to speech
+ * @param {string} [voiceId] - Optional voice ID
+ * @param {string} [preset] - Optional voice preset (warm, question, acknowledgment, etc.)
+ * @returns {Promise<Blob>} Audio blob (audio/mpeg)
+ */
+export const synthesizeSpeech = async (text, voiceId, preset) => {
+  const response = await api.post(
+    "/voice/tts/synthesize",
+    {text, voiceId, preset},
+    {responseType: "blob"}
+  );
+  return response.data; // Returns Blob directly
+};
+
+/**
+ * Synthesize text to speech - returns base64 JSON (legacy fallback)
  * @param {string} text - Text to convert to speech
  * @param {string} [voiceId] - Optional voice ID
  * @returns {Promise<Object>} { audioBase64, contentType, estimatedDuration }
  */
-export const synthesizeSpeech = async (text, voiceId) => {
-  const response = await api.post("/voice/tts/synthesize", {text, voiceId});
+export const synthesizeSpeechBase64 = async (text, voiceId, preset) => {
+  const response = await api.post("/voice/tts/synthesize-json", {
+    text,
+    voiceId,
+    preset,
+  });
   return response.data;
 };
 
@@ -234,6 +291,21 @@ export const synthesizeSpeech = async (text, voiceId) => {
 export const getTTSVoices = async () => {
   const response = await api.get("/voice/tts/voices");
   return response.data;
+};
+
+/**
+ * Test voice with sample phrases - returns binary audio blob
+ * @param {string} [preset] - Voice preset (greeting, question, acknowledgment, transition, closing)
+ * @param {string} [customText] - Custom text to synthesize
+ * @returns {Promise<Blob>} Audio blob (audio/mpeg)
+ */
+export const testVoice = async (preset, customText) => {
+  const response = await api.post(
+    "/voice/tts/test",
+    {preset, customText},
+    {responseType: "blob"}
+  );
+  return response.data; // Returns Blob directly
 };
 
 export default {
@@ -250,7 +322,10 @@ export default {
   getHistory,
   getStats,
   checkVoiceAvailability,
+  transcribeAudioOnly,
   checkTTSAvailability,
   synthesizeSpeech,
+  synthesizeSpeechBase64,
   getTTSVoices,
+  testVoice,
 };

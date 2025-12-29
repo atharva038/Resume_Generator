@@ -225,22 +225,28 @@ const UserManagement = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-cyan-500/10 border border-cyan-500/20 rounded-full mb-3">
+            <UserIcon className="w-3.5 h-3.5 text-cyan-400" />
+            <span className="text-xs font-medium text-cyan-400">
+              User Management
+            </span>
+          </div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
             User Management
           </h1>
-          <p className="text-gray-600 dark:text-gray-600 dark:text-gray-400 mt-1">
+          <p className="text-gray-600 dark:text-gray-400 mt-1">
             Manage users, roles, and permissions
           </p>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+      <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {/* Search */}
           <div className="md:col-span-2">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-600 dark:text-gray-400 w-5 h-5" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
                 placeholder="Search by name or email..."
@@ -252,7 +258,7 @@ const UserManagement = () => {
                     page: 1,
                   }))
                 }
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white"
+                className="w-full pl-10 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 text-white placeholder-gray-500 transition-all"
               />
             </div>
           </div>
@@ -264,11 +270,17 @@ const UserManagement = () => {
               onChange={(e) =>
                 setFilters((prev) => ({...prev, role: e.target.value, page: 1}))
               }
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white"
+              className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-purple-500/50 text-white transition-all"
             >
-              <option value="">All Roles</option>
-              <option value="user">User</option>
-              <option value="admin">Admin</option>
+              <option value="" className="bg-[#1a1a1a]">
+                All Roles
+              </option>
+              <option value="user" className="bg-[#1a1a1a]">
+                User
+              </option>
+              <option value="admin" className="bg-[#1a1a1a]">
+                Admin
+              </option>
             </select>
           </div>
 
@@ -283,69 +295,76 @@ const UserManagement = () => {
                   page: 1,
                 }))
               }
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white"
+              className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-purple-500/50 text-white transition-all"
             >
-              <option value="">All Status</option>
-              <option value="active">Active</option>
-              <option value="disabled">Disabled</option>
+              <option value="" className="bg-[#1a1a1a]">
+                All Status
+              </option>
+              <option value="active" className="bg-[#1a1a1a]">
+                Active
+              </option>
+              <option value="disabled" className="bg-[#1a1a1a]">
+                Disabled
+              </option>
             </select>
           </div>
         </div>
       </div>
 
       {/* Users Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-blue-500 animate-pulse"></div>
           </div>
         ) : error ? (
-          <div className="p-6 text-center text-red-600 dark:text-red-400">
-            {error}
-          </div>
+          <div className="p-6 text-center text-red-400">{error}</div>
         ) : users.length === 0 ? (
-          <div className="p-6 text-center text-gray-500 dark:text-gray-500 dark:text-gray-400">
-            No users found
-          </div>
+          <div className="p-6 text-center text-gray-400">No users found</div>
         ) : (
           <>
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50 dark:bg-gray-700">
+                <thead className="bg-white/5 border-b border-white/10">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-500 dark:text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                       User
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-500 dark:text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                       Role
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-500 dark:text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-500 dark:text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                       Stats
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-500 dark:text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                       Joined
                     </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-500 dark:text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                <tbody className="divide-y divide-white/5">
                   {users.map((user) => (
                     <tr
                       key={user._id}
-                      className="hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                      className="hover:bg-white/5 transition-colors"
                     >
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div>
-                          <div className="text-sm font-medium text-gray-900 dark:text-white">
-                            {user.name}
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white font-medium">
+                            {user.name?.charAt(0) || "U"}
                           </div>
-                          <div className="text-sm text-gray-500 dark:text-gray-500 dark:text-gray-400">
-                            {user.email}
+                          <div>
+                            <div className="text-sm font-medium text-white">
+                              {user.name}
+                            </div>
+                            <div className="text-sm text-gray-400">
+                              {user.email}
+                            </div>
                           </div>
                         </div>
                       </td>
@@ -355,31 +374,44 @@ const UserManagement = () => {
                           onChange={(e) =>
                             handleRoleChange(user._id, e.target.value)
                           }
-                          className="text-sm border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-1 dark:bg-gray-700 dark:text-white"
+                          className="text-sm bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-white"
                         >
-                          <option value="user">User</option>
-                          <option value="admin">Admin</option>
+                          <option value="user" className="bg-[#1a1a1a]">
+                            User
+                          </option>
+                          <option value="admin" className="bg-[#1a1a1a]">
+                            Admin
+                          </option>
                         </select>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
-                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          className={`px-2.5 py-1 inline-flex text-xs leading-5 font-medium rounded-full ${
                             user.status === "active"
-                              ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
-                              : "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400"
+                              ? "bg-green-500/10 text-green-400 border border-green-500/20"
+                              : "bg-red-500/10 text-red-400 border border-red-500/20"
                           }`}
                         >
                           {user.status}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-500 dark:text-gray-400">
-                        <div>
-                          {user.resumeCount || 0} resumes
-                          <br />
-                          {user.aiUsageCount || 0} AI calls
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span className="text-purple-400">
+                              {user.resumeCount || 0}
+                            </span>{" "}
+                            resumes
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-blue-400">
+                              {user.aiUsageCount || 0}
+                            </span>{" "}
+                            AI calls
+                          </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-500 dark:text-gray-400">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
                         {new Date(user.createdAt).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -391,10 +423,10 @@ const UserManagement = () => {
                                 user.status === "active" ? "disabled" : "active"
                               )
                             }
-                            className={`p-2 rounded-lg transition-colors ${
+                            className={`p-2 rounded-lg transition-all ${
                               user.status === "active"
-                                ? "text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
-                                : "text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20"
+                                ? "text-red-400 hover:bg-red-500/10 border border-transparent hover:border-red-500/20"
+                                : "text-green-400 hover:bg-green-500/10 border border-transparent hover:border-green-500/20"
                             }`}
                             title={
                               user.status === "active" ? "Disable" : "Enable"
@@ -410,7 +442,7 @@ const UserManagement = () => {
                             onClick={() =>
                               handleDeleteUser(user._id, user.name)
                             }
-                            className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                            className="p-2 text-red-400 hover:bg-red-500/10 border border-transparent hover:border-red-500/20 rounded-lg transition-all"
                             title="Delete"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -424,8 +456,8 @@ const UserManagement = () => {
             </div>
 
             {/* Pagination */}
-            <div className="bg-gray-50 dark:bg-gray-700 px-6 py-4 flex items-center justify-between border-t border-gray-200 dark:border-gray-600">
-              <div className="text-sm text-gray-700 dark:text-gray-300">
+            <div className="bg-white/5 px-6 py-4 flex items-center justify-between border-t border-white/10">
+              <div className="text-sm text-gray-400">
                 Showing {(pagination.page - 1) * filters.limit + 1} to{" "}
                 {Math.min(pagination.page * filters.limit, pagination.total)} of{" "}
                 {pagination.total} users
@@ -434,19 +466,19 @@ const UserManagement = () => {
                 <button
                   onClick={() => handlePageChange(pagination.page - 1)}
                   disabled={pagination.page === 1}
-                  className="p-2 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                  className="p-2 bg-white/5 border border-white/10 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/10 transition-all"
                 >
-                  <ChevronLeft className="w-4 h-4" />
+                  <ChevronLeft className="w-4 h-4 text-gray-400" />
                 </button>
-                <span className="text-sm text-gray-700 dark:text-gray-300">
+                <span className="text-sm text-gray-300 px-3">
                   Page {pagination.page} of {pagination.totalPages}
                 </span>
                 <button
                   onClick={() => handlePageChange(pagination.page + 1)}
                   disabled={pagination.page === pagination.totalPages}
-                  className="p-2 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                  className="p-2 bg-white/5 border border-white/10 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/10 transition-all"
                 >
-                  <ChevronRight className="w-4 h-4" />
+                  <ChevronRight className="w-4 h-4 text-gray-400" />
                 </button>
               </div>
             </div>

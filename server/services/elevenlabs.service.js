@@ -10,17 +10,78 @@ import fetch from "node-fetch";
 const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY;
 const ELEVENLABS_API_URL = "https://api.elevenlabs.io/v1";
 
-// Default voice - professional, clear voice good for interviews
-// You can find more voices at https://api.elevenlabs.io/v1/voices
-const DEFAULT_VOICE_ID =
-  process.env.ELEVENLABS_VOICE_ID || "pNInz6obpgDQGcFmaJgB"; // "Adam" - clear male voice
+// Voice IDs
+const VOICE_IDS = {
+  rachel: "21m00Tcm4TlvDq8ikWAM", // Rachel - warm, professional female voice (primary)
+  adam: "pNInz6obpgDQGcFmaJgB", // Adam - clear male voice (backup)
+};
 
-// Voice settings for interview context
+// Default voice - Rachel (warm, professional female voice - perfect for interviews)
+const DEFAULT_VOICE_ID = process.env.ELEVENLABS_VOICE_ID || VOICE_IDS.rachel;
+
+// Backup voice if primary fails
+const BACKUP_VOICE_ID = VOICE_IDS.adam;
+
+// Voice settings optimized for natural, expressive interview conversation
+// Lower stability = more emotional variation, Higher style = more expressive
 const VOICE_SETTINGS = {
-  stability: 0.75, // More stable for professional tone
-  similarity_boost: 0.75, // Balance between clarity and naturalness
-  style: 0.5, // Moderate expressiveness
-  use_speaker_boost: true,
+  stability: 0.4, // Lower for more emotional variation and natural speech patterns
+  similarity_boost: 0.75, // Good balance - maintains voice character while allowing expression
+  style: 0.65, // Higher expressiveness - sounds more engaged and interested
+  use_speaker_boost: true, // Enhance voice clarity
+};
+
+// Alternative settings for different emotional contexts
+export const VOICE_PRESETS = {
+  // Warm and enthusiastic - for greetings and positive feedback
+  warm: {
+    stability: 0.35, // Very expressive
+    similarity_boost: 0.7,
+    style: 0.75, // High enthusiasm
+    use_speaker_boost: true,
+  },
+  // Curious and engaged - for asking questions
+  question: {
+    stability: 0.45,
+    similarity_boost: 0.75,
+    style: 0.6, // Sounds interested and curious
+    use_speaker_boost: true,
+  },
+  // Encouraging and positive - for acknowledgments
+  acknowledgment: {
+    stability: 0.4,
+    similarity_boost: 0.8,
+    style: 0.7, // Warm and appreciative tone
+    use_speaker_boost: true,
+  },
+  // Friendly transition
+  transition: {
+    stability: 0.5,
+    similarity_boost: 0.75,
+    style: 0.55,
+    use_speaker_boost: true,
+  },
+  // Warm closing - grateful and friendly
+  closing: {
+    stability: 0.35,
+    similarity_boost: 0.75,
+    style: 0.8, // Very warm and appreciative
+    use_speaker_boost: true,
+  },
+  // Professional but friendly (default fallback)
+  professional: {
+    stability: 0.5,
+    similarity_boost: 0.75,
+    style: 0.5,
+    use_speaker_boost: true,
+  },
+  // Supportive and calm
+  supportive: {
+    stability: 0.45,
+    similarity_boost: 0.8,
+    style: 0.6,
+    use_speaker_boost: true,
+  },
 };
 
 /**
@@ -70,7 +131,9 @@ export const getVoices = async () => {
  * @param {string} text - Text to convert to speech
  * @param {Object} options - Optional settings
  * @param {string} options.voiceId - Voice ID to use
+ * @param {string} options.preset - Voice preset (warm, professional, supportive)
  * @param {string} options.model - Model to use (eleven_monolingual_v1, eleven_multilingual_v2)
+ * @param {boolean} options.useBackup - Whether to try backup voice on failure
  * @returns {Promise<Buffer>} Audio buffer (MP3)
  */
 export const textToSpeech = async (text, options = {}) => {
@@ -84,12 +147,21 @@ export const textToSpeech = async (text, options = {}) => {
 
   const voiceId = options.voiceId || DEFAULT_VOICE_ID;
   const model = options.model || "eleven_monolingual_v1";
+  const useBackup = options.useBackup !== false; // Default to true
 
-  try {
-    console.log(`🔊 Synthesizing speech: "${text.substring(0, 50)}..."`);
+  // Get voice settings - use preset if specified, otherwise default
+  const voiceSettings =
+    options.preset && VOICE_PRESETS[options.preset]
+      ? VOICE_PRESETS[options.preset]
+      : VOICE_SETTINGS;
+
+  const synthesize = async (vId) => {
+    console.log(
+      `🔊 Synthesizing speech with voice ${vId}: "${text.substring(0, 50)}..."`
+    );
 
     const response = await fetch(
-      `${ELEVENLABS_API_URL}/text-to-speech/${voiceId}`,
+      `${ELEVENLABS_API_URL}/text-to-speech/${vId}`,
       {
         method: "POST",
         headers: {
@@ -100,7 +172,7 @@ export const textToSpeech = async (text, options = {}) => {
         body: JSON.stringify({
           text,
           model_id: model,
-          voice_settings: VOICE_SETTINGS,
+          voice_settings: voiceSettings,
         }),
       }
     );
@@ -116,8 +188,24 @@ export const textToSpeech = async (text, options = {}) => {
     console.log(`✅ Speech synthesized: ${audioBuffer.length} bytes`);
 
     return audioBuffer;
+  };
+
+  try {
+    return await synthesize(voiceId);
   } catch (error) {
-    console.error("❌ Text-to-speech error:", error);
+    console.error("❌ Text-to-speech error with primary voice:", error.message);
+
+    // Try backup voice if enabled and we weren't already using it
+    if (useBackup && voiceId !== BACKUP_VOICE_ID) {
+      console.log("🔄 Trying backup voice (Adam)...");
+      try {
+        return await synthesize(BACKUP_VOICE_ID);
+      } catch (backupError) {
+        console.error("❌ Backup voice also failed:", backupError.message);
+        throw error; // Throw original error
+      }
+    }
+
     throw error;
   }
 };
@@ -126,7 +214,7 @@ export const textToSpeech = async (text, options = {}) => {
  * Convert text to speech and return as base64
  * @param {string} text - Text to convert
  * @param {Object} options - Optional settings
- * @returns {Promise<Object>} { audioBase64, contentType, duration }
+ * @returns {Promise<Object>} { audioBase64, contentType, duration, voiceId }
  */
 export const textToSpeechBase64 = async (text, options = {}) => {
   const audioBuffer = await textToSpeech(text, options);
@@ -136,6 +224,7 @@ export const textToSpeechBase64 = async (text, options = {}) => {
     contentType: "audio/mpeg",
     // Estimate duration (rough: 150 words per minute, ~5 chars per word)
     estimatedDuration: Math.ceil((text.length / 5 / 150) * 60),
+    voiceId: options.voiceId || DEFAULT_VOICE_ID,
   };
 };
 
@@ -238,4 +327,5 @@ export default {
   textToSpeechBase64,
   textToSpeechStream,
   getUsage,
+  VOICE_PRESETS,
 };
