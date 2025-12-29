@@ -1,5 +1,6 @@
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
+import SEO from "../components/common/SEO";
 import {
   Target,
   Sparkles,
@@ -370,329 +371,340 @@ const Templates = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black">
-      <div className="container mx-auto px-4 py-12">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-zinc-900 rounded-full mb-4 border border-gray-200 dark:border-zinc-800">
-            <Layout className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-            <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-              11 Professional Templates
-            </span>
-          </div>
-          <h1 className="text-4xl sm:text-5xl font-bold mb-4 text-gray-900 dark:text-white">
-            Choose Your Resume Template
-          </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            Select from professionally designed templates, each optimized for
-            ATS systems and tailored to different career paths
-          </p>
-        </div>
+    <>
+      <SEO
+        title="Professional Resume Templates - ATS-Optimized Designs"
+        description="Choose from 11+ professional, ATS-optimized resume templates. Modern, classic, creative, and technical designs to match your career goals."
+        keywords="resume templates, professional resume, ATS templates, CV templates, modern resume design, resume layout, professional CV"
+        url="https://www.smartnshine.app/templates"
+      />
 
-        {/* Category Filter */}
-        <div className="flex justify-center mb-10 flex-wrap gap-3">
-          <div className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 mr-2">
-            <Filter className="w-5 h-5" />
-            <span className="font-semibold">Filter:</span>
+      <div className="min-h-screen bg-white dark:bg-black">
+        <div className="container mx-auto px-4 py-12">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-zinc-900 rounded-full mb-4 border border-gray-200 dark:border-zinc-800">
+              <Layout className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+              <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                11 Professional Templates
+              </span>
+            </div>
+            <h1 className="text-4xl sm:text-5xl font-bold mb-4 text-gray-900 dark:text-white">
+              Choose Your Resume Template
+            </h1>
+            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+              Select from professionally designed templates, each optimized for
+              ATS systems and tailored to different career paths
+            </p>
           </div>
-          {categories.map((category) => (
-            <button
-              key={category}
-              onClick={() => setSelectedCategory(category)}
-              className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
-                selectedCategory === category
-                  ? "bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white shadow-lg scale-105"
-                  : "bg-white dark:bg-zinc-900 backdrop-blur-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-800 hover:shadow-md border border-gray-200 dark:border-zinc-700"
-              }`}
-            >
-              {category}
-            </button>
-          ))}
-        </div>
 
-        {/* Templates Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-12">
-          {filteredTemplates.map((template) => (
-            <div
-              key={template.id}
-              className="group bg-white dark:bg-zinc-950 rounded-xl border border-gray-200 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-700 transition-all duration-200 overflow-hidden cursor-pointer"
-              onClick={() => {
-                setSelectedTemplate(template);
-                // Set default color theme for this template
-                const themes = TEMPLATE_COLOR_THEMES[template.id];
-                if (themes && themes.length > 0) {
-                  setSelectedColorTheme(themes[0].id);
-                } else {
-                  setSelectedColorTheme(null);
-                }
-              }}
-            >
-              {/* Template Preview */}
-              <div
-                className="relative bg-gray-50 dark:bg-zinc-900 overflow-hidden"
-                style={{height: "420px"}}
+          {/* Category Filter */}
+          <div className="flex justify-center mb-10 flex-wrap gap-3">
+            <div className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 mr-2">
+              <Filter className="w-5 h-5" />
+              <span className="font-semibold">Filter:</span>
+            </div>
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
+                  selectedCategory === category
+                    ? "bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white shadow-lg scale-105"
+                    : "bg-white dark:bg-zinc-900 backdrop-blur-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-800 hover:shadow-md border border-gray-200 dark:border-zinc-700"
+                }`}
               >
-                <div
-                  className="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none"
-                  style={{
-                    width: "210mm",
-                    height: "297mm",
-                    transform: "translateX(-50%) scale(0.35)",
-                    transformOrigin: "top center",
-                  }}
-                >
-                  <template.component resumeData={sampleResumeData} />
-                </div>
-                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+                {category}
+              </button>
+            ))}
+          </div>
 
-                {/* Overlay Preview Button */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                  <button className="flex items-center gap-2 bg-white dark:bg-zinc-900 text-gray-900 dark:text-white px-6 py-3 rounded-lg font-semibold border border-gray-200 dark:border-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
-                    <Eye className="w-5 h-5" />
-                    Preview
+          {/* Templates Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-12">
+            {filteredTemplates.map((template) => (
+              <div
+                key={template.id}
+                className="group bg-white dark:bg-zinc-950 rounded-xl border border-gray-200 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-700 transition-all duration-200 overflow-hidden cursor-pointer"
+                onClick={() => {
+                  setSelectedTemplate(template);
+                  // Set default color theme for this template
+                  const themes = TEMPLATE_COLOR_THEMES[template.id];
+                  if (themes && themes.length > 0) {
+                    setSelectedColorTheme(themes[0].id);
+                  } else {
+                    setSelectedColorTheme(null);
+                  }
+                }}
+              >
+                {/* Template Preview */}
+                <div
+                  className="relative bg-gray-50 dark:bg-zinc-900 overflow-hidden"
+                  style={{height: "420px"}}
+                >
+                  <div
+                    className="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none"
+                    style={{
+                      width: "210mm",
+                      height: "297mm",
+                      transform: "translateX(-50%) scale(0.35)",
+                      transformOrigin: "top center",
+                    }}
+                  >
+                    <template.component resumeData={sampleResumeData} />
+                  </div>
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+
+                  {/* Overlay Preview Button */}
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    <button className="flex items-center gap-2 bg-white dark:bg-zinc-900 text-gray-900 dark:text-white px-6 py-3 rounded-lg font-semibold border border-gray-200 dark:border-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
+                      <Eye className="w-5 h-5" />
+                      Preview
+                    </button>
+                  </div>
+
+                  {/* ATS Score Badge */}
+                  <div className="absolute top-3 right-3 bg-white dark:bg-zinc-900 px-3 py-2 rounded-lg border border-gray-200 dark:border-zinc-800">
+                    <div className="flex items-center gap-2">
+                      <Target className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                      <span className="text-xs font-semibold text-gray-600 dark:text-gray-400">
+                        ATS
+                      </span>
+                      <span
+                        className={`text-lg font-bold ${
+                          template.atsScore >= 95
+                            ? "text-green-500"
+                            : template.atsScore >= 90
+                              ? "text-blue-500"
+                              : "text-orange-500"
+                        }`}
+                      >
+                        {template.atsScore}%
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Category Badge */}
+                  <div className="absolute top-3 left-3">
+                    <span className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-semibold px-3 py-1.5 rounded-lg">
+                      {template.category}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Template Info */}
+                <div className="p-5">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                    {template.name}
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
+                    {template.description}
+                  </p>
+
+                  {/* Features */}
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {template.features.map((feature, idx) => (
+                      <span
+                        key={idx}
+                        className="inline-flex items-center gap-1 text-xs bg-gray-100 dark:bg-zinc-900 text-gray-700 dark:text-gray-300 px-3 py-1.5 rounded-lg font-medium border border-gray-200 dark:border-zinc-800"
+                      >
+                        <CheckCircle className="w-3 h-3" />
+                        {feature}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Color Palette */}
+                  <div className="flex items-center gap-2 mb-4">
+                    <Palette className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                    <div className="flex gap-2">
+                      {template.colors.map((color, idx) => (
+                        <div
+                          key={idx}
+                          className="w-6 h-6 rounded-lg border-2 border-gray-300 dark:border-gray-600 shadow-sm"
+                          style={{backgroundColor: color}}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Select Button */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSelectTemplate(template.id);
+                    }}
+                    className="w-full flex items-center justify-center gap-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-semibold py-3 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors"
+                  >
+                    Use Template
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Template Preview Modal */}
+          {selectedTemplate && (
+            <div
+              className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+              onClick={() => setSelectedTemplate(null)}
+            >
+              <div
+                className="bg-white dark:bg-zinc-950 rounded-xl max-w-5xl w-full max-h-[90vh] overflow-hidden border border-gray-200 dark:border-zinc-800"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Modal Header */}
+                <div className="bg-white dark:bg-zinc-950 p-6 flex justify-between items-center border-b border-gray-200 dark:border-zinc-800">
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+                      {selectedTemplate.name} Template
+                    </h2>
+                    <p className="text-gray-600 dark:text-gray-400">
+                      {selectedTemplate.description}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setSelectedTemplate(null)}
+                    className="text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-900 p-2 rounded-lg transition-colors"
+                  >
+                    <X className="w-8 h-8" />
                   </button>
                 </div>
 
-                {/* ATS Score Badge */}
-                <div className="absolute top-3 right-3 bg-white dark:bg-zinc-900 px-3 py-2 rounded-lg border border-gray-200 dark:border-zinc-800">
-                  <div className="flex items-center gap-2">
-                    <Target className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                    <span className="text-xs font-semibold text-gray-600 dark:text-gray-400">
-                      ATS
-                    </span>
-                    <span
-                      className={`text-lg font-bold ${
-                        template.atsScore >= 95
-                          ? "text-green-500"
-                          : template.atsScore >= 90
-                            ? "text-blue-500"
-                            : "text-orange-500"
-                      }`}
-                    >
-                      {template.atsScore}%
-                    </span>
+                {/* Color Theme Selector - Show if template supports color themes */}
+                {TEMPLATE_COLOR_THEMES[selectedTemplate.id] && (
+                  <div className="px-6 py-4 bg-gray-50 dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-800">
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                        🎨 Color Theme:
+                      </span>
+                      {TEMPLATE_COLOR_THEMES[selectedTemplate.id].map(
+                        (theme) => (
+                          <button
+                            key={theme.id}
+                            onClick={() => setSelectedColorTheme(theme.id)}
+                            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                              selectedColorTheme === theme.id
+                                ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-gray-900 dark:border-white"
+                                : "bg-white dark:bg-zinc-950 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-800 border border-gray-200 dark:border-zinc-800"
+                            }`}
+                          >
+                            <div
+                              className="w-4 h-4 rounded-full border-2 border-gray-300 dark:border-zinc-700"
+                              style={{backgroundColor: theme.primary}}
+                            />
+                            <span className="text-sm font-medium">
+                              {theme.name}
+                            </span>
+                          </button>
+                        )
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Modal Body - Template Preview */}
+                <div className="overflow-auto max-h-[60vh] p-6 bg-gray-50 dark:bg-zinc-900">
+                  <div
+                    className="scale-75 origin-top mx-auto"
+                    style={{width: "210mm"}}
+                  >
+                    <selectedTemplate.component
+                      resumeData={{
+                        ...sampleResumeData,
+                        colorTheme: selectedColorTheme,
+                      }}
+                    />
                   </div>
                 </div>
 
-                {/* Category Badge */}
-                <div className="absolute top-3 left-3">
-                  <span className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-semibold px-3 py-1.5 rounded-lg">
-                    {template.category}
-                  </span>
-                </div>
-              </div>
-
-              {/* Template Info */}
-              <div className="p-5">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                  {template.name}
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
-                  {template.description}
-                </p>
-
-                {/* Features */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {template.features.map((feature, idx) => (
-                    <span
-                      key={idx}
-                      className="inline-flex items-center gap-1 text-xs bg-gray-100 dark:bg-zinc-900 text-gray-700 dark:text-gray-300 px-3 py-1.5 rounded-lg font-medium border border-gray-200 dark:border-zinc-800"
-                    >
-                      <CheckCircle className="w-3 h-3" />
-                      {feature}
-                    </span>
-                  ))}
-                </div>
-
-                {/* Color Palette */}
-                <div className="flex items-center gap-2 mb-4">
-                  <Palette className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                  <div className="flex gap-2">
-                    {template.colors.map((color, idx) => (
-                      <div
-                        key={idx}
-                        className="w-6 h-6 rounded-lg border-2 border-gray-300 dark:border-gray-600 shadow-sm"
-                        style={{backgroundColor: color}}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                {/* Select Button */}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleSelectTemplate(template.id);
-                  }}
-                  className="w-full flex items-center justify-center gap-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-semibold py-3 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors"
-                >
-                  Use Template
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Template Preview Modal */}
-        {selectedTemplate && (
-          <div
-            className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
-            onClick={() => setSelectedTemplate(null)}
-          >
-            <div
-              className="bg-white dark:bg-zinc-950 rounded-xl max-w-5xl w-full max-h-[90vh] overflow-hidden border border-gray-200 dark:border-zinc-800"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Modal Header */}
-              <div className="bg-white dark:bg-zinc-950 p-6 flex justify-between items-center border-b border-gray-200 dark:border-zinc-800">
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
-                    {selectedTemplate.name} Template
-                  </h2>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    {selectedTemplate.description}
-                  </p>
-                </div>
-                <button
-                  onClick={() => setSelectedTemplate(null)}
-                  className="text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-900 p-2 rounded-lg transition-colors"
-                >
-                  <X className="w-8 h-8" />
-                </button>
-              </div>
-
-              {/* Color Theme Selector - Show if template supports color themes */}
-              {TEMPLATE_COLOR_THEMES[selectedTemplate.id] && (
-                <div className="px-6 py-4 bg-gray-50 dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-800">
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                      🎨 Color Theme:
-                    </span>
-                    {TEMPLATE_COLOR_THEMES[selectedTemplate.id].map((theme) => (
-                      <button
-                        key={theme.id}
-                        onClick={() => setSelectedColorTheme(theme.id)}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-                          selectedColorTheme === theme.id
-                            ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-gray-900 dark:border-white"
-                            : "bg-white dark:bg-zinc-950 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-800 border border-gray-200 dark:border-zinc-800"
+                {/* Modal Footer */}
+                <div className="p-6 bg-white dark:bg-zinc-950 border-t border-gray-200 dark:border-zinc-800 flex flex-col sm:flex-row justify-between items-center gap-4">
+                  <div className="flex items-center gap-4 flex-wrap">
+                    <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-800">
+                      <Target className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                      <span className="text-sm font-semibold text-gray-600 dark:text-gray-400">
+                        ATS Score:
+                      </span>
+                      <span
+                        className={`text-xl font-bold ${
+                          selectedTemplate.atsScore >= 95
+                            ? "text-green-500"
+                            : selectedTemplate.atsScore >= 90
+                              ? "text-blue-500"
+                              : "text-orange-500"
                         }`}
                       >
-                        <div
-                          className="w-4 h-4 rounded-full border-2 border-gray-300 dark:border-zinc-700"
-                          style={{backgroundColor: theme.primary}}
-                        />
-                        <span className="text-sm font-medium">
-                          {theme.name}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Modal Body - Template Preview */}
-              <div className="overflow-auto max-h-[60vh] p-6 bg-gray-50 dark:bg-zinc-900">
-                <div
-                  className="scale-75 origin-top mx-auto"
-                  style={{width: "210mm"}}
-                >
-                  <selectedTemplate.component
-                    resumeData={{
-                      ...sampleResumeData,
-                      colorTheme: selectedColorTheme,
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* Modal Footer */}
-              <div className="p-6 bg-white dark:bg-zinc-950 border-t border-gray-200 dark:border-zinc-800 flex flex-col sm:flex-row justify-between items-center gap-4">
-                <div className="flex items-center gap-4 flex-wrap">
-                  <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-800">
-                    <Target className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                    <span className="text-sm font-semibold text-gray-600 dark:text-gray-400">
-                      ATS Score:
-                    </span>
-                    <span
-                      className={`text-xl font-bold ${
-                        selectedTemplate.atsScore >= 95
-                          ? "text-green-500"
-                          : selectedTemplate.atsScore >= 90
-                            ? "text-blue-500"
-                            : "text-orange-500"
-                      }`}
-                    >
-                      {selectedTemplate.atsScore}%
+                        {selectedTemplate.atsScore}%
+                      </span>
+                    </div>
+                    <span className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-semibold px-4 py-2 rounded-lg">
+                      {selectedTemplate.category}
                     </span>
                   </div>
-                  <span className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-semibold px-4 py-2 rounded-lg">
-                    {selectedTemplate.category}
-                  </span>
+                  <button
+                    onClick={() => handleSelectTemplate(selectedTemplate.id)}
+                    className="flex items-center gap-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-semibold px-8 py-3 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors"
+                  >
+                    Use This Template
+                    <ArrowRight className="w-5 h-5" />
+                  </button>
                 </div>
-                <button
-                  onClick={() => handleSelectTemplate(selectedTemplate.id)}
-                  className="flex items-center gap-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-semibold px-8 py-3 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors"
-                >
-                  Use This Template
-                  <ArrowRight className="w-5 h-5" />
-                </button>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Info Section */}
-        <div className="mt-16 bg-white dark:bg-zinc-950 rounded-xl p-8 sm:p-12 border border-gray-200 dark:border-zinc-800">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-3 text-center text-gray-900 dark:text-white">
-            Why Our Templates Stand Out
-          </h2>
-          <p className="text-center text-gray-600 dark:text-gray-400 mb-10 max-w-2xl mx-auto">
-            Professionally crafted templates designed to help you land your
-            dream job
-          </p>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center group">
-              <div className="w-16 h-16 mx-auto mb-4 bg-green-500 rounded-xl flex items-center justify-center group-hover:bg-green-600 transition-colors">
-                <Target className="w-8 h-8 text-white" />
+          {/* Info Section */}
+          <div className="mt-16 bg-white dark:bg-zinc-950 rounded-xl p-8 sm:p-12 border border-gray-200 dark:border-zinc-800">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-3 text-center text-gray-900 dark:text-white">
+              Why Our Templates Stand Out
+            </h2>
+            <p className="text-center text-gray-600 dark:text-gray-400 mb-10 max-w-2xl mx-auto">
+              Professionally crafted templates designed to help you land your
+              dream job
+            </p>
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="text-center group">
+                <div className="w-16 h-16 mx-auto mb-4 bg-green-500 rounded-xl flex items-center justify-center group-hover:bg-green-600 transition-colors">
+                  <Target className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                  ATS-Optimized
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400">
+                  All templates score 85%+ on ATS systems, ensuring your resume
+                  gets past automated screening
+                </p>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                ATS-Optimized
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400">
-                All templates score 85%+ on ATS systems, ensuring your resume
-                gets past automated screening
-              </p>
-            </div>
-            <div className="text-center group">
-              <div className="w-16 h-16 mx-auto mb-4 bg-purple-500 rounded-xl flex items-center justify-center group-hover:bg-purple-600 transition-colors">
-                <Palette className="w-8 h-8 text-white" />
+              <div className="text-center group">
+                <div className="w-16 h-16 mx-auto mb-4 bg-purple-500 rounded-xl flex items-center justify-center group-hover:bg-purple-600 transition-colors">
+                  <Palette className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                  Diverse Designs
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400">
+                  From corporate executive to creative designer, find the
+                  perfect match for your career path
+                </p>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                Diverse Designs
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400">
-                From corporate executive to creative designer, find the perfect
-                match for your career path
-              </p>
-            </div>
-            <div className="text-center group">
-              <div className="w-16 h-16 mx-auto mb-4 bg-blue-500 rounded-xl flex items-center justify-center group-hover:bg-blue-600 transition-colors">
-                <Zap className="w-8 h-8 text-white" />
+              <div className="text-center group">
+                <div className="w-16 h-16 mx-auto mb-4 bg-blue-500 rounded-xl flex items-center justify-center group-hover:bg-blue-600 transition-colors">
+                  <Zap className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                  Instant Switching
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Try different templates with one click - your content stays,
+                  only the design changes
+                </p>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                Instant Switching
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400">
-                Try different templates with one click - your content stays,
-                only the design changes
-              </p>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

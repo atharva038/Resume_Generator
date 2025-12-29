@@ -45,7 +45,7 @@ Allow: /refund-policy
 Allow: /shipping-policy
 
 # Sitemap location
-Sitemap: https://smartnshine.app/sitemap.xml
+Sitemap: https://www.smartnshine.app/sitemap.xml
 
 # Crawl delay to be nice to servers
 Crawl-delay: 1
