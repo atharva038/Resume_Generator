@@ -290,7 +290,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
 
       {/* Current Plan Card - Only show for Free tier */}
       {subscription?.tier === "free" && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-6">
+        <div className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl shadow-lg dark:shadow-2xl border border-gray-200/50 dark:border-white/10 p-6 mb-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
             <div className="flex items-center mb-4 md:mb-0">
               <div
@@ -357,9 +357,9 @@ const SubscriptionDashboard = ({embedded = false}) => {
                 return (
                   <div
                     key={plan._id || index}
-                    className="bg-white dark:bg-black rounded-xl shadow-sm dark:shadow-lg border border-gray-200 dark:border-zinc-800 overflow-hidden"
+                    className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl shadow-lg dark:shadow-2xl border border-gray-200/50 dark:border-white/10 overflow-hidden"
                   >
-                    <div className="bg-purple-50 dark:bg-purple-900/10 p-4 border-b border-purple-200 dark:border-purple-800/30">
+                    <div className="bg-purple-50/50 dark:bg-purple-900/10 p-4 border-b border-purple-200/50 dark:border-purple-800/30">
                       <div className="flex justify-between items-start mb-3">
                         <div>
                           <h3 className="text-base font-bold text-gray-900 dark:text-white">
@@ -403,7 +403,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
                           <span>Billing Cycle Progress</span>
                           <span>{Math.round(progressPercentage)}%</span>
                         </div>
-                        <div className="w-full bg-gray-200 dark:bg-zinc-800 rounded-full h-2">
+                        <div className="w-full bg-gray-200/50 dark:bg-white/10 rounded-full h-2">
                           <div
                             className="h-2 rounded-full bg-purple-600 transition-all"
                             style={{width: `${progressPercentage}%`}}
@@ -442,7 +442,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
                     </div>
 
                     {/* Action Buttons for Pro Plan */}
-                    <div className="p-3 bg-gray-50 dark:bg-zinc-900 flex flex-wrap gap-2 border-t border-gray-200 dark:border-zinc-800">
+                    <div className="p-3 bg-gray-50/50 dark:bg-white/5 flex flex-wrap gap-2 border-t border-gray-200/50 dark:border-white/10">
                       <button
                         onClick={() => navigate("/pricing")}
                         className="flex-1 bg-purple-600 text-white px-3 py-1.5 rounded-lg font-semibold hover:bg-purple-700 transition-all text-xs"
@@ -556,7 +556,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
                           <span>Time Used</span>
                           <span>{Math.round(progressPercentage)}%</span>
                         </div>
-                        <div className="w-full bg-gray-200 dark:bg-zinc-800 rounded-full h-1.5">
+                        <div className="w-full bg-gray-200/50 dark:bg-white/10 rounded-full h-1.5">
                           <div
                             className={`h-1.5 rounded-full transition-all ${
                               progressPercentage >= 90
@@ -590,7 +590,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
                     </div>
 
                     {/* Action Buttons for One-Time Plan */}
-                    <div className="p-3 bg-gray-50 dark:bg-zinc-900 flex flex-wrap gap-2 border-t border-gray-200 dark:border-zinc-800">
+                    <div className="p-3 bg-gray-50/50 dark:bg-white/5 flex flex-wrap gap-2 border-t border-gray-200/50 dark:border-white/10">
                       <button
                         onClick={() => navigate("/pricing")}
                         className="flex-1 bg-purple-600 text-white px-3 py-1.5 rounded-lg font-semibold hover:bg-purple-700 transition-all text-xs"
@@ -636,28 +636,28 @@ const SubscriptionDashboard = ({embedded = false}) => {
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
               {/* Total Purchases */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-md">
+              <div className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl p-3 shadow-lg dark:shadow-2xl border border-gray-200/50 dark:border-white/10">
                 <div className="flex items-center justify-between mb-1.5">
                   <FaShoppingCart className="text-xl text-blue-600" />
                   <span className="text-2xl font-bold text-gray-900 dark:text-white">
                     {stats.total}
                   </span>
                 </div>
-                <p className="text-xs text-gray-600 dark:text-gray-700 dark:text-gray-300 font-medium">
+                <p className="text-xs text-gray-600 dark:text-gray-300 font-medium">
                   Total Purchases
                 </p>
               </div>
 
               {/* One-Time Plans */}
               {stats.oneTimePlans > 0 && (
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-md">
+                <div className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl p-3 shadow-lg dark:shadow-2xl border border-gray-200/50 dark:border-white/10">
                   <div className="flex items-center justify-between mb-1.5">
                     <FaRocket className="text-xl text-blue-500" />
                     <span className="text-2xl font-bold text-blue-600">
                       {stats.oneTimePlans}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-600 dark:text-gray-700 dark:text-gray-300 font-medium">
+                  <p className="text-xs text-gray-600 dark:text-gray-300 font-medium">
                     One-Time Plans
                   </p>
                 </div>
@@ -665,14 +665,14 @@ const SubscriptionDashboard = ({embedded = false}) => {
 
               {/* Pro Plans */}
               {stats.proPlans > 0 && (
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-md">
+                <div className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl p-3 shadow-lg dark:shadow-2xl border border-gray-200/50 dark:border-white/10">
                   <div className="flex items-center justify-between mb-1.5">
                     <FaCrown className="text-xl text-purple-500" />
                     <span className="text-2xl font-bold text-purple-600">
                       {stats.proPlans}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-600 dark:text-gray-700 dark:text-gray-300 font-medium">
+                  <p className="text-xs text-gray-600 dark:text-gray-300 font-medium">
                     Pro Plans
                   </p>
                 </div>
@@ -709,10 +709,10 @@ const SubscriptionDashboard = ({embedded = false}) => {
 
       {/* AI Configuration (PRO only) */}
       {subscription?.tier === "pro" && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-6">
+        <div className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl shadow-lg dark:shadow-2xl p-6 mb-6 border border-gray-200/50 dark:border-white/10">
           <div className="flex justify-between items-center mb-4">
             <div>
-              <h2 className="text-xl font-bold text-gray-900 mb-1.5">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1.5">
                 AI Settings
               </h2>
               <p className="text-sm text-gray-600 dark:text-gray-300">
@@ -724,14 +724,14 @@ const SubscriptionDashboard = ({embedded = false}) => {
             </div>
             <button
               onClick={toggleAISettings}
-              className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-all flex items-center text-xs"
+              className="bg-gray-200/50 dark:bg-white/10 text-gray-700 dark:text-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-300/50 dark:hover:bg-white/20 transition-all flex items-center text-xs"
             >
               <FaCog className="mr-1.5" /> Configure
             </button>
           </div>
 
           {showAISettings && (
-            <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+            <div className="bg-gray-50/50 dark:bg-white/5 p-4 rounded-lg border border-gray-200/50 dark:border-white/10">
               <p className="text-sm text-gray-700 dark:text-gray-200 mb-3">
                 Choose your preferred AI model for resume generation:
               </p>
@@ -788,8 +788,8 @@ const SubscriptionDashboard = ({embedded = false}) => {
       )}
 
       {/* Usage Statistics */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-6">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
+      <div className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl shadow-lg dark:shadow-2xl p-6 mb-6 border border-gray-200/50 dark:border-white/10">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
           Usage Statistics
         </h2>
 
@@ -808,7 +808,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
                   </span>
                 </div>
                 {usage.resumesLimit !== Infinity && (
-                  <div className="w-full bg-gray-200 dark:bg-zinc-700 rounded-full h-2 shadow-inner">
+                  <div className="w-full bg-gray-200/50 dark:bg-white/10 rounded-full h-2 shadow-inner">
                     <div
                       className={`h-2 rounded-full transition-all ${getProgressColor(
                         (usage.resumesUsed / usage.resumesLimit) * 100
@@ -843,7 +843,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
                   </span>
                 </div>
                 {usage.aiGenerationsLimit !== Infinity && (
-                  <div className="w-full bg-gray-200 dark:bg-zinc-700 rounded-full h-2 shadow-inner">
+                  <div className="w-full bg-gray-200/50 dark:bg-white/10 rounded-full h-2 shadow-inner">
                     <div
                       className={`h-2 rounded-full transition-all ${getProgressColor(
                         (usage.aiGenerationsUsed / usage.aiGenerationsLimit) *
@@ -885,7 +885,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
                   </span>
                 </div>
                 {usage.atsScansLimit !== Infinity && (
-                  <div className="w-full bg-gray-200 dark:bg-zinc-700 rounded-full h-2 shadow-inner">
+                  <div className="w-full bg-gray-200/50 dark:bg-white/10 rounded-full h-2 shadow-inner">
                     <div
                       className={`h-2 rounded-full transition-all ${getProgressColor(
                         (usage.atsScansUsed / usage.atsScansLimit) * 100
@@ -918,7 +918,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
                     </span>
                   </div>
                   {usage.jobMatchesLimit !== Infinity && (
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="w-full bg-gray-200/50 dark:bg-white/10 rounded-full h-2 shadow-inner">
                       <div
                         className={`h-2 rounded-full transition-all ${getProgressColor(
                           (usage.jobMatchesUsed / usage.jobMatchesLimit) * 100
@@ -952,7 +952,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
                     </span>
                   </div>
                   {usage.coverLettersLimit !== Infinity && (
-                    <div className="w-full bg-gray-200 dark:bg-zinc-700 rounded-full h-2 shadow-inner">
+                    <div className="w-full bg-gray-200/50 dark:bg-white/10 rounded-full h-2 shadow-inner">
                       <div
                         className={`h-2 rounded-full transition-all ${getProgressColor(
                           (usage.coverLettersUsed / usage.coverLettersLimit) *
@@ -990,15 +990,15 @@ const SubscriptionDashboard = ({embedded = false}) => {
       </div>
 
       {/* Payment History */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
+      <div className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl shadow-lg dark:shadow-2xl p-6 border border-gray-200/50 dark:border-white/10">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
           Payment History
         </h2>
 
         {history && history.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 dark:bg-gray-700">
+              <thead className="bg-gray-50/50 dark:bg-white/5">
                 <tr>
                   <th className="px-3 py-2 text-left text-xs text-gray-700 dark:text-gray-200 font-semibold">
                     Date
@@ -1024,7 +1024,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
                 {history.map((payment, index) => (
                   <tr
                     key={payment._id || payment.receiptId || `payment-${index}`}
-                    className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                    className="hover:bg-gray-50/50 dark:hover:bg-white/5 transition-colors"
                   >
                     <td className="px-3 py-2 text-xs text-gray-600 dark:text-gray-300">
                       {formatDate(payment.createdAt || payment.date)}
@@ -1105,13 +1105,13 @@ const SubscriptionDashboard = ({embedded = false}) => {
             <div className="flex gap-3">
               <button
                 onClick={setShowCancelModalFalse}
-                className="flex-1 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-900 dark:text-white py-1.5 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-all text-sm"
+                className="flex-1 bg-gray-200/50 dark:bg-white/10 text-gray-700 dark:text-gray-200 py-1.5 rounded-lg hover:bg-gray-300/50 dark:hover:bg-white/20 transition-all text-sm border border-gray-200/50 dark:border-white/10"
               >
                 Keep Subscription
               </button>
               <button
                 onClick={handleCancelSubscription}
-                className="flex-1 bg-red-600 text-gray-900 dark:text-white py-1.5 rounded-lg hover:bg-red-700 transition-all text-sm"
+                className="flex-1 bg-red-600 text-white py-1.5 rounded-lg hover:bg-red-700 transition-all text-sm"
               >
                 Cancel Subscription
               </button>
