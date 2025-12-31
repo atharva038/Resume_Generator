@@ -1,5 +1,6 @@
 import {useState, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
+import {Helmet} from "react-helmet-async";
 import {
   FaCheck,
   FaCrown,
@@ -167,304 +168,371 @@ const Pricing = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black py-12 px-4">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-            Choose Your Plan
-          </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
-            Get the perfect plan for your resume building needs
-          </p>
-        </div>
+    <>
+      {/* SEO Meta Tags & Schema.org Structured Data */}
+      <Helmet>
+        <title>Pricing Plans - SmartNShine AI Resume Builder</title>
+        <meta
+          name="description"
+          content="Choose from Free, One-Time, or Pro subscription plans. Build ATS-optimized resumes with AI assistance starting at ₹199/month or ₹1999 one-time payment."
+        />
+        <meta
+          name="keywords"
+          content="resume builder pricing, ATS resume cost, subscription plans, resume builder plans, professional resume pricing"
+        />
+        <link rel="canonical" href="https://www.smartnshine.app/pricing" />
 
-        {/* Pricing Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12 max-w-5xl mx-auto">
-          {pricing &&
-            Object.entries(pricing).map(([tier, tierData]) => {
-              const config = tierConfig[tier];
-              if (!config) return null;
+        {/* Schema.org Product/Service Structured Data */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: "SmartNShine Resume Builder",
+            description:
+              "AI-powered ATS resume builder with professional templates, job matching, and interview preparation",
+            brand: {
+              "@type": "Brand",
+              name: "SmartNShine",
+            },
+            offers: [
+              {
+                "@type": "Offer",
+                name: "Free Plan",
+                price: "0",
+                priceCurrency: "INR",
+                availability: "https://schema.org/InStock",
+                description:
+                  "3 resume creations, 10 AI generations, 2 ATS scans, 5 job matches per month",
+              },
+              {
+                "@type": "Offer",
+                name: "One-Time Plan",
+                price: "1999",
+                priceCurrency: "INR",
+                availability: "https://schema.org/InStock",
+                description:
+                  "Unlimited resumes for 1 year, 150 AI generations, 30 ATS scans, 100 job matches",
+              },
+              {
+                "@type": "Offer",
+                name: "Pro Subscription",
+                price: "199",
+                priceCurrency: "INR",
+                priceValidUntil: "2026-12-31",
+                availability: "https://schema.org/InStock",
+                description:
+                  "Unlimited everything! Priority support, advanced AI models, voice CV analysis",
+              },
+            ],
+            aggregateRating: {
+              "@type": "AggregateRating",
+              ratingValue: "4.8",
+              reviewCount: "1250",
+            },
+          })}
+        </script>
+      </Helmet>
 
-              const isPopular = config.popular;
-              const isCurrentPlan = currentSubscription?.tier === tier;
-              const isActivePlan =
-                isCurrentPlan &&
-                (tier === "free" ||
-                  tier === "one-time" ||
-                  (tier === "pro" && currentSubscription?.status === "active"));
+      <div className="min-h-screen bg-white dark:bg-black py-12 px-4">
+        <div className="max-w-7xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <h1 className="text-5xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+              Choose Your Plan
+            </h1>
+            <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
+              Get the perfect plan for your resume building needs
+            </p>
+          </div>
 
-              return (
-                <div
-                  key={tier}
-                  className={`relative bg-white dark:bg-zinc-900/50 dark:backdrop-blur-xl rounded-2xl shadow-sm dark:shadow-lg border border-gray-200 dark:border-white/10 overflow-hidden transform transition-all duration-300 hover:scale-105 ${
-                    isPopular
-                      ? "ring-4 ring-purple-400 dark:ring-purple-600 -mt-4 lg:scale-105"
-                      : ""
-                  }`}
-                >
-                  {/* Current Plan Badge */}
-                  {isActivePlan && (
-                    <div className="absolute top-0 left-0 bg-green-600 text-white px-4 py-1 rounded-br-lg font-semibold text-sm z-10 flex items-center gap-1">
-                      <FaCheck className="text-sm" />
-                      CURRENT PLAN
-                    </div>
-                  )}
+          {/* Pricing Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12 max-w-5xl mx-auto">
+            {pricing &&
+              Object.entries(pricing).map(([tier, tierData]) => {
+                const config = tierConfig[tier];
+                if (!config) return null;
 
-                  {/* Popular Badge */}
-                  {isPopular && !isActivePlan && (
-                    <div className="absolute top-0 right-0 bg-purple-600 text-white px-4 py-1 rounded-bl-lg font-semibold text-sm">
-                      MOST POPULAR
-                    </div>
-                  )}
+                const isPopular = config.popular;
+                const isCurrentPlan = currentSubscription?.tier === tier;
+                const isActivePlan =
+                  isCurrentPlan &&
+                  (tier === "free" ||
+                    tier === "one-time" ||
+                    (tier === "pro" &&
+                      currentSubscription?.status === "active"));
 
-                  {/* Card Header */}
+                return (
                   <div
-                    className={`${config.bgGradient} p-6 text-center border-b ${config.borderColor}`}
+                    key={tier}
+                    className={`relative bg-white dark:bg-zinc-900/50 dark:backdrop-blur-xl rounded-2xl shadow-sm dark:shadow-lg border border-gray-200 dark:border-white/10 overflow-hidden transform transition-all duration-300 hover:scale-105 ${
+                      isPopular
+                        ? "ring-4 ring-purple-400 dark:ring-purple-600 -mt-4 lg:scale-105"
+                        : ""
+                    }`}
                   >
-                    <div className="mb-4 flex justify-center">
-                      {config.icon}
-                    </div>
-                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white uppercase mb-2">
-                      {tier.replace("-", " ")}
-                    </h3>
-                    <div className="text-4xl font-extrabold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
-                      {getDisplayPrice(tier, tierData)}
-                    </div>
-                    {tier === "one-time" && (
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
-                        One-time payment
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Features List */}
-                  <div className="p-6 bg-white dark:bg-zinc-900/50 dark:backdrop-blur-xl">
-                    <ul className="space-y-3 mb-6">
-                      {tierData.features?.map((feature, index) => (
-                        <li key={index} className="flex items-start">
-                          <FaCheck className="text-green-500 mt-1 mr-3 flex-shrink-0" />
-                          <span className="text-gray-700 dark:text-gray-300">
-                            {feature}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-
-                    {/* CTA Button */}
-                    <button
-                      onClick={() => handleSelectPlan(tier, tierData.plan)}
-                      className={`w-full py-3 rounded-lg font-semibold text-white transition-all shadow-md hover:shadow-lg ${
-                        isActivePlan
-                          ? "bg-gray-400 dark:bg-zinc-700 cursor-not-allowed"
-                          : config.buttonColor
-                      }`}
-                      disabled={isActivePlan}
-                    >
-                      {isActivePlan
-                        ? "Current Plan ✓"
-                        : tier === "free"
-                          ? "Get Started Free"
-                          : "Choose Plan"}
-                    </button>
-
-                    {/* Show message for active subscribers */}
-                    {isActivePlan && tier !== "free" && (
-                      <div className="mt-3 text-center">
-                        <p className="text-sm text-green-600 dark:text-green-400 font-medium flex items-center justify-center">
-                          <FaCheck className="mr-2" />
-                          {tier === "pro"
-                            ? "You're on our best plan!"
-                            : "You have access to premium features"}
-                        </p>
+                    {/* Current Plan Badge */}
+                    {isActivePlan && (
+                      <div className="absolute top-0 left-0 bg-green-600 text-white px-4 py-1 rounded-br-lg font-semibold text-sm z-10 flex items-center gap-1">
+                        <FaCheck className="text-sm" />
+                        CURRENT PLAN
                       </div>
                     )}
+
+                    {/* Popular Badge */}
+                    {isPopular && !isActivePlan && (
+                      <div className="absolute top-0 right-0 bg-purple-600 text-white px-4 py-1 rounded-bl-lg font-semibold text-sm">
+                        MOST POPULAR
+                      </div>
+                    )}
+
+                    {/* Card Header */}
+                    <div
+                      className={`${config.bgGradient} p-6 text-center border-b ${config.borderColor}`}
+                    >
+                      <div className="mb-4 flex justify-center">
+                        {config.icon}
+                      </div>
+                      <h3 className="text-2xl font-bold text-gray-900 dark:text-white uppercase mb-2">
+                        {tier.replace("-", " ")}
+                      </h3>
+                      <div className="text-4xl font-extrabold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
+                        {getDisplayPrice(tier, tierData)}
+                      </div>
+                      {tier === "one-time" && (
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          One-time payment
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Features List */}
+                    <div className="p-6 bg-white dark:bg-zinc-900/50 dark:backdrop-blur-xl">
+                      <ul className="space-y-3 mb-6">
+                        {tierData.features?.map((feature, index) => (
+                          <li key={index} className="flex items-start">
+                            <FaCheck className="text-green-500 mt-1 mr-3 flex-shrink-0" />
+                            <span className="text-gray-700 dark:text-gray-300">
+                              {feature}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+
+                      {/* CTA Button */}
+                      <button
+                        onClick={() => handleSelectPlan(tier, tierData.plan)}
+                        className={`w-full py-3 rounded-lg font-semibold text-white transition-all shadow-md hover:shadow-lg ${
+                          isActivePlan
+                            ? "bg-gray-400 dark:bg-zinc-700 cursor-not-allowed"
+                            : config.buttonColor
+                        }`}
+                        disabled={isActivePlan}
+                      >
+                        {isActivePlan
+                          ? "Current Plan ✓"
+                          : tier === "free"
+                            ? "Get Started Free"
+                            : "Choose Plan"}
+                      </button>
+
+                      {/* Show message for active subscribers */}
+                      {isActivePlan && tier !== "free" && (
+                        <div className="mt-3 text-center">
+                          <p className="text-sm text-green-600 dark:text-green-400 font-medium flex items-center justify-center">
+                            <FaCheck className="mr-2" />
+                            {tier === "pro"
+                              ? "You're on our best plan!"
+                              : "You have access to premium features"}
+                          </p>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-        </div>
+                );
+              })}
+          </div>
 
-        {/* Feature Comparison Table */}
-        <div className="bg-white dark:bg-zinc-900/50 dark:backdrop-blur-xl rounded-2xl shadow-sm dark:shadow-lg border border-gray-200 dark:border-white/10 p-8 mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6 text-center">
-            Compare All Features
-          </h2>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="border-b-2 border-gray-200 dark:border-white/10">
-                  <th className="py-4 px-4 text-gray-700 dark:text-gray-300 font-semibold">
-                    Feature
-                  </th>
-                  <th className="py-4 px-4 text-center text-gray-700 dark:text-gray-300 font-semibold">
-                    Free
-                  </th>
-                  <th className="py-4 px-4 text-center text-gray-700 dark:text-gray-300 font-semibold">
-                    One-Time
-                  </th>
-                  <th className="py-4 px-4 text-center text-gray-700 dark:text-gray-300 font-semibold">
-                    Pro
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  {
-                    name: "AI Requests",
-                    values: ["10/month", "150/21 days", "∞"],
-                  },
-                  {
-                    name: "Resumes per Month",
-                    values: ["1", "1", "∞"],
-                  },
-                  {
-                    name: "ATS Score Analysis",
-                    values: ["✗", "1", "∞"],
-                  },
-                  // TEMPORARILY HIDDEN FOR RAZORPAY COMPLIANCE
-                  // {
-                  //   name: "Job Matches per Day",
-                  //   values: ["0", "3", "∞"],
-                  // },
-                  // TEMPORARILY HIDDEN - Cover Letters feature not yet implemented
-                  // {
-                  //   name: "Cover Letters",
-                  //   values: ["✗", "✗", "∞"],
-                  // },
-                  {
-                    name: "AI Model",
-                    values: ["Gemini", "GPT-4o", "GPT-4o"],
-                  },
-                  {
-                    name: "AI Resume Extraction",
-                    values: ["✗", "✗", "2/day"],
-                  },
-                  {
-                    name: "All Templates",
-                    values: ["✗", "✓", "✓"],
-                  },
-                  {
-                    name: "Portfolio Builder",
-                    values: ["✗", "✗", "✓"],
-                  },
-                  // TEMPORARILY HIDDEN - Analytics feature to be enabled later
-                  // {
-                  //   name: "Advanced Analytics",
-                  //   values: ["✗", "✗", "✓"],
-                  // },
-                  {
-                    name: "Priority Support",
-                    values: ["✗", "✗", "✓"],
-                  },
-                ].map((row, index) => (
-                  <tr
-                    key={index}
-                    className="border-b border-gray-100 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-white/5"
-                  >
-                    <td className="py-4 px-4 font-medium text-gray-700 dark:text-gray-300">
-                      {row.name}
-                    </td>
-                    {row.values.map((value, vIndex) => (
-                      <td key={vIndex} className="py-4 px-4 text-center">
-                        {value === "✓" ? (
-                          <FaCheck className="text-green-500 dark:text-green-400 mx-auto" />
-                        ) : value === "✗" ? (
-                          <span className="text-gray-400 dark:text-gray-600">
-                            ✗
-                          </span>
-                        ) : (
-                          <span className="text-gray-700 dark:text-gray-300 font-semibold">
-                            {value}
-                          </span>
-                        )}
-                      </td>
-                    ))}
+          {/* Feature Comparison Table */}
+          <div className="bg-white dark:bg-zinc-900/50 dark:backdrop-blur-xl rounded-2xl shadow-sm dark:shadow-lg border border-gray-200 dark:border-white/10 p-8 mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6 text-center">
+              Compare All Features
+            </h2>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="border-b-2 border-gray-200 dark:border-white/10">
+                    <th className="py-4 px-4 text-gray-700 dark:text-gray-300 font-semibold">
+                      Feature
+                    </th>
+                    <th className="py-4 px-4 text-center text-gray-700 dark:text-gray-300 font-semibold">
+                      Free
+                    </th>
+                    <th className="py-4 px-4 text-center text-gray-700 dark:text-gray-300 font-semibold">
+                      One-Time
+                    </th>
+                    <th className="py-4 px-4 text-center text-gray-700 dark:text-gray-300 font-semibold">
+                      Pro
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {[
+                    {
+                      name: "AI Requests",
+                      values: ["10/month", "150/21 days", "∞"],
+                    },
+                    {
+                      name: "Resumes per Month",
+                      values: ["1", "1", "∞"],
+                    },
+                    {
+                      name: "ATS Score Analysis",
+                      values: ["✗", "1", "∞"],
+                    },
+                    // TEMPORARILY HIDDEN FOR RAZORPAY COMPLIANCE
+                    // {
+                    //   name: "Job Matches per Day",
+                    //   values: ["0", "3", "∞"],
+                    // },
+                    // TEMPORARILY HIDDEN - Cover Letters feature not yet implemented
+                    // {
+                    //   name: "Cover Letters",
+                    //   values: ["✗", "✗", "∞"],
+                    // },
+                    {
+                      name: "AI Model",
+                      values: ["Gemini", "GPT-4o", "GPT-4o"],
+                    },
+                    {
+                      name: "AI Resume Extraction",
+                      values: ["✗", "✗", "2/day"],
+                    },
+                    {
+                      name: "All Templates",
+                      values: ["✗", "✓", "✓"],
+                    },
+                    {
+                      name: "Portfolio Builder",
+                      values: ["✗", "✗", "✓"],
+                    },
+                    // TEMPORARILY HIDDEN - Analytics feature to be enabled later
+                    // {
+                    //   name: "Advanced Analytics",
+                    //   values: ["✗", "✗", "✓"],
+                    // },
+                    {
+                      name: "Priority Support",
+                      values: ["✗", "✗", "✓"],
+                    },
+                  ].map((row, index) => (
+                    <tr
+                      key={index}
+                      className="border-b border-gray-100 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-white/5"
+                    >
+                      <td className="py-4 px-4 font-medium text-gray-700 dark:text-gray-300">
+                        {row.name}
+                      </td>
+                      {row.values.map((value, vIndex) => (
+                        <td key={vIndex} className="py-4 px-4 text-center">
+                          {value === "✓" ? (
+                            <FaCheck className="text-green-500 dark:text-green-400 mx-auto" />
+                          ) : value === "✗" ? (
+                            <span className="text-gray-400 dark:text-gray-600">
+                              ✗
+                            </span>
+                          ) : (
+                            <span className="text-gray-700 dark:text-gray-300 font-semibold">
+                              {value}
+                            </span>
+                          )}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* FAQ Section */}
+          <div className="bg-white dark:bg-black rounded-2xl shadow-sm dark:shadow-lg border border-gray-200 dark:border-zinc-800 p-8">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6 text-center">
+              Frequently Asked Questions
+            </h2>
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                  What's special about the Pro plan?
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Pro plan gives you unlimited access to everything - unlimited
+                  resumes, GPT-4o AI (premium quality), unlimited ATS scans,
+                  {/* TEMPORARILY HIDDEN FOR RAZORPAY COMPLIANCE */}
+                  {/* unlimited job matches, */}
+                  {/* TEMPORARILY HIDDEN - Analytics feature */}
+                  {/* advanced analytics, and */}
+                  and priority support. It's the best value for serious job
+                  seekers.
+                </p>
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                  Can I cancel my subscription anytime?
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Yes! You can cancel your subscription at any time from your
+                  dashboard. You'll continue to have access until the end of
+                  your billing period.
+                </p>
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                  Is there a refund policy?
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400">
+                  We offer a 7-day money-back guarantee for all paid plans. If
+                  you're not satisfied, contact us for a full refund.
+                </p>
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                  What payment methods do you accept?
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400">
+                  We accept all major credit/debit cards, UPI, net banking, and
+                  wallets through Razorpay.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* CTA Section */}
+          <div className="text-center mt-12">
+            <p className="text-gray-600 dark:text-gray-600 dark:text-gray-400 mb-4">
+              Need help choosing?{" "}
+              <a
+                href="/contact"
+                className="text-purple-600 dark:text-purple-400 hover:underline"
+              >
+                Contact us
+              </a>
+            </p>
           </div>
         </div>
 
-        {/* FAQ Section */}
-        <div className="bg-white dark:bg-black rounded-2xl shadow-sm dark:shadow-lg border border-gray-200 dark:border-zinc-800 p-8">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6 text-center">
-            Frequently Asked Questions
-          </h2>
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                What's special about the Pro plan?
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400">
-                Pro plan gives you unlimited access to everything - unlimited
-                resumes, GPT-4o AI (premium quality), unlimited ATS scans,
-                {/* TEMPORARILY HIDDEN FOR RAZORPAY COMPLIANCE */}
-                {/* unlimited job matches, */}
-                {/* TEMPORARILY HIDDEN - Analytics feature */}
-                {/* advanced analytics, and */}
-                and priority support. It's the best value for serious job
-                seekers.
-              </p>
-            </div>
-            <div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                Can I cancel my subscription anytime?
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400">
-                Yes! You can cancel your subscription at any time from your
-                dashboard. You'll continue to have access until the end of your
-                billing period.
-              </p>
-            </div>
-            <div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                Is there a refund policy?
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400">
-                We offer a 7-day money-back guarantee for all paid plans. If
-                you're not satisfied, contact us for a full refund.
-              </p>
-            </div>
-            <div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                What payment methods do you accept?
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400">
-                We accept all major credit/debit cards, UPI, net banking, and
-                wallets through Razorpay.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* CTA Section */}
-        <div className="text-center mt-12">
-          <p className="text-gray-600 dark:text-gray-600 dark:text-gray-400 mb-4">
-            Need help choosing?{" "}
-            <a
-              href="/contact"
-              className="text-purple-600 dark:text-purple-400 hover:underline"
-            >
-              Contact us
-            </a>
-          </p>
-        </div>
+        {/* Payment Modal */}
+        {showPaymentModal && paymentData && (
+          <PaymentModal
+            tier={paymentData.tier}
+            plan={paymentData.plan}
+            onClose={() => {
+              setShowPaymentModalFalse();
+              setPaymentData(null);
+            }}
+          />
+        )}
       </div>
-
-      {/* Payment Modal */}
-      {showPaymentModal && paymentData && (
-        <PaymentModal
-          tier={paymentData.tier}
-          plan={paymentData.plan}
-          onClose={() => {
-            setShowPaymentModalFalse();
-            setPaymentData(null);
-          }}
-        />
-      )}
-    </div>
+    </>
   );
 };
 

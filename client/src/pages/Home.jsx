@@ -2,6 +2,7 @@ import {Link} from "react-router-dom";
 import {useState, useRef, useEffect} from "react";
 import {motion} from "framer-motion";
 import SEO from "../components/common/SEO";
+import FAQSchema from "../components/common/FAQSchema";
 import {
   Sparkles,
   Upload,
@@ -284,6 +285,7 @@ const Home = () => {
         keywords="resume builder, ATS optimization, AI resume, job application, career tools, professional resume templates, resume maker, CV builder, job search"
         url="https://www.smartnshine.app"
       />
+      <FAQSchema faqs={faqs} />
 
       <div className="min-h-screen bg-white dark:bg-[#0C0C0C] overflow-x-hidden">
         {/* Subtle grid background pattern */}

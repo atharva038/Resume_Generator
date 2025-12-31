@@ -117,9 +117,10 @@ export const SkillsSection = ({resumeData, updateField}) => {
     setError("");
 
     try {
+      // ResumeId is optional - works for both new and existing resumes
       const response = await resumeAPI.categorizeSkills(
         skillsInput,
-        resumeData._id
+        resumeData._id // Pass if available, undefined if new resume
       );
 
       if (response.data && response.data.skills) {
