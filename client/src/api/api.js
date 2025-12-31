@@ -219,13 +219,15 @@ export const resumeAPI = {
   /**
    * Automatically categorize skills into groups using AI
    * @param {Array<string>} skills - Flat list of skills
-   * @param {string} resumeId - Resume ID for subscription check
+   * @param {string} resumeId - Resume ID (optional - not used by backend)
    * @returns {Promise} Axios response with categorized skills array
    */
   categorizeSkills: (skills, resumeId) => {
+    // ResumeId is optional now - backend doesn't need it for text processing
     return api.post("/resume/categorize-skills", {
       skills,
-      resumeId, // Required by checkResumeSubscriptionAccess middleware
+      // Only include resumeId if provided (for tracking purposes if needed)
+      ...(resumeId && {resumeId}),
     });
   },
 
