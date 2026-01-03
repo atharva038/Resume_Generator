@@ -24,6 +24,10 @@ import CorporateEliteTemplate from "../components/templates/CorporateEliteTempla
 import StrategicLeaderTemplate from "../components/templates/StrategicLeaderTemplate";
 import ImpactProTemplate from "../components/templates/ImpactProTemplate";
 import GitHubStyleTemplate from "../components/templates/GitHubStyleTemplate";
+import DataAnalystTemplate from "../components/templates/DataAnalystTemplate";
+import SocialMediaTemplate from "../components/templates/Social-MediaTemplate";
+import MarketingDirectorTemplate from "../components/templates/MarketingDirectorTemplate"; 
+import SoftwareEngineeringLeadTemplate from "../components/templates/SoftwareEngineeringLeadTemplate";
 
 // Sample resume data for preview - matches template structure
 const sampleResumeData = {
@@ -62,7 +66,7 @@ const sampleResumeData = {
       bullets: [
         "Led team of 5 developers in building scalable web applications serving 100K+ users",
         "Improved system performance by 40% through code optimization and architecture redesign",
-        "Mentored junior developers and conducted technical interviews",
+        "Mentored  developers and conducted technical interviews",
       ],
     },
     {
@@ -250,6 +254,46 @@ const templates = [
     ],
     colors: ["#24292e", "#ffffff"],
   },
+  {
+  id: "data-analyst",
+  name: "Data Analyst",
+  component: DataAnalystTemplate,
+  category: "Professional",
+  atsScore: 96,
+  description: "Quantitative results-driven template optimized for data professionals",
+  features: ["Metrics-Focused", "Results-Driven", "Table Layout", "Clean Structure"],
+  colors: ["#1a73e8", "#ffffff"],
+},
+{
+  id: "social-media",
+  name: "Social Media",
+  component: SocialMediaTemplate,
+  category: "Creative",
+  atsScore: 85,
+  description: "Modern, visually distinct template optimized for social media and marketing professionals",
+  features: ["Project Highlights", "Visual Hierarchy", "Results-Focused", "Professional Layout"],
+  colors: ["#2c3e50", "#3498db", "#ffffff"],
+},
+{
+  id: "marketing-director",
+  name: "Marketing Director",
+  component: MarketingDirectorTemplate,
+  category: "Creative",
+  atsScore: 88,
+  description: "Bold, all-caps header template for marketing leadership positions",
+  features: ["All-Caps Header", "Multi-Column Skills", "Compact Layout", "Leadership Focus"],
+  colors: ["#000000", "#ffffff"],
+},
+{
+  id: "software-engineering-lead",
+  name: "Software Engineering Lead",
+  component: SoftwareEngineeringLeadTemplate,
+  category: "Professional",
+  atsScore: 90,
+  description: "Technical leadership template with thick section dividers and skill categories",
+  features: ["Technical Leadership", "Thick Dividers", "Skill Categories", "Engineering Focus"],
+  colors: ["#000000", "#ffffff"],
+}
 ];
 
 // Color theme configurations (same as Editor.jsx)
@@ -316,6 +360,14 @@ const TEMPLATE_COLOR_THEMES = {
   { id: "maroon", name: "Maroon", primary: "#880e4f" },
   { id: "navy", name: "Navy Blue", primary: "#003366" },
 ],
+
+"data-analyst": [
+  { id: "blue", name: "Professional Blue", primary: "#1a73e8" },
+  { id: "teal", name: "Analytical Teal", primary: "#00796b" },
+  { id: "indigo", name: "Data Indigo", primary: "#303f9f" },
+  { id: "gray", name: "Analyst Gray", primary: "#37474f" },
+],
+
 };
 
 const Templates = () => {
@@ -356,7 +408,7 @@ const Templates = () => {
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-zinc-900 rounded-full mb-4 border border-gray-200 dark:border-zinc-800">
             <Layout className="w-4 h-4 text-gray-600 dark:text-gray-400" />
             <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-              11 Professional Templates
+             16 Professional Templates
             </span>
           </div>
           <h1 className="text-4xl sm:text-5xl font-bold mb-4 text-gray-900 dark:text-white">

@@ -42,6 +42,9 @@ import CorporateEliteTemplate from "../components/templates/CorporateEliteTempla
 import StrategicLeaderTemplate from "../components/templates/StrategicLeaderTemplate";
 import ImpactProTemplate from "../components/templates/ImpactProTemplate";
 import GitHubStyleTemplate from "../components/templates/GitHubStyleTemplate";
+import { DataAnalystTemplate } from "../components/templates";
+import SocialMediaTemplate from "../components/templates/Social-MediaTemplate";
+import SoftwareEngineeringLeadTemplate from "../components/templates/SoftwareEngineeringLeadTemplate";
 
 // Default section order (only editable resume sections)
 const DEFAULT_SECTION_ORDER = [
@@ -91,6 +94,30 @@ const TEMPLATES = [
     atsScore: 94,
   },
   {
+    id: "data-analyst",
+    name: "Data Analyst",
+    component: DataAnalystTemplate,
+    category: "Professional",
+    emoji: "💼",
+    atsScore: 94,
+  },
+  {
+    id: "social-media",
+    name: "Social Media",
+    component: SocialMediaTemplate,
+    category: "Creative",
+    emoji: "📱",
+    atsScore: 90,
+  },
+  {
+    id: "software-engineering-lead",
+    name: "Software Engineering Lead",
+    component: SoftwareEngineeringLeadTemplate,
+    category: "Professional",
+    emoji: "💼",
+    atsScore: 90,
+  },
+  {
     id: "professional-v2",
     name: "Professional V2",
     component: ProfessionalV2Template,
@@ -115,7 +142,7 @@ const TEMPLATES = [
     atsScore: 93,
   },
   {
-    id: "GitHubStyle",
+    id: "github-style",
     name: "GitHub Style",
     component: GitHubStyleTemplate,
     category: "Tech",
@@ -303,6 +330,11 @@ const Editor = () => {
       "modern",
       "professional",
       "professionalv2",
+      "github-style",
+      "data-analyst",
+      "social-media",
+      "marketing-director",
+      "software-engineering-lead",
     ];
     if (!supportedTemplates.includes(selectedTemplate)) {
       setTemplatePageUsage(null);
@@ -1908,7 +1940,12 @@ const Editor = () => {
                   selectedTemplate === "classic" ||
                   selectedTemplate === "modern" ||
                   selectedTemplate === "professional" ||
-                  selectedTemplate === "professionalv2") && (
+                  selectedTemplate === "professionalv2" ||
+                  selectedTemplate === "github-style" ||
+                  selectedTemplate === "data-analyst" ||
+                  selectedTemplate === "social-media" ||
+                  selectedTemplate === "marketing-director" ||
+                  selectedTemplate === "software-engineering-lead")  && (
                   <div
                     className="fixed top-0 left-[-9999px] opacity-0 pointer-events-none"
                     style={{width: "210mm", height: "auto"}}

@@ -18,6 +18,11 @@ import AcademicTemplate from "../../templates/AcademicTemplate";
 import CorporateEliteTemplate from "../../templates/CorporateEliteTemplate";
 import StrategicLeaderTemplate from "../../templates/StrategicLeaderTemplate";
 import ImpactProTemplate from "../../templates/ImpactProTemplate";
+import GitHubStyleTemplate from "../../templates/GitHubStyleTemplate";
+import DataAnalystTemplate from "../../templates/DataAnalystTemplate";
+import SocialMediaTemplate from "../../templates/Social-MediaTemplate";
+import MarketingDirectorTemplate from "../../templates/MarketingDirectorTemplate";
+import SoftwareEngineeringLeadTemplate from "../../templates/SoftwareEngineeringLeadTemplate";
 import FullPreviewModal from "./FullPreviewModal";
 
 const ResumePreview = forwardRef(
@@ -131,6 +136,11 @@ const ResumePreview = forwardRef(
       "corporate-elite": CorporateEliteTemplate,
       "strategic-leader": StrategicLeaderTemplate,
       "impact-pro": ImpactProTemplate,
+      "github-style": GitHubStyleTemplate,
+      "data-analyst": DataAnalystTemplate,
+      "social-media": SocialMediaTemplate,
+      "marketing-director": MarketingDirectorTemplate,
+      "software-engineering-lead": SoftwareEngineeringLeadTemplate,
     };
 
     const SelectedTemplate = templates[template] || ClassicTemplate;

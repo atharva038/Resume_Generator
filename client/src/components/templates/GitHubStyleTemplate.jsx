@@ -101,12 +101,15 @@ const GitHubStyleTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) =>
     "education",
     "publications",
     "skills",
+    "certifications",
+    "achievements",
+    "customSections",
   ];
 
   const sectionOrder =
     resumeData.sectionOrder && resumeData.sectionOrder.length > 0
       ? resumeData.sectionOrder.filter(
-          (id) => !["certifications", "achievements", "personal"].includes(id)
+          (id) => !["score", "personal", "recommendations"].includes(id)
         )
       : DEFAULT_SECTION_ORDER;
 
@@ -120,6 +123,8 @@ const GitHubStyleTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) =>
       education: "EDUCATION",
       publications: "PUBLICATIONS",
       skills: "SKILLS",
+      certifications: "CERTIFICATIONS",
+      achievements: "ACHIEVEMENTS",
     };
     return (
       customTitles[sectionId] ||
@@ -128,8 +133,19 @@ const GitHubStyleTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) =>
     ).toUpperCase();
   };
 
+  // Helper function to safely format skills (handles both array and string)
+  const formatSkills = (items) => {
+    if (Array.isArray(items)) {
+      return items.join(" • ");
+    }
+    if (typeof items === "string") {
+      return items;
+    }
+    return "";
+  };
+
   // Helper function to format contact items
-  const formatContactItem = (item, icon) => {
+  const formatContactItem = (item) => {
     if (!item) return null;
     
     if (item.startsWith('http')) {
@@ -143,7 +159,7 @@ const GitHubStyleTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) =>
             textDecoration: "none",
           }}
         >
-          {icon} {item}
+          {item}
         </a>
       );
     }
@@ -157,12 +173,12 @@ const GitHubStyleTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) =>
             textDecoration: "none",
           }}
         >
-          {icon} {item}
+          {item}
         </a>
       );
     }
     
-    return <span>{icon} {item}</span>;
+    return <span>{item}</span>;
   };
 
   // Render section helper function
@@ -223,11 +239,12 @@ const GitHubStyleTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) =>
                 {exp.company && (
                   <div style={{fontSize: "10pt", color: selectedTheme.textLight, marginTop: "2px"}}>
                     {exp.company}
+                    {exp.location && <span> — {exp.location}</span>}
                   </div>
                 )}
               </div>
               {exp.description && (
-                <div style={{fontSize: "10pt", color: selectedTheme.text, lineHeight: "1.5"}}>
+                <div style={{fontSize: "10pt", color: selectedTheme.text, lineHeight: "1.5", marginBottom: "6px"}}>
                   {exp.description}
                 </div>
               )}
@@ -277,18 +294,18 @@ const GitHubStyleTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) =>
                         textDecoration: "none",
                       }}
                     >
-                      Link to Demo
+                      View Project
                     </a>
                   )}
                 </div>
                 {project.technologies && (
                   <div style={{fontSize: "9pt", color: selectedTheme.textMuted, marginTop: "2px"}}>
-                    {Array.isArray(project.technologies) ? project.technologies.join(", ") : project.technologies}
+                    Technologies: {formatSkills(project.technologies)}
                   </div>
                 )}
               </div>
               {project.description && (
-                <div style={{fontSize: "10pt", color: selectedTheme.text, lineHeight: "1.5"}}>
+                <div style={{fontSize: "10pt", color: selectedTheme.text, lineHeight: "1.5", marginBottom: "6px"}}>
                   {project.description}
                 </div>
               )}
@@ -413,13 +430,99 @@ const GitHubStyleTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) =>
                 {skillGroup.category}
               </div>
               <div style={{fontSize: "10pt", color: selectedTheme.text}}>
-                {Array.isArray(skillGroup.items) 
-                  ? skillGroup.items.join(", ")
-                  : skillGroup.items}
+                {formatSkills(skillGroup.items)}
               </div>
             </div>
           ))}
         </section>
+      ),
+
+      certifications: resumeData.certifications && resumeData.certifications.length > 0 && (
+        <section key="certifications" style={sectionStyle}>
+          <h2
+            className="font-bold"
+            style={{
+              fontSize: "14pt",
+              color: selectedTheme.primary,
+              marginBottom: "12px",
+              paddingBottom: "4px",
+              borderBottom: `1px solid ${selectedTheme.border}`,
+            }}
+          >
+            {getSectionTitle("certifications")}
+          </h2>
+          <div style={{display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "12px"}}>
+            {resumeData.certifications.map((cert, index) => (
+              <div key={index} style={{marginBottom: "8px"}}>
+                <div className="font-bold" style={{fontSize: "10pt", color: selectedTheme.primary}}>
+                  {cert.name}
+                </div>
+                {cert.issuer && (
+                  <div style={{fontSize: "9pt", color: selectedTheme.textMuted, marginTop: "2px"}}>
+                    {cert.issuer} {cert.date && `(${cert.date})`}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      ),
+
+      achievements: resumeData.achievements && resumeData.achievements.length > 0 && (
+        <section key="achievements" style={sectionStyle}>
+          <h2
+            className="font-bold"
+            style={{
+              fontSize: "14pt",
+              color: selectedTheme.primary,
+              marginBottom: "12px",
+              paddingBottom: "4px",
+              borderBottom: `1px solid ${selectedTheme.border}`,
+            }}
+          >
+            {getSectionTitle("achievements")}
+          </h2>
+          <ul style={{paddingLeft: "20px", marginTop: "6px"}}>
+            {resumeData.achievements.map((achievement, index) => (
+              <li key={index} style={{fontSize: "10pt", marginBottom: "4px", color: selectedTheme.text, lineHeight: "1.5"}}>
+                {achievement}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ),
+
+      customSections: resumeData.customSections && resumeData.customSections.length > 0 && (
+        <div key="customSections">
+          {resumeData.customSections.map((section, sectionIndex) => {
+            if (section.title && section.items && section.items.length > 0) {
+              return (
+                <section key={sectionIndex} style={sectionStyle}>
+                  <h2
+                    className="font-bold"
+                    style={{
+                      fontSize: "14pt",
+                      color: selectedTheme.primary,
+                      marginBottom: "12px",
+                      paddingBottom: "4px",
+                      borderBottom: `1px solid ${selectedTheme.border}`,
+                    }}
+                  >
+                    {section.title.toUpperCase()}
+                  </h2>
+                  <ul style={{paddingLeft: "20px", marginTop: "6px"}}>
+                    {section.items.map((item, itemIndex) => (
+                      <li key={itemIndex} style={{fontSize: "10pt", marginBottom: "4px", color: selectedTheme.text, lineHeight: "1.5"}}>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              );
+            }
+            return null;
+          })}
+        </div>
       ),
     };
 
@@ -470,12 +573,17 @@ const GitHubStyleTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) =>
             marginTop: "8px",
           }}
         >
-          {resumeData.contact?.github && formatContactItem(resumeData.contact.github, "👤")}
-          {resumeData.contact?.linkedin && formatContactItem(resumeData.contact.linkedin, "💼")}
-          {resumeData.contact?.website && formatContactItem(resumeData.contact.website, "🌐")}
-          {resumeData.contact?.email && formatContactItem(resumeData.contact.email, "✉️")}
-          {resumeData.contact?.phone && formatContactItem(resumeData.contact.phone, "📱")}
+          {resumeData.contact?.email && formatContactItem(resumeData.contact.email)}
+          {resumeData.contact?.phone && formatContactItem(resumeData.contact.phone)}
+          {resumeData.contact?.github && formatContactItem(resumeData.contact.github)}
+          {resumeData.contact?.linkedin && formatContactItem(resumeData.contact.linkedin)}
+          {resumeData.contact?.website && formatContactItem(resumeData.contact.website)}
         </div>
+        {resumeData.contact?.location && (
+          <div style={{fontSize: "10pt", marginTop: "6px", color: selectedTheme.textMuted}}>
+            {resumeData.contact.location}
+          </div>
+        )}
       </header>
 
       {/* Dynamic sections based on sectionOrder */}
