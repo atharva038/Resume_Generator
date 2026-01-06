@@ -31,7 +31,15 @@ export const DarkModeProvider = ({children}) => {
       root.classList.remove("dark");
     }
 
+<<<<<<< HEAD
+    try {
+      localStorage.setItem("darkMode", String(isDarkMode));
+    } catch (error) {
+      console.error("Error saving darkMode to localStorage:", error);
+    }
+=======
     themeStorage.setDarkMode(isDarkMode);
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   }, [isDarkMode]);
 
   const toggleDarkMode = () => {

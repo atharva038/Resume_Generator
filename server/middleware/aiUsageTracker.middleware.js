@@ -34,6 +34,10 @@ const QUOTA_LIMITS = {
     daily: Infinity, // No daily limit
     monthly: Infinity, // Unlimited for pro users
   },
+  "one-time": {
+    daily: 30, // 30 AI requests per day for one-time purchase users
+    monthly: 200, // 200 AI requests during 21-day access period
+  },
   premium: {
     daily: Infinity, // No daily limit
     monthly: Infinity, // Unlimited for premium users

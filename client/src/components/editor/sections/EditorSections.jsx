@@ -6,10 +6,17 @@
 import {useState, useEffect} from "react";
 import {useToggle} from "@/hooks";
 import EditableSection from "./EditableSection";
+<<<<<<< HEAD
+import {ScoreCard} from "../../common/cards";
+import {RecommendationsPanel} from "../panels";
+import {resumeAPI} from "../../../services/api";
+import {LimitedTextarea} from "../../common/LimitedInputs";
+=======
 import {ScoreCard} from "@/components/common/cards";
 import {RecommendationsPanel} from "@/components/editor/panels";
 import {resumeAPI} from "@/api/api";
 import {LimitedTextarea} from "@/components/common/LimitedInputs";
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 
 export const PersonalInfoSection = ({
   resumeData,
@@ -40,7 +47,11 @@ export const PersonalInfoSection = ({
         onChange={(e) => {
           const value = e.target.value;
           // Only allow numbers, spaces, hyphens, parentheses, and plus sign
+<<<<<<< HEAD
+          if (/^[0-9\s\-\(\)\+]*$/.test(value)) {
+=======
           if (/^[0-9\s\-()+ ]*$/.test(value)) {
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
             updateContact("phone", value);
           }
         }}

@@ -1,8 +1,12 @@
 import {useEffect, useState} from "react";
 import {Link} from "react-router-dom";
 import {FaCrown, FaExclamationTriangle} from "react-icons/fa";
+<<<<<<< HEAD
+import {getUsageStats} from "../../services/subscription.api";
+=======
 import {getUsageStats} from "@/api/subscription.api";
 import {authStorage} from "@/utils/storage";
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 
 /**
  * Usage Badge Component
@@ -21,7 +25,11 @@ export const UsageBadge = ({compact = false}) => {
       const data = await getUsageStats();
       setUsage(data);
 
+<<<<<<< HEAD
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
+=======
       const user = authStorage.getUser() || {};
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
       setTier(user.subscription?.tier || "free");
     } catch (error) {
       console.error("Failed to fetch usage:", error);
@@ -193,7 +201,11 @@ export const TierIndicator = ({showUpgrade = true}) => {
   const [tier, setTier] = useState("free");
 
   useEffect(() => {
+<<<<<<< HEAD
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+=======
     const user = authStorage.getUser() || {};
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
     setTier(user.subscription?.tier || "free");
   }, []);
 

@@ -1,4 +1,7 @@
 import {forwardRef, useRef, useEffect, useState} from "react";
+<<<<<<< HEAD
+
+=======
 import {Mail, Phone, MapPin, Linkedin, Github, Globe} from "lucide-react";
 
 /**
@@ -25,6 +28,7 @@ import {Mail, Phone, MapPin, Linkedin, Github, Globe} from "lucide-react";
  *   resumeData={{ name: "Riley Kim", contact: { email: "riley@example.com" }, selectedTheme: "teal" }}
  * />
  */
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 const ProfessionalV2Template = forwardRef(
   ({resumeData, onPageUsageChange}, ref) => {
     // Page overflow detection state
@@ -572,6 +576,10 @@ const ProfessionalV2Template = forwardRef(
         {/* Styles */}
         <style jsx>{`
           .professional-v2-template {
+<<<<<<< HEAD
+            font-family: "Inter", "Roboto", "Source Sans Pro", -apple-system,
+              BlinkMacSystemFont, sans-serif;
+=======
             font-family:
               "Inter",
               "Roboto",
@@ -579,6 +587,7 @@ const ProfessionalV2Template = forwardRef(
               -apple-system,
               BlinkMacSystemFont,
               sans-serif;
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
             background: white;
             color: #1a1a1a;
             line-height: 1.5;

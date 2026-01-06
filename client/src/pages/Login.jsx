@@ -19,7 +19,11 @@ import {FcGoogle} from "react-icons/fc";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+<<<<<<< HEAD
+  const [showPassword, setShowPassword] = useState(false);
+=======
   const [showPassword, toggleShowPassword] = useToggle(false);
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   const [error, setError] = useState("");
   const [loading, toggleLoading, setLoadingTrue, setLoadingFalse] =
     useToggle(false);
@@ -150,7 +154,11 @@ const Login = () => {
                 />
                 <button
                   type="button"
+<<<<<<< HEAD
+                  onClick={() => setShowPassword(!showPassword)}
+=======
                   onClick={toggleShowPassword}
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 transition-colors"
                 >
                   {showPassword ? (
@@ -198,7 +206,13 @@ const Login = () => {
           <div className="space-y-3">
             {/* Google OAuth Button */}
             <a
+<<<<<<< HEAD
+              href={`${
+                import.meta.env.VITE_SERVER_URL || "http://localhost:5000"
+              }/api/auth/google`}
+=======
               href={`${config.serverUrl}/api/auth/google`}
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
               className="w-full flex items-center justify-center gap-3 px-4 py-2.5 bg-white dark:bg-black border border-gray-300 dark:border-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-lg transition-all duration-200 font-medium text-gray-700 dark:text-gray-300 text-sm"
             >
               <FcGoogle className="w-5 h-5" />
@@ -207,7 +221,13 @@ const Login = () => {
 
             {/* GitHub OAuth Button */}
             <a
+<<<<<<< HEAD
+              href={`${
+                import.meta.env.VITE_SERVER_URL || "http://localhost:5000"
+              }/api/auth/github`}
+=======
               href={`${config.serverUrl}/api/auth/github`}
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
               className="w-full flex items-center justify-center gap-3 px-4 py-2.5 bg-white dark:bg-black border border-gray-300 dark:border-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-lg transition-all duration-200 font-medium text-gray-700 dark:text-gray-300 text-sm"
             >
               <Github className="w-5 h-5" />

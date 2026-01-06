@@ -9,7 +9,10 @@ import {checkAIQuota} from "../middleware/aiUsageTracker.middleware.js";
 import {
   checkSubscription,
   checkUsageLimit,
+<<<<<<< HEAD
+=======
   checkResumeSubscriptionAccess,
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 } from "../middleware/subscription.middleware.js";
 import {
   validateResumeCreate,
@@ -55,7 +58,10 @@ router.post(
   "/enhance",
   authenticateToken,
   checkSubscription,
+<<<<<<< HEAD
+=======
   checkResumeSubscriptionAccess, // NEW: Check if resume's subscription is active
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   checkUsageLimit("aiGenerationsPerMonth"),
   aiLimiter,
   checkAIQuota,
@@ -68,7 +74,10 @@ router.post(
   "/generate-summary",
   authenticateToken,
   checkSubscription,
+<<<<<<< HEAD
+=======
   checkResumeSubscriptionAccess, // NEW: Check if resume's subscription is active
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   checkUsageLimit("aiGenerationsPerMonth"),
   aiLimiter,
   checkAIQuota,
@@ -81,7 +90,10 @@ router.post(
   "/categorize-skills",
   authenticateToken,
   checkSubscription,
+<<<<<<< HEAD
+=======
   checkResumeSubscriptionAccess, // NEW: Check if resume's subscription is active
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   checkUsageLimit("aiGenerationsPerMonth"),
   aiLimiter,
   checkAIQuota,
@@ -94,7 +106,10 @@ router.post(
   "/segregate-achievements",
   authenticateToken,
   checkSubscription,
+<<<<<<< HEAD
+=======
   checkResumeSubscriptionAccess, // NEW: Check if resume's subscription is active
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   checkUsageLimit("aiGenerationsPerMonth"),
   aiLimiter,
   checkAIQuota,
@@ -107,7 +122,10 @@ router.post(
   "/process-custom-section",
   authenticateToken,
   checkSubscription,
+<<<<<<< HEAD
+=======
   checkResumeSubscriptionAccess, // NEW: Check if resume's subscription is active
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   checkUsageLimit("aiGenerationsPerMonth"),
   aiLimiter,
   checkAIQuota,
@@ -130,7 +148,10 @@ router.post(
   "/track-download",
   authenticateToken,
   checkSubscription,
+<<<<<<< HEAD
+=======
   checkResumeSubscriptionAccess, // NEW: Check if resume's subscription is active
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   checkUsageLimit("resumeDownloadsPerMonth"),
   trackDownload
 );

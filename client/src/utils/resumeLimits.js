@@ -69,7 +69,11 @@ export const FIELD_LIMITS = {
 export const PAGE_LIMITS = {
   // Approximate character count that fits on one page
   totalCharacters: 3500,
+<<<<<<< HEAD
+  
+=======
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   // Approximate line count for A4 page (with margins)
   totalLines: 45,
 };
@@ -80,7 +84,11 @@ export const PAGE_LIMITS = {
  * @returns {Object} - Content metrics
  */
 export const calculateContentMetrics = (resumeData) => {
+<<<<<<< HEAD
+  if (!resumeData) return { totalChars: 0, estimatedLines: 0, sections: {} };
+=======
   if (!resumeData) return {totalChars: 0, estimatedLines: 0, sections: {}};
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 
   let totalChars = 0;
   let estimatedLines = 0;
@@ -102,7 +110,11 @@ export const calculateContentMetrics = (resumeData) => {
     countChars(resumeData.contact?.linkedin) +
     countChars(resumeData.contact?.github) +
     countChars(resumeData.contact?.portfolio);
+<<<<<<< HEAD
+  
+=======
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   sections.personal = {
     chars: personalChars,
     lines: Math.max(3, charsToLines(personalChars)), // minimum 3 lines for header
@@ -141,7 +153,11 @@ export const calculateContentMetrics = (resumeData) => {
         countChars(exp.location) +
         countChars(exp.startDate) +
         countChars(exp.endDate);
+<<<<<<< HEAD
+      
+=======
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
       if (exp.bullets && Array.isArray(exp.bullets)) {
         exp.bullets.forEach((bullet) => {
           experienceChars += countChars(bullet);
@@ -167,7 +183,11 @@ export const calculateContentMetrics = (resumeData) => {
         countChars(edu.field) +
         countChars(edu.location) +
         countChars(edu.gpa);
+<<<<<<< HEAD
+      
+=======
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
       if (edu.bullets && Array.isArray(edu.bullets)) {
         edu.bullets.forEach((bullet) => {
           educationChars += countChars(bullet);
@@ -191,7 +211,11 @@ export const calculateContentMetrics = (resumeData) => {
         countChars(proj.name) +
         countChars(proj.description) +
         countChars(proj.technologies);
+<<<<<<< HEAD
+      
+=======
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
       if (proj.bullets && Array.isArray(proj.bullets)) {
         proj.bullets.forEach((bullet) => {
           projectsChars += countChars(bullet);
@@ -211,7 +235,13 @@ export const calculateContentMetrics = (resumeData) => {
   if (resumeData.certifications && Array.isArray(resumeData.certifications)) {
     resumeData.certifications.forEach((cert) => {
       certificationsChars +=
+<<<<<<< HEAD
+        countChars(cert.name) +
+        countChars(cert.issuer) +
+        countChars(cert.date);
+=======
         countChars(cert.name) + countChars(cert.issuer) + countChars(cert.date);
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
     });
   }
   sections.certifications = {
@@ -262,9 +292,13 @@ export const calculateContentMetrics = (resumeData) => {
     estimatedLines,
     sections,
     exceedsOnePage: estimatedLines > PAGE_LIMITS.totalLines,
+<<<<<<< HEAD
+    utilizationPercent: Math.round((estimatedLines / PAGE_LIMITS.totalLines) * 100),
+=======
     utilizationPercent: Math.round(
       (estimatedLines / PAGE_LIMITS.totalLines) * 100
     ),
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   };
 };
 
@@ -275,6 +309,13 @@ export const calculateContentMetrics = (resumeData) => {
  * @param {number} additionalChars - Characters being added
  * @returns {boolean} - True if would exceed limit
  */
+<<<<<<< HEAD
+export const wouldExceedPageLimit = (resumeData, section, additionalChars = 0) => {
+  const currentMetrics = calculateContentMetrics(resumeData);
+  const estimatedNewChars = currentMetrics.totalChars + additionalChars;
+  const estimatedNewLines = Math.ceil(estimatedNewChars / 80);
+  
+=======
 export const wouldExceedPageLimit = (
   resumeData,
   section,
@@ -284,6 +325,7 @@ export const wouldExceedPageLimit = (
   const estimatedNewChars = currentMetrics.totalChars + additionalChars;
   const estimatedNewLines = Math.ceil(estimatedNewChars / 80);
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   return estimatedNewLines > PAGE_LIMITS.totalLines;
 };
 
@@ -295,9 +337,15 @@ export const wouldExceedPageLimit = (
  */
 export const validateFieldLength = (field, value) => {
   const limit = FIELD_LIMITS[field];
+<<<<<<< HEAD
+  
+  if (!limit) {
+    return { valid: true, remaining: Infinity };
+=======
 
   if (!limit) {
     return {valid: true, remaining: Infinity};
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   }
 
   const length = (value || "").length;
@@ -337,11 +385,16 @@ export const getSuggestedReductions = (metrics) => {
   if (metrics.sections.experience?.lines > 20) {
     suggestions.push({
       section: "Experience",
+<<<<<<< HEAD
+      action: "Limit to 4-5 bullet points per job, focus on recent/relevant roles",
+      estimatedSavings: Math.ceil((metrics.sections.experience.lines - 20) * 0.6),
+=======
       action:
         "Limit to 4-5 bullet points per job, focus on recent/relevant roles",
       estimatedSavings: Math.ceil(
         (metrics.sections.experience.lines - 20) * 0.6
       ),
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
     });
   }
 

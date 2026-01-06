@@ -27,7 +27,11 @@ import RefundPolicy from "./pages/RefundPolicy";
 import ShippingPolicy from "./pages/ShippingPolicy";
 import PaymentModal from "./components/common/PaymentModal";
 import SubscriptionDashboard from "./pages/SubscriptionDashboard";
+<<<<<<< HEAD
+import AdvancedAnalytics from "./pages/AdvancedAnalytics";
+=======
 // import AdvancedAnalytics from "./pages/AdvancedAnalytics"; // Temporarily disabled
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 import Profile from "./pages/Profile";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import UserManagement from "./pages/admin/UserManagement";
@@ -202,15 +206,23 @@ function App() {
                 </ProtectedRoute>
               }
             />
+<<<<<<< HEAD
+            <Route
+=======
             {/* Temporarily disabled - Advanced Analytics */}
             {/* <Route
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
               path="analytics"
               element={
                 <ProtectedRoute>
                   <AdvancedAnalytics />
                 </ProtectedRoute>
               }
+<<<<<<< HEAD
+            />
+=======
             /> */}
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
             <Route
               path="profile"
               element={

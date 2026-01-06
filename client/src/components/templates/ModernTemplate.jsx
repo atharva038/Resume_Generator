@@ -1,5 +1,7 @@
 import {forwardRef, useRef, useEffect, useState} from "react";
 
+<<<<<<< HEAD
+=======
 /**
  * ModernTemplate - Contemporary resume template with bold design elements
  *
@@ -40,6 +42,7 @@ import {forwardRef, useRef, useEffect, useState} from "react";
  *   onPageUsageChange={(info) => console.log(info)}
  * />
  */
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 const ModernTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
   // Page overflow detection state
   const containerRef = useRef(null);

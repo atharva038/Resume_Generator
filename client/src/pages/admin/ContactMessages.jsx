@@ -473,7 +473,11 @@ const ContactMessages = () => {
                   Contact Message Details
                 </h3>
                 <button
+<<<<<<< HEAD
+                  onClick={() => setShowModal(false)}
+=======
                   onClick={setShowModalFalse}
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
                   className="text-gray-600 dark:text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-300"
                 >
                   <X className="w-6 h-6" />

@@ -1,6 +1,10 @@
 import {useState} from "react";
+<<<<<<< HEAD
+import {FIELD_LIMITS, validateFieldLength} from "../../utils/resumeLimits";
+=======
 import {FIELD_LIMITS, validateFieldLength} from "@/utils/resumeLimits";
 import {useToggle} from "@/hooks";
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 
 /**
  * Input field with character limit indicator
@@ -16,22 +20,41 @@ export const LimitedInput = ({
   maxLength,
   ...props
 }) => {
+<<<<<<< HEAD
+  const [isFocused, setIsFocused] = useState(false);
+
+  // Get limit from FIELD_LIMITS or use provided maxLength
+  const limit = maxLength || FIELD_LIMITS[fieldName] || null;
+  
+=======
   const [isFocused, toggleFocused, setIsFocusedTrue, setIsFocusedFalse] =
     useToggle(false);
 
   // Get limit from FIELD_LIMITS or use provided maxLength
   const limit = maxLength || FIELD_LIMITS[fieldName] || null;
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   // Calculate validation
   const validation = limit ? validateFieldLength(fieldName, value) : null;
 
   const handleChange = (e) => {
     const newValue = e.target.value;
+<<<<<<< HEAD
+    
+=======
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
     // If there's a limit, enforce it
     if (limit && newValue.length > limit) {
       return; // Don't allow typing beyond limit
     }
+<<<<<<< HEAD
+    
+    onChange(e);
+  };
+
+  const showCounter = showLimit && limit && (isFocused || (validation && validation.remaining < 50));
+=======
 
     onChange(e);
   };
@@ -40,6 +63,7 @@ export const LimitedInput = ({
     showLimit &&
     limit &&
     (isFocused || (validation && validation.remaining < 50));
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 
   return (
     <div className="relative">
@@ -53,8 +77,13 @@ export const LimitedInput = ({
             ? "border-red-500 dark:border-red-400"
             : ""
         }`}
+<<<<<<< HEAD
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+=======
         onFocus={setIsFocusedTrue}
         onBlur={setIsFocusedFalse}
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
         maxLength={limit || undefined}
         {...props}
       />
@@ -64,8 +93,13 @@ export const LimitedInput = ({
             validation.remaining < 10
               ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
               : validation.remaining < 30
+<<<<<<< HEAD
+              ? "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400"
+              : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
+=======
                 ? "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400"
                 : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
           }`}
         >
           {validation.remaining} left
@@ -89,22 +123,41 @@ export const LimitedTextarea = ({
   rows = 3,
   ...props
 }) => {
+<<<<<<< HEAD
+  const [isFocused, setIsFocused] = useState(false);
+
+  // Get limit from FIELD_LIMITS or use provided maxLength
+  const limit = maxLength || FIELD_LIMITS[fieldName] || null;
+  
+=======
   const [isFocused, toggleFocused, setIsFocusedTrue, setIsFocusedFalse] =
     useToggle(false);
 
   // Get limit from FIELD_LIMITS or use provided maxLength
   const limit = maxLength || FIELD_LIMITS[fieldName] || null;
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   // Calculate validation
   const validation = limit ? validateFieldLength(fieldName, value) : null;
 
   const handleChange = (e) => {
     const newValue = e.target.value;
+<<<<<<< HEAD
+    
+=======
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
     // If there's a limit, enforce it
     if (limit && newValue.length > limit) {
       return; // Don't allow typing beyond limit
     }
+<<<<<<< HEAD
+    
+    onChange(e);
+  };
+
+  const showCounter = showLimit && limit && (isFocused || (validation && validation.remaining < 100));
+=======
 
     onChange(e);
   };
@@ -113,6 +166,7 @@ export const LimitedTextarea = ({
     showLimit &&
     limit &&
     (isFocused || (validation && validation.remaining < 100));
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 
   return (
     <div className="relative">
@@ -125,8 +179,13 @@ export const LimitedTextarea = ({
             ? "border-red-500 dark:border-red-400"
             : ""
         }`}
+<<<<<<< HEAD
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+=======
         onFocus={setIsFocusedTrue}
         onBlur={setIsFocusedFalse}
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
         maxLength={limit || undefined}
         rows={rows}
         {...props}
@@ -137,8 +196,13 @@ export const LimitedTextarea = ({
             validation.remaining < 20
               ? "bg-red-100/90 dark:bg-red-900/50 text-red-700 dark:text-red-400"
               : validation.remaining < 50
+<<<<<<< HEAD
+              ? "bg-orange-100/90 dark:bg-orange-900/50 text-orange-700 dark:text-orange-400"
+              : "bg-gray-100/90 dark:bg-gray-700/50 text-gray-600 dark:text-gray-400"
+=======
                 ? "bg-orange-100/90 dark:bg-orange-900/50 text-orange-700 dark:text-orange-400"
                 : "bg-gray-100/90 dark:bg-gray-700/50 text-gray-600 dark:text-gray-400"
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
           }`}
         >
           {validation.current} / {validation.limit}
@@ -172,10 +236,17 @@ export const PageUtilizationIndicator = ({metrics, twoPageMode}) => {
             utilizationPercent > 100
               ? "bg-gradient-to-r from-red-500 to-red-600"
               : utilizationPercent > 90
+<<<<<<< HEAD
+              ? "bg-gradient-to-r from-orange-500 to-orange-600"
+              : utilizationPercent > 75
+              ? "bg-gradient-to-r from-yellow-500 to-yellow-600"
+              : "bg-gradient-to-r from-green-500 to-green-600"
+=======
                 ? "bg-gradient-to-r from-orange-500 to-orange-600"
                 : utilizationPercent > 75
                   ? "bg-gradient-to-r from-yellow-500 to-yellow-600"
                   : "bg-gradient-to-r from-green-500 to-green-600"
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
           }`}
           style={{width: `${Math.min(utilizationPercent, 100)}%`}}
         />

@@ -114,7 +114,11 @@ const JobSpecificScoreCard = ({resumeData, onUpdateField}) => {
     "azure-devops-engineer": "devops",
     "kubernetes-engineer": "devops",
     "terraform-engineer": "devops",
+<<<<<<< HEAD
+    "sre": "devops",
+=======
     sre: "devops",
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
     "platform-engineer": "devops",
 
     // Database

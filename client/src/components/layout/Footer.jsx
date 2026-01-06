@@ -87,12 +87,17 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           {/* Brand Section */}
           <div className="space-y-4">
+<<<<<<< HEAD
+            <Link to="/" className="flex items-center gap-2 group">
+              <Sparkles className="w-5 h-5 text-primary-600 dark:text-primary-400 group-hover:rotate-12 transition-transform duration-300" />
+=======
             <Link to="/" className="flex items-center group">
               <img
                 src="/Logo_Main.png"
                 alt="SmartNShine"
                 className="h-14 w-auto object-contain group-hover:scale-105 transition-transform duration-300 -mr-1"
               />
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
               <span className="text-lg font-bold bg-gradient-to-r from-primary-600 to-purple-600 bg-clip-text text-transparent tracking-tight">
                 SmartNShine
               </span>

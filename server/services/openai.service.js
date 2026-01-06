@@ -11,6 +11,8 @@ const openai = process.env.OPENAI_API_KEY
 const MODEL = "gpt-4o"; // GPT-4o for premium users
 const MAX_TOKENS = 4096;
 
+<<<<<<< HEAD
+=======
 // ============================================
 // RETRY CONFIGURATION
 // ============================================
@@ -120,6 +122,7 @@ async function retryWithBackoff(fn, operationName = "OpenAI API call") {
   throw lastError;
 }
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 /**
  * Extract token usage from OpenAI API response
  * @param {Object} response - OpenAI API response object
@@ -286,6 +289,51 @@ Return ONLY the enhanced content without explanations or additional formatting.`
  * @returns {Promise<Object>} - Structured resume data
  */
 export async function parseResumeWithAI(resumeText) {
+<<<<<<< HEAD
+  try {
+    if (!openai) {
+      throw new Error("OpenAI API key not configured");
+    }
+
+    const prompt = PARSE_RESUME_PROMPT.replace("{resumeText}", resumeText);
+
+    console.log("🤖 Calling OpenAI GPT-4o to parse resume...");
+    const completion = await openai.chat.completions.create({
+      model: MODEL,
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are an expert resume parser. Return only valid JSON without markdown formatting.",
+        },
+        {role: "user", content: prompt},
+      ],
+      temperature: 0.3,
+      max_tokens: MAX_TOKENS,
+      response_format: {type: "json_object"},
+    });
+
+    const response = completion.choices[0];
+    const text = response.message.content;
+
+    // Extract token usage and calculate cost
+    const tokenUsage = extractTokenUsage(completion);
+    const cost = calculateCost(tokenUsage);
+
+    // Parse JSON
+    const parsedData = JSON.parse(text);
+
+    console.log(
+      `✅ Resume parsed with GPT-4o (Tokens: ${
+        tokenUsage.totalTokens
+      }, Cost: ₹${cost.amountINR.toFixed(2)})`
+    );
+    return {data: parsedData, tokenUsage, cost};
+  } catch (error) {
+    console.error("❌ OpenAI parsing error:", error.message);
+    throw new Error(`Failed to parse resume with GPT-4o: ${error.message}`);
+  }
+=======
   return retryWithBackoff(async () => {
     try {
       if (!openai) {
@@ -331,6 +379,7 @@ export async function parseResumeWithAI(resumeText) {
       throw new Error(`Failed to parse resume with GPT-4o: ${error.message}`);
     }
   }, "OpenAI Resume Parsing");
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 }
 
 /**
@@ -394,6 +443,12 @@ export async function enhanceContentWithAI(
     // Try to parse as JSON if it looks like JSON
     try {
       if (enhancedContent.startsWith("[") || enhancedContent.startsWith("{")) {
+<<<<<<< HEAD
+        enhancedContent = JSON.parse(enhancedContent);
+      }
+    } catch (e) {
+      // Keep as string if not valid JSON
+=======
         const parsed = JSON.parse(enhancedContent);
 
         // If parsed result is an array of objects (like projects), extract text only
@@ -420,6 +475,7 @@ export async function enhanceContentWithAI(
     } catch (e) {
       // Keep as string if not valid JSON
       console.log("Content is not JSON, keeping as string");
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
     }
 
     console.log(

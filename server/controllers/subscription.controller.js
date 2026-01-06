@@ -352,11 +352,14 @@ export async function getUsageStats(req, res) {
           total: user.usage?.resumesCreated || 0,
           limit: user.getUsageLimit("resumesPerMonth"),
         },
+<<<<<<< HEAD
+=======
         aiGenerations: {
           used: user.usage?.aiGenerationsThisMonth || 0,
           total: user.usage?.aiGenerationsUsed || 0,
           limit: user.getUsageLimit("aiGenerationsPerMonth"),
         },
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
         atsScans: {
           used: user.usage?.atsScansThisMonth || 0,
           total: user.usage?.atsScans || 0,
