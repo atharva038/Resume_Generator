@@ -41,6 +41,8 @@ import {
   updateAIQuotaLimits,
   toggleFeature,
   updateRateLimits,
+  getAIExtractionUsage,
+  resetUserExtractionCounter,
 } from "../controllers/admin.controller.js";
 
 const router = express.Router();
@@ -104,6 +106,14 @@ router.post(
   "/ai-quota/users/:userId/reset-daily",
   validateUserId,
   resetUserDailyQuota
+);
+
+// AI Resume Extraction Usage Management
+router.get("/ai-extraction-usage", getAIExtractionUsage);
+router.post(
+  "/users/:userId/reset-extraction-counter",
+  validateUserId,
+  resetUserExtractionCounter
 );
 
 // System Settings

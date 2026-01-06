@@ -1,5 +1,5 @@
 import {Link, useLocation} from "react-router-dom";
-import {BlockableLink} from "../auth";
+import {BlockableLink} from "@/components/auth";
 import {useState} from "react";
 import {
   Home,
@@ -14,8 +14,10 @@ import {
   Sparkles,
   Shield,
   TrendingUp,
+  UserCircle,
+  Tag,
 } from "lucide-react";
-import {useAuth} from "../../context/AuthContext";
+import {useAuth} from "@/context/AuthContext";
 
 const Sidebar = ({isOpen, setIsOpen}) => {
   const location = useLocation();
@@ -59,12 +61,34 @@ const Sidebar = ({isOpen, setIsOpen}) => {
       icon: LayoutDashboard,
       description: "Manage your resumes",
     },
+    // Temporarily disabled - Advanced Analytics
+    // {
+    //   name: "Analytics",
+    //   path: "/analytics",
+    //   icon: TrendingUp,
+    //   description: "Advanced insights",
+    //   badge: "PRO",
+    // },
     {
+<<<<<<< HEAD
       name: "Analytics",
       path: "/analytics",
       icon: TrendingUp,
       description: "Advanced insights",
       badge: "PRO",
+=======
+      name: "Profile",
+      path: "/profile",
+      icon: UserCircle,
+      description: "Profile & Subscription",
+      requiresAuth: true,
+    },
+    {
+      name: "Pricing",
+      path: "/pricing",
+      icon: Tag,
+      description: "View Pricing",
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
     },
     {
       name: "Contact",
@@ -103,9 +127,19 @@ const Sidebar = ({isOpen, setIsOpen}) => {
             {isOpen && (
               <Link
                 to="/"
+<<<<<<< HEAD
                 className="flex items-center gap-2 text-xl font-bold group"
               >
                 <Sparkles className="w-6 h-6 text-primary-400 group-hover:rotate-12 transition-transform duration-300" />
+=======
+                className="flex items-center text-xl font-bold group"
+              >
+                <img
+                  src="/Logo_Main.png"
+                  alt="SmartNShine"
+                  className="h-16 w-auto object-contain group-hover:scale-105 transition-transform duration-300 -mr-1"
+                />
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
                 <span className="bg-gradient-to-r from-primary-600 to-purple-600 bg-clip-text text-transparent tracking-tight">
                   SmartNShine
                 </span>
@@ -118,7 +152,15 @@ const Sidebar = ({isOpen, setIsOpen}) => {
                 to="/"
                 className="hidden lg:flex items-center justify-center w-full group"
               >
+<<<<<<< HEAD
                 <Sparkles className="w-7 h-7 text-primary-400 group-hover:rotate-12 transition-transform duration-300" />
+=======
+                <img
+                  src="/Logo_Main.png"
+                  alt="SmartNShine"
+                  className="h-16 w-auto object-contain group-hover:scale-105 transition-transform duration-300"
+                />
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
               </Link>
             )}
 
@@ -170,7 +212,14 @@ const Sidebar = ({isOpen, setIsOpen}) => {
               )}
 
               {/* Regular Navigation Links */}
+<<<<<<< HEAD
               {navLinks.slice(0, -2).map((link) => {
+=======
+              {navLinks.slice(0, -3).map((link) => {
+                // Skip links that require auth when user is not logged in
+                if (link.requiresAuth && !user) return null;
+
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
                 const Icon = link.icon;
                 const isActive = isActivePath(link.path);
 
@@ -225,9 +274,18 @@ const Sidebar = ({isOpen, setIsOpen}) => {
               })}
             </div>
 
+<<<<<<< HEAD
             {/* Bottom Navigation Links (Analytics & Contact) */}
             <div className="space-y-1 mt-auto pt-2 border-t border-gray-200 dark:border-zinc-800">
               {navLinks.slice(-2).map((link) => {
+=======
+            {/* Bottom Navigation Links (Profile, Pricing & Contact) */}
+            <div className="space-y-1 mt-auto pt-2 border-t border-gray-200 dark:border-zinc-800">
+              {navLinks.slice(-3).map((link) => {
+                // Skip Profile link if user is not logged in
+                if (link.requiresAuth && !user) return null;
+
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
                 const Icon = link.icon;
                 const isActive = isActivePath(link.path);
 

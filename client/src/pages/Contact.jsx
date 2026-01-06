@@ -17,10 +17,27 @@ import {
   Trash2,
   Loader2,
 } from "lucide-react";
+<<<<<<< HEAD
 import {contactAPI} from "../services/api";
 import {feedbackAPI} from "../services/feedback.api";
 import {parseValidationErrors, formatFieldErrors} from "../utils/errorHandler";
 import toast from "react-hot-toast";
+=======
+import {contactAPI} from "@/api/api";
+import {feedbackAPI} from "@/api/feedback.api";
+import {
+  parseValidationErrors,
+  formatFieldErrors,
+  handleApiError,
+} from "@/utils/errorHandler";
+import {
+  contactSchema,
+  feedbackSchema,
+  validateWithSchema,
+} from "@/utils/validation";
+import toast from "react-hot-toast";
+import {useToggle} from "@/hooks";
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 
 const Contact = () => {
   const [activeTab, setActiveTab] = useState("contact"); // 'contact' or 'feedback'
@@ -56,9 +73,25 @@ const Contact = () => {
     pageUrl: window.location.href,
   });
 
+<<<<<<< HEAD
   const [feedbackLoading, setFeedbackLoading] = useState(false);
   const [myFeedback, setMyFeedback] = useState([]);
   const [loadingFeedback, setLoadingFeedback] = useState(false);
+=======
+  const [
+    feedbackLoading,
+    toggleFeedbackLoading,
+    setFeedbackLoadingTrue,
+    setFeedbackLoadingFalse,
+  ] = useToggle(false);
+  const [myFeedback, setMyFeedback] = useState([]);
+  const [
+    loadingFeedback,
+    toggleLoadingFeedback,
+    setLoadingFeedbackTrue,
+    setLoadingFeedbackFalse,
+  ] = useToggle(false);
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   const [stats, setStats] = useState(null);
 
   // Fetch feedback data when switching to feedback tab
@@ -71,6 +104,7 @@ const Contact = () => {
 
   const fetchMyFeedback = async () => {
     try {
+<<<<<<< HEAD
       setLoadingFeedback(true);
       const response = await feedbackAPI.getMyFeedback({limit: 20});
       setMyFeedback(response.data.feedbacks);
@@ -78,6 +112,15 @@ const Contact = () => {
       console.error("Error fetching feedback:", error);
     } finally {
       setLoadingFeedback(false);
+=======
+      setLoadingFeedbackTrue();
+      const response = await feedbackAPI.getMyFeedback({limit: 20});
+      setMyFeedback(response.data.feedbacks);
+    } catch (error) {
+      handleApiError(error, "Failed to load your feedback", toast);
+    } finally {
+      setLoadingFeedbackFalse();
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
     }
   };
 
@@ -86,7 +129,11 @@ const Contact = () => {
       const response = await feedbackAPI.getFeedbackStats();
       setStats(response.data.stats);
     } catch (error) {
+<<<<<<< HEAD
       console.error("Error fetching stats:", error);
+=======
+      handleApiError(error, "Failed to load feedback statistics", toast);
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
     }
   };
 
@@ -94,6 +141,43 @@ const Contact = () => {
     {value: "general", label: "General Inquiry", icon: "💬"},
     {value: "support", label: "Technical Support", icon: "🛠️"},
     {value: "business", label: "Business Inquiry", icon: "💼"},
+<<<<<<< HEAD
+  ];
+
+  const feedbackTypes = [
+    {
+      id: "improvement",
+      label: "Improvement",
+      icon: Lightbulb,
+      color: "yellow",
+      description: "Suggest ways to make our app better",
+    },
+    {
+      id: "feedback",
+      label: "General Feedback",
+      icon: MessageSquare,
+      color: "blue",
+      description: "Share your thoughts and experiences",
+    },
+    {
+      id: "bug",
+      label: "Bug Report",
+      icon: Bug,
+      color: "red",
+      description: "Report issues or technical problems",
+    },
+  ];
+
+  const feedbackCategories = [
+    {value: "ui-ux", label: "UI/UX"},
+    {value: "feature-request", label: "Feature"},
+    {value: "performance", label: "Performance"},
+    {value: "ai-enhancement", label: "AI Enhancement"},
+    {value: "template", label: "Template"},
+    {value: "authentication", label: "Authentication"},
+    {value: "other", label: "Other"},
+=======
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   ];
 
   const feedbackTypes = [
@@ -130,35 +214,13 @@ const Contact = () => {
     {value: "other", label: "Other"},
   ];
 
-  const validateForm = () => {
-    const newErrors = {};
-
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
-    } else if (formData.name.trim().length < 2) {
-      newErrors.name = "Name must be at least 2 characters";
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email";
-    }
-
-    if (!formData.subject.trim()) {
-      newErrors.subject = "Subject is required";
-    } else if (formData.subject.trim().length < 5) {
-      newErrors.subject = "Subject must be at least 5 characters";
-    }
-
-    if (!formData.message.trim()) {
-      newErrors.message = "Message is required";
-    } else if (formData.message.trim().length < 10) {
-      newErrors.message = "Message must be at least 10 characters";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const validateForm = async () => {
+    const {isValid, errors: validationErrors} = await validateWithSchema(
+      contactSchema,
+      formData
+    );
+    setErrors(validationErrors);
+    return isValid;
   };
 
   const handleChange = (e) => {
@@ -173,7 +235,8 @@ const Contact = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!validateForm()) {
+    const isValid = await validateForm();
+    if (!isValid) {
       return;
     }
 
@@ -220,7 +283,26 @@ const Contact = () => {
 
   const handleFeedbackSubmit = async (e) => {
     e.preventDefault();
+<<<<<<< HEAD
     setFeedbackLoading(true);
+=======
+
+    // Validate with Yup
+    const {isValid, errors: validationErrors} = await validateWithSchema(
+      feedbackSchema,
+      feedbackForm
+    );
+
+    if (!isValid) {
+      toast.error(Object.values(validationErrors)[0], {
+        icon: "⚠️",
+        duration: 4000,
+      });
+      return;
+    }
+
+    setFeedbackLoadingTrue();
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 
     try {
       await feedbackAPI.submitFeedback(feedbackForm);
@@ -249,7 +331,11 @@ const Contact = () => {
         duration: 4000,
       });
     } finally {
+<<<<<<< HEAD
       setFeedbackLoading(false);
+=======
+      setFeedbackLoadingFalse();
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
     }
   };
 
@@ -869,8 +955,13 @@ const Contact = () => {
                               item.type === "bug"
                                 ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
                                 : item.type === "improvement"
+<<<<<<< HEAD
                                 ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
                                 : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+=======
+                                  ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
+                                  : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
                             }`}
                           >
                             {item.type}

@@ -1,5 +1,48 @@
 import {forwardRef} from "react";
 
+/**
+ * AcademicTemplate - Specialized resume template for academic and research positions
+ *
+ * Features:
+ * - Academic-focused section ordering (Education first)
+ * - Special sections for Publications and Research
+ * - Traditional academic formatting
+ * - Professional typography suitable for academia
+ * - ATS-compatible structure
+ * - Flexible skills formatting (array or string)
+ * - Custom section order support
+ *
+ * Default section order: Education, Experience, Publications, Research,
+ * Achievements, Skills, Certifications, Projects, Custom Sections
+ *
+ * @component
+ * @param {Object} props - Component props
+ * @param {Object} props.resumeData - Complete resume data object
+ * @param {string} props.resumeData.name - Candidate's full name
+ * @param {Object} props.resumeData.contact - Contact information
+ * @param {Array<Object>} props.resumeData.education - Education entries (shown first)
+ * @param {Array<Object>} [props.resumeData.experience] - Work/research experience
+ * @param {Array<Object>} [props.resumeData.publications] - Published works (academic-specific)
+ * @param {Array<Object>} [props.resumeData.research] - Research projects (academic-specific)
+ * @param {Array<Object>} [props.resumeData.skills] - Skills (flexible format)
+ * @param {Array<string>} [props.resumeData.sectionOrder] - Custom section ordering
+ * @param {React.Ref} ref - Forwarded ref for PDF generation
+ *
+ * @example
+ * <AcademicTemplate
+ *   ref={templateRef}
+ *   resumeData={{
+ *     name: "Dr. Taylor Smith",
+ *     contact: { email: "taylor@university.edu" },
+ *     education: [{
+ *       degree: "Ph.D. in Computer Science",
+ *       institution: "MIT",
+ *       graduationDate: "May 2023"
+ *     }],
+ *     publications: [{ name: "Machine Learning in Healthcare", issuer: "IEEE", date: "2022" }]
+ *   }}
+ * />
+ */
 const AcademicTemplate = forwardRef(({resumeData}, ref) => {
   // Helper function to safely format skills (handles both array and string)
   const formatSkills = (items) => {

@@ -16,16 +16,23 @@ import {
   getUserQuotaStatus,
   getUserQuotaDetails,
   resetUserDailyQuota,
-} from "../../services/admin.api";
+} from "@/api/admin.api";
+import {useToggle} from "@/hooks";
 
 const AIQuotaManagement = () => {
   const [quotaData, setQuotaData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, toggleLoading, setLoadingTrue, setLoadingFalse] =
+    useToggle(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("usage");
   const [selectedUser, setSelectedUser] = useState(null);
-  const [showUserDetails, setShowUserDetails] = useState(false);
+  const [
+    showUserDetails,
+    toggleUserDetails,
+    setShowUserDetailsTrue,
+    setShowUserDetailsFalse,
+  ] = useToggle(false);
 
   useEffect(() => {
     fetchQuotaStatus();
@@ -33,7 +40,7 @@ const AIQuotaManagement = () => {
 
   const fetchQuotaStatus = async () => {
     try {
-      setLoading(true);
+      setLoadingTrue();
       const response = await getUserQuotaStatus({
         sortBy,
         search: searchTerm,
@@ -44,7 +51,7 @@ const AIQuotaManagement = () => {
       console.error("Error fetching quota status:", err);
       setError(err.response?.data?.error || "Failed to load quota data");
     } finally {
-      setLoading(false);
+      setLoadingFalse();
     }
   };
 
@@ -79,7 +86,7 @@ const AIQuotaManagement = () => {
     try {
       const response = await getUserQuotaDetails(userId);
       setSelectedUser(response.data);
-      setShowUserDetails(true);
+      setShowUserDetailsTrue();
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to load user details", {
         icon: "❌",
@@ -416,12 +423,12 @@ const AIQuotaManagement = () => {
                             user.tier === "admin"
                               ? "bg-purple-600"
                               : user.quota.daily.percentage >= 100
-                              ? "bg-red-600"
-                              : user.quota.daily.percentage >= 80
-                              ? "bg-orange-600"
-                              : user.quota.daily.percentage >= 50
-                              ? "bg-yellow-600"
-                              : "bg-green-600"
+                                ? "bg-red-600"
+                                : user.quota.daily.percentage >= 80
+                                  ? "bg-orange-600"
+                                  : user.quota.daily.percentage >= 50
+                                    ? "bg-yellow-600"
+                                    : "bg-green-600"
                           }`}
                           style={{
                             width: `${Math.min(
@@ -532,7 +539,11 @@ const AIQuotaManagement = () => {
                   </p>
                 </div>
                 <button
+<<<<<<< HEAD
                   onClick={() => setShowUserDetails(false)}
+=======
+                  onClick={setShowUserDetailsFalse}
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
                   className="text-gray-600 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                 >
                   <XCircle className="w-6 h-6" />

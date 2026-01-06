@@ -12,6 +12,7 @@ import {
   X,
   Filter,
 } from "lucide-react";
+<<<<<<< HEAD
 import ClassicTemplate from "../components/templates/ClassicTemplate";
 import ModernTemplate from "../components/templates/ModernTemplate";
 import MinimalTemplate from "../components/templates/MinimalTemplate";
@@ -28,6 +29,20 @@ import DataAnalystTemplate from "../components/templates/DataAnalystTemplate";
 import SocialMediaTemplate from "../components/templates/Social-MediaTemplate";
 import MarketingDirectorTemplate from "../components/templates/MarketingDirectorTemplate"; 
 import SoftwareEngineeringLeadTemplate from "../components/templates/SoftwareEngineeringLeadTemplate";
+=======
+import ClassicTemplate from "@/components/templates/ClassicTemplate";
+import ModernTemplate from "@/components/templates/ModernTemplate";
+import MinimalTemplate from "@/components/templates/MinimalTemplate";
+import ProfessionalTemplate from "@/components/templates/ProfessionalTemplate";
+import Professional2Template from "@/components/templates/Professional2Template";
+import TechTemplate from "@/components/templates/TechTemplate";
+import Creative2Template from "@/components/templates/Creative2Template";
+import AcademicTemplate from "@/components/templates/AcademicTemplate";
+import CorporateEliteTemplate from "@/components/templates/CorporateEliteTemplate";
+import StrategicLeaderTemplate from "@/components/templates/StrategicLeaderTemplate";
+import ImpactProTemplate from "@/components/templates/ImpactProTemplate";
+import GitHubStyleTemplate from "@/components/templates/GitHubStyleTemplate";
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 
 // Sample resume data for preview - matches template structure
 const sampleResumeData = {
@@ -162,15 +177,20 @@ const templates = [
     colors: ["#059669", "#ffffff"],
   },
   {
-    id: "executive",
-    name: "Executive",
-    component: ExecutiveTemplate,
-    category: "Leadership",
-    atsScore: 96,
+    id: "professional2",
+    name: "Professional Elite",
+    component: Professional2Template,
+    category: "Professional",
+    atsScore: 98,
     description:
-      "Premium formal template for senior leadership and executive positions",
-    features: ["Formal", "Leadership-Focused", "Achievement-Driven"],
-    colors: ["#2c3e50", "#ffffff"],
+      "Premium ATS-optimized template with dynamic content density and all sections included",
+    features: [
+      "Highest ATS Score",
+      "All Sections",
+      "Dynamic Layout",
+      "6 Color Themes",
+    ],
+    colors: ["#1e3a8a", "#ffffff"],
   },
   {
     id: "tech",
@@ -184,14 +204,30 @@ const templates = [
     colors: ["#0ea5e9", "#0f172a"],
   },
   {
-    id: "creative",
-    name: "Creative Designer",
-    component: CreativeTemplate,
-    category: "Creative",
-    atsScore: 88,
+    id: "GitHubStyle",
+    name: "GitHub Style",
+    component: GitHubStyleTemplate,
+    category: "Tech",
+    atsScore: 93,
     description:
-      "Vibrant creative template with visual appeal while maintaining ATS compatibility",
-    features: ["Colorful", "Visual Appeal", "Portfolio Ready"],
+      "GitHub-inspired template with clean code aesthetics and developer-friendly layout",
+    features: ["GitHub Theme", "Developer Focus", "Clean Design"],
+    colors: ["#0ea5e9", "#0f172a"],
+  },
+  {
+    id: "creative2",
+    name: "Creative Designer Pro",
+    component: Creative2Template,
+    category: "Creative",
+    atsScore: 94,
+    description:
+      "Vibrant modern creative template with dynamic layouts and ATS optimization",
+    features: [
+      "6 Color Themes",
+      "Dynamic Layout",
+      "All Sections",
+      "Visual Appeal",
+    ],
     colors: ["#8b5cf6", "#ec4899", "#ffffff"],
   },
   {
@@ -254,6 +290,7 @@ const templates = [
     ],
     colors: ["#24292e", "#ffffff"],
   },
+<<<<<<< HEAD
   {
   id: "data-analyst",
   name: "Data Analyst",
@@ -294,6 +331,8 @@ const templates = [
   features: ["Technical Leadership", "Thick Dividers", "Skill Categories", "Engineering Focus"],
   colors: ["#000000", "#ffffff"],
 }
+=======
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 ];
 
 // Color theme configurations (same as Editor.jsx)
@@ -353,6 +392,7 @@ const TEMPLATE_COLOR_THEMES = {
     { id: "teal", name: "Solid Teal", primary: "#0f766e" },
   ],
   "github-style": [
+<<<<<<< HEAD
   { id: "classic", name: "Classic Black", primary: "#000000" },
   { id: "indigo", name: "Deep Indigo", primary: "#1a237e" },
   { id: "saffron", name: "Saffron", primary: "#ff9933" },
@@ -368,6 +408,15 @@ const TEMPLATE_COLOR_THEMES = {
   { id: "gray", name: "Analyst Gray", primary: "#37474f" },
 ],
 
+=======
+    {id: "classic", name: "Classic Black", primary: "#000000"},
+    {id: "indigo", name: "Deep Indigo", primary: "#1a237e"},
+    {id: "saffron", name: "Saffron", primary: "#ff9933"},
+    {id: "forest", name: "Forest Green", primary: "#1b5e20"},
+    {id: "maroon", name: "Maroon", primary: "#880e4f"},
+    {id: "navy", name: "Navy Blue", primary: "#003366"},
+  ],
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 };
 
 const Templates = () => {
@@ -408,7 +457,11 @@ const Templates = () => {
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-zinc-900 rounded-full mb-4 border border-gray-200 dark:border-zinc-800">
             <Layout className="w-4 h-4 text-gray-600 dark:text-gray-400" />
             <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+<<<<<<< HEAD
              16 Professional Templates
+=======
+              11 Professional Templates
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
             </span>
           </div>
           <h1 className="text-4xl sm:text-5xl font-bold mb-4 text-gray-900 dark:text-white">
@@ -461,7 +514,11 @@ const Templates = () => {
               {/* Template Preview */}
               <div
                 className="relative bg-gray-50 dark:bg-zinc-900 overflow-hidden"
+<<<<<<< HEAD
                 style={{ height: "420px" }}
+=======
+                style={{height: "420px"}}
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
               >
                 <div
                   className="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none"
@@ -496,8 +553,8 @@ const Templates = () => {
                         template.atsScore >= 95
                           ? "text-green-500"
                           : template.atsScore >= 90
-                          ? "text-blue-500"
-                          : "text-orange-500"
+                            ? "text-blue-500"
+                            : "text-orange-500"
                       }`}
                     >
                       {template.atsScore}%
@@ -612,7 +669,11 @@ const Templates = () => {
                       >
                         <div
                           className="w-4 h-4 rounded-full border-2 border-gray-300 dark:border-zinc-700"
+<<<<<<< HEAD
                           style={{ backgroundColor: theme.primary }}
+=======
+                          style={{backgroundColor: theme.primary}}
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
                         />
                         <span className="text-sm font-medium">
                           {theme.name}
@@ -651,8 +712,8 @@ const Templates = () => {
                         selectedTemplate.atsScore >= 95
                           ? "text-green-500"
                           : selectedTemplate.atsScore >= 90
-                          ? "text-blue-500"
-                          : "text-orange-500"
+                            ? "text-blue-500"
+                            : "text-orange-500"
                       }`}
                     >
                       {selectedTemplate.atsScore}%

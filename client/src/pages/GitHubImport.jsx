@@ -1,16 +1,18 @@
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
-import {GitHubExtractor} from "../components/features/github";
+import {GitHubExtractor} from "@/components/features/github";
 import {CheckCircle} from "lucide-react";
+import {useToggle} from "@/hooks";
 
 const GitHubImport = () => {
   const navigate = useNavigate();
-  const [extracted, setExtracted] = useState(false);
+  const [extracted, toggleExtracted, setExtractedTrue, setExtractedFalse] =
+    useToggle(false);
 
   const handleDataExtracted = (githubData) => {
     // Store the GitHub data in localStorage or state management
     localStorage.setItem("githubData", JSON.stringify(githubData));
-    setExtracted(true);
+    setExtractedTrue();
 
     // Show success message and redirect after 2 seconds
     setTimeout(() => {

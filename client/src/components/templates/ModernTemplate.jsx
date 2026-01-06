@@ -1,5 +1,48 @@
 import {forwardRef, useRef, useEffect, useState} from "react";
 
+<<<<<<< HEAD
+=======
+/**
+ * ModernTemplate - Contemporary resume template with bold design elements
+ *
+ * Features:
+ * - Modern single-column layout with visual hierarchy
+ * - Multiple color themes (blue, teal, purple, amber, emerald)
+ * - Automatic page overflow detection and logging
+ * - Clean section separators with color accents
+ * - Professional typography with modern spacing
+ * - ATS-compatible structure
+ *
+ * @component
+ * @param {Object} props - Component props
+ * @param {Object} props.resumeData - Complete resume data object (same structure as ClassicTemplate)
+ * @param {string} props.resumeData.name - Candidate's full name
+ * @param {Object} props.resumeData.contact - Contact information
+ * @param {string} [props.resumeData.summary] - Professional summary
+ * @param {Array<Object>} [props.resumeData.experience] - Work experience entries
+ * @param {Array<Object>} [props.resumeData.education] - Education entries
+ * @param {Array<Object>} [props.resumeData.skills] - Skills grouped by category
+ * @param {Array<Object>} [props.resumeData.projects] - Project entries
+ * @param {Array<Object>} [props.resumeData.certifications] - Certifications
+ * @param {Array<string>} [props.resumeData.achievements] - Achievements
+ * @param {Array<Object>} [props.resumeData.customSections] - Custom sections
+ * @param {string} [props.resumeData.selectedTheme] - Color theme (blue, teal, purple, amber, emerald)
+ * @param {Array<string>} [props.resumeData.sectionOrder] - Custom section ordering
+ * @param {Function} [props.onPageUsageChange] - Callback for page overflow detection
+ * @param {React.Ref} ref - Forwarded ref for PDF generation
+ *
+ * @example
+ * <ModernTemplate
+ *   ref={templateRef}
+ *   resumeData={{
+ *     name: "Alex Johnson",
+ *     contact: { email: "alex@example.com" },
+ *     selectedTheme: "teal"
+ *   }}
+ *   onPageUsageChange={(info) => console.log(info)}
+ * />
+ */
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 const ModernTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
   // Page overflow detection state
   const containerRef = useRef(null);
@@ -158,7 +201,9 @@ const ModernTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
             {getSectionTitle("summary")}
           </h2>
           <p style={{fontSize: "10pt", textAlign: "justify"}}>
-            {resumeData.summary}
+            {typeof resumeData.summary === "string"
+              ? resumeData.summary
+              : resumeData.summary?.summary || ""}
           </p>
         </section>
       ),

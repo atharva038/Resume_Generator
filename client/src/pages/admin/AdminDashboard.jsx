@@ -24,7 +24,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import {getDashboardStats} from "../../services/admin.api";
+import {getDashboardStats} from "@/api/admin.api";
 
 const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
@@ -97,19 +97,19 @@ const AdminDashboard = () => {
       trend: "up",
     },
     {
+      title: "AI Extractions Today",
+      value: stats?.aiExtractions?.today || 0,
+      icon: Activity,
+      color: "bg-orange-500",
+      change: `${stats?.aiExtractions?.usersAtLimit || 0} at limit`,
+      trend: stats?.aiExtractions?.usersAtLimit > 0 ? "down" : "up",
+    },
+    {
       title: "AI Cost",
       value: `$${(stats?.stats?.totalAICost || 0).toFixed(2)}`,
       icon: DollarSign,
-      color: "bg-orange-500",
-      change: "+15%",
-      trend: "up",
-    },
-    {
-      title: "Templates",
-      value: stats?.stats?.totalTemplates || 0,
-      icon: Activity,
       color: "bg-pink-500",
-      change: "+2",
+      change: "+15%",
       trend: "up",
     },
     {

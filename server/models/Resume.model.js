@@ -101,6 +101,27 @@ const resumeSchema = new mongoose.Schema(
       type: String,
       default: null, // Will use template's default if not specified
     },
+    // Subscription tracking for access control
+    subscriptionInfo: {
+      subscriptionId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Subscription",
+        default: null,
+      },
+      createdWithTier: {
+        type: String,
+        enum: ["free", "one-time", "pro", "premium", "student", "lifetime"],
+        default: "free",
+      },
+      createdWithSubscription: {
+        type: Boolean,
+        default: false,
+      },
+      linkedAt: {
+        type: Date,
+        default: null,
+      },
+    },
   },
   {
     timestamps: true,

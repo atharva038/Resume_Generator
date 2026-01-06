@@ -6,6 +6,7 @@ import React, {
   useEffect,
 } from "react";
 import {useReactToPrint} from "react-to-print";
+<<<<<<< HEAD
 import ClassicTemplate from "../../templates/ClassicTemplate";
 import ModernTemplate from "../../templates/ModernTemplate";
 import MinimalTemplate from "../../templates/MinimalTemplate";
@@ -23,6 +24,21 @@ import DataAnalystTemplate from "../../templates/DataAnalystTemplate";
 import SocialMediaTemplate from "../../templates/Social-MediaTemplate";
 import MarketingDirectorTemplate from "../../templates/MarketingDirectorTemplate";
 import SoftwareEngineeringLeadTemplate from "../../templates/SoftwareEngineeringLeadTemplate";
+=======
+import {useToggle, useMediaQuery} from "@/hooks";
+import ClassicTemplate from "@/components/templates/ClassicTemplate";
+import ModernTemplate from "@/components/templates/ModernTemplate";
+import MinimalTemplate from "@/components/templates/MinimalTemplate";
+import ProfessionalTemplate from "@/components/templates/ProfessionalTemplate";
+import ProfessionalV2Template from "@/components/templates/ProfessionalV2Template";
+import ExecutiveTemplate from "@/components/templates/ExecutiveTemplate";
+import TechTemplate from "@/components/templates/TechTemplate";
+import Creative2Template from "@/components/templates/Creative2Template";
+import AcademicTemplate from "@/components/templates/AcademicTemplate";
+import CorporateEliteTemplate from "@/components/templates/CorporateEliteTemplate";
+import StrategicLeaderTemplate from "@/components/templates/StrategicLeaderTemplate";
+import ImpactProTemplate from "@/components/templates/ImpactProTemplate";
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 import FullPreviewModal from "./FullPreviewModal";
 
 const ResumePreview = forwardRef(
@@ -32,7 +48,16 @@ const ResumePreview = forwardRef(
   ) => {
     const componentRef = useRef();
     const containerRef = useRef();
+<<<<<<< HEAD
     const [hasOverflow, setHasOverflow] = useState(false);
+=======
+    const [
+      hasOverflow,
+      toggleOverflow,
+      setHasOverflowTrue,
+      setHasOverflowFalse,
+    ] = useToggle(false);
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 
     // Template-specific page usage from individual templates
     const [pageUsage, setPageUsage] = useState({
@@ -43,8 +68,18 @@ const ResumePreview = forwardRef(
       templateName: "",
     });
 
+<<<<<<< HEAD
     const [showFullPreview, setShowFullPreview] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
+=======
+    const [
+      showFullPreview,
+      toggleFullPreview,
+      setShowFullPreviewTrue,
+      setShowFullPreviewFalse,
+    ] = useToggle(false);
+    const isMobile = useMediaQuery("(max-width: 1023px)"); // lg breakpoint
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
     const [numberOfPages, setNumberOfPages] = useState(1);
 
     // Callback to receive page usage data from individual templates
@@ -54,7 +89,15 @@ const ResumePreview = forwardRef(
         usageInfo
       );
       setPageUsage(usageInfo);
+<<<<<<< HEAD
       setHasOverflow(usageInfo.isOverflowing);
+=======
+      if (usageInfo.isOverflowing) {
+        setHasOverflowTrue();
+      } else {
+        setHasOverflowFalse();
+      }
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 
       // Calculate number of pages needed
       if (usageInfo.currentHeight > 0) {
@@ -78,6 +121,7 @@ const ResumePreview = forwardRef(
           isOverflowing: false,
           templateName: "",
         });
+<<<<<<< HEAD
         setHasOverflow(false);
       }
     }, [template, twoPageMode]);
@@ -123,6 +167,43 @@ const ResumePreview = forwardRef(
     }, [resumeData, twoPageMode]);
     */
 
+=======
+        setHasOverflowFalse();
+      }
+    }, [template, twoPageMode, setHasOverflowFalse]);
+
+    // Check for content overflow in single-page mode
+    // COMMENTED OUT: Universal page usage calculator
+    // Now using template-specific calculations via onPageUsageChange callback
+    /*
+    useEffect(() => {
+      if (!twoPageMode && containerRef.current) {
+        const container = containerRef.current;
+        const currentHeight = container.scrollHeight;
+        const maxHeight = 1056; // A4 page height at 96 DPI
+        const isOverflowing = currentHeight > maxHeight;
+        const percentage = Math.min(Math.round((currentHeight / maxHeight) * 100), 100);
+        
+        setHasOverflow(isOverflowing);
+        setPageUsage({
+          currentHeight,
+          maxHeight,
+          percentage,
+          isOverflowing,
+        });
+      } else {
+        setHasOverflow(false);
+        setPageUsage({
+          currentHeight: 0,
+          maxHeight: 1056,
+          percentage: 0,
+          isOverflowing: false,
+        });
+      }
+    }, [resumeData, twoPageMode]);
+    */
+
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
     const templates = {
       classic: ClassicTemplate,
       modern: ModernTemplate,
@@ -131,16 +212,23 @@ const ResumePreview = forwardRef(
       "professional-v2": ProfessionalV2Template,
       executive: ExecutiveTemplate,
       tech: TechTemplate,
+<<<<<<< HEAD
       creative: CreativeTemplate,
+=======
+      creative2: Creative2Template,
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
       academic: AcademicTemplate,
       "corporate-elite": CorporateEliteTemplate,
       "strategic-leader": StrategicLeaderTemplate,
       "impact-pro": ImpactProTemplate,
+<<<<<<< HEAD
       "github-style": GitHubStyleTemplate,
       "data-analyst": DataAnalystTemplate,
       "social-media": SocialMediaTemplate,
       "marketing-director": MarketingDirectorTemplate,
       "software-engineering-lead": SoftwareEngineeringLeadTemplate,
+=======
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
     };
 
     const SelectedTemplate = templates[template] || ClassicTemplate;
@@ -227,7 +315,11 @@ const ResumePreview = forwardRef(
                   // Multi-page view CSS
                   position: "relative",
                 }}
+<<<<<<< HEAD
                 onClick={isMobile ? () => setShowFullPreview(true) : undefined}
+=======
+                onClick={isMobile ? setShowFullPreviewTrue : undefined}
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
               >
                 {/* Page break indicators - visual guides at every A4 page boundary */}
                 {!twoPageMode &&
@@ -316,7 +408,11 @@ const ResumePreview = forwardRef(
         {/* Full Preview Modal */}
         <FullPreviewModal
           isOpen={showFullPreview}
+<<<<<<< HEAD
           onClose={() => setShowFullPreview(false)}
+=======
+          onClose={setShowFullPreviewFalse}
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
         >
           <div
             className="bg-white dark:bg-gray-50 shadow-2xl"

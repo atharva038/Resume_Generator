@@ -2,8 +2,10 @@ import {useState} from "react";
 import {useEditor, EditorContent} from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import toast from "react-hot-toast";
-import {resumeAPI} from "../../../services/api";
-import {parseValidationErrors} from "../../../utils/errorHandler";
+import {resumeAPI} from "@/api/api";
+import {parseValidationErrors} from "@/utils/errorHandler";
+import {authStorage} from "@/utils/storage";
+import {useToggle} from "@/hooks";
 
 const EditableSection = ({
   title,
@@ -19,8 +21,10 @@ const EditableSection = ({
   projectData,
   onUpdateProject,
 }) => {
-  const [enhancing, setEnhancing] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+  const [enhancing, toggleEnhancing, setEnhancingTrue, setEnhancingFalse] =
+    useToggle(false);
+  const [isEditing, toggleEditing, setIsEditingTrue, setIsEditingFalse] =
+    useToggle(false);
 
   // Initialize TipTap editor for bullet points
   const editor = useEditor({
@@ -28,10 +32,10 @@ const EditableSection = ({
     content: Array.isArray(content)
       ? `<ul>${content.map((bullet) => `<li>${bullet}</li>`).join("")}</ul>`
       : typeof content === "object"
-      ? `<ul>${(content.bullets || [])
-          .map((bullet) => `<li>${bullet}</li>`)
-          .join("")}</ul>`
-      : `<p>${content || ""}</p>`,
+        ? `<ul>${(content.bullets || [])
+            .map((bullet) => `<li>${bullet}</li>`)
+            .join("")}</ul>`
+        : `<p>${content || ""}</p>`,
     onUpdate: ({editor}) => {
       if (sectionType === "summary") {
         onUpdate(editor.getText());
@@ -49,29 +53,79 @@ const EditableSection = ({
   });
 
   const handleEnhance = async () => {
-    setEnhancing(true);
+    setEnhancingTrue();
     try {
       // Check if user is authenticated
+<<<<<<< HEAD
       const token = localStorage.getItem("token");
       if (!token) {
+=======
+      if (!authStorage.hasToken()) {
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
         toast.error("Please log in to use AI enhancement", {
           icon: "🔒",
           duration: 3000,
         });
+<<<<<<< HEAD
         setEnhancing(false);
         return;
       }
 
+=======
+        setEnhancingFalse();
+        return;
+      }
+
+      // Validate resumeData and resumeId
+      if (!resumeData?._id) {
+        console.warn(
+          "⚠️  Resume not saved yet. Please save before using AI enhancement."
+        );
+        toast.error(
+          "Please save your resume first before using AI enhancement",
+          {
+            icon: "💾",
+            duration: 4000,
+          }
+        );
+        setEnhancingFalse();
+        return;
+      }
+
+      console.log("🔍 Enhancing with resumeId:", resumeData._id);
+
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
       let contentToEnhance;
 
       if (sectionType === "summary") {
         contentToEnhance = content;
       } else if (sectionType === "experience" && experienceData) {
+<<<<<<< HEAD
         contentToEnhance = experienceData.bullets;
       } else if (sectionType === "projects" && projectData) {
         contentToEnhance = projectData.bullets;
+=======
+        // Ensure we're sending bullets as array of strings
+        contentToEnhance = Array.isArray(experienceData.bullets)
+          ? experienceData.bullets
+          : [experienceData.bullets].filter(Boolean);
+      } else if (sectionType === "projects" && projectData) {
+        // Ensure we're sending bullets as array of strings
+        contentToEnhance = Array.isArray(projectData.bullets)
+          ? projectData.bullets
+          : [projectData.bullets].filter(Boolean);
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
       } else {
         contentToEnhance = content;
+      }
+
+      // Ensure contentToEnhance is serializable (no complex objects)
+      if (
+        typeof contentToEnhance === "object" &&
+        !Array.isArray(contentToEnhance)
+      ) {
+        console.warn("⚠️  Content is an object, converting to string");
+        contentToEnhance = JSON.stringify(contentToEnhance);
       }
 
       // Pass full resumeData for context-aware enhancement
@@ -87,9 +141,21 @@ const EditableSection = ({
         editor?.commands.setContent(`<p>${enhanced}</p>`);
       } else {
         const bullets = Array.isArray(enhanced) ? enhanced : [enhanced];
-        onUpdate(bullets);
+
+        // Convert bullets to strings (handle objects like project data)
+        const bulletStrings = bullets.map((b) => {
+          if (typeof b === "string") {
+            return b;
+          } else if (typeof b === "object" && b !== null) {
+            // If it's an object (like a project), convert to string representation
+            return JSON.stringify(b);
+          }
+          return String(b);
+        });
+
+        onUpdate(bulletStrings);
         editor?.commands.setContent(
-          `<ul>${bullets.map((b) => `<li>${b}</li>`).join("")}</ul>`
+          `<ul>${bulletStrings.map((b) => `<li>${b}</li>`).join("")}</ul>`
         );
       }
 
@@ -142,7 +208,7 @@ const EditableSection = ({
         );
       }
     } finally {
-      setEnhancing(false);
+      setEnhancingFalse();
     }
   };
 

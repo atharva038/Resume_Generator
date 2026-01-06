@@ -3,14 +3,25 @@ import {
   getAllJobs,
   getJobCategories,
   getJobsByCategory,
-} from "../../../utils/jobProfiles";
-import {calculateJobSpecificScore} from "../../../utils/jobSpecificScoring";
+} from "@/utils/jobProfiles";
+import {calculateJobSpecificScore} from "@/utils/jobSpecificScoring";
+import {useToggle} from "@/hooks";
 
 const JobSpecificScoreCard = ({resumeData, onUpdateField}) => {
   const [customTechStack, setCustomTechStack] = useState("");
-  const [showCustomTech, setShowCustomTech] = useState(false);
+  const [
+    showCustomTech,
+    toggleCustomTech,
+    setShowCustomTechTrue,
+    setShowCustomTechFalse,
+  ] = useToggle(false);
   const [scoreData, setScoreData] = useState(null);
-  const [isCalculating, setIsCalculating] = useState(false);
+  const [
+    isCalculating,
+    toggleCalculating,
+    setIsCalculatingTrue,
+    setIsCalculatingFalse,
+  ] = useToggle(false);
 
   // New state for cascading dropdowns
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -103,7 +114,11 @@ const JobSpecificScoreCard = ({resumeData, onUpdateField}) => {
     "azure-devops-engineer": "devops",
     "kubernetes-engineer": "devops",
     "terraform-engineer": "devops",
+<<<<<<< HEAD
     "sre": "devops",
+=======
+    sre: "devops",
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
     "platform-engineer": "devops",
 
     // Database
@@ -199,7 +214,7 @@ const JobSpecificScoreCard = ({resumeData, onUpdateField}) => {
   const calculateScore = useCallback(() => {
     if (!resumeData) return;
 
-    setIsCalculating(true);
+    setIsCalculatingTrue();
 
     // For predefined jobs, use the normal calculation
     const techArray = customTechStack
@@ -214,7 +229,7 @@ const JobSpecificScoreCard = ({resumeData, onUpdateField}) => {
         techArray
       );
       setScoreData(result);
-      setIsCalculating(false);
+      setIsCalculatingFalse();
     } catch (error) {
       console.error("Error calculating score:", error);
       // Fallback to zero score if calculation fails
@@ -236,9 +251,15 @@ const JobSpecificScoreCard = ({resumeData, onUpdateField}) => {
           color: "red",
         },
       });
-      setIsCalculating(false);
+      setIsCalculatingFalse();
     }
-  }, [resumeData, selectedJob, customTechStack]);
+  }, [
+    resumeData,
+    selectedJob,
+    customTechStack,
+    setIsCalculatingTrue,
+    setIsCalculatingFalse,
+  ]);
 
   // Calculate on mount and when dependencies change
   useEffect(() => {
@@ -415,7 +436,7 @@ const JobSpecificScoreCard = ({resumeData, onUpdateField}) => {
         {/* Custom Tech Stack */}
         <div>
           <button
-            onClick={() => setShowCustomTech(!showCustomTech)}
+            onClick={toggleCustomTech}
             className="text-sm text-primary-600 dark:text-primary-400 hover:underline"
           >
             {showCustomTech ? "- Hide" : "+"} Add Custom Tech Stack
@@ -516,10 +537,10 @@ const JobSpecificScoreCard = ({resumeData, onUpdateField}) => {
                     scoreData.level.color === "green"
                       ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
                       : scoreData.level.color === "blue"
-                      ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400"
-                      : scoreData.level.color === "yellow"
-                      ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400"
-                      : "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
+                        ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400"
+                        : scoreData.level.color === "yellow"
+                          ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400"
+                          : "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
                   }`}
                 >
                   {scoreData.level.label}
@@ -685,8 +706,8 @@ const JobSpecificScoreCard = ({resumeData, onUpdateField}) => {
                         rec.priority === "high"
                           ? "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800"
                           : rec.priority === "medium"
-                          ? "bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800"
-                          : "bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800"
+                            ? "bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800"
+                            : "bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800"
                       }`}
                     >
                       <div className="flex items-start gap-2">
@@ -695,15 +716,15 @@ const JobSpecificScoreCard = ({resumeData, onUpdateField}) => {
                             rec.priority === "high"
                               ? "text-red-600 dark:text-red-400"
                               : rec.priority === "medium"
-                              ? "text-yellow-600 dark:text-yellow-400"
-                              : "text-blue-600 dark:text-blue-400"
+                                ? "text-yellow-600 dark:text-yellow-400"
+                                : "text-blue-600 dark:text-blue-400"
                           }`}
                         >
                           {rec.priority === "high"
                             ? "⚠️"
                             : rec.priority === "medium"
-                            ? "⚡"
-                            : "ℹ️"}
+                              ? "⚡"
+                              : "ℹ️"}
                         </span>
                         <div className="flex-1">
                           <p className="font-medium text-gray-900 dark:text-gray-100 mb-1">

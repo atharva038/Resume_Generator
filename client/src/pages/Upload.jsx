@@ -1,9 +1,16 @@
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {useDropzone} from "react-dropzone";
+<<<<<<< HEAD
 import {resumeAPI} from "../services/api";
 import {parseValidationErrors} from "../utils/errorHandler";
 import UpgradeRequiredModal from "../components/common/modals/UpgradeRequiredModal";
+=======
+import {resumeAPI} from "@/api/api";
+import {parseValidationErrors} from "@/utils/errorHandler";
+import UpgradeRequiredModal from "@/components/common/modals/UpgradeRequiredModal";
+import {useToggle} from "@/hooks";
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 import {
   Upload as UploadIcon,
   FileText,
@@ -15,9 +22,19 @@ import {
 } from "lucide-react";
 
 const Upload = () => {
-  const [uploading, setUploading] = useState(false);
+  const [uploading, toggleUploading, setUploadingTrue, setUploadingFalse] =
+    useToggle(false);
   const [error, setError] = useState("");
+<<<<<<< HEAD
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+=======
+  const [
+    showUpgradeModal,
+    toggleUpgradeModal,
+    setShowUpgradeModalTrue,
+    setShowUpgradeModalFalse,
+  ] = useToggle(false);
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   const [upgradeMessage, setUpgradeMessage] = useState("");
   const navigate = useNavigate();
 
@@ -26,7 +43,7 @@ const Upload = () => {
 
     const file = acceptedFiles[0];
     setError("");
-    setUploading(true);
+    setUploadingTrue();
 
     try {
       const formData = new FormData();
@@ -50,13 +67,17 @@ const Upload = () => {
         setUpgradeMessage(
           err.response.data.message || "Upgrade to access this premium feature!"
         );
+<<<<<<< HEAD
         setShowUpgradeModal(true);
+=======
+        setShowUpgradeModalTrue();
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
       } else {
         console.log("⚠️ Not an upgrade error - showing regular error");
         setError(parseValidationErrors(err));
       }
     } finally {
-      setUploading(false);
+      setUploadingFalse();
     }
   };
 
@@ -317,7 +338,11 @@ const Upload = () => {
       {showUpgradeModal && (
         <UpgradeRequiredModal
           isOpen={showUpgradeModal}
+<<<<<<< HEAD
           onClose={() => setShowUpgradeModal(false)}
+=======
+          onClose={setShowUpgradeModalFalse}
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
           message={upgradeMessage}
           title="Upgrade Required"
           feature="AI Resume Parsing"

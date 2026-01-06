@@ -1,8 +1,12 @@
 import {Link, useNavigate} from "react-router-dom";
-import {useAuth} from "../../context/AuthContext";
-import {BlockableLink} from "../auth";
-import {DarkModeToggle} from "../common";
+import {useAuth} from "@/context/AuthContext";
+import {BlockableLink} from "@/components/auth";
+import {DarkModeToggle} from "@/components/common";
 import {useState, useEffect} from "react";
+<<<<<<< HEAD
+=======
+import {useToggle} from "@/hooks";
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 import {
   Menu,
   Sparkles,
@@ -17,16 +21,21 @@ import {
 const Navbar = ({toggleSidebar, isSidebarOpen}) => {
   const {user, logout} = useAuth();
   const navigate = useNavigate();
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [isScrolled, toggleScrolled, setIsScrolledTrue, setIsScrolledFalse] =
+    useToggle(false);
 
   // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+      if (window.scrollY > 10) {
+        setIsScrolledTrue();
+      } else {
+        setIsScrolledFalse();
+      }
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [setIsScrolledTrue, setIsScrolledFalse]);
 
   const handleLogout = () => {
     logout();
@@ -57,6 +66,7 @@ const Navbar = ({toggleSidebar, isSidebarOpen}) => {
             </button>
 
             {/* Logo */}
+<<<<<<< HEAD
             <Link
               to="/"
               className="flex items-center gap-2 text-xl font-bold group"
@@ -64,6 +74,14 @@ const Navbar = ({toggleSidebar, isSidebarOpen}) => {
               <div className="relative">
                 <Sparkles className="w-6 h-6 text-primary-400 group-hover:rotate-12 transition-transform duration-300" />
               </div>
+=======
+            <Link to="/" className="flex items-center text-xl font-bold group">
+              <img
+                src="/Logo_Main.png"
+                alt="SmartNShine"
+                className="h-16 w-auto object-contain group-hover:scale-105 transition-transform duration-300 -mr-1"
+              />
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
               <span className="bg-gradient-to-r from-primary-600 to-purple-600 bg-clip-text text-transparent hidden sm:inline tracking-tight">
                 SmartNShine
               </span>

@@ -1,5 +1,6 @@
 import {createContext, useContext, useState, useEffect} from "react";
-import {authAPI} from "../services/api";
+import {authAPI} from "@/api/api";
+import {authStorage} from "@/utils/storage";
 
 const AuthContext = createContext(null);
 
@@ -7,40 +8,43 @@ export const AuthProvider = ({children}) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
   const checkAuth = async () => {
-    const token = localStorage.getItem("token");
+    const token = authStorage.getToken();
     if (token) {
       try {
         const response = await authAPI.getCurrentUser();
         setUser(response.data.user);
+        authStorage.setUser(response.data.user);
       } catch (error) {
         console.error("Auth check failed:", error);
-        localStorage.removeItem("token");
+        authStorage.clearAuth();
       }
     }
     setLoading(false);
   };
 
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
   const login = async (email, password) => {
     const response = await authAPI.login({email, password});
-    localStorage.setItem("token", response.data.token);
+    authStorage.setToken(response.data.token);
+    authStorage.setUser(response.data.user);
     setUser(response.data.user);
     return response.data;
   };
 
   const register = async (name, email, password) => {
     const response = await authAPI.register({name, email, password});
-    localStorage.setItem("token", response.data.token);
+    authStorage.setToken(response.data.token);
+    authStorage.setUser(response.data.user);
     setUser(response.data.user);
     return response.data;
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
+    authStorage.clearAuth();
     setUser(null);
   };
 

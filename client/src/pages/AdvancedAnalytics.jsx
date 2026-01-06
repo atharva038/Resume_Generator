@@ -1,6 +1,10 @@
 import {useState, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
+<<<<<<< HEAD
 import {useAuth} from "../context/AuthContext";
+=======
+import {useAuth} from "@/context/AuthContext";
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 import axios from "axios";
 import {
   BarChart,
@@ -505,8 +509,13 @@ const UsageBar = ({label, used, limit}) => {
     percentage >= 90
       ? "bg-red-500 dark:bg-red-600"
       : percentage >= 70
+<<<<<<< HEAD
       ? "bg-yellow-500 dark:bg-yellow-600"
       : "bg-green-500 dark:bg-green-600";
+=======
+        ? "bg-yellow-500 dark:bg-yellow-600"
+        : "bg-green-500 dark:bg-green-600";
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 
   return (
     <div>

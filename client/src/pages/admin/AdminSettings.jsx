@@ -25,13 +25,16 @@ import {
   updateAIQuotaLimits,
   toggleFeature,
   updateRateLimits,
-} from "../../services/admin.api";
+} from "@/api/admin.api";
+import {useToggle} from "@/hooks";
 
 const AdminSettings = () => {
   const [settings, setSettings] = useState(null);
   const [systemStats, setSystemStats] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const [loading, toggleLoading, setLoadingTrue, setLoadingFalse] =
+    useToggle(true);
+  const [saving, toggleSaving, setSavingTrue, setSavingFalse] =
+    useToggle(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [activeTab, setActiveTab] = useState("general");
@@ -42,7 +45,7 @@ const AdminSettings = () => {
 
   const fetchData = async () => {
     try {
-      setLoading(true);
+      setLoadingTrue();
       const [settingsRes, statsRes] = await Promise.all([
         getSettings(),
         getSystemStats(),
@@ -54,13 +57,13 @@ const AdminSettings = () => {
       console.error("Error fetching settings:", err);
       setError(err.response?.data?.error || "Failed to load settings");
     } finally {
-      setLoading(false);
+      setLoadingFalse();
     }
   };
 
   const handleSaveSettings = async () => {
     try {
-      setSaving(true);
+      setSavingTrue();
       await updateSettings(settings);
       setSuccess("Settings saved successfully!");
       setTimeout(() => setSuccess(null), 3000);
@@ -68,7 +71,7 @@ const AdminSettings = () => {
     } catch (err) {
       setError(err.response?.data?.error || "Failed to save settings");
     } finally {
-      setSaving(false);
+      setSavingFalse();
     }
   };
 
@@ -82,7 +85,7 @@ const AdminSettings = () => {
     }
 
     try {
-      setSaving(true);
+      setSavingTrue();
       await resetSettings();
       setSuccess("Settings reset to defaults successfully!");
       setTimeout(() => setSuccess(null), 3000);
@@ -90,7 +93,7 @@ const AdminSettings = () => {
     } catch (err) {
       setError(err.response?.data?.error || "Failed to reset settings");
     } finally {
-      setSaving(false);
+      setSavingFalse();
     }
   };
 
@@ -111,7 +114,7 @@ const AdminSettings = () => {
 
   const handleUpdateAIQuota = async (tier) => {
     try {
-      setSaving(true);
+      setSavingTrue();
       await updateAIQuotaLimits({
         tier,
         daily: settings.aiQuota[tier].daily,
@@ -122,13 +125,13 @@ const AdminSettings = () => {
     } catch (err) {
       setError(err.response?.data?.error || "Failed to update AI quota");
     } finally {
-      setSaving(false);
+      setSavingFalse();
     }
   };
 
   const handleUpdateRateLimit = async (category) => {
     try {
-      setSaving(true);
+      setSavingTrue();
       await updateRateLimits({
         category,
         windowMs: settings.rateLimits[category].windowMs,
@@ -139,7 +142,7 @@ const AdminSettings = () => {
     } catch (err) {
       setError(err.response?.data?.error || "Failed to update rate limits");
     } finally {
-      setSaving(false);
+      setSavingFalse();
     }
   };
 

@@ -1,5 +1,6 @@
 import {Link, useNavigate} from "react-router-dom";
 import {useState, useEffect, useRef} from "react";
+import {useToggle} from "@/hooks";
 import {
   CheckCircle2,
   Sparkles,
@@ -13,15 +14,16 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import ProfessionalTemplate from "../templates/ProfessionalTemplate";
-import ModernTemplate from "../templates/ModernTemplate";
-import CreativeTemplate from "../templates/CreativeTemplate";
-import ExecutiveTemplate from "../templates/ExecutiveTemplate";
-import MinimalTemplate from "../templates/MinimalTemplate";
-import TechTemplate from "../templates/TechTemplate";
+import ProfessionalTemplate from "@/components/templates/ProfessionalTemplate";
+import ModernTemplate from "@/components/templates/ModernTemplate";
+import Creative2Template from "@/components/templates/Creative2Template";
+import Professional2Template from "@/components/templates/Professional2Template";
+import MinimalTemplate from "@/components/templates/MinimalTemplate";
+import TechTemplate from "@/components/templates/TechTemplate";
 
 const HeroSection = () => {
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, toggleVisible, setIsVisibleTrue, setIsVisibleFalse] =
+    useToggle(false);
   const [scrollY, setScrollY] = useState(0);
   const [currentTemplateIndex, setCurrentTemplateIndex] = useState(0);
   const [laptopScrollPosition, setLaptopScrollPosition] = useState(0);
@@ -44,7 +46,7 @@ const HeroSection = () => {
   };
 
   useEffect(() => {
-    setIsVisible(true);
+    setIsVisibleTrue();
 
     let rafId = null;
     const handleScroll = () => {
@@ -307,15 +309,15 @@ const HeroSection = () => {
     },
     {
       id: 3,
-      name: "Creative",
-      component: CreativeTemplate,
-      color: "from-orange-500 to-red-600",
+      name: "Creative Designer Pro",
+      component: Creative2Template,
+      color: "from-purple-500 to-pink-600",
     },
     {
       id: 4,
-      name: "Executive",
-      component: ExecutiveTemplate,
-      color: "from-gray-700 to-gray-900",
+      name: "Professional Elite",
+      component: Professional2Template,
+      color: "from-blue-700 to-indigo-800",
     },
     {
       id: 5,

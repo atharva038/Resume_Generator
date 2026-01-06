@@ -15,7 +15,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import {getAIAnalytics} from "../../services/admin.api";
+import {getAIAnalytics} from "@/api/admin.api";
 
 const AIAnalytics = () => {
   const [analytics, setAnalytics] = useState(null);

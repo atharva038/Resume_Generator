@@ -1,4 +1,5 @@
 import {createContext, useContext, useEffect, useState} from "react";
+import {themeStorage} from "@/utils/storage";
 
 const DarkModeContext = createContext();
 
@@ -11,13 +12,9 @@ export const useDarkMode = () => {
 };
 
 const getInitialDarkMode = () => {
-  try {
-    const savedMode = localStorage.getItem("darkMode");
-    if (savedMode !== null) {
-      return savedMode === "true";
-    }
-  } catch (error) {
-    console.error("Error reading darkMode from localStorage:", error);
+  const savedMode = themeStorage.getDarkMode();
+  if (savedMode !== null && savedMode !== false) {
+    return savedMode;
   }
   return window.matchMedia("(prefers-color-scheme: dark)").matches;
 };
@@ -34,11 +31,15 @@ export const DarkModeProvider = ({children}) => {
       root.classList.remove("dark");
     }
 
+<<<<<<< HEAD
     try {
       localStorage.setItem("darkMode", String(isDarkMode));
     } catch (error) {
       console.error("Error saving darkMode to localStorage:", error);
     }
+=======
+    themeStorage.setDarkMode(isDarkMode);
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   }, [isDarkMode]);
 
   const toggleDarkMode = () => {

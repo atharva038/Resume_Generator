@@ -306,6 +306,7 @@ userSchema.methods.getUsageLimit = function (limitType) {
       atsScansPerMonth: 0,
       jobMatchesPerDay: 0,
       coverLettersPerMonth: 0,
+<<<<<<< HEAD
       aiGenerationsPerMonth: 1, // Only 1 AI feature usage for free users
     },
     "one-time": {
@@ -315,6 +316,19 @@ userSchema.methods.getUsageLimit = function (limitType) {
       jobMatchesPerDay: 3,
       coverLettersPerMonth: 5,
       aiGenerationsPerMonth: 10,
+=======
+      aiGenerationsPerMonth: 10, // 10 AI feature usage for free users
+      aiResumeExtractionsPerDay: 1, // 1 AI resume extraction per day for free users
+    },
+    "one-time": {
+      resumesPerMonth: 1, // One-time purchase allows creating only 1 NEW resume
+      resumeDownloadsPerMonth: Infinity, // Unlimited downloads
+      atsScansPerMonth: 5,
+      jobMatchesPerDay: 3,
+      coverLettersPerMonth: 5,
+      aiGenerationsPerMonth: 150, // 150 AI requests for 21-day period (not monthly!)
+      aiResumeExtractionsPerDay: 10, // 10 AI resume extractions per day
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
     },
     pro: {
       resumesPerMonth: Infinity,
@@ -322,7 +336,11 @@ userSchema.methods.getUsageLimit = function (limitType) {
       atsScansPerMonth: Infinity,
       jobMatchesPerDay: 10,
       coverLettersPerMonth: Infinity,
+<<<<<<< HEAD
       aiResumeExtractionsPerDay: 2, // New: AI resume extraction limit
+=======
+      aiResumeExtractionsPerDay: 10, // 10 AI resume extractions per day
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
       aiGenerationsPerMonth: Infinity,
     },
     premium: {
@@ -331,7 +349,11 @@ userSchema.methods.getUsageLimit = function (limitType) {
       atsScansPerMonth: Infinity,
       jobMatchesPerDay: Infinity,
       coverLettersPerMonth: Infinity,
+<<<<<<< HEAD
       aiResumeExtractionsPerDay: 2, // New: AI resume extraction limit
+=======
+      aiResumeExtractionsPerDay: 10, // 10 AI resume extractions per day
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
       aiGenerationsPerMonth: Infinity,
     },
     lifetime: {
@@ -340,7 +362,11 @@ userSchema.methods.getUsageLimit = function (limitType) {
       atsScansPerMonth: Infinity,
       jobMatchesPerDay: 10,
       coverLettersPerMonth: Infinity,
+<<<<<<< HEAD
       aiResumeExtractionsPerDay: 2, // New: AI resume extraction limit
+=======
+      aiResumeExtractionsPerDay: 10, // 10 AI resume extractions per day
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
       aiGenerationsPerMonth: Infinity,
     },
   };
@@ -359,6 +385,10 @@ userSchema.methods.hasReachedLimit = function (limitType) {
     jobMatchesPerDay: this.usage.jobMatchesToday,
     coverLettersPerMonth: this.usage.coverLettersThisMonth,
     aiGenerationsPerMonth: this.usage.aiGenerationsThisMonth,
+<<<<<<< HEAD
+=======
+    aiResumeExtractionsPerDay: this.usage.aiResumeExtractionsToday,
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   };
 
   return (usageMap[limitType] || 0) >= limit;
@@ -401,6 +431,10 @@ userSchema.methods.resetMonthlyUsage = async function () {
 
 userSchema.methods.resetDailyUsage = async function () {
   this.usage.jobMatchesToday = 0;
+<<<<<<< HEAD
+=======
+  this.usage.aiResumeExtractionsToday = 0;
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   this.usage.lastDailyReset = new Date();
   await this.save();
 };

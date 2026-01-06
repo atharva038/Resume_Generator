@@ -26,12 +26,14 @@ import {
   getContactStatistics,
   updateContactStatus,
   deleteContactMessage,
-} from "../../services/admin.api";
-import {parseValidationErrors} from "../../utils/errorHandler";
+} from "@/api/admin.api";
+import {parseValidationErrors} from "@/utils/errorHandler";
+import {useToggle} from "@/hooks";
 
 const ContactMessages = () => {
   const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, toggleLoading, setLoadingTrue, setLoadingFalse] =
+    useToggle(true);
   const [stats, setStats] = useState(null);
   const [filters, setFilters] = useState({
     page: 1,
@@ -42,8 +44,10 @@ const ContactMessages = () => {
   });
   const [pagination, setPagination] = useState({total: 0, totalPages: 1});
   const [selectedMessage, setSelectedMessage] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const [updating, setUpdating] = useState(false);
+  const [showModal, toggleModal, setShowModalTrue, setShowModalFalse] =
+    useToggle(false);
+  const [updating, toggleUpdating, setUpdatingTrue, setUpdatingFalse] =
+    useToggle(false);
 
   useEffect(() => {
     fetchMessages();
@@ -52,14 +56,14 @@ const ContactMessages = () => {
 
   const fetchMessages = async () => {
     try {
-      setLoading(true);
+      setLoadingTrue();
       const response = await getContactMessages(filters);
       setMessages(response.data.data.messages);
       setPagination(response.data.data.pagination);
     } catch (err) {
       console.error("Error fetching messages:", err);
     } finally {
-      setLoading(false);
+      setLoadingFalse();
     }
   };
 
@@ -74,11 +78,11 @@ const ContactMessages = () => {
 
   const handleStatusUpdate = async (id, status, notes = "") => {
     try {
-      setUpdating(true);
+      setUpdatingTrue();
       await updateContactStatus(id, {status, notes});
       fetchMessages();
       fetchStats();
-      setShowModal(false);
+      setShowModalFalse();
       setSelectedMessage(null);
       toast.success("Message status updated successfully!", {
         icon: "✅",
@@ -91,7 +95,7 @@ const ContactMessages = () => {
         duration: 3000,
       });
     } finally {
-      setUpdating(false);
+      setUpdatingFalse();
     }
   };
 
@@ -101,7 +105,7 @@ const ContactMessages = () => {
         await deleteContactMessage(id);
         fetchMessages();
         fetchStats();
-        setShowModal(false);
+        setShowModalFalse();
         toast.success("Message deleted successfully!", {
           icon: "🗑️",
           duration: 2000,
@@ -408,7 +412,7 @@ const ContactMessages = () => {
                       <button
                         onClick={() => {
                           setSelectedMessage(message);
-                          setShowModal(true);
+                          setShowModalTrue();
                         }}
                         className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
                       >
@@ -459,7 +463,7 @@ const ContactMessages = () => {
           <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
             <div
               className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-75"
-              onClick={() => setShowModal(false)}
+              onClick={setShowModalFalse}
             ></div>
 
             <div className="inline-block w-full max-w-3xl my-8 overflow-hidden text-left align-middle transition-all transform bg-white dark:bg-gray-800 shadow-xl rounded-2xl">
@@ -469,7 +473,11 @@ const ContactMessages = () => {
                   Contact Message Details
                 </h3>
                 <button
+<<<<<<< HEAD
                   onClick={() => setShowModal(false)}
+=======
+                  onClick={setShowModalFalse}
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
                   className="text-gray-600 dark:text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-300"
                 >
                   <X className="w-6 h-6" />

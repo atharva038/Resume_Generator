@@ -2,17 +2,32 @@ import React, {useState} from "react";
 import {Link} from "react-router-dom";
 import {Mail, ArrowLeft, Send, CheckCircle, AlertCircle} from "lucide-react";
 import axios from "axios";
+import {useToggle} from "@/hooks";
+import {forgotPasswordSchema, validateWithSchema} from "@/utils/validation";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [loading, toggleLoading, setLoadingTrue, setLoadingFalse] =
+    useToggle(false);
+  const [success, toggleSuccess, setSuccessTrue, setSuccessFalse] =
+    useToggle(false);
   const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    setLoading(true);
+
+    // Validate with Yup
+    const {isValid, errors} = await validateWithSchema(forgotPasswordSchema, {
+      email,
+    });
+
+    if (!isValid) {
+      setError(Object.values(errors)[0]);
+      return;
+    }
+
+    setLoadingTrue();
 
     try {
       const API_URL =
@@ -21,7 +36,7 @@ const ForgotPassword = () => {
         email,
       });
 
-      setSuccess(true);
+      setSuccessTrue();
       setEmail("");
     } catch (err) {
       setError(
@@ -29,7 +44,7 @@ const ForgotPassword = () => {
           "Failed to send reset email. Please try again."
       );
     } finally {
-      setLoading(false);
+      setLoadingFalse();
     }
   };
 

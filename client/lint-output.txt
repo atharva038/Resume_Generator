@@ -1,0 +1,429 @@
+
+> ats-resume-client@1.0.0 lint
+> eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0
+
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/App.jsx
+  19:8  warning  'JobSearch' is defined but never used          no-unused-vars
+  20:8  warning  'SmartJobMatchPage' is defined but never used  no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/common/ErrorBoundary.jsx
+  14:35  warning  'error' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/common/LimitedInputs.jsx
+   1:9   warning  'useState' is defined but never used                no-unused-vars
+  19:21  warning  'toggleFocused' is assigned a value but never used  no-unused-vars
+  92:21  warning  'toggleFocused' is assigned a value but never used  no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/common/PageTransition.jsx
+  9:5  warning  'toggleTransitioning' is assigned a value but never used  no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/common/PaymentModal.jsx
+  30:19  warning  'toggleLoading' is assigned a value but never used                                                                                                                                                                                                                      no-unused-vars
+  33:10  warning  'orderDetails' is assigned a value but never used                                                                                                                                                                                                                       no-unused-vars
+  47:6   warning  React Hook useEffect has missing dependencies: 'fetchPricingDetails', 'navigate', and 'onClose'. Either include them or remove the dependency array. If 'onClose' changes too often, find the parent component that defines it and wrap that definition in useCallback  react-hooks/exhaustive-deps
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/common/cards/JobSpecificScoreCard.jsx
+   15:5  warning  'setShowCustomTechTrue' is assigned a value but never used                                                            no-unused-vars
+   16:5  warning  'setShowCustomTechFalse' is assigned a value but never used                                                           no-unused-vars
+   21:5  warning  'toggleCalculating' is assigned a value but never used                                                                no-unused-vars
+  186:6  warning  React Hook useEffect has a missing dependency: 'jobSubCategoryMap'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  207:6  warning  React Hook useEffect has a missing dependency: 'jobSubCategoryMap'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/common/modals/ConfirmationModal.jsx
+  1:35  warning  'UserX' is defined but never used  no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/common/modals/GitHubImportModal.jsx
+  12:3   warning  'Plus' is defined but never used                                                                         no-unused-vars
+  13:3   warning  'RefreshCw' is defined but never used                                                                    no-unused-vars
+  23:19  warning  'toggleLoading' is assigned a value but never used                                                       no-unused-vars
+  62:6   warning  React Hook useEffect has a missing dependency: 'step'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/editor/ResumeWizard.jsx
+  331:19  warning  'isAccessible' is assigned a value but never used  no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/editor/panels/RecommendationsPanel.jsx
+  6:20  warning  'toggleExpanded' is assigned a value but never used   no-unused-vars
+  8:21  warning  'toggleEnhancing' is assigned a value but never used  no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/editor/preview/FullPreviewModal.jsx
+    7:22  warning  'toggleDragging' is assigned a value but never used                                                                                                                                          no-unused-vars
+   11:22  warning  'togglePinching' is assigned a value but never used                                                                                                                                          no-unused-vars
+  145:6   warning  React Hook useEffect has missing dependencies: 'setIsDraggingFalse', 'setIsDraggingTrue', 'setIsPinchingFalse', and 'setIsPinchingTrue'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/editor/preview/ResumePreview.jsx
+  32:7   warning  'hasOverflow' is assigned a value but never used        no-unused-vars
+  33:7   warning  'toggleOverflow' is assigned a value but never used     no-unused-vars
+  39:12  warning  'pageUsage' is assigned a value but never used          no-unused-vars
+  49:7   warning  'toggleFullPreview' is assigned a value but never used  no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/editor/sections/EditableSection.jsx
+   1:9   warning  'useState' is defined but never used                    no-unused-vars
+  23:21  warning  'toggleEnhancing' is assigned a value but never used    no-unused-vars
+  25:10  warning  'isEditing' is assigned a value but never used          no-unused-vars
+  25:21  warning  'toggleEditing' is assigned a value but never used      no-unused-vars
+  25:36  warning  'setIsEditingTrue' is assigned a value but never used   no-unused-vars
+  25:54  warning  'setIsEditingFalse' is assigned a value but never used  no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/editor/sections/EditorSections.jsx
+    9:9   warning  'ScoreCard' is defined but never used                                                                                                                                                                       no-unused-vars
+   10:9   warning  'RecommendationsPanel' is defined but never used                                                                                                                                                            no-unused-vars
+   12:9   warning  'LimitedTextarea' is defined but never used                                                                                                                                                                 no-unused-vars
+   84:21  warning  'toggleLoading' is assigned a value but never used                                                                                                                                                          no-unused-vars
+  317:3   warning  'updateField' is defined but never used. Allowed unused args must match /^_/u                                                                                                                               no-unused-vars
+  650:9   warning  The 'achievements' logical expression could make the dependencies of useEffect Hook (at line 663) change on every render. To fix this, wrap the initialization of 'achievements' in its own useMemo() Hook  react-hooks/exhaustive-deps
+  652:21  warning  'toggleLoading' is assigned a value but never used                                                                                                                                                          no-unused-vars
+  933:21  warning  'toggleLoading' is assigned a value but never used                                                                                                                                                          no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/features/github/GitHubExtractor.jsx
+  23:19  warning  'toggleLoading' is assigned a value but never used      no-unused-vars
+  29:5   warning  'toggleShowResults' is assigned a value but never used  no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/features/job-match/SmartJobMatch.jsx
+   29:19  warning  'toggleLoading' is assigned a value but never used                                                             no-unused-vars
+   35:5   warning  'toggleJobModal' is assigned a value but never used                                                            no-unused-vars
+  235:11  warning  'location' is assigned a value but never used                                                                  no-unused-vars
+  313:6   warning  React Hook useEffect has a missing dependency: 'resumeData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/features/ml/JobMatchAnalyzer.jsx
+  20:21  warning  'toggleAnalyzing' is assigned a value but never used  no-unused-vars
+  67:9   warning  'getScoreBgColor' is assigned a value but never used  no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/layout/AdminLayout.jsx
+   1:9  warning  'useState' is defined but never used                          no-unused-vars
+  14:3  warning  'X' is defined but never used                                 no-unused-vars
+  36:5  warning  'setIsMobileMenuOpenTrue' is assigned a value but never used  no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/layout/Footer.jsx
+   5:3   warning  'MessageCircle' is defined but never used                                                                                                                                                                                                                          no-unused-vars
+   6:3   warning  'Linkedin' is defined but never used                                                                                                                                                                                                                               no-unused-vars
+   7:3   warning  'Twitter' is defined but never used                                                                                                                                                                                                                                no-unused-vars
+   8:3   warning  'Github' is defined but never used                                                                                                                                                                                                                                 no-unused-vars
+   9:3   warning  'Shield' is defined but never used                                                                                                                                                                                                                                 no-unused-vars
+  11:28  warning  'useState' is defined but never used                                                                                                                                                                                                                               no-unused-vars
+  16:21  warning  'toggleVisible' is assigned a value but never used                                                                                                                                                                                                                 no-unused-vars
+  16:54  warning  'setIsVisibleFalse' is assigned a value but never used                                                                                                                                                                                                             no-unused-vars
+  36:38  warning  The ref value 'footerRef.current' will likely have changed by the time this effect cleanup function runs. If this ref points to a node rendered by React, copy 'footerRef.current' to a variable inside the effect, and use that variable in the cleanup function  react-hooks/exhaustive-deps
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/layout/HeroSection.jsx
+   10:3   warning  'Shield' is defined but never used                                                                                   no-unused-vars
+   11:3   warning  'TrendingUp' is defined but never used                                                                               no-unused-vars
+   12:3   warning  'FileText' is defined but never used                                                                                 no-unused-vars
+   25:21  warning  'toggleVisible' is assigned a value but never used                                                                   no-unused-vars
+   25:54  warning  'setIsVisibleFalse' is assigned a value but never used                                                               no-unused-vars
+   27:10  warning  'scrollY' is assigned a value but never used                                                                         no-unused-vars
+   28:10  warning  'currentTemplateIndex' is assigned a value but never used                                                            no-unused-vars
+   28:32  warning  'setCurrentTemplateIndex' is assigned a value but never used                                                         no-unused-vars
+   69:6   warning  React Hook useEffect has a missing dependency: 'setIsVisibleTrue'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  346:9   warning  'trustPoints' is assigned a value but never used                                                                     no-unused-vars
+  352:9   warning  'floatingResumes' is assigned a value but never used                                                                 no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/layout/Layout.jsx
+  2:9  warning  'useState' is defined but never used  no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/layout/MainLayout.jsx
+  1:9  warning  'useState' is defined but never used  no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/layout/Navbar.jsx
+   5:9   warning  'useState' is defined but never used                 no-unused-vars
+  21:22  warning  'toggleScrolled' is assigned a value but never used  no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/layout/Sidebar.jsx
+  3:9  warning  'useState' is defined but never used  no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/templates/ClassicTemplate.jsx
+   6:10  warning  'pageOverflowInfo' is assigned a value but never used                                                                                                                                                                                              no-unused-vars
+  40:6   warning  React Hook useEffect has a missing dependency: 'onPageUsageChange'. Either include it or remove the dependency array. If 'onPageUsageChange' changes too often, find the parent component that defines it and wrap that definition in useCallback  react-hooks/exhaustive-deps
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/templates/CorporateEliteTemplate.jsx
+   2:9   warning  'Mail' is defined but never used                                                                                                                                                                                                                   no-unused-vars
+   2:15  warning  'Phone' is defined but never used                                                                                                                                                                                                                  no-unused-vars
+   2:22  warning  'MapPin' is defined but never used                                                                                                                                                                                                                 no-unused-vars
+   2:30  warning  'Linkedin' is defined but never used                                                                                                                                                                                                               no-unused-vars
+   2:40  warning  'Github' is defined but never used                                                                                                                                                                                                                 no-unused-vars
+   2:48  warning  'Globe' is defined but never used                                                                                                                                                                                                                  no-unused-vars
+  26:12  warning  'pageOverflowInfo' is assigned a value but never used                                                                                                                                                                                              no-unused-vars
+  71:8   warning  React Hook useEffect has a missing dependency: 'onPageUsageChange'. Either include it or remove the dependency array. If 'onPageUsageChange' changes too often, find the parent component that defines it and wrap that definition in useCallback  react-hooks/exhaustive-deps
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/templates/Creative2Template.jsx
+    1:8   warning  'React' is defined but never used                                                                                     no-unused-vars
+   22:10  warning  'pages' is assigned a value but never used                                                                            no-unused-vars
+   22:17  warning  'setPages' is assigned a value but never used                                                                         no-unused-vars
+  412:6   warning  React Hook useEffect has a missing dependency: 'onPageUsageChange'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/templates/ExecutiveTemplate.jsx
+   6:10  warning  'pageOverflowInfo' is assigned a value but never used                                                                                                                                                                                              no-unused-vars
+  51:6   warning  React Hook useEffect has a missing dependency: 'onPageUsageChange'. Either include it or remove the dependency array. If 'onPageUsageChange' changes too often, find the parent component that defines it and wrap that definition in useCallback  react-hooks/exhaustive-deps
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/templates/ImpactProTemplate.jsx
+    1:8   warning  'React' is defined but never used                                                                                     no-unused-vars
+   22:10  warning  'pages' is assigned a value but never used                                                                            no-unused-vars
+   22:17  warning  'setPages' is assigned a value but never used                                                                         no-unused-vars
+  374:6   warning  React Hook useEffect has a missing dependency: 'onPageUsageChange'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/templates/MinimalTemplate.jsx
+   6:10  warning  'pageOverflowInfo' is assigned a value but never used                                                                                                                                                                                              no-unused-vars
+  51:6   warning  React Hook useEffect has a missing dependency: 'onPageUsageChange'. Either include it or remove the dependency array. If 'onPageUsageChange' changes too often, find the parent component that defines it and wrap that definition in useCallback  react-hooks/exhaustive-deps
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/templates/ModernTemplate.jsx
+   6:10  warning  'pageOverflowInfo' is assigned a value but never used                                                                                                                                                                                              no-unused-vars
+  51:6   warning  React Hook useEffect has a missing dependency: 'onPageUsageChange'. Either include it or remove the dependency array. If 'onPageUsageChange' changes too often, find the parent component that defines it and wrap that definition in useCallback  react-hooks/exhaustive-deps
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/templates/Professional2Template.jsx
+    1:8   warning  'React' is defined but never used                                                                                     no-unused-vars
+   22:10  warning  'pages' is assigned a value but never used                                                                            no-unused-vars
+  360:6   warning  React Hook useEffect has a missing dependency: 'onPageUsageChange'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/templates/ProfessionalTemplate.jsx
+   2:9   warning  'Mail' is defined but never used                                                                                                                                                                                                                   no-unused-vars
+   2:15  warning  'Phone' is defined but never used                                                                                                                                                                                                                  no-unused-vars
+   2:22  warning  'MapPin' is defined but never used                                                                                                                                                                                                                 no-unused-vars
+   2:30  warning  'Linkedin' is defined but never used                                                                                                                                                                                                               no-unused-vars
+   2:40  warning  'Github' is defined but never used                                                                                                                                                                                                                 no-unused-vars
+   2:48  warning  'Globe' is defined but never used                                                                                                                                                                                                                  no-unused-vars
+  18:12  warning  'pageOverflowInfo' is assigned a value but never used                                                                                                                                                                                              no-unused-vars
+  63:8   warning  React Hook useEffect has a missing dependency: 'onPageUsageChange'. Either include it or remove the dependency array. If 'onPageUsageChange' changes too often, find the parent component that defines it and wrap that definition in useCallback  react-hooks/exhaustive-deps
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/templates/ProfessionalV2Template.jsx
+    8:12  warning  'pageOverflowInfo' is assigned a value but never used                                                                                                                                                                                              no-unused-vars
+   53:8   warning  React Hook useEffect has a missing dependency: 'onPageUsageChange'. Either include it or remove the dependency array. If 'onPageUsageChange' changes too often, find the parent component that defines it and wrap that definition in useCallback  react-hooks/exhaustive-deps
+   92:11  warning  'selectedTheme' is assigned a value but never used                                                                                                                                                                                                 no-unused-vars
+  161:11  warning  'truncateText' is assigned a value but never used                                                                                                                                                                                                  no-unused-vars
+  161:33  warning  'lines' is assigned a value but never used. Allowed unused args must match /^_/u                                                                                                                                                                   no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/templates/StrategicLeaderTemplate.jsx
+   26:12  warning  'pageOverflowInfo' is assigned a value but never used                                                                                                                                                                                              no-unused-vars
+   71:8   warning  React Hook useEffect has a missing dependency: 'onPageUsageChange'. Either include it or remove the dependency array. If 'onPageUsageChange' changes too often, find the parent component that defines it and wrap that definition in useCallback  react-hooks/exhaustive-deps
+  138:11  warning  'SIDEBAR_SECTIONS' is assigned a value but never used                                                                                                                                                                                              no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/templates/TechTemplate.jsx
+   6:10  warning  'pageOverflowInfo' is assigned a value but never used                                                                                                                                                                                              no-unused-vars
+  51:6   warning  React Hook useEffect has a missing dependency: 'onPageUsageChange'. Either include it or remove the dependency array. If 'onPageUsageChange' changes too often, find the parent component that defines it and wrap that definition in useCallback  react-hooks/exhaustive-deps
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/ui/Badge.jsx
+  1:8  warning  'React' is defined but never used  no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/ui/Button.jsx
+  1:8  warning  'React' is defined but never used  no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/components/ui/Card.jsx
+  1:8  warning  'React' is defined but never used  no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/context/AuthContext.jsx
+  61:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/context/DarkModeContext.jsx
+  5:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/context/NavigationBlockerContext.jsx
+   7:21  warning  'toggleBlocked' is assigned a value but never used                                                                              no-unused-vars
+  48:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/pages/ATSAnalyzer.jsx
+   17:9   warning  'JobMatchAnalyzer' is defined but never used                                                                                                                   no-unused-vars
+   21:21  warning  'setActiveTab' is assigned a value but never used                                                                                                              no-unused-vars
+   25:21  warning  'toggleAnalyzing' is assigned a value but never used                                                                                                           no-unused-vars
+   31:5   warning  'toggleLoadingResumes' is assigned a value but never used                                                                                                      no-unused-vars
+   32:5   warning  'setLoadingResumesTrue' is assigned a value but never used                                                                                                     no-unused-vars
+   35:10  warning  'selectedResumeData' is assigned a value but never used                                                                                                        no-unused-vars
+   37:5   warning  'loadingResumeData' is assigned a value but never used                                                                                                         no-unused-vars
+   38:5   warning  'toggleLoadingResumeData' is assigned a value but never used                                                                                                   no-unused-vars
+   88:6   warning  React Hook useEffect has missing dependencies: 'setLoadingResumeDataFalse' and 'setLoadingResumeDataTrue'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  164:9   warning  'getScoreBgColor' is assigned a value but never used                                                                                                           no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/pages/AdvancedAnalytics.jsx
+  21:3   warning  'TrendingUp' is defined but never used     no-unused-vars
+  36:10  warning  'user' is assigned a value but never used  no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/pages/AuthCallback.jsx
+  18:13  warning  'provider' is assigned a value but never used  no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/pages/Contact.jsx
+   13:3   warning  'Sparkles' is defined but never used                                                                                no-unused-vars
+   62:5   warning  'toggleFeedbackLoading' is assigned a value but never used                                                          no-unused-vars
+   69:5   warning  'toggleLoadingFeedback' is assigned a value but never used                                                          no-unused-vars
+   81:6   warning  React Hook useEffect has a missing dependency: 'fetchMyFeedback'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  287:16  warning  'error' is defined but never used                                                                                   no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/pages/Dashboard.jsx
+  13:3  warning  'User' is defined but never used        no-unused-vars
+  15:3  warning  'FolderOpen' is defined but never used  no-unused-vars
+  16:3  warning  'Download' is defined but never used    no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/pages/Editor.jsx
+   14:3   warning  'PersonalInfoSection' is defined but never used                                                                                                                                         no-unused-vars
+   30:9   warning  'getJobCategories' is defined but never used                                                                                                                                            no-unused-vars
+   30:27  warning  'getJobsByCategory' is defined but never used                                                                                                                                           no-unused-vars
+   32:9   warning  'PageUtilizationIndicator' is defined but never used                                                                                                                                    no-unused-vars
+  248:5   warning  'toggleUnsavedChanges' is assigned a value but never used                                                                                                                               no-unused-vars
+  254:5   warning  'toggleUnsavedModal' is assigned a value but never used                                                                                                                                 no-unused-vars
+  259:18  warning  'toggleSaving' is assigned a value but never used                                                                                                                                       no-unused-vars
+  261:22  warning  'toggleAutoSaving' is assigned a value but never used                                                                                                                                   no-unused-vars
+  272:5   warning  'toggleTemplateSelector' is assigned a value but never used                                                                                                                             no-unused-vars
+  278:5   warning  'toggleColorThemeSelector' is assigned a value but never used                                                                                                                           no-unused-vars
+  293:5   warning  'toggleGitHubImportModal' is assigned a value but never used                                                                                                                            no-unused-vars
+  299:5   warning  'toggleGithubImportSuccess' is assigned a value but never used                                                                                                                          no-unused-vars
+  307:5   warning  'togglePageLimitModal' is assigned a value but never used                                                                                                                               no-unused-vars
+  313:5   warning  'toggleTwoPageMode' is assigned a value but never used                                                                                                                                  no-unused-vars
+  315:5   warning  'setTwoPageModeFalse' is assigned a value but never used                                                                                                                                no-unused-vars
+  317:10  warning  'lastContentMetrics' is assigned a value but never used                                                                                                                                 no-unused-vars
+  322:5   warning  'toggleUpgradeModal' is assigned a value but never used                                                                                                                                 no-unused-vars
+  353:5   warning  'toggleWizardMode' is assigned a value but never used                                                                                                                                   no-unused-vars
+  374:6   warning  React Hook useEffect has a missing dependency: 'showUnsavedModalTrue'. Either include it or remove the dependency array                                                                 react-hooks/exhaustive-deps
+  411:6   warning  React Hook useEffect has a missing dependency: 'showPageLimitModalTrue'. Either include it or remove the dependency array                                                               react-hooks/exhaustive-deps
+  468:6   warning  React Hook useEffect has missing dependencies: 'setAutoSavingFalse', 'setAutoSavingTrue', and 'setHasUnsavedChangesFalse'. Either include them or remove the dependency array           react-hooks/exhaustive-deps
+  487:29  warning  'e' is defined but never used. Allowed unused args must match /^_/u                                                                                                                     no-unused-vars
+  518:6   warning  React Hook useEffect has a missing dependency: 'showUnsavedModalTrue'. Either include it or remove the dependency array                                                                 react-hooks/exhaustive-deps
+  631:6   warning  React Hook useEffect has missing dependencies: 'isMobile', 'setIsWizardModeFalse', 'setIsWizardModeTrue', and 'setShowPreviewTrue'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  823:38  warning  'skipTracking' is assigned a value but never used. Allowed unused args must match /^_/u                                                                                                 no-unused-vars
+  839:5   warning  'skipTracking' is assigned a value but never used. Allowed unused args must match /^_/u                                                                                                 no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/pages/ForgotPassword.jsx
+   1:8   warning  'React' is defined but never used                     no-unused-vars
+   9:19  warning  'toggleLoading' is assigned a value but never used    no-unused-vars
+  11:19  warning  'toggleSuccess' is assigned a value but never used    no-unused-vars
+  11:50  warning  'setSuccessFalse' is assigned a value but never used  no-unused-vars
+  23:13  warning  'response' is assigned a value but never used         no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/pages/GitHubImport.jsx
+  1:9   warning  'useState' is defined but never used                    no-unused-vars
+  9:21  warning  'toggleExtracted' is assigned a value but never used    no-unused-vars
+  9:56  warning  'setExtractedFalse' is assigned a value but never used  no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/pages/Home.jsx
+   16:3  warning  'Users' is defined but never used                 no-unused-vars
+   19:3  warning  'GitBranch' is defined but never used             no-unused-vars
+   94:9  warning  'features' is assigned a value but never used     no-unused-vars
+  174:9  warning  'whyChooseUs' is assigned a value but never used  no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/pages/JobSearch.jsx
+   22:19  warning  'toggleLoading' is assigned a value but never used                                                                  no-unused-vars
+   45:5   warning  'toggleJobModal' is assigned a value but never used                                                                 no-unused-vars
+  267:6   warning  React Hook useEffect has a missing dependency: 'fetchCategories'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/pages/Login.jsx
+  22:19  warning  'toggleLoading' is assigned a value but never used  no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/pages/Pricing.jsx
+   8:3   warning  'FaGraduationCap' is defined but never used              no-unused-vars
+   9:3   warning  'FaInfinity' is defined but never used                   no-unused-vars
+  24:10  warning  'selectedTier' is assigned a value but never used        no-unused-vars
+  24:24  warning  'setSelectedTier' is assigned a value but never used     no-unused-vars
+  27:5   warning  'togglePaymentModal' is assigned a value but never used  no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/pages/Profile.jsx
+  3:31  warning  'FaHistory' is defined but never used  no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/pages/RateLimitExceeded.jsx
+  7:3  warning  'RefreshCw' is defined but never used  no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/pages/Register.jsx
+  26:19  warning  'toggleLoading' is assigned a value but never used  no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/pages/ResetPassword.jsx
+   1:8   warning  'React' is defined but never used                     no-unused-vars
+  18:19  warning  'toggleLoading' is assigned a value but never used    no-unused-vars
+  20:19  warning  'toggleSuccess' is assigned a value but never used    no-unused-vars
+  20:50  warning  'setSuccessFalse' is assigned a value but never used  no-unused-vars
+  99:13  warning  'response' is assigned a value but never used         no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/pages/ShippingPolicy.jsx
+  2:9  warning  'Truck' is defined but never used  no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/pages/SmartJobMatchPage.jsx
+  26:6  warning  React Hook useEffect has a missing dependency: 'fetchResumes'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/pages/SubscriptionDashboard.jsx
+   5:3  warning  'FaCalendarAlt' is defined but never used                                                                                                 no-unused-vars
+   8:3  warning  'FaExclamationTriangle' is defined but never used                                                                                         no-unused-vars
+  41:5  warning  'toggleCancelModal' is assigned a value but never used                                                                                    no-unused-vars
+  49:5  warning  'setShowAISettingsTrue' is assigned a value but never used                                                                                no-unused-vars
+  61:6  warning  React Hook useEffect has a missing dependency: 'location.state?.subscriptionActivated'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/pages/Templates.jsx
+  5:3  warning  'Sparkles' is defined but never used  no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/pages/Upload.jsx
+  19:21  warning  'toggleUploading' is assigned a value but never used     no-unused-vars
+  24:5   warning  'toggleUpgradeModal' is assigned a value but never used  no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/pages/admin/AIAnalytics.jsx
+   2:33  warning  'Clock' is defined but never used                                                                                  no-unused-vars
+   6:3   warning  'BarChart' is defined but never used                                                                               no-unused-vars
+   7:3   warning  'Bar' is defined but never used                                                                                    no-unused-vars
+  31:6   warning  React Hook useEffect has a missing dependency: 'fetchAnalytics'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/pages/admin/AIExtractionManagement.jsx
+    5:3   warning  'Brain' is defined but never used                                                                                       no-unused-vars
+   13:3   warning  'CheckCircle2' is defined but never used                                                                                no-unused-vars
+   14:3   warning  'XCircle' is defined but never used                                                                                     no-unused-vars
+   15:3   warning  'Download' is defined but never used                                                                                    no-unused-vars
+   17:3   warning  'Calendar' is defined but never used                                                                                    no-unused-vars
+   35:6   warning  React Hook useEffect has a missing dependency: 'fetchExtractionData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  251:44  warning  'idx' is defined but never used. Allowed unused args must match /^_/u                                                   no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/pages/admin/AIQuotaManagement.jsx
+   13:3   warning  'Clock' is defined but never used                                                                                    no-unused-vars
+   24:19  warning  'toggleLoading' is assigned a value but never used                                                                   no-unused-vars
+   32:5   warning  'toggleUserDetails' is assigned a value but never used                                                               no-unused-vars
+   39:6   warning  React Hook useEffect has a missing dependency: 'fetchQuotaStatus'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  106:9   warning  'getQuotaStatusBg' is assigned a value but never used                                                                no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/pages/admin/AdminFeedback.jsx
+   7:3   warning  'Filter' is defined but never used                                                                                 no-unused-vars
+  14:3   warning  'Eye' is defined but never used                                                                                    no-unused-vars
+  29:19  warning  'toggleLoading' is assigned a value but never used                                                                 no-unused-vars
+  41:21  warning  'toggleModal' is assigned a value but never used                                                                   no-unused-vars
+  49:6   warning  React Hook useEffect has a missing dependency: 'fetchFeedbacks'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/pages/admin/AdminSettings.jsx
+    8:3   warning  'Server' is defined but never used                                                                            no-unused-vars
+   11:3   warning  'Mail' is defined but never used                                                                              no-unused-vars
+   17:3   warning  'ToggleLeft' is defined but never used                                                                        no-unused-vars
+   34:19  warning  'toggleLoading' is assigned a value but never used                                                            no-unused-vars
+   36:18  warning  'toggleSaving' is assigned a value but never used                                                             no-unused-vars
+   40:10  warning  'activeTab' is assigned a value but never used                                                                no-unused-vars
+   40:21  warning  'setActiveTab' is assigned a value but never used                                                             no-unused-vars
+   44:6   warning  React Hook useEffect has a missing dependency: 'fetchData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  100:9   warning  'handleToggleFeature' is assigned a value but never used                                                      no-unused-vars
+  115:9   warning  'handleUpdateAIQuota' is assigned a value but never used                                                      no-unused-vars
+  132:9   warning  'handleUpdateRateLimit' is assigned a value but never used                                                    no-unused-vars
+  149:9   warning  'updateSettingValue' is assigned a value but never used                                                       no-unused-vars
+  162:9   warning  'tabs' is assigned a value but never used                                                                     no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/pages/admin/ContactMessages.jsx
+   4:3   warning  'Filter' is defined but never used                                                                                no-unused-vars
+  20:3   warning  'AlertCircle' is defined but never used                                                                           no-unused-vars
+  35:19  warning  'toggleLoading' is assigned a value but never used                                                                no-unused-vars
+  47:21  warning  'toggleModal' is assigned a value but never used                                                                  no-unused-vars
+  49:20  warning  'toggleUpdating' is assigned a value but never used                                                               no-unused-vars
+  55:6   warning  React Hook useEffect has a missing dependency: 'fetchMessages'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/pages/admin/UserManagement.jsx
+   5:3   warning  'Filter' is defined but never used                                                                             no-unused-vars
+   9:3   warning  'Eye' is defined but never used                                                                                no-unused-vars
+  10:3   warning  'Shield' is defined but never used                                                                             no-unused-vars
+  11:11  warning  'UserIcon' is defined but never used                                                                           no-unused-vars
+  40:10  warning  'selectedUser' is assigned a value but never used                                                              no-unused-vars
+  40:24  warning  'setSelectedUser' is assigned a value but never used                                                           no-unused-vars
+  50:6   warning  React Hook useEffect has a missing dependency: 'fetchUsers'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/utils/jobSpecificScoring.js
+  255:46  warning  'jobProfile' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/src/utils/resumeScoring.js
+  580:42  warning  'resumeData' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+
+/Users/atharva_beast/Desktop/Coading/Full-Stack-Web/ATS_RESUME_GENERATOR/client/vite.config.js
+  10:25  error  '__dirname' is not defined  no-undef
+  11:36  error  '__dirname' is not defined  no-undef
+  12:31  error  '__dirname' is not defined  no-undef
+  13:31  error  '__dirname' is not defined  no-undef
+  14:29  error  '__dirname' is not defined  no-undef
+  15:33  error  '__dirname' is not defined  no-undef
+  16:31  error  '__dirname' is not defined  no-undef
+  17:32  error  '__dirname' is not defined  no-undef
+  18:34  error  '__dirname' is not defined  no-undef
+
+✖ 276 problems (9 errors, 267 warnings)
+

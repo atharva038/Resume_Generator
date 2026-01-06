@@ -3,6 +3,7 @@ import {RotateCcw, Calendar, Mail, CheckCircle, XCircle} from "lucide-react";
 
 const RefundPolicy = () => {
   return (
+<<<<<<< HEAD
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 py-12 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
@@ -16,6 +17,21 @@ const RefundPolicy = () => {
                 Refund & Cancellation Policy
               </h1>
               <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-600 dark:text-gray-400 mt-2">
+=======
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-gray-900 py-12 px-4">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="bg-white/80 backdrop-blur-xl dark:bg-gray-800/80 rounded-2xl shadow-xl p-8 mb-8 border border-purple-100 dark:border-purple-900/30">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-3 bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900 dark:to-blue-900 rounded-lg">
+              <RotateCcw className="w-8 h-8 text-purple-600 dark:text-purple-400" />
+            </div>
+            <div>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400">
+                Refund & Cancellation Policy
+              </h1>
+              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mt-2">
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
                 <Calendar className="w-4 h-4" />
                 <span>Last Updated: December 1, 2025</span>
               </div>
@@ -28,10 +44,17 @@ const RefundPolicy = () => {
         </div>
 
         {/* Content */}
+<<<<<<< HEAD
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 space-y-8">
           {/* Section 1 */}
           <section>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
+=======
+        <div className="bg-white/80 backdrop-blur-xl dark:bg-gray-800/80 rounded-2xl shadow-xl p-8 space-y-8 border border-purple-100 dark:border-purple-900/30">
+          {/* Section 1 */}
+          <section>
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400 mb-4">
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
               1. Refund Policy Overview
             </h2>
             <div className="bg-yellow-50 dark:bg-gray-700 rounded-lg p-5 mb-4">
@@ -56,7 +79,11 @@ const RefundPolicy = () => {
 
           {/* Section 2 */}
           <section>
+<<<<<<< HEAD
             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
+=======
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400 mb-4">
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
               2. Eligibility for Refunds
             </h2>
 
@@ -163,7 +190,11 @@ const RefundPolicy = () => {
 
           {/* Section 3 */}
           <section>
+<<<<<<< HEAD
             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
+=======
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400 mb-4">
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
               3. Non-Refundable Situations
             </h2>
             <div className="bg-red-50 dark:bg-gray-700 rounded-lg p-5">
@@ -212,7 +243,11 @@ const RefundPolicy = () => {
 
           {/* Section 4 */}
           <section>
+<<<<<<< HEAD
             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
+=======
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400 mb-4">
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
               4. Cancellation Policy
             </h2>
             <div className="space-y-4 text-gray-700 dark:text-gray-300">
@@ -282,7 +317,11 @@ const RefundPolicy = () => {
 
           {/* Section 5 */}
           <section>
+<<<<<<< HEAD
             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
+=======
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400 mb-4">
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
               5. Refund Process & Timeline
             </h2>
 
@@ -361,7 +400,11 @@ const RefundPolicy = () => {
 
           {/* Section 6 */}
           <section>
+<<<<<<< HEAD
             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
+=======
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400 mb-4">
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
               6. Payment Method & Currency
             </h2>
             <div className="space-y-3 text-gray-700 dark:text-gray-300">
@@ -394,7 +437,11 @@ const RefundPolicy = () => {
 
           {/* Section 7 */}
           <section>
+<<<<<<< HEAD
             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
+=======
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400 mb-4">
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
               7. Subscription Renewal
             </h2>
             <div className="bg-yellow-50 dark:bg-gray-700 rounded-lg p-5">
@@ -424,7 +471,11 @@ const RefundPolicy = () => {
 
           {/* Section 8 */}
           <section>
+<<<<<<< HEAD
             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
+=======
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400 mb-4">
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
               8. Disputes & Chargebacks
             </h2>
             <p className="text-gray-700 dark:text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
@@ -444,7 +495,11 @@ const RefundPolicy = () => {
 
           {/* Section 9 */}
           <section>
+<<<<<<< HEAD
             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
+=======
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400 mb-4">
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
               9. Service Modifications
             </h2>
             <p className="text-gray-700 dark:text-gray-700 dark:text-gray-300 leading-relaxed">
@@ -457,7 +512,11 @@ const RefundPolicy = () => {
 
           {/* Section 10 */}
           <section>
+<<<<<<< HEAD
             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-4">
+=======
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400 mb-4">
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
               10. Questions & Support
             </h2>
             <p className="text-gray-700 dark:text-gray-700 dark:text-gray-300 mb-3">
@@ -471,20 +530,34 @@ const RefundPolicy = () => {
           </section>
 
           {/* Contact Section */}
+<<<<<<< HEAD
           <section className="bg-orange-50 dark:bg-gray-700 rounded-lg p-6">
             <div className="flex items-center gap-3 mb-3">
               <Mail className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+=======
+          <section className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-lg p-6 border border-purple-200 dark:border-purple-800">
+            <div className="flex items-center gap-3 mb-3">
+              <Mail className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
               <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                 Contact Us
               </h3>
             </div>
+<<<<<<< HEAD
             <p className="text-gray-700 dark:text-gray-700 dark:text-gray-300 mb-3">
+=======
+            <p className="text-gray-700 dark:text-gray-300 mb-3">
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
               For refund requests and cancellation support:
             </p>
             <div className="space-y-2">
               <p className="text-gray-700 dark:text-gray-300">
                 <strong>Email:</strong>{" "}
+<<<<<<< HEAD
                 <span className="text-orange-600 dark:text-orange-400 font-semibold">
+=======
+                <span className="text-purple-600 dark:text-purple-400 font-semibold">
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
                   support@smartnshine.app
                 </span>
               </p>
@@ -499,19 +572,31 @@ const RefundPolicy = () => {
         <div className="mt-8 flex flex-wrap gap-4 justify-center">
           <Link
             to="/terms-and-conditions"
+<<<<<<< HEAD
             className="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-gray-900 dark:text-white rounded-lg font-semibold transition-colors duration-300"
+=======
+            className="px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
           >
             Terms & Conditions
           </Link>
           <Link
             to="/pricing"
+<<<<<<< HEAD
             className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-gray-900 dark:text-white rounded-lg font-semibold transition-colors duration-300"
+=======
+            className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
           >
             View Pricing
           </Link>
           <Link
             to="/"
+<<<<<<< HEAD
             className="px-6 py-3 bg-orange-600 hover:bg-orange-700 text-gray-900 dark:text-white rounded-lg font-semibold transition-colors duration-300"
+=======
+            className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
           >
             Back to Home
           </Link>

@@ -1,15 +1,28 @@
 import Resume from "../models/Resume.model.js";
 import User from "../models/User.model.js";
+<<<<<<< HEAD
+=======
+import Subscription from "../models/Subscription.model.js";
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 import {extractTextFromFile, deleteFile} from "../utils/fileExtractor.js";
+// Import ALL AI functions from OpenAI (Gemini has quota limits)
 import {
+<<<<<<< HEAD
   parseResumeWithAI as parseResumeWithGemini,
+=======
+  parseResumeWithAI as parseResumeWithOpenAI,
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   enhanceContentWithAI,
   generateSummaryWithAI,
   categorizeSkillsWithAI,
   segregateAchievementsWithAI,
   processCustomSectionWithAI,
+<<<<<<< HEAD
 } from "../services/gemini.service.js";
 import {parseResumeWithAI as parseResumeWithOpenAI} from "../services/openai.service.js";
+=======
+} from "../services/openai.service.js";
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 import {trackAIUsage} from "../middleware/aiUsageTracker.middleware.js";
 
 /**
@@ -65,11 +78,17 @@ export const uploadResume = async (req, res) => {
       );
     }
 
+<<<<<<< HEAD
     // Use OpenAI for premium tiers, Gemini for free/one-time
     const parseResumeWithAI = canUseAIExtraction
       ? parseResumeWithOpenAI
       : parseResumeWithGemini;
     const aiProvider = canUseAIExtraction ? "OpenAI" : "Gemini";
+=======
+    // Use OpenAI for all parsing operations
+    const parseResumeWithAI = parseResumeWithOpenAI;
+    const aiProvider = "OpenAI";
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 
     // Parse resume using AI
     console.log(`🤖 Using ${aiProvider} for ${tier} user's resume extraction`);
@@ -160,6 +179,7 @@ export const enhanceContent = async (req, res) => {
       return res.status(400).json({error: "Section type is required"});
     }
 
+<<<<<<< HEAD
     // Check user's subscription tier
     const userId = req.user._id || req.user.userId;
     const user = await User.findById(userId);
@@ -176,6 +196,15 @@ export const enhanceContent = async (req, res) => {
         availableIn: ["pro", "premium", "lifetime"],
       });
     }
+=======
+    // Get user ID for tracking
+    const userId = req.user._id || req.user.userId;
+
+    // Usage limits are now checked by checkUsageLimit middleware
+    // Free users get 10 AI generations per month
+    // One-time users get 100 AI generations per month
+    // Pro/Premium/Lifetime users get unlimited
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 
     // Enhance content using Gemini AI with full resume context and custom prompt
     const startTime = Date.now();
@@ -253,6 +282,7 @@ export const generateSummary = async (req, res) => {
       return res.status(400).json({error: "Resume data is required"});
     }
 
+<<<<<<< HEAD
     // Check user's subscription tier
     const userId = req.user._id || req.user.userId;
     const user = await User.findById(userId);
@@ -269,6 +299,13 @@ export const generateSummary = async (req, res) => {
         availableIn: ["pro", "premium", "lifetime"],
       });
     }
+=======
+    // Get user ID for tracking
+    const userId = req.user._id || req.user.userId;
+
+    // Usage limits are checked by checkUsageLimit middleware
+    // Free users: 10 AI generations/month, One-time: 100/month, Pro+: Unlimited
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 
     // Generate summary using Gemini AI
     const startTime = Date.now();
@@ -351,15 +388,58 @@ export const saveResume = async (req, res) => {
       resumeData.resumeTitle = "Untitled Resume";
     }
 
-    // Create new resume document
+    // Get user's subscription info for linking
+    const user = req.user; // Full user object from checkSubscription middleware
+    const userTier = user.subscription?.tier || "free";
+    const userStatus = user.subscription?.status || "expired";
+
+    // Find active subscription if user has premium tier
+    let subscriptionInfo = {
+      subscriptionId: null,
+      createdWithTier: userTier,
+      createdWithSubscription: false,
+      linkedAt: null,
+    };
+
+    if (
+      ["one-time", "pro", "premium", "student", "lifetime"].includes(
+        userTier
+      ) &&
+      userStatus === "active"
+    ) {
+      const activeSubscription = await Subscription.findOne({
+        userId: user._id,
+        tier: userTier,
+        status: "active",
+      }).sort({createdAt: -1}); // Get the latest active subscription
+
+      if (activeSubscription) {
+        subscriptionInfo = {
+          subscriptionId: activeSubscription._id,
+          createdWithTier: userTier,
+          createdWithSubscription: true,
+          linkedAt: new Date(),
+        };
+        console.log(
+          `🔗 Linking resume to subscription: ${activeSubscription._id} (${userTier})`
+        );
+      }
+    }
+
+    // Create new resume document with subscription info
     const resume = new Resume({
       ...resumeData,
       userId,
+      subscriptionInfo,
     });
 
     await resume.save();
     console.log(
+<<<<<<< HEAD
       `💾 Resume saved to database: ID ${resume._id}, Title: "${resume.resumeTitle}"`
+=======
+      `💾 Resume saved to database: ID ${resume._id}, Title: "${resume.resumeTitle}", Tier: ${subscriptionInfo.createdWithTier}`
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
     );
 
     // Increment user's resume creation counters
@@ -520,6 +600,7 @@ export const categorizeSkills = async (req, res) => {
       return res.status(400).json({error: "Skills must be a string"});
     }
 
+<<<<<<< HEAD
     // Check user's subscription tier
     const userId = req.user._id || req.user.userId;
     const user = await User.findById(userId);
@@ -536,6 +617,13 @@ export const categorizeSkills = async (req, res) => {
         availableIn: ["pro", "premium", "lifetime"],
       });
     }
+=======
+    // Get user ID for tracking
+    const userId = req.user._id || req.user.userId;
+
+    // Usage limits are checked by checkUsageLimit middleware
+    // Free users: 10 AI generations/month, One-time: 100/month, Pro+: Unlimited
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 
     // Categorize skills using Gemini AI
     const startTime = Date.now();
@@ -602,6 +690,7 @@ export const segregateAchievements = async (req, res) => {
       return res.status(400).json({error: "Achievements must be a string"});
     }
 
+<<<<<<< HEAD
     // Check user's subscription tier
     const userId = req.user._id || req.user.userId;
     const user = await User.findById(userId);
@@ -618,6 +707,13 @@ export const segregateAchievements = async (req, res) => {
         availableIn: ["pro", "premium", "lifetime"],
       });
     }
+=======
+    // Get user ID for tracking
+    const userId = req.user._id || req.user.userId;
+
+    // Usage limits are checked by checkUsageLimit middleware
+    // Free users: 10 AI generations/month, One-time: 100/month, Pro+: Unlimited
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 
     // Segregate achievements using Gemini AI
     const startTime = Date.now();
@@ -683,6 +779,7 @@ export const processCustomSection = async (req, res) => {
       return res.status(400).json({error: "Content must be a string"});
     }
 
+<<<<<<< HEAD
     // Check user's subscription tier
     const userId = req.user._id || req.user.userId;
     const user = await User.findById(userId);
@@ -699,6 +796,13 @@ export const processCustomSection = async (req, res) => {
         availableIn: ["pro", "premium", "lifetime"],
       });
     }
+=======
+    // Get user ID for tracking
+    const userId = req.user._id || req.user.userId;
+
+    // Usage limits are checked by checkUsageLimit middleware
+    // Free users: 10 AI generations/month, One-time: 100/month, Pro+: Unlimited
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 
     // Process custom section using Gemini AI
     const startTime = Date.now();

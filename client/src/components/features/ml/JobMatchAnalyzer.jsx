@@ -11,12 +11,14 @@ import {
   Loader2,
   Zap,
 } from "lucide-react";
-import {mlAPI} from "../../../services/api";
+import {mlAPI} from "@/api/api";
 import toast from "react-hot-toast";
+import {useToggle} from "@/hooks";
 
 const JobMatchAnalyzer = ({resumeData}) => {
   const [jobDescription, setJobDescription] = useState("");
-  const [analyzing, setAnalyzing] = useState(false);
+  const [analyzing, toggleAnalyzing, setAnalyzingTrue, setAnalyzingFalse] =
+    useToggle(false);
   const [matchResult, setMatchResult] = useState(null);
 
   const handleAnalyze = async () => {
@@ -30,7 +32,7 @@ const JobMatchAnalyzer = ({resumeData}) => {
       return;
     }
 
-    setAnalyzing(true);
+    setAnalyzingTrue();
 
     try {
       const response = await mlAPI.calculateMatchScore(
@@ -51,7 +53,7 @@ const JobMatchAnalyzer = ({resumeData}) => {
           "Failed to analyze match. Please try again."
       );
     } finally {
-      setAnalyzing(false);
+      setAnalyzingFalse();
     }
   };
 
@@ -181,10 +183,10 @@ const JobMatchAnalyzer = ({resumeData}) => {
                           matchResult.matchPercentage >= 80
                             ? "#10b981"
                             : matchResult.matchPercentage >= 60
-                            ? "#3b82f6"
-                            : matchResult.matchPercentage >= 40
-                            ? "#f59e0b"
-                            : "#ef4444"
+                              ? "#3b82f6"
+                              : matchResult.matchPercentage >= 40
+                                ? "#f59e0b"
+                                : "#ef4444"
                         }
                       />
                       <stop
@@ -193,10 +195,10 @@ const JobMatchAnalyzer = ({resumeData}) => {
                           matchResult.matchPercentage >= 80
                             ? "#34d399"
                             : matchResult.matchPercentage >= 60
-                            ? "#6366f1"
-                            : matchResult.matchPercentage >= 40
-                            ? "#fb923c"
-                            : "#f472b6"
+                              ? "#6366f1"
+                              : matchResult.matchPercentage >= 40
+                                ? "#fb923c"
+                                : "#f472b6"
                         }
                       />
                     </linearGradient>

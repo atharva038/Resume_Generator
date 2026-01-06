@@ -17,9 +17,9 @@ import {
   updateUserStatus,
   updateUserRole,
   deleteUser,
-} from "../../services/admin.api";
-import {parseValidationErrors} from "../../utils/errorHandler";
-import {ConfirmationModal} from "../../components/common/modals";
+} from "@/api/admin.api";
+import {parseValidationErrors} from "@/utils/errorHandler";
+import {ConfirmationModal} from "@/components/common/modals";
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
