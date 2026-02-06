@@ -201,7 +201,11 @@ const AdminLayout = () => {
             {/* Logout Button */}
             <button
               onClick={handleLogout}
+<<<<<<< HEAD
+              className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-gray-900 dark:text-white rounded-lg transition-colors"
+=======
               className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
               aria-label="Logout"
             >
               <LogOut className="w-4 h-4" />
@@ -243,8 +247,13 @@ const AdminLayout = () => {
                   onClick={closeMobileMenu}
                   className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
                     isActive
+<<<<<<< HEAD
+                      ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 font-medium"
+                      : "text-gray-700 dark:text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+=======
                       ? "bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/30 dark:to-blue-900/30 text-purple-700 dark:text-purple-300 font-medium shadow-md border border-purple-200 dark:border-purple-700"
                       : "text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-gray-100 hover:to-gray-50 dark:hover:from-gray-700/50 dark:hover:to-gray-700/30"
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
                   }`}
                 >
                   <Icon
@@ -263,7 +272,11 @@ const AdminLayout = () => {
             <Link
               to="/"
               onClick={closeMobileMenu}
+<<<<<<< HEAD
+              className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-gray-100 to-gray-50 dark:from-gray-700 dark:to-gray-700/50 text-gray-700 dark:text-gray-700 dark:text-gray-300 rounded-lg hover:from-gray-200 hover:to-gray-100 dark:hover:from-gray-600 dark:hover:to-gray-600/50 transition-all border border-gray-200 dark:border-gray-600"
+=======
               className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/30 dark:to-blue-900/30 text-purple-700 dark:text-purple-300 rounded-lg hover:from-purple-200 hover:to-blue-200 dark:hover:from-purple-800/40 dark:hover:to-blue-800/40 transition-all duration-200 border border-purple-200 dark:border-purple-700 shadow-sm hover:shadow-md"
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
             >
               <FileText className="w-5 h-5 flex-shrink-0" />
               <span className="font-medium">Back to Site</span>
@@ -275,8 +288,13 @@ const AdminLayout = () => {
       {/* Floating Button to Open Sidebar (Desktop only, when sidebar is closed) */}
       {!isSidebarOpen && (
         <button
+<<<<<<< HEAD
+          onClick={() => setIsSidebarOpen(true)}
+          className="hidden lg:flex fixed left-4 top-20 z-30 p-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-gray-900 dark:text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 items-center justify-center group"
+=======
           onClick={setIsSidebarOpenTrue}
           className="hidden lg:flex fixed left-4 top-20 z-30 p-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 items-center justify-center group"
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
           aria-label="Open sidebar"
           title="Open Menu"
         >

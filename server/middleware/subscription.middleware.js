@@ -32,6 +32,8 @@ export async function checkSubscription(req, res, next) {
     // Check subscription status and expiry
     await user.checkSubscriptionExpiry();
 
+<<<<<<< HEAD
+=======
     // Check if daily usage needs to be reset (for job matches and AI extractions)
     const now = new Date();
     const lastReset = user.usage.lastDailyReset;
@@ -49,6 +51,7 @@ export async function checkSubscription(req, res, next) {
       await user.save();
     }
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
     // Attach updated user to request
     req.user = user;
 
@@ -84,6 +87,17 @@ export function checkUsageLimit(limitType) {
         });
       }
 
+<<<<<<< HEAD
+      console.log(`🔍 Checking usage limit for ${limitType}:`, {
+        userId: user._id,
+        tier: user.subscription?.tier || "free",
+        current: user.usage?.[limitType] || 0,
+        limit: user.getUsageLimit(limitType),
+      });
+
+      // Check if limit reached
+      if (user.hasReachedLimit(limitType)) {
+=======
       // Map limitType to actual usage field
       const usageFieldMap = {
         resumesPerMonth: "resumesThisMonth",
@@ -113,6 +127,7 @@ export function checkUsageLimit(limitType) {
 
       // Check if limit reached
       if (hasReached) {
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
         const limit = user.getUsageLimit(limitType);
         const tier = user.subscription?.tier || "free";
 
@@ -204,6 +219,8 @@ export function checkUsageLimit(limitType) {
               action: "Upgrade to Pro",
             },
           },
+<<<<<<< HEAD
+=======
           aiResumeExtractionsPerDay: {
             free: {
               title: "Daily AI Extraction Limit Reached",
@@ -236,6 +253,7 @@ export function checkUsageLimit(limitType) {
               action: "Try Tomorrow",
             },
           },
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
         };
 
         const defaultMessage = {
@@ -548,6 +566,8 @@ export async function getUserUsageStats(req, res) {
   }
 }
 
+<<<<<<< HEAD
+=======
 /**
  * Check if the resume's subscription is still active
  * This middleware ensures that resumes created with one-time subscriptions
@@ -729,6 +749,7 @@ export async function checkResumeSubscriptionAccess(req, res, next) {
   }
 }
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 export default {
   checkSubscription,
   checkUsageLimit,
@@ -738,5 +759,8 @@ export default {
   trackUsage,
   tierBasedRateLimit,
   getUserUsageStats,
+<<<<<<< HEAD
+=======
   checkResumeSubscriptionAccess,
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 };

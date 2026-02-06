@@ -1203,7 +1203,11 @@ export const JOB_PROFILES = {
     ],
     minExperience: 1,
   },
+<<<<<<< HEAD
+  
+=======
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   // Additional Frontend Frameworks & Stacks
   "nextjs-developer": {
     label: "Next.js Developer",
@@ -1221,6 +1225,12 @@ export const JOB_PROFILES = {
       projects: 0.2,
       education: 0.1,
     },
+<<<<<<< HEAD
+    experienceKeywords: ["built", "developed", "deployed", "optimized", "implemented SSR"],
+    minExperience: 0,
+  },
+  
+=======
     experienceKeywords: [
       "built",
       "developed",
@@ -1231,6 +1241,7 @@ export const JOB_PROFILES = {
     minExperience: 0,
   },
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   "svelte-developer": {
     label: "Svelte/SvelteKit Developer",
     category: "Engineering",
@@ -1250,7 +1261,11 @@ export const JOB_PROFILES = {
     experienceKeywords: ["built", "developed", "created", "optimized"],
     minExperience: 0,
   },
+<<<<<<< HEAD
+  
+=======
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   "remix-developer": {
     label: "Remix Developer",
     category: "Engineering",
@@ -1259,12 +1274,16 @@ export const JOB_PROFILES = {
       frameworks: ["Remix", "React", "React Router"],
       databases: ["PostgreSQL", "MongoDB", "Prisma"],
       tools: ["Git", "npm", "Fly.io", "Vercel"],
+<<<<<<< HEAD
+      concepts: ["Progressive Enhancement", "Nested Routing", "Data Loading", "SSR"],
+=======
       concepts: [
         "Progressive Enhancement",
         "Nested Routing",
         "Data Loading",
         "SSR",
       ],
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
     },
     weights: {
       technical: 0.45,
@@ -1275,7 +1294,11 @@ export const JOB_PROFILES = {
     experienceKeywords: ["built", "developed", "optimized", "implemented"],
     minExperience: 0,
   },
+<<<<<<< HEAD
+  
+=======
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   "solidjs-developer": {
     label: "Solid.js Developer",
     category: "Engineering",
@@ -1295,7 +1318,11 @@ export const JOB_PROFILES = {
     experienceKeywords: ["built", "developed", "optimized", "created"],
     minExperience: 0,
   },
+<<<<<<< HEAD
+  
+=======
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   // Backend Frameworks & Specializations
   "nestjs-developer": {
     label: "NestJS Developer",
@@ -1305,12 +1332,16 @@ export const JOB_PROFILES = {
       frameworks: ["NestJS", "Express", "TypeORM", "Prisma"],
       databases: ["PostgreSQL", "MongoDB", "MySQL", "Redis"],
       tools: ["Git", "Docker", "Jest", "Swagger", "RabbitMQ"],
+<<<<<<< HEAD
+      concepts: ["Dependency Injection", "Microservices", "REST API", "GraphQL"],
+=======
       concepts: [
         "Dependency Injection",
         "Microservices",
         "REST API",
         "GraphQL",
       ],
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
     },
     weights: {
       technical: 0.45,
@@ -1318,6 +1349,12 @@ export const JOB_PROFILES = {
       projects: 0.2,
       education: 0.1,
     },
+<<<<<<< HEAD
+    experienceKeywords: ["developed", "built", "architected", "implemented APIs"],
+    minExperience: 0,
+  },
+  
+=======
     experienceKeywords: [
       "developed",
       "built",
@@ -1327,6 +1364,7 @@ export const JOB_PROFILES = {
     minExperience: 0,
   },
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   "fastapi-developer": {
     label: "FastAPI Developer",
     category: "Engineering",
@@ -1335,12 +1373,16 @@ export const JOB_PROFILES = {
       frameworks: ["FastAPI", "Pydantic", "SQLAlchemy", "Alembic"],
       databases: ["PostgreSQL", "MongoDB", "MySQL", "Redis"],
       tools: ["Git", "Docker", "Uvicorn", "Pytest", "Swagger"],
+<<<<<<< HEAD
+      concepts: ["Async Programming", "REST API", "Type Hints", "Dependency Injection"],
+=======
       concepts: [
         "Async Programming",
         "REST API",
         "Type Hints",
         "Dependency Injection",
       ],
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
     },
     weights: {
       technical: 0.45,
@@ -1351,7 +1393,11 @@ export const JOB_PROFILES = {
     experienceKeywords: ["developed", "built", "implemented", "optimized APIs"],
     minExperience: 0,
   },
+<<<<<<< HEAD
+  
+=======
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   "spring-boot-developer": {
     label: "Spring Boot Developer",
     category: "Engineering",
@@ -1360,6 +1406,9 @@ export const JOB_PROFILES = {
       frameworks: ["Spring Boot", "Spring MVC", "Spring Security", "Hibernate"],
       databases: ["PostgreSQL", "MySQL", "Oracle", "MongoDB"],
       tools: ["Git", "Maven", "Gradle", "Docker", "Jenkins"],
+<<<<<<< HEAD
+      concepts: ["Microservices", "REST API", "JPA", "Security", "Cloud Native"],
+=======
       concepts: [
         "Microservices",
         "REST API",
@@ -1367,6 +1416,7 @@ export const JOB_PROFILES = {
         "Security",
         "Cloud Native",
       ],
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
     },
     weights: {
       technical: 0.45,
@@ -1377,7 +1427,11 @@ export const JOB_PROFILES = {
     experienceKeywords: ["developed", "built", "architected", "implemented"],
     minExperience: 0,
   },
+<<<<<<< HEAD
+  
+=======
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   "laravel-developer": {
     label: "Laravel Developer",
     category: "Engineering",
@@ -1397,7 +1451,11 @@ export const JOB_PROFILES = {
     experienceKeywords: ["developed", "built", "created", "implemented"],
     minExperience: 0,
   },
+<<<<<<< HEAD
+  
+=======
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   "django-developer": {
     label: "Django Developer",
     category: "Engineering",
@@ -1417,7 +1475,11 @@ export const JOB_PROFILES = {
     experienceKeywords: ["developed", "built", "implemented", "deployed"],
     minExperience: 0,
   },
+<<<<<<< HEAD
+  
+=======
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   "rails-developer": {
     label: "Ruby on Rails Developer",
     category: "Engineering",
@@ -1426,12 +1488,16 @@ export const JOB_PROFILES = {
       frameworks: ["Rails", "Active Record", "Hotwire", "Stimulus"],
       databases: ["PostgreSQL", "MySQL", "Redis"],
       tools: ["Git", "Bundler", "Heroku", "RSpec"],
+<<<<<<< HEAD
+      concepts: ["MVC", "Active Record", "Convention over Configuration", "RESTful"],
+=======
       concepts: [
         "MVC",
         "Active Record",
         "Convention over Configuration",
         "RESTful",
       ],
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
     },
     weights: {
       technical: 0.45,
@@ -1442,7 +1508,11 @@ export const JOB_PROFILES = {
     experienceKeywords: ["developed", "built", "implemented", "deployed"],
     minExperience: 0,
   },
+<<<<<<< HEAD
+  
+=======
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   "express-developer": {
     label: "Express.js Developer",
     category: "Engineering",
@@ -1451,12 +1521,16 @@ export const JOB_PROFILES = {
       frameworks: ["Express.js", "Mongoose", "Passport.js"],
       databases: ["MongoDB", "PostgreSQL", "MySQL", "Redis"],
       tools: ["Git", "npm", "Docker", "PM2", "Nginx"],
+<<<<<<< HEAD
+      concepts: ["Middleware", "REST API", "Authentication", "Session Management"],
+=======
       concepts: [
         "Middleware",
         "REST API",
         "Authentication",
         "Session Management",
       ],
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
     },
     weights: {
       technical: 0.45,
@@ -1467,7 +1541,11 @@ export const JOB_PROFILES = {
     experienceKeywords: ["developed", "built", "implemented", "created APIs"],
     minExperience: 0,
   },
+<<<<<<< HEAD
+  
+=======
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   "graphql-developer": {
     label: "GraphQL Developer",
     category: "Engineering",
@@ -1484,6 +1562,12 @@ export const JOB_PROFILES = {
       projects: 0.2,
       education: 0.1,
     },
+<<<<<<< HEAD
+    experienceKeywords: ["designed schemas", "implemented", "built APIs", "optimized"],
+    minExperience: 0,
+  },
+  
+=======
     experienceKeywords: [
       "designed schemas",
       "implemented",
@@ -1493,6 +1577,7 @@ export const JOB_PROFILES = {
     minExperience: 0,
   },
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   // Full Stack Variations
   "t3-stack-developer": {
     label: "T3 Stack Developer (Next.js + tRPC + Prisma)",
@@ -1513,7 +1598,11 @@ export const JOB_PROFILES = {
     experienceKeywords: ["built", "developed", "implemented", "deployed"],
     minExperience: 0,
   },
+<<<<<<< HEAD
+  
+=======
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   "jamstack-developer": {
     label: "JAMstack Developer",
     category: "Engineering",
@@ -1533,7 +1622,11 @@ export const JOB_PROFILES = {
     experienceKeywords: ["built", "developed", "deployed", "optimized"],
     minExperience: 0,
   },
+<<<<<<< HEAD
+  
+=======
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   "serverless-developer": {
     label: "Serverless Developer",
     category: "Engineering",
@@ -1553,7 +1646,11 @@ export const JOB_PROFILES = {
     experienceKeywords: ["developed", "deployed", "architected", "implemented"],
     minExperience: 0,
   },
+<<<<<<< HEAD
+  
+=======
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   // Mobile Development Variations
   "kotlin-developer": {
     label: "Kotlin Developer (Android)",
@@ -1563,12 +1660,16 @@ export const JOB_PROFILES = {
       frameworks: ["Android SDK", "Jetpack Compose", "Coroutines", "Room"],
       databases: ["SQLite", "Room", "Realm"],
       tools: ["Android Studio", "Git", "Gradle", "Firebase"],
+<<<<<<< HEAD
+      concepts: ["Material Design", "MVVM", "Lifecycle", "Dependency Injection"],
+=======
       concepts: [
         "Material Design",
         "MVVM",
         "Lifecycle",
         "Dependency Injection",
       ],
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
     },
     weights: {
       technical: 0.45,
@@ -1579,7 +1680,11 @@ export const JOB_PROFILES = {
     experienceKeywords: ["developed", "built", "published", "implemented"],
     minExperience: 0,
   },
+<<<<<<< HEAD
+  
+=======
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   "swiftui-developer": {
     label: "SwiftUI Developer (iOS)",
     category: "Engineering",
@@ -1599,7 +1704,11 @@ export const JOB_PROFILES = {
     experienceKeywords: ["developed", "built", "published", "implemented"],
     minExperience: 0,
   },
+<<<<<<< HEAD
+  
+=======
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   "ionic-developer": {
     label: "Ionic Developer",
     category: "Engineering",
@@ -1619,7 +1728,11 @@ export const JOB_PROFILES = {
     experienceKeywords: ["developed", "built", "deployed", "published"],
     minExperience: 0,
   },
+<<<<<<< HEAD
+  
+=======
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   // DevOps & Cloud Specializations
   "aws-devops-engineer": {
     label: "AWS DevOps Engineer",
@@ -1640,7 +1753,11 @@ export const JOB_PROFILES = {
     experienceKeywords: ["deployed", "automated", "architected", "optimized"],
     minExperience: 1,
   },
+<<<<<<< HEAD
+  
+=======
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   "azure-devops-engineer": {
     label: "Azure DevOps Engineer",
     category: "Engineering",
@@ -1648,6 +1765,9 @@ export const JOB_PROFILES = {
       programming: ["PowerShell", "Python", "C#"],
       frameworks: ["Azure Resource Manager", "Bicep", "Terraform"],
       databases: ["Azure SQL", "Cosmos DB"],
+<<<<<<< HEAD
+      tools: ["Azure", "Docker", "Kubernetes", "Azure DevOps", "GitHub Actions"],
+=======
       tools: [
         "Azure",
         "Docker",
@@ -1655,6 +1775,7 @@ export const JOB_PROFILES = {
         "Azure DevOps",
         "GitHub Actions",
       ],
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
       concepts: ["CI/CD", "IaC", "Azure Services", "Monitoring"],
     },
     weights: {
@@ -1666,7 +1787,11 @@ export const JOB_PROFILES = {
     experienceKeywords: ["deployed", "automated", "architected", "managed"],
     minExperience: 1,
   },
+<<<<<<< HEAD
+  
+=======
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   "kubernetes-engineer": {
     label: "Kubernetes Engineer",
     category: "Engineering",
@@ -1683,6 +1808,12 @@ export const JOB_PROFILES = {
       projects: 0.15,
       education: 0.1,
     },
+<<<<<<< HEAD
+    experienceKeywords: ["deployed", "managed clusters", "orchestrated", "automated"],
+    minExperience: 1,
+  },
+  
+=======
     experienceKeywords: [
       "deployed",
       "managed clusters",
@@ -1692,6 +1823,7 @@ export const JOB_PROFILES = {
     minExperience: 1,
   },
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   "terraform-engineer": {
     label: "Terraform/IaC Engineer",
     category: "Engineering",
@@ -1711,13 +1843,20 @@ export const JOB_PROFILES = {
     experienceKeywords: ["provisioned", "automated", "managed infrastructure"],
     minExperience: 1,
   },
+<<<<<<< HEAD
+  
+=======
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   // AI/ML Specializations
   "nlp-engineer": {
     label: "NLP Engineer",
     category: "Engineering",
     requiredSkills: {
       programming: ["Python"],
+<<<<<<< HEAD
+      frameworks: ["Transformers", "spaCy", "NLTK", "Hugging Face", "LangChain"],
+=======
       frameworks: [
         "Transformers",
         "spaCy",
@@ -1725,6 +1864,7 @@ export const JOB_PROFILES = {
         "Hugging Face",
         "LangChain",
       ],
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
       databases: ["Vector DB", "Pinecone", "Weaviate"],
       tools: ["PyTorch", "TensorFlow", "Git", "Jupyter"],
       concepts: ["Language Models", "Embeddings", "Text Classification", "NER"],
@@ -1735,6 +1875,12 @@ export const JOB_PROFILES = {
       projects: 0.15,
       education: 0.1,
     },
+<<<<<<< HEAD
+    experienceKeywords: ["developed models", "trained", "fine-tuned", "implemented"],
+    minExperience: 0,
+  },
+  
+=======
     experienceKeywords: [
       "developed models",
       "trained",
@@ -1744,6 +1890,7 @@ export const JOB_PROFILES = {
     minExperience: 0,
   },
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   "computer-vision-engineer": {
     label: "Computer Vision Engineer",
     category: "Engineering",
@@ -1752,12 +1899,16 @@ export const JOB_PROFILES = {
       frameworks: ["OpenCV", "PyTorch", "TensorFlow", "YOLO", "Detectron2"],
       databases: [],
       tools: ["Git", "CUDA", "Docker", "Jupyter"],
+<<<<<<< HEAD
+      concepts: ["Image Processing", "Object Detection", "Segmentation", "CNNs"],
+=======
       concepts: [
         "Image Processing",
         "Object Detection",
         "Segmentation",
         "CNNs",
       ],
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
     },
     weights: {
       technical: 0.45,
@@ -1765,6 +1916,12 @@ export const JOB_PROFILES = {
       projects: 0.15,
       education: 0.1,
     },
+<<<<<<< HEAD
+    experienceKeywords: ["developed", "trained models", "implemented", "optimized"],
+    minExperience: 0,
+  },
+  
+=======
     experienceKeywords: [
       "developed",
       "trained models",
@@ -1774,6 +1931,7 @@ export const JOB_PROFILES = {
     minExperience: 0,
   },
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   "mlops-engineer": {
     label: "MLOps Engineer",
     category: "Engineering",
@@ -1790,6 +1948,12 @@ export const JOB_PROFILES = {
       projects: 0.2,
       education: 0.1,
     },
+<<<<<<< HEAD
+    experienceKeywords: ["deployed models", "automated", "implemented pipelines"],
+    minExperience: 1,
+  },
+  
+=======
     experienceKeywords: [
       "deployed models",
       "automated",
@@ -1798,6 +1962,7 @@ export const JOB_PROFILES = {
     minExperience: 1,
   },
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   "deep-learning-engineer": {
     label: "Deep Learning Engineer",
     category: "Engineering",
@@ -1814,6 +1979,12 @@ export const JOB_PROFILES = {
       projects: 0.15,
       education: 0.1,
     },
+<<<<<<< HEAD
+    experienceKeywords: ["trained", "developed models", "optimized", "implemented"],
+    minExperience: 0,
+  },
+  
+=======
     experienceKeywords: [
       "trained",
       "developed models",
@@ -1823,6 +1994,7 @@ export const JOB_PROFILES = {
     minExperience: 0,
   },
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   // Database Specialists
   "mongodb-developer": {
     label: "MongoDB Developer",
@@ -1840,6 +2012,12 @@ export const JOB_PROFILES = {
       projects: 0.2,
       education: 0.1,
     },
+<<<<<<< HEAD
+    experienceKeywords: ["designed schemas", "optimized queries", "implemented"],
+    minExperience: 0,
+  },
+  
+=======
     experienceKeywords: [
       "designed schemas",
       "optimized queries",
@@ -1848,6 +2026,7 @@ export const JOB_PROFILES = {
     minExperience: 0,
   },
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   "postgresql-developer": {
     label: "PostgreSQL Developer",
     category: "Engineering",
@@ -1864,6 +2043,12 @@ export const JOB_PROFILES = {
       projects: 0.2,
       education: 0.1,
     },
+<<<<<<< HEAD
+    experienceKeywords: ["optimized queries", "designed schemas", "tuned performance"],
+    minExperience: 0,
+  },
+  
+=======
     experienceKeywords: [
       "optimized queries",
       "designed schemas",
@@ -1872,6 +2057,7 @@ export const JOB_PROFILES = {
     minExperience: 0,
   },
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   "redis-developer": {
     label: "Redis Developer",
     category: "Engineering",
@@ -1891,7 +2077,11 @@ export const JOB_PROFILES = {
     experienceKeywords: ["implemented caching", "optimized", "designed"],
     minExperience: 0,
   },
+<<<<<<< HEAD
+  
+=======
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   // Game Development
   "unity-developer": {
     label: "Unity Game Developer",
@@ -1901,6 +2091,9 @@ export const JOB_PROFILES = {
       frameworks: ["Unity", "Unity ML-Agents"],
       databases: [],
       tools: ["Git", "Blender", "Photoshop", "Visual Studio"],
+<<<<<<< HEAD
+      concepts: ["Game Physics", "Animation", "Scripting", "UI/UX", "Optimization"],
+=======
       concepts: [
         "Game Physics",
         "Animation",
@@ -1908,6 +2101,7 @@ export const JOB_PROFILES = {
         "UI/UX",
         "Optimization",
       ],
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
     },
     weights: {
       technical: 0.4,
@@ -1915,6 +2109,12 @@ export const JOB_PROFILES = {
       projects: 0.25,
       education: 0.1,
     },
+<<<<<<< HEAD
+    experienceKeywords: ["developed games", "implemented mechanics", "published"],
+    minExperience: 0,
+  },
+  
+=======
     experienceKeywords: [
       "developed games",
       "implemented mechanics",
@@ -1923,6 +2123,7 @@ export const JOB_PROFILES = {
     minExperience: 0,
   },
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   "unreal-developer": {
     label: "Unreal Engine Developer",
     category: "Engineering",
@@ -1931,6 +2132,9 @@ export const JOB_PROFILES = {
       frameworks: ["Unreal Engine"],
       databases: [],
       tools: ["Git", "Blender", "Perforce", "Visual Studio"],
+<<<<<<< HEAD
+      concepts: ["Game Development", "3D Graphics", "Physics", "AI", "Multiplayer"],
+=======
       concepts: [
         "Game Development",
         "3D Graphics",
@@ -1938,6 +2142,7 @@ export const JOB_PROFILES = {
         "AI",
         "Multiplayer",
       ],
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
     },
     weights: {
       technical: 0.45,
@@ -1948,7 +2153,11 @@ export const JOB_PROFILES = {
     experienceKeywords: ["developed", "implemented", "optimized", "shipped"],
     minExperience: 0,
   },
+<<<<<<< HEAD
+  
+=======
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   "godot-developer": {
     label: "Godot Developer",
     category: "Engineering",
@@ -1965,6 +2174,12 @@ export const JOB_PROFILES = {
       projects: 0.25,
       education: 0.1,
     },
+<<<<<<< HEAD
+    experienceKeywords: ["developed games", "implemented", "created", "published"],
+    minExperience: 0,
+  },
+  
+=======
     experienceKeywords: [
       "developed games",
       "implemented",
@@ -1974,6 +2189,7 @@ export const JOB_PROFILES = {
     minExperience: 0,
   },
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   // Embedded Systems
   "embedded-systems-engineer": {
     label: "Embedded Systems Engineer",
@@ -1991,6 +2207,12 @@ export const JOB_PROFILES = {
       projects: 0.15,
       education: 0.1,
     },
+<<<<<<< HEAD
+    experienceKeywords: ["developed firmware", "implemented", "debugged", "optimized"],
+    minExperience: 0,
+  },
+  
+=======
     experienceKeywords: [
       "developed firmware",
       "implemented",
@@ -2000,6 +2222,7 @@ export const JOB_PROFILES = {
     minExperience: 0,
   },
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   "iot-developer": {
     label: "IoT Developer",
     category: "Engineering",
@@ -2019,7 +2242,11 @@ export const JOB_PROFILES = {
     experienceKeywords: ["developed", "implemented", "integrated", "deployed"],
     minExperience: 0,
   },
+<<<<<<< HEAD
+  
+=======
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   // Blockchain
   "blockchain-developer": {
     label: "Blockchain Developer",
@@ -2029,6 +2256,9 @@ export const JOB_PROFILES = {
       frameworks: ["Ethereum", "Web3.js", "Hardhat", "Truffle"],
       databases: [],
       tools: ["Git", "MetaMask", "Ganache", "Remix"],
+<<<<<<< HEAD
+      concepts: ["Smart Contracts", "DeFi", "NFTs", "Consensus", "Cryptography"],
+=======
       concepts: [
         "Smart Contracts",
         "DeFi",
@@ -2036,6 +2266,7 @@ export const JOB_PROFILES = {
         "Consensus",
         "Cryptography",
       ],
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
     },
     weights: {
       technical: 0.45,
@@ -2046,7 +2277,11 @@ export const JOB_PROFILES = {
     experienceKeywords: ["developed smart contracts", "deployed", "audited"],
     minExperience: 0,
   },
+<<<<<<< HEAD
+  
+=======
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   "web3-developer": {
     label: "Web3 Developer",
     category: "Engineering",
@@ -2066,7 +2301,11 @@ export const JOB_PROFILES = {
     experienceKeywords: ["built dApps", "integrated", "developed", "deployed"],
     minExperience: 0,
   },
+<<<<<<< HEAD
+  
+=======
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   // Testing & QA
   "test-automation-engineer": {
     label: "Test Automation Engineer",
@@ -2084,6 +2323,12 @@ export const JOB_PROFILES = {
       projects: 0.2,
       education: 0.1,
     },
+<<<<<<< HEAD
+    experienceKeywords: ["automated tests", "implemented", "developed frameworks"],
+    minExperience: 0,
+  },
+  
+=======
     experienceKeywords: [
       "automated tests",
       "implemented",
@@ -2092,6 +2337,7 @@ export const JOB_PROFILES = {
     minExperience: 0,
   },
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   "qa-engineer": {
     label: "QA Engineer",
     category: "Engineering",
@@ -2100,12 +2346,16 @@ export const JOB_PROFILES = {
       frameworks: ["Selenium", "Cypress", "TestNG", "JUnit"],
       databases: [],
       tools: ["Git", "JIRA", "Postman", "TestRail"],
+<<<<<<< HEAD
+      concepts: ["Testing Methodologies", "Bug Tracking", "Test Planning", "QA"],
+=======
       concepts: [
         "Testing Methodologies",
         "Bug Tracking",
         "Test Planning",
         "QA",
       ],
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
     },
     weights: {
       technical: 0.35,
@@ -2113,12 +2363,16 @@ export const JOB_PROFILES = {
       projects: 0.25,
       education: 0.1,
     },
+<<<<<<< HEAD
+    experienceKeywords: ["tested", "identified bugs", "improved quality", "automated"],
+=======
     experienceKeywords: [
       "tested",
       "identified bugs",
       "improved quality",
       "automated",
     ],
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
     minExperience: 0,
   },
 };

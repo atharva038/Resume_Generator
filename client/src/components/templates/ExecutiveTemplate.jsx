@@ -784,7 +784,11 @@ const ExecutiveTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
             {resumeData.customSections.map((section, index) => (
               <section
                 key={section.id || `custom-${index}`}
+<<<<<<< HEAD
+                style={{marginBottom: "18px"}}
+=======
                 style={{marginBottom: dynamicStyles.sectionMarginBottom}}
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
               >
                 <h2
                   style={{
@@ -807,10 +811,17 @@ const ExecutiveTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
                       <li
                         key={`${section.id || index}-item-${itemIndex}`}
                         style={{
+<<<<<<< HEAD
+                          fontSize: "10pt",
+                          lineHeight: "1.5",
+                          color: "#333",
+                          marginBottom: "4px",
+=======
                           fontSize: dynamicStyles.achievementSize,
                           lineHeight: dynamicStyles.lineHeight,
                           color: selectedTheme.text,
                           marginBottom: dynamicStyles.achievementMarginBottom,
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
                         }}
                       >
                         {item}
@@ -820,9 +831,15 @@ const ExecutiveTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
                 ) : (
                   <div
                     style={{
+<<<<<<< HEAD
+                      fontSize: "10pt",
+                      lineHeight: "1.5",
+                      color: "#333",
+=======
                       fontSize: dynamicStyles.fontSize,
                       lineHeight: dynamicStyles.lineHeight,
                       color: selectedTheme.text,
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
                       whiteSpace: "pre-wrap",
                     }}
                   >

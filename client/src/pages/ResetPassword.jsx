@@ -194,7 +194,11 @@ const ResetPassword = () => {
                     />
                     <button
                       type="button"
+<<<<<<< HEAD
+                      onClick={() => setShowPassword(!showPassword)}
+=======
                       onClick={toggleShowPassword}
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                     >
                       {showPassword ? (
@@ -304,7 +308,13 @@ const ResetPassword = () => {
                     />
                     <button
                       type="button"
+<<<<<<< HEAD
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
+=======
                       onClick={toggleShowConfirmPassword}
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                     >
                       {showConfirmPassword ? (

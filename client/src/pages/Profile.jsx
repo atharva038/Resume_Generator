@@ -1,5 +1,9 @@
 import {useState} from "react";
+<<<<<<< HEAD
+import {useAuth} from "../context/AuthContext";
+=======
 import {useAuth} from "@/context/AuthContext";
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 import {FaUser, FaCreditCard, FaHistory, FaKey} from "react-icons/fa";
 import SubscriptionDashboard from "./SubscriptionDashboard";
 

@@ -6,6 +6,28 @@ if (!process.env.GEMINI_API_KEY) {
   dotenv.config();
 }
 
+<<<<<<< HEAD
+// Validate GEMINI_API_KEY after attempting to load
+if (!process.env.GEMINI_API_KEY) {
+  console.error("❌ GEMINI_API_KEY is not set in environment variables");
+  console.error("💡 Please add GEMINI_API_KEY=your_key_here to your .env file");
+  console.error("📚 Get your key from: https://aistudio.google.com/app/apikey");
+  throw new Error(
+    "GEMINI_API_KEY is required. Please set it in your .env file."
+  );
+}
+
+// Trim the API key to remove any whitespace
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY.trim();
+
+// Validate key format
+if (GEMINI_API_KEY.length < 20) {
+  console.warn("⚠️  Warning: GEMINI_API_KEY seems too short");
+}
+
+// Initialize Gemini AI with validated key
+const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+=======
 // Make Gemini optional: if GEMINI_API_KEY is not provided, the service will
 // be loaded but guarded so the server doesn't crash at import time. Calls to
 // Gemini functions will throw a clear error if attempted without configuration.
@@ -134,6 +156,7 @@ async function retryWithBackoff(fn, operation = "API call") {
     `${operation} failed after ${RETRY_CONFIG.maxRetries} retries: ${lastError.message}`
   );
 }
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 
 /**
  * Extract token usage from Gemini API response
@@ -434,7 +457,29 @@ YOU MUST follow these custom instructions while maintaining all the critical rul
       `✅ Content enhanced successfully for ${sectionType} (Tokens: ${tokenUsage.totalTokens})`
     );
     return {data: enhancedContent, tokenUsage};
+<<<<<<< HEAD
+  } catch (error) {
+    console.error("❌ Gemini enhancement error:", error.message);
+
+    // Check if it's a quota exceeded error
+    if (
+      error.message.includes("429") ||
+      error.message.includes("quota") ||
+      error.message.includes("Too Many Requests")
+    ) {
+      const quotaError = new Error(
+        "AI service quota exceeded. Please try again later or upgrade your plan."
+      );
+      quotaError.code = "QUOTA_EXCEEDED";
+      quotaError.statusCode = 429;
+      throw quotaError;
+    }
+
+    throw new Error(`Failed to enhance content with AI: ${error.message}`);
+  }
+=======
   }, `Content enhancement (${sectionType})`);
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 }
 
 /**
@@ -466,7 +511,29 @@ Return only the summary text without any additional formatting or explanations.`
       `✅ Summary generated successfully (Tokens: ${tokenUsage.totalTokens})`
     );
     return {data: text, tokenUsage};
+<<<<<<< HEAD
+  } catch (error) {
+    console.error("❌ Gemini summary generation error:", error.message);
+
+    // Check if it's a quota exceeded error
+    if (
+      error.message.includes("429") ||
+      error.message.includes("quota") ||
+      error.message.includes("Too Many Requests")
+    ) {
+      const quotaError = new Error(
+        "AI service quota exceeded. Please try again later or upgrade your plan."
+      );
+      quotaError.code = "QUOTA_EXCEEDED";
+      quotaError.statusCode = 429;
+      throw quotaError;
+    }
+
+    throw new Error(`Failed to generate summary with AI: ${error.message}`);
+  }
+=======
   }, "Summary generation");
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 }
 
 /**

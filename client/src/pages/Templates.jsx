@@ -1,5 +1,5 @@
-import {useState} from "react";
-import {useNavigate} from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Target,
   Sparkles,
@@ -12,6 +12,24 @@ import {
   X,
   Filter,
 } from "lucide-react";
+<<<<<<< HEAD
+import ClassicTemplate from "../components/templates/ClassicTemplate";
+import ModernTemplate from "../components/templates/ModernTemplate";
+import MinimalTemplate from "../components/templates/MinimalTemplate";
+import ProfessionalTemplate from "../components/templates/ProfessionalTemplate";
+import ExecutiveTemplate from "../components/templates/ExecutiveTemplate";
+import TechTemplate from "../components/templates/TechTemplate";
+import CreativeTemplate from "../components/templates/CreativeTemplate";
+import AcademicTemplate from "../components/templates/AcademicTemplate";
+import CorporateEliteTemplate from "../components/templates/CorporateEliteTemplate";
+import StrategicLeaderTemplate from "../components/templates/StrategicLeaderTemplate";
+import ImpactProTemplate from "../components/templates/ImpactProTemplate";
+import GitHubStyleTemplate from "../components/templates/GitHubStyleTemplate";
+import DataAnalystTemplate from "../components/templates/DataAnalystTemplate";
+import SocialMediaTemplate from "../components/templates/Social-MediaTemplate";
+import MarketingDirectorTemplate from "../components/templates/MarketingDirectorTemplate"; 
+import SoftwareEngineeringLeadTemplate from "../components/templates/SoftwareEngineeringLeadTemplate";
+=======
 import ClassicTemplate from "@/components/templates/ClassicTemplate";
 import ModernTemplate from "@/components/templates/ModernTemplate";
 import MinimalTemplate from "@/components/templates/MinimalTemplate";
@@ -24,6 +42,7 @@ import CorporateEliteTemplate from "@/components/templates/CorporateEliteTemplat
 import StrategicLeaderTemplate from "@/components/templates/StrategicLeaderTemplate";
 import ImpactProTemplate from "@/components/templates/ImpactProTemplate";
 import GitHubStyleTemplate from "@/components/templates/GitHubStyleTemplate";
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 
 // Sample resume data for preview - matches template structure
 const sampleResumeData = {
@@ -62,7 +81,7 @@ const sampleResumeData = {
       bullets: [
         "Led team of 5 developers in building scalable web applications serving 100K+ users",
         "Improved system performance by 40% through code optimization and architecture redesign",
-        "Mentored junior developers and conducted technical interviews",
+        "Mentored  developers and conducted technical interviews",
       ],
     },
     {
@@ -104,7 +123,7 @@ const sampleResumeData = {
       issuer: "Amazon Web Services",
       date: "2022",
     },
-    {name: "React Professional Certification", issuer: "Meta", date: "2023"},
+    { name: "React Professional Certification", issuer: "Meta", date: "2023" },
   ],
   achievements: [
     "Employee of the Year 2022 - Tech Corp",
@@ -271,65 +290,125 @@ const templates = [
     ],
     colors: ["#24292e", "#ffffff"],
   },
+<<<<<<< HEAD
+  {
+  id: "data-analyst",
+  name: "Data Analyst",
+  component: DataAnalystTemplate,
+  category: "Professional",
+  atsScore: 96,
+  description: "Quantitative results-driven template optimized for data professionals",
+  features: ["Metrics-Focused", "Results-Driven", "Table Layout", "Clean Structure"],
+  colors: ["#1a73e8", "#ffffff"],
+},
+{
+  id: "social-media",
+  name: "Social Media",
+  component: SocialMediaTemplate,
+  category: "Creative",
+  atsScore: 85,
+  description: "Modern, visually distinct template optimized for social media and marketing professionals",
+  features: ["Project Highlights", "Visual Hierarchy", "Results-Focused", "Professional Layout"],
+  colors: ["#2c3e50", "#3498db", "#ffffff"],
+},
+{
+  id: "marketing-director",
+  name: "Marketing Director",
+  component: MarketingDirectorTemplate,
+  category: "Creative",
+  atsScore: 88,
+  description: "Bold, all-caps header template for marketing leadership positions",
+  features: ["All-Caps Header", "Multi-Column Skills", "Compact Layout", "Leadership Focus"],
+  colors: ["#000000", "#ffffff"],
+},
+{
+  id: "software-engineering-lead",
+  name: "Software Engineering Lead",
+  component: SoftwareEngineeringLeadTemplate,
+  category: "Professional",
+  atsScore: 90,
+  description: "Technical leadership template with thick section dividers and skill categories",
+  features: ["Technical Leadership", "Thick Dividers", "Skill Categories", "Engineering Focus"],
+  colors: ["#000000", "#ffffff"],
+}
+=======
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 ];
 
 // Color theme configurations (same as Editor.jsx)
 const TEMPLATE_COLOR_THEMES = {
   classic: [
-    {id: "navy", name: "Navy Blue", primary: "#0066cc"},
-    {id: "burgundy", name: "Burgundy", primary: "#8b1a1a"},
-    {id: "forest", name: "Forest Green", primary: "#1b5e20"},
-    {id: "charcoal", name: "Charcoal", primary: "#2d3748"},
+    { id: "navy", name: "Navy Blue", primary: "#0066cc" },
+    { id: "burgundy", name: "Burgundy", primary: "#8b1a1a" },
+    { id: "forest", name: "Forest Green", primary: "#1b5e20" },
+    { id: "charcoal", name: "Charcoal", primary: "#2d3748" },
   ],
   modern: [
-    {id: "blue", name: "Blue", primary: "#2563eb"},
-    {id: "purple", name: "Purple", primary: "#7c3aed"},
-    {id: "teal", name: "Teal", primary: "#0d9488"},
-    {id: "orange", name: "Orange", primary: "#ea580c"},
+    { id: "blue", name: "Blue", primary: "#2563eb" },
+    { id: "purple", name: "Purple", primary: "#7c3aed" },
+    { id: "teal", name: "Teal", primary: "#0d9488" },
+    { id: "orange", name: "Orange", primary: "#ea580c" },
   ],
   minimal: [
-    {id: "charcoal", name: "Charcoal", primary: "#2d3748"},
-    {id: "navy", name: "Navy", primary: "#1e40af"},
-    {id: "slate", name: "Slate", primary: "#475569"},
-    {id: "graphite", name: "Graphite", primary: "#18181b"},
+    { id: "charcoal", name: "Charcoal", primary: "#2d3748" },
+    { id: "navy", name: "Navy", primary: "#1e40af" },
+    { id: "slate", name: "Slate", primary: "#475569" },
+    { id: "graphite", name: "Graphite", primary: "#18181b" },
   ],
   professional: [
-    {id: "navy", name: "Navy Blue", primary: "#1e3a8a"},
-    {id: "burgundy", name: "Burgundy", primary: "#881337"},
-    {id: "forest", name: "Forest Green", primary: "#065f46"},
-    {id: "gray", name: "Gray", primary: "#374151"},
+    { id: "navy", name: "Navy Blue", primary: "#1e3a8a" },
+    { id: "burgundy", name: "Burgundy", primary: "#881337" },
+    { id: "forest", name: "Forest Green", primary: "#065f46" },
+    { id: "gray", name: "Gray", primary: "#374151" },
   ],
   "professional-v2": [
-    {id: "blue", name: "Blue", primary: "#1d4ed8"},
-    {id: "purple", name: "Purple", primary: "#7e22ce"},
-    {id: "teal", name: "Teal", primary: "#0f766e"},
-    {id: "burgundy", name: "Burgundy", primary: "#9f1239"},
+    { id: "blue", name: "Blue", primary: "#1d4ed8" },
+    { id: "purple", name: "Purple", primary: "#7e22ce" },
+    { id: "teal", name: "Teal", primary: "#0f766e" },
+    { id: "burgundy", name: "Burgundy", primary: "#9f1239" },
   ],
   "corporate-elite": [
-    {id: "navy", name: "Navy Blue", primary: "#1e3a5f"},
-    {id: "burgundy", name: "Burgundy", primary: "#7c2d41"},
-    {id: "forest", name: "Forest Green", primary: "#1e5f4d"},
-    {id: "charcoal", name: "Charcoal", primary: "#2d3748"},
+    { id: "navy", name: "Navy Blue", primary: "#1e3a5f" },
+    { id: "burgundy", name: "Burgundy", primary: "#7c2d41" },
+    { id: "forest", name: "Forest Green", primary: "#1e5f4d" },
+    { id: "charcoal", name: "Charcoal", primary: "#2d3748" },
   ],
   "strategic-leader": [
-    {id: "teal", name: "Teal", primary: "#0d7377"},
-    {id: "purple", name: "Purple", primary: "#6b46c1"},
-    {id: "burgundy", name: "Burgundy", primary: "#9b2c2c"},
-    {id: "navy", name: "Navy Blue", primary: "#2c5282"},
+    { id: "teal", name: "Teal", primary: "#0d7377" },
+    { id: "purple", name: "Purple", primary: "#6b46c1" },
+    { id: "burgundy", name: "Burgundy", primary: "#9b2c2c" },
+    { id: "navy", name: "Navy Blue", primary: "#2c5282" },
   ],
   "impact-pro": [
-    {id: "emerald", name: "Emerald", primary: "#047857"},
-    {id: "blue", name: "Blue", primary: "#1e40af"},
-    {id: "purple", name: "Purple", primary: "#7e22ce"},
-    {id: "orange", name: "Orange", primary: "#c2410c"},
+    { id: "emerald", name: "Emerald", primary: "#047857" },
+    { id: "blue", name: "Blue", primary: "#1e40af" },
+    { id: "purple", name: "Purple", primary: "#7e22ce" },
+    { id: "orange", name: "Orange", primary: "#c2410c" },
   ],
   tech: [
-    {id: "black", name: "Tech Black", primary: "#0f172a"},
-    {id: "blue", name: "Solid Blue", primary: "#1e40af"},
-    {id: "purple", name: "Solid Purple", primary: "#7e22ce"},
-    {id: "teal", name: "Solid Teal", primary: "#0f766e"},
+    { id: "black", name: "Tech Black", primary: "#0f172a" },
+    { id: "blue", name: "Solid Blue", primary: "#1e40af" },
+    { id: "purple", name: "Solid Purple", primary: "#7e22ce" },
+    { id: "teal", name: "Solid Teal", primary: "#0f766e" },
   ],
   "github-style": [
+<<<<<<< HEAD
+  { id: "classic", name: "Classic Black", primary: "#000000" },
+  { id: "indigo", name: "Deep Indigo", primary: "#1a237e" },
+  { id: "saffron", name: "Saffron", primary: "#ff9933" },
+  { id: "forest", name: "Forest Green", primary: "#1b5e20" },
+  { id: "maroon", name: "Maroon", primary: "#880e4f" },
+  { id: "navy", name: "Navy Blue", primary: "#003366" },
+],
+
+"data-analyst": [
+  { id: "blue", name: "Professional Blue", primary: "#1a73e8" },
+  { id: "teal", name: "Analytical Teal", primary: "#00796b" },
+  { id: "indigo", name: "Data Indigo", primary: "#303f9f" },
+  { id: "gray", name: "Analyst Gray", primary: "#37474f" },
+],
+
+=======
     {id: "classic", name: "Classic Black", primary: "#000000"},
     {id: "indigo", name: "Deep Indigo", primary: "#1a237e"},
     {id: "saffron", name: "Saffron", primary: "#ff9933"},
@@ -337,6 +416,7 @@ const TEMPLATE_COLOR_THEMES = {
     {id: "maroon", name: "Maroon", primary: "#880e4f"},
     {id: "navy", name: "Navy Blue", primary: "#003366"},
   ],
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 };
 
 const Templates = () => {
@@ -377,7 +457,11 @@ const Templates = () => {
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-zinc-900 rounded-full mb-4 border border-gray-200 dark:border-zinc-800">
             <Layout className="w-4 h-4 text-gray-600 dark:text-gray-400" />
             <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+<<<<<<< HEAD
+             16 Professional Templates
+=======
               11 Professional Templates
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
             </span>
           </div>
           <h1 className="text-4xl sm:text-5xl font-bold mb-4 text-gray-900 dark:text-white">
@@ -430,7 +514,11 @@ const Templates = () => {
               {/* Template Preview */}
               <div
                 className="relative bg-gray-50 dark:bg-zinc-900 overflow-hidden"
+<<<<<<< HEAD
+                style={{ height: "420px" }}
+=======
                 style={{height: "420px"}}
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
               >
                 <div
                   className="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none"
@@ -512,7 +600,7 @@ const Templates = () => {
                       <div
                         key={idx}
                         className="w-6 h-6 rounded-lg border-2 border-gray-300 dark:border-gray-600 shadow-sm"
-                        style={{backgroundColor: color}}
+                        style={{ backgroundColor: color }}
                       />
                     ))}
                   </div>
@@ -581,7 +669,11 @@ const Templates = () => {
                       >
                         <div
                           className="w-4 h-4 rounded-full border-2 border-gray-300 dark:border-zinc-700"
+<<<<<<< HEAD
+                          style={{ backgroundColor: theme.primary }}
+=======
                           style={{backgroundColor: theme.primary}}
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
                         />
                         <span className="text-sm font-medium">
                           {theme.name}
@@ -596,7 +688,7 @@ const Templates = () => {
               <div className="overflow-auto max-h-[60vh] p-6 bg-gray-50 dark:bg-zinc-900">
                 <div
                   className="scale-75 origin-top mx-auto"
-                  style={{width: "210mm"}}
+                  style={{ width: "210mm" }}
                 >
                   <selectedTemplate.component
                     resumeData={{

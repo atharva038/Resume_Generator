@@ -1,3 +1,58 @@
+<<<<<<< HEAD
+import {forwardRef, useRef, useEffect, useState} from "react";
+
+const ClassicTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
+  // Page overflow detection state
+  const containerRef = useRef(null);
+  const [pageOverflowInfo, setPageOverflowInfo] = useState({
+    isOverflowing: false,
+    currentHeight: 0,
+    maxHeight: 1056, // Standard A4 page height at 96 DPI (11 inches * 96)
+    overflowPercentage: 0,
+    templateName: "ClassicTemplate",
+  });
+
+  // Detect page overflow whenever resumeData changes
+  useEffect(() => {
+    if (containerRef.current) {
+      const currentHeight = containerRef.current.scrollHeight;
+      const maxHeight = 1056; // A4 page height
+      const isOverflowing = currentHeight > maxHeight;
+      const overflowPercentage = isOverflowing
+        ? Math.round(((currentHeight - maxHeight) / maxHeight) * 100)
+        : 0;
+
+      const usageInfo = {
+        isOverflowing,
+        currentHeight,
+        maxHeight,
+        overflowPercentage,
+        percentage: Math.round((currentHeight / maxHeight) * 100), // Allow > 100% for overflow
+        templateName: "ClassicTemplate",
+      };
+
+      setPageOverflowInfo(usageInfo);
+
+      // Log overflow information for testing - TEMPLATE SPECIFIC
+      if (isOverflowing) {
+        console.log(
+          `⚠️ ClassicTemplate: Page overflow detected! Current height: ${currentHeight}px, Max: ${maxHeight}px, Overflow: ${overflowPercentage}%`
+        );
+      } else {
+        console.log(
+          `✅ ClassicTemplate: Content fits on one page. Height: ${currentHeight}px / ${maxHeight}px (${usageInfo.percentage}% filled)`
+        );
+      }
+
+      // Pass data to parent component if callback provided
+      if (onPageUsageChange) {
+        onPageUsageChange(usageInfo);
+      }
+    }
+  }, [resumeData]); // Don't include onPageUsageChange to avoid infinite loops
+
+  // Color Themes - Multiple professional palettes
+=======
 import {forwardRef, useRef, useEffect, useState, useMemo} from "react";
 
 /**
@@ -137,6 +192,7 @@ const ClassicTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
   }, [resumeData]); // Don't include onPageUsageChange to prevent infinite loops
 
   // Color Themes - Professional ATS-friendly palettes
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   const colorThemes = {
     navy: {
       primary: "#003d82", // Deep professional navy
@@ -426,7 +482,11 @@ const ClassicTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
   const renderSection = (sectionId) => {
     // Common style to prevent page breaks inside sections
     const sectionStyle = {
+<<<<<<< HEAD
+      marginBottom: "12px",
+=======
       marginBottom: dynamicStyles.sectionMarginBottom,
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
       pageBreakInside: "avoid",
       breakInside: "avoid",
     };
@@ -890,12 +950,16 @@ const ClassicTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
                           key={`${
                             section.id || sectionIndex
                           }-item-${itemIndex}`}
+<<<<<<< HEAD
+                          style={{fontSize: "10pt", marginBottom: "3px"}}
+=======
                           style={{
                             fontSize: dynamicStyles.achievementSize,
                             lineHeight: dynamicStyles.lineHeight,
                             marginBottom: dynamicStyles.achievementMarginBottom,
                             color: selectedTheme.text,
                           }}
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
                         >
                           {item}
                         </li>

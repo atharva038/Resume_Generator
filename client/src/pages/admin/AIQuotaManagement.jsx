@@ -539,7 +539,11 @@ const AIQuotaManagement = () => {
                   </p>
                 </div>
                 <button
+<<<<<<< HEAD
+                  onClick={() => setShowUserDetails(false)}
+=======
                   onClick={setShowUserDetailsFalse}
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
                   className="text-gray-600 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                 >
                   <XCircle className="w-6 h-6" />

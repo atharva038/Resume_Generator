@@ -1774,6 +1774,8 @@ export const resetUserDailyQuota = async (req, res) => {
       return res.status(404).json({error: "User not found"});
     }
 
+<<<<<<< HEAD
+=======
     // Reset ALL usage counters in the User model
     user.usage.resumesThisMonth = 0;
     user.usage.resumesDownloadedThisMonth = 0;
@@ -1788,6 +1790,7 @@ export const resetUserDailyQuota = async (req, res) => {
     await user.save();
     console.log(`✅ Reset all usage counters for user: ${user.email}`);
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
     // Mark today's usage records as not counting towards quota
     // This preserves the data for analytics while resetting the quota
     const startOfDay = new Date();
@@ -1806,6 +1809,11 @@ export const resetUserDailyQuota = async (req, res) => {
     );
 
     res.json({
+<<<<<<< HEAD
+      message: `Daily quota reset successfully for ${user.name}`,
+      resetRecords: result.modifiedCount,
+      note: "Usage records preserved for analytics",
+=======
       message: `All usage counters reset successfully for ${user.name}`,
       resetRecords: result.modifiedCount,
       countersReset: {
@@ -1818,6 +1826,7 @@ export const resetUserDailyQuota = async (req, res) => {
         aiResumeExtractionsToday: 0,
       },
       note: "All usage counters reset to 0, usage records preserved for analytics",
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
     });
   } catch (error) {
     console.error("Reset user daily quota error:", error);

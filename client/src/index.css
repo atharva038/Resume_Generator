@@ -58,8 +58,13 @@
   }
 
   .scrollbar-hide {
+<<<<<<< HEAD
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+=======
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   }
 
   /* Payment Modal Animations */

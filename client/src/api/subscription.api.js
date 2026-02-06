@@ -1,3 +1,5 @@
+<<<<<<< HEAD:client/src/services/subscription.api.js
+=======
 /**
  * Subscription and Payment API Service Module
  *
@@ -14,11 +16,20 @@
  * @module subscription.api
  */
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c:client/src/api/subscription.api.js
 import axios from "axios";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
+<<<<<<< HEAD:client/src/services/subscription.api.js
+/**
+ * Subscription API Service
+ * Handles all subscription-related API calls
+ */
+
+=======
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c:client/src/api/subscription.api.js
 // Create axios instance with auth token
 const getAuthHeader = () => {
   const token = localStorage.getItem("token");

@@ -8,10 +8,16 @@ import {
   FaGraduationCap,
   FaInfinity,
 } from "react-icons/fa";
+<<<<<<< HEAD
+import {getPricing, getSubscriptionStatus} from "../services/subscription.api";
+import PaymentModal from "../components/common/PaymentModal";
+import toast from "react-hot-toast";
+=======
 import {getPricing, getSubscriptionStatus} from "@/api/subscription.api";
 import PaymentModal from "@/components/common/PaymentModal";
 import toast from "react-hot-toast";
 import {useToggle} from "@/hooks";
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 
 /**
  * Pricing Page Component
@@ -22,12 +28,16 @@ const Pricing = () => {
   const [pricing, setPricing] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedTier, setSelectedTier] = useState(null);
+<<<<<<< HEAD
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+=======
   const [
     showPaymentModal,
     togglePaymentModal,
     setShowPaymentModalTrue,
     setShowPaymentModalFalse,
   ] = useToggle(false);
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   const [paymentData, setPaymentData] = useState(null);
   const [currentSubscription, setCurrentSubscription] = useState(null);
 
@@ -121,7 +131,11 @@ const Pricing = () => {
 
     // Open payment modal instead of navigating
     setPaymentData({tier, plan});
+<<<<<<< HEAD
+    setShowPaymentModal(true);
+=======
     setShowPaymentModalTrue();
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   };
 
   const formatPrice = (amount) => {
@@ -264,8 +278,13 @@ const Pricing = () => {
                       {isActivePlan
                         ? "Current Plan ✓"
                         : tier === "free"
+<<<<<<< HEAD
+                        ? "Get Started Free"
+                        : "Choose Plan"}
+=======
                           ? "Get Started Free"
                           : "Choose Plan"}
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
                     </button>
 
                     {/* Show message for active subscribers */}
@@ -311,10 +330,13 @@ const Pricing = () => {
               <tbody>
                 {[
                   {
+<<<<<<< HEAD
+=======
                     name: "AI Requests",
                     values: ["10/month", "150/21 days", "∞"],
                   },
                   {
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
                     name: "Resumes per Month",
                     values: ["1", "1", "∞"],
                   },
@@ -459,7 +481,11 @@ const Pricing = () => {
           tier={paymentData.tier}
           plan={paymentData.plan}
           onClose={() => {
+<<<<<<< HEAD
+            setShowPaymentModal(false);
+=======
             setShowPaymentModalFalse();
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
             setPaymentData(null);
           }}
         />

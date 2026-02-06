@@ -56,11 +56,22 @@ const EditableSection = ({
     setEnhancingTrue();
     try {
       // Check if user is authenticated
+<<<<<<< HEAD
+      const token = localStorage.getItem("token");
+      if (!token) {
+=======
       if (!authStorage.hasToken()) {
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
         toast.error("Please log in to use AI enhancement", {
           icon: "🔒",
           duration: 3000,
         });
+<<<<<<< HEAD
+        setEnhancing(false);
+        return;
+      }
+
+=======
         setEnhancingFalse();
         return;
       }
@@ -83,11 +94,17 @@ const EditableSection = ({
 
       console.log("🔍 Enhancing with resumeId:", resumeData._id);
 
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
       let contentToEnhance;
 
       if (sectionType === "summary") {
         contentToEnhance = content;
       } else if (sectionType === "experience" && experienceData) {
+<<<<<<< HEAD
+        contentToEnhance = experienceData.bullets;
+      } else if (sectionType === "projects" && projectData) {
+        contentToEnhance = projectData.bullets;
+=======
         // Ensure we're sending bullets as array of strings
         contentToEnhance = Array.isArray(experienceData.bullets)
           ? experienceData.bullets
@@ -97,6 +114,7 @@ const EditableSection = ({
         contentToEnhance = Array.isArray(projectData.bullets)
           ? projectData.bullets
           : [projectData.bullets].filter(Boolean);
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
       } else {
         contentToEnhance = content;
       }

@@ -12,9 +12,14 @@ import {
   createPaymentOrder,
   verifyPayment,
   getPricing,
+<<<<<<< HEAD
+} from "../../services/subscription.api";
+import toast from "react-hot-toast";
+=======
 } from "@/api/subscription.api";
 import toast from "react-hot-toast";
 import {useToggle} from "@/hooks";
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 
 /**
  * Payment Modal Component
@@ -27,8 +32,12 @@ const PaymentModal = ({tier: propTier, plan: propPlan, onClose}) => {
   const tier = propTier;
   const plan = propPlan;
 
+<<<<<<< HEAD
+  const [loading, setLoading] = useState(false);
+=======
   const [loading, toggleLoading, setLoadingTrue, setLoadingFalse] =
     useToggle(false);
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
   const [pricing, setPricing] = useState(null);
   const [orderDetails, setOrderDetails] = useState(null);
 
@@ -78,7 +87,11 @@ const PaymentModal = ({tier: propTier, plan: propPlan, onClose}) => {
 
   const handlePayment = async () => {
     try {
+<<<<<<< HEAD
+      setLoading(true);
+=======
       setLoadingTrue();
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
 
       // Load Razorpay script
       const scriptLoaded = await loadRazorpayScript();
@@ -117,7 +130,11 @@ const PaymentModal = ({tier: propTier, plan: propPlan, onClose}) => {
         },
         modal: {
           ondismiss: () => {
+<<<<<<< HEAD
+            setLoading(false);
+=======
             setLoadingFalse();
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
             toast.info("Payment cancelled");
           },
         },
@@ -239,14 +256,22 @@ const PaymentModal = ({tier: propTier, plan: propPlan, onClose}) => {
         toast.error(
           `Payment failed: ${response.error.description || "Please try again"}`
         );
+<<<<<<< HEAD
+        setLoading(false);
+=======
         setLoadingFalse();
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
       });
     } catch (error) {
       console.error("Payment error:", error);
       toast.error(
         error.error || "Failed to initiate payment. Please try again."
       );
+<<<<<<< HEAD
+      setLoading(false);
+=======
       setLoadingFalse();
+>>>>>>> a85e817e4d9eaea89f7e0b07440cb935ef505c6c
     }
   };
 
