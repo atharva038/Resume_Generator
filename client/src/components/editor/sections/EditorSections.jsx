@@ -10,6 +10,7 @@ import {ScoreCard} from "@/components/common/cards";
 import {RecommendationsPanel} from "@/components/editor/panels";
 import {resumeAPI} from "@/api/api";
 import {LimitedTextarea} from "@/components/common/LimitedInputs";
+import toast from "react-hot-toast";
 
 export const PersonalInfoSection = ({
   resumeData,
@@ -79,7 +80,7 @@ export const PersonalInfoSection = ({
   </div>
 );
 
-export const SkillsSection = ({resumeData, updateField}) => {
+export const SkillsSection = ({resumeData, updateField, user}) => {
   const [skillsInput, setSkillsInput] = useState("");
   const [isLoading, toggleLoading, setIsLoadingTrue, setIsLoadingFalse] =
     useToggle(false);
@@ -89,12 +90,34 @@ export const SkillsSection = ({resumeData, updateField}) => {
   // Initialize skills input from existing data when skills are loaded
   useEffect(() => {
     if (resumeData.skills && resumeData.skills.length > 0 && !initialized) {
-      const allSkills = resumeData.skills
+      // Clean up any corrupted skills data (where items might be a string instead of array)
+      const cleanedSkills = resumeData.skills.map((skillGroup) => ({
+        ...skillGroup,
+        items: Array.isArray(skillGroup.items)
+          ? skillGroup.items
+          : typeof skillGroup.items === "string"
+            ? skillGroup.items
+                .split(",")
+                .map((s) => s.trim())
+                .filter(Boolean)
+            : [],
+      }));
+
+      // If skills were corrupted, update them
+      const hasCorruptedData = resumeData.skills.some(
+        (sg) => !Array.isArray(sg.items)
+      );
+      if (hasCorruptedData) {
+        updateField("skills", cleanedSkills);
+      }
+
+      const allSkills = cleanedSkills
         .flatMap((group) => group.items || [])
         .join(", ");
       setSkillsInput(allSkills);
       setInitialized(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resumeData.skills, initialized]);
 
   // Handle textarea input with no restrictions
@@ -113,29 +136,137 @@ export const SkillsSection = ({resumeData, updateField}) => {
       return;
     }
 
+    // Check if user is logged in
+    if (!user) {
+      setError("Please log in to use AI features.");
+      return;
+    }
+
     setIsLoadingTrue();
     setError("");
 
     try {
+      console.log("🚀 Starting categorization with input:", skillsInput);
+      console.log("📝 Resume ID:", resumeData._id);
+      console.log("👤 User authenticated:", !!user);
+      
       // ResumeId is optional - works for both new and existing resumes
       const response = await resumeAPI.categorizeSkills(
         skillsInput,
         resumeData._id // Pass if available, undefined if new resume
       );
 
-      if (response.data && response.data.skills) {
+      console.log("✅ Categorization response:", response);
+      console.log("📊 Response data:", response.data);
+
+      // Check if server returned an error
+      if (response.data && response.data.error) {
+        console.error("❌ Server returned error:", response.data.error);
+        setError(response.data.error);
+        return;
+      }
+
+      // Try to extract skills from different possible response structures
+      let categorizedSkills = null;
+      
+      if (response.data) {
+        if (response.data.skills) {
+          categorizedSkills = response.data.skills;
+        } else if (Array.isArray(response.data)) {
+          // Sometimes the API might return the array directly
+          categorizedSkills = response.data;
+        } else if (response.data.data) {
+          // Sometimes it might be nested under 'data'
+          categorizedSkills = response.data.data;
+        }
+      }
+      
+      console.log("🔍 Extracted categorizedSkills:", categorizedSkills);
+      console.log("🔍 Type of categorizedSkills:", typeof categorizedSkills);
+      console.log("🔍 Is array?", Array.isArray(categorizedSkills));
+      
+      if (categorizedSkills && Array.isArray(categorizedSkills)) {
+        console.log("🔍 Raw categorizedSkills:", categorizedSkills);
+        
+        // Ensure all skills have the correct array structure
+        const validatedSkills = categorizedSkills
+          .map((skillGroup) => ({
+            category: skillGroup.category || "Uncategorized",
+            items: Array.isArray(skillGroup.items) 
+              ? skillGroup.items.filter(item => item && item.trim())
+              : [],
+          }))
+          .filter(group => group.items.length > 0); // Remove empty categories
+
+        console.log("✨ Validated skills:", validatedSkills);
+
+        if (validatedSkills.length === 0) {
+          setError("No valid skills could be categorized. Please check your input.");
+          return;
+        }
+
+        console.log("About to update resumeData.skills with:", validatedSkills);
+        
         // Update the skills in resumeData
-        updateField("skills", response.data.skills);
+        updateField("skills", validatedSkills);
         setError("");
+        
+        // Reset initialized flag to allow re-syncing
+        setInitialized(false);
+        
+        // Show success message
+        toast.success(
+          `Successfully categorized ${validatedSkills.length} skill categories!`,
+          {
+            icon: "✨",
+            duration: 3000,
+          }
+        );
       } else {
-        setError("Failed to categorize skills");
+        console.error("❌ No valid skills array found in response");
+        console.error("❌ Full response:", response);
+        setError("Invalid response format from server. Skills data not found or in wrong format.");
       }
     } catch (err) {
-      console.error("Categorization error:", err);
-      setError(
-        err.response?.data?.error ||
-          "Failed to categorize skills. Please try again."
-      );
+      console.error("❌ Categorization error:", err);
+      console.error("📋 Error details:", {
+        message: err.message,
+        status: err.response?.status,
+        statusText: err.response?.statusText,
+        data: err.response?.data,
+        headers: err.response?.headers,
+      });
+      
+      // Handle different error types
+      let errorMessage = "Failed to categorize skills. Please try again.";
+      
+      if (err.response) {
+        // Server responded with error
+        const status = err.response.status;
+        const data = err.response.data;
+        
+        if (status === 401) {
+          errorMessage = "Authentication failed. Please refresh the page and log in again.";
+        } else if (status === 403) {
+          errorMessage = data.error || data.message || "AI usage limit reached. Please upgrade your plan or try again tomorrow.";
+        } else if (status === 429) {
+          errorMessage = "Rate limit exceeded. Please wait a moment before trying again.";
+        } else if (status === 400) {
+          errorMessage = data.error || "Invalid input. Please check your skills text and try again.";
+        } else if (status === 500) {
+          errorMessage = "Server error. Our AI service might be temporarily unavailable. Please try again in a few minutes.";
+        } else {
+          errorMessage = data.error || data.message || `Server returned error ${status}. Please try again.`;
+        }
+      } else if (err.request) {
+        // Request made but no response
+        errorMessage = "Cannot connect to server. Please check your internet connection and try again.";
+      } else {
+        // Something else happened
+        errorMessage = err.message || errorMessage;
+      }
+      
+      setError(errorMessage);
     } finally {
       setIsLoadingFalse();
     }
@@ -199,14 +330,16 @@ export const SkillsSection = ({resumeData, updateField}) => {
           {/* Categorize button */}
           <button
             onClick={handleCategorize}
-            disabled={isLoading || !skillsInput.trim()}
+            disabled={isLoading || !skillsInput.trim() || !user}
             className={`py-2 px-6 rounded-lg text-sm font-medium transition-all ${
-              isLoading || !skillsInput.trim()
+              isLoading || !skillsInput.trim() || !user
                 ? "bg-gray-200 dark:bg-zinc-800 text-gray-400 dark:text-gray-500 cursor-not-allowed"
                 : "bg-purple-600 hover:bg-purple-700 text-white shadow-md hover:shadow-lg"
             }`}
           >
-            {isLoading ? (
+            {!user ? (
+              "🔒 Login Required for AI Features"
+            ) : isLoading ? (
               <span className="flex items-center justify-center gap-2">
                 <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
                   <circle
@@ -281,20 +414,13 @@ export const SkillsSection = ({resumeData, updateField}) => {
                           : ""
                     }
                     onChange={(e) => {
-                      // Allow free-form editing, store as string temporarily
+                      // Always store as array to prevent data corruption during autosave
                       const value = e.target.value;
-                      updateSkillCategory(index, "items", value);
-                    }}
-                    onBlur={(e) => {
-                      // Convert to array when user finishes editing
-                      const value = e.target.value;
-                      if (typeof value === "string") {
-                        const itemsArray = value
-                          .split(",")
-                          .map((s) => s.trim())
-                          .filter(Boolean);
-                        updateSkillCategory(index, "items", itemsArray);
-                      }
+                      const itemsArray = value
+                        .split(",")
+                        .map((s) => s.trim())
+                        .filter(Boolean);
+                      updateSkillCategory(index, "items", itemsArray);
                     }}
                     placeholder="Skills (comma-separated)"
                     className="input-field min-h-[60px] resize-y"
@@ -304,6 +430,21 @@ export const SkillsSection = ({resumeData, updateField}) => {
                   />
                 </div>
               ))}
+            </div>
+          )}
+
+          {/* Debug Panel - Remove after testing */}
+          {resumeData.skills && resumeData.skills.length > 0 && (
+            <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+              <div className="text-xs font-mono">
+                <div className="font-bold text-blue-900 dark:text-blue-300 mb-2">
+                  🔍 Debug: Skills in resumeData ({resumeData.skills.length}{" "}
+                  categories)
+                </div>
+                <pre className="text-blue-800 dark:text-blue-400 overflow-auto max-h-40">
+                  {JSON.stringify(resumeData.skills, null, 2)}
+                </pre>
+              </div>
             </div>
           )}
         </div>

@@ -546,9 +546,26 @@ export const categorizeSkills = async (req, res) => {
 
     // Categorize skills using Gemini AI
     const startTime = Date.now();
+    console.log("🤖 Calling categorizeSkillsWithAI with skills:", skills);
+    
     const {data: categorizedSkills, tokenUsage} = await categorizeSkillsWithAI(
       skills
     );
+    
+    console.log("✅ AI service returned:", categorizedSkills);
+    console.log("📊 Token usage:", tokenUsage);
+    
+    // Validate that we got valid categorized skills
+    if (!Array.isArray(categorizedSkills)) {
+      console.error("❌ AI service did not return an array:", typeof categorizedSkills, categorizedSkills);
+      throw new Error("AI service returned invalid format: expected array, got " + typeof categorizedSkills);
+    }
+    
+    if (categorizedSkills.length === 0) {
+      console.warn("⚠️ AI service returned empty skills array");
+      throw new Error("No skills could be categorized from the input");
+    }
+    
     const responseTime = Date.now() - startTime;
 
     // Track AI usage
@@ -568,10 +585,13 @@ export const categorizeSkills = async (req, res) => {
       },
     });
 
-    res.json({
+    const responseData = {
       message: "Skills categorized successfully",
       skills: categorizedSkills,
-    });
+    };
+    
+    console.log("📤 Sending response to client:", responseData);
+    res.json(responseData);
   } catch (error) {
     console.error("Categorize skills error:", error);
 

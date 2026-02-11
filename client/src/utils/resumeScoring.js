@@ -197,7 +197,7 @@ function scoreSummary(summary) {
  * Score skills section (0-10 points)
  */
 function scoreSkills(skills) {
-  if (!skills || !Array.isArray(skills) || skills.length === 0) {
+  if (!skills || skills.length === 0) {
     return {
       score: 0,
       maxScore: 10,
@@ -207,7 +207,7 @@ function scoreSkills(skills) {
   }
 
   const totalSkills = skills.reduce(
-    (sum, cat) => sum + (cat?.items?.length || 0),
+    (sum, cat) => sum + (cat.items?.length || 0),
     0
   );
   const categoryCount = skills.length;

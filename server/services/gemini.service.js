@@ -476,10 +476,11 @@ Return only the summary text without any additional formatting or explanations.`
  */
 export async function categorizeSkillsWithAI(skillsText) {
   return await retryWithBackoff(async () => {
-    ensureGeminiEnabled();
-    const model = genAI.getGenerativeModel({model: "gemini-2.5-flash"});
+    try {
+      ensureGeminiEnabled();
+      const model = genAI.getGenerativeModel({model: "gemini-2.5-flash"});
 
-    const prompt = `You are an expert technical recruiter. Categorize the following skills into relevant categories.
+      const prompt = `You are an expert technical recruiter. Categorize the following skills into relevant categories.
 
 RULES:
 1. Common categories: Programming Languages, Frameworks & Libraries, Databases, Cloud & DevOps, Tools & Technologies, Soft Skills, etc.
@@ -506,33 +507,97 @@ Return ONLY a valid JSON array in this exact format:
 
 Return ONLY valid JSON with no additional text, explanations, or markdown formatting.`;
 
-    console.log("🤖 Calling Gemini API to categorize skills...");
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    let text = response.text().trim();
+      console.log("🤖 Calling Gemini API to categorize skills...");
+      console.log("📝 Input skills:", skillsText);
+      
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      let text = response.text().trim();
 
-    // Extract token usage
-    const tokenUsage = extractTokenUsage(response);
+      console.log("🔍 Raw AI response:", text);
 
-    // Clean response - remove markdown code blocks if present
-    if (text.startsWith("```json")) {
-      text = text.replace(/^```json\n/, "").replace(/\n```$/, "");
-    } else if (text.startsWith("```")) {
-      text = text.replace(/^```\n/, "").replace(/\n```$/, "");
+      // Extract token usage
+      const tokenUsage = extractTokenUsage(response);
+
+      // Clean response - remove markdown code blocks if present
+      if (text.startsWith("```json")) {
+        text = text.replace(/^```json\n/, "").replace(/\n```$/, "");
+      } else if (text.startsWith("```")) {
+        text = text.replace(/^```\n/, "").replace(/\n```$/, "");
+      }
+
+      console.log("🧹 Cleaned AI response:", text);
+
+      // Parse JSON with better error handling
+      let categorizedSkills;
+      try {
+        categorizedSkills = JSON.parse(text);
+      } catch (parseError) {
+        console.error("❌ JSON parse error:", parseError);
+        console.error("❌ Failed to parse text:", text);
+        
+        // Try to create a fallback categorization
+        const skills = skillsText.split(/[,\n]/).map(s => s.trim()).filter(Boolean);
+        categorizedSkills = [
+          {
+            category: "Skills",
+            items: skills
+          }
+        ];
+        console.log("🔄 Using fallback categorization:", categorizedSkills);
+      }
+
+      // Validate structure
+      if (!Array.isArray(categorizedSkills)) {
+        console.error("❌ AI returned non-array:", typeof categorizedSkills, categorizedSkills);
+        
+        // Create fallback if not array
+        const skills = skillsText.split(/[,\n]/).map(s => s.trim()).filter(Boolean);
+        categorizedSkills = [
+          {
+            category: "Skills",
+            items: skills
+          }
+        ];
+        console.log("🔄 Using fallback for non-array:", categorizedSkills);
+      }
+
+      // Ensure all categories have valid structure
+      categorizedSkills = categorizedSkills.map(category => ({
+        category: category.category || "Uncategorized",
+        items: Array.isArray(category.items) ? category.items : []
+      })).filter(category => category.items.length > 0);
+
+      console.log(
+        `✅ Skills categorized successfully: ${categorizedSkills.length} categories (Tokens: ${tokenUsage?.totalTokens || 'unknown'})`
+      );
+      
+      return {data: categorizedSkills, tokenUsage};
+      
+    } catch (error) {
+      console.error("❌ Gemini API error:", error);
+      console.error("❌ Error details:", {
+        name: error.name,
+        message: error.message,
+        stack: error.stack
+      });
+      
+      // Create a simple fallback categorization if Gemini fails completely
+      const skills = skillsText.split(/[,\n]/).map(s => s.trim()).filter(Boolean);
+      const fallbackResult = [
+        {
+          category: "Skills", 
+          items: skills
+        }
+      ];
+      
+      console.log("🆘 Using emergency fallback:", fallbackResult);
+      
+      return {
+        data: fallbackResult,
+        tokenUsage: {totalTokens: 0, promptTokens: 0, completionTokens: 0}
+      };
     }
-
-    // Parse JSON
-    const categorizedSkills = JSON.parse(text);
-
-    // Validate structure
-    if (!Array.isArray(categorizedSkills)) {
-      throw new Error("Invalid response format from AI");
-    }
-
-    console.log(
-      `✅ Skills categorized successfully: ${categorizedSkills.length} categories (Tokens: ${tokenUsage.totalTokens})`
-    );
-    return {data: categorizedSkills, tokenUsage};
   }, "Skills categorization");
 }
 
