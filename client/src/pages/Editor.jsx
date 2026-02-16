@@ -650,6 +650,34 @@ const Editor = () => {
         };
       }
 
+      // Ensure all array fields are properly initialized to prevent reduce errors
+      if (!Array.isArray(data.skills)) {
+        data.skills = [];
+      }
+      if (!Array.isArray(data.experience)) {
+        data.experience = [];
+      }
+      if (!Array.isArray(data.education)) {
+        data.education = [];
+      }
+      if (!Array.isArray(data.projects)) {
+        data.projects = [];
+      }
+      if (!Array.isArray(data.certifications)) {
+        data.certifications = [];
+      }
+      if (!Array.isArray(data.achievements)) {
+        data.achievements = [];
+      }
+      if (!Array.isArray(data.customSections)) {
+        data.customSections = [];
+      }
+
+      // Initialize summary as empty string if not present
+      if (!data.summary) {
+        data.summary = "";
+      }
+
       setResumeData(data);
       // Store a deep copy as original data for change detection
       setOriginalResumeData(JSON.parse(JSON.stringify(data)));
@@ -2025,7 +2053,7 @@ const Editor = () => {
             <div className="w-full border-t-2 border-gray-300 dark:border-gray-600"></div>
           </div>
           <div className="relative flex justify-center">
-            <span className="bg-gray-50 dark:bg-gray-900 px-4 sm:px-6 py-2 text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-700 dark:text-gray-300 rounded-full border-2 border-gray-300 dark:border-gray-600">
+            <span className="bg-gray-50 dark:bg-gray-900 px-4 sm:px-6 py-2 text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 rounded-full border-2 border-gray-300 dark:border-gray-600">
               ✏️ Resume Content Editor
             </span>
           </div>
@@ -2587,7 +2615,7 @@ const Editor = () => {
 
                 {/* Content */}
                 <div className="text-center mb-6">
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                     Unsaved Changes
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400">
@@ -2617,7 +2645,7 @@ const Editor = () => {
                   <button
                     onClick={handleCancelNavigation}
                     disabled={saving}
-                    className="w-full px-4 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full px-4 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Cancel
                   </button>

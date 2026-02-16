@@ -1,0 +1,64 @@
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Disallow admin routes
+Disallow: /admin
+Disallow: /admin/*
+
+# Disallow API routes (backend endpoints)
+Disallow: /api/
+Disallow: /api/*
+
+# Disallow authentication pages (private pages)
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /auth/callback
+
+# Disallow user dashboard (private content)
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /editor
+Disallow: /editor/*
+Disallow: /subscription
+Disallow: /interview-history
+Disallow: /interview-result/*
+
+# Disallow upload pages (private workflow)
+Disallow: /upload
+Disallow: /github-import
+
+# Allow important public pages
+Allow: /
+Allow: /templates
+Allow: /pricing
+Allow: /contact
+Allow: /ats-analyzer
+Allow: /job-search
+Allow: /smart-job-match
+Allow: /ai-interview
+Allow: /privacy-policy
+Allow: /terms
+Allow: /refund-policy
+Allow: /shipping-policy
+
+# Sitemap location
+Sitemap: https://www.smartnshine.app/sitemap.xml
+
+# Crawl delay to be nice to servers
+Crawl-delay: 1
+
+# Specific bot instructions
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 1
