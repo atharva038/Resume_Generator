@@ -224,10 +224,45 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Check voice services availability (non-blocking)
+async function checkVoiceServices() {
+  const voiceServiceUrl =
+    process.env.VOICE_SERVICE_URL ||
+    process.env.ML_SERVICE_URL ||
+    "http://localhost:5001";
+  const chatterboxUrl =
+    process.env.CHATTERBOX_SERVICE_URL || "http://localhost:5002";
+
+  try {
+    await fetch(`${voiceServiceUrl}/health`, {
+      signal: AbortSignal.timeout(3000),
+    });
+    console.log("✅ Whisper STT service: available on", voiceServiceUrl);
+  } catch {
+    console.warn(
+      `⚠️  Whisper STT service not reachable on ${voiceServiceUrl} (AI Interview voice input will be unavailable)`
+    );
+  }
+
+  try {
+    await fetch(`${chatterboxUrl}/health`, {
+      signal: AbortSignal.timeout(3000),
+    });
+    console.log("✅ Chatterbox TTS service: available on", chatterboxUrl);
+  } catch {
+    console.warn(
+      `⚠️  Chatterbox TTS service not reachable on ${chatterboxUrl} (Browser TTS will be used as fallback)`
+    );
+  }
+}
+
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
   console.log(`📝 Environment: ${process.env.NODE_ENV || "development"}`);
+
+  // Check voice services after startup (non-blocking)
+  checkVoiceServices();
 });
 
 export default app;

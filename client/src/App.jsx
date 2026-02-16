@@ -165,7 +165,7 @@ function App() {
               }
             />
             <Route
-              path="dashboard"
+              path="my-resumes"
               element={
                 <ProtectedRoute>
                   <Dashboard />

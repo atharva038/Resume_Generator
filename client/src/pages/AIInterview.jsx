@@ -106,6 +106,7 @@ const AIInterview = () => {
   const [audioChunks, setAudioChunks] = useState([]);
   const [voiceAvailable, setVoiceAvailable] = useState(false);
   const [ttsAvailable, setTtsAvailable] = useState(false);
+  const [serverTtsAvailable, setServerTtsAvailable] = useState(false); // Chatterbox running?
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [audioRef, setAudioRef] = useState(null);
   const [isMuted, setIsMuted] = useState(false); // Mute AI speech
@@ -136,6 +137,7 @@ const AIInterview = () => {
   const silenceCheckIntervalRef = useRef(null);
   const hasUserSpokenRef = useRef(false); // Track if user has spoken at all during this recording
   const silencePromptCountRef = useRef(0); // Track how many times we've prompted for silence
+  const startRecordingRef = useRef(null); // Stable ref for startRecording to avoid stale closures
 
   // Session and question refs for immediate access in callbacks
   const sessionRef = useRef(null);
@@ -179,6 +181,9 @@ const AIInterview = () => {
         setVoiceAvailable(voiceRes.data?.available || false);
         setTtsAvailable(
           ttsRes.data?.available || configRes.data?.ttsAvailable || false
+        );
+        setServerTtsAvailable(
+          ttsRes.data?.providers?.chatterbox?.available || false
         );
 
         // Set defaults
@@ -241,18 +246,34 @@ const AIInterview = () => {
             setConversationPhase(CONVERSATION_PHASES.WRAP_UP);
           }
 
-          // Auto-complete when time is up
+          // Warning toast at 30 seconds remaining
+          if (remainingTime === 30) {
+            toast("30 seconds remaining! Wrapping up soon...", {
+              icon: "⏰",
+              duration: 5000,
+            });
+          }
+
+          // Auto-complete when time is up (with 15s grace period for active recording/processing)
           if (
             remainingTime <= 0 &&
             conversationPhase !== CONVERSATION_PHASES.COMPLETED
           ) {
-            handleCompleteInterview();
+            const isActivelyWorking =
+              isRecording ||
+              interviewPhase === "processing" ||
+              interviewPhase === "asking";
+
+            // Allow up to 15s grace period if user is mid-recording or answer is processing
+            if (!isActivelyWorking || remainingTime <= -15) {
+              handleCompleteInterview();
+            }
           }
         }
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [step, startTime, selectedMode, interviewDuration, conversationPhase]);
+  }, [step, startTime, selectedMode, interviewDuration, conversationPhase, isRecording, interviewPhase]);
 
   // Cleanup audio resources on unmount
   useEffect(() => {
@@ -317,6 +338,11 @@ const AIInterview = () => {
         text?.substring(0, 50) + "..."
       );
 
+      // Cancel any in-progress audio to prevent overlapping playback
+      if (window.speechSynthesis?.speaking) {
+        window.speechSynthesis.cancel();
+      }
+
       // Always show the message as subtitle, even when muted
       setAiMessage(text);
       setIsSpeaking(true);
@@ -342,6 +368,9 @@ const AIInterview = () => {
         setIsPlayingAudio(true);
 
         try {
+          if (!serverTtsAvailable) {
+            throw new Error("Chatterbox not running, using browser TTS");
+          }
           console.log("📡 Calling TTS API (binary)...");
           const audioBlob = await interviewAPI.synthesizeSpeech(text);
           console.log("📡 TTS Response - Blob received:", {
@@ -491,7 +520,7 @@ const AIInterview = () => {
         }, 4000);
       }
     },
-    [isMuted]
+    [isMuted, serverTtsAvailable]
   );
 
   // Generate natural, emotionally expressive acknowledgment after user's answer
@@ -544,15 +573,18 @@ const AIInterview = () => {
   // Play audio from base64 data (for questions with pre-generated audio)
   const playQuestionAudio = useCallback(
     async (audioData, questionText = "") => {
+      const autoStartRecording = () => {
+        if (selectedMode === "live" && voiceAvailable) {
+          setTimeout(() => startRecordingRef.current?.(true), 300);
+        }
+      };
+
       if (!audioData?.audioBase64) {
         console.warn("⚠️ No audio data, falling back to TTS");
-        // Fall back to TTS if no pre-generated audio
         if (questionText) {
           speakAndListen(questionText, () => {
             setInterviewPhase("waiting");
-            if (selectedMode === "live" && voiceAvailable) {
-              setTimeout(() => startRecording(true), 300);
-            }
+            autoStartRecording();
           });
         }
         return;
@@ -582,12 +614,8 @@ const AIInterview = () => {
           setIsPlayingAudio(false);
           setIsSpeaking(false);
           URL.revokeObjectURL(audioUrl);
-          // Transition to waiting phase after AI finishes speaking
           setInterviewPhase("waiting");
-          // Auto-start recording after question plays in live mode
-          if (selectedMode === "live" && voiceAvailable) {
-            setTimeout(() => startRecording(true), 300);
-          }
+          autoStartRecording();
         };
 
         audio.onerror = () => {
@@ -595,9 +623,7 @@ const AIInterview = () => {
           setIsPlayingAudio(false);
           setIsSpeaking(false);
           setInterviewPhase("waiting");
-          if (selectedMode === "live" && voiceAvailable) {
-            setTimeout(() => startRecording(true), 300);
-          }
+          autoStartRecording();
         };
 
         await audio.play();
@@ -606,16 +632,18 @@ const AIInterview = () => {
         setIsPlayingAudio(false);
         setIsSpeaking(false);
         setInterviewPhase("waiting");
-        if (selectedMode === "live" && voiceAvailable) {
-          setTimeout(() => startRecording(true), 300);
-        }
+        autoStartRecording();
       }
     },
-    [selectedMode, voiceAvailable]
+    [selectedMode, voiceAvailable, speakAndListen]
   );
 
-  // Stop audio playback
+  // Stop any in-progress audio playback (prevents race conditions from overlapping audio)
   const stopAudio = () => {
+    // Cancel browser speech synthesis if active
+    if (window.speechSynthesis?.speaking) {
+      window.speechSynthesis.cancel();
+    }
     if (audioRef) {
       audioRef.pause();
       audioRef.currentTime = 0;
@@ -626,7 +654,7 @@ const AIInterview = () => {
     setInterviewPhase("waiting");
     // Start recording if in live mode
     if (selectedMode === "live" && voiceAvailable) {
-      setTimeout(() => startRecording(true), 300);
+      setTimeout(() => startRecordingRef.current?.(true), 300);
     }
   };
 
@@ -1014,14 +1042,22 @@ const AIInterview = () => {
 
       // Set up audio analysis for silence detection in live mode
       if (selectedMode === "live") {
-        audioContextRef.current = new (
-          window.AudioContext || window.webkitAudioContext
-        )();
-        analyserRef.current = audioContextRef.current.createAnalyser();
-        analyserRef.current.fftSize = 256;
+        try {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (!AudioCtx) {
+            console.warn("AudioContext not supported, silence detection disabled");
+          } else {
+            audioContextRef.current = new AudioCtx();
+            analyserRef.current = audioContextRef.current.createAnalyser();
+            analyserRef.current.fftSize = 256;
 
-        const source = audioContextRef.current.createMediaStreamSource(stream);
-        source.connect(analyserRef.current);
+            const source = audioContextRef.current.createMediaStreamSource(stream);
+            source.connect(analyserRef.current);
+          }
+        } catch (audioCtxError) {
+          console.warn("AudioContext creation failed, silence detection disabled:", audioCtxError.message);
+          // Silence detection won't work, but recording will still function with manual stop
+        }
 
         silenceStartRef.current = null;
         recordingStartTimeRef.current = Date.now();
@@ -1114,6 +1150,9 @@ const AIInterview = () => {
       toast.error("Microphone access denied or not available");
     }
   };
+
+  // Keep ref in sync for stable access in useCallback closures
+  startRecordingRef.current = startRecording;
 
   // Handle extended silence - when user hasn't responded at all
   const handleExtendedSilence = useCallback(async () => {

@@ -3,14 +3,9 @@ import {useDarkMode} from "@/context/DarkModeContext";
 const DarkModeToggle = () => {
   const {isDarkMode, toggleDarkMode} = useDarkMode();
 
-  const handleToggle = () => {
-    console.log("Toggle clicked! Current mode:", isDarkMode ? "dark" : "light");
-    toggleDarkMode();
-  };
-
   return (
     <button
-      onClick={handleToggle}
+      onClick={toggleDarkMode}
       className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
       aria-label="Toggle dark mode"
       title={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}

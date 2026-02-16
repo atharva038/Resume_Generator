@@ -77,7 +77,7 @@ router.post(
 );
 
 // Protected routes - categorize skills with AI (requires authentication + AI rate limiting + quota check)
-router.post(
+ router.post(
   "/categorize-skills",
   authenticateToken,
   checkSubscription,

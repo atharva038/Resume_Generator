@@ -51,7 +51,7 @@ const Register = () => {
 
     try {
       await register(name, email, password);
-      navigate("/dashboard");
+      navigate("/my-resumes");
     } catch (err) {
       if (
         err.response?.status === 429 ||

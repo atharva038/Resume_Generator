@@ -55,10 +55,6 @@ const ResumePreview = forwardRef(
 
     // Callback to receive page usage data from individual templates
     const handlePageUsageChange = (usageInfo) => {
-      console.log(
-        "📊 ResumePreview received page usage from template:",
-        usageInfo
-      );
       setPageUsage(usageInfo);
       if (usageInfo.isOverflowing) {
         setHasOverflowTrue();

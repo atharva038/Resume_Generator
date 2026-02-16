@@ -2,7 +2,7 @@
 import InterviewResult from "../models/InterviewResult.model.js";
 import Resume from "../models/Resume.model.js";
 import * as interviewService from "../services/interview.service.js";
-import * as elevenlabsService from "../services/elevenlabs.service.js";
+import * as chatterboxService from "../services/chatterbox.service.js";
 import axios from "axios";
 import FormData from "form-data";
 
@@ -18,16 +18,28 @@ import FormData from "form-data";
  * @returns {Promise<Object|null>} Audio data or null
  */
 const generateQuestionAudio = async (text, liveMode = false) => {
-  if (!liveMode || !elevenlabsService.isConfigured()) {
+  if (!liveMode) {
     return null;
   }
 
   try {
-    const audioData = await elevenlabsService.textToSpeechBase64(text);
-    return audioData;
+    const isAvailable = await chatterboxService.isAvailable();
+    if (!isAvailable) {
+      return null; // Frontend will use browser TTS fallback
+    }
+
+    const audioBuffer = await chatterboxService.textToSpeech(text, {
+      language: "en",
+    });
+
+    return {
+      audioBase64: audioBuffer.toString("base64"),
+      contentType: "audio/wav",
+      estimatedDuration: Math.ceil((text.length / 5 / 150) * 60),
+    };
   } catch (error) {
     console.error("Failed to generate question audio:", error);
-    return null;
+    return null; // Frontend will use browser TTS fallback
   }
 };
 
@@ -83,7 +95,7 @@ export const getInterviewConfig = async (req, res) => {
           requiresTTS: true,
         },
       ],
-      ttsAvailable: elevenlabsService.isConfigured(),
+      ttsAvailable: true, // Always true - Browser TTS (Web Speech API) is always available as fallback
     };
 
     res.json({success: true, data: config});

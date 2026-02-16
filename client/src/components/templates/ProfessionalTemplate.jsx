@@ -27,16 +27,6 @@ import {Mail, Phone, MapPin, Linkedin, Github, Globe} from "lucide-react";
  */
 const ProfessionalTemplate = forwardRef(
   ({resumeData, onPageUsageChange}, ref) => {
-    // Debug: Log resume data structure
-    console.log("🔍 ProfessionalTemplate - Resume Data:", {
-      hasExperience: !!resumeData?.experience,
-      experienceCount: resumeData?.experience?.length || 0,
-      firstExp: resumeData?.experience?.[0],
-      hasProjects: !!resumeData?.projects,
-      projectsCount: resumeData?.projects?.length || 0,
-      firstProject: resumeData?.projects?.[0],
-    });
-
     // Page overflow detection state
     const containerRef = useRef(null);
     const [pageOverflowInfo, setPageOverflowInfo] = useState({
@@ -67,17 +57,6 @@ const ProfessionalTemplate = forwardRef(
         };
 
         setPageOverflowInfo(usageInfo);
-
-        // Log overflow information for testing
-        if (isOverflowing) {
-          console.log(
-            `⚠️ ProfessionalTemplate: Page overflow detected! Current height: ${currentHeight}px, Max: ${maxHeight}px, Overflow: ${overflowPercentage}%`
-          );
-        } else {
-          console.log(
-            `✅ ProfessionalTemplate: Content fits on one page. Height: ${currentHeight}px / ${maxHeight}px (${usageInfo.percentage}% filled)`
-          );
-        }
 
         // Pass data to parent component if callback provided
         if (onPageUsageChange) {
@@ -177,11 +156,6 @@ const ProfessionalTemplate = forwardRef(
     };
 
     const contentDensity = calculateContentDensity();
-
-    // Log content density for debugging
-    console.log(
-      `📊 ProfessionalTemplate Content Density: ${contentDensity} (low < 15, medium 15-30, high > 30)`
-    );
 
     // Dynamic styling based on content density
     const getDynamicStyles = () => {

@@ -61,17 +61,6 @@ const TechTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
 
       setPageOverflowInfo(usageInfo);
 
-      // Log overflow information for testing - TEMPLATE SPECIFIC
-      if (isOverflowing) {
-        console.log(
-          `⚠️ TechTemplate: Page overflow detected! Current height: ${currentHeight}px, Max: ${maxHeight}px, Overflow: ${overflowPercentage}%`
-        );
-      } else {
-        console.log(
-          `✅ TechTemplate: Content fits on one page. Height: ${currentHeight}px / ${maxHeight}px (${usageInfo.percentage}% filled)`
-        );
-      }
-
       // Pass data to parent component if callback provided
       if (onPageUsageChange) {
         onPageUsageChange(usageInfo);

@@ -1,6 +1,7 @@
 import express from "express";
 import {authenticateToken} from "../middleware/auth.middleware.js";
-// import * as elevenlabsService from "../services/elevenlabs.service.js"; // COMMENTED OUT - Using browser TTS
+// ElevenLabs DISABLED - using Chatterbox TTS + Browser TTS fallback
+// Service kept in codebase for future re-enablement
 import * as chatterboxService from "../services/chatterbox.service.js";
 
 const router = express.Router();
@@ -55,7 +56,6 @@ router.get("/health", async (req, res) => {
 router.get("/tts/health", async (req, res) => {
   try {
     const chatterboxAvailable = await chatterboxService.isAvailable();
-    // const elevenlabsAvailable = elevenlabsService.isConfigured(); // DISABLED
 
     let chatterboxHealth = null;
     if (chatterboxAvailable) {
@@ -68,6 +68,7 @@ router.get("/tts/health", async (req, res) => {
 
     res.json({
       success: true,
+      available: true, // TTS is always available (Browser TTS fallback)
       providers: {
         chatterbox: {
           available: chatterboxAvailable,
@@ -75,15 +76,9 @@ router.get("/tts/health", async (req, res) => {
           cost: "free",
           details: chatterboxHealth,
         },
-        // elevenlabs: {  // DISABLED
-        //   available: false,
-        //   priority: 2,
-        //   cost: "paid",
-        //   status: "disabled - payment issue"
-        // },
         browser: {
           available: true,
-          priority: 2, // Now priority 2 since ElevenLabs is disabled
+          priority: 2,
           cost: "free",
           note: "Frontend fallback (Web Speech API)",
         },
@@ -129,64 +124,16 @@ router.get("/transcribe/health", authenticateToken, async (req, res) => {
   }
 });
 
-// =====================
-// TEXT-TO-SPEECH (ElevenLabs)
-// =====================
-
-/**
- * @route   GET /api/voice/tts/health
- * @desc    Check if text-to-speech is available
- * @access  Private
- */
-router.get("/tts/health", authenticateToken, async (req, res) => {
-  try {
-    const usage = await elevenlabsService.getUsage();
-    res.json({
-      success: true,
-      data: {
-        available: usage.configured && usage.canSynthesize,
-        ...usage,
-      },
-    });
-  } catch (error) {
-    console.error("TTS health check error:", error);
-    res.json({
-      success: true,
-      data: {
-        available: false,
-        configured: elevenlabsService.isConfigured(),
-        error: error.message,
-      },
-    });
-  }
-});
-
 /**
  * @route   GET /api/voice/tts/voices
- * @desc    Get available TTS voices
+ * @desc    Get available TTS voices (ElevenLabs disabled - using Chatterbox)
  * @access  Private
  */
 router.get("/tts/voices", authenticateToken, async (req, res) => {
-  try {
-    if (!elevenlabsService.isConfigured()) {
-      return res.status(503).json({
-        success: false,
-        error: "ElevenLabs not configured",
-      });
-    }
-
-    const voices = await elevenlabsService.getVoices();
-    res.json({
-      success: true,
-      data: voices,
-    });
-  } catch (error) {
-    console.error("Get voices error:", error);
-    res.status(500).json({
-      success: false,
-      error: "Failed to get voices",
-    });
-  }
+  return res.status(503).json({
+    success: false,
+    error: "ElevenLabs TTS is disabled. Using Chatterbox + Browser TTS instead.",
+  });
 });
 
 /**
@@ -246,9 +193,6 @@ router.post("/tts/synthesize", authenticateToken, async (req, res) => {
       console.warn("⚠️ Chatterbox TTS failed:", chatterboxError.message);
       console.log("🔄 Falling back to browser TTS...");
     }
-
-    // ElevenLabs fallback DISABLED
-    // if (elevenlabsService.isConfigured()) { ... }
 
     // No TTS service available - return 503 to trigger browser TTS
     console.log("📱 Returning 503 to trigger browser TTS fallback");
@@ -320,26 +264,5 @@ router.post("/tts/test", authenticateToken, async (req, res) => {
     suggestion: "Start a Live Mode interview to test the current TTS system",
   });
 });
-
-// ORIGINAL CODE COMMENTED OUT:
-// router.post("/tts/test", authenticateToken, async (req, res) => {
-//   try {
-//     const {preset, customText} = req.body;
-//     if (!elevenlabsService.isConfigured()) {
-//       return res.status(503).json({
-//         success: false,
-//         error: "Text-to-speech service not configured",
-//       });
-//     }
-//     const samplePhrases = { /* ... */ };
-//     const text = customText || samplePhrases[preset] || samplePhrases.greeting;
-//     const audioBuffer = await elevenlabsService.textToSpeech(text, { /* ... */ });
-//     res.set({ /* ... */ });
-//     res.send(audioBuffer);
-//   } catch (error) {
-//     console.error("TTS test error:", error);
-//     res.status(500).json({ /* ... */ });
-//   }
-// });
 
 export default router;
