@@ -1,8 +1,3 @@
-/**
- * Section Components for Editor
- * Separated components for each editable section
- */
-
 import {useState, useEffect} from "react";
 import {useToggle} from "@/hooks";
 import EditableSection from "./EditableSection";
@@ -10,6 +5,7 @@ import {ScoreCard} from "@/components/common/cards";
 import {RecommendationsPanel} from "@/components/editor/panels";
 import {resumeAPI} from "@/api/api";
 import {LimitedTextarea} from "@/components/common/LimitedInputs";
+import {handleDateChange, isValidDate, getDateValidationMessage} from "@/utils/dateValidation";
 
 export const PersonalInfoSection = ({
   resumeData,
@@ -39,7 +35,6 @@ export const PersonalInfoSection = ({
         value={resumeData.contact?.phone || ""}
         onChange={(e) => {
           const value = e.target.value;
-          // Only allow numbers, spaces, hyphens, parentheses, and plus sign
           if (/^[0-9\s\-()+ ]*$/.test(value)) {
             updateContact("phone", value);
           }
@@ -86,7 +81,6 @@ export const SkillsSection = ({resumeData, updateField}) => {
   const [error, setError] = useState("");
   const [initialized, setInitialized] = useState(false);
 
-  // Initialize skills input from existing data when skills are loaded
   useEffect(() => {
     if (resumeData.skills && resumeData.skills.length > 0 && !initialized) {
       const allSkills = resumeData.skills
@@ -97,16 +91,12 @@ export const SkillsSection = ({resumeData, updateField}) => {
     }
   }, [resumeData.skills, initialized]);
 
-  // Handle textarea input with no restrictions
   const handleSkillsInputChange = (e) => {
     const value = e.target.value;
-    // Allow all characters including commas, periods, etc.
     setSkillsInput(value);
-    // Clear any error
     if (error) setError("");
   };
 
-  // Handle AI categorization
   const handleCategorize = async () => {
     if (!skillsInput.trim()) {
       setError("Please enter some skills first");
@@ -455,34 +445,55 @@ export const EducationSection = ({
             />
           </div>
           <div className="grid grid-cols-3 gap-2">
-            <input
-              type="text"
-              value={edu.startDate}
-              onChange={(e) =>
-                updateArrayItem("education", index, "startDate", e.target.value)
-              }
-              placeholder="Start (MM/YYYY)"
-              className="input-field"
-              pattern="(0[1-9]|1[0-2])\/[0-9]{4}"
-              title="Format: MM/YYYY (e.g., 08/2018)"
-            />
-            <input
-              type="text"
-              value={edu.endDate}
-              onChange={(e) =>
-                updateArrayItem("education", index, "endDate", e.target.value)
-              }
-              placeholder="End (MM/YYYY)"
-              className="input-field"
-              pattern="(0[1-9]|1[0-2])\/[0-9]{4}"
-              title="Format: MM/YYYY (e.g., 05/2022)"
-            />
+            <div>
+              <input
+                type="text"
+                value={edu.startDate}
+                onChange={(e) =>
+                  handleDateChange(
+                    e.target.value,
+                    edu.startDate,
+                    (value) => updateArrayItem("education", index, "startDate", value)
+                  )
+                }
+                placeholder="Start (DD/MM/YYYY)"
+                className={`input-field ${!isValidDate(edu.startDate) && edu.startDate ? 'border-red-500' : ''}`}
+                title="Format: DD/MM/YYYY (e.g., 15/08/2018)"
+                maxLength="10"
+              />
+              {!isValidDate(edu.startDate) && edu.startDate && (
+                <p className="text-xs text-red-500 mt-1">
+                  {getDateValidationMessage(edu.startDate)}
+                </p>
+              )}
+            </div>
+            <div>
+              <input
+                type="text"
+                value={edu.endDate}
+                onChange={(e) =>
+                  handleDateChange(
+                    e.target.value,
+                    edu.endDate,
+                    (value) => updateArrayItem("education", index, "endDate", value)
+                  )
+                }
+                placeholder="End (DD/MM/YYYY)"
+                className={`input-field ${!isValidDate(edu.endDate) && edu.endDate ? 'border-red-500' : ''}`}
+                title="Format: DD/MM/YYYY (e.g., 20/05/2022)"
+                maxLength="10"
+              />
+              {!isValidDate(edu.endDate) && edu.endDate && (
+                <p className="text-xs text-red-500 mt-1">
+                  {getDateValidationMessage(edu.endDate)}
+                </p>
+              )}
+            </div>
             <input
               type="text"
               value={edu.gpa || ""}
               onChange={(e) => {
                 const value = e.target.value;
-                // Only allow numbers and decimal point, max one decimal point
                 if (/^\d*\.?\d*$/.test(value) && value.length <= 4) {
                   updateArrayItem("education", index, "gpa", value);
                 }
@@ -608,16 +619,29 @@ export const CertificationsSection = ({
             autoComplete="off"
           />
           <div className="grid grid-cols-2 gap-2">
-            <input
-              type="text"
-              value={cert.date || ""}
-              onChange={(e) =>
-                updateArrayItem("certifications", index, "date", e.target.value)
-              }
-              placeholder="Date"
-              className="input-field"
-              autoComplete="off"
-            />
+            <div>
+              <input
+                type="text"
+                value={cert.date || ""}
+                onChange={(e) =>
+                  handleDateChange(
+                    e.target.value,
+                    cert.date || "",
+                    (value) => updateArrayItem("certifications", index, "date", value)
+                  )
+                }
+                placeholder="Date (DD/MM/YYYY)"
+                className={`input-field ${!isValidDate(cert.date) && cert.date ? 'border-red-500' : ''}`}
+                autoComplete="off"
+                title="Format: DD/MM/YYYY (e.g., 10/03/2023)"
+                maxLength="10"
+              />
+              {!isValidDate(cert.date) && cert.date && (
+                <p className="text-xs text-red-500 mt-1">
+                  {getDateValidationMessage(cert.date)}
+                </p>
+              )}
+            </div>
             <input
               type="text"
               value={cert.credentialId || ""}
