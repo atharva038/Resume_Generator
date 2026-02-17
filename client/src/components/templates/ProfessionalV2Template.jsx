@@ -58,17 +58,6 @@ const ProfessionalV2Template = forwardRef(
 
         setPageOverflowInfo(usageInfo);
 
-        // Log overflow information for testing
-        if (isOverflowing) {
-          console.log(
-            `⚠️ ProfessionalV2Template: Page overflow detected! Current height: ${currentHeight}px, Max: ${maxHeight}px, Overflow: ${overflowPercentage}%`
-          );
-        } else {
-          console.log(
-            `✅ ProfessionalV2Template: Content fits on one page. Height: ${currentHeight}px / ${maxHeight}px (${usageInfo.percentage}% filled)`
-          );
-        }
-
         // Pass data to parent component if callback provided
         if (onPageUsageChange) {
           onPageUsageChange(usageInfo);

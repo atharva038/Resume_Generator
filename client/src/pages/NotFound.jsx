@@ -1,168 +1,247 @@
 import {useNavigate} from "react-router-dom";
+import {useEffect} from "react";
+import {motion} from "framer-motion";
+import {Home, ArrowLeft, FileText, Sparkles, AlertTriangle} from "lucide-react";
 
 const NotFound = () => {
   const navigate = useNavigate();
 
+  // Set page title
+  useEffect(() => {
+    document.title = "404 - Page Not Found | SmartNShine";
+  }, []);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center px-4 py-8">
-      <div className="max-w-2xl w-full text-center">
-        {/* 404 Illustration */}
-        <div className="mb-8">
-          <div className="inline-flex items-center justify-center">
-            <svg
-              className="w-64 h-64 text-gray-700 dark:text-gray-300 dark:text-gray-700"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+    <div className="min-h-screen bg-white dark:bg-black relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-40 left-20 w-[500px] h-[500px] bg-purple-500/5 dark:bg-purple-500/5 rounded-full blur-[150px]"></div>
+        <div className="absolute bottom-40 right-20 w-[400px] h-[400px] bg-blue-500/5 dark:bg-blue-500/5 rounded-full blur-[120px]"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-pink-500/3 dark:bg-pink-500/3 rounded-full blur-[100px]"></div>
+      </div>
+
+      <div className="relative min-h-screen flex items-center justify-center px-4 py-8">
+        <div className="max-w-4xl w-full">
+          {/* Main Content */}
+          <motion.div
+            initial={{opacity: 0, y: 20}}
+            animate={{opacity: 1, y: 0}}
+            transition={{duration: 0.5}}
+            className="text-center"
+          >
+            {/* 404 Illustration with Emoji */}
+            <motion.div
+              initial={{scale: 0.8, opacity: 0}}
+              animate={{scale: 1, opacity: 1}}
+              transition={{delay: 0.2, duration: 0.5}}
+              className="mb-8"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={0.5}
-                d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </div>
-        </div>
+              <div className="relative inline-block">
+                {/* Lost Document Emoji/Illustration */}
+                <motion.div
+                  animate={{
+                    y: [0, -15, 0],
+                    rotate: [-5, 5, -5],
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                  className="text-8xl md:text-9xl mb-4"
+                >
+                  📄❓
+                </motion.div>
 
-        {/* Content Card */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 md:p-12">
-          {/* 404 Number */}
-          <h1 className="text-8xl md:text-9xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent mb-4">
-            404
-          </h1>
+                {/* Glowing 404 */}
+                <h1 className="text-[8rem] md:text-[12rem] lg:text-[14rem] font-black leading-none mb-2">
+                  <span className="bg-gradient-to-r from-purple-600 via-blue-600 to-pink-600 dark:from-purple-400 dark:via-blue-400 dark:to-pink-400 bg-clip-text text-transparent">
+                    404
+                  </span>
+                </h1>
 
-          {/* Main Message */}
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-            Page Not Found
-          </h2>
+                {/* Sparkles */}
+                {[...Array(8)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    animate={{
+                      scale: [0, 1, 0],
+                      opacity: [0, 1, 0],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      delay: i * 0.25,
+                    }}
+                    className="absolute"
+                    style={{
+                      top: `${15 + (i % 4) * 25}%`,
+                      left: `${i < 4 ? 5 + i * 10 : 65 + (i - 4) * 10}%`,
+                    }}
+                  >
+                    <Sparkles className="w-5 h-5 text-purple-400 dark:text-purple-300" />
+                  </motion.div>
+                ))}
 
-          <p className="text-lg text-gray-600 dark:text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">
-            Oops! The page you're looking for doesn't exist. It might have been
-            moved or deleted.
-          </p>
+                {/* Floating Search Icon */}
+                <motion.div
+                  animate={{
+                    x: [0, 10, 0],
+                    y: [0, -10, 0],
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                  className="absolute top-1/4 right-0 text-4xl md:text-5xl"
+                >
+                  🔍
+                </motion.div>
 
-          {/* Suggestions */}
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6 mb-8 text-left max-w-md mx-auto">
-            <h3 className="text-sm font-semibold text-blue-900 dark:text-blue-100 mb-3 flex items-center gap-2">
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              Here's what you can do:
-            </h3>
-            <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-2">
-              <li className="flex items-start gap-2">
-                <span className="text-blue-600 dark:text-blue-400 mt-0.5">
-                  •
-                </span>
-                <span>Check the URL for any typos</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-blue-600 dark:text-blue-400 mt-0.5">
-                  •
-                </span>
-                <span>Go back to the previous page</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-blue-600 dark:text-blue-400 mt-0.5">
-                  •
-                </span>
-                <span>Visit our homepage to start fresh</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-blue-600 dark:text-blue-400 mt-0.5">
-                  •
-                </span>
-                <span>Use the navigation menu to find what you need</span>
-              </li>
-            </ul>
-          </div>
+                {/* Confused Face */}
+                <motion.div
+                  animate={{
+                    rotate: [0, 10, -10, 0],
+                  }}
+                  transition={{
+                    duration: 5,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                  className="absolute bottom-1/4 left-0 text-4xl md:text-5xl"
+                >
+                  😕
+                </motion.div>
+              </div>
+            </motion.div>
 
-          {/* Action Buttons */}
-          <div className="flex flex-wrap justify-center gap-4">
-            <button
-              onClick={() => window.history.back()}
-              className="px-8 py-3 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2"
+            {/* Error Message Card */}
+            <motion.div
+              initial={{opacity: 0, y: 20}}
+              animate={{opacity: 1, y: 0}}
+              transition={{delay: 0.3, duration: 0.5}}
+              className="max-w-2xl mx-auto"
             >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                />
-              </svg>
-              Go Back
-            </button>
+              <div className="bg-white dark:bg-black backdrop-blur-xl rounded-3xl shadow-2xl border border-gray-200 dark:border-zinc-800 p-8 md:p-12">
+                {/* Alert Icon */}
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-purple-50 dark:bg-purple-500/10 border border-purple-200 dark:border-purple-500/30 mb-6">
+                  <AlertTriangle className="w-8 h-8 text-purple-600 dark:text-purple-400" />
+                </div>
 
-            <button
-              onClick={() => navigate("/")}
-              className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-gray-900 dark:text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-                />
-              </svg>
-              Go Home
-            </button>
+                {/* Main Message */}
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+                  Oops! Page Not Found
+                </h2>
 
-            <button
-              onClick={() => navigate("/dashboard")}
-              className="px-8 py-3 bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-gray-900 dark:text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"
-                />
-              </svg>
-              Dashboard
-            </button>
-          </div>
-        </div>
+                <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-lg mx-auto">
+                  The resume you're looking for seems to have gone missing.
+                  Don't worry, let's get you back on track!
+                </p>
 
-        {/* Footer */}
-        <div className="mt-8">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Need help?{" "}
-            <a
-              href="/contact"
-              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                {/* Quick Links */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                  {[
+                    {
+                      icon: Home,
+                      title: "Homepage",
+                      desc: "Start fresh",
+                      path: "/",
+                      gradient: "from-purple-500 to-blue-500",
+                    },
+                    {
+                      icon: FileText,
+                      title: "My Resumes",
+                      desc: "Your resumes",
+                      path: "/my-resumes",
+                      gradient: "from-blue-500 to-cyan-500",
+                    },
+                    {
+                      icon: Sparkles,
+                      title: "Create Resume",
+                      desc: "Build new",
+                      path: "/upload",
+                      gradient: "from-pink-500 to-purple-500",
+                    },
+                  ].map((link, index) => (
+                    <motion.button
+                      key={link.path}
+                      initial={{opacity: 0, y: 20}}
+                      animate={{opacity: 1, y: 0}}
+                      transition={{delay: 0.4 + index * 0.1}}
+                      onClick={() => navigate(link.path)}
+                      className="group relative p-4 bg-white dark:bg-zinc-900 hover:bg-gray-50 dark:hover:bg-zinc-800 rounded-xl border border-gray-200 dark:border-zinc-700 transition-all duration-300 hover:scale-105 hover:shadow-xl"
+                    >
+                      <div
+                        className={`w-10 h-10 rounded-lg bg-gradient-to-br ${link.gradient} flex items-center justify-center mb-3 mx-auto group-hover:scale-110 transition-transform`}
+                      >
+                        <link.icon className="w-5 h-5 text-white" />
+                      </div>
+                      <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                        {link.title}
+                      </h3>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">
+                        {link.desc}
+                      </p>
+                    </motion.button>
+                  ))}
+                </div>
+
+                {/* Primary Actions */}
+                <div className="flex flex-col sm:flex-row justify-center gap-4">
+                  <motion.button
+                    initial={{opacity: 0, scale: 0.9}}
+                    animate={{opacity: 1, scale: 1}}
+                    transition={{delay: 0.7}}
+                    onClick={() => window.history.back()}
+                    className="group inline-flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-700 text-gray-900 dark:text-gray-100 font-semibold rounded-xl border-2 border-gray-200 dark:border-zinc-700 transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                  >
+                    <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+                    Go Back
+                  </motion.button>
+
+                  <motion.button
+                    initial={{opacity: 0, scale: 0.9}}
+                    animate={{opacity: 1, scale: 1}}
+                    transition={{delay: 0.8}}
+                    onClick={() => navigate("/")}
+                    className="group inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-semibold rounded-xl shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40 transition-all duration-300 hover:scale-105"
+                  >
+                    <Home className="w-5 h-5" />
+                    Go to Homepage
+                    <motion.span
+                      animate={{x: [0, 5, 0]}}
+                      transition={{
+                        duration: 1.5,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
+                    >
+                      →
+                    </motion.span>
+                  </motion.button>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Help Text */}
+            <motion.div
+              initial={{opacity: 0}}
+              animate={{opacity: 1}}
+              transition={{delay: 0.9}}
+              className="mt-8"
             >
-              Contact our support team
-            </a>
-          </p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Still can't find what you're looking for?{" "}
+                <a
+                  href="/contact"
+                  className="text-purple-600 dark:text-purple-400 hover:underline font-semibold"
+                >
+                  Contact our support team
+                </a>
+              </p>
+            </motion.div>
+          </motion.div>
         </div>
       </div>
     </div>

@@ -84,12 +84,12 @@ const Navbar = ({toggleSidebar, isSidebarOpen}) => {
               <>
                 {/* My Resumes */}
                 <BlockableLink
-                  to="/dashboard"
+                  to="/my-resumes"
                   className="hidden md:flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-lg transition-all duration-200"
-                  title="My Dashboard"
+                  title="My Resumes"
                 >
                   <LayoutDashboard className="w-4 h-4" />
-                  <span>Dashboard</span>
+                  <span>My Resumes</span>
                 </BlockableLink>
 
                 {/* Profile */}

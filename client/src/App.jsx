@@ -178,31 +178,31 @@ function App() {
                 </ProtectedRoute>
               }
             /> */}
-              <Route
-                path="contact"
-                element={
-                  <ProtectedRoute>
-                    <Contact />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="dashboard"
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                }
-              />
-              {/* Subscription Routes */}
-              <Route path="pricing" element={<Pricing />} />
-              <Route path="privacy-policy" element={<PrivacyPolicy />} />
-              <Route
-                path="terms-and-conditions"
-                element={<TermsAndConditions />}
-              />
-              <Route path="refund-policy" element={<RefundPolicy />} />
-              <Route path="shipping-policy" element={<ShippingPolicy />} />
+            <Route
+              path="contact"
+              element={
+                <ProtectedRoute>
+                  <Contact />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="my-resumes"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            {/* Subscription Routes */}
+            <Route path="pricing" element={<Pricing />} />
+            <Route path="privacy-policy" element={<PrivacyPolicy />} />
+            <Route
+              path="terms-and-conditions"
+              element={<TermsAndConditions />}
+            />
+            <Route path="refund-policy" element={<RefundPolicy />} />
+            <Route path="shipping-policy" element={<ShippingPolicy />} />
 
               {/* Public Auth Routes */}
               <Route path="login" element={<Login />} />

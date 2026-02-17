@@ -26,6 +26,8 @@ router.post(
   submitContact
 );
 
+router.post("/public", validateContactSubmission, submitContact)
+
 // Protected routes (Admin only)
 router.get("/", authenticateToken, getAllContacts);
 router.get("/stats/summary", authenticateToken, getContactStats);

@@ -46,7 +46,7 @@ const Login = () => {
 
     try {
       await login(email, password);
-      const from = location.state?.from?.pathname || "/dashboard";
+      const from = location.state?.from?.pathname || "/my-resumes";
       navigate(from, {replace: true});
     } catch (err) {
       if (

@@ -56,17 +56,6 @@ const MinimalTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
 
       setPageOverflowInfo(usageInfo);
 
-      // Log overflow information for testing
-      if (isOverflowing) {
-        console.log(
-          `⚠️ MinimalTemplate: Page overflow detected! Current height: ${currentHeight}px, Max: ${maxHeight}px, Overflow: ${overflowPercentage}%`
-        );
-      } else {
-        console.log(
-          `✅ MinimalTemplate: Content fits on one page. Height: ${currentHeight}px / ${maxHeight}px (${usageInfo.percentage}% filled)`
-        );
-      }
-
       // Pass data to parent component if callback provided
       if (onPageUsageChange) {
         onPageUsageChange(usageInfo);
@@ -187,11 +176,6 @@ const MinimalTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
   };
 
   const contentDensity = calculateContentDensity();
-
-  // Log content density for debugging
-  console.log(
-    `📊 MinimalTemplate Content Density: ${contentDensity} (low < 15, medium 15-30, high > 30)`
-  );
 
   // Dynamic styling based on content density
   const getDynamicStyles = () => {

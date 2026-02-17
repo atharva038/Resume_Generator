@@ -39,7 +39,7 @@ const HeroSection = () => {
   const handleBuildResumeClick = (e) => {
     e.preventDefault();
     if (isLoggedIn()) {
-      navigate("/dashboard");
+      navigate("/my-resumes");
     } else {
       navigate("/register");
     }

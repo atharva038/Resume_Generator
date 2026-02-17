@@ -1722,171 +1722,235 @@ const Editor = () => {
           </div>
         </div>
 
-        {/* Mobile-Friendly Action Bar */}
-        <div className="lg:hidden sticky top-0 z-40 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 -mx-2 sm:-mx-4 px-2 sm:px-4 py-3 mb-4 no-print">
+        {/* Enhanced Mobile Action Bar */}
+        <div className="lg:hidden sticky top-0 z-40 bg-gradient-to-r from-white/98 via-gray-50/98 to-white/98 dark:from-zinc-950/98 dark:via-zinc-900/98 dark:to-zinc-950/98 backdrop-blur-xl border-b-2 border-gray-200 dark:border-zinc-800 shadow-lg -mx-2 sm:-mx-4 px-2 sm:px-4 py-3 mb-4 no-print">
           <div className="flex gap-2 justify-between items-stretch">
             {/* Preview Toggle - Mobile */}
             <button
               onClick={togglePreview}
-              className={`flex-1 px-3 py-2 rounded-lg font-semibold transition-all duration-200 text-xs flex items-center justify-center ${
+              className={`flex-1 px-3 py-2.5 rounded-xl font-bold transition-all duration-300 text-xs flex flex-col items-center justify-center shadow-md hover:shadow-lg active:scale-95 ${
                 showPreview
-                  ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900"
-                  : "bg-white dark:bg-zinc-900 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-zinc-700"
+                  ? "bg-gradient-to-br from-purple-600 via-blue-600 to-pink-600 text-white"
+                  : "bg-white dark:bg-zinc-900 text-gray-700 dark:text-gray-300 border-2 border-gray-300 dark:border-zinc-700 hover:border-purple-500 dark:hover:border-purple-500"
               }`}
             >
-              <span className="text-base mr-1.5">
+              <span className="text-lg mb-0.5">
                 {showPreview ? "👁️" : "👁️‍🗨️"}
               </span>
-              <span className="hidden xs:inline">
-                {showPreview ? "Hide" : "Show"}{" "}
+              <span className="text-[10px] tracking-wide">
+                {showPreview ? "HIDE" : "SHOW"}
               </span>
-              Preview
             </button>
 
-            {/* Download PDF - Mobile */}
-            <button
-              onClick={handleDownloadPDF}
-              disabled={isSubscriptionExpired()}
-              className={`flex-1 px-3 py-2 rounded-lg font-semibold transition-all duration-200 text-xs flex items-center justify-center ${
-                isSubscriptionExpired()
-                  ? "bg-gray-300 dark:bg-gray-700 cursor-not-allowed text-gray-500"
-                  : "bg-green-600 hover:bg-green-700 text-white"
-              }`}
-            >
-              <span className="text-base mr-1.5">
-                {isSubscriptionExpired() ? "🔒" : "📥"}
-              </span>
-              {isSubscriptionExpired() ? "Expired" : "Download"}
-            </button>
-
-            {/* Save Button - Mobile */}
+            {/* Save Button - Mobile (Most Important) */}
             <button
               onClick={handleSave}
               disabled={saving || autoSaving}
-              className={`flex-1 px-3 py-2 rounded-lg font-semibold transition-all duration-200 text-xs relative flex items-center justify-center ${
+              className={`flex-1 px-3 py-2.5 rounded-xl font-bold transition-all duration-300 text-xs relative flex flex-col items-center justify-center shadow-md hover:shadow-lg active:scale-95 ${
                 saving || autoSaving
-                  ? "bg-gray-300 dark:bg-gray-700 cursor-not-allowed text-gray-500"
+                  ? "bg-gray-400 dark:bg-gray-600 cursor-not-allowed text-white"
                   : hasUnsavedChanges
-                    ? "bg-orange-600 hover:bg-orange-700 text-white"
-                    : "bg-blue-600 hover:bg-blue-700 text-white"
+                    ? "bg-gradient-to-br from-orange-600 via-red-600 to-pink-600 text-white animate-pulse"
+                    : "bg-gradient-to-br from-blue-600 via-cyan-600 to-teal-600 text-white"
               }`}
             >
               {hasUnsavedChanges && !saving && !autoSaving && (
-                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-gray-800 animate-pulse"></span>
+                <>
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white dark:border-gray-800 animate-ping"></span>
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white dark:border-gray-800 flex items-center justify-center text-[8px] font-bold">
+                    !
+                  </span>
+                </>
               )}
-              <span className="text-base mr-1.5">
-                {saving || autoSaving ? "⏳" : hasUnsavedChanges ? "⚠️" : "💾"}
+              <span className="text-lg mb-0.5">
+                {saving || autoSaving ? "⏳" : hasUnsavedChanges ? "�" : "✓"}
               </span>
-              <span className="hidden xs:inline">
+              <span className="text-[10px] tracking-wide">
                 {saving
-                  ? "Saving..."
+                  ? "WAIT"
                   : autoSaving
-                    ? "Auto-saving..."
+                    ? "AUTO"
                     : hasUnsavedChanges
-                      ? "Save*"
-                      : "Saved"}
+                      ? "SAVE"
+                      : "SAVED"}
               </span>
-              <span className="xs:hidden">
-                {saving || autoSaving ? "..." : hasUnsavedChanges ? "*" : "✓"}
+            </button>
+
+            {/* Export PDF - Mobile */}
+            <button
+              onClick={handleDownloadPDF}
+              disabled={isSubscriptionExpired()}
+              className={`flex-1 px-3 py-2.5 rounded-xl font-bold transition-all duration-300 text-xs flex flex-col items-center justify-center shadow-md active:scale-95 ${
+                isSubscriptionExpired()
+                  ? "bg-gray-400 dark:bg-gray-700 cursor-not-allowed text-white"
+                  : "bg-gradient-to-br from-green-600 via-emerald-600 to-teal-600 text-white hover:shadow-lg"
+              }`}
+            >
+              <span className="text-lg mb-0.5">
+                {isSubscriptionExpired() ? "🔒" : "📥"}
               </span>
+              <span className="text-[10px] tracking-wide">
+                {isSubscriptionExpired() ? "LOCKED" : "EXPORT"}
+              </span>
+            </button>
+
+            {/* GitHub Import - Mobile */}
+            <button
+              onClick={() => showGitHubImportModalTrue()}
+              className="flex-1 px-3 py-2.5 rounded-xl font-bold bg-gradient-to-br from-gray-900 via-gray-800 to-black dark:from-white dark:via-gray-100 dark:to-gray-200 text-white dark:text-gray-900 transition-all duration-300 text-xs flex flex-col items-center justify-center shadow-md hover:shadow-lg active:scale-95"
+            >
+              <span className="text-lg mb-0.5">💻</span>
+              <span className="text-[10px] tracking-wide">IMPORT</span>
             </button>
           </div>
         </div>
 
-        {/* Floating Action Buttons - Desktop Only */}
-        <div className="hidden lg:flex fixed right-6 top-32 z-50 flex-col gap-4 no-print">
+        {/* Enhanced Floating Action Buttons - Desktop Only */}
+        <div className="hidden lg:flex fixed right-8 top-32 z-50 flex-col gap-3 no-print">
           {/* Preview Toggle Button */}
           <button
             onClick={togglePreview}
-            className={`group relative w-14 h-14 rounded-full font-medium transition-all duration-200 hover:scale-105 ${
+            className={`group relative overflow-hidden transition-all duration-300 rounded-2xl shadow-2xl hover:shadow-purple-500/20 ${
               showPreview
-                ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100"
-                : "bg-white dark:bg-zinc-900 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 border-2 border-gray-300 dark:border-zinc-700"
-            } shadow-lg hover:shadow-xl`}
+                ? "bg-gradient-to-br from-purple-600 via-blue-600 to-pink-600 text-white w-16 h-16"
+                : "bg-white dark:bg-zinc-900 text-gray-700 dark:text-gray-300 border-2 border-gray-300 dark:border-zinc-700 hover:border-purple-500 dark:hover:border-purple-500 w-16 h-16"
+            } hover:scale-110 active:scale-95`}
           >
-            <div className="flex items-center justify-center">
-              <span className="text-2xl">{showPreview ? "👁️" : "👁️‍🗨️"}</span>
-            </div>
-            {/* Hover Tooltip */}
-            <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-gray-900 dark:text-white text-xs font-semibold rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
-              {showPreview ? "Hide Preview" : "Show Preview"}
-              <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-1 border-4 border-transparent border-l-gray-900 dark:border-l-gray-700"></span>
-            </span>
-          </button>
-
-          {/* Download PDF Button */}
-          <button
-            onClick={handleDownloadPDF}
-            disabled={isSubscriptionExpired()}
-            className={`group relative w-14 h-14 rounded-full shadow-lg font-medium transition-all duration-200 ${
-              isSubscriptionExpired()
-                ? "bg-gray-300 dark:bg-gray-700 cursor-not-allowed"
-                : "bg-green-600 hover:bg-green-700 text-white hover:scale-105 hover:shadow-xl"
-            }`}
-          >
-            <div className="flex items-center justify-center">
-              <span className="text-2xl">
-                {isSubscriptionExpired() ? "🔒" : "📥"}
+            <div className="relative z-10 flex flex-col items-center justify-center h-full">
+              <span className="text-2xl mb-0.5">
+                {showPreview ? "👁️" : "👁️‍🗨️"}
+              </span>
+              <span className="text-[9px] font-bold tracking-wide uppercase">
+                {showPreview ? "Hide" : "Show"}
               </span>
             </div>
-            {/* Hover Tooltip */}
-            <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-gray-900 dark:text-white text-xs font-semibold rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
-              {isSubscriptionExpired()
-                ? "Subscription Expired"
-                : "Download PDF"}
-              <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-1 border-4 border-transparent border-l-gray-900 dark:border-l-gray-700"></span>
+            {/* Animated background gradient on hover */}
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-blue-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            {/* Tooltip */}
+            <span className="absolute right-full mr-4 top-1/2 -translate-y-1/2 px-4 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-bold rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap pointer-events-none border-2 border-gray-700 dark:border-gray-300 group-hover:mr-5">
+              {showPreview ? "Hide Preview Panel" : "Show Live Preview"}
+              <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-1.5 border-[6px] border-transparent border-l-gray-900 dark:border-l-white"></span>
             </span>
           </button>
 
-          {/* Save Button */}
+          {/* Save Button - Most Critical */}
           <button
             onClick={handleSave}
             disabled={saving || autoSaving}
-            className={`group relative w-14 h-14 rounded-full shadow-lg font-medium transition-all duration-200 hover:scale-105 hover:shadow-xl ${
+            className={`group relative overflow-hidden transition-all duration-300 rounded-2xl shadow-2xl w-16 h-16 ${
               saving || autoSaving
-                ? "bg-gray-300 dark:bg-gray-700 cursor-not-allowed"
+                ? "bg-gray-400 dark:bg-gray-600 cursor-not-allowed"
                 : hasUnsavedChanges
-                  ? "bg-orange-600 hover:bg-orange-700 text-white"
-                  : "bg-blue-600 hover:bg-blue-700 text-white"
-            }`}
+                  ? "bg-gradient-to-br from-orange-600 via-red-600 to-pink-600 text-white hover:shadow-orange-500/30 hover:scale-110 animate-pulse"
+                  : "bg-gradient-to-br from-blue-600 via-cyan-600 to-teal-600 text-white hover:shadow-blue-500/30 hover:scale-110"
+            } active:scale-95`}
           >
             {hasUnsavedChanges && !saving && !autoSaving && (
-              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white dark:border-gray-800 animate-pulse"></span>
+              <>
+                <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 rounded-full border-3 border-white dark:border-gray-800 animate-ping"></span>
+                <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 rounded-full border-3 border-white dark:border-gray-800 flex items-center justify-center text-[10px] font-bold">
+                  !
+                </span>
+              </>
             )}
-            <div className="flex items-center justify-center">
-              <span className="text-2xl">
-                {saving || autoSaving ? "⏳" : hasUnsavedChanges ? "⚠️" : "💾"}
+            <div className="relative z-10 flex flex-col items-center justify-center h-full">
+              <span className="text-2xl mb-0.5">
+                {saving || autoSaving ? "⏳" : hasUnsavedChanges ? "💾" : "✓"}
+              </span>
+              <span className="text-[9px] font-bold tracking-wide uppercase">
+                {saving || autoSaving
+                  ? "Wait"
+                  : hasUnsavedChanges
+                    ? "Save"
+                    : "Saved"}
               </span>
             </div>
-            {/* Hover Tooltip */}
+            {/* Tooltip */}
             {!saving && !autoSaving && (
-              <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-gray-900 dark:text-white text-xs font-semibold rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
-                {hasUnsavedChanges ? "Save Changes*" : "Resume Saved"}
-                <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-1 border-4 border-transparent border-l-gray-900 dark:border-l-gray-700"></span>
+              <span className="absolute right-full mr-4 top-1/2 -translate-y-1/2 px-4 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-bold rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap pointer-events-none border-2 border-gray-700 dark:border-gray-300 group-hover:mr-5">
+                {hasUnsavedChanges
+                  ? "💾 Save Changes Now!"
+                  : "✓ All Changes Saved"}
+                <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-1.5 border-[6px] border-transparent border-l-gray-900 dark:border-l-white"></span>
               </span>
             )}
             {(saving || autoSaving) && (
-              <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-gray-900 dark:text-white text-xs font-semibold rounded-lg shadow-xl opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
-                {autoSaving ? "Auto-saving..." : "Saving..."}
-                <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-1 border-4 border-transparent border-l-gray-900 dark:border-l-gray-700"></span>
+              <span className="absolute right-full mr-4 top-1/2 -translate-y-1/2 px-4 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-bold rounded-xl shadow-2xl opacity-100 transition-all duration-300 whitespace-nowrap pointer-events-none border-2 border-gray-700 dark:border-gray-300">
+                {autoSaving ? "⚡ Auto-saving..." : "💾 Saving..."}
+                <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-1.5 border-[6px] border-transparent border-l-gray-900 dark:border-l-white"></span>
               </span>
             )}
           </button>
+
+          {/* Export PDF Button */}
+          <button
+            onClick={handleDownloadPDF}
+            disabled={isSubscriptionExpired()}
+            className={`group relative overflow-hidden transition-all duration-300 rounded-2xl shadow-2xl w-16 h-16 ${
+              isSubscriptionExpired()
+                ? "bg-gray-400 dark:bg-gray-700 cursor-not-allowed"
+                : "bg-gradient-to-br from-green-600 via-emerald-600 to-teal-600 text-white hover:shadow-green-500/30 hover:scale-110"
+            } active:scale-95`}
+          >
+            <div className="relative z-10 flex flex-col items-center justify-center h-full">
+              <span className="text-2xl mb-0.5">
+                {isSubscriptionExpired() ? "🔒" : "📥"}
+              </span>
+              <span className="text-[9px] font-bold tracking-wide uppercase">
+                {isSubscriptionExpired() ? "Locked" : "Export"}
+              </span>
+            </div>
+            {/* Tooltip */}
+            <span className="absolute right-full mr-4 top-1/2 -translate-y-1/2 px-4 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-bold rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap pointer-events-none border-2 border-gray-700 dark:border-gray-300 group-hover:mr-5">
+              {isSubscriptionExpired()
+                ? "🔒 Subscription Required"
+                : "📥 Download as PDF"}
+              <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-1.5 border-[6px] border-transparent border-l-gray-900 dark:border-l-white"></span>
+            </span>
+          </button>
+
+          {/* GitHub Import Button */}
+          <button
+            onClick={() => showGitHubImportModalTrue()}
+            className="group relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-black dark:from-white dark:via-gray-100 dark:to-gray-200 text-white dark:text-gray-900 transition-all duration-300 rounded-2xl shadow-2xl hover:shadow-purple-500/20 w-16 h-16 hover:scale-110 active:scale-95"
+          >
+            <div className="relative z-10 flex flex-col items-center justify-center h-full">
+              <span className="text-2xl mb-0.5">💻</span>
+              <span className="text-[9px] font-bold tracking-wide uppercase">
+                Import
+              </span>
+            </div>
+            {/* Animated background gradient on hover */}
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 via-blue-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            {/* Tooltip */}
+            <span className="absolute right-full mr-4 top-1/2 -translate-y-1/2 px-4 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-bold rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap pointer-events-none border-2 border-gray-700 dark:border-gray-300 group-hover:mr-5">
+              💻 Import from GitHub
+              <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-1.5 border-[6px] border-transparent border-l-gray-900 dark:border-l-white"></span>
+            </span>
+          </button>
+
+          {/* Divider */}
+          <div className="h-px bg-gradient-to-r from-transparent via-gray-400 dark:via-gray-600 to-transparent my-1"></div>
 
           {/* Scroll to Top Button */}
           <button
             onClick={() => window.scrollTo({top: 0, behavior: "smooth"})}
-            className="group relative w-14 h-14 rounded-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 shadow-lg font-medium hover:bg-gray-800 dark:hover:bg-gray-100 transition-all duration-200 hover:scale-105 hover:shadow-xl"
+            className="group relative overflow-hidden bg-white dark:bg-zinc-900 border-2 border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:border-purple-500 dark:hover:border-purple-500 transition-all duration-300 rounded-2xl shadow-2xl hover:shadow-purple-500/20 w-16 h-16 hover:scale-110 active:scale-95"
           >
-            <div className="flex items-center justify-center">
+            <div className="relative z-10 flex flex-col items-center justify-center h-full">
               <span className="text-2xl transition-transform duration-300 group-hover:-translate-y-1">
                 ⬆️
               </span>
+              <span className="text-[9px] font-bold tracking-wide uppercase">
+                Top
+              </span>
             </div>
-            {/* Hover Tooltip */}
-            <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-gray-900 dark:text-white text-xs font-semibold rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
-              Scroll to Top
-              <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-1 border-4 border-transparent border-l-gray-900 dark:border-l-gray-700"></span>
+            {/* Animated background gradient on hover */}
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-blue-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            {/* Tooltip */}
+            <span className="absolute right-full mr-4 top-1/2 -translate-y-1/2 px-4 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-bold rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap pointer-events-none border-2 border-gray-700 dark:border-gray-300 group-hover:mr-5">
+              ⬆️ Back to Top
+              <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-1.5 border-[6px] border-transparent border-l-gray-900 dark:border-l-white"></span>
             </span>
           </button>
         </div>

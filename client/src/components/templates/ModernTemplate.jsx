@@ -72,17 +72,6 @@ const ModernTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
 
       setPageOverflowInfo(usageInfo);
 
-      // Log overflow information for testing
-      if (isOverflowing) {
-        console.log(
-          `⚠️ ModernTemplate: Page overflow detected! Current height: ${currentHeight}px, Max: ${maxHeight}px, Overflow: ${overflowPercentage}%`
-        );
-      } else {
-        console.log(
-          `✅ ModernTemplate: Content fits on one page. Height: ${currentHeight}px / ${maxHeight}px (${usageInfo.percentage}% filled)`
-        );
-      }
-
       // Pass data to parent component if callback provided
       if (onPageUsageChange) {
         onPageUsageChange(usageInfo);

@@ -118,7 +118,7 @@ export const uploadLimiter = rateLimit({
  */
 export const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per 15 minutes
+  max: process.env.NODE_ENV === "development" ? 1000 : 100, // Higher limit in dev mode
   message: {
     error: "Too many requests. Please try again after 15 minutes.",
     retryAfter: "15 minutes",
@@ -134,7 +134,7 @@ export const apiLimiter = rateLimit({
         "Too many requests from this IP. Please try again after 15 minutes.",
       retryAfter: "15 minutes",
       type: "API_RATE_LIMIT_EXCEEDED",
-      limit: 100,
+      limit: process.env.NODE_ENV === "development" ? 1000 : 100,
       window: "15 minutes",
     });
   },

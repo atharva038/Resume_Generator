@@ -145,17 +145,17 @@ const SmartJobMatchPage = () => {
             </p>
             <div className="flex gap-4 justify-center">
               <button
-                onClick={() => navigate("/dashboard")}
+                onClick={() => navigate("/my-resumes")}
                 className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-gray-900 dark:text-white font-bold py-3 px-8 rounded-lg transition-all duration-200 flex items-center gap-2"
               >
                 <Plus className="w-5 h-5" />
                 Create Resume
               </button>
               <button
-                onClick={() => navigate("/dashboard")}
+                onClick={() => navigate("/my-resumes")}
                 className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 font-semibold py-3 px-8 rounded-lg transition-all"
               >
-                Go to Dashboard
+                Go to My Resumes
               </button>
             </div>
           </div>
@@ -187,7 +187,7 @@ const SmartJobMatchPage = () => {
                 value={selectedResume?._id || ""}
                 onChange={(e) => {
                   if (e.target.value === "create-new") {
-                    navigate("/dashboard");
+                    navigate("/my-resumes");
                   } else {
                     loadResumeDetails(e.target.value);
                   }
@@ -214,7 +214,7 @@ const SmartJobMatchPage = () => {
             </div>
             <div className="flex gap-2">
               <button
-                onClick={() => navigate("/dashboard")}
+                onClick={() => navigate("/my-resumes")}
                 className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-gray-900 dark:text-white font-semibold py-2 px-6 rounded-lg transition-all shadow-md hover:shadow-lg flex items-center gap-2"
               >
                 {resumes.length === 1 ? (

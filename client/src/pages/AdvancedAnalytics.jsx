@@ -111,10 +111,10 @@ const AdvancedAnalytics = () => {
               View Pro Plans
             </button>
             <button
-              onClick={() => navigate("/dashboard")}
+              onClick={() => navigate("/my-resumes")}
               className="w-full bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-gray-300 py-3 px-6 rounded-lg font-semibold hover:bg-gray-200 dark:hover:bg-zinc-700 transition-all duration-200"
             >
-              Back to Dashboard
+              Back to My Resumes
             </button>
           </div>
         </div>
@@ -143,10 +143,10 @@ const AdvancedAnalytics = () => {
               Retry
             </button>
             <button
-              onClick={() => navigate("/dashboard")}
+              onClick={() => navigate("/my-resumes")}
               className="w-full bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-gray-300 py-3 px-6 rounded-lg font-semibold hover:bg-gray-200 dark:hover:bg-zinc-700 transition-all"
             >
-              Back to Dashboard
+              Back to My Resumes
             </button>
           </div>
         </div>
