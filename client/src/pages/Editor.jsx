@@ -1,4 +1,4 @@
-import {useState, useEffect, useRef, useCallback, useMemo} from "react";
+import {useState, useEffect, useRef, useMemo} from "react";
 import {useLocation, useNavigate} from "react-router-dom";
 import {useAuth} from "@/context/AuthContext";
 import {useNavigationBlocker} from "@/context/NavigationBlockerContext";
@@ -23,14 +23,10 @@ import {
   ResumeWizard,
 } from "@/components/editor";
 import {ScoreCard, JobSpecificScoreCard} from "@/components/common/cards";
-import {
-  GitHubImportModal,
-  PageLimitExceededModal,
-} from "@/components/common/modals";
+import {GitHubImportModal} from "@/components/common/modals";
 import UpgradeRequiredModal from "@/components/common/modals/UpgradeRequiredModal";
 import {getJobCategories, getJobsByCategory} from "@/utils/jobProfiles";
 import {calculateResumeScore} from "@/utils/resumeScoring";
-import {calculateContentMetrics} from "@/utils/resumeLimits";
 import {PageUtilizationIndicator} from "@/components/common/LimitedInputs";
 import ClassicTemplate from "@/components/templates/ClassicTemplate";
 import ModernTemplate from "@/components/templates/ModernTemplate";
@@ -333,21 +329,6 @@ const Editor = () => {
     setGithubImportSuccessFalse,
   ] = useToggle(false);
 
-  // Page limit states
-  const [
-    showPageLimitModal,
-    togglePageLimitModal,
-    showPageLimitModalTrue,
-    showPageLimitModalFalse,
-  ] = useToggle(false);
-  const [
-    twoPageMode,
-    toggleTwoPageMode,
-    setTwoPageModeTrue,
-    setTwoPageModeFalse,
-  ] = useToggle(false);
-  const [lastContentMetrics, setLastContentMetrics] = useState(null);
-
   // Upgrade modal states
   const [
     showUpgradeModal,
@@ -357,33 +338,12 @@ const Editor = () => {
   ] = useToggle(false);
   const [upgradeMessage, setUpgradeMessage] = useState("");
 
-  // Template-specific page usage (from TechTemplate and ClassicTemplate)
-  const [templatePageUsage, setTemplatePageUsage] = useState(null);
-
-  // Callback to receive page usage from templates (memoized to prevent infinite loops)
-  const handleTemplatePageUsage = useCallback((usageInfo) => {
-    setTemplatePageUsage(usageInfo);
-  }, []); // Empty deps - function doesn't need to change
-
-  // Reset page usage when switching to non-supported templates
   useEffect(() => {
     const onScroll = () => setShowScrollTop(window.scrollY > 300);
     window.addEventListener("scroll", onScroll, {passive: true});
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => {
-    const supportedTemplates = [
-      "tech",
-      "classic",
-      "modern",
-      "professional",
-      "professionalv2",
-    ];
-    if (!supportedTemplates.includes(selectedTemplate)) {
-      setTemplatePageUsage(null);
-    }
-  }, [selectedTemplate]);
 
   // Wizard mode for new resumes
   const [
@@ -429,24 +389,6 @@ const Editor = () => {
     setHasUnsavedChangesFalse,
   ]);
 
-  // Monitor content size and show warning if exceeds one page
-  useEffect(() => {
-    if (!resumeData || twoPageMode) return;
-
-    // Calculate content metrics
-    const metrics = calculateContentMetrics(resumeData);
-    setLastContentMetrics(metrics);
-
-    // Check if content exceeds one page
-    if (metrics.exceedsOnePage) {
-      // Show modal after a short delay to allow user to see what they typed
-      const timer = setTimeout(() => {
-        showPageLimitModalTrue();
-      }, 500);
-
-      return () => clearTimeout(timer);
-    }
-  }, [resumeData, twoPageMode]);
 
   // Auto-save functionality
   useEffect(() => {
@@ -874,24 +816,6 @@ const Editor = () => {
     setIsWizardModeFalse();
     toast.success("Resume setup complete! You can now edit all sections.", {
       icon: "🎉",
-      duration: 3000,
-    });
-  };
-
-  // Page limit handlers
-  const handleEnableTwoPages = () => {
-    setTwoPageModeTrue();
-    showPageLimitModalFalse();
-    toast.success("Two-page mode enabled", {
-      icon: "📄",
-      duration: 3000,
-    });
-  };
-
-  const handleContinueEditing = () => {
-    showPageLimitModalFalse();
-    toast.info("Please reduce content to fit one page", {
-      icon: "✏️",
       duration: 3000,
     });
   };
@@ -2073,8 +1997,6 @@ const Editor = () => {
                     ref={resumePreviewRef}
                     resumeData={resumeData}
                     template={selectedTemplate}
-                    twoPageMode={twoPageMode}
-                    onPageUsageChange={handleTemplatePageUsage}
                     onDownload={handleDownloadPDF}
                   />
                 </div>
@@ -2090,121 +2012,6 @@ const Editor = () => {
           >
             {/* Editor Panel - Dynamic Sections */}
             <div className="space-y-4 sm:space-y-6 order-2 xl:order-1">
-              {/* Hidden Template Renderer for Page Usage Calculation (when preview is hidden) */}
-              {!showPreview &&
-                !twoPageMode &&
-                (selectedTemplate === "tech" ||
-                  selectedTemplate === "classic" ||
-                  selectedTemplate === "modern" ||
-                  selectedTemplate === "professional" ||
-                  selectedTemplate === "professionalv2") && (
-                  <div
-                    className="fixed top-0 left-[-9999px] opacity-0 pointer-events-none"
-                    style={{width: "210mm", height: "auto"}}
-                  >
-                    <ResumePreview
-                      resumeData={resumeData}
-                      template={selectedTemplate}
-                      twoPageMode={twoPageMode}
-                      onPageUsageChange={handleTemplatePageUsage}
-                      onDownload={handleDownloadPDF}
-                    />
-                  </div>
-                )}
-
-              {/* Template-Specific Page Usage Indicator */}
-              {!twoPageMode &&
-                templatePageUsage &&
-                templatePageUsage.templateName &&
-                templatePageUsage.percentage > 0 && (
-                  <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-zinc-800 dark:to-zinc-900 rounded-xl p-4 border-2 border-gray-200 dark:border-zinc-700 shadow-sm">
-                    {/* Header */}
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-gray-800 dark:text-gray-200">
-                          📄 Page Usage
-                        </span>
-                        <span className="text-xs font-mono font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 px-3 py-1 rounded-full shadow-sm">
-                          {templatePageUsage.templateName}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-mono text-gray-600 dark:text-gray-400 bg-white dark:bg-zinc-800 px-2 py-1 rounded border border-gray-300 dark:border-zinc-600">
-                          {templatePageUsage.currentHeight}px /{" "}
-                          {templatePageUsage.maxHeight}px
-                        </span>
-                        {templatePageUsage.isOverflowing && (
-                          <span className="text-xs font-bold text-orange-600 dark:text-orange-400 flex items-center gap-1 animate-pulse">
-                            ⚠️ Overflow!
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Progress Bar */}
-                    <div className="w-full bg-gray-300 dark:bg-zinc-700 rounded-full h-3 overflow-hidden shadow-inner">
-                      <div
-                        className={`h-full rounded-full transition-all duration-500 ${
-                          templatePageUsage.percentage >= 100
-                            ? "bg-gradient-to-r from-red-500 via-orange-500 to-red-600"
-                            : templatePageUsage.percentage >= 80
-                              ? "bg-gradient-to-r from-yellow-400 via-orange-400 to-orange-500"
-                              : "bg-gradient-to-r from-green-400 via-blue-400 to-blue-500"
-                        }`}
-                        style={{
-                          width: `${Math.min(
-                            templatePageUsage.percentage,
-                            100
-                          )}%`,
-                        }}
-                      />
-                    </div>
-
-                    {/* Stats */}
-                    <div className="mt-3 flex items-center justify-between">
-                      <div className="text-sm">
-                        <span className="font-bold text-gray-800 dark:text-gray-200">
-                          {templatePageUsage.percentage}%
-                        </span>
-                        <span className="text-gray-600 dark:text-gray-400 ml-1">
-                          filled
-                        </span>
-                      </div>
-                      {templatePageUsage.isOverflowing && (
-                        <div className="text-sm">
-                          <span className="font-bold text-orange-600 dark:text-orange-400">
-                            +{templatePageUsage.overflowPercentage}%
-                          </span>
-                          <span className="text-gray-600 dark:text-gray-400 ml-1">
-                            overflow
-                          </span>
-                        </div>
-                      )}
-                      {!templatePageUsage.isOverflowing && (
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
-                          ✅ Fits on one page
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Debug Info */}
-                    <div className="mt-2 pt-2 border-t border-gray-300 dark:border-zinc-700">
-                      <div className="text-xs text-gray-500 dark:text-gray-400 font-mono">
-                        Height: {templatePageUsage.currentHeight}px | Max:{" "}
-                        {templatePageUsage.maxHeight}px |
-                        {templatePageUsage.isOverflowing
-                          ? ` Over by: ${
-                              templatePageUsage.currentHeight -
-                              templatePageUsage.maxHeight
-                            }px`
-                          : ` Space left: ${
-                              templatePageUsage.maxHeight -
-                              templatePageUsage.currentHeight
-                            }px`}
-                      </div>
-                    </div>
-                  </div>
-                )}
 
               {sectionOrder.map((sectionId) => renderSection(sectionId))}
             </div>
@@ -2245,8 +2052,6 @@ const Editor = () => {
                     ref={resumePreviewRef}
                     resumeData={resumeData}
                     template={selectedTemplate}
-                    twoPageMode={twoPageMode}
-                    onPageUsageChange={handleTemplatePageUsage}
                     onDownload={handleDownloadPDF}
                   />
                 </div>
@@ -2466,15 +2271,6 @@ const Editor = () => {
           onClose={() => showGitHubImportModalFalse()}
           onImport={handleGitHubImport}
           currentResume={resumeData}
-        />
-
-        {/* Page Limit Exceeded Modal */}
-        <PageLimitExceededModal
-          isOpen={showPageLimitModal}
-          onClose={() => showPageLimitModalFalse()}
-          resumeData={resumeData}
-          onEnableTwoPages={handleEnableTwoPages}
-          onContinueEditing={handleContinueEditing}
         />
 
         {/* Color Theme Selector Modal */}
