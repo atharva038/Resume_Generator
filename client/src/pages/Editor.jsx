@@ -1,4 +1,4 @@
-import {useState, useEffect, useRef, useCallback} from "react";
+import {useState, useEffect, useRef, useCallback, useMemo} from "react";
 import {useLocation, useNavigate} from "react-router-dom";
 import {useAuth} from "@/context/AuthContext";
 import {useNavigationBlocker} from "@/context/NavigationBlockerContext";
@@ -29,6 +29,7 @@ import {
 } from "@/components/common/modals";
 import UpgradeRequiredModal from "@/components/common/modals/UpgradeRequiredModal";
 import {getJobCategories, getJobsByCategory} from "@/utils/jobProfiles";
+import {calculateResumeScore} from "@/utils/resumeScoring";
 import {calculateContentMetrics} from "@/utils/resumeLimits";
 import {PageUtilizationIndicator} from "@/components/common/LimitedInputs";
 import ClassicTemplate from "@/components/templates/ClassicTemplate";
@@ -312,10 +313,13 @@ const Editor = () => {
     DEFAULT_SECTION_ORDER
   );
   const [draggedSection, setDraggedSection] = useState(null);
-  const [isAnalysisExpanded, setIsAnalysisExpanded] = useLocalStorage(
-    "analysisExpanded",
-    true
-  );
+  const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  const atsScore = useMemo(() => {
+    if (!resumeData) return null;
+    return calculateResumeScore(resumeData);
+  }, [resumeData]);
   const [
     showGitHubImportModal,
     toggleGitHubImportModal,
@@ -362,6 +366,12 @@ const Editor = () => {
   }, []); // Empty deps - function doesn't need to change
 
   // Reset page usage when switching to non-supported templates
+  useEffect(() => {
+    const onScroll = () => setShowScrollTop(window.scrollY > 300);
+    window.addEventListener("scroll", onScroll, {passive: true});
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   useEffect(() => {
     const supportedTemplates = [
       "tech",
@@ -1678,14 +1688,14 @@ const Editor = () => {
               </button>
             )}
             {/* GitHub Import Button */}
-            <button
+            {/* <button
               onClick={() => showGitHubImportModalTrue()}
               className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 border border-gray-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-black text-gray-900 dark:text-gray-300 text-xs sm:text-sm font-semibold hover:bg-gray-50 dark:hover:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-zinc-600 transition-all flex items-center justify-center gap-2"
               title="Import from GitHub"
             >
               <span className="hidden sm:inline">💻</span>
               <span className="text-xs sm:text-sm">Import GitHub</span>
-            </button>
+            </button> */}
             {/* Reset Order Button - Hide in wizard mode */}
             {!isWizardMode && (
               <button
@@ -1805,195 +1815,203 @@ const Editor = () => {
           </div>
         </div>
 
-        {/* Enhanced Floating Action Buttons - Desktop Only */}
-        <div className="hidden lg:flex fixed right-8 top-32 z-50 flex-col gap-3 no-print">
-          {/* Preview Toggle Button */}
-          <button
-            onClick={togglePreview}
-            className={`group relative overflow-hidden transition-all duration-300 rounded-2xl shadow-2xl hover:shadow-purple-500/20 ${
-              showPreview
-                ? "bg-gradient-to-br from-purple-600 via-blue-600 to-pink-600 text-white w-16 h-16"
-                : "bg-white dark:bg-zinc-900 text-gray-700 dark:text-gray-300 border-2 border-gray-300 dark:border-zinc-700 hover:border-purple-500 dark:hover:border-purple-500 w-16 h-16"
-            } hover:scale-110 active:scale-95`}
-          >
-            <div className="relative z-10 flex flex-col items-center justify-center h-full">
-              <span className="text-2xl mb-0.5">
-                {showPreview ? "👁️" : "👁️‍🗨️"}
-              </span>
-              <span className="text-[9px] font-bold tracking-wide uppercase">
-                {showPreview ? "Hide" : "Show"}
-              </span>
-            </div>
-            {/* Animated background gradient on hover */}
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-blue-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            {/* Tooltip */}
-            <span className="absolute right-full mr-4 top-1/2 -translate-y-1/2 px-4 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-bold rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap pointer-events-none border-2 border-gray-700 dark:border-gray-300 group-hover:mr-5">
-              {showPreview ? "Hide Preview Panel" : "Show Live Preview"}
-              <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-1.5 border-[6px] border-transparent border-l-gray-900 dark:border-l-white"></span>
-            </span>
-          </button>
+        {/* Compact Floating Action Rail - Desktop Only */}
+        <div className="hidden lg:block fixed right-5 top-1/2 -translate-y-1/2 z-50 no-print">
+          <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-2xl shadow-lg p-1.5 flex flex-col gap-0.5">
 
-          {/* Save Button - Most Critical */}
-          <button
-            onClick={handleSave}
-            disabled={saving || autoSaving}
-            className={`group relative overflow-hidden transition-all duration-300 rounded-2xl shadow-2xl w-16 h-16 ${
-              saving || autoSaving
-                ? "bg-gray-400 dark:bg-gray-600 cursor-not-allowed"
-                : hasUnsavedChanges
-                  ? "bg-gradient-to-br from-orange-600 via-red-600 to-pink-600 text-white hover:shadow-orange-500/30 hover:scale-110 animate-pulse"
-                  : "bg-gradient-to-br from-blue-600 via-cyan-600 to-teal-600 text-white hover:shadow-blue-500/30 hover:scale-110"
-            } active:scale-95`}
-          >
-            {hasUnsavedChanges && !saving && !autoSaving && (
+            {/* Preview Toggle */}
+            <button
+              onClick={togglePreview}
+              className={`group relative w-9 h-9 flex items-center justify-center rounded-xl transition-colors ${
+                showPreview
+                  ? "bg-violet-100 dark:bg-violet-900/40 text-violet-600 dark:text-violet-400"
+                  : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800"
+              }`}
+            >
+              {showPreview ? (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+              ) : (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                </svg>
+              )}
+              <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-2.5 py-1.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-medium rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                {showPreview ? "Hide preview" : "Show preview"}
+              </span>
+            </button>
+
+            <div className="h-px bg-gray-200 dark:bg-zinc-700 mx-1.5 my-0.5" />
+
+            {/* Save */}
+            <button
+              onClick={handleSave}
+              disabled={saving || autoSaving}
+              className={`group relative w-9 h-9 flex items-center justify-center rounded-xl transition-colors ${
+                saving || autoSaving
+                  ? "text-gray-300 dark:text-gray-600 cursor-not-allowed"
+                  : hasUnsavedChanges
+                    ? "text-orange-500 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20"
+                    : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800"
+              }`}
+            >
+              {hasUnsavedChanges && !saving && !autoSaving && (
+                <span className="absolute top-1 right-1 w-2 h-2 bg-orange-500 rounded-full" />
+              )}
+              {saving || autoSaving ? (
+                <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+              ) : hasUnsavedChanges ? (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                </svg>
+              ) : (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              )}
+              <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-2.5 py-1.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-medium rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                {saving || autoSaving
+                  ? "Saving…"
+                  : hasUnsavedChanges
+                    ? "Save changes"
+                    : "All changes saved"}
+              </span>
+            </button>
+
+            {/* Export PDF */}
+            <button
+              onClick={handleDownloadPDF}
+              disabled={isSubscriptionExpired()}
+              className={`group relative w-9 h-9 flex items-center justify-center rounded-xl transition-colors ${
+                isSubscriptionExpired()
+                  ? "text-gray-300 dark:text-gray-600 cursor-not-allowed"
+                  : "text-gray-500 dark:text-gray-400 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-600 dark:hover:text-green-400"
+              }`}
+            >
+              {isSubscriptionExpired() ? (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              ) : (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+              )}
+              <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-2.5 py-1.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-medium rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                {isSubscriptionExpired() ? "Subscription required" : "Export as PDF"}
+              </span>
+            </button>
+
+            {/* GitHub Import */}
+            {/* <button
+              onClick={() => showGitHubImportModalTrue()}
+              className="group relative w-9 h-9 flex items-center justify-center rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+            >
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
+              </svg>
+              <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-2.5 py-1.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-medium rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                Import from GitHub
+              </span>
+            </button> */}
+
+            {/* Scroll to Top — only when scrolled */}
+            {showScrollTop && (
               <>
-                <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 rounded-full border-3 border-white dark:border-gray-800 animate-ping"></span>
-                <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 rounded-full border-3 border-white dark:border-gray-800 flex items-center justify-center text-[10px] font-bold">
-                  !
-                </span>
+                <div className="h-px bg-gray-200 dark:bg-zinc-700 mx-1.5 my-0.5" />
+                <button
+                  onClick={() => window.scrollTo({top: 0, behavior: "smooth"})}
+                  className="group relative w-9 h-9 flex items-center justify-center rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                  </svg>
+                  <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-2.5 py-1.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-medium rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                    Back to top
+                  </span>
+                </button>
               </>
             )}
-            <div className="relative z-10 flex flex-col items-center justify-center h-full">
-              <span className="text-2xl mb-0.5">
-                {saving || autoSaving ? "⏳" : hasUnsavedChanges ? "💾" : "✓"}
-              </span>
-              <span className="text-[9px] font-bold tracking-wide uppercase">
-                {saving || autoSaving
-                  ? "Wait"
-                  : hasUnsavedChanges
-                    ? "Save"
-                    : "Saved"}
-              </span>
-            </div>
-            {/* Tooltip */}
-            {!saving && !autoSaving && (
-              <span className="absolute right-full mr-4 top-1/2 -translate-y-1/2 px-4 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-bold rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap pointer-events-none border-2 border-gray-700 dark:border-gray-300 group-hover:mr-5">
-                {hasUnsavedChanges
-                  ? "💾 Save Changes Now!"
-                  : "✓ All Changes Saved"}
-                <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-1.5 border-[6px] border-transparent border-l-gray-900 dark:border-l-white"></span>
-              </span>
-            )}
-            {(saving || autoSaving) && (
-              <span className="absolute right-full mr-4 top-1/2 -translate-y-1/2 px-4 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-bold rounded-xl shadow-2xl opacity-100 transition-all duration-300 whitespace-nowrap pointer-events-none border-2 border-gray-700 dark:border-gray-300">
-                {autoSaving ? "⚡ Auto-saving..." : "💾 Saving..."}
-                <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-1.5 border-[6px] border-transparent border-l-gray-900 dark:border-l-white"></span>
-              </span>
-            )}
-          </button>
 
-          {/* Export PDF Button */}
-          <button
-            onClick={handleDownloadPDF}
-            disabled={isSubscriptionExpired()}
-            className={`group relative overflow-hidden transition-all duration-300 rounded-2xl shadow-2xl w-16 h-16 ${
-              isSubscriptionExpired()
-                ? "bg-gray-400 dark:bg-gray-700 cursor-not-allowed"
-                : "bg-gradient-to-br from-green-600 via-emerald-600 to-teal-600 text-white hover:shadow-green-500/30 hover:scale-110"
-            } active:scale-95`}
-          >
-            <div className="relative z-10 flex flex-col items-center justify-center h-full">
-              <span className="text-2xl mb-0.5">
-                {isSubscriptionExpired() ? "🔒" : "📥"}
-              </span>
-              <span className="text-[9px] font-bold tracking-wide uppercase">
-                {isSubscriptionExpired() ? "Locked" : "Export"}
-              </span>
-            </div>
-            {/* Tooltip */}
-            <span className="absolute right-full mr-4 top-1/2 -translate-y-1/2 px-4 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-bold rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap pointer-events-none border-2 border-gray-700 dark:border-gray-300 group-hover:mr-5">
-              {isSubscriptionExpired()
-                ? "🔒 Subscription Required"
-                : "📥 Download as PDF"}
-              <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-1.5 border-[6px] border-transparent border-l-gray-900 dark:border-l-white"></span>
-            </span>
-          </button>
-
-          {/* GitHub Import Button */}
-          <button
-            onClick={() => showGitHubImportModalTrue()}
-            className="group relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-black dark:from-white dark:via-gray-100 dark:to-gray-200 text-white dark:text-gray-900 transition-all duration-300 rounded-2xl shadow-2xl hover:shadow-purple-500/20 w-16 h-16 hover:scale-110 active:scale-95"
-          >
-            <div className="relative z-10 flex flex-col items-center justify-center h-full">
-              <span className="text-2xl mb-0.5">💻</span>
-              <span className="text-[9px] font-bold tracking-wide uppercase">
-                Import
-              </span>
-            </div>
-            {/* Animated background gradient on hover */}
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 via-blue-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            {/* Tooltip */}
-            <span className="absolute right-full mr-4 top-1/2 -translate-y-1/2 px-4 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-bold rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap pointer-events-none border-2 border-gray-700 dark:border-gray-300 group-hover:mr-5">
-              💻 Import from GitHub
-              <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-1.5 border-[6px] border-transparent border-l-gray-900 dark:border-l-white"></span>
-            </span>
-          </button>
-
-          {/* Divider */}
-          <div className="h-px bg-gradient-to-r from-transparent via-gray-400 dark:via-gray-600 to-transparent my-1"></div>
-
-          {/* Scroll to Top Button */}
-          <button
-            onClick={() => window.scrollTo({top: 0, behavior: "smooth"})}
-            className="group relative overflow-hidden bg-white dark:bg-zinc-900 border-2 border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:border-purple-500 dark:hover:border-purple-500 transition-all duration-300 rounded-2xl shadow-2xl hover:shadow-purple-500/20 w-16 h-16 hover:scale-110 active:scale-95"
-          >
-            <div className="relative z-10 flex flex-col items-center justify-center h-full">
-              <span className="text-2xl transition-transform duration-300 group-hover:-translate-y-1">
-                ⬆️
-              </span>
-              <span className="text-[9px] font-bold tracking-wide uppercase">
-                Top
-              </span>
-            </div>
-            {/* Animated background gradient on hover */}
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-blue-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            {/* Tooltip */}
-            <span className="absolute right-full mr-4 top-1/2 -translate-y-1/2 px-4 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-bold rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap pointer-events-none border-2 border-gray-700 dark:border-gray-300 group-hover:mr-5">
-              ⬆️ Back to Top
-              <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-1.5 border-[6px] border-transparent border-l-gray-900 dark:border-l-white"></span>
-            </span>
-          </button>
-        </div>
-
-        {/* Info Banner */}
-        <div className="mb-6 p-3 sm:p-4 bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-lg">
-          <div className="flex items-start gap-2 text-xs sm:text-sm text-gray-700 dark:text-gray-300">
-            <span className="text-base sm:text-lg flex-shrink-0">💡</span>
-            <span>
-              <strong>Tip:</strong>{" "}
-              <span className="hidden sm:inline">
-                Your ATS scores and recommendations are shown at the top. Scroll
-                down to edit resume sections.
-              </span>{" "}
-              <span className="sm:hidden">Scroll to edit sections below.</span>{" "}
-              Drag section headers to reorder them!
-            </span>
           </div>
         </div>
 
-        {/* Fixed Scores & Analysis Section - Collapsible */}
-        <div className="mb-8">
-          <div className="bg-white dark:bg-zinc-950 border border-gray-200 dark:border-zinc-800 rounded-xl overflow-hidden">
-            {/* Collapsible Header */}
-            <button
-              onClick={() => setIsAnalysisExpanded(!isAnalysisExpanded)}
-              className="w-full p-4 sm:p-6 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-zinc-900 transition-colors"
-            >
-              <h2 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2 sm:gap-3">
-                <span className="text-2xl sm:text-3xl">📊</span>
-                <span className="hidden sm:inline">
-                  Resume Analysis & Scoring
+        {/* Sticky Mini Score Bar */}
+        {atsScore && (
+          <div className="sticky top-0 z-20 mb-6 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl shadow-sm">
+            <div className="flex items-center justify-between px-4 py-3 gap-3">
+              {/* Left: score pills */}
+              <div className="flex items-center gap-3 min-w-0">
+                <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 hidden sm:block flex-shrink-0">
+                  📊 Resume Score
                 </span>
-                <span className="sm:hidden">Analysis</span>
-              </h2>
-              <div className="flex items-center gap-2 sm:gap-3">
-                <span className="hidden sm:inline text-sm text-gray-600 dark:text-gray-400 font-medium">
-                  {isAnalysisExpanded ? "Click to collapse" : "Click to expand"}
+                {/* ATS pill */}
+                <div
+                  className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold flex-shrink-0"
+                  style={{
+                    backgroundColor:
+                      atsScore.totalScore >= 80
+                        ? "#dcfce7"
+                        : atsScore.totalScore >= 60
+                          ? "#fef9c3"
+                          : "#fee2e2",
+                    color:
+                      atsScore.totalScore >= 80
+                        ? "#16a34a"
+                        : atsScore.totalScore >= 60
+                          ? "#ca8a04"
+                          : "#dc2626",
+                  }}
+                >
+                  <span
+                    className="w-2 h-2 rounded-full flex-shrink-0"
+                    style={{
+                      backgroundColor:
+                        atsScore.totalScore >= 80
+                          ? "#16a34a"
+                          : atsScore.totalScore >= 60
+                            ? "#ca8a04"
+                            : "#dc2626",
+                    }}
+                  />
+                  ATS {atsScore.totalScore}/100
+                </div>
+                {/* Mini progress bar — hidden on mobile */}
+                <div className="hidden sm:flex items-center gap-2 w-28 flex-shrink-0">
+                  <div className="flex-1 h-1.5 bg-gray-200 dark:bg-zinc-700 rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all duration-700"
+                      style={{
+                        width: `${atsScore.totalScore}%`,
+                        backgroundColor:
+                          atsScore.totalScore >= 80
+                            ? "#16a34a"
+                            : atsScore.totalScore >= 60
+                              ? "#ca8a04"
+                              : "#dc2626",
+                      }}
+                    />
+                  </div>
+                </div>
+                {/* Level label */}
+                <span className="hidden md:block text-xs text-gray-500 dark:text-gray-400 truncate">
+                  {atsScore.level?.label}
                 </span>
+              </div>
+
+              {/* Right: CTA button */}
+              <button
+                onClick={() => setIsAnalysisOpen(true)}
+                className="flex-shrink-0 flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/40 px-3 py-1.5 rounded-lg transition-colors"
+              >
+                Full Analysis
                 <svg
-                  className={`w-5 h-5 sm:w-6 sm:h-6 text-gray-600 dark:text-gray-400 transition-transform duration-200 ${
-                    isAnalysisExpanded ? "rotate-180" : ""
-                  }`}
+                  className="w-3.5 h-3.5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -2002,50 +2020,14 @@ const Editor = () => {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
+                    d="M9 5l7 7-7 7"
                   />
                 </svg>
-              </div>
-            </button>
-
-            {/* Collapsible Content */}
-            {isAnalysisExpanded && (
-              <div className="px-3 sm:px-6 pb-4 sm:pb-6 space-y-4 sm:space-y-6 bg-gray-50 dark:bg-zinc-900">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-                  {/* ATS Score Card */}
-                  <div className="bg-white dark:bg-zinc-950 rounded-lg border border-gray-200 dark:border-zinc-800">
-                    <ScoreCard resumeData={resumeData} expanded={false} />
-                  </div>
-
-                  {/* Job-Specific Score Card */}
-                  <div className="bg-white dark:bg-zinc-950 rounded-lg border border-gray-200 dark:border-zinc-800">
-                    <JobSpecificScoreCard
-                      resumeData={resumeData}
-                      onUpdateField={updateField}
-                    />
-                  </div>
-                </div>
-
-                {/* Recommendations Panel - Full Width */}
-                <div className="bg-white dark:bg-zinc-950 rounded-lg border border-gray-200 dark:border-zinc-800">
-                  <div className="p-4 sm:p-6">
-                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
-                      <span className="text-lg sm:text-xl">💡</span>
-                      <span className="hidden sm:inline">
-                        Improvement Recommendations
-                      </span>
-                      <span className="sm:hidden">Recommendations</span>
-                    </h3>
-                    <RecommendationsPanel
-                      resumeData={resumeData}
-                      onEnhanceAll={handleEnhanceAll}
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
+              </button>
+            </div>
           </div>
-        </div>
+        )}
+
 
         {/* Divider with Label */}
         <div className="relative mb-6 sm:mb-8">
@@ -2129,16 +2111,6 @@ const Editor = () => {
                     />
                   </div>
                 )}
-
-              {/* DEBUG: Show template page usage state */}
-              {!twoPageMode && (
-                <div className="bg-blue-100 dark:bg-blue-900 p-2 rounded text-xs">
-                  <strong>Debug:</strong> Template: {selectedTemplate} | Has
-                  Data: {templatePageUsage ? "YES" : "NO"} | Template Name:{" "}
-                  {templatePageUsage?.templateName || "N/A"} | Preview Shown:{" "}
-                  {showPreview ? "YES" : "NO"}
-                </div>
-              )}
 
               {/* Template-Specific Page Usage Indicator */}
               {!twoPageMode &&
@@ -2417,6 +2389,75 @@ const Editor = () => {
               </div>
             </div>
           </div>
+        )}
+
+        {/* Analysis Drawer */}
+        {isAnalysisOpen && (
+          <>
+            {/* Backdrop */}
+            <div
+              className="fixed inset-0 bg-black/50 z-40 transition-opacity"
+              onClick={() => setIsAnalysisOpen(false)}
+            />
+            {/* Slide-in panel from right */}
+            <div className="fixed right-0 top-0 h-full w-full max-w-2xl bg-white dark:bg-zinc-950 z-50 shadow-2xl flex flex-col overflow-hidden">
+              {/* Drawer header */}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-zinc-800 flex-shrink-0">
+                <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                  <span>📊</span>
+                  Resume Analysis & Scoring
+                </h2>
+                <button
+                  onClick={() => setIsAnalysisOpen(false)}
+                  className="p-2 rounded-lg text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Drawer scrollable content */}
+              <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 bg-gray-50 dark:bg-zinc-900">
+                {/* ATS Score + Job Match side by side */}
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="bg-white dark:bg-zinc-950 rounded-xl border border-gray-200 dark:border-zinc-800">
+                    <ScoreCard resumeData={resumeData} expanded={true} />
+                  </div>
+                  <div className="bg-white dark:bg-zinc-950 rounded-xl border border-gray-200 dark:border-zinc-800">
+                    <JobSpecificScoreCard
+                      resumeData={resumeData}
+                      onUpdateField={updateField}
+                    />
+                  </div>
+                </div>
+
+                {/* Recommendations */}
+                <div className="bg-white dark:bg-zinc-950 rounded-xl border border-gray-200 dark:border-zinc-800">
+                  <div className="p-4 sm:p-6">
+                    <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                      <span>💡</span>
+                      Improvement Recommendations
+                    </h3>
+                    <RecommendationsPanel
+                      resumeData={resumeData}
+                      onEnhanceAll={handleEnhanceAll}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
         )}
 
         {/* GitHub Import Modal */}

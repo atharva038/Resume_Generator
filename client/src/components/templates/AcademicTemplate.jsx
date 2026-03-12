@@ -647,7 +647,7 @@ const AcademicTemplate = forwardRef(({resumeData}, ref) => {
       className="resume-preview"
       style={{
         width: "210mm",
-        minHeight: "297mm",
+        minHeight: "11in",
         backgroundColor: "white",
         padding: "20mm 20mm",
         fontFamily: "'Times New Roman', 'Garamond', serif",

@@ -297,6 +297,11 @@ userSchema.methods.canAccessFeature = function (feature) {
 };
 
 userSchema.methods.getUsageLimit = function (limitType) {
+  // Admin users have unlimited access to all features
+  if (this.role === "admin") {
+    return Infinity;
+  }
+
   const tier = this.subscription.tier;
 
   const limits = {
@@ -351,6 +356,11 @@ userSchema.methods.getUsageLimit = function (limitType) {
 };
 
 userSchema.methods.hasReachedLimit = function (limitType) {
+  // Admin users never reach any limits
+  if (this.role === "admin") {
+    return false;
+  }
+
   const limit = this.getUsageLimit(limitType);
   if (limit === Infinity) return false;
 
@@ -368,6 +378,11 @@ userSchema.methods.hasReachedLimit = function (limitType) {
 };
 
 userSchema.methods.incrementUsage = async function (usageType) {
+  // Admin users' usage is not tracked
+  if (this.role === "admin") {
+    return;
+  }
+
   const usageMap = {
     resume: {total: "resumesCreated", monthly: "resumesThisMonth"},
     download: {

@@ -84,6 +84,12 @@ export function checkUsageLimit(limitType) {
         });
       }
 
+      // Admin users have unlimited access to all features
+      if (user.role === "admin") {
+        console.log(`✅ Admin user ${user._id} - usage limit check bypassed for ${limitType}`);
+        return next();
+      }
+
       // Map limitType to actual usage field
       const usageFieldMap = {
         resumesPerMonth: "resumesThisMonth",

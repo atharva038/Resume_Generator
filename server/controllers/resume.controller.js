@@ -29,16 +29,17 @@ export const uploadResume = async (req, res) => {
     const userId = req.user._id || req.user.userId;
     const user = await User.findById(userId);
     const tier = user?.subscription?.tier || "free";
+    const isAdmin = user?.role === "admin";
 
-    // Check if user can use AI resume extraction (Pro/Premium/Lifetime only)
-    const canUseAIExtraction = ["pro", "premium", "lifetime"].includes(tier);
+    // Admin users have unlimited access
+    const canUseAIExtraction = isAdmin || ["pro", "premium", "lifetime"].includes(tier);
 
     // Get usage limits for response
     let limit = null;
     let used = null;
 
-    // If using AI extraction, check daily limit
-    if (canUseAIExtraction) {
+    // If using AI extraction and not admin, check daily limit
+    if (canUseAIExtraction && !isAdmin) {
       limit = user.getUsageLimit("aiResumeExtractionsPerDay");
       used = user.usage?.aiResumeExtractionsToday || 0;
 
@@ -78,8 +79,8 @@ export const uploadResume = async (req, res) => {
     );
     const responseTime = Date.now() - startTime;
 
-    // Increment AI extraction counter for pro/premium/lifetime users
-    if (canUseAIExtraction) {
+    // Increment AI extraction counter for pro/premium/lifetime users (skip for admins)
+    if (canUseAIExtraction && !isAdmin) {
       await User.findByIdAndUpdate(userId, {
         $inc: {
           "usage.aiResumeExtractions": 1,
@@ -87,6 +88,8 @@ export const uploadResume = async (req, res) => {
         },
       });
       console.log(`✅ AI extraction count incremented for ${tier} user`);
+    } else if (isAdmin) {
+      console.log(`✅ Admin user - AI extraction count not incremented`);
     }
 
     // AI usage tracking is handled by gemini.service.js internally

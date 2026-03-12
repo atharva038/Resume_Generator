@@ -35,7 +35,7 @@ const TechTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
   const [pageOverflowInfo, setPageOverflowInfo] = useState({
     isOverflowing: false,
     currentHeight: 0,
-    maxHeight: 1056, // Standard A4 page height at 96 DPI (11 inches * 96)
+    maxHeight: 1056, // 11in at 96dpi (matches template minHeight)
     overflowPercentage: 0,
     templateName: "TechTemplate",
   });
@@ -44,7 +44,7 @@ const TechTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
   useEffect(() => {
     if (containerRef.current) {
       const currentHeight = containerRef.current.scrollHeight;
-      const maxHeight = 1056; // A4 page height
+      const maxHeight = 1056; // 11in at 96dpi (matches template minHeight)
       const isOverflowing = currentHeight > maxHeight;
       const overflowPercentage = isOverflowing
         ? Math.round(((currentHeight - maxHeight) / maxHeight) * 100)

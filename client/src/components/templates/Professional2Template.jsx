@@ -329,7 +329,7 @@ const Professional2Template = forwardRef((props, ref) => {
   useEffect(() => {
     if (contentRef.current) {
       const currentHeight = contentRef.current.scrollHeight;
-      const maxHeight = 1056; // A4 page height at 96 DPI
+      const maxHeight = 1056; // 11in at 96dpi (matches template minHeight)
       const isOverflowing = currentHeight > maxHeight;
       const overflowPercentage = isOverflowing
         ? Math.round(((currentHeight - maxHeight) / maxHeight) * 100)
@@ -1079,7 +1079,7 @@ const Professional2Template = forwardRef((props, ref) => {
       ref={ref}
       style={{
         width: "794px", // A4 width at 96 DPI (8.27 inches)
-        minHeight: "1123px", // A4 height at 96 DPI (11.69 inches)
+        minHeight: "11in", // A4 height at 96 DPI (11.69 inches)
         backgroundColor: "#ffffff",
         color: selectedTheme.text,
         fontFamily:
