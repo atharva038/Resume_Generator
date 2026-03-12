@@ -38,7 +38,7 @@ const ResumePreview = forwardRef(
     // Template-specific page usage from individual templates
     const [pageUsage, setPageUsage] = useState({
       currentHeight: 0,
-      maxHeight: 1056,
+      maxHeight: 1123,
       percentage: 0,
       isOverflowing: false,
       templateName: "",
@@ -79,7 +79,7 @@ const ResumePreview = forwardRef(
       if (twoPageMode) {
         setPageUsage({
           currentHeight: 0,
-          maxHeight: 1056,
+          maxHeight: 1123,
           percentage: 0,
           isOverflowing: false,
           templateName: "",

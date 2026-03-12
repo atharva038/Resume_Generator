@@ -377,7 +377,7 @@ const Creative2Template = forwardRef((props, ref) => {
       if (!element) return;
 
       const currentHeight = element.scrollHeight;
-      const maxHeight = 1056; // A4 page height in pixels at 96 DPI
+      const maxHeight = 1123; // A4 page height in pixels (297mm at 96dpi)
 
       const percentage = Math.round((currentHeight / maxHeight) * 100);
       const isOverflowing = currentHeight > maxHeight;

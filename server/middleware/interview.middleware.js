@@ -54,6 +54,18 @@ export async function checkInterviewLimit(req, res, next) {
     const userId = user._id;
     const tier = user.subscription?.tier || "free";
 
+    // Admin users have unlimited access to interviews
+    if (user.role === "admin") {
+      console.log(`✅ Admin user ${userId} - interview limit check bypassed`);
+      req.interviewLimits = {
+        dailyLimit: Infinity,
+        used: 0,
+        remaining: Infinity,
+        tier: "admin",
+      };
+      return next();
+    }
+
     // Get daily limit for user's tier
     const dailyLimit = INTERVIEW_LIMITS[tier] || INTERVIEW_LIMITS.free;
 
@@ -138,8 +150,15 @@ export async function checkInterviewLimit(req, res, next) {
  * Voice mode is a premium feature
  */
 export function checkVoiceAccess(req, res, next) {
-  const tier = req.user?.subscription?.tier || "free";
+  const user = req.user;
+  const tier = user?.subscription?.tier || "free";
   const mode = req.body.mode;
+
+  // Admin users have unlimited access to voice mode
+  if (user?.role === "admin") {
+    console.log(`✅ Admin user - voice access granted`);
+    return next();
+  }
 
   // Voice/live mode is available for paid tiers
   const voiceEnabledTiers = [

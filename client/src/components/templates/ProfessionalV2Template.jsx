@@ -32,7 +32,7 @@ const ProfessionalV2Template = forwardRef(
     const [pageOverflowInfo, setPageOverflowInfo] = useState({
       isOverflowing: false,
       currentHeight: 0,
-      maxHeight: 1056, // Standard A4 page height at 96 DPI (11 inches * 96)
+      maxHeight: 1123, // A4 page height in pixels (297mm at 96dpi)
       overflowPercentage: 0,
       templateName: "ProfessionalV2Template",
     });
@@ -41,7 +41,7 @@ const ProfessionalV2Template = forwardRef(
     useEffect(() => {
       if (containerRef.current) {
         const currentHeight = containerRef.current.scrollHeight;
-        const maxHeight = 1056; // A4 page height
+        const maxHeight = 1123; // A4 page height in pixels (297mm at 96dpi)
         const isOverflowing = currentHeight > maxHeight;
         const overflowPercentage = isOverflowing
           ? Math.round(((currentHeight - maxHeight) / maxHeight) * 100)

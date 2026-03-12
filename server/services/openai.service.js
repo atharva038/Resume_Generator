@@ -492,13 +492,15 @@ export async function categorizeSkillsWithAI(skillsText) {
 
 ${skillsText}
 
-Return as JSON array:
-[
-  {
-    "category": "Category Name",
-    "items": ["skill1", "skill2"]
-  }
-]`;
+Return as JSON object with a "skills" key containing the array:
+{
+  "skills": [
+    {
+      "category": "Category Name",
+      "items": ["skill1", "skill2"]
+    }
+  ]
+}`;
 
     console.log("🤖 Categorizing skills with GPT-4o...");
     const completion = await openai.chat.completions.create({
@@ -507,7 +509,7 @@ Return as JSON array:
         {
           role: "system",
           content:
-            "You are a resume expert. Categorize skills logically. Return only valid JSON.",
+            "You are a resume expert. Categorize skills logically. Return only valid JSON with a 'skills' array.",
         },
         {role: "user", content: prompt},
       ],
@@ -518,7 +520,17 @@ Return as JSON array:
 
     const response = completion.choices[0];
     const text = response.message.content.trim();
-    const categorizedSkills = JSON.parse(text);
+    const parsed = JSON.parse(text);
+
+    // Extract the array - handle both {skills: [...]} and plain object with array value
+    let categorizedSkills = parsed.skills || parsed.categories;
+    if (!categorizedSkills) {
+      // Fallback: find first array value in the object
+      categorizedSkills = Object.values(parsed).find((v) => Array.isArray(v));
+    }
+    if (!Array.isArray(categorizedSkills)) {
+      throw new Error("Invalid response format from AI: expected an array");
+    }
 
     // Extract token usage and calculate cost
     const tokenUsage = extractTokenUsage(completion);

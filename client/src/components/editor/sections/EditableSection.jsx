@@ -25,6 +25,11 @@ const EditableSection = ({
     useToggle(false);
   const [isEditing, toggleEditing, setIsEditingTrue, setIsEditingFalse] =
     useToggle(false);
+  const [techInputValue, setTechInputValue] = useState(
+    Array.isArray(projectData?.technologies)
+      ? projectData.technologies.join(", ")
+      : projectData?.technologies || ""
+  );
 
   // Initialize TipTap editor for bullet points
   const editor = useEditor({
@@ -316,14 +321,10 @@ const EditableSection = ({
           />
           <input
             type="text"
-            value={
-              Array.isArray(projectData.technologies)
-                ? projectData.technologies.join(", ")
-                : projectData.technologies || ""
-            }
-            onChange={(e) => {
-              const value = e.target.value;
-              const techArray = value
+            value={techInputValue}
+            onChange={(e) => setTechInputValue(e.target.value)}
+            onBlur={(e) => {
+              const techArray = e.target.value
                 .split(",")
                 .map((s) => s.trim())
                 .filter((s) => s.length > 0);
