@@ -339,7 +339,7 @@ const ImpactProTemplate = forwardRef((props, ref) => {
       if (!element) return;
 
       const currentHeight = element.scrollHeight;
-      const maxHeight = 1123; // A4 page height in pixels (297mm at 96dpi)
+      const maxHeight = 1056; // 11in at 96dpi (matches template minHeight)
 
       const percentage = Math.round((currentHeight / maxHeight) * 100);
       const isOverflowing = currentHeight > maxHeight;
@@ -1184,7 +1184,7 @@ const ImpactProTemplate = forwardRef((props, ref) => {
       ref={ref}
       style={{
         width: "210mm",
-        minHeight: "297mm",
+        minHeight: "11in",
         backgroundColor: "#ffffff",
         fontFamily:
           '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',

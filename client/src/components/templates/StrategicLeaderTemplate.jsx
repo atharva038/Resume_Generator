@@ -26,7 +26,7 @@ const StrategicLeaderTemplate = forwardRef(
     const [pageOverflowInfo, setPageOverflowInfo] = useState({
       isOverflowing: false,
       currentHeight: 0,
-      maxHeight: 1123, // A4 page height in pixels (297mm at 96dpi)
+      maxHeight: 1056, // 11in at 96dpi (matches template minHeight)
       overflowPercentage: 0,
       templateName: "StrategicLeaderTemplate",
     });
@@ -35,7 +35,7 @@ const StrategicLeaderTemplate = forwardRef(
     useEffect(() => {
       if (containerRef.current) {
         const currentHeight = containerRef.current.scrollHeight;
-        const maxHeight = 1123; // A4 page height in pixels (297mm at 96dpi)
+        const maxHeight = 1056; // 11in at 96dpi (matches template minHeight)
         const isOverflowing = currentHeight > maxHeight;
         const overflowPercentage = isOverflowing
           ? Math.round(((currentHeight - maxHeight) / maxHeight) * 100)
@@ -436,7 +436,7 @@ const StrategicLeaderTemplate = forwardRef(
         }}
         style={{
           width: "210mm",
-          minHeight: "297mm",
+          minHeight: "11in",
           backgroundColor: "white",
           fontFamily:
             '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',

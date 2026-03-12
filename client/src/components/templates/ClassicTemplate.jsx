@@ -103,7 +103,7 @@ const ClassicTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
   const [pageOverflowInfo, setPageOverflowInfo] = useState({
     isOverflowing: false,
     currentHeight: 0,
-    maxHeight: 1123, // A4 page height in pixels (297mm at 96dpi)
+    maxHeight: 1056, // 11in at 96dpi (matches template minHeight)
     overflowPercentage: 0,
     templateName: "ClassicTemplate",
   });
