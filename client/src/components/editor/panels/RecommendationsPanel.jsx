@@ -1,6 +1,7 @@
 import {useState} from "react";
 import {useToggle} from "@/hooks";
 import {calculateResumeScore} from "@/utils/resumeScoring";
+import {Lightbulb, Loader2, Rocket, Sparkles} from "lucide-react";
 
 const RecommendationsPanel = ({resumeData, onEnhanceAll}) => {
   const [expanded, toggleExpanded, setExpandedTrue, setExpandedFalse] =
@@ -212,8 +213,9 @@ const RecommendationsPanel = ({resumeData, onEnhanceAll}) => {
         <div className="mt-6">
           {/* Custom Prompt Input */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              ✨ Custom AI Instructions (Optional)
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 inline-flex items-center gap-1.5">
+              <Sparkles className="w-4 h-4" />
+              Custom AI Instructions (Optional)
             </label>
             <textarea
               value={customPrompt}
@@ -222,15 +224,16 @@ const RecommendationsPanel = ({resumeData, onEnhanceAll}) => {
               className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
               rows="3"
             />
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              💡 Tip: Give specific instructions like "target data science
-              roles" or "emphasize cloud technologies"
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 inline-flex items-center gap-1.5">
+              <Lightbulb className="w-3.5 h-3.5" />
+              Tip: Give specific instructions like "target data science roles"
+              or "emphasize cloud technologies"
             </p>
           </div>
 
           {/* Enhancement Button */}
           <button
-            className="btn-primary w-full"
+            className="w-full inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3.5 font-semibold text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
             onClick={async () => {
               setEnhancingTrue();
               try {
@@ -243,12 +246,12 @@ const RecommendationsPanel = ({resumeData, onEnhanceAll}) => {
           >
             {enhancing ? (
               <>
-                <span className="inline-block animate-spin mr-2">⚙️</span>
+                <Loader2 className="w-4 h-4 animate-spin" />
                 Enhancing All Sections...
               </>
             ) : (
               <>
-                <span className="mr-2">🚀</span>
+                <Rocket className="w-4 h-4" />
                 {customPrompt
                   ? "Apply Custom AI Enhancement"
                   : "Apply AI Enhancement to All Sections"}

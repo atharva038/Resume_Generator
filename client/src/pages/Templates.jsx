@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import SEO from "../components/common/SEO";
 import {
@@ -20,8 +20,6 @@ import ProfessionalTemplate from "@/components/templates/ProfessionalTemplate";
 import Professional2Template from "@/components/templates/Professional2Template";
 import TechTemplate from "@/components/templates/TechTemplate";
 import Creative2Template from "@/components/templates/Creative2Template";
-import AcademicTemplate from "@/components/templates/AcademicTemplate";
-import CorporateEliteTemplate from "@/components/templates/CorporateEliteTemplate";
 import StrategicLeadershipTemplate from "@/components/templates/StrategicLeadershipTemplate";
 import ImpactProTemplate from "@/components/templates/ImpactProTemplate";
 import GitHubStyleTemplate from "@/components/templates/GitHubStyleTemplate";
@@ -213,28 +211,6 @@ const templates = [
     colors: ["#8b5cf6", "#ec4899", "#ffffff"],
   },
   {
-    id: "academic",
-    name: "Academic Research",
-    component: AcademicTemplate,
-    category: "Academic",
-    atsScore: 97,
-    description:
-      "Scholarly CV format for academics, researchers, and PhD candidates",
-    features: ["Publication-Ready", "Research-Focused", "Extended Format"],
-    colors: ["#1a202c", "#ffffff"],
-  },
-  {
-    id: "corporate-elite",
-    name: "Corporate Elite",
-    component: CorporateEliteTemplate,
-    category: "Professional",
-    atsScore: 99,
-    description:
-      "Ultra-professional Fortune 500 template with sophisticated navy accents",
-    features: ["Fortune 500 Ready", "Maximum ATS", "Executive Polish"],
-    colors: ["#1e3a5f", "#ffffff"],
-  },
-  {
     id: "strategic-leader",
     name: "Strategic Leadership",
     component: StrategicLeadershipTemplate,
@@ -306,12 +282,6 @@ const TEMPLATE_COLOR_THEMES = {
     {id: "teal", name: "Teal", primary: "#0f766e"},
     {id: "burgundy", name: "Burgundy", primary: "#9f1239"},
   ],
-  "corporate-elite": [
-    {id: "navy", name: "Navy Blue", primary: "#1e3a5f"},
-    {id: "burgundy", name: "Burgundy", primary: "#7c2d41"},
-    {id: "forest", name: "Forest Green", primary: "#1e5f4d"},
-    {id: "charcoal", name: "Charcoal", primary: "#2d3748"},
-  ],
   "strategic-leader": [
     {id: "teal", name: "Teal", primary: "#0d7377"},
     {id: "purple", name: "Purple", primary: "#6b46c1"},
@@ -340,6 +310,52 @@ const TEMPLATE_COLOR_THEMES = {
   ],
 };
 
+const THUMBNAIL_BASE_WIDTH_PX = 793.7; // 210mm at 96dpi
+
+const UniformTemplatePreview = ({TemplateComponent, resumeData}) => {
+  const frameRef = useRef(null);
+  const [scale, setScale] = useState(0.35);
+
+  useEffect(() => {
+    if (!frameRef.current) return;
+
+    const updateScale = () => {
+      if (!frameRef.current) return;
+      const frameWidth = frameRef.current.clientWidth;
+      if (!frameWidth) return;
+      setScale(frameWidth / THUMBNAIL_BASE_WIDTH_PX);
+    };
+
+    updateScale();
+
+    const observer = new ResizeObserver(updateScale);
+    observer.observe(frameRef.current);
+
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div className="absolute inset-0 p-3">
+      <div
+        ref={frameRef}
+        className="relative h-full w-full overflow-hidden rounded-md border border-gray-300 dark:border-zinc-700 bg-white shadow-[0_8px_20px_rgba(15,23,42,0.2)]"
+      >
+        <div
+          className="pointer-events-none"
+          style={{
+            transform: `scale(${scale})`,
+            transformOrigin: "top left",
+            width: "210mm",
+            height: "297mm",
+          }}
+        >
+          <TemplateComponent resumeData={resumeData} />
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Templates = () => {
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -352,7 +368,6 @@ const Templates = () => {
     "Leadership",
     "Tech",
     "Creative",
-    "Academic",
   ];
 
   const filteredTemplates =
@@ -438,20 +453,13 @@ const Templates = () => {
               >
                 {/* Template Preview */}
                 <div
-                  className="relative bg-gray-50 dark:bg-zinc-900 overflow-hidden"
+                  className="relative bg-gradient-to-b from-slate-100 to-slate-200 dark:from-zinc-900 dark:to-zinc-800 overflow-hidden"
                   style={{height: "420px"}}
                 >
-                  <div
-                    className="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none"
-                    style={{
-                      width: "210mm",
-                      height: "297mm",
-                      transform: "translateX(-50%) scale(0.35)",
-                      transformOrigin: "top center",
-                    }}
-                  >
-                    <template.component resumeData={sampleResumeData} />
-                  </div>
+                  <UniformTemplatePreview
+                    TemplateComponent={template.component}
+                    resumeData={sampleResumeData}
+                  />
                   <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
 
                   {/* Overlay Preview Button */}

@@ -3,7 +3,7 @@ import {useState} from "react";
 /**
  * CollapsibleSection - Wrapper component for collapsible, draggable sections
  * @param {string} title - Section title
- * @param {string} icon - Emoji icon for the section
+ * @param {ReactNode} icon - Icon element for the section
  * @param {ReactNode} children - Section content
  * @param {boolean} defaultExpanded - Whether section starts expanded
  * @param {function} onDragStart - Drag start handler
@@ -15,7 +15,7 @@ import {useState} from "react";
  */
 const CollapsibleSection = ({
   title,
-  icon = "📄",
+  icon = null,
   children,
   defaultExpanded = true,
   onDragStart,
@@ -62,7 +62,7 @@ const CollapsibleSection = ({
           </div>
 
           {/* Icon and title */}
-          <span className="text-xl">{icon}</span>
+          {icon && <span className="text-xl inline-flex">{icon}</span>}
           <h2 className="section-title mb-0">{title}</h2>
 
           {/* Item count badge (if applicable) */}

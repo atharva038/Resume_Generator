@@ -15,8 +15,6 @@ import ProfessionalV2Template from "@/components/templates/ProfessionalV2Templat
 import ExecutiveTemplate from "@/components/templates/ExecutiveTemplate";
 import TechTemplate from "@/components/templates/TechTemplate";
 import Creative2Template from "@/components/templates/Creative2Template";
-import AcademicTemplate from "@/components/templates/AcademicTemplate";
-import CorporateEliteTemplate from "@/components/templates/CorporateEliteTemplate";
 import StrategicLeadershipTemplate from "@/components/templates/StrategicLeadershipTemplate";
 import ImpactProTemplate from "@/components/templates/ImpactProTemplate";
 import GitHubStyleTemplate from "@/components/templates/GitHubStyleTemplate";
@@ -126,8 +124,6 @@ const ResumePreview = forwardRef(
       tech: TechTemplate,
       GitHubStyle: GitHubStyleTemplate,
       creative2: Creative2Template,
-      academic: AcademicTemplate,
-      "corporate-elite": CorporateEliteTemplate,
       "strategic-leader": StrategicLeadershipTemplate,
       "strategic-leadership": StrategicLeadershipTemplate,
       "stratergic-leader": StrategicLeadershipTemplate,

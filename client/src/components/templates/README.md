@@ -28,12 +28,10 @@ This directory contains all resume template components for the ATS Resume Genera
 
 ### Executive & Leadership
 - **ExecutiveTemplate** - Premium format for C-suite positions
-- **CorporateEliteTemplate** - Fortune 500-ready (99% ATS compatibility)
 - **StrategicLeadershipTemplate** - Leadership-focused (97% ATS compatibility)
 - **ImpactProTemplate** - Results-driven with metrics focus (98% ATS compatibility)
 
 ### Specialized
-- **AcademicTemplate** - Academic and research positions
 - **GitHubStyleTemplate** - Developer-focused, GitHub-inspired design
 
 ## 🏗️ Template Architecture
@@ -412,7 +410,6 @@ const templates = {
 
 ### ATS Compatibility Scores
 
-- **99%+**: CorporateEliteTemplate
 - **97-98%**: StrategicLeadershipTemplate, ImpactProTemplate
 - **95%+**: Professional2Template, ClassicTemplate
 - **94%+**: Creative2Template, ModernTemplate
@@ -453,10 +450,8 @@ const templates = {
 |----------|-----------|----------|--------------|------------------|
 | ClassicTemplate | 95% | General use | 5 themes | Two-column skills |
 | Professional2Template | 95% | Corporate | 6 themes | Dynamic density |
-| CorporateEliteTemplate | 99% | Executive | Navy only | Fortune 500 ready |
 | ModernTemplate | 94% | Tech | 5 themes | Bold design |
 | CreativeTemplate | 94% | Design/Creative | 6 themes | Vibrant colors |
-| AcademicTemplate | 92% | Research/Academia | Traditional | Publications section |
 | TechTemplate | 93% | Developers | 6 themes | Code-like aesthetic |
 
 ## 🚀 Future Enhancements

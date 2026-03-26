@@ -6,6 +6,7 @@ import {resumeAPI} from "@/api/api";
 import {parseValidationErrors} from "@/utils/errorHandler";
 import {authStorage} from "@/utils/storage";
 import {useToggle} from "@/hooks";
+import {Lightbulb, Loader2, Sparkles} from "lucide-react";
 
 const EditableSection = ({
   title,
@@ -225,9 +226,19 @@ const EditableSection = ({
           <button
             onClick={handleEnhance}
             disabled={enhancing}
-            className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-500 font-medium px-3 py-1 rounded border border-primary-600 dark:border-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg border border-blue-500/40 dark:border-blue-400/40 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all duration-200 font-semibold disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {enhancing ? "✨ Enhancing..." : "✨ Enhance"}
+            {enhancing ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Enhancing...
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-4 h-4" />
+                Enhance
+              </>
+            )}
           </button>
           {onRemove && (
             <button
@@ -387,8 +398,9 @@ const EditableSection = ({
         />
       </div>
 
-      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-        💡 Tip: Click "Enhance" to optimize this content with AI for better ATS
+      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 flex items-center gap-1.5">
+        <Lightbulb className="w-3.5 h-3.5" />
+        Tip: Click "Enhance" to optimize this content with AI for better ATS
         compatibility
       </p>
     </div>
