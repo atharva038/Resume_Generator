@@ -1,4 +1,56 @@
-import {forwardRef, useRef, useEffect, useState} from "react";
+import {forwardRef, useRef, useEffect, useState, useMemo} from "react";
+
+const DEFAULT_SECTION_ORDER = [
+  "summary",
+  "skills",
+  "experience",
+  "education",
+  "projects",
+  "certifications",
+  "achievements",
+  "customSections",
+];
+
+const SECTION_TITLES = {
+  summary: "ABOUT ME",
+  skills: "SKILLS",
+  experience: "EXPERIENCE",
+  education: "EDUCATION",
+  projects: "PROJECTS",
+  certifications: "CERTIFICATIONS",
+  achievements: "ACHIEVEMENTS",
+};
+
+const COLOR_THEMES = {
+  blue: {
+    primary: "#2563eb",
+    secondary: "#1e40af",
+    text: "#000000",
+    textLight: "#374151",
+    textMuted: "#6b7280",
+  },
+  purple: {
+    primary: "#7c3aed",
+    secondary: "#6d28d9",
+    text: "#000000",
+    textLight: "#374151",
+    textMuted: "#6b7280",
+  },
+  teal: {
+    primary: "#0d9488",
+    secondary: "#0f766e",
+    text: "#000000",
+    textLight: "#374151",
+    textMuted: "#6b7280",
+  },
+  orange: {
+    primary: "#ea580c",
+    secondary: "#c2410c",
+    text: "#000000",
+    textLight: "#374151",
+    textMuted: "#6b7280",
+  },
+};
 
 /**
  * ModernTemplate - Contemporary resume template with bold design elements
@@ -43,6 +95,7 @@ import {forwardRef, useRef, useEffect, useState} from "react";
 const ModernTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
   // Page overflow detection state
   const containerRef = useRef(null);
+  const data = useMemo(() => resumeData || {}, [resumeData]);
   const [pageOverflowInfo, setPageOverflowInfo] = useState({
     isOverflowing: false,
     currentHeight: 0,
@@ -79,40 +132,116 @@ const ModernTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
     }
   }, [resumeData]);
 
-  // Color Themes - Multiple professional palettes
-  const colorThemes = {
-    blue: {
-      primary: "#2563eb",
-      secondary: "#1e40af",
-      text: "#000000",
-      textLight: "#374151",
-      textMuted: "#6b7280",
-    },
-    purple: {
-      primary: "#7c3aed",
-      secondary: "#6d28d9",
-      text: "#000000",
-      textLight: "#374151",
-      textMuted: "#6b7280",
-    },
-    teal: {
-      primary: "#0d9488",
-      secondary: "#0f766e",
-      text: "#000000",
-      textLight: "#374151",
-      textMuted: "#6b7280",
-    },
-    orange: {
-      primary: "#ea580c",
-      secondary: "#c2410c",
-      text: "#000000",
-      textLight: "#374151",
-      textMuted: "#6b7280",
-    },
-  };
-
   // Select theme based on resumeData or default to blue
-  const selectedTheme = colorThemes[resumeData?.colorTheme] || colorThemes.blue;
+  const selectedTheme =
+    COLOR_THEMES[data?.selectedTheme || data?.colorTheme] || COLOR_THEMES.blue;
+
+  const contentDensity = useMemo(() => {
+    let score = 0;
+
+    score += (data.summary?.length || 0) > 280 ? 3 : data.summary ? 2 : 0;
+    score += (data.experience?.length || 0) * 3;
+    score += (data.projects?.length || 0) * 2;
+    score += (data.education?.length || 0) * 2;
+    score += (data.skills?.length || 0) * 1.5;
+    score += (data.certifications?.length || 0) * 1;
+    score += (data.achievements?.length || 0) * 1;
+
+    (data.experience || []).forEach((item) => {
+      score += item?.bullets?.length || 0;
+    });
+    (data.projects || []).forEach((item) => {
+      score += item?.bullets?.length || 0;
+    });
+    (data.customSections || []).forEach((section) => {
+      score += section?.items?.length || 0;
+    });
+
+    if (score < 16) {
+      return "low";
+    }
+    if (score < 30) {
+      return "medium";
+    }
+    return "high";
+  }, [data]);
+
+  const dynamicStyles = useMemo(() => {
+    if (contentDensity === "low") {
+      return {
+        containerPadding: "0.55in",
+        fontSize: "10.5pt",
+        lineHeight: "1.38",
+        headerMarginBottom: "15px",
+        nameSize: "27pt",
+        nameMarginBottom: "7px",
+        contactSize: "10pt",
+        contactGap: "10px",
+        sectionMarginBottom: "13px",
+        sectionHeadingSize: "12pt",
+        sectionHeadingMarginBottom: "7px",
+        sectionHeadingTracking: "0.5px",
+        summarySize: "10pt",
+        metaSize: "9pt",
+        bodySize: "10pt",
+        roleSize: "11pt",
+        itemGap: "11px",
+        bulletGap: "3px",
+        sectionAccentWidth: "2px",
+        sectionAccentPadding: "10px",
+        sectionTopPadding: "7px",
+      };
+    }
+    if (contentDensity === "medium") {
+      return {
+        containerPadding: "0.48in 0.52in",
+        fontSize: "10pt",
+        lineHeight: "1.34",
+        headerMarginBottom: "12px",
+        nameSize: "24pt",
+        nameMarginBottom: "6px",
+        contactSize: "9.5pt",
+        contactGap: "8px",
+        sectionMarginBottom: "10px",
+        sectionHeadingSize: "11pt",
+        sectionHeadingMarginBottom: "6px",
+        sectionHeadingTracking: "0.5px",
+        summarySize: "9.5pt",
+        metaSize: "8.8pt",
+        bodySize: "9.5pt",
+        roleSize: "10.5pt",
+        itemGap: "8px",
+        bulletGap: "2px",
+        sectionAccentWidth: "2px",
+        sectionAccentPadding: "9px",
+        sectionTopPadding: "6px",
+      };
+    }
+
+    return {
+      containerPadding: "0.42in 0.5in",
+      fontSize: "9.5pt",
+      lineHeight: "1.3",
+      headerMarginBottom: "9px",
+      nameSize: "21pt",
+      nameMarginBottom: "5px",
+      contactSize: "9pt",
+      contactGap: "7px",
+      sectionMarginBottom: "8px",
+      sectionHeadingSize: "10pt",
+      sectionHeadingMarginBottom: "4px",
+      sectionHeadingTracking: "0.45px",
+      summarySize: "9pt",
+      metaSize: "8pt",
+      bodySize: "9pt",
+      roleSize: "9.8pt",
+      itemGap: "6px",
+      bulletGap: "1.5px",
+      sectionAccentWidth: "1.5px",
+      sectionAccentPadding: "8px",
+      sectionTopPadding: "5px",
+    };
+  }, [contentDensity]);
 
   // Helper function to safely format skills (handles both array and string)
   const formatSkills = (items) => {
@@ -125,40 +254,19 @@ const ModernTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
     return "";
   };
 
-  // Default section order if not specified
-  const DEFAULT_SECTION_ORDER = [
-    "summary",
-    "skills",
-    "experience",
-    "education",
-    "projects",
-    "certifications",
-    "achievements",
-    "customSections",
-  ];
-
   const sectionOrder =
-    resumeData.sectionOrder && resumeData.sectionOrder.length > 0
-      ? resumeData.sectionOrder.filter(
+    data.sectionOrder && data.sectionOrder.length > 0
+      ? data.sectionOrder.filter(
           (id) => !["score", "personal", "recommendations"].includes(id)
         )
       : DEFAULT_SECTION_ORDER;
 
   // Get custom section titles or use defaults
   const getSectionTitle = (sectionId) => {
-    const customTitles = resumeData.sectionTitles || {};
-    const defaultTitles = {
-      summary: "ABOUT ME",
-      skills: "SKILLS",
-      experience: "EXPERIENCE",
-      education: "EDUCATION",
-      projects: "PROJECTS",
-      certifications: "CERTIFICATIONS",
-      achievements: "ACHIEVEMENTS",
-    };
+    const customTitles = data.sectionTitles || {};
     return (
       customTitles[sectionId] ||
-      defaultTitles[sectionId] ||
+      SECTION_TITLES[sectionId] ||
       sectionId
     ).toUpperCase();
   };
@@ -167,55 +275,61 @@ const ModernTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
   const renderSection = (sectionId) => {
     // Common style to prevent page breaks inside sections
     const sectionStyle = {
-      marginBottom: "14px",
+      marginBottom: dynamicStyles.sectionMarginBottom,
       pageBreakInside: "avoid",
       breakInside: "avoid",
+      borderLeft:
+        sectionId === "summary"
+          ? "none"
+          : `${dynamicStyles.sectionAccentWidth} solid ${selectedTheme.primary}`,
+      borderTop:
+        sectionId === "summary" ? "none" : `1px solid ${selectedTheme.primary}22`,
+      paddingLeft: dynamicStyles.sectionAccentPadding,
+      paddingTop: sectionId === "summary" ? "0" : dynamicStyles.sectionTopPadding,
     };
 
+    const headingStyle = {
+      fontSize: dynamicStyles.sectionHeadingSize,
+      color: selectedTheme.primary,
+      marginBottom: dynamicStyles.sectionHeadingMarginBottom,
+      letterSpacing: dynamicStyles.sectionHeadingTracking,
+    };
+
+    const adaptiveSkillsColumns =
+      contentDensity === "high" || (data.skills?.length || 0) > 12
+        ? "1fr"
+        : "repeat(2, minmax(0, 1fr))";
+
     const sections = {
-      summary: resumeData.summary && (
+      summary: data.summary && (
         <section key="summary" style={sectionStyle}>
-          <h2
-            className="font-bold uppercase"
-            style={{
-              fontSize: "12pt",
-              color: selectedTheme.primary,
-              marginBottom: "6px",
-              letterSpacing: "0.5px",
-            }}
-          >
+          <h2 className="font-bold uppercase" style={headingStyle}>
             {getSectionTitle("summary")}
           </h2>
-          <p style={{fontSize: "10pt", textAlign: "justify"}}>
-            {typeof resumeData.summary === "string"
-              ? resumeData.summary
-              : resumeData.summary?.summary || ""}
+          <p
+            style={{fontSize: dynamicStyles.summarySize, textAlign: "justify"}}
+          >
+            {typeof data.summary === "string"
+              ? data.summary
+              : data.summary?.summary || ""}
           </p>
         </section>
       ),
 
-      skills: resumeData.skills && resumeData.skills.length > 0 && (
+      skills: data.skills && data.skills.length > 0 && (
         <section key="skills" style={sectionStyle}>
-          <h2
-            className="font-bold uppercase"
-            style={{
-              fontSize: "12pt",
-              color: selectedTheme.primary,
-              marginBottom: "6px",
-              letterSpacing: "0.5px",
-            }}
-          >
+          <h2 className="font-bold uppercase" style={headingStyle}>
             {getSectionTitle("skills")}
           </h2>
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: "6px",
+              gridTemplateColumns: adaptiveSkillsColumns,
+              gap: dynamicStyles.itemGap,
             }}
           >
-            {resumeData.skills.map((skillGroup, index) => (
-              <div key={index} style={{fontSize: "10pt"}}>
+            {data.skills.map((skillGroup, index) => (
+              <div key={index} style={{fontSize: dynamicStyles.bodySize}}>
                 <span
                   className="font-semibold"
                   style={{color: selectedTheme.textLight}}
@@ -231,39 +345,42 @@ const ModernTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
         </section>
       ),
 
-      experience: resumeData.experience && resumeData.experience.length > 0 && (
+      experience: data.experience && data.experience.length > 0 && (
         <section key="experience" style={sectionStyle}>
-          <h2
-            className="font-bold uppercase"
-            style={{
-              fontSize: "12pt",
-              color: selectedTheme.primary,
-              marginBottom: "6px",
-              letterSpacing: "0.5px",
-            }}
-          >
+          <h2 className="font-bold uppercase" style={headingStyle}>
             {getSectionTitle("experience")}
           </h2>
-          {resumeData.experience.map((exp, index) => (
-            <div key={index} style={{marginBottom: "12px"}}>
+          {data.experience.map((exp, index) => (
+            <div key={index} style={{marginBottom: dynamicStyles.itemGap}}>
               <div
                 className="flex justify-between items-baseline"
                 style={{marginBottom: "2px"}}
               >
                 <div>
-                  <span className="font-bold" style={{fontSize: "11pt"}}>
+                  <span
+                    className="font-bold"
+                    style={{fontSize: dynamicStyles.roleSize}}
+                  >
                     {exp.title || "Position"}
                   </span>
                   {exp.company && (
                     <span
-                      style={{fontSize: "10pt", color: selectedTheme.textMuted}}
+                      style={{
+                        fontSize: dynamicStyles.bodySize,
+                        color: selectedTheme.textMuted,
+                      }}
                     >
                       {" "}
                       @ {exp.company}
                     </span>
                   )}
                 </div>
-                <div style={{fontSize: "9pt", color: selectedTheme.textMuted}}>
+                <div
+                  style={{
+                    fontSize: dynamicStyles.metaSize,
+                    color: selectedTheme.textMuted,
+                  }}
+                >
                   {exp.startDate && (
                     <>
                       {exp.startDate} - {exp.current ? "Present" : exp.endDate}
@@ -274,12 +391,12 @@ const ModernTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
               {exp.location && (
                 <div
                   style={{
-                    fontSize: "9pt",
+                    fontSize: dynamicStyles.metaSize,
                     color: selectedTheme.textMuted,
                     marginBottom: "4px",
                   }}
                 >
-                  📍 {exp.location}
+                  Location: {exp.location}
                 </div>
               )}
               {exp.bullets && exp.bullets.length > 0 && (
@@ -288,7 +405,13 @@ const ModernTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
                   style={{marginTop: "4px"}}
                 >
                   {exp.bullets.map((bullet, i) => (
-                    <li key={i} style={{fontSize: "10pt", marginBottom: "2px"}}>
+                    <li
+                      key={i}
+                      style={{
+                        fontSize: dynamicStyles.bodySize,
+                        marginBottom: dynamicStyles.bulletGap,
+                      }}
+                    >
                       {bullet}
                     </li>
                   ))}
@@ -299,21 +422,13 @@ const ModernTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
         </section>
       ),
 
-      projects: resumeData.projects && resumeData.projects.length > 0 && (
+      projects: data.projects && data.projects.length > 0 && (
         <section key="projects" style={sectionStyle}>
-          <h2
-            className="font-bold uppercase"
-            style={{
-              fontSize: "12pt",
-              color: selectedTheme.primary,
-              marginBottom: "6px",
-              letterSpacing: "0.5px",
-            }}
-          >
+          <h2 className="font-bold uppercase" style={headingStyle}>
             {getSectionTitle("projects")}
           </h2>
-          {resumeData.projects.map((project, index) => (
-            <div key={index} style={{marginBottom: "10px"}}>
+          {data.projects.map((project, index) => (
+            <div key={index} style={{marginBottom: dynamicStyles.itemGap}}>
               <div
                 style={{
                   display: "flex",
@@ -322,7 +437,10 @@ const ModernTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
                   flexWrap: "wrap",
                 }}
               >
-                <div className="font-bold" style={{fontSize: "11pt"}}>
+                <div
+                  className="font-bold"
+                  style={{fontSize: dynamicStyles.roleSize}}
+                >
                   {project.name}
                 </div>
                 {project.link && (
@@ -331,20 +449,20 @@ const ModernTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{
-                      fontSize: "9pt",
+                      fontSize: dynamicStyles.metaSize,
                       color: selectedTheme.primary,
                       textDecoration: "underline",
                       marginLeft: "8px",
                     }}
                   >
-                    🔗 Link
+                    Project Link
                   </a>
                 )}
               </div>
               {project.technologies && (
                 <div
                   style={{
-                    fontSize: "9pt",
+                    fontSize: dynamicStyles.metaSize,
                     color: selectedTheme.textMuted,
                     marginBottom: "3px",
                   }}
@@ -361,7 +479,13 @@ const ModernTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
                   style={{marginTop: "3px"}}
                 >
                   {project.bullets.map((bullet, i) => (
-                    <li key={i} style={{fontSize: "10pt", marginBottom: "2px"}}>
+                    <li
+                      key={i}
+                      style={{
+                        fontSize: dynamicStyles.bodySize,
+                        marginBottom: dynamicStyles.bulletGap,
+                      }}
+                    >
                       {bullet}
                     </li>
                   ))}
@@ -372,28 +496,28 @@ const ModernTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
         </section>
       ),
 
-      education: resumeData.education && resumeData.education.length > 0 && (
+      education: data.education && data.education.length > 0 && (
         <section key="education" style={sectionStyle}>
-          <h2
-            className="font-bold uppercase"
-            style={{
-              fontSize: "12pt",
-              color: selectedTheme.primary,
-              marginBottom: "6px",
-              letterSpacing: "0.5px",
-            }}
-          >
+          <h2 className="font-bold uppercase" style={headingStyle}>
             {getSectionTitle("education")}
           </h2>
-          {resumeData.education.map((edu, index) => (
-            <div key={index} style={{marginBottom: "8px"}}>
+          {data.education.map((edu, index) => (
+            <div key={index} style={{marginBottom: dynamicStyles.itemGap}}>
               <div className="flex justify-between items-baseline">
                 <div>
-                  <span className="font-bold" style={{fontSize: "10pt"}}>
+                  <span
+                    className="font-bold"
+                    style={{fontSize: dynamicStyles.bodySize}}
+                  >
                     {edu.degree} {edu.field && `in ${edu.field}`}
                   </span>
                 </div>
-                <div style={{fontSize: "9pt", color: selectedTheme.textMuted}}>
+                <div
+                  style={{
+                    fontSize: dynamicStyles.metaSize,
+                    color: selectedTheme.textMuted,
+                  }}
+                >
                   {edu.startDate && (
                     <>
                       {edu.startDate} - {edu.endDate}
@@ -401,7 +525,12 @@ const ModernTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
                   )}
                 </div>
               </div>
-              <div style={{fontSize: "10pt", color: selectedTheme.textMuted}}>
+              <div
+                style={{
+                  fontSize: dynamicStyles.bodySize,
+                  color: selectedTheme.textMuted,
+                }}
+              >
                 {edu.institution}
                 {edu.location && <span> — {edu.location}</span>}
                 {edu.gpa && <span> | GPA: {edu.gpa}</span>}
@@ -411,22 +540,20 @@ const ModernTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
         </section>
       ),
 
-      certifications: resumeData.certifications &&
-        resumeData.certifications.length > 0 && (
+      certifications: data.certifications &&
+        data.certifications.length > 0 && (
           <section key="certifications" style={sectionStyle}>
-            <h2
-              className="font-bold uppercase"
-              style={{
-                fontSize: "12pt",
-                color: selectedTheme.primary,
-                marginBottom: "6px",
-                letterSpacing: "0.5px",
-              }}
-            >
+            <h2 className="font-bold uppercase" style={headingStyle}>
               {getSectionTitle("certifications")}
             </h2>
-            {resumeData.certifications.map((cert, index) => (
-              <div key={index} style={{fontSize: "10pt", marginBottom: "4px"}}>
+            {data.certifications.map((cert, index) => (
+              <div
+                key={index}
+                style={{
+                  fontSize: dynamicStyles.bodySize,
+                  marginBottom: dynamicStyles.bulletGap,
+                }}
+              >
                 <span className="font-semibold">{cert.name}</span>
                 {cert.issuer && (
                   <span style={{color: selectedTheme.textMuted}}>
@@ -436,7 +563,10 @@ const ModernTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
                 )}
                 {cert.date && (
                   <span
-                    style={{fontSize: "9pt", color: selectedTheme.textMuted}}
+                    style={{
+                      fontSize: dynamicStyles.metaSize,
+                      color: selectedTheme.textMuted,
+                    }}
                   >
                     {" "}
                     ({cert.date})
@@ -447,26 +577,24 @@ const ModernTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
           </section>
         ),
 
-      achievements: resumeData.achievements &&
-        resumeData.achievements.length > 0 && (
+      achievements: data.achievements &&
+        data.achievements.length > 0 && (
           <section key="achievements" style={sectionStyle}>
-            <h2
-              className="font-bold uppercase"
-              style={{
-                fontSize: "12pt",
-                color: selectedTheme.primary,
-                marginBottom: "6px",
-                letterSpacing: "0.5px",
-              }}
-            >
+            <h2 className="font-bold uppercase" style={headingStyle}>
               {getSectionTitle("achievements")}
             </h2>
             <ul
               className="list-disc list-outside ml-5"
               style={{marginTop: "4px"}}
             >
-              {resumeData.achievements.map((achievement, index) => (
-                <li key={index} style={{fontSize: "10pt", marginBottom: "3px"}}>
+              {data.achievements.map((achievement, index) => (
+                <li
+                  key={index}
+                  style={{
+                    fontSize: dynamicStyles.bodySize,
+                    marginBottom: dynamicStyles.bulletGap,
+                  }}
+                >
                   {achievement}
                 </li>
               ))}
@@ -474,22 +602,14 @@ const ModernTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
           </section>
         ),
 
-      customSections: resumeData.customSections &&
-        resumeData.customSections.length > 0 && (
+      customSections: data.customSections &&
+        data.customSections.length > 0 && (
           <div key="customSections">
-            {resumeData.customSections.map((section, sectionIndex) => {
+            {data.customSections.map((section, sectionIndex) => {
               if (section.title && section.items && section.items.length > 0) {
                 return (
                   <section key={sectionIndex} style={sectionStyle}>
-                    <h2
-                      className="font-bold uppercase"
-                      style={{
-                        fontSize: "12pt",
-                        color: selectedTheme.primary,
-                        marginBottom: "6px",
-                        letterSpacing: "0.5px",
-                      }}
-                    >
+                    <h2 className="font-bold uppercase" style={headingStyle}>
                       {section.title.toUpperCase()}
                     </h2>
                     <ul
@@ -499,7 +619,10 @@ const ModernTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
                       {section.items.map((item, itemIndex) => (
                         <li
                           key={itemIndex}
-                          style={{fontSize: "10pt", marginBottom: "3px"}}
+                          style={{
+                            fontSize: dynamicStyles.bodySize,
+                            marginBottom: dynamicStyles.bulletGap,
+                          }}
                         >
                           {item}
                         </li>
@@ -530,45 +653,52 @@ const ModernTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
       className="resume-preview !bg-white !text-black shadow-lg border border-gray-300 font-resume"
       style={{
         minHeight: "11in",
-        padding: "0.5in",
-        fontSize: "10.5pt",
-        lineHeight: "1.35",
-        color: "#000000",
+        padding: dynamicStyles.containerPadding,
+        fontSize: dynamicStyles.fontSize,
+        lineHeight: dynamicStyles.lineHeight,
+        color: selectedTheme.text,
+        background: `linear-gradient(180deg, ${selectedTheme.primary}08 0%, #ffffff 180px)`,
       }}
     >
       {/* Header - Left Aligned Modern Style */}
-      <header style={{marginBottom: "16px"}}>
+      <header
+        style={{
+          marginBottom: dynamicStyles.headerMarginBottom,
+          borderBottom: `2px solid ${selectedTheme.primary}`,
+          paddingBottom: "8px",
+        }}
+      >
         <h1
           className="font-bold"
           style={{
-            fontSize: "28pt",
-            marginBottom: "6px",
+            fontSize: dynamicStyles.nameSize,
+            marginBottom: dynamicStyles.nameMarginBottom,
             color: selectedTheme.primary,
           }}
         >
-          {resumeData.name || "Your Name"}
+          {data.name || "Your Name"}
         </h1>
         <div
           style={{
-            fontSize: "10pt",
+            fontSize: dynamicStyles.contactSize,
             display: "flex",
             flexWrap: "wrap",
-            gap: "8px",
-            color: "#4b5563",
+            gap: dynamicStyles.contactGap,
+            color: selectedTheme.textMuted,
           }}
         >
-          {resumeData.contact?.email && (
-            <span>✉ {resumeData.contact.email}</span>
+          {data.contact?.email && (
+            <span>Email: {data.contact.email}</span>
           )}
-          {resumeData.contact?.phone && (
-            <span>📱 {resumeData.contact.phone}</span>
+          {data.contact?.phone && (
+            <span>Phone: {data.contact.phone}</span>
           )}
-          {resumeData.contact?.location && (
-            <span>📍 {resumeData.contact.location}</span>
+          {data.contact?.location && (
+            <span>Location: {data.contact.location}</span>
           )}
-          {resumeData.contact?.linkedin && (
+          {data.contact?.linkedin && (
             <a
-              href={resumeData.contact.linkedin}
+              href={data.contact.linkedin}
               target="_blank"
               rel="noopener noreferrer"
               style={{
@@ -576,12 +706,12 @@ const ModernTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
                 textDecoration: "underline",
               }}
             >
-              🔗 LinkedIn
+              LinkedIn
             </a>
           )}
-          {resumeData.contact?.github && (
+          {data.contact?.github && (
             <a
-              href={resumeData.contact.github}
+              href={data.contact.github}
               target="_blank"
               rel="noopener noreferrer"
               style={{
@@ -589,7 +719,7 @@ const ModernTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
                 textDecoration: "underline",
               }}
             >
-              💻 GitHub
+              GitHub
             </a>
           )}
         </div>

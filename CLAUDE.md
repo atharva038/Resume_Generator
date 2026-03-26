@@ -169,7 +169,7 @@ Active development branch for AI interview features. Key areas of work:
 - Rate limiting on all API routes
 
 ## Known Issues
-- See `VOICE_SERVICE_AUDIT.md` for comprehensive voice service bugs
+- See `docs/audits/VOICE_SERVICE_AUDIT.md` for comprehensive voice service bugs
 - ElevenLabs TTS disabled - using Chatterbox + browser TTS fallback
 - Duplicate `GET /tts/health` route in voice.routes.js (line 55 vs 141)
 - Interview timer auto-complete lacks grace period

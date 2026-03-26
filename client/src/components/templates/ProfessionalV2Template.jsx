@@ -1,5 +1,60 @@
-import {forwardRef, useRef, useEffect, useState} from "react";
+import {forwardRef, useRef, useEffect, useMemo} from "react";
 import {Mail, Phone, MapPin, Linkedin, Github, Globe} from "lucide-react";
+
+const COLOR_THEMES = {
+  blue: {
+    primary: "#1d4ed8",
+    secondary: "#2563eb",
+    accent: "#3b82f6",
+    text: "#111827",
+    textLight: "#4b5563",
+    textMuted: "#6b7280",
+  },
+  purple: {
+    primary: "#7e22ce",
+    secondary: "#9333ea",
+    accent: "#a855f7",
+    text: "#111827",
+    textLight: "#4b5563",
+    textMuted: "#6b7280",
+  },
+  teal: {
+    primary: "#0f766e",
+    secondary: "#14b8a6",
+    accent: "#2dd4bf",
+    text: "#111827",
+    textLight: "#4b5563",
+    textMuted: "#6b7280",
+  },
+  burgundy: {
+    primary: "#9f1239",
+    secondary: "#be123c",
+    accent: "#e11d48",
+    text: "#111827",
+    textLight: "#4b5563",
+    textMuted: "#6b7280",
+  },
+};
+
+const DEFAULT_SECTION_ORDER = [
+  "summary",
+  "skills",
+  "experience",
+  "education",
+  "projects",
+  "certifications",
+  "achievements",
+  "customSections",
+];
+
+const DEFAULT_SECTION_TITLES = {
+  experience: "Professional Experience",
+  projects: "Projects",
+  education: "Education",
+  certifications: "Certifications",
+  achievements: "Achievements",
+  customSections: "Additional Information",
+};
 
 /**
  * ProfessionalV2Template - Enhanced version of ProfessionalTemplate with improved spacing
@@ -26,16 +81,8 @@ import {Mail, Phone, MapPin, Linkedin, Github, Globe} from "lucide-react";
  * />
  */
 const ProfessionalV2Template = forwardRef(
-  ({resumeData, onPageUsageChange}, ref) => {
-    // Page overflow detection state
+  ({resumeData, onPageUsageChange, printMode = false}, ref) => {
     const containerRef = useRef(null);
-    const [pageOverflowInfo, setPageOverflowInfo] = useState({
-      isOverflowing: false,
-      currentHeight: 0,
-      maxHeight: 1056, // 11in at 96dpi (matches template minHeight)
-      overflowPercentage: 0,
-      templateName: "ProfessionalV2Template",
-    });
 
     // Detect page overflow whenever resumeData changes
     useEffect(() => {
@@ -56,8 +103,6 @@ const ProfessionalV2Template = forwardRef(
           templateName: "ProfessionalV2Template",
         };
 
-        setPageOverflowInfo(usageInfo);
-
         // Pass data to parent component if callback provided
         if (onPageUsageChange) {
           onPageUsageChange(usageInfo);
@@ -65,45 +110,40 @@ const ProfessionalV2Template = forwardRef(
       }
     }, [resumeData]);
 
-    // Color Themes - Multiple professional palettes
-    const colorThemes = {
-      blue: {
-        primary: "#1d4ed8",
-        secondary: "#2563eb",
-        accent: "#3b82f6",
-        text: "#111827",
-        textLight: "#4b5563",
-        textMuted: "#6b7280",
-      },
-      purple: {
-        primary: "#7e22ce",
-        secondary: "#9333ea",
-        accent: "#a855f7",
-        text: "#111827",
-        textLight: "#4b5563",
-        textMuted: "#6b7280",
-      },
-      teal: {
-        primary: "#0f766e",
-        secondary: "#14b8a6",
-        accent: "#2dd4bf",
-        text: "#111827",
-        textLight: "#4b5563",
-        textMuted: "#6b7280",
-      },
-      burgundy: {
-        primary: "#9f1239",
-        secondary: "#be123c",
-        accent: "#e11d48",
-        text: "#111827",
-        textLight: "#4b5563",
-        textMuted: "#6b7280",
-      },
-    };
+    const data = useMemo(() => resumeData || {}, [resumeData]);
+    const isPrintMode = Boolean(printMode);
+    const contactInfo = useMemo(
+      () => data.personalInfo || data.contact || {},
+      [data]
+    );
+    const hasValue = (value) =>
+      typeof value === "string" ? value.trim().length > 0 : Boolean(value);
 
-    // Select theme based on resumeData or default to blue
-    const selectedTheme =
-      colorThemes[resumeData?.colorTheme] || colorThemes.blue;
+    const fullName = contactInfo.fullName || data.name || "Your Name";
+    const professionalTitle =
+      contactInfo.title || data.title || data.designation || data.headline || "";
+    const profilePhoto = contactInfo.photo || data.photo || data.profileImage;
+
+    const summaryText = data.summary || data.objective || "";
+    const skillsList = Array.isArray(data.skills) ? data.skills : [];
+    const experienceList = Array.isArray(data.experience) ? data.experience : [];
+    const projectList = Array.isArray(data.projects) ? data.projects : [];
+    const educationList = Array.isArray(data.education) ? data.education : [];
+    const certificationList = Array.isArray(data.certifications)
+      ? data.certifications
+      : [];
+    const achievementList = Array.isArray(data.achievements)
+      ? data.achievements
+      : [];
+    const customSectionList = Array.isArray(data.customSections)
+      ? data.customSections
+      : [];
+    const languageList = Array.isArray(data.languages) ? data.languages : [];
+
+    const selectedTheme = useMemo(
+      () => COLOR_THEMES[data?.colorTheme] || COLOR_THEMES.blue,
+      [data?.colorTheme]
+    );
 
     // Helper function to safely format skills (returns array)
     const formatSkills = (items) => {
@@ -113,6 +153,11 @@ const ProfessionalV2Template = forwardRef(
         return items
           .flatMap((item) => {
             if (typeof item === "string") return [item];
+            if (Array.isArray(item?.items)) {
+              return item.items
+                .map((entry) => (typeof entry === "string" ? entry : ""))
+                .filter(Boolean);
+            }
             if (item.items && Array.isArray(item.items))
               return formatSkills(item.items);
             if (item.category || item.name) return [item.category || item.name];
@@ -128,37 +173,21 @@ const ProfessionalV2Template = forwardRef(
       return [];
     };
 
-    // Default section order - Complete list for single column design
-    const DEFAULT_SECTION_ORDER = [
-      "summary",
-      "skills",
-      "experience",
-      "projects",
-      "education",
-      "certifications",
-      "achievements",
-      "customSections",
-    ];
-
-    const sectionOrder =
-      resumeData.sectionOrder && resumeData.sectionOrder.length > 0
-        ? resumeData.sectionOrder.filter(
-            (id) => !["score", "personal", "recommendations"].includes(id)
-          )
-        : DEFAULT_SECTION_ORDER;
+    const sectionOrder = useMemo(() => {
+      if (data.sectionOrder && data.sectionOrder.length > 0) {
+        return data.sectionOrder.filter(
+          (id) => !["score", "personal", "recommendations"].includes(id)
+        );
+      }
+      return DEFAULT_SECTION_ORDER;
+    }, [data.sectionOrder]);
 
     // Helper: Get section title
     const getSectionTitle = (sectionId) => {
-      const customTitles = resumeData.sectionTitles || {};
-      const defaultTitles = {
-        experience: "Professional Experience",
-        projects: "Projects",
-        education: "Education",
-        certifications: "Certifications",
-        achievements: "Achievements",
-        customSections: "Additional Information",
-      };
-      return customTitles[sectionId] || defaultTitles[sectionId] || sectionId;
+      const customTitles = data.sectionTitles || {};
+      return (
+        customTitles[sectionId] || DEFAULT_SECTION_TITLES[sectionId] || sectionId
+      );
     };
 
     // Helper: Check if section has content
@@ -170,13 +199,118 @@ const ProfessionalV2Template = forwardRef(
       return false;
     };
 
-    // Helper: Truncate text
-    const truncateText = (text, lines = 4) => {
-      if (!text) return "";
-      const words = text.split(" ");
-      if (words.length <= 50) return text;
-      return words.slice(0, 50).join(" ") + "...";
+    // Normalize mixed experience payloads so print output never drops content.
+    const normalizeToBulletArray = (value) => {
+      if (!value) return [];
+
+      if (Array.isArray(value)) {
+        return value
+          .map((item) => {
+            if (typeof item === "string") return item.trim();
+            if (typeof item === "object" && item !== null) {
+              return (
+                item.text ||
+                item.description ||
+                item.content ||
+                item.value ||
+                ""
+              )
+                .toString()
+                .trim();
+            }
+            return "";
+          })
+          .filter(Boolean);
+      }
+
+      if (typeof value === "string") {
+        return value
+          .split(/\n|•|\u2022|\-|\*\s+/)
+          .map((item) => item.trim())
+          .filter(Boolean);
+      }
+
+      return [];
     };
+
+    const getEducationDateRange = (edu) => {
+      if (edu?.graduationDate) return edu.graduationDate;
+      if (edu?.startDate && edu?.endDate) return `${edu.startDate} - ${edu.endDate}`;
+      return edu?.startDate || edu?.endDate || "";
+    };
+
+    const getCertificationTitle = (cert) => cert?.title || cert?.name || "";
+
+    const formatDateRange = (startDate, endDate, current) => {
+      if (!startDate && !endDate && !current) return "";
+      const from = startDate || "";
+      const to = current ? "Present" : endDate || "";
+
+      if (from && to) return `${from} - ${to}`;
+      return from || to;
+    };
+
+    const formattedSkills = useMemo(
+      () => formatSkills(skillsList),
+      [skillsList]
+    );
+
+    const normalizedExperience = useMemo(
+      () =>
+        experienceList.map((exp) => ({
+          ...exp,
+          role: exp.position || exp.title || "",
+          companyName: exp.company || "",
+          dateRange: formatDateRange(exp.startDate, exp.endDate, exp.current),
+          descriptionText:
+            exp?.description || exp?.summary || exp?.overview || "",
+          bulletItems: normalizeToBulletArray(
+            exp?.bullets || exp?.highlights || exp?.responsibilities || []
+          ),
+        })),
+      [experienceList]
+    );
+
+    const normalizedProjects = useMemo(
+      () =>
+        projectList.map((project) => ({
+          ...project,
+          title: project.name || project.title || "",
+          descriptionText: project?.description || project?.summary || "",
+          bulletItems: normalizeToBulletArray(
+            project?.bullets ||
+              project?.highlights ||
+              project?.responsibilities ||
+              []
+          ),
+        })),
+      [projectList]
+    );
+
+    const normalizedCustomSections = useMemo(
+      () =>
+        customSectionList
+          .map((section) => {
+            const items = Array.isArray(section?.items)
+              ? section.items
+                  .map((item) => (typeof item === "string" ? item.trim() : ""))
+                  .filter(Boolean)
+              : typeof section?.content === "string"
+                ? section.content
+                    .split(/\n|•|\u2022|\-|\*\s+/)
+                    .map((item) => item.trim())
+                    .filter(Boolean)
+                : [];
+
+            return {
+              ...section,
+              title: section?.title || "Additional Information",
+              items,
+            };
+          })
+          .filter((section) => hasContent(section.items) || hasContent(section.content)),
+      [customSectionList]
+    );
 
     // Section styling with page break prevention
     const sectionStyle = {
@@ -188,25 +322,25 @@ const ProfessionalV2Template = forwardRef(
     // Render sections dynamically
     const renderSection = (sectionId) => {
       const sections = {
-        summary: resumeData.summary && (
+        summary: summaryText && (
           <section
             key="summary"
             className="resume-section"
             style={sectionStyle}
           >
-            <h2 className="section-title">Professional Summary</h2>
+            <h2 className="pv2-section-title">Professional Summary</h2>
             <div className="section-content">
-              <p className="summary-text">{resumeData.summary}</p>
+              <p className="summary-text">{summaryText}</p>
             </div>
           </section>
         ),
 
-        skills: hasContent(resumeData.skills) && (
+        skills: hasContent(skillsList) && (
           <section key="skills" className="resume-section" style={sectionStyle}>
-            <h2 className="section-title">{getSectionTitle("skills")}</h2>
+            <h2 className="pv2-section-title">{getSectionTitle("skills")}</h2>
             <div className="section-content">
               <div className="skills-container">
-                {formatSkills(resumeData.skills).map((skill, index) => (
+                {formattedSkills.map((skill, index) => (
                   <span key={index} className="skill-badge">
                     {skill}
                   </span>
@@ -216,76 +350,88 @@ const ProfessionalV2Template = forwardRef(
           </section>
         ),
 
-        experience: hasContent(resumeData.experience) && (
+        experience: hasContent(experienceList) && (
           <section
             key="experience"
             className="resume-section"
             style={sectionStyle}
           >
-            <h2 className="section-title">{getSectionTitle("experience")}</h2>
+            <h2 className="pv2-section-title">{getSectionTitle("experience")}</h2>
             <div className="section-content">
-              {resumeData.experience.map((exp, index) => (
+              {normalizedExperience.map((exp, index) => {
+
+                  return (
                 <div
                   key={index}
                   className="experience-item"
                   style={{
                     ...sectionStyle,
-                    animation: `fadeInHighlight 0.5s ease ${index * 0.1}s`,
+                    animation: isPrintMode
+                      ? "none"
+                      : `fadeInHighlight 0.5s ease ${index * 0.1}s`,
                   }}
                 >
                   <div className="experience-header">
                     <div className="experience-left">
                       <h3 className="experience-role">
-                        {exp.position || exp.title}
+                        {exp.role}
                       </h3>
-                      <p className="experience-company">{exp.company}</p>
+                      <p className="experience-company">{exp.companyName}</p>
                     </div>
                     <div className="experience-right">
-                      <p className="experience-duration">
-                        {exp.startDate} -{" "}
-                        {exp.current ? "Present" : exp.endDate}
-                      </p>
+                      {exp.dateRange && (
+                        <p className="experience-duration">
+                          {exp.dateRange}
+                        </p>
+                      )}
                       {exp.location && (
                         <p className="experience-location">{exp.location}</p>
                       )}
                     </div>
                   </div>
-                  {exp.description && (
-                    <p className="experience-description">{exp.description}</p>
+                  {exp.descriptionText && (
+                    <p className="experience-description">
+                      {exp.descriptionText}
+                    </p>
                   )}
-                  {hasContent(exp.bullets || exp.highlights) && (
+                  {exp.bulletItems.length > 0 && (
                     <ul className="experience-bullets">
-                      {(exp.bullets || exp.highlights).map((bullet, idx) => (
+                      {exp.bulletItems.map((bullet, idx) => (
                         <li key={idx}>{bullet}</li>
                       ))}
                     </ul>
                   )}
                 </div>
-              ))}
+                  );
+                })}
             </div>
           </section>
         ),
 
-        projects: hasContent(resumeData.projects) && (
+        projects: hasContent(projectList) && (
           <section
             key="projects"
             className="resume-section"
             style={sectionStyle}
           >
-            <h2 className="section-title">{getSectionTitle("projects")}</h2>
+            <h2 className="pv2-section-title">{getSectionTitle("projects")}</h2>
             <div className="section-content">
-              {resumeData.projects.map((project, index) => (
+              {normalizedProjects.map((project, index) => {
+
+                  return (
                 <div
                   key={index}
                   className="project-item"
                   style={{
                     ...sectionStyle,
-                    animation: `fadeInHighlight 0.5s ease ${index * 0.1}s`,
+                    animation: isPrintMode
+                      ? "none"
+                      : `fadeInHighlight 0.5s ease ${index * 0.1}s`,
                   }}
                 >
                   <div className="project-header">
                     <h3 className="project-name">
-                      {project.name || project.title}
+                      {project.title}
                       {project.source === "github" && (
                         <span className="github-tag">
                           <Github size={12} /> GitHub
@@ -303,8 +449,10 @@ const ProfessionalV2Template = forwardRef(
                       </a>
                     )}
                   </div>
-                  {project.description && (
-                    <p className="project-description">{project.description}</p>
+                  {project.descriptionText && (
+                    <p className="project-description">
+                      {project.descriptionText}
+                    </p>
                   )}
                   {hasContent(project.technologies || project.techStack) && (
                     <div className="project-tech">
@@ -314,30 +462,29 @@ const ProfessionalV2Template = forwardRef(
                         : project.technologies || project.techStack}
                     </div>
                   )}
-                  {hasContent(project.bullets || project.highlights) && (
+                  {project.bulletItems.length > 0 && (
                     <ul className="project-bullets">
-                      {(project.bullets || project.highlights).map(
-                        (bullet, idx) => (
-                          <li key={idx}>{bullet}</li>
-                        )
-                      )}
+                      {project.bulletItems.map((bullet, idx) => (
+                        <li key={idx}>{bullet}</li>
+                      ))}
                     </ul>
                   )}
                 </div>
-              ))}
+                  );
+                })}
             </div>
           </section>
         ),
 
-        education: hasContent(resumeData.education) && (
+        education: hasContent(educationList) && (
           <section
             key="education"
             className="resume-section"
             style={sectionStyle}
           >
-            <h2 className="section-title">{getSectionTitle("education")}</h2>
+            <h2 className="pv2-section-title">{getSectionTitle("education")}</h2>
             <div className="section-content">
-              {resumeData.education.map((edu, index) => (
+              {educationList.map((edu, index) => (
                 <div
                   key={index}
                   className="education-item"
@@ -352,9 +499,11 @@ const ProfessionalV2Template = forwardRef(
                       )}
                     </div>
                     <div className="education-right">
-                      <p className="education-duration">
-                        {edu.startDate} - {edu.endDate}
-                      </p>
+                      {getEducationDateRange(edu) && (
+                        <p className="education-duration">
+                          {getEducationDateRange(edu)}
+                        </p>
+                      )}
                       {edu.gpa && (
                         <p className="education-gpa">GPA: {edu.gpa}</p>
                       )}
@@ -373,24 +522,26 @@ const ProfessionalV2Template = forwardRef(
           </section>
         ),
 
-        certifications: hasContent(resumeData.certifications) && (
+        certifications: hasContent(certificationList) && (
           <section
             key="certifications"
             className="resume-section"
             style={sectionStyle}
           >
-            <h2 className="section-title">
+            <h2 className="pv2-section-title">
               {getSectionTitle("certifications")}
             </h2>
             <div className="section-content">
-              {resumeData.certifications.map((cert, index) => (
+              {certificationList.map((cert, index) => (
                 <div
                   key={index}
                   className="certification-item"
                   style={sectionStyle}
                 >
                   <div className="certification-header">
-                    <h3 className="certification-title">{cert.title}</h3>
+                    <h3 className="certification-title">
+                      {getCertificationTitle(cert)}
+                    </h3>
                     {cert.date && (
                       <span className="certification-date">{cert.date}</span>
                     )}
@@ -407,16 +558,16 @@ const ProfessionalV2Template = forwardRef(
           </section>
         ),
 
-        achievements: hasContent(resumeData.achievements) && (
+        achievements: hasContent(achievementList) && (
           <section
             key="achievements"
             className="resume-section"
             style={sectionStyle}
           >
-            <h2 className="section-title">{getSectionTitle("achievements")}</h2>
+            <h2 className="pv2-section-title">{getSectionTitle("achievements")}</h2>
             <div className="section-content">
               <ul className="achievements-list">
-                {resumeData.achievements.map((achievement, index) => (
+                {achievementList.map((achievement, index) => (
                   <li key={index}>{achievement}</li>
                 ))}
               </ul>
@@ -425,19 +576,30 @@ const ProfessionalV2Template = forwardRef(
         ),
 
         customSections:
-          hasContent(resumeData.customSections) &&
-          resumeData.customSections.map((section, index) => (
-            <section
-              key={`custom-${index}`}
-              className="resume-section"
-              style={sectionStyle}
-            >
-              <h2 className="section-title">{section.title}</h2>
-              <div className="section-content">
-                <p style={{whiteSpace: "pre-wrap"}}>{section.content}</p>
-              </div>
-            </section>
-          )),
+          hasContent(normalizedCustomSections) &&
+          normalizedCustomSections.map((section, index) => {
+
+            return (
+              <section
+                key={`custom-${index}`}
+                className="resume-section"
+                style={sectionStyle}
+              >
+                <h2 className="pv2-section-title">{section.title}</h2>
+                <div className="section-content">
+                  {section.items.length > 0 ? (
+                    <ul className="achievements-list">
+                      {section.items.map((item, itemIndex) => (
+                        <li key={`${index}-item-${itemIndex}`}>{item}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p style={{whiteSpace: "pre-wrap"}}>{section.content}</p>
+                  )}
+                </div>
+              </section>
+            );
+          }),
       };
 
       return sections[sectionId];
@@ -451,27 +613,33 @@ const ProfessionalV2Template = forwardRef(
           else if (ref) ref.current = el;
         }}
         className="professional-v2-template"
-        style={{minHeight: "11in"}}
+        style={{
+          minHeight: isPrintMode ? "auto" : "11in",
+          "--pv2-primary": selectedTheme.primary,
+          "--pv2-secondary": selectedTheme.secondary,
+          "--pv2-accent": selectedTheme.accent,
+          "--pv2-text": selectedTheme.text,
+          "--pv2-text-light": selectedTheme.textLight,
+          "--pv2-text-muted": selectedTheme.textMuted,
+        }}
       >
-        <div className="template-container">
+        <div className={`template-container${isPrintMode ? " pv2-print-source" : ""}`}>
           {/* Unique Header Design */}
           <header className="resume-header" style={sectionStyle}>
             <div className="header-top">
               <div className="header-left">
                 <h1 className="header-name">
-                  {resumeData.personalInfo?.fullName || "Your Name"}
+                  {fullName}
                 </h1>
-                {resumeData.personalInfo?.title && (
-                  <p className="header-title">
-                    {resumeData.personalInfo.title}
-                  </p>
+                {professionalTitle && (
+                  <p className="header-title">{professionalTitle}</p>
                 )}
               </div>
-              {resumeData.personalInfo?.photo && (
+              {profilePhoto && (
                 <div className="header-photo">
                   <img
-                    src={resumeData.personalInfo.photo}
-                    alt={resumeData.personalInfo?.fullName}
+                    src={profilePhoto}
+                    alt={fullName}
                   />
                 </div>
               )}
@@ -479,29 +647,29 @@ const ProfessionalV2Template = forwardRef(
 
             {/* Contact Info Bar */}
             <div className="contact-bar">
-              {resumeData.personalInfo?.email && (
+              {hasValue(contactInfo?.email) && (
                 <div className="contact-item">
                   <Mail size={12} className="contact-icon" />
-                  <span>{resumeData.personalInfo.email}</span>
+                  <span>{contactInfo.email}</span>
                 </div>
               )}
-              {resumeData.personalInfo?.phone && (
+              {hasValue(contactInfo?.phone) && (
                 <div className="contact-item">
                   <Phone size={12} className="contact-icon" />
-                  <span>{resumeData.personalInfo.phone}</span>
+                  <span>{contactInfo.phone}</span>
                 </div>
               )}
-              {resumeData.personalInfo?.location && (
+              {hasValue(contactInfo?.location) && (
                 <div className="contact-item">
                   <MapPin size={12} className="contact-icon" />
-                  <span>{resumeData.personalInfo.location}</span>
+                  <span>{contactInfo.location}</span>
                 </div>
               )}
-              {resumeData.personalInfo?.linkedin && (
+              {hasValue(contactInfo?.linkedin) && (
                 <div className="contact-item">
                   <Linkedin size={12} className="contact-icon" />
                   <a
-                    href={resumeData.personalInfo.linkedin}
+                    href={contactInfo.linkedin}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -509,11 +677,11 @@ const ProfessionalV2Template = forwardRef(
                   </a>
                 </div>
               )}
-              {resumeData.personalInfo?.github && (
+              {hasValue(contactInfo?.github) && (
                 <div className="contact-item">
                   <Github size={12} className="contact-icon" />
                   <a
-                    href={resumeData.personalInfo.github}
+                    href={contactInfo.github}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -521,11 +689,11 @@ const ProfessionalV2Template = forwardRef(
                   </a>
                 </div>
               )}
-              {resumeData.personalInfo?.website && (
+              {hasValue(contactInfo?.website) && (
                 <div className="contact-item">
                   <Globe size={12} className="contact-icon" />
                   <a
-                    href={resumeData.personalInfo.website}
+                    href={contactInfo.website}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -536,10 +704,10 @@ const ProfessionalV2Template = forwardRef(
             </div>
 
             {/* Languages inline if available */}
-            {hasContent(resumeData.languages) && (
+            {hasContent(languageList) && (
               <div className="languages-bar">
                 <strong>Languages:</strong>
-                {resumeData.languages.map((lang, index) => (
+                {languageList.map((lang, index) => (
                   <span key={index} className="language-tag">
                     {typeof lang === "string"
                       ? lang
@@ -562,6 +730,12 @@ const ProfessionalV2Template = forwardRef(
         {/* Styles */}
         <style jsx>{`
           .professional-v2-template {
+            --pv2-primary: #1d4ed8;
+            --pv2-secondary: #2563eb;
+            --pv2-accent: #3b82f6;
+            --pv2-text: #111827;
+            --pv2-text-light: #4b5563;
+            --pv2-text-muted: #6b7280;
             font-family:
               "Inter",
               "Roboto",
@@ -570,7 +744,7 @@ const ProfessionalV2Template = forwardRef(
               BlinkMacSystemFont,
               sans-serif;
             background: white;
-            color: #1a1a1a;
+            color: var(--pv2-text);
             line-height: 1.5;
           }
 
@@ -580,9 +754,123 @@ const ProfessionalV2Template = forwardRef(
             background: white;
           }
 
+          .template-container.pv2-print-source {
+            max-width: none;
+          }
+
+          .pv2-print-source .resume-header {
+            padding: 7px 10px 6px 10px;
+            margin-bottom: 6px;
+            border-radius: 0;
+          }
+
+          .pv2-print-source .header-top {
+            margin-bottom: 4px;
+            gap: 8px;
+          }
+
+          .pv2-print-source .header-name {
+            font-size: 17px;
+            margin-bottom: 1px;
+          }
+
+          .pv2-print-source .header-title {
+            font-size: 10.5px;
+          }
+
+          .pv2-print-source .header-photo {
+            width: 44px;
+            height: 44px;
+          }
+
+          .pv2-print-source .contact-bar {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            padding: 4px 6px;
+            margin-bottom: 4px;
+            gap: 3px 10px;
+            backdrop-filter: none;
+          }
+
+          .pv2-print-source .contact-item {
+            font-size: 9px;
+            gap: 4px;
+            white-space: nowrap;
+          }
+
+          .pv2-print-source .languages-bar {
+            padding: 5px 8px;
+            gap: 6px;
+            font-size: 9.5px;
+          }
+
+          .pv2-print-source .language-tag {
+            font-size: 9px;
+            padding: 2px 6px;
+          }
+
+          .pv2-print-source .main-content {
+            padding: 0 10px 8px 10px;
+          }
+
+          .pv2-print-source .section-content {
+            display: block;
+          }
+
+          .pv2-print-source .resume-section {
+            margin-bottom: 10px;
+            break-inside: avoid;
+          }
+
+          .pv2-print-source .experience-item,
+          .pv2-print-source .project-item,
+          .pv2-print-source .education-item,
+          .pv2-print-source .certification-item {
+            padding: 8px 10px;
+            margin-bottom: 8px;
+            min-height: auto;
+            height: auto;
+            background: #ffffff;
+            break-inside: avoid;
+          }
+
+          .pv2-print-source .experience-bullets,
+          .pv2-print-source .project-bullets,
+          .pv2-print-source .achievements-list,
+          .pv2-print-source .education-achievements {
+            display: block;
+            margin: 4px 0 0 0;
+            padding: 0;
+          }
+
+          .pv2-print-source .experience-bullets li,
+          .pv2-print-source .project-bullets li,
+          .pv2-print-source .achievements-list li,
+          .pv2-print-source .education-achievements li {
+            display: list-item;
+            list-style: disc outside;
+            margin: 0 0 3px 18px;
+            padding-left: 0;
+            line-height: 1.35;
+          }
+
+          .pv2-print-source .experience-bullets li::before,
+          .pv2-print-source .project-bullets li::before,
+          .pv2-print-source .achievements-list li::before,
+          .pv2-print-source .education-achievements li::before {
+            content: none;
+          }
+
           /* UNIQUE HEADER DESIGN */
           .resume-header {
-            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            background: linear-gradient(
+              135deg,
+              var(--pv2-primary) 0%,
+              var(--pv2-secondary) 100%
+            );
             color: white;
             padding: 20px 24px 16px 24px;
             margin-bottom: 18px;
@@ -710,25 +998,29 @@ const ProfessionalV2Template = forwardRef(
             margin-bottom: 16px;
           }
 
-          .section-title {
+          .professional-v2-template .pv2-section-title {
             font-size: 14px;
             font-weight: 700;
-            color: #1e3a8a;
+            color: var(--pv2-primary) !important;
             text-transform: uppercase;
             letter-spacing: 0.8px;
             margin: 0 0 10px 0;
             padding-bottom: 5px;
-            border-bottom: 2px solid #1e3a8a;
+            border-bottom: 2px solid var(--pv2-primary);
             display: flex;
             align-items: center;
             gap: 8px;
           }
 
-          .section-title::before {
+          .professional-v2-template .pv2-section-title::before {
             content: "";
             width: 4px;
             height: 14px;
-            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            background: linear-gradient(
+              135deg,
+              var(--pv2-primary) 0%,
+              var(--pv2-secondary) 100%
+            );
             border-radius: 2px;
           }
 
@@ -741,7 +1033,7 @@ const ProfessionalV2Template = forwardRef(
           /* SUMMARY */
           .summary-text {
             font-size: 12px;
-            color: #1a1a1a;
+            color: var(--pv2-text);
             line-height: 1.6;
             margin: 0;
             text-align: justify;
@@ -755,7 +1047,11 @@ const ProfessionalV2Template = forwardRef(
           }
 
           .skill-badge {
-            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            background: linear-gradient(
+              135deg,
+              var(--pv2-primary) 0%,
+              var(--pv2-secondary) 100%
+            );
             color: white;
             padding: 5px 12px;
             border-radius: 4px;
@@ -766,18 +1062,13 @@ const ProfessionalV2Template = forwardRef(
 
           .skill-badge:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(30, 58, 138, 0.3);
-          }
-
-          .skill-badge:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(30, 58, 138, 0.3);
+            box-shadow: 0 4px 8px rgba(37, 99, 235, 0.25);
           }
 
           /* EXPERIENCE */
           .experience-item {
             padding: 10px 12px;
-            border-left: 3px solid #2563eb;
+            border-left: 3px solid var(--pv2-secondary);
             background: linear-gradient(90deg, #f8fafc 0%, #ffffff 100%);
             border-radius: 4px;
             transition: all 0.2s;
@@ -785,7 +1076,7 @@ const ProfessionalV2Template = forwardRef(
 
           .experience-item:hover {
             background: #f1f5f9;
-            border-left-color: #1e3a8a;
+            border-left-color: var(--pv2-primary);
           }
 
           .experience-header {
@@ -807,33 +1098,33 @@ const ProfessionalV2Template = forwardRef(
           .experience-role {
             font-size: 13px;
             font-weight: 700;
-            color: #1a1a1a;
+            color: var(--pv2-text);
             margin: 0 0 2px 0;
           }
 
           .experience-company {
             font-size: 12px;
-            color: #1e3a8a;
+            color: var(--pv2-primary);
             font-weight: 600;
             margin: 0;
           }
 
           .experience-duration {
             font-size: 11px;
-            color: #1a1a1a;
+            color: var(--pv2-text);
             font-weight: 500;
             margin: 0 0 2px 0;
           }
 
           .experience-location {
             font-size: 10px;
-            color: #64748b;
+            color: var(--pv2-text-muted);
             margin: 0;
           }
 
           .experience-description {
             font-size: 12px;
-            color: #1a1a1a;
+            color: var(--pv2-text);
             margin: 0 0 6px 0;
             line-height: 1.5;
           }
@@ -846,7 +1137,7 @@ const ProfessionalV2Template = forwardRef(
 
           .experience-bullets li {
             font-size: 11px;
-            color: #1a1a1a;
+            color: var(--pv2-text);
             padding-left: 14px;
             position: relative;
             margin-bottom: 3px;
@@ -857,7 +1148,7 @@ const ProfessionalV2Template = forwardRef(
             content: "▸";
             position: absolute;
             left: 0;
-            color: #2563eb;
+            color: var(--pv2-secondary);
             font-weight: bold;
           }
 
@@ -871,7 +1162,7 @@ const ProfessionalV2Template = forwardRef(
           }
 
           .project-item:hover {
-            border-color: #2563eb;
+            border-color: var(--pv2-secondary);
             box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
             background: white;
           }
@@ -888,7 +1179,7 @@ const ProfessionalV2Template = forwardRef(
           .project-name {
             font-size: 13px;
             font-weight: 700;
-            color: #1a1a1a;
+            color: var(--pv2-text);
             margin: 0;
             display: flex;
             align-items: center;
@@ -899,7 +1190,11 @@ const ProfessionalV2Template = forwardRef(
             display: inline-flex;
             align-items: center;
             gap: 3px;
-            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            background: linear-gradient(
+              135deg,
+              var(--pv2-primary) 0%,
+              var(--pv2-secondary) 100%
+            );
             color: white;
             padding: 2px 6px;
             border-radius: 3px;
@@ -909,7 +1204,7 @@ const ProfessionalV2Template = forwardRef(
 
           .project-link {
             font-size: 11px;
-            color: #2563eb;
+            color: var(--pv2-secondary);
             text-decoration: none;
             font-weight: 600;
           }
@@ -920,19 +1215,19 @@ const ProfessionalV2Template = forwardRef(
 
           .project-description {
             font-size: 12px;
-            color: #1a1a1a;
+            color: var(--pv2-text);
             margin: 0 0 6px 0;
             line-height: 1.5;
           }
 
           .project-tech {
             font-size: 11px;
-            color: #1a1a1a;
+            color: var(--pv2-text);
             margin-bottom: 6px;
           }
 
           .project-tech strong {
-            color: #1e3a8a;
+            color: var(--pv2-primary);
             font-weight: 600;
           }
 
@@ -944,7 +1239,7 @@ const ProfessionalV2Template = forwardRef(
 
           .project-bullets li {
             font-size: 11px;
-            color: #1a1a1a;
+            color: var(--pv2-text);
             padding-left: 14px;
             position: relative;
             margin-bottom: 3px;
@@ -955,7 +1250,7 @@ const ProfessionalV2Template = forwardRef(
             content: "▸";
             position: absolute;
             left: 0;
-            color: #2563eb;
+            color: var(--pv2-secondary);
             font-weight: bold;
           }
 
@@ -964,12 +1259,12 @@ const ProfessionalV2Template = forwardRef(
             padding: 10px;
             background: #ffffff;
             border-radius: 3px;
-            border-left: 3px solid #2563eb;
+            border-left: 3px solid var(--pv2-secondary);
             transition: all 0.2s;
           }
 
           .education-item:hover {
-            border-left-color: #1e3a8a;
+            border-left-color: var(--pv2-primary);
             box-shadow: 0 1px 3px rgba(37, 99, 235, 0.1);
           }
 
@@ -983,33 +1278,33 @@ const ProfessionalV2Template = forwardRef(
           .education-degree {
             font-size: 13px;
             font-weight: 700;
-            color: #1a1a1a;
+            color: var(--pv2-text);
             margin: 0 0 2px 0;
           }
 
           .education-institution {
             font-size: 12px;
-            color: #2563eb;
+            color: var(--pv2-secondary);
             font-weight: 600;
             margin: 0 0 2px 0;
           }
 
           .education-field {
             font-size: 11px;
-            color: #1a1a1a;
+            color: var(--pv2-text);
             margin: 0;
           }
 
           .education-duration {
             font-size: 11px;
-            color: #1a1a1a;
+            color: var(--pv2-text);
             font-weight: 500;
             margin: 0 0 2px 0;
           }
 
           .education-gpa {
             font-size: 11px;
-            color: #2563eb;
+            color: var(--pv2-secondary);
             font-weight: 600;
             margin: 0;
           }
@@ -1022,7 +1317,7 @@ const ProfessionalV2Template = forwardRef(
 
           .education-achievements li {
             font-size: 11px;
-            color: #1a1a1a;
+            color: var(--pv2-text);
             padding-left: 14px;
             position: relative;
             margin-bottom: 2px;
@@ -1033,21 +1328,21 @@ const ProfessionalV2Template = forwardRef(
             content: "▸";
             position: absolute;
             left: 0;
-            color: #2563eb;
+            color: var(--pv2-secondary);
             font-weight: bold;
           }
 
           /* CERTIFICATIONS */
           .certification-item {
             padding: 10px;
-            border-left: 3px solid #2563eb;
+            border-left: 3px solid var(--pv2-secondary);
             background: #ffffff;
             border-radius: 3px;
             transition: all 0.2s;
           }
 
           .certification-item:hover {
-            border-left-color: #1e3a8a;
+            border-left-color: var(--pv2-primary);
             box-shadow: 0 1px 3px rgba(37, 99, 235, 0.1);
           }
 
@@ -1063,26 +1358,26 @@ const ProfessionalV2Template = forwardRef(
           .certification-title {
             font-size: 12px;
             font-weight: 700;
-            color: #1a1a1a;
+            color: var(--pv2-text);
             margin: 0;
           }
 
           .certification-date {
             font-size: 10px;
-            color: #1a1a1a;
+            color: var(--pv2-text);
             font-weight: 500;
           }
 
           .certification-issuer {
             font-size: 11px;
-            color: #2563eb;
+            color: var(--pv2-secondary);
             font-weight: 600;
             margin: 0 0 3px 0;
           }
 
           .certification-description {
             font-size: 11px;
-            color: #1a1a1a;
+            color: var(--pv2-text);
             line-height: 1.5;
             margin: 0;
           }
@@ -1096,7 +1391,7 @@ const ProfessionalV2Template = forwardRef(
 
           .achievements-list li {
             font-size: 11px;
-            color: #1a1a1a;
+            color: var(--pv2-text);
             padding-left: 14px;
             position: relative;
             margin-bottom: 3px;
@@ -1107,7 +1402,7 @@ const ProfessionalV2Template = forwardRef(
             content: "★";
             position: absolute;
             left: 0;
-            color: #2563eb;
+            color: var(--pv2-secondary);
             font-weight: bold;
           }
 
@@ -1147,21 +1442,167 @@ const ProfessionalV2Template = forwardRef(
           @media print {
             .professional-v2-template {
               background: white;
+              min-height: auto !important;
+              color: #111827 !important;
+            }
+
+            .professional-v2-template,
+            .professional-v2-template * {
+              animation: none !important;
+              transition: none !important;
+            }
+
+            .template-container {
+              max-width: none;
+            }
+
+            .main-content,
+            .main-content * {
+              color: #111827 !important;
+              -webkit-text-fill-color: #111827 !important;
+            }
+
+            .skill-badge,
+            .skill-badge * {
+              color: #ffffff !important;
+              -webkit-text-fill-color: #ffffff !important;
             }
 
             .resume-header {
-              background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+              background: linear-gradient(
+                135deg,
+                var(--pv2-primary) 0%,
+                var(--pv2-secondary) 100%
+              );
+              padding: 10px 14px 8px 14px;
+              margin-bottom: 8px;
               -webkit-print-color-adjust: exact;
               print-color-adjust: exact;
+            }
+
+            .header-top {
+              margin-bottom: 6px;
+              gap: 10px;
+            }
+
+            .header-name {
+              font-size: 20px;
+              margin-bottom: 2px;
+            }
+
+            .header-title {
+              font-size: 12px;
+            }
+
+            .header-photo {
+              width: 56px;
+              height: 56px;
+            }
+
+            .contact-bar {
+              padding: 6px 8px;
+              margin-bottom: 6px;
+              gap: 6px 10px;
+            }
+
+            .contact-item {
+              font-size: 9.5px;
+              gap: 4px;
+            }
+
+            .languages-bar {
+              padding: 5px 8px;
+              gap: 6px;
+              font-size: 9.5px;
+            }
+
+            .language-tag {
+              font-size: 9px;
+              padding: 2px 6px;
+            }
+
+            .resume-header,
+            .resume-header * {
+              color: #ffffff !important;
+              -webkit-text-fill-color: #ffffff !important;
+            }
+
+            .main-content {
+              padding: 0 12px 8px 12px;
+            }
+
+            .section-content {
+              display: block !important;
+              gap: 7px;
+            }
+
+            .resume-section {
+              margin-bottom: 10px !important;
+              page-break-inside: avoid;
+              break-inside: avoid;
+            }
+
+            .experience-item,
+            .project-item,
+            .education-item,
+            .certification-item {
+              padding: 8px 10px;
+              margin-bottom: 8px !important;
+              min-height: auto !important;
+              height: auto !important;
+              page-break-inside: avoid !important;
+              break-inside: avoid !important;
+              background: #ffffff !important;
+            }
+
+            .experience-bullets,
+            .project-bullets,
+            .achievements-list,
+            .education-achievements {
+              display: block !important;
+              margin: 4px 0 0 0 !important;
+              padding: 0 !important;
+            }
+
+            .experience-bullets li,
+            .project-bullets li,
+            .achievements-list li,
+            .education-achievements li {
+              display: list-item !important;
+              list-style: disc outside !important;
+              margin: 0 0 3px 18px !important;
+              padding-left: 0 !important;
+              line-height: 1.35 !important;
+            }
+
+            .experience-bullets li::before,
+            .project-bullets li::before,
+            .achievements-list li::before,
+            .education-achievements li::before {
+              content: none !important;
+            }
+
+            .experience-header,
+            .project-header,
+            .education-header,
+            .certification-header {
+              margin-bottom: 4px !important;
+              gap: 4px !important;
+            }
+
+            .experience-description,
+            .project-description,
+            .summary-text,
+            .experience-bullets li,
+            .project-bullets li,
+            .achievements-list li {
+              color: #111827 !important;
+              -webkit-text-fill-color: #111827 !important;
             }
 
             .expand-skills-btn,
             .read-more-btn {
               display: none;
-            }
-
-            .resume-section {
-              page-break-inside: avoid;
             }
           }
 

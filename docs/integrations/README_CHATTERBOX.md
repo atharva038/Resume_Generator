@@ -38,7 +38,7 @@ client/src/pages/
 
 ```
 Project Root/
-├── CHATTERBOX_INTEGRATION_SUMMARY.md  # This summary
+├── ../changelogs/CHATTERBOX_INTEGRATION_SUMMARY.md  # This summary
 ├── VOICE_SERVICE_GUIDE.md             # Updated main guide
 └── chatterbox-service/
     ├── README.md                      # Service docs
@@ -273,7 +273,7 @@ curl -X POST http://localhost:5002/tts/synthesize \
 
 ## 📖 Documentation Quick Links
 
-1. **CHATTERBOX_INTEGRATION_SUMMARY.md** ← You are here!
+1. **../changelogs/CHATTERBOX_INTEGRATION_SUMMARY.md**
 2. **VOICE_SERVICE_GUIDE.md** - Complete voice services guide
 3. **chatterbox-service/README.md** - API documentation
 4. **chatterbox-service/SETUP_GUIDE.md** - Setup troubleshooting

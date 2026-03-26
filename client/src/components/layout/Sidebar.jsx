@@ -315,7 +315,7 @@ const Sidebar = ({isOpen, setIsOpen}) => {
           {isOpen && (
             <div className="border-t border-gray-200 dark:border-zinc-800 p-4">
               <p className="text-xs text-gray-500 dark:text-gray-500 text-center font-medium">
-                © 2025 SmartNShine
+                © 2026 SmartNShine
               </p>
             </div>
           )}

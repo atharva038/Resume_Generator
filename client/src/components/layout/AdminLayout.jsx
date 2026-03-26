@@ -12,7 +12,7 @@ import {
   LogOut,
   Menu,
   X,
-  FileBox,
+  FileBox, 
   Activity,
   Moon,
   Sun,

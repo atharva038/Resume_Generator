@@ -29,7 +29,7 @@ This directory contains all resume template components for the ATS Resume Genera
 ### Executive & Leadership
 - **ExecutiveTemplate** - Premium format for C-suite positions
 - **CorporateEliteTemplate** - Fortune 500-ready (99% ATS compatibility)
-- **StrategicLeaderTemplate** - Leadership-focused (97% ATS compatibility)
+- **StrategicLeadershipTemplate** - Leadership-focused (97% ATS compatibility)
 - **ImpactProTemplate** - Results-driven with metrics focus (98% ATS compatibility)
 
 ### Specialized
@@ -413,7 +413,7 @@ const templates = {
 ### ATS Compatibility Scores
 
 - **99%+**: CorporateEliteTemplate
-- **97-98%**: StrategicLeaderTemplate, ImpactProTemplate
+- **97-98%**: StrategicLeadershipTemplate, ImpactProTemplate
 - **95%+**: Professional2Template, ClassicTemplate
 - **94%+**: Creative2Template, ModernTemplate
 - **90%+**: All other templates
