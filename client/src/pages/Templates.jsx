@@ -22,7 +22,7 @@ import TechTemplate from "@/components/templates/TechTemplate";
 import Creative2Template from "@/components/templates/Creative2Template";
 import AcademicTemplate from "@/components/templates/AcademicTemplate";
 import CorporateEliteTemplate from "@/components/templates/CorporateEliteTemplate";
-import StrategicLeaderTemplate from "@/components/templates/StrategicLeaderTemplate";
+import StrategicLeadershipTemplate from "@/components/templates/StrategicLeadershipTemplate";
 import ImpactProTemplate from "@/components/templates/ImpactProTemplate";
 import GitHubStyleTemplate from "@/components/templates/GitHubStyleTemplate";
 
@@ -236,8 +236,8 @@ const templates = [
   },
   {
     id: "strategic-leader",
-    name: "Strategic Leader",
-    component: StrategicLeaderTemplate,
+    name: "Strategic Leadership",
+    component: StrategicLeadershipTemplate,
     category: "Leadership",
     atsScore: 97,
     description:

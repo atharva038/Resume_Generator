@@ -1,60 +1,19 @@
-import {forwardRef, useRef, useEffect, useState} from "react";
+import {forwardRef, useRef, useEffect, useMemo} from "react";
 
 /**
- * GitHubStyleTemplate - Developer-focused resume template inspired by GitHub's design
+ * Metro Grid Narrative template
  *
- * Features:
- * - Clean, monospace-inspired design aesthetic
- * - Developer-friendly layout emphasizing open source contributions
- * - GitHub profile and project highlighting
- * - Minimalist black and white color scheme with green accents
- * - Automatic page overflow detection with logging
- * - ATS-compatible structure
- *
- * Best for: Software Developers, Open Source Contributors, Tech Roles
- *
- * @component
- * @param {Object} props - Component props
- * @param {Object} props.resumeData - Complete resume data object (same structure as ClassicTemplate)
- * @param {Object} props.resumeData.contact - Contact information (github URL highly recommended)
- * @param {Array<Object>} [props.resumeData.projects] - Projects (prominently displayed)
- * @param {Function} [props.onPageUsageChange] - Callback for page overflow detection
- * @param {React.Ref} ref - Forwarded ref for PDF generation
- *
- * @example
- * <GitHubStyleTemplate
- *   ref={templateRef}
- *   resumeData={{
- *     name: "Alex Developer",
- *     contact: {
- *       email: "alex@dev.com",
- *       github: "github.com/alexdev"
- *     },
- *     projects: [{
- *       name: "Open Source Project",
- *       technologies: "React, Node.js",
- *       bullets: ["1k+ GitHub stars", "100+ contributors"]
- *     }]
- *   }}
- * />
+ * A modular, ATS-safe design direction with rail markers, split masthead,
+ * and matrix-style section rhythm.
  */
 const GitHubStyleTemplate = forwardRef(
   ({resumeData, onPageUsageChange}, ref) => {
-    // Page overflow detection state
     const containerRef = useRef(null);
-    const [pageOverflowInfo, setPageOverflowInfo] = useState({
-      isOverflowing: false,
-      currentHeight: 0,
-      maxHeight: 1056, // 11in at 96dpi (matches template minHeight)
-      overflowPercentage: 0,
-      templateName: "GitHubStyleTemplate",
-    });
 
-    // Detect page overflow whenever resumeData changes
     useEffect(() => {
       if (containerRef.current) {
         const currentHeight = containerRef.current.scrollHeight;
-        const maxHeight = 1056; // 11in at 96dpi (matches template minHeight)
+        const maxHeight = 1056;
         const isOverflowing = currentHeight > maxHeight;
         const overflowPercentage = isOverflowing
           ? Math.round(((currentHeight - maxHeight) / maxHeight) * 100)
@@ -69,512 +28,628 @@ const GitHubStyleTemplate = forwardRef(
           templateName: "GitHubStyleTemplate",
         };
 
-        setPageOverflowInfo(usageInfo);
-
-        // Log overflow information for testing
-        if (isOverflowing) {
-          console.log(
-            `⚠️ GitHubStyleTemplate: Page overflow detected! Current height: ${currentHeight}px, Max: ${maxHeight}px, Overflow: ${overflowPercentage}%`
-          );
-        } else {
-          console.log(
-            `✅ GitHubStyleTemplate: Content fits on one page. Height: ${currentHeight}px / ${maxHeight}px (${usageInfo.percentage}% filled)`
-          );
-        }
-
-        // Pass data to parent component if callback provided
         if (onPageUsageChange) {
           onPageUsageChange(usageInfo);
         }
       }
-    }, [resumeData]);
+    }, [resumeData, onPageUsageChange]);
 
-    // Color Themes - GitHub style
     const colorThemes = {
-      github: {
-        primary: "#24292e", // GitHub dark gray
-        secondary: "#0366d6", // GitHub blue
-        text: "#24292e",
-        textLight: "#586069",
-        textMuted: "#6a737d",
-        border: "#e1e4e8",
+      metroNavy: {
+        primary: "#13315c",
+        accent: "#1d4e89",
+        rail: "#2f6690",
+        badgeText: "#ffffff",
+        text: "#111827",
+        textLight: "#374151",
+        textMuted: "#4b5563",
+        border: "#d1d5db",
+        panelBg: "#f8fafc",
         bg: "#ffffff",
       },
-      dark: {
-        primary: "#0d1117", // GitHub dark mode
-        secondary: "#58a6ff",
-        text: "#c9d1d9",
-        textLight: "#8b949e",
-        textMuted: "#6e7681",
-        border: "#30363d",
-        bg: "#0d1117",
-      },
-      blue: {
-        primary: "#0366d6",
-        secondary: "#1a73e8",
-        text: "#202124",
-        textLight: "#5f6368",
-        textMuted: "#80868b",
-        border: "#dadce0",
+      metroTeal: {
+        primary: "#0f4c5c",
+        accent: "#157a6e",
+        rail: "#1b9aaa",
+        badgeText: "#ffffff",
+        text: "#111827",
+        textLight: "#334155",
+        textMuted: "#475569",
+        border: "#d4d4d8",
+        panelBg: "#f8fafc",
         bg: "#ffffff",
       },
-      green: {
-        primary: "#22863a", // GitHub green
-        secondary: "#28a745",
-        text: "#24292e",
-        textLight: "#586069",
-        textMuted: "#6a737d",
-        border: "#e1e4e8",
+      metroBurgundy: {
+        primary: "#5e2129",
+        accent: "#8b2635",
+        rail: "#b23a48",
+        badgeText: "#ffffff",
+        text: "#1f2937",
+        textLight: "#374151",
+        textMuted: "#6b7280",
+        border: "#d4d4d8",
+        panelBg: "#faf7f7",
         bg: "#ffffff",
       },
     };
 
-    // Select theme based on resumeData or default to github
     const selectedTheme =
-      colorThemes[resumeData?.colorTheme] || colorThemes.github;
+      colorThemes[resumeData?.selectedTheme || resumeData?.colorTheme] ||
+      colorThemes.metroNavy;
 
-    // Default section order for GitHub style format
+    const headingFont =
+      '"Avenir Next", "Montserrat", "Segoe UI", sans-serif';
+    const bodyFont =
+      '"Source Sans 3", "Calibri", "Trebuchet MS", sans-serif';
+
+    const isDenseContent = useMemo(() => {
+      let score = 0;
+      score += (resumeData?.experience?.length || 0) * 3;
+      score += (resumeData?.projects?.length || 0) * 2;
+      score += (resumeData?.education?.length || 0) * 1.5;
+      score += (resumeData?.skills?.length || 0) * 1.5;
+      score += (resumeData?.certifications?.length || 0) * 1;
+      score += (resumeData?.achievements?.length || 0) * 1;
+      score += (resumeData?.publications?.length || 0) * 1;
+      if (resumeData?.summary?.length > 220) score += 2;
+      return score >= 24;
+    }, [resumeData]);
+
+    const compact = {
+      pagePadding: isDenseContent ? "0.44in" : "0.5in",
+      bandMarginSmall: isDenseContent ? "6px" : "8px",
+      bandMarginLarge: isDenseContent ? "8px" : "10px",
+      panelPadding: isDenseContent ? "6px 7px" : "8px 9px",
+      railWidth: isDenseContent ? "5px" : "6px",
+      headingSize: isDenseContent ? "10pt" : "10.8pt",
+      bodySize: isDenseContent ? "8.8pt" : "9.3pt",
+      smallText: isDenseContent ? "8pt" : "8.5pt",
+    };
+
     const DEFAULT_SECTION_ORDER = [
       "summary",
       "experience",
       "projects",
-      "education",
-      "publications",
       "skills",
+      "education",
+      "certifications",
+      "achievements",
+      "publications",
+      "customSections",
     ];
 
     const sectionOrder =
       resumeData.sectionOrder && resumeData.sectionOrder.length > 0
         ? resumeData.sectionOrder.filter(
-            (id) => !["certifications", "achievements", "personal"].includes(id)
+            (id) => !["score", "personal", "recommendations"].includes(id)
           )
         : DEFAULT_SECTION_ORDER;
 
-    // Get custom section titles or use defaults
     const getSectionTitle = (sectionId) => {
       const customTitles = resumeData.sectionTitles || {};
       const defaultTitles = {
-        summary: "SUMMARY",
-        experience: "WORK EXPERIENCE",
-        projects: "PROJECTS",
-        education: "EDUCATION",
-        publications: "PUBLICATIONS",
-        skills: "SKILLS",
+        summary: "Professional Summary",
+        experience: "Experience",
+        projects: "Projects",
+        skills: "Skills Matrix",
+        education: "Education",
+        certifications: "Certifications",
+        achievements: "Achievements",
+        publications: "Publications",
+        customSections: "Additional Information",
       };
-      return (
-        customTitles[sectionId] ||
-        defaultTitles[sectionId] ||
-        sectionId
-      ).toUpperCase();
+      return customTitles[sectionId] || defaultTitles[sectionId] || sectionId;
     };
 
-    // Helper function to format contact items
-    const formatContactItem = (item, icon) => {
-      if (!item) return null;
+    const formatContactItem = (label, value) => {
+      if (!value) return null;
 
-      if (item.startsWith("http")) {
-        return (
-          <a
-            href={item}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              color: selectedTheme.secondary,
-              textDecoration: "none",
-            }}
-          >
-            {icon} {item}
-          </a>
-        );
+      let href = null;
+      if (value.includes("@")) {
+        href = `mailto:${value}`;
+      } else if (value.startsWith("http")) {
+        href = value;
+      } else if (
+        label === "LinkedIn" ||
+        label === "GitHub" ||
+        label === "Website"
+      ) {
+        href = value.startsWith("www.") ? `https://${value}` : `https://${value}`;
       }
 
-      if (item.includes("@")) {
+      if (!href) {
         return (
-          <a
-            href={`mailto:${item}`}
-            style={{
-              color: selectedTheme.secondary,
-              textDecoration: "none",
-            }}
-          >
-            {icon} {item}
-          </a>
+          <span style={{fontSize: "9pt", color: selectedTheme.textLight}}>
+            {label}: {value}
+          </span>
         );
       }
 
       return (
-        <span>
-          {icon} {item}
-        </span>
+        <a
+          href={href}
+          target={href.startsWith("mailto:") ? undefined : "_blank"}
+          rel={href.startsWith("mailto:") ? undefined : "noopener noreferrer"}
+          style={{
+            fontSize: "9pt",
+            color: selectedTheme.accent,
+            textDecoration: "none",
+          }}
+        >
+          {label}: {value}
+        </a>
       );
     };
 
-    // Render section helper function
-    const renderSection = (sectionId) => {
-      // Common style to prevent page breaks inside sections
-      const sectionStyle = {
-        marginBottom: "20px",
-        pageBreakInside: "avoid",
-        breakInside: "avoid",
-      };
+    const renderBandHeader = (label, index) => (
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "6px",
+          marginBottom: "5px",
+        }}
+      >
+        <span
+          style={{
+            backgroundColor: selectedTheme.rail,
+            color: selectedTheme.badgeText,
+            fontSize: "7.8pt",
+            fontWeight: "700",
+            padding: "1px 6px",
+            borderRadius: "4px",
+            letterSpacing: "0.3px",
+            minWidth: "20px",
+            textAlign: "center",
+            fontFamily: headingFont,
+          }}
+        >
+          {String(index + 1).padStart(2, "0")}
+        </span>
+        <h2
+          style={{
+            margin: 0,
+            color: selectedTheme.primary,
+            fontFamily: headingFont,
+            fontSize: compact.headingSize,
+            textTransform: "uppercase",
+            letterSpacing: "0.6px",
+            fontWeight: "700",
+          }}
+        >
+          {label}
+        </h2>
+      </div>
+    );
 
-      const sections = {
-        summary: resumeData.summary && (
-          <section key="summary" style={sectionStyle}>
-            <h2
-              className="font-bold"
-              style={{
-                fontSize: "14pt",
-                color: selectedTheme.primary,
-                marginBottom: "8px",
-                paddingBottom: "4px",
-                borderBottom: `1px solid ${selectedTheme.border}`,
-              }}
-            >
-              {getSectionTitle("summary")}
-            </h2>
-            <p
-              style={{
-                fontSize: "10pt",
-                color: selectedTheme.text,
-                lineHeight: "1.5",
-              }}
-            >
-              {resumeData.summary}
-            </p>
-          </section>
-        ),
-
-        experience: resumeData.experience &&
-          resumeData.experience.length > 0 && (
-            <section key="experience" style={sectionStyle}>
-              <h2
-                className="font-bold"
-                style={{
-                  fontSize: "14pt",
-                  color: selectedTheme.primary,
-                  marginBottom: "12px",
-                  paddingBottom: "4px",
-                  borderBottom: `1px solid ${selectedTheme.border}`,
-                }}
-              >
-                {getSectionTitle("experience")}
-              </h2>
-              {resumeData.experience.map((exp, index) => (
-                <div key={index} style={{marginBottom: "16px"}}>
-                  <div style={{marginBottom: "8px"}}>
-                    <div className="flex justify-between items-baseline">
-                      <span
-                        className="font-bold"
-                        style={{fontSize: "11pt", color: selectedTheme.primary}}
-                      >
-                        {exp.title || "Designation"}
-                      </span>
-                      <span
-                        style={{
-                          fontSize: "10pt",
-                          color: selectedTheme.textMuted,
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        {exp.startDate} -{" "}
-                        {exp.current ? "present" : exp.endDate}
-                      </span>
-                    </div>
-                    {exp.company && (
-                      <div
-                        style={{
-                          fontSize: "10pt",
-                          color: selectedTheme.textLight,
-                          marginTop: "2px",
-                        }}
-                      >
-                        {exp.company}
-                      </div>
-                    )}
-                  </div>
-                  {exp.description && (
-                    <div
-                      style={{
-                        fontSize: "10pt",
-                        color: selectedTheme.text,
-                        lineHeight: "1.5",
-                      }}
-                    >
-                      {exp.description}
-                    </div>
-                  )}
-                  {exp.bullets && exp.bullets.length > 0 && (
-                    <ul style={{marginTop: "8px", paddingLeft: "20px"}}>
-                      {exp.bullets.map((bullet, i) => (
-                        <li
-                          key={i}
-                          style={{
-                            fontSize: "10pt",
-                            marginBottom: "4px",
-                            color: selectedTheme.text,
-                            lineHeight: "1.5",
-                          }}
-                        >
-                          {bullet}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              ))}
-            </section>
-          ),
-
-        projects: resumeData.projects && resumeData.projects.length > 0 && (
-          <section key="projects" style={sectionStyle}>
-            <h2
-              className="font-bold"
-              style={{
-                fontSize: "14pt",
-                color: selectedTheme.primary,
-                marginBottom: "12px",
-                paddingBottom: "4px",
-                borderBottom: `1px solid ${selectedTheme.border}`,
-              }}
-            >
-              {getSectionTitle("projects")}
-            </h2>
-            {resumeData.projects.map((project, index) => (
-              <div key={index} style={{marginBottom: "16px"}}>
-                <div style={{marginBottom: "6px"}}>
-                  <div className="flex justify-between items-baseline">
-                    <span
-                      className="font-bold"
-                      style={{fontSize: "11pt", color: selectedTheme.primary}}
-                    >
-                      {project.name || "Project Name"}
-                    </span>
-                    {project.link && (
-                      <a
-                        href={project.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{
-                          fontSize: "10pt",
-                          color: selectedTheme.secondary,
-                          textDecoration: "none",
-                        }}
-                      >
-                        Link to Demo
-                      </a>
-                    )}
-                  </div>
-                  {project.technologies && (
-                    <div
-                      style={{
-                        fontSize: "9pt",
-                        color: selectedTheme.textMuted,
-                        marginTop: "2px",
-                      }}
-                    >
-                      {Array.isArray(project.technologies)
-                        ? project.technologies.join(", ")
-                        : project.technologies}
-                    </div>
-                  )}
-                </div>
-                {project.description && (
-                  <div
-                    style={{
-                      fontSize: "10pt",
-                      color: selectedTheme.text,
-                      lineHeight: "1.5",
-                    }}
-                  >
-                    {project.description}
-                  </div>
-                )}
-                {project.bullets && project.bullets.length > 0 && (
-                  <ul style={{marginTop: "6px", paddingLeft: "20px"}}>
-                    {project.bullets.map((bullet, i) => (
-                      <li
-                        key={i}
-                        style={{
-                          fontSize: "10pt",
-                          marginBottom: "3px",
-                          color: selectedTheme.text,
-                          lineHeight: "1.5",
-                        }}
-                      >
-                        {bullet}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            ))}
-          </section>
-        ),
-
-        education: resumeData.education && resumeData.education.length > 0 && (
-          <section key="education" style={sectionStyle}>
-            <h2
-              className="font-bold"
-              style={{
-                fontSize: "14pt",
-                color: selectedTheme.primary,
-                marginBottom: "12px",
-                paddingBottom: "4px",
-                borderBottom: `1px solid ${selectedTheme.border}`,
-              }}
-            >
-              {getSectionTitle("education")}
-            </h2>
-            {resumeData.education.map((edu, index) => (
-              <div key={index} style={{marginBottom: "12px"}}>
-                <div className="flex justify-between items-baseline">
-                  <div>
-                    <span
-                      className="font-bold"
-                      style={{fontSize: "10pt", color: selectedTheme.primary}}
-                    >
-                      {edu.degree} {edu.field && `(${edu.field})`}
-                    </span>
-                    {edu.institution && (
-                      <span
-                        style={{fontSize: "10pt", color: selectedTheme.primary}}
-                      >
-                        {" "}
-                        at <strong>{edu.institution}</strong>
-                      </span>
-                    )}
-                  </div>
-                  <div
-                    style={{fontSize: "9pt", color: selectedTheme.textMuted}}
-                  >
-                    {edu.startDate} - {edu.endDate || "present"}
-                  </div>
-                </div>
-                {(edu.gpa || edu.grades) && (
-                  <div
-                    style={{
-                      fontSize: "10pt",
-                      color: selectedTheme.textLight,
-                      marginTop: "2px",
-                    }}
-                  >
-                    {edu.gpa && `GPA: ${edu.gpa}`}
-                    {edu.grades && `Grades: ${edu.grades}`}
-                  </div>
-                )}
-                {edu.location && (
-                  <div
-                    style={{
-                      fontSize: "9pt",
-                      color: selectedTheme.textMuted,
-                      marginTop: "1px",
-                    }}
-                  >
-                    {edu.location}
-                  </div>
-                )}
-              </div>
-            ))}
-          </section>
-        ),
-
-        publications: resumeData.publications &&
-          resumeData.publications.length > 0 && (
-            <section key="publications" style={sectionStyle}>
-              <h2
-                className="font-bold"
-                style={{
-                  fontSize: "14pt",
-                  color: selectedTheme.primary,
-                  marginBottom: "12px",
-                  paddingBottom: "4px",
-                  borderBottom: `1px solid ${selectedTheme.border}`,
-                }}
-              >
-                {getSectionTitle("publications")}
-              </h2>
-              {resumeData.publications.map((pub, index) => (
-                <div
-                  key={index}
-                  style={{
-                    marginBottom: "12px",
-                    fontSize: "9.5pt",
-                    color: selectedTheme.text,
-                    lineHeight: "1.5",
-                  }}
-                >
-                  {pub.authors && <span>{pub.authors} </span>}
-                  {pub.date && <span>({pub.date}). </span>}
-                  {pub.title && (
-                    <span>
-                      "<strong>{pub.title}</strong>".{" "}
-                    </span>
-                  )}
-                  {pub.journal && (
-                    <span>
-                      In: <em>{pub.journal}</em>{" "}
-                    </span>
-                  )}
-                  {pub.volume && <span>{pub.volume}</span>}
-                  {pub.pages && <span>, pp. {pub.pages}. </span>}
-                  {pub.url && (
-                    <a
-                      href={pub.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        color: selectedTheme.secondary,
-                        textDecoration: "none",
-                      }}
-                    >
-                      url: {pub.url}
-                    </a>
-                  )}
-                </div>
-              ))}
-            </section>
-          ),
-
-        skills: resumeData.skills && resumeData.skills.length > 0 && (
-          <section key="skills" style={sectionStyle}>
-            <h2
-              className="font-bold"
-              style={{
-                fontSize: "14pt",
-                color: selectedTheme.primary,
-                marginBottom: "12px",
-                paddingBottom: "4px",
-                borderBottom: `1px solid ${selectedTheme.border}`,
-              }}
-            >
-              {getSectionTitle("skills")}
-            </h2>
-            {resumeData.skills.map((skillGroup, index) => (
-              <div key={index} style={{marginBottom: "10px"}}>
-                <div
-                  className="font-bold"
-                  style={{
-                    fontSize: "10pt",
-                    color: selectedTheme.textLight,
-                    marginBottom: "4px",
-                  }}
-                >
-                  {skillGroup.category}
-                </div>
-                <div style={{fontSize: "10pt", color: selectedTheme.text}}>
-                  {Array.isArray(skillGroup.items)
-                    ? skillGroup.items.join(", ")
-                    : skillGroup.items}
-                </div>
-              </div>
-            ))}
-          </section>
-        ),
-      };
-
-      return sections[sectionId] || null;
+    const renderBand = (sectionId, sectionIndex, content) => {
+      if (!content) return null;
+      return (
+        <section
+          key={sectionId}
+          style={{
+            marginBottom:
+              sectionIndex % 2 === 0
+                ? compact.bandMarginSmall
+                : compact.bandMarginLarge,
+            pageBreakInside: "auto",
+            breakInside: "auto",
+            display: "grid",
+            gridTemplateColumns: `${compact.railWidth} 1fr`,
+              gap: "6px",
+          }}
+        >
+          <div
+            aria-hidden="true"
+            style={{
+              width: compact.railWidth,
+              borderRadius: "3px",
+              background: `linear-gradient(180deg, ${selectedTheme.rail}, ${selectedTheme.accent})`,
+            }}
+          />
+          <div
+            style={{
+              border: `1px solid ${selectedTheme.border}`,
+              backgroundColor:
+                sectionIndex % 2 === 0 ? selectedTheme.panelBg : selectedTheme.bg,
+              borderRadius: "6px",
+              padding: compact.panelPadding,
+            }}
+          >
+            {renderBandHeader(getSectionTitle(sectionId), sectionIndex)}
+            {content}
+          </div>
+        </section>
+      );
     };
+
+    const toArray = (value) => {
+      if (Array.isArray(value)) return value;
+      if (typeof value === "string") {
+        return value
+          .split(",")
+          .map((item) => item.trim())
+          .filter(Boolean);
+      }
+      return [];
+    };
+
+    const renderSectionContent = (sectionId) => {
+      const data = resumeData || {};
+
+      if (sectionId === "summary" && data.summary) {
+        return (
+          <p
+            style={{
+              margin: 0,
+              fontSize: compact.bodySize,
+              lineHeight: "1.4",
+              color: selectedTheme.text,
+              fontFamily: bodyFont,
+              textAlign: "justify",
+            }}
+          >
+            {data.summary}
+          </p>
+        );
+      }
+
+      if (sectionId === "experience" && data.experience?.length) {
+        return data.experience.map((exp, index) => (
+          <div key={index} style={{marginBottom: index === data.experience.length - 1 ? 0 : "7px"}}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                gap: "10px",
+                alignItems: "baseline",
+                marginBottom: "3px",
+              }}
+            >
+              <span
+                style={{
+                  color: selectedTheme.primary,
+                  fontSize: compact.bodySize,
+                  fontWeight: "700",
+                  fontFamily: headingFont,
+                }}
+              >
+                {exp.title || "Role"}
+                {exp.company ? `, ${exp.company}` : ""}
+              </span>
+              <span style={{fontSize: compact.smallText, color: selectedTheme.textMuted}}>
+                {exp.startDate || ""} - {exp.current ? "Present" : exp.endDate || "Present"}
+              </span>
+            </div>
+            {exp.location && (
+              <div
+                style={{
+                  marginBottom: "3px",
+                  fontSize: compact.smallText,
+                  color: selectedTheme.textLight,
+                  fontFamily: bodyFont,
+                }}
+              >
+                {exp.location}
+              </div>
+            )}
+            {exp.description && (
+              <p
+                style={{
+                  margin: "0 0 3px 0",
+                  fontSize: compact.bodySize,
+                  lineHeight: "1.35",
+                  color: selectedTheme.text,
+                  fontFamily: bodyFont,
+                }}
+              >
+                {exp.description}
+              </p>
+            )}
+            {exp.bullets?.length > 0 && (
+              <ul style={{margin: "0", paddingLeft: "18px"}}>
+                {exp.bullets.map((bullet, bulletIndex) => (
+                  <li
+                    key={bulletIndex}
+                    style={{
+                      marginBottom: "1px",
+                      color: selectedTheme.text,
+                      fontSize: compact.bodySize,
+                      lineHeight: "1.3",
+                      fontFamily: bodyFont,
+                    }}
+                  >
+                    {bullet}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        ));
+      }
+
+      if (sectionId === "projects" && data.projects?.length) {
+        return data.projects.map((project, index) => (
+          <div key={index} style={{marginBottom: index === data.projects.length - 1 ? 0 : "7px"}}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                gap: "10px",
+                alignItems: "baseline",
+                marginBottom: "3px",
+              }}
+            >
+              <span
+                style={{
+                  color: selectedTheme.primary,
+                  fontSize: compact.bodySize,
+                  fontWeight: "700",
+                  fontFamily: headingFont,
+                }}
+              >
+                {project.name || "Project"}
+              </span>
+              {project.link && (
+                <a
+                  href={project.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    color: selectedTheme.accent,
+                    fontSize: compact.smallText,
+                    textDecoration: "none",
+                  }}
+                >
+                  Project Link
+                </a>
+              )}
+            </div>
+            {project.technologies && (
+              <div
+                style={{
+                  marginBottom: "3px",
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: "4px",
+                }}
+              >
+                {toArray(project.technologies).map((tech, techIndex) => (
+                  <span
+                    key={techIndex}
+                    style={{
+                      backgroundColor: selectedTheme.bg,
+                      border: `1px solid ${selectedTheme.border}`,
+                      padding: "1px 5px",
+                      borderRadius: "12px",
+                      fontSize: "7.8pt",
+                      color: selectedTheme.textLight,
+                      fontFamily: headingFont,
+                    }}
+                  >
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            )}
+            {project.description && (
+              <p
+                style={{
+                  margin: "0 0 3px 0",
+                  fontSize: compact.bodySize,
+                  lineHeight: "1.32",
+                  color: selectedTheme.text,
+                  fontFamily: bodyFont,
+                }}
+              >
+                {project.description}
+              </p>
+            )}
+            {project.bullets?.length > 0 && (
+              <ul style={{margin: 0, paddingLeft: "18px"}}>
+                {project.bullets.map((bullet, bulletIndex) => (
+                  <li
+                    key={bulletIndex}
+                    style={{
+                      marginBottom: "1px",
+                      color: selectedTheme.text,
+                      fontSize: compact.bodySize,
+                      lineHeight: "1.3",
+                      fontFamily: bodyFont,
+                    }}
+                  >
+                    {bullet}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        ));
+      }
+
+      if (sectionId === "skills" && data.skills?.length) {
+        return (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns:
+                data.skills.length >= 6
+                  ? "repeat(3, minmax(0, 1fr))"
+                  : "repeat(2, minmax(0, 1fr))",
+              gap: "6px 8px",
+            }}
+          >
+            {data.skills.map((skillGroup, index) => (
+              <div
+                key={index}
+                style={{
+                  border: `1px solid ${selectedTheme.border}`,
+                  backgroundColor: selectedTheme.bg,
+                  borderRadius: "4px",
+                  padding: "5px 6px",
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: compact.smallText,
+                    fontWeight: "700",
+                    marginBottom: "2px",
+                    color: selectedTheme.primary,
+                    fontFamily: headingFont,
+                  }}
+                >
+                  {skillGroup.category || "Category"}
+                </div>
+                <div
+                  style={{
+                    fontSize: compact.smallText,
+                    lineHeight: "1.25",
+                    color: selectedTheme.text,
+                    fontFamily: bodyFont,
+                  }}
+                >
+                  {toArray(skillGroup.items).join(", ") || "-"}
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+      }
+
+      if (sectionId === "education" && data.education?.length) {
+        return data.education.map((edu, index) => (
+          <div key={index} style={{marginBottom: index === data.education.length - 1 ? 0 : "5px"}}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "baseline",
+                gap: "10px",
+              }}
+            >
+              <span
+                style={{
+                  color: selectedTheme.primary,
+                  fontSize: compact.bodySize,
+                  fontWeight: "700",
+                  fontFamily: headingFont,
+                }}
+              >
+                {edu.degree || "Degree"}
+                {edu.field ? ` (${edu.field})` : ""}
+              </span>
+              <span style={{fontSize: compact.smallText, color: selectedTheme.textMuted}}>
+                {edu.startDate || ""} - {edu.endDate || "Present"}
+              </span>
+            </div>
+            {edu.institution && (
+              <div style={{fontSize: compact.smallText, color: selectedTheme.textLight}}>
+                {edu.institution}
+              </div>
+            )}
+            {(edu.gpa || edu.grades) && (
+              <div style={{fontSize: compact.smallText, color: selectedTheme.textMuted}}>
+                {edu.gpa ? `GPA: ${edu.gpa}` : ""}
+                {edu.grades ? ` ${edu.grades}` : ""}
+              </div>
+            )}
+          </div>
+        ));
+      }
+
+      if (sectionId === "certifications" && data.certifications?.length) {
+        return (
+          <ul style={{margin: 0, paddingLeft: "18px"}}>
+            {data.certifications.map((cert, index) => (
+              <li key={index} style={{marginBottom: "1px", fontSize: compact.bodySize, color: selectedTheme.text}}>
+                <span style={{fontWeight: "700", color: selectedTheme.primary}}>
+                  {cert.name || cert.title || cert}
+                </span>
+                {(cert.issuer || cert.date) && (
+                  <span style={{color: selectedTheme.textLight}}>
+                    {cert.issuer ? ` - ${cert.issuer}` : ""}
+                    {cert.date ? ` (${cert.date})` : ""}
+                  </span>
+                )}
+              </li>
+            ))}
+          </ul>
+        );
+      }
+
+      if (sectionId === "achievements" && data.achievements?.length) {
+        return (
+          <ul style={{margin: 0, paddingLeft: "18px"}}>
+            {data.achievements.map((achievement, index) => (
+              <li key={index} style={{marginBottom: "1px", fontSize: compact.bodySize, color: selectedTheme.text}}>
+                {typeof achievement === "string"
+                  ? achievement
+                  : achievement.title || achievement.description || "Achievement"}
+              </li>
+            ))}
+          </ul>
+        );
+      }
+
+      if (sectionId === "publications" && data.publications?.length) {
+        return data.publications.map((pub, index) => (
+          <div key={index} style={{marginBottom: index === data.publications.length - 1 ? 0 : "4px"}}>
+            <span style={{fontSize: compact.bodySize, color: selectedTheme.text}}>
+              {pub.authors ? `${pub.authors}. ` : ""}
+              {pub.date ? `(${pub.date}). ` : ""}
+              {pub.title ? `\"${pub.title}.\" ` : ""}
+              {pub.journal ? `${pub.journal}. ` : ""}
+              {pub.pages ? `pp. ${pub.pages}. ` : ""}
+            </span>
+            {pub.url && (
+              <a
+                href={pub.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{fontSize: compact.smallText, color: selectedTheme.accent, textDecoration: "none"}}
+              >
+                {pub.url}
+              </a>
+            )}
+          </div>
+        ));
+      }
+
+      if (sectionId === "customSections" && data.customSections?.length) {
+        return data.customSections.map((section, index) => (
+          <div key={index} style={{marginBottom: index === data.customSections.length - 1 ? 0 : "4px"}}>
+            <div style={{fontSize: compact.bodySize, fontWeight: "700", color: selectedTheme.primary}}>
+              {section.title || "Additional"}
+            </div>
+            {section.content && (
+              <p style={{margin: "1px 0 0", fontSize: compact.bodySize, color: selectedTheme.text}}>
+                {section.content}
+              </p>
+            )}
+            {section.items?.length > 0 && (
+              <ul style={{margin: "3px 0 0", paddingLeft: "18px"}}>
+                {section.items.map((item, itemIndex) => (
+                  <li key={itemIndex} style={{fontSize: compact.bodySize, color: selectedTheme.text}}>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        ));
+      }
+
+      return null;
+    };
+
+    const contacts = [
+      formatContactItem("Email", resumeData?.contact?.email),
+      formatContactItem("Phone", resumeData?.contact?.phone),
+      formatContactItem("Location", resumeData?.contact?.location),
+      formatContactItem("LinkedIn", resumeData?.contact?.linkedin),
+      formatContactItem("GitHub", resumeData?.contact?.github),
+      formatContactItem("Website", resumeData?.contact?.website),
+    ].filter(Boolean);
 
     return (
       <div
@@ -586,55 +661,91 @@ const GitHubStyleTemplate = forwardRef(
             ref.current = node;
           }
         }}
-        className="resume-preview font-resume"
+        className="resume-preview"
         style={{
           minHeight: "11in",
-          padding: "0.75in",
-          fontSize: "10.5pt",
-          lineHeight: "1.4",
+          padding: compact.pagePadding,
           color: selectedTheme.text,
           backgroundColor: selectedTheme.bg,
+          fontFamily: bodyFont,
         }}
       >
-        {/* Header - GitHub Style */}
-        <header style={{marginBottom: "24px", textAlign: "center"}}>
-          <h1
-            className="font-bold"
-            style={{
-              fontSize: "22pt",
-              marginBottom: "8px",
-              color: selectedTheme.primary,
-            }}
-          >
-            {resumeData.name || "Your Name"}
-          </h1>
+        <header
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1.3fr 1fr",
+            gap: "10px",
+            marginBottom: "8px",
+            borderBottom: `1px solid ${selectedTheme.border}`,
+            paddingBottom: "5px",
+          }}
+        >
+          <div>
+            <h1
+              style={{
+                margin: "0 0 2px 0",
+                color: selectedTheme.primary,
+                fontSize: isDenseContent ? "18pt" : "20pt",
+                lineHeight: "1.1",
+                fontWeight: "800",
+                letterSpacing: "0.4px",
+                fontFamily: headingFont,
+              }}
+            >
+              {resumeData?.name || "Your Name"}
+            </h1>
+            <div
+              style={{
+                fontSize: compact.smallText,
+                color: selectedTheme.textLight,
+                fontFamily: headingFont,
+                fontWeight: "600",
+                letterSpacing: "0.3px",
+              }}
+            >
+              METRO GRID NARRATIVE PROFILE
+            </div>
+          </div>
 
           <div
             style={{
-              fontSize: "10pt",
               display: "flex",
-              justifyContent: "center",
-              flexWrap: "wrap",
-              gap: "12px",
-              color: selectedTheme.textLight,
-              marginTop: "8px",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              gap: "2px",
+              border: `1px solid ${selectedTheme.border}`,
+              borderRadius: "6px",
+              padding: "5px 7px",
+              backgroundColor: selectedTheme.panelBg,
+              minHeight: "fit-content",
             }}
           >
-            {resumeData.contact?.github &&
-              formatContactItem(resumeData.contact.github, "👤")}
-            {resumeData.contact?.linkedin &&
-              formatContactItem(resumeData.contact.linkedin, "💼")}
-            {resumeData.contact?.website &&
-              formatContactItem(resumeData.contact.website, "🌐")}
-            {resumeData.contact?.email &&
-              formatContactItem(resumeData.contact.email, "✉️")}
-            {resumeData.contact?.phone &&
-              formatContactItem(resumeData.contact.phone, "📱")}
+            <div
+              style={{
+                color: selectedTheme.primary,
+                fontWeight: "700",
+                fontSize: compact.smallText,
+                fontFamily: headingFont,
+                textTransform: "uppercase",
+                letterSpacing: "0.6px",
+                marginBottom: "1px",
+              }}
+            >
+              Contact
+            </div>
+            {contacts.length > 0 ? (
+              contacts
+            ) : (
+              <span style={{fontSize: compact.smallText, color: selectedTheme.textMuted}}>
+                Add contact details in the editor.
+              </span>
+            )}
           </div>
         </header>
 
-        {/* Dynamic sections based on sectionOrder */}
-        {sectionOrder.map((sectionId) => renderSection(sectionId))}
+        {sectionOrder.map((sectionId, index) =>
+          renderBand(sectionId, index, renderSectionContent(sectionId))
+        )}
       </div>
     );
   }

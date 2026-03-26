@@ -1,4 +1,72 @@
-import {forwardRef, useRef, useEffect, useState, useMemo} from "react";
+import {forwardRef, useRef, useEffect, useMemo} from "react";
+
+const COLOR_THEMES = {
+  navy: {
+    primary: "#003d82",
+    secondary: "#0066cc",
+    text: "#000000",
+    textLight: "#2d3748",
+    textMuted: "#4a5568",
+    border: "#003d82",
+    linkColor: "#0066cc",
+  },
+  burgundy: {
+    primary: "#7d1007",
+    secondary: "#8b1a1a",
+    text: "#000000",
+    textLight: "#2d3748",
+    textMuted: "#4a5568",
+    border: "#7d1007",
+    linkColor: "#8b1a1a",
+  },
+  forest: {
+    primary: "#0d4d0d",
+    secondary: "#1b5e20",
+    text: "#000000",
+    textLight: "#2d3748",
+    textMuted: "#4a5568",
+    border: "#0d4d0d",
+    linkColor: "#1b5e20",
+  },
+  charcoal: {
+    primary: "#1a202c",
+    secondary: "#2d3748",
+    text: "#000000",
+    textLight: "#2d3748",
+    textMuted: "#4a5568",
+    border: "#1a202c",
+    linkColor: "#2d3748",
+  },
+  slate: {
+    primary: "#1e293b",
+    secondary: "#334155",
+    text: "#000000",
+    textLight: "#334155",
+    textMuted: "#64748b",
+    border: "#1e293b",
+    linkColor: "#334155",
+  },
+  teal: {
+    primary: "#0d5e5e",
+    secondary: "#0f766e",
+    text: "#000000",
+    textLight: "#2d3748",
+    textMuted: "#4a5568",
+    border: "#0d5e5e",
+    linkColor: "#0f766e",
+  },
+};
+
+const DEFAULT_SECTION_ORDER = [
+  "summary",
+  "skills",
+  "experience",
+  "education",
+  "projects",
+  "certifications",
+  "achievements",
+  "customSections",
+];
 
 /**
  * ClassicTemplate - Professional ATS-optimized resume template with clean formatting
@@ -98,15 +166,8 @@ import {forwardRef, useRef, useEffect, useState, useMemo} from "react";
  * />
  */
 const ClassicTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
-  // Page overflow detection state
   const containerRef = useRef(null);
-  const [pageOverflowInfo, setPageOverflowInfo] = useState({
-    isOverflowing: false,
-    currentHeight: 0,
-    maxHeight: 1056, // 11in at 96dpi (matches template minHeight)
-    overflowPercentage: 0,
-    templateName: "ClassicTemplate",
-  });
+  const data = useMemo(() => resumeData || {}, [resumeData]);
 
   // Detect page overflow whenever resumeData changes
   useEffect(() => {
@@ -127,8 +188,6 @@ const ClassicTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
         templateName: "ClassicTemplate",
       };
 
-      setPageOverflowInfo(usageInfo);
-
       // Pass data to parent component if callback provided
       if (onPageUsageChange) {
         onPageUsageChange(usageInfo);
@@ -136,109 +195,55 @@ const ClassicTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
     }
   }, [resumeData]); // Don't include onPageUsageChange to prevent infinite loops
 
-  // Color Themes - Professional ATS-friendly palettes
-  const colorThemes = {
-    navy: {
-      primary: "#003d82", // Deep professional navy
-      secondary: "#0066cc",
-      text: "#000000",
-      textLight: "#2d3748",
-      textMuted: "#4a5568",
-      border: "#003d82",
-      linkColor: "#0066cc",
-    },
-    burgundy: {
-      primary: "#7d1007", // Deep burgundy
-      secondary: "#8b1a1a",
-      text: "#000000",
-      textLight: "#2d3748",
-      textMuted: "#4a5568",
-      border: "#7d1007",
-      linkColor: "#8b1a1a",
-    },
-    forest: {
-      primary: "#0d4d0d", // Deep forest green
-      secondary: "#1b5e20",
-      text: "#000000",
-      textLight: "#2d3748",
-      textMuted: "#4a5568",
-      border: "#0d4d0d",
-      linkColor: "#1b5e20",
-    },
-    charcoal: {
-      primary: "#1a202c", // Professional charcoal
-      secondary: "#2d3748",
-      text: "#000000",
-      textLight: "#2d3748",
-      textMuted: "#4a5568",
-      border: "#1a202c",
-      linkColor: "#2d3748",
-    },
-    slate: {
-      primary: "#1e293b", // Professional slate
-      secondary: "#334155",
-      text: "#000000",
-      textLight: "#334155",
-      textMuted: "#64748b",
-      border: "#1e293b",
-      linkColor: "#334155",
-    },
-    teal: {
-      primary: "#0d5e5e", // Professional teal
-      secondary: "#0f766e",
-      text: "#000000",
-      textLight: "#2d3748",
-      textMuted: "#4a5568",
-      border: "#0d5e5e",
-      linkColor: "#0f766e",
-    },
-  };
-
   // Select theme based on resumeData or default to navy
-  const selectedTheme = colorThemes[resumeData?.colorTheme] || colorThemes.navy;
+  const selectedTheme = useMemo(
+    () =>
+      COLOR_THEMES[data?.selectedTheme || data?.colorTheme] || COLOR_THEMES.navy,
+    [data?.selectedTheme, data?.colorTheme]
+  );
 
   // Calculate content density to determine styling mode (memoized to prevent recalculation on every render)
   const contentDensity = useMemo(() => {
     let contentScore = 0;
 
     // Count experience items and bullets
-    if (resumeData.experience?.length) {
-      contentScore += resumeData.experience.length * 3;
-      resumeData.experience.forEach((exp) => {
+    if (data.experience?.length) {
+      contentScore += data.experience.length * 3;
+      data.experience.forEach((exp) => {
         contentScore += (exp.bullets?.length || 0) * 1;
       });
     }
 
     // Count projects and bullets
-    if (resumeData.projects?.length) {
-      contentScore += resumeData.projects.length * 2;
-      resumeData.projects.forEach((proj) => {
+    if (data.projects?.length) {
+      contentScore += data.projects.length * 2;
+      data.projects.forEach((proj) => {
         contentScore += (proj.bullets?.length || 0) * 1;
       });
     }
 
     // Count education items
-    contentScore += (resumeData.education?.length || 0) * 2;
+    contentScore += (data.education?.length || 0) * 2;
 
     // Count skills
-    contentScore += (resumeData.skills?.length || 0) * 1.5;
+    contentScore += (data.skills?.length || 0) * 1.5;
 
     // Count certifications
-    contentScore += (resumeData.certifications?.length || 0) * 1;
+    contentScore += (data.certifications?.length || 0) * 1;
 
     // Count achievements
-    contentScore += (resumeData.achievements?.length || 0) * 1;
+    contentScore += (data.achievements?.length || 0) * 1;
 
     // Count custom sections
-    if (resumeData.customSections?.length) {
-      resumeData.customSections.forEach((section) => {
+    if (data.customSections?.length) {
+      data.customSections.forEach((section) => {
         contentScore += (section.items?.length || 0) * 1;
       });
     }
 
     // Summary adds to content
-    if (resumeData.summary) {
-      contentScore += resumeData.summary.length > 300 ? 3 : 2;
+    if (data.summary) {
+      contentScore += data.summary.length > 300 ? 3 : 2;
     }
 
     // Determine density: low (<15), medium (15-30), high (>30)
@@ -246,7 +251,7 @@ const ClassicTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
       contentScore < 15 ? "low" : contentScore < 30 ? "medium" : "high";
 
     return density;
-  }, [resumeData]); // Only recalculate when resumeData changes
+  }, [data]); // Only recalculate when resumeData changes
 
   // Dynamic styling based on content density
   const getDynamicStyles = () => {
@@ -390,7 +395,7 @@ const ClassicTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
     }
   };
 
-  const dynamicStyles = getDynamicStyles();
+  const dynamicStyles = useMemo(() => getDynamicStyles(), [contentDensity]);
 
   // Helper function to safely format skills (handles both array and string)
   const formatSkills = (items) => {
@@ -403,48 +408,47 @@ const ClassicTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
     return "";
   };
 
-  // Default section order if not specified
-  const DEFAULT_SECTION_ORDER = [
-    "summary",
-    "skills",
-    "experience",
-    "education",
-    "projects",
-    "certifications",
-    "achievements",
-    "customSections",
-  ];
-
   const sectionOrder =
-    resumeData.sectionOrder && resumeData.sectionOrder.length > 0
-      ? resumeData.sectionOrder.filter(
+    data.sectionOrder && data.sectionOrder.length > 0
+      ? data.sectionOrder.filter(
           (id) => !["score", "personal", "recommendations"].includes(id)
         )
       : DEFAULT_SECTION_ORDER;
 
-  // Render section helper function
-  const renderSection = (sectionId) => {
-    // Common style to prevent page breaks inside sections
-    const sectionStyle = {
+  const sectionStyle = useMemo(
+    () => ({
       marginBottom: dynamicStyles.sectionMarginBottom,
       pageBreakInside: "avoid",
       breakInside: "avoid",
-    };
+    }),
+    [dynamicStyles.sectionMarginBottom]
+  );
 
-    const sections = {
-      summary: resumeData.summary && (
+  const sectionHeadingStyle = useMemo(
+    () => ({
+      fontSize: dynamicStyles.sectionHeadingSize,
+      color: selectedTheme.primary,
+      borderBottom: `1.5px solid ${selectedTheme.border}`,
+      paddingBottom: dynamicStyles.sectionHeadingPaddingBottom,
+      marginBottom: dynamicStyles.sectionHeadingMarginBottom,
+      letterSpacing: "0.5px",
+    }),
+    [
+      dynamicStyles.sectionHeadingSize,
+      dynamicStyles.sectionHeadingPaddingBottom,
+      dynamicStyles.sectionHeadingMarginBottom,
+      selectedTheme.primary,
+      selectedTheme.border,
+    ]
+  );
+
+  // Render section helper function
+  const renderSection = (sectionId) => {
+    switch (sectionId) {
+      case "summary":
+        return data.summary ? (
         <section key="summary" style={sectionStyle}>
-          <h2
-            className="font-bold uppercase"
-            style={{
-              fontSize: dynamicStyles.sectionHeadingSize,
-              color: selectedTheme.primary,
-              borderBottom: `1.5px solid ${selectedTheme.border}`,
-              paddingBottom: dynamicStyles.sectionHeadingPaddingBottom,
-              marginBottom: dynamicStyles.sectionHeadingMarginBottom,
-              letterSpacing: "0.5px",
-            }}
-          >
+          <h2 className="font-bold uppercase" style={sectionHeadingStyle}>
             Professional Summary
           </h2>
           <p
@@ -454,27 +458,18 @@ const ClassicTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
               color: selectedTheme.text,
             }}
           >
-            {resumeData.summary}
+            {data.summary}
           </p>
         </section>
-      ),
+        ) : null;
 
-      skills: resumeData.skills && resumeData.skills.length > 0 && (
+      case "skills":
+        return data.skills && data.skills.length > 0 ? (
         <section key="skills" style={sectionStyle}>
-          <h2
-            className="font-bold uppercase"
-            style={{
-              fontSize: dynamicStyles.sectionHeadingSize,
-              color: selectedTheme.primary,
-              borderBottom: `1.5px solid ${selectedTheme.border}`,
-              paddingBottom: dynamicStyles.sectionHeadingPaddingBottom,
-              marginBottom: dynamicStyles.sectionHeadingMarginBottom,
-              letterSpacing: "0.5px",
-            }}
-          >
+          <h2 className="font-bold uppercase" style={sectionHeadingStyle}>
             Skills
           </h2>
-          {resumeData.skills.map((skillGroup, index) => (
+          {data.skills.map((skillGroup, index) => (
             <div
               key={index}
               style={{
@@ -494,24 +489,15 @@ const ClassicTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
             </div>
           ))}
         </section>
-      ),
+        ) : null;
 
-      experience: resumeData.experience && resumeData.experience.length > 0 && (
+      case "experience":
+        return data.experience && data.experience.length > 0 ? (
         <section key="experience" style={sectionStyle}>
-          <h2
-            className="font-bold uppercase"
-            style={{
-              fontSize: dynamicStyles.sectionHeadingSize,
-              color: selectedTheme.primary,
-              borderBottom: `1.5px solid ${selectedTheme.border}`,
-              paddingBottom: dynamicStyles.sectionHeadingPaddingBottom,
-              marginBottom: dynamicStyles.sectionHeadingMarginBottom,
-              letterSpacing: "0.5px",
-            }}
-          >
+          <h2 className="font-bold uppercase" style={sectionHeadingStyle}>
             Professional Experience
           </h2>
-          {resumeData.experience.map((exp, index) => (
+          {data.experience.map((exp, index) => (
             <div
               key={index}
               style={{marginBottom: dynamicStyles.experienceMarginBottom}}
@@ -591,24 +577,15 @@ const ClassicTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
             </div>
           ))}
         </section>
-      ),
+        ) : null;
 
-      projects: resumeData.projects && resumeData.projects.length > 0 && (
+      case "projects":
+        return data.projects && data.projects.length > 0 ? (
         <section key="projects" style={sectionStyle}>
-          <h2
-            className="font-bold uppercase"
-            style={{
-              fontSize: dynamicStyles.sectionHeadingSize,
-              color: selectedTheme.primary,
-              borderBottom: `1.5px solid ${selectedTheme.border}`,
-              paddingBottom: dynamicStyles.sectionHeadingPaddingBottom,
-              marginBottom: dynamicStyles.sectionHeadingMarginBottom,
-              letterSpacing: "0.5px",
-            }}
-          >
+          <h2 className="font-bold uppercase" style={sectionHeadingStyle}>
             Projects
           </h2>
-          {resumeData.projects.map((project, index) => (
+          {data.projects.map((project, index) => (
             <div
               key={index}
               style={{marginBottom: dynamicStyles.projectMarginBottom}}
@@ -684,24 +661,15 @@ const ClassicTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
             </div>
           ))}
         </section>
-      ),
+        ) : null;
 
-      education: resumeData.education && resumeData.education.length > 0 && (
+      case "education":
+        return data.education && data.education.length > 0 ? (
         <section key="education" style={sectionStyle}>
-          <h2
-            className="font-bold uppercase"
-            style={{
-              fontSize: dynamicStyles.sectionHeadingSize,
-              color: selectedTheme.primary,
-              borderBottom: `1.5px solid ${selectedTheme.border}`,
-              paddingBottom: dynamicStyles.sectionHeadingPaddingBottom,
-              marginBottom: dynamicStyles.sectionHeadingMarginBottom,
-              letterSpacing: "0.5px",
-            }}
-          >
+          <h2 className="font-bold uppercase" style={sectionHeadingStyle}>
             Education
           </h2>
-          {resumeData.education.map((edu, index) => (
+          {data.education.map((edu, index) => (
             <div
               key={index}
               style={{marginBottom: dynamicStyles.educationMarginBottom}}
@@ -768,25 +736,15 @@ const ClassicTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
             </div>
           ))}
         </section>
-      ),
+        ) : null;
 
-      certifications: resumeData.certifications &&
-        resumeData.certifications.length > 0 && (
+      case "certifications":
+        return data.certifications && data.certifications.length > 0 ? (
           <section key="certifications" style={sectionStyle}>
-            <h2
-              className="font-bold uppercase"
-              style={{
-                fontSize: dynamicStyles.sectionHeadingSize,
-                color: selectedTheme.primary,
-                borderBottom: `1.5px solid ${selectedTheme.border}`,
-                paddingBottom: dynamicStyles.sectionHeadingPaddingBottom,
-                marginBottom: dynamicStyles.sectionHeadingMarginBottom,
-                letterSpacing: "0.5px",
-              }}
-            >
+            <h2 className="font-bold uppercase" style={sectionHeadingStyle}>
               Certifications
             </h2>
-            {resumeData.certifications.map((cert, index) => (
+            {data.certifications.map((cert, index) => (
               <div
                 key={index}
                 style={{
@@ -817,29 +775,19 @@ const ClassicTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
               </div>
             ))}
           </section>
-        ),
+        ) : null;
 
-      achievements: resumeData.achievements &&
-        resumeData.achievements.length > 0 && (
+      case "achievements":
+        return data.achievements && data.achievements.length > 0 ? (
           <section key="achievements" style={sectionStyle}>
-            <h2
-              className="font-bold uppercase"
-              style={{
-                fontSize: dynamicStyles.sectionHeadingSize,
-                color: selectedTheme.primary,
-                borderBottom: `1.5px solid ${selectedTheme.border}`,
-                paddingBottom: dynamicStyles.sectionHeadingPaddingBottom,
-                marginBottom: dynamicStyles.sectionHeadingMarginBottom,
-                letterSpacing: "0.5px",
-              }}
-            >
+            <h2 className="font-bold uppercase" style={sectionHeadingStyle}>
               Achievements
             </h2>
             <ul
               className="list-disc list-outside ml-5"
               style={{marginTop: "4px"}}
             >
-              {resumeData.achievements.map((achievement, index) => (
+              {data.achievements.map((achievement, index) => (
                 <li
                   key={index}
                   style={{
@@ -854,31 +802,19 @@ const ClassicTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
               ))}
             </ul>
           </section>
-        ),
+        ) : null;
 
-      // Custom Sections - render all custom sections when "customSections" is in sectionOrder
-      customSections: resumeData.customSections &&
-        resumeData.customSections.length > 0 && (
+      case "customSections":
+        return data.customSections && data.customSections.length > 0 ? (
           <>
-            {resumeData.customSections.map((section, sectionIndex) => {
+            {data.customSections.map((section, sectionIndex) => {
               if (section.title && section.items && section.items.length > 0) {
                 return (
                   <section
                     key={`customSection_${sectionIndex}`}
                     style={sectionStyle}
                   >
-                    <h2
-                      className="font-bold uppercase"
-                      style={{
-                        fontSize: dynamicStyles.sectionHeadingSize,
-                        color: selectedTheme.primary,
-                        borderBottom: `1.5px solid ${selectedTheme.border}`,
-                        paddingBottom:
-                          dynamicStyles.sectionHeadingPaddingBottom,
-                        marginBottom: dynamicStyles.sectionHeadingMarginBottom,
-                        letterSpacing: "0.5px",
-                      }}
-                    >
+                    <h2 className="font-bold uppercase" style={sectionHeadingStyle}>
                       {section.title}
                     </h2>
                     <ul
@@ -907,10 +843,11 @@ const ClassicTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
               return null;
             })}
           </>
-        ),
-    };
+        ) : null;
 
-    return sections[sectionId] || null;
+      default:
+        return null;
+    }
   };
 
   return (
@@ -949,7 +886,7 @@ const ClassicTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
             color: selectedTheme.primary,
           }}
         >
-          {resumeData.name || "Your Name"}
+          {data.name || "Your Name"}
         </h1>
         <div
           style={{
@@ -957,23 +894,23 @@ const ClassicTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
             color: selectedTheme.textLight,
           }}
         >
-          {resumeData.contact?.email && (
+          {data.contact?.email && (
             <div style={{marginBottom: dynamicStyles.contactMarginBottom}}>
-              {resumeData.contact.email}
+              {data.contact.email}
             </div>
           )}
           <div className="flex justify-center gap-3 flex-wrap">
-            {resumeData.contact?.phone && (
-              <span>{resumeData.contact.phone}</span>
+            {data.contact?.phone && (
+              <span>{data.contact.phone}</span>
             )}
-            {resumeData.contact?.location && (
-              <span>{resumeData.contact.location}</span>
+            {data.contact?.location && (
+              <span>{data.contact.location}</span>
             )}
           </div>
           <div className="flex justify-center gap-3 flex-wrap">
-            {resumeData.contact?.linkedin && (
+            {data.contact?.linkedin && (
               <a
-                href={resumeData.contact.linkedin}
+                href={data.contact.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -984,9 +921,9 @@ const ClassicTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
                 LinkedIn
               </a>
             )}
-            {resumeData.contact?.github && (
+            {data.contact?.github && (
               <a
-                href={resumeData.contact.github}
+                href={data.contact.github}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{

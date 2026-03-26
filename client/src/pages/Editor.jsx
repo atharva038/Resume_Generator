@@ -38,9 +38,10 @@ import TechTemplate from "@/components/templates/TechTemplate";
 import Creative2Template from "@/components/templates/Creative2Template";
 import AcademicTemplate from "@/components/templates/AcademicTemplate";
 import CorporateEliteTemplate from "@/components/templates/CorporateEliteTemplate";
-import StrategicLeaderTemplate from "@/components/templates/StrategicLeaderTemplate";
+import StrategicLeadershipTemplate from "@/components/templates/StrategicLeadershipTemplate";
 import ImpactProTemplate from "@/components/templates/ImpactProTemplate";
 import GitHubStyleTemplate from "@/components/templates/GitHubStyleTemplate";
+import StructuredPhotoTemplate from "@/components/templates/StructuredPhotoTemplate";
 
 // Default section order (only editable resume sections)
 const DEFAULT_SECTION_ORDER = [
@@ -115,11 +116,11 @@ const TEMPLATES = [
   },
   {
     id: "GitHubStyle",
-    name: "GitHub Style",
+    name: "Metro Grid Narrative",
     component: GitHubStyleTemplate,
-    category: "Tech",
-    emoji: "💻",
-    atsScore: 93,
+    category: "Professional",
+    emoji: "🏙️",
+    atsScore: 96,
   },
   {
     id: "creative2",
@@ -147,8 +148,8 @@ const TEMPLATES = [
   },
   {
     id: "strategic-leader",
-    name: "Strategic Leader",
-    component: StrategicLeaderTemplate,
+    name: "Strategic Leadership",
+    component: StrategicLeadershipTemplate,
     category: "Leadership",
     emoji: "🎯",
     atsScore: 97,
@@ -160,6 +161,14 @@ const TEMPLATES = [
     category: "Professional",
     emoji: "⚡",
     atsScore: 98,
+  },
+  {
+    id: "structured-photo",
+    name: "Structured Photo Pro",
+    component: StructuredPhotoTemplate,
+    category: "Creative",
+    emoji: "📸",
+    atsScore: 95,
   },
 ];
 
@@ -207,6 +216,21 @@ const TEMPLATE_COLOR_THEMES = {
     {id: "purple", name: "Purple", primary: "#6d28d9", emoji: "🔮"},
     {id: "teal", name: "Teal", primary: "#0e7490", emoji: "🌊"},
   ],
+  GitHubStyle: [
+    {id: "metroNavy", name: "Metro Navy", primary: "#13315c", emoji: "🏙️"},
+    {
+      id: "metroTeal",
+      name: "Metro Teal",
+      primary: "#0f4c5c",
+      emoji: "🌆",
+    },
+    {
+      id: "metroBurgundy",
+      name: "Metro Burgundy",
+      primary: "#5e2129",
+      emoji: "🏢",
+    },
+  ],
   creative2: [
     {id: "purple", name: "Purple", primary: "#8b5cf6", emoji: "💜"},
     {id: "coral", name: "Coral", primary: "#f97316", emoji: "🧡"},
@@ -238,6 +262,16 @@ const TEMPLATE_COLOR_THEMES = {
     {id: "blue", name: "Blue", primary: "#1e40af", emoji: "💙"},
     {id: "purple", name: "Purple", primary: "#7e22ce", emoji: "💜"},
     {id: "orange", name: "Orange", primary: "#c2410c", emoji: "🧡"},
+  ],
+  "structured-photo": [
+    {id: "coral", name: "Coral", primary: "#e05c5c", emoji: "🟥"},
+    {
+      id: "terracotta",
+      name: "Terracotta",
+      primary: "#d9694f",
+      emoji: "🟧",
+    },
+    {id: "rose", name: "Rose", primary: "#db5d74", emoji: "🌹"},
   ],
 };
 

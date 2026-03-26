@@ -8,20 +8,20 @@ import {forwardRef, useRef, useEffect, useState} from "react";
  * - Subtle color accents for visual organization
  * - Excellent whitespace and typography
  * - Optimized for ATS parsing
- * - Professional color themes (slate, indigo, rose, amber, emerald, neutral)
+ * - Professional conservative color themes (charcoal, navy, slate)
  * - Automatic page overflow detection
  *
  * @component
  * @param {Object} props - Component props
  * @param {Object} props.resumeData - Complete resume data object (same structure as ClassicTemplate)
- * @param {string} [props.resumeData.selectedTheme] - Color theme (slate, indigo, rose, amber, emerald, neutral)
+ * @param {string} [props.resumeData.selectedTheme] - Color theme (charcoal, navy, slate)
  * @param {Function} [props.onPageUsageChange] - Callback for page overflow detection
  * @param {React.Ref} ref - Forwarded ref for PDF generation
  *
  * @example
  * <MinimalTemplate
  *   ref={templateRef}
- *   resumeData={{ name: "Sam Lee", contact: { email: "sam@example.com" }, selectedTheme: "neutral" }}
+ *   resumeData={{ name: "Sam Lee", contact: { email: "sam@example.com" }, selectedTheme: "charcoal" }}
  * />
  */
 const MinimalTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
@@ -92,38 +92,12 @@ const MinimalTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
       border: "#e2e8f0",
       linkColor: "#334155",
     },
-    graphite: {
-      primary: "#18181b", // Pure graphite
-      secondary: "#27272a",
-      text: "#09090b",
-      textLight: "#3f3f46",
-      textMuted: "#71717a",
-      border: "#e4e4e7",
-      linkColor: "#18181b",
-    },
-    burgundy: {
-      primary: "#881337", // Professional burgundy
-      secondary: "#9f1239",
-      text: "#1a1a1a",
-      textLight: "#4b5563",
-      textMuted: "#6b7280",
-      border: "#e2e8f0",
-      linkColor: "#881337",
-    },
-    forest: {
-      primary: "#065f46", // Deep forest green
-      secondary: "#047857",
-      text: "#1a1a1a",
-      textLight: "#374151",
-      textMuted: "#6b7280",
-      border: "#e2e8f0",
-      linkColor: "#065f46",
-    },
   };
 
   // Select theme based on resumeData or default to charcoal
   const selectedTheme =
-    colorThemes[resumeData?.colorTheme] || colorThemes.charcoal;
+    colorThemes[resumeData?.selectedTheme || resumeData?.colorTheme] ||
+    colorThemes.charcoal;
 
   // Calculate content density to determine styling mode
   const calculateContentDensity = () => {
@@ -184,7 +158,7 @@ const MinimalTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
         return {
           containerPadding: "0.6in",
           fontSize: "10.5pt",
-          lineHeight: "1.4",
+          lineHeight: "1.42",
           headerMarginBottom: "20px",
           nameSize: "32pt",
           nameMarginBottom: "4px",
@@ -225,7 +199,7 @@ const MinimalTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
         return {
           containerPadding: "0.5in 0.55in",
           fontSize: "10pt",
-          lineHeight: "1.35",
+          lineHeight: "1.38",
           headerMarginBottom: "16px",
           nameSize: "28pt",
           nameMarginBottom: "3px",
@@ -267,7 +241,7 @@ const MinimalTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
         return {
           containerPadding: "0.45in 0.5in",
           fontSize: "9.5pt",
-          lineHeight: "1.3",
+          lineHeight: "1.33",
           headerMarginBottom: "12px",
           nameSize: "26pt",
           nameMarginBottom: "3px",
@@ -389,7 +363,7 @@ const MinimalTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
             style={{
               fontSize: dynamicStyles.sectionHeadingSize,
               marginBottom: dynamicStyles.sectionHeadingMarginBottom,
-              letterSpacing: "1px",
+              letterSpacing: "0.5px",
               color: selectedTheme.primary,
             }}
           >
@@ -503,7 +477,7 @@ const MinimalTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
             style={{
               fontSize: dynamicStyles.sectionHeadingSize,
               marginBottom: dynamicStyles.sectionHeadingMarginBottom,
-              letterSpacing: "1px",
+              letterSpacing: "0.5px",
               color: selectedTheme.primary,
             }}
           >
@@ -610,7 +584,7 @@ const MinimalTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
             style={{
               fontSize: dynamicStyles.sectionHeadingSize,
               marginBottom: dynamicStyles.sectionHeadingMarginBottom,
-              letterSpacing: "1px",
+              letterSpacing: "0.5px",
               color: selectedTheme.primary,
             }}
           >
@@ -672,7 +646,7 @@ const MinimalTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
             style={{
               fontSize: dynamicStyles.sectionHeadingSize,
               marginBottom: dynamicStyles.sectionHeadingMarginBottom,
-              letterSpacing: "1px",
+              letterSpacing: "0.5px",
               color: selectedTheme.primary,
             }}
           >
@@ -711,7 +685,7 @@ const MinimalTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
               style={{
                 fontSize: dynamicStyles.sectionHeadingSize,
                 marginBottom: dynamicStyles.sectionHeadingMarginBottom,
-                letterSpacing: "1px",
+                letterSpacing: "0.5px",
                 color: selectedTheme.primary,
               }}
             >
@@ -764,7 +738,7 @@ const MinimalTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
               style={{
                 fontSize: dynamicStyles.sectionHeadingSize,
                 marginBottom: dynamicStyles.sectionHeadingMarginBottom,
-                letterSpacing: "1px",
+                letterSpacing: "0.5px",
                 color: selectedTheme.primary,
               }}
             >
@@ -805,7 +779,7 @@ const MinimalTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
                       style={{
                         fontSize: dynamicStyles.sectionHeadingSize,
                         marginBottom: dynamicStyles.sectionHeadingMarginBottom,
-                        letterSpacing: "1px",
+                        letterSpacing: "0.5px",
                         color: selectedTheme.primary,
                       }}
                     >
@@ -892,8 +866,8 @@ const MinimalTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
               target="_blank"
               rel="noopener noreferrer"
               style={{
-                color: selectedTheme.linkColor,
-                textDecoration: "underline",
+                color: selectedTheme.textLight,
+                textDecoration: "none",
               }}
             >
               LinkedIn
@@ -905,8 +879,8 @@ const MinimalTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
               target="_blank"
               rel="noopener noreferrer"
               style={{
-                color: selectedTheme.linkColor,
-                textDecoration: "underline",
+                color: selectedTheme.textLight,
+                textDecoration: "none",
               }}
             >
               GitHub

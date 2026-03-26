@@ -17,8 +17,10 @@ import TechTemplate from "@/components/templates/TechTemplate";
 import Creative2Template from "@/components/templates/Creative2Template";
 import AcademicTemplate from "@/components/templates/AcademicTemplate";
 import CorporateEliteTemplate from "@/components/templates/CorporateEliteTemplate";
-import StrategicLeaderTemplate from "@/components/templates/StrategicLeaderTemplate";
+import StrategicLeadershipTemplate from "@/components/templates/StrategicLeadershipTemplate";
 import ImpactProTemplate from "@/components/templates/ImpactProTemplate";
+import GitHubStyleTemplate from "@/components/templates/GitHubStyleTemplate";
+import StructuredPhotoTemplate from "@/components/templates/StructuredPhotoTemplate";
 import FullPreviewModal from "./FullPreviewModal";
 
 // Template page height in px (11 in @ 96 dpi — matches minHeight across all templates)
@@ -30,7 +32,7 @@ const OVERFLOW_THRESHOLD_PX = 80;
 
 const ResumePreview = forwardRef(
   ({resumeData, template = "classic", onPageUsageChange}, ref) => {
-    const componentRef = useRef();
+    const printTemplateRef = useRef();
     const templateRef = useRef(); // page-0 template wrapper — used for DOM section measurement
     const [showFullPreview, , setShowFullPreviewTrue, setShowFullPreviewFalse] =
       useToggle(false);
@@ -122,18 +124,22 @@ const ResumePreview = forwardRef(
       "professional-v2": ProfessionalV2Template,
       executive: ExecutiveTemplate,
       tech: TechTemplate,
+      GitHubStyle: GitHubStyleTemplate,
       creative2: Creative2Template,
       academic: AcademicTemplate,
       "corporate-elite": CorporateEliteTemplate,
-      "strategic-leader": StrategicLeaderTemplate,
+      "strategic-leader": StrategicLeadershipTemplate,
+      "strategic-leadership": StrategicLeadershipTemplate,
+      "stratergic-leader": StrategicLeadershipTemplate,
       "impact-pro": ImpactProTemplate,
+      "structured-photo": StructuredPhotoTemplate,
     };
 
     const SelectedTemplate = templates[template] || ClassicTemplate;
     const twoPageMode = numberOfPages > 1;
 
     const handlePrint = useReactToPrint({
-      contentRef: componentRef,
+      contentRef: printTemplateRef,
       documentTitle: `${resumeData?.name || "Resume"}_Resume`,
       pageStyle: `
         @page { size: A4; margin: 0.5in; }
@@ -243,7 +249,6 @@ const ResumePreview = forwardRef(
                           }}
                         >
                           <SelectedTemplate
-                            ref={pageIndex === 0 ? componentRef : undefined}
                             resumeData={resumeData}
                             twoPageMode={twoPageMode}
                             onPageUsageChange={
@@ -287,6 +292,28 @@ const ResumePreview = forwardRef(
             />
           </div>
         </FullPreviewModal>
+
+        {/* Dedicated print source: natural-size template without preview scaling/pagination wrappers */}
+        <div
+          aria-hidden="true"
+          style={{
+            position: "fixed",
+            left: "-200vw",
+            top: 0,
+            width: "210mm",
+            background: "#ffffff",
+            pointerEvents: "none",
+            opacity: 0,
+          }}
+        >
+          <SelectedTemplate
+            ref={printTemplateRef}
+            resumeData={resumeData}
+            twoPageMode={false}
+            printMode={template === "professional-v2"}
+            onPageUsageChange={() => {}}
+          />
+        </div>
       </>
     );
   }
