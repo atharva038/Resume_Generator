@@ -7,6 +7,7 @@ import {
   Twitter,
   Github,
   Shield,
+  Heart,
 } from "lucide-react";
 import {useEffect, useRef, useState} from "react";
 import {useToggle} from "@/hooks";
@@ -228,7 +229,7 @@ const Footer = () => {
             {/* Built with Love */}
             <p className="text-xs text-gray-500 dark:text-gray-500 dark:text-gray-500 dark:text-gray-500 flex items-center gap-1.5">
               Built with
-              <span className="text-red-500">❤️</span>
+              <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500" />
               for job seekers worldwide
             </p>
           </div>

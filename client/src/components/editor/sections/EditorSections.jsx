@@ -5,6 +5,15 @@ import {ScoreCard} from "@/components/common/cards";
 import {RecommendationsPanel} from "@/components/editor/panels";
 import {resumeAPI} from "@/api/api";
 import {LimitedTextarea} from "@/components/common/LimitedInputs";
+import {
+  AlertTriangle,
+  Lightbulb,
+  Loader2,
+  Plus,
+  Sparkles,
+  Trophy,
+  X,
+} from "lucide-react";
 import {handleDateChange, isValidDate, getDateValidationMessage} from "@/utils/dateValidation";
 
 export const PersonalInfoSection = ({
@@ -153,8 +162,9 @@ export const SkillsSection = ({resumeData, updateField}) => {
       <div className="mb-4">
         <div className="flex justify-between items-center mb-2">
           <h2 className="section-title mb-0">Skills</h2>
-          <div className="text-sm text-gray-500 dark:text-gray-400">
-            ✨ AI-Powered Categorization
+          <div className="text-sm text-gray-500 dark:text-gray-400 inline-flex items-center gap-1.5">
+            <Sparkles className="w-4 h-4" />
+            AI-Powered Categorization
           </div>
         </div>
 
@@ -173,9 +183,10 @@ export const SkillsSection = ({resumeData, updateField}) => {
               autoComplete="off"
               spellCheck="false"
             />
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              💡 Tip: Just list all your skills and AI will automatically
-              organize them into categories
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 inline-flex items-center gap-1.5">
+              <Lightbulb className="w-3.5 h-3.5" />
+              Tip: Just list all your skills and AI will automatically organize
+              them into categories
             </p>
             {skillsInput && (
               <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
@@ -190,41 +201,30 @@ export const SkillsSection = ({resumeData, updateField}) => {
           <button
             onClick={handleCategorize}
             disabled={isLoading || !skillsInput.trim()}
-            className={`py-2 px-6 rounded-lg text-sm font-medium transition-all ${
+            className={`w-full sm:w-auto py-2.5 px-5 rounded-lg text-sm font-semibold transition-all border inline-flex items-center justify-center gap-2 ${
               isLoading || !skillsInput.trim()
-                ? "bg-gray-200 dark:bg-zinc-800 text-gray-400 dark:text-gray-500 cursor-not-allowed"
-                : "bg-purple-600 hover:bg-purple-700 text-white shadow-md hover:shadow-lg"
+                ? "bg-gray-200 dark:bg-zinc-800 border-gray-300 dark:border-zinc-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                : "bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 border-transparent text-white shadow-md hover:shadow-lg"
             }`}
           >
             {isLoading ? (
               <span className="flex items-center justify-center gap-2">
-                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                    fill="none"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
-                </svg>
+                <Loader2 className="w-4 h-4 animate-spin" />
                 Categorizing with AI...
               </span>
             ) : (
-              "🤖 Categorize Skills with AI"
+              <>
+                <Sparkles className="w-4 h-4" />
+                Categorize Skills with AI
+              </>
             )}
           </button>
 
           {/* Error message */}
           {error && (
-            <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-600 dark:text-red-400 text-sm">
-              ⚠️ {error}
+            <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-600 dark:text-red-400 text-sm flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+              <span>{error}</span>
             </div>
           )}
 
@@ -232,7 +232,8 @@ export const SkillsSection = ({resumeData, updateField}) => {
           {resumeData.skills && resumeData.skills.length > 0 && (
             <div className="mt-4 space-y-3">
               <div className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                <span>📊 Categorized Skills</span>
+                <Sparkles className="w-4 h-4" />
+                <span>Categorized Skills</span>
                 <span className="text-xs text-gray-500 dark:text-gray-400">
                   ({resumeData.skills.length} categories)
                 </span>
@@ -764,8 +765,9 @@ export const AchievementsSection = ({resumeData, updateField}) => {
       <div className="mb-4">
         <div className="flex justify-between items-center mb-2">
           <h2 className="section-title mb-0">Achievements</h2>
-          <div className="text-sm text-gray-500 dark:text-gray-400">
-            ✨ AI-Powered Formatting
+          <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
+            <Sparkles className="w-4 h-4" />
+            AI-Powered Formatting
           </div>
         </div>
 
@@ -783,67 +785,58 @@ export const AchievementsSection = ({resumeData, updateField}) => {
               rows={5}
               autoComplete="off"
             />
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              💡 Tip: Write naturally and AI will format them into professional
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 flex items-center gap-1.5">
+              <Lightbulb className="w-3.5 h-3.5" />
+              Tip: Write naturally and AI will format them into professional
               bullet points
             </p>
           </div>
 
           {/* Action buttons */}
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2.5">
             {/* Manual Save button */}
             <button
               onClick={handleManualSave}
               disabled={!achievementsInput.trim()}
-              className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all ${
+              className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all border flex items-center justify-center gap-2 ${
                 !achievementsInput.trim()
-                  ? "bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
-                  : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg"
+                  ? "bg-gray-200 dark:bg-zinc-800 border-gray-300 dark:border-zinc-700 text-gray-500 cursor-not-allowed"
+                  : "bg-white dark:bg-zinc-900 border-blue-500/40 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20"
               }`}
             >
-              ➕ Add to List
+              <Plus className="w-4 h-4" />
+              Add to List
             </button>
 
             {/* AI Segregate button */}
             <button
               onClick={handleSegregate}
               disabled={isLoading || !achievementsInput.trim()}
-              className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all ${
+              className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all border flex items-center justify-center gap-2 ${
                 isLoading || !achievementsInput.trim()
-                  ? "bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
-                  : "bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white shadow-md hover:shadow-lg"
+                  ? "bg-gray-200 dark:bg-zinc-800 border-gray-300 dark:border-zinc-700 text-gray-500 cursor-not-allowed"
+                  : "bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 border-transparent text-white shadow-md hover:shadow-lg"
               }`}
             >
               {isLoading ? (
                 <span className="flex items-center justify-center gap-2">
-                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                      fill="none"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    />
-                  </svg>
+                  <Loader2 className="animate-spin h-5 w-5" />
                   Formatting with AI...
                 </span>
               ) : (
-                "🤖 Format with AI"
+                <span className="flex items-center justify-center gap-2">
+                  <Sparkles className="w-4 h-4" />
+                  Format with AI
+                </span>
               )}
             </button>
           </div>
 
           {/* Error message */}
           {error && (
-            <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-600 dark:text-red-400 text-sm">
-              ⚠️ {error}
+            <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-600 dark:text-red-400 text-sm flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+              <span>{error}</span>
             </div>
           )}
 
@@ -852,16 +845,18 @@ export const AchievementsSection = ({resumeData, updateField}) => {
             <div className="mt-4 space-y-3">
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                  <span>🏆 Formatted Achievements</span>
+                  <Trophy className="w-4 h-4" />
+                  <span>Formatted Achievements</span>
                   <span className="text-xs text-gray-500 dark:text-gray-400">
                     ({achievements.length} items)
                   </span>
                 </div>
                 <button
                   onClick={addAchievement}
-                  className="text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400 font-medium"
+                  className="text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400 font-medium inline-flex items-center gap-1.5"
                 >
-                  + Add More
+                  <Plus className="w-3.5 h-3.5" />
+                  Add More
                 </button>
               </div>
 
@@ -877,10 +872,10 @@ export const AchievementsSection = ({resumeData, updateField}) => {
                   />
                   <button
                     onClick={() => removeAchievement(index)}
-                    className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 px-3 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+                    className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 w-9 h-9 flex items-center justify-center hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
                     title="Remove achievement"
                   >
-                    ✕
+                    <X className="w-4 h-4" />
                   </button>
                 </div>
               ))}

@@ -8,6 +8,33 @@ import {parseValidationErrors} from "@/utils/errorHandler";
 import logger from "@/utils/logger";
 import toast, {Toaster} from "react-hot-toast";
 import {
+  BarChart3,
+  BriefcaseBusiness,
+  Check,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
+  Download,
+  Eye,
+  EyeOff,
+  FileText,
+  Github,
+  GraduationCap,
+  LayoutTemplate,
+  Lightbulb,
+  Loader2,
+  Lock,
+  PenSquare,
+  PencilLine,
+  Rocket,
+  RotateCcw,
+  ScrollText,
+  Sparkles,
+  Target,
+  Trophy,
+  User,
+} from "lucide-react";
+import {
   ResumePreview,
   EditableSection,
   CollapsibleSection,
@@ -21,6 +48,7 @@ import {
   AchievementsSection,
   CustomSectionsManager,
   ResumeWizard,
+  TemplateSelectorModal,
 } from "@/components/editor";
 import {ScoreCard, JobSpecificScoreCard} from "@/components/common/cards";
 import {GitHubImportModal} from "@/components/common/modals";
@@ -28,20 +56,7 @@ import UpgradeRequiredModal from "@/components/common/modals/UpgradeRequiredModa
 import {getJobCategories, getJobsByCategory} from "@/utils/jobProfiles";
 import {calculateResumeScore} from "@/utils/resumeScoring";
 import {PageUtilizationIndicator} from "@/components/common/LimitedInputs";
-import ClassicTemplate from "@/components/templates/ClassicTemplate";
-import ModernTemplate from "@/components/templates/ModernTemplate";
-import MinimalTemplate from "@/components/templates/MinimalTemplate";
-import ProfessionalTemplate from "@/components/templates/ProfessionalTemplate";
-import ProfessionalV2Template from "@/components/templates/ProfessionalV2Template";
-import Professional2Template from "@/components/templates/Professional2Template";
-import TechTemplate from "@/components/templates/TechTemplate";
-import Creative2Template from "@/components/templates/Creative2Template";
-import AcademicTemplate from "@/components/templates/AcademicTemplate";
-import CorporateEliteTemplate from "@/components/templates/CorporateEliteTemplate";
-import StrategicLeadershipTemplate from "@/components/templates/StrategicLeadershipTemplate";
-import ImpactProTemplate from "@/components/templates/ImpactProTemplate";
-import GitHubStyleTemplate from "@/components/templates/GitHubStyleTemplate";
-import StructuredPhotoTemplate from "@/components/templates/StructuredPhotoTemplate";
+import {TEMPLATES, TEMPLATE_COLOR_THEMES} from "@/components/editor/templateConfig";
 
 // Default section order (only editable resume sections)
 const DEFAULT_SECTION_ORDER = [
@@ -56,225 +71,6 @@ const DEFAULT_SECTION_ORDER = [
   "customSections",
 ];
 
-// Template configurations
-const TEMPLATES = [
-  {
-    id: "classic",
-    name: "Classic",
-    component: ClassicTemplate,
-    category: "Professional",
-    emoji: "📋",
-    atsScore: 95,
-  },
-  {
-    id: "modern",
-    name: "Modern",
-    component: ModernTemplate,
-    category: "Professional",
-    emoji: "🎨",
-    atsScore: 92,
-  },
-  {
-    id: "minimal",
-    name: "Minimal",
-    component: MinimalTemplate,
-    category: "Professional",
-    emoji: "✨",
-    atsScore: 98,
-  },
-  {
-    id: "professional",
-    name: "Professional",
-    component: ProfessionalTemplate,
-    category: "Professional",
-    emoji: "💼",
-    atsScore: 94,
-  },
-  {
-    id: "professional-v2",
-    name: "Professional V2",
-    component: ProfessionalV2Template,
-    category: "Professional",
-    emoji: "📄",
-    atsScore: 96,
-  },
-  {
-    id: "professional2",
-    name: "Professional Elite",
-    component: Professional2Template,
-    category: "Professional",
-    emoji: "🏆",
-    atsScore: 98,
-  },
-  {
-    id: "tech",
-    name: "Tech Developer",
-    component: TechTemplate,
-    category: "Tech",
-    emoji: "💻",
-    atsScore: 93,
-  },
-  {
-    id: "GitHubStyle",
-    name: "Metro Grid Narrative",
-    component: GitHubStyleTemplate,
-    category: "Professional",
-    emoji: "🏙️",
-    atsScore: 96,
-  },
-  {
-    id: "creative2",
-    name: "Creative Designer Pro",
-    component: Creative2Template,
-    category: "Creative",
-    emoji: "🎨",
-    atsScore: 94,
-  },
-  {
-    id: "academic",
-    name: "Academic Research",
-    component: AcademicTemplate,
-    category: "Academic",
-    emoji: "🎓",
-    atsScore: 97,
-  },
-  {
-    id: "corporate-elite",
-    name: "Corporate Elite",
-    component: CorporateEliteTemplate,
-    category: "Professional",
-    emoji: "🏢",
-    atsScore: 99,
-  },
-  {
-    id: "strategic-leader",
-    name: "Strategic Leadership",
-    component: StrategicLeadershipTemplate,
-    category: "Leadership",
-    emoji: "🎯",
-    atsScore: 97,
-  },
-  {
-    id: "impact-pro",
-    name: "Impact Pro",
-    component: ImpactProTemplate,
-    category: "Professional",
-    emoji: "⚡",
-    atsScore: 98,
-  },
-  {
-    id: "structured-photo",
-    name: "Structured Photo Pro",
-    component: StructuredPhotoTemplate,
-    category: "Creative",
-    emoji: "📸",
-    atsScore: 95,
-  },
-];
-
-// Color theme configurations for templates that support multiple themes
-const TEMPLATE_COLOR_THEMES = {
-  classic: [
-    {id: "navy", name: "Navy Blue", primary: "#0066cc", emoji: "💼"},
-    {id: "burgundy", name: "Burgundy", primary: "#8b1a1a", emoji: "🍷"},
-    {id: "forest", name: "Forest Green", primary: "#1b5e20", emoji: "🌲"},
-    {id: "charcoal", name: "Charcoal", primary: "#2d3748", emoji: "⚫"},
-  ],
-  modern: [
-    {id: "blue", name: "Blue", primary: "#2563eb", emoji: "💙"},
-    {id: "purple", name: "Purple", primary: "#7c3aed", emoji: "💜"},
-    {id: "teal", name: "Teal", primary: "#0d9488", emoji: "🌊"},
-    {id: "orange", name: "Orange", primary: "#ea580c", emoji: "🧡"},
-  ],
-  minimal: [
-    {id: "charcoal", name: "Charcoal", primary: "#2d3748", emoji: "⚫"},
-    {id: "navy", name: "Navy", primary: "#1e40af", emoji: "💼"},
-    {id: "slate", name: "Slate", primary: "#475569", emoji: "🌑"},
-    {id: "graphite", name: "Graphite", primary: "#18181b", emoji: "⬛"},
-  ],
-  professional: [
-    {id: "navy", name: "Navy Blue", primary: "#1e3a8a", emoji: "💼"},
-    {id: "burgundy", name: "Burgundy", primary: "#881337", emoji: "🍷"},
-    {id: "forest", name: "Forest Green", primary: "#065f46", emoji: "🌲"},
-    {id: "gray", name: "Gray", primary: "#374151", emoji: "⚪"},
-  ],
-  "professional-v2": [
-    {id: "blue", name: "Blue", primary: "#1d4ed8", emoji: "💙"},
-    {id: "purple", name: "Purple", primary: "#7e22ce", emoji: "💜"},
-    {id: "teal", name: "Teal", primary: "#0f766e", emoji: "🌊"},
-    {id: "burgundy", name: "Burgundy", primary: "#9f1239", emoji: "🍷"},
-  ],
-  executive: [
-    {id: "navy", name: "Navy Blue", primary: "#1e40af", emoji: "💼"},
-    {id: "burgundy", name: "Burgundy", primary: "#7f1d1d", emoji: "🍷"},
-    {id: "charcoal", name: "Charcoal", primary: "#1f2937", emoji: "⚫"},
-    {id: "forest", name: "Forest Green", primary: "#14532d", emoji: "🌲"},
-  ],
-  tech: [
-    {id: "black", name: "Black", primary: "#0f172a", emoji: "⚫"},
-    {id: "blue", name: "Tech Blue", primary: "#1e3a8a", emoji: "�"},
-    {id: "purple", name: "Purple", primary: "#6d28d9", emoji: "🔮"},
-    {id: "teal", name: "Teal", primary: "#0e7490", emoji: "🌊"},
-  ],
-  GitHubStyle: [
-    {id: "metroNavy", name: "Metro Navy", primary: "#13315c", emoji: "🏙️"},
-    {
-      id: "metroTeal",
-      name: "Metro Teal",
-      primary: "#0f4c5c",
-      emoji: "🌆",
-    },
-    {
-      id: "metroBurgundy",
-      name: "Metro Burgundy",
-      primary: "#5e2129",
-      emoji: "🏢",
-    },
-  ],
-  creative2: [
-    {id: "purple", name: "Purple", primary: "#8b5cf6", emoji: "💜"},
-    {id: "coral", name: "Coral", primary: "#f97316", emoji: "🧡"},
-    {id: "teal", name: "Teal", primary: "#14b8a6", emoji: "🌊"},
-    {id: "rose", name: "Rose", primary: "#e11d48", emoji: "🌹"},
-    {id: "indigo", name: "Indigo", primary: "#4f46e5", emoji: "�"},
-    {id: "cyan", name: "Cyan", primary: "#0891b2", emoji: "💎"},
-  ],
-  academic: [
-    {id: "navy", name: "Navy Blue", primary: "#1e3a8a", emoji: "📘"},
-    {id: "burgundy", name: "Burgundy", primary: "#881337", emoji: "📕"},
-    {id: "forest", name: "Forest Green", primary: "#065f46", emoji: "📗"},
-    {id: "charcoal", name: "Charcoal", primary: "#1f2937", emoji: "📓"},
-  ],
-  "corporate-elite": [
-    {id: "navy", name: "Navy Blue", primary: "#1e3a5f", emoji: "💼"},
-    {id: "burgundy", name: "Burgundy", primary: "#7c2d41", emoji: "🍷"},
-    {id: "forest", name: "Forest Green", primary: "#1e5f4d", emoji: "🌲"},
-    {id: "charcoal", name: "Charcoal", primary: "#2d3748", emoji: "⚫"},
-  ],
-  "strategic-leader": [
-    {id: "teal", name: "Teal", primary: "#0d7377", emoji: "🌊"},
-    {id: "purple", name: "Purple", primary: "#6b46c1", emoji: "🔮"},
-    {id: "burgundy", name: "Burgundy", primary: "#9b2c2c", emoji: "🍷"},
-    {id: "navy", name: "Navy", primary: "#1e3a8a", emoji: "💼"},
-  ],
-  "impact-pro": [
-    {id: "emerald", name: "Emerald", primary: "#047857", emoji: "💚"},
-    {id: "blue", name: "Blue", primary: "#1e40af", emoji: "💙"},
-    {id: "purple", name: "Purple", primary: "#7e22ce", emoji: "💜"},
-    {id: "orange", name: "Orange", primary: "#c2410c", emoji: "🧡"},
-  ],
-  "structured-photo": [
-    {id: "coral", name: "Coral", primary: "#e05c5c", emoji: "🟥"},
-    {
-      id: "terracotta",
-      name: "Terracotta",
-      primary: "#d9694f",
-      emoji: "🟧",
-    },
-    {id: "rose", name: "Rose", primary: "#db5d74", emoji: "🌹"},
-  ],
-};
-
 const Editor = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -282,6 +78,7 @@ const Editor = () => {
   const {blockNavigation, unblockNavigation} = useNavigationBlocker();
   const resumePreviewRef = useRef(null);
   const previewSectionRef = useRef(null);
+  const colorDropdownRef = useRef(null);
 
   // Helper function to check if subscription is expired
   const isSubscriptionExpired = () => {
@@ -378,6 +175,22 @@ const Editor = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    if (!showColorThemeSelector) return;
+
+    const handleClickOutside = (event) => {
+      if (
+        colorDropdownRef.current &&
+        !colorDropdownRef.current.contains(event.target)
+      ) {
+        showColorThemeSelectorFalse();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showColorThemeSelector, showColorThemeSelectorFalse]);
+
 
   // Wizard mode for new resumes
   const [
@@ -455,7 +268,7 @@ const Editor = () => {
         setHasUnsavedChangesFalse();
 
         // Show success toast
-        toast.success("Auto-saved ✓", {
+        toast.success("Auto-saved", {
           duration: 2000,
           position: "bottom-right",
           style: {
@@ -464,7 +277,6 @@ const Editor = () => {
             fontSize: "14px",
             fontWeight: "500",
           },
-          icon: "💾",
         });
       } catch (error) {
         logger.error("❌ Auto-save failed:", error);
@@ -675,7 +487,6 @@ const Editor = () => {
   const handleSave = async () => {
     if (!user) {
       toast.error("Please login to save your resume", {
-        icon: "🔒",
         duration: 3000,
       });
       navigate("/login");
@@ -690,7 +501,6 @@ const Editor = () => {
         const response = await resumeAPI.update(resumeData._id, resumeData);
         savedResume = response.data;
         toast.success("Resume updated successfully!", {
-          icon: "✅",
           duration: 2500,
         });
       } else {
@@ -698,7 +508,6 @@ const Editor = () => {
         const response = await resumeAPI.save(resumeData);
         savedResume = response.data;
         toast.success("Resume saved successfully!", {
-          icon: "💾",
           duration: 2500,
         });
       }
@@ -728,7 +537,6 @@ const Editor = () => {
         showUpgradeModalTrue();
       } else {
         toast.error("Failed to save resume: " + parseValidationErrors(err), {
-          icon: "❌",
           duration: 4000,
         });
       }
@@ -741,7 +549,6 @@ const Editor = () => {
   const handleDownloadPDF = async () => {
     if (!user) {
       toast.error("Please login to download your resume", {
-        icon: "🔒",
         duration: 3000,
       });
       navigate("/login");
@@ -780,7 +587,6 @@ const Editor = () => {
       }
 
       toast.success("Resume download started!", {
-        icon: "📥",
         duration: 2000,
       });
     } catch (err) {
@@ -802,7 +608,6 @@ const Editor = () => {
         toast.error(
           "Failed to download resume: " + parseValidationErrors(err),
           {
-            icon: "❌",
             duration: 4000,
           }
         );
@@ -849,7 +654,6 @@ const Editor = () => {
   const handleWizardComplete = () => {
     setIsWizardModeFalse();
     toast.success("Resume setup complete! You can now edit all sections.", {
-      icon: "🎉",
       duration: 3000,
     });
   };
@@ -969,8 +773,8 @@ const Editor = () => {
           description: repo.description || "No description provided",
           technologies: [repo.language, ...(repo.topics || [])].filter(Boolean),
           link: repo.url,
-          bullets: [`⭐ ${repo.stars} stars`, `🔱 ${repo.forks} forks`],
-          highlights: [`⭐ ${repo.stars} stars`, `🔱 ${repo.forks} forks`],
+          bullets: [`${repo.stars} stars`, `${repo.forks} forks`],
+          highlights: [`${repo.stars} stars`, `${repo.forks} forks`],
         }));
 
         if (importedData.mergeOptions.projects === "replace") {
@@ -1151,7 +955,6 @@ const Editor = () => {
           toast.error(
             "Failed to auto-save imported data: " + parseValidationErrors(err),
             {
-              icon: "❌",
               duration: 4000,
             }
           );
@@ -1173,7 +976,6 @@ const Editor = () => {
         sectionOrder: DEFAULT_SECTION_ORDER,
       }));
       toast.success("Section order reset to default!", {
-        icon: "🔄",
         duration: 2000,
       });
     }
@@ -1280,7 +1082,6 @@ const Editor = () => {
         toast.success(
           `All sections enhanced successfully! (${successCount} sections improved)`,
           {
-            icon: "✨",
             duration: 3000,
           }
         );
@@ -1289,7 +1090,6 @@ const Editor = () => {
         toast(
           `Enhancement completed with some issues: ${successCount} enhanced, ${failCount} failed`,
           {
-            icon: "⚠️",
             duration: 4000,
             style: {
               background: "#FEF3C7",
@@ -1303,7 +1103,6 @@ const Editor = () => {
       toast.error(
         "Enhancement failed: " + (err.response?.data?.error || err.message),
         {
-          icon: "❌",
           duration: 4000,
         }
       );
@@ -1326,7 +1125,7 @@ const Editor = () => {
           key="combinedScore"
           sectionId="combinedScore"
           title="ATS Score" // TEMPORARILY HIDDEN FOR RAZORPAY COMPLIANCE - "& Job Match" removed
-          icon="📊"
+          icon={<BarChart3 className="w-5 h-5" />}
           defaultExpanded={true}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
@@ -1359,7 +1158,7 @@ const Editor = () => {
           key="personal"
           sectionId="personal"
           title="Personal Information"
-          icon="👤"
+          icon={<User className="w-5 h-5" />}
           defaultExpanded={true}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
@@ -1423,7 +1222,7 @@ const Editor = () => {
           key="summary"
           sectionId="summary"
           title="Professional Summary"
-          icon="📝"
+          icon={<FileText className="w-5 h-5" />}
           defaultExpanded={true}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
@@ -1448,7 +1247,7 @@ const Editor = () => {
           key="recommendations"
           sectionId="recommendations"
           title="Improvement Recommendations"
-          icon="💡"
+          icon={<Lightbulb className="w-5 h-5" />}
           defaultExpanded={false}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
@@ -1470,7 +1269,7 @@ const Editor = () => {
           key="skills"
           sectionId="skills"
           title="Skills"
-          icon="🎯"
+          icon={<Target className="w-5 h-5" />}
           defaultExpanded={true}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
@@ -1487,7 +1286,7 @@ const Editor = () => {
           key="experience"
           sectionId="experience"
           title="Experience"
-          icon="💼"
+          icon={<BriefcaseBusiness className="w-5 h-5" />}
           defaultExpanded={true}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
@@ -1511,7 +1310,7 @@ const Editor = () => {
           key="education"
           sectionId="education"
           title="Education"
-          icon="🎓"
+          icon={<GraduationCap className="w-5 h-5" />}
           defaultExpanded={true}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
@@ -1534,7 +1333,7 @@ const Editor = () => {
           key="projects"
           sectionId="projects"
           title="Projects"
-          icon="🚀"
+          icon={<Rocket className="w-5 h-5" />}
           defaultExpanded={true}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
@@ -1557,7 +1356,7 @@ const Editor = () => {
           key="certifications"
           sectionId="certifications"
           title="Certifications"
-          icon="📜"
+          icon={<ScrollText className="w-5 h-5" />}
           defaultExpanded={true}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
@@ -1579,7 +1378,7 @@ const Editor = () => {
           key="achievements"
           sectionId="achievements"
           title="Achievements"
-          icon="🏆"
+          icon={<Trophy className="w-5 h-5" />}
           defaultExpanded={true}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
@@ -1599,7 +1398,7 @@ const Editor = () => {
           key="customSections"
           sectionId="customSections"
           title="Custom Sections"
-          icon="✏️"
+          icon={<PenSquare className="w-5 h-5" />}
           defaultExpanded={true}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
@@ -1617,6 +1416,11 @@ const Editor = () => {
 
     return sections[sectionId] || null;
   };
+
+  const availableColorThemes = TEMPLATE_COLOR_THEMES[selectedTemplate] || [];
+  const activeColorTheme =
+    availableColorThemes.find((theme) => theme.id === resumeData?.colorTheme) ||
+    availableColorThemes[0];
 
   return (
     <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
@@ -1639,7 +1443,7 @@ const Editor = () => {
                 className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 border border-blue-600 dark:border-blue-500 rounded-lg bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 text-xs sm:text-sm font-semibold hover:bg-blue-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2"
                 title="Switch to full editor mode"
               >
-                <span>📝</span>
+                <PenSquare className="w-4 h-4" />
                 <span className="text-xs sm:text-sm">
                   Switch to Full Editor
                 </span>
@@ -1661,7 +1465,7 @@ const Editor = () => {
                 className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 border border-gray-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-black text-gray-900 dark:text-gray-300 text-xs sm:text-sm font-semibold hover:border-orange-500 hover:text-orange-600 dark:hover:text-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors flex items-center justify-center gap-1"
                 title="Reset section order to default"
               >
-                <span className="hidden sm:inline">🔄</span>
+                <RotateCcw className="hidden sm:inline w-4 h-4" />
                 <span>Reset</span>
               </button>
             )}
@@ -1671,21 +1475,81 @@ const Editor = () => {
               className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 border border-gray-300 dark:border-zinc-700 rounded-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs sm:text-sm font-semibold hover:bg-gray-800 dark:hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-700 dark:focus:ring-gray-300 transition-all flex items-center justify-center gap-1.5"
               title="Change template"
             >
-              <span>
-                {TEMPLATES.find((t) => t.id === selectedTemplate)?.emoji}
-              </span>
+              <LayoutTemplate className="w-4 h-4" />
               <span>Change Template</span>
             </button>
             {/* Color Theme Selector Button - Only show for templates with color themes */}
-            {TEMPLATE_COLOR_THEMES[selectedTemplate] && (
-              <button
-                onClick={() => showColorThemeSelectorTrue()}
-                className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 border border-gray-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-900 text-gray-900 dark:text-white text-xs sm:text-sm font-semibold hover:bg-gray-50 dark:hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-gray-400 dark:focus:ring-zinc-600 transition-all flex items-center justify-center gap-1.5"
-                title="Change color theme"
-              >
-                <span>🎨</span>
-                <span>Colors</span>
-              </button>
+            {availableColorThemes.length > 0 && (
+              <div ref={colorDropdownRef} className="relative flex-none">
+                <button
+                  onClick={toggleColorThemeSelector}
+                  className="min-w-[142px] max-w-[168px] px-3 py-2.5 border border-gray-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-900 text-gray-900 dark:text-white text-xs sm:text-sm font-semibold hover:bg-gray-50 dark:hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-gray-400 dark:focus:ring-zinc-600 transition-all flex items-center justify-between gap-2"
+                  title="Change color theme"
+                  aria-haspopup="listbox"
+                  aria-expanded={showColorThemeSelector}
+                >
+                  <span className="flex items-center gap-2 min-w-0">
+                    <span
+                      className="w-3 h-3 rounded-full border border-gray-300 dark:border-zinc-600 flex-shrink-0"
+                      style={{backgroundColor: activeColorTheme?.primary || "#374151"}}
+                    />
+                    <span className="truncate">
+                      {activeColorTheme?.name || "Select color"}
+                    </span>
+                  </span>
+                  {showColorThemeSelector ? (
+                    <ChevronUp className="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" />
+                  ) : (
+                    <ChevronDown className="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" />
+                  )}
+                </button>
+
+                {showColorThemeSelector && (
+                  <div className="absolute top-full left-0 mt-1.5 w-52 max-w-[68vw] bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-lg shadow-xl z-50 overflow-hidden">
+                    <div className="max-h-56 overflow-auto py-1">
+                      {availableColorThemes.map((theme) => (
+                        <button
+                          key={theme.id}
+                          onClick={() => {
+                            setResumeData((prev) => ({
+                              ...prev,
+                              colorTheme: theme.id,
+                            }));
+                            showColorThemeSelectorFalse();
+                            toast.success(`${theme.name} theme applied!`, {
+                              duration: 2000,
+                              position: "bottom-right",
+                            });
+                          }}
+                          className={`w-full px-2.5 py-2 text-left flex items-center gap-2.5 transition-colors ${
+                            resumeData?.colorTheme === theme.id
+                              ? "bg-gray-100 dark:bg-zinc-800"
+                              : "hover:bg-gray-50 dark:hover:bg-zinc-800/70"
+                          }`}
+                        >
+                          <span
+                            className="w-3.5 h-3.5 rounded-full border border-gray-300 dark:border-zinc-600 flex-shrink-0"
+                            style={{backgroundColor: theme.primary}}
+                          />
+                          <span className="flex-1 min-w-0">
+                            <span className="block text-xs font-semibold text-gray-900 dark:text-gray-100 truncate">
+                              {theme.name}
+                            </span>
+                            <span className="block text-[11px] text-gray-500 dark:text-gray-400 leading-tight">
+                              {theme.primary}
+                            </span>
+                          </span>
+                          {resumeData?.colorTheme === theme.id && (
+                            <span className="text-xs font-semibold text-gray-700 dark:text-gray-200">
+                              Active
+                            </span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
           </div>
         </div>
@@ -1702,9 +1566,11 @@ const Editor = () => {
                   : "bg-white dark:bg-zinc-900 text-gray-700 dark:text-gray-300 border-2 border-gray-300 dark:border-zinc-700 hover:border-purple-500 dark:hover:border-purple-500"
               }`}
             >
-              <span className="text-lg mb-0.5">
-                {showPreview ? "👁️" : "👁️‍🗨️"}
-              </span>
+              {showPreview ? (
+                <Eye className="w-4 h-4 mb-1" />
+              ) : (
+                <EyeOff className="w-4 h-4 mb-1" />
+              )}
               <span className="text-[10px] tracking-wide">
                 {showPreview ? "HIDE" : "SHOW"}
               </span>
@@ -1730,9 +1596,13 @@ const Editor = () => {
                   </span>
                 </>
               )}
-              <span className="text-lg mb-0.5">
-                {saving || autoSaving ? "⏳" : hasUnsavedChanges ? "�" : "✓"}
-              </span>
+              {saving || autoSaving ? (
+                <Loader2 className="w-4 h-4 mb-1 animate-spin" />
+              ) : hasUnsavedChanges ? (
+                <Download className="w-4 h-4 mb-1" />
+              ) : (
+                <Check className="w-4 h-4 mb-1" />
+              )}
               <span className="text-[10px] tracking-wide">
                 {saving
                   ? "WAIT"
@@ -1754,9 +1624,11 @@ const Editor = () => {
                   : "bg-gradient-to-br from-green-600 via-emerald-600 to-teal-600 text-white hover:shadow-lg"
               }`}
             >
-              <span className="text-lg mb-0.5">
-                {isSubscriptionExpired() ? "🔒" : "📥"}
-              </span>
+              {isSubscriptionExpired() ? (
+                <Lock className="w-4 h-4 mb-1" />
+              ) : (
+                <Download className="w-4 h-4 mb-1" />
+              )}
               <span className="text-[10px] tracking-wide">
                 {isSubscriptionExpired() ? "LOCKED" : "EXPORT"}
               </span>
@@ -1767,7 +1639,7 @@ const Editor = () => {
               onClick={() => showGitHubImportModalTrue()}
               className="flex-1 px-3 py-2.5 rounded-xl font-bold bg-gradient-to-br from-gray-900 via-gray-800 to-black dark:from-white dark:via-gray-100 dark:to-gray-200 text-white dark:text-gray-900 transition-all duration-300 text-xs flex flex-col items-center justify-center shadow-md hover:shadow-lg active:scale-95"
             >
-              <span className="text-lg mb-0.5">💻</span>
+              <Github className="w-4 h-4 mb-1" />
               <span className="text-[10px] tracking-wide">IMPORT</span>
             </button>
           </div>
@@ -1906,7 +1778,9 @@ const Editor = () => {
               {/* Left: score pills */}
               <div className="flex items-center gap-3 min-w-0">
                 <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 hidden sm:block flex-shrink-0">
-                  📊 Resume Score
+                  <span className="inline-flex items-center gap-1.5">
+                    <BarChart3 className="w-4 h-4" /> Resume Score
+                  </span>
                 </span>
                 {/* ATS pill */}
                 <div
@@ -1994,7 +1868,9 @@ const Editor = () => {
           </div>
           <div className="relative flex justify-center">
             <span className="bg-gray-50 dark:bg-gray-900 px-4 sm:px-6 py-2 text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 rounded-full border-2 border-gray-300 dark:border-gray-600">
-              ✏️ Resume Content Editor
+              <span className="inline-flex items-center gap-1.5">
+                <PencilLine className="w-4 h-4" /> Resume Content Editor
+              </span>
             </span>
           </div>
         </div>
@@ -2060,7 +1936,7 @@ const Editor = () => {
                   {/* Stylish Header */}
                   <div className="flex justify-between items-center mb-4 xl:hidden">
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                      <span className="text-2xl">👁️</span>
+                      <Eye className="w-5 h-5" />
                       <span>Resume Preview</span>
                     </h3>
                     <button
@@ -2094,141 +1970,14 @@ const Editor = () => {
           </div>
         )}
 
-        {/* Template Selector Modal */}
-        {showTemplateSelector && (
-          <div
-            className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-2 sm:p-4 no-print"
-            onClick={() => showTemplateSelectorFalse()}
-          >
-            <div
-              className="bg-white dark:bg-zinc-950 rounded-xl w-full max-w-6xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden border border-gray-200 dark:border-zinc-800"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Modal Header */}
-              <div className="bg-white dark:bg-zinc-950 p-4 sm:p-6 flex justify-between items-center border-b border-gray-200 dark:border-zinc-800">
-                <div>
-                  <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1">
-                    Choose Resume Template
-                  </h2>
-                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                    Select a template and see changes instantly
-                  </p>
-                </div>
-                <button
-                  onClick={() => showTemplateSelectorFalse()}
-                  className="text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-900 p-2 rounded-lg transition-colors flex-shrink-0"
-                >
-                  <svg
-                    className="w-6 h-6 sm:w-8 sm:h-8"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              </div>
-
-              {/* Modal Body - Template Grid */}
-              <div className="overflow-auto max-h-[calc(95vh-120px)] sm:max-h-[calc(90vh-140px)] p-3 sm:p-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-                  {TEMPLATES.map((template) => (
-                    <div
-                      key={template.id}
-                      onClick={() => {
-                        setSelectedTemplate(template.id);
-                        showTemplateSelectorFalse();
-                      }}
-                      className={`group relative bg-white dark:bg-zinc-900 rounded-xl hover:shadow-lg transition-all duration-200 overflow-hidden cursor-pointer border-2 ${
-                        selectedTemplate === template.id
-                          ? "border-gray-900 dark:border-white ring-4 ring-gray-200 dark:ring-zinc-800"
-                          : "border-gray-200 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-700"
-                      }`}
-                    >
-                      {/* Current Selection Badge */}
-                      {selectedTemplate === template.id && (
-                        <div className="absolute top-2 left-2 z-10 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-semibold px-3 py-1 rounded-lg flex items-center gap-1">
-                          ✓ Current
-                        </div>
-                      )}
-
-                      {/* Template Preview */}
-                      <div className="relative h-48 overflow-hidden bg-gray-50 dark:bg-zinc-800">
-                        <div
-                          className="absolute inset-0 scale-[0.2] origin-top-left pointer-events-none"
-                          style={{
-                            transformOrigin: "top left",
-                            width: "210mm",
-                            height: "297mm",
-                          }}
-                        >
-                          <template.component resumeData={resumeData} />
-                        </div>
-
-                        {/* Hover Overlay */}
-                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end justify-center pb-4">
-                          <span className="text-white font-semibold text-sm">
-                            Click to Apply
-                          </span>
-                        </div>
-
-                        {/* ATS Score Badge */}
-                        <div className="absolute top-2 right-2 bg-white dark:bg-zinc-900 px-2 py-1 rounded-lg border border-gray-200 dark:border-zinc-800">
-                          <span
-                            className={`text-xs font-bold ${
-                              template.atsScore >= 95
-                                ? "text-green-500"
-                                : template.atsScore >= 90
-                                  ? "text-blue-500"
-                                  : "text-orange-500"
-                            }`}
-                          >
-                            {template.atsScore}%
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Template Info */}
-                      <div className="p-3 sm:p-4">
-                        <div className="flex items-center justify-between mb-2">
-                          <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                            <span className="text-xl sm:text-2xl">
-                              {template.emoji}
-                            </span>
-                            <span className="text-sm sm:text-base">
-                              {template.name}
-                            </span>
-                          </h3>
-                        </div>
-                        <span className="inline-block text-xs bg-gray-100 dark:bg-zinc-900 text-gray-700 dark:text-gray-300 px-2 py-1 rounded-lg border border-gray-200 dark:border-zinc-800">
-                          {template.category}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Modal Footer */}
-              <div className="p-3 sm:p-4 bg-gray-50 dark:bg-zinc-900 border-t border-gray-200 dark:border-zinc-800 flex flex-col sm:flex-row justify-between items-center gap-3">
-                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 text-center sm:text-left">
-                  💡 Your resume content stays the same, only the design changes
-                </div>
-                <button
-                  onClick={() => showTemplateSelectorFalse()}
-                  className="w-full sm:w-auto px-4 sm:px-6 py-2 bg-gray-200 dark:bg-zinc-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-700 transition-colors font-medium text-sm"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        <TemplateSelectorModal
+          isOpen={showTemplateSelector}
+          onClose={showTemplateSelectorFalse}
+          templates={TEMPLATES}
+          resumeData={resumeData}
+          selectedTemplate={selectedTemplate}
+          onApplyTemplate={setSelectedTemplate}
+        />
 
         {/* Analysis Drawer */}
         {isAnalysisOpen && (
@@ -2243,7 +1992,7 @@ const Editor = () => {
               {/* Drawer header */}
               <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-zinc-800 flex-shrink-0">
                 <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                  <span>📊</span>
+                  <BarChart3 className="w-5 h-5" />
                   Resume Analysis & Scoring
                 </h2>
                 <button
@@ -2285,7 +2034,7 @@ const Editor = () => {
                 <div className="bg-white dark:bg-zinc-950 rounded-xl border border-gray-200 dark:border-zinc-800">
                   <div className="p-4 sm:p-6">
                     <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
-                      <span>💡</span>
+                      <Lightbulb className="w-4 h-4" />
                       Improvement Recommendations
                     </h3>
                     <RecommendationsPanel
@@ -2307,144 +2056,11 @@ const Editor = () => {
           currentResume={resumeData}
         />
 
-        {/* Color Theme Selector Modal */}
-        {showColorThemeSelector && TEMPLATE_COLOR_THEMES[selectedTemplate] && (
-          <div
-            className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-2 sm:p-4 no-print"
-            onClick={() => showColorThemeSelectorFalse()}
-          >
-            <div
-              className="bg-white dark:bg-zinc-950 rounded-xl w-full max-w-2xl overflow-hidden border border-gray-200 dark:border-zinc-800"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Modal Header */}
-              <div className="bg-white dark:bg-zinc-950 p-4 sm:p-6 flex justify-between items-center border-b border-gray-200 dark:border-zinc-800">
-                <div>
-                  <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1">
-                    Choose Color Theme
-                  </h2>
-                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                    Pick a professional color palette for your resume
-                  </p>
-                </div>
-                <button
-                  onClick={() => showColorThemeSelectorFalse()}
-                  className="text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-900 p-2 rounded-lg transition-colors flex-shrink-0"
-                >
-                  <svg
-                    className="w-6 h-6 sm:w-8 sm:h-8"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              </div>
-
-              {/* Modal Body - Color Theme Grid */}
-              <div className="p-4 sm:p-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {TEMPLATE_COLOR_THEMES[selectedTemplate].map((theme) => (
-                    <div
-                      key={theme.id}
-                      onClick={() => {
-                        setResumeData((prev) => ({
-                          ...prev,
-                          colorTheme: theme.id,
-                        }));
-                        showColorThemeSelectorFalse();
-                        toast.success(
-                          `${theme.emoji} ${theme.name} theme applied!`,
-                          {
-                            duration: 2000,
-                            position: "bottom-right",
-                          }
-                        );
-                      }}
-                      className={`group relative bg-white dark:bg-zinc-900 rounded-xl hover:shadow-lg transition-all duration-200 overflow-hidden cursor-pointer border-2 p-6 ${
-                        resumeData?.colorTheme === theme.id
-                          ? "border-gray-900 dark:border-white ring-4 ring-gray-200 dark:ring-zinc-800"
-                          : "border-gray-200 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-700"
-                      }`}
-                    >
-                      {/* Current Selection Badge */}
-                      {resumeData?.colorTheme === theme.id && (
-                        <div className="absolute top-2 right-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-semibold px-3 py-1 rounded-lg">
-                          ✓ Active
-                        </div>
-                      )}
-
-                      {/* Color Swatch */}
-                      <div className="flex items-center gap-4 mb-4">
-                        <div
-                          className="w-16 h-16 rounded-lg border-2 border-gray-200 dark:border-zinc-700"
-                          style={{backgroundColor: theme.primary}}
-                        />
-                        <div>
-                          <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                            <span className="text-2xl">{theme.emoji}</span>
-                            {theme.name}
-                          </h3>
-                          <p className="text-sm text-gray-500 dark:text-gray-400">
-                            {theme.primary}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Preview bars showing color in action */}
-                      <div className="space-y-2">
-                        <div
-                          className="h-2 rounded-full"
-                          style={{backgroundColor: theme.primary, opacity: 1}}
-                        />
-                        <div
-                          className="h-2 rounded-full"
-                          style={{backgroundColor: theme.primary, opacity: 0.7}}
-                        />
-                        <div
-                          className="h-2 rounded-full"
-                          style={{backgroundColor: theme.primary, opacity: 0.4}}
-                        />
-                      </div>
-
-                      {/* Hover Overlay */}
-                      <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
-                        <span className="text-gray-900 dark:text-white font-semibold text-sm bg-white dark:bg-zinc-900 px-4 py-2 rounded-lg border border-gray-200 dark:border-zinc-800">
-                          Click to Apply
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Modal Footer */}
-              <div className="p-4 bg-gray-50 dark:bg-zinc-900 border-t border-gray-200 dark:border-zinc-800 flex justify-between items-center">
-                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                  🎨 Choose a color that matches your industry
-                </div>
-                <button
-                  onClick={() => showColorThemeSelectorFalse()}
-                  className="px-4 sm:px-6 py-2 bg-gray-200 dark:bg-zinc-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-700 transition-colors font-medium text-sm"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* GitHub Import Success Notification */}
         {githubImportSuccess && (
           <div className="fixed bottom-6 right-6 z-50 animate-fade-in">
             <div className="bg-green-600 text-gray-900 dark:text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3">
-              <span className="text-2xl">✨</span>
+              <CheckCircle2 className="w-6 h-6" />
               <div>
                 <p className="font-bold">Successfully Updated!</p>
                 <p className="text-sm text-green-100">

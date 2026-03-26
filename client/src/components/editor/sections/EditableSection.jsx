@@ -6,7 +6,7 @@ import {resumeAPI} from "@/api/api";
 import {parseValidationErrors} from "@/utils/errorHandler";
 import {authStorage} from "@/utils/storage";
 import {useToggle} from "@/hooks";
-import {handleDateChange, isValidDate, getDateValidationMessage} from "@/utils/dateValidation";
+import {Lightbulb, Loader2, Sparkles} from "lucide-react";
 
 const EditableSection = ({
   title,
@@ -226,9 +226,19 @@ const EditableSection = ({
           <button
             onClick={handleEnhance}
             disabled={enhancing}
-            className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-500 font-medium px-3 py-1 rounded border border-primary-600 dark:border-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg border border-blue-500/40 dark:border-blue-400/40 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all duration-200 font-semibold disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {enhancing ? "✨ Enhancing..." : "✨ Enhance"}
+            {enhancing ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Enhancing...
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-4 h-4" />
+                Enhance
+              </>
+            )}
           </button>
           {onRemove && (
             <button
@@ -271,55 +281,29 @@ const EditableSection = ({
               className="input-field"
               autoComplete="off"
             />
-            <div>
-              <input
-                type="text"
-                value={experienceData.startDate || ""}
-                onChange={(e) =>
-                  handleDateChange(
-                    e.target.value,
-                    experienceData.startDate || "",
-                    (value) => onUpdateExperience("startDate", value)
-                  )
-                }
-                placeholder="Start (DD/MM/YYYY)"
-                className={`input-field ${!isValidDate(experienceData.startDate) && experienceData.startDate ? 'border-red-500' : ''}`}
-                autoComplete="off"
-                title="Format: DD/MM/YYYY (e.g., 15/01/2020)"
-                maxLength="10"
-              />
-              {!isValidDate(experienceData.startDate) && experienceData.startDate && (
-                <p className="text-xs text-red-500 mt-1">
-                  {getDateValidationMessage(experienceData.startDate)}
-                </p>
-              )}
-            </div>
-            <div>
-              <input
-                type="text"
-                value={experienceData.endDate || ""}
-                onChange={(e) =>
-                  handleDateChange(
-                    e.target.value,
-                    experienceData.endDate || "",
-                    (value) => onUpdateExperience("endDate", value)
-                  )
-                }
-                placeholder={
-                  experienceData.current ? "Present" : "End (DD/MM/YYYY)"
-                }
-                className={`input-field ${!isValidDate(experienceData.endDate) && experienceData.endDate && !experienceData.current ? 'border-red-500' : ''}`}
-                autoComplete="off"
-                disabled={experienceData.current}
-                title="Format: DD/MM/YYYY (e.g., 20/12/2023)"
-                maxLength="10"
-              />
-              {!isValidDate(experienceData.endDate) && experienceData.endDate && !experienceData.current && (
-                <p className="text-xs text-red-500 mt-1">
-                  {getDateValidationMessage(experienceData.endDate)}
-                </p>
-              )}
-            </div>
+            <input
+              type="text"
+              value={experienceData.startDate || ""}
+              onChange={(e) => onUpdateExperience("startDate", e.target.value)}
+              placeholder="Start Date (MM/YYYY)"
+              className="input-field"
+              autoComplete="off"
+              pattern="(0[1-9]|1[0-2])\/[0-9]{4}"
+              title="Format: MM/YYYY (e.g., 01/2020)"
+            />
+            <input
+              type="text"
+              value={experienceData.endDate || ""}
+              onChange={(e) => onUpdateExperience("endDate", e.target.value)}
+              placeholder={
+                experienceData.current ? "Present" : "End Date (MM/YYYY)"
+              }
+              className="input-field"
+              autoComplete="off"
+              disabled={experienceData.current}
+              pattern="(0[1-9]|1[0-2])\/[0-9]{4}"
+              title="Format: MM/YYYY (e.g., 12/2023)"
+            />
           </div>
           <label className="flex items-center gap-2">
             <input
@@ -414,8 +398,9 @@ const EditableSection = ({
         />
       </div>
 
-      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-        💡 Tip: Click "Enhance" to optimize this content with AI for better ATS
+      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 flex items-center gap-1.5">
+        <Lightbulb className="w-3.5 h-3.5" />
+        Tip: Click "Enhance" to optimize this content with AI for better ATS
         compatibility
       </p>
     </div>
