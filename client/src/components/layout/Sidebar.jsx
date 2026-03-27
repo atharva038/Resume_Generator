@@ -130,7 +130,7 @@ const Sidebar = ({isOpen, setIsOpen}) => {
                 className="flex items-center text-xl font-bold group"
               >
                 <img
-                  src="/Logo_Main.png"
+                  src="/New-logo_SNS.png"
                   alt="SmartNShine"
                   className="h-16 w-auto object-contain group-hover:scale-105 transition-transform duration-300 -mr-1"
                 />
@@ -147,7 +147,7 @@ const Sidebar = ({isOpen, setIsOpen}) => {
                 className="hidden lg:flex items-center justify-center w-full group"
               >
                 <img
-                  src="/Logo_Main.png"
+                  src="/New-logo_SNS.png"
                   alt="SmartNShine"
                   className="h-16 w-auto object-contain group-hover:scale-105 transition-transform duration-300"
                 />
