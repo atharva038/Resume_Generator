@@ -147,7 +147,7 @@ const Navbar = ({ toggleSidebar, isSidebarOpen }) => {
                 {/* CTA: Build Resume */}
                 <BlockableLink
                   to="/upload"
-                  className="group inline-flex items-center gap-2 px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 text-sm font-medium rounded-full transition-all duration-200 shadow-sm hover:shadow-md"
+                  className="group inline-flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 text-white text-sm font-medium rounded-full transition-all duration-200 shadow-sm hover:shadow-md"
                   title="Build My Resume"
                 >
                   <Sparkles className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
