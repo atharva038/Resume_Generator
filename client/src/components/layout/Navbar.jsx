@@ -2,7 +2,7 @@ import {Link, useNavigate} from "react-router-dom";
 import {useAuth} from "@/context/AuthContext";
 import {BlockableLink} from "@/components/auth";
 import {DarkModeToggle} from "@/components/common";
-import {useState, useEffect} from "react";
+import {useEffect} from "react";
 import {useToggle} from "@/hooks";
 import {
   Menu,
@@ -15,10 +15,10 @@ import {
   ArrowRight,
 } from "lucide-react";
 
-const Navbar = ({toggleSidebar, isSidebarOpen}) => {
+const Navbar = ({ toggleSidebar, isSidebarOpen }) => {
   const {user, logout} = useAuth();
   const navigate = useNavigate();
-  const [isScrolled, toggleScrolled, setIsScrolledTrue, setIsScrolledFalse] =
+  const [isScrolled, , setIsScrolledTrue, setIsScrolledFalse] =
     useToggle(false);
 
   // Handle scroll effect
@@ -45,7 +45,7 @@ const Navbar = ({toggleSidebar, isSidebarOpen}) => {
         isSidebarOpen ? "left-0 lg:left-64" : "left-0 lg:left-20"
       } ${
         isScrolled
-          ? "bg-white/95 dark:bg-black/95 backdrop-blur-xl border-b border-gray-200 dark:border-zinc-800/50 shadow-sm"
+          ? "bg-white/95 dark:bg-black/95 backdrop-blur-xl border-b border-gray-200 dark:border-white/10 shadow-sm"
           : "bg-white/80 dark:bg-black/80 backdrop-blur-md border-b border-transparent"
       }`}
     >
@@ -65,11 +65,11 @@ const Navbar = ({toggleSidebar, isSidebarOpen}) => {
             {/* Logo */}
             <Link to="/" className="flex items-center text-xl font-bold group">
               <img
-                src="/New-logo_SNS.png"
+                src="/orb-logo.png"
                 alt="SmartNShine"
-                className="h-16 w-auto object-contain group-hover:scale-105 transition-transform duration-300 -mr-1"
+                className="h-16 w-auto object-contain group-hover:scale-105 transition-all duration-300 -mr-1 dark:brightness-100 dark:saturate-100 brightness-50 contrast-125 saturate-200"
               />
-              <span className="bg-gradient-to-r from-primary-600 to-purple-600 bg-clip-text text-transparent hidden sm:inline tracking-tight">
+              <span className="bg-gradient-to-r from-[#5d8ff0] via-[#6f7fe4] to-[#8b67df] dark:from-[#6aa0ff] dark:via-[#7f8ce7] dark:to-[#9b78ea] bg-clip-text text-transparent hidden sm:inline tracking-tight">
                 SmartNShine
               </span>
             </Link>
@@ -85,7 +85,7 @@ const Navbar = ({toggleSidebar, isSidebarOpen}) => {
                 {/* My Resumes */}
                 <BlockableLink
                   to="/my-resumes"
-                  className="hidden md:flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-lg transition-all duration-200"
+                  className="hidden md:flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-lg transition-all duration-200"
                   title="My Resumes"
                 >
                   <LayoutDashboard className="w-4 h-4" />
@@ -95,7 +95,7 @@ const Navbar = ({toggleSidebar, isSidebarOpen}) => {
                 {/* Profile */}
                 <BlockableLink
                   to="/profile"
-                  className="hidden lg:flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-lg transition-all duration-200"
+                  className="hidden lg:flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-lg transition-all duration-200"
                   title="Profile & Subscription"
                 >
                   <UserCircle className="w-4 h-4" />
@@ -105,7 +105,7 @@ const Navbar = ({toggleSidebar, isSidebarOpen}) => {
                 {/* Pricing */}
                 <BlockableLink
                   to="/pricing"
-                  className="hidden lg:flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-lg transition-all duration-200"
+                  className="hidden lg:flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-lg transition-all duration-200"
                   title="View Pricing"
                 >
                   <Tag className="w-4 h-4" />
@@ -127,7 +127,7 @@ const Navbar = ({toggleSidebar, isSidebarOpen}) => {
                 {/* Pricing Link */}
                 <BlockableLink
                   to="/pricing"
-                  className="hidden sm:flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-lg transition-all duration-200"
+                  className="hidden sm:flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-lg transition-all duration-200"
                   title="View Pricing"
                 >
                   <Tag className="w-4 h-4" />
@@ -137,7 +137,7 @@ const Navbar = ({toggleSidebar, isSidebarOpen}) => {
                 {/* Login Button */}
                 <BlockableLink
                   to="/login"
-                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-lg transition-all duration-200"
+                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-lg transition-all duration-200"
                   title="Login"
                 >
                   <User className="w-4 h-4" />
@@ -147,7 +147,7 @@ const Navbar = ({toggleSidebar, isSidebarOpen}) => {
                 {/* CTA: Build Resume */}
                 <BlockableLink
                   to="/upload"
-                  className="group inline-flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-gray-900 dark:text-white text-sm font-medium rounded-lg transition-all duration-200 shadow-sm shadow-primary-500/25 hover:shadow-md hover:shadow-primary-500/30"
+                  className="group inline-flex items-center gap-2 px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 text-sm font-medium rounded-full transition-all duration-200 shadow-sm hover:shadow-md"
                   title="Build My Resume"
                 >
                   <Sparkles className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />

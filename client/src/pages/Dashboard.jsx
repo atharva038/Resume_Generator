@@ -10,12 +10,12 @@ import {
   Edit,
   Trash2,
   Calendar,
-  User,
   Sparkles,
-  FolderOpen,
-  Download,
   Edit3,
   X,
+  CheckCircle2,
+  CircleX,
+  NotepadText,
 } from "lucide-react";
 
 const Dashboard = () => {
@@ -54,12 +54,12 @@ const Dashboard = () => {
       await resumeAPI.delete(id);
       setResumes(resumes.filter((r) => r._id !== id));
       toast.success("Resume deleted successfully!", {
-        icon: "🗑️",
+        icon: <Trash2 className="w-4 h-4 text-red-600" />,
         duration: 2000,
       });
     } catch (err) {
       toast.error("Failed to delete resume", {
-        icon: "❌",
+        icon: <CircleX className="w-4 h-4 text-red-600" />,
         duration: 3000,
       });
       console.error(err);
@@ -72,7 +72,7 @@ const Dashboard = () => {
       navigate("/editor", {state: {resumeData: response.data}});
     } catch (err) {
       toast.error("Failed to load resume", {
-        icon: "❌",
+        icon: <CircleX className="w-4 h-4 text-red-600" />,
         duration: 3000,
       });
       console.error(err);
@@ -90,7 +90,7 @@ const Dashboard = () => {
   const handleSaveInfo = async () => {
     if (!editForm.name.trim()) {
       toast.error("Resume title is required", {
-        icon: "📝",
+        icon: <NotepadText className="w-4 h-4 text-amber-600" />,
         duration: 2000,
       });
       return;
@@ -115,14 +115,14 @@ const Dashboard = () => {
       setEditingResume(null);
       setEditForm({name: "", description: ""});
       toast.success("Resume info updated successfully!", {
-        icon: "✅",
+        icon: <CheckCircle2 className="w-4 h-4 text-green-600" />,
         duration: 2000,
       });
     } catch (err) {
       toast.error(
         "Failed to update resume info: " + parseValidationErrors(err),
         {
-          icon: "❌",
+          icon: <CircleX className="w-4 h-4 text-red-600" />,
           duration: 4000,
         }
       );
@@ -147,17 +147,17 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black">
-      <div className="container mx-auto px-4 py-8 sm:py-12">
-        <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-white dark:bg-black text-gray-900 dark:text-white">
+      <div className="px-4 sm:px-6 lg:px-8 py-12">
+        <div className="max-w-7xl mx-auto pt-14">
           {/* Header Section */}
           <div className="mb-12">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
               <div>
-                <h1 className="text-4xl sm:text-5xl font-bold mb-2 text-gray-900 dark:text-white tracking-tight">
+                <h1 className="text-4xl sm:text-5xl font-black mb-2 text-gray-900 dark:text-white tracking-tight">
                   My Resumes
                 </h1>
-                <p className="text-gray-600 dark:text-gray-400">
+                <p className="text-gray-600 dark:text-gray-400 font-light">
                   Welcome back,{" "}
                   <span className="font-medium text-gray-900 dark:text-white">
                     {user?.name}
@@ -166,7 +166,7 @@ const Dashboard = () => {
               </div>
               <Link
                 to="/upload"
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-gray-900 dark:text-white font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md text-sm"
+                className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-gray-900 hover:bg-gray-800 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 font-semibold rounded-full transition-all duration-200 shadow-sm hover:shadow-md text-sm"
               >
                 <Plus className="w-4 h-4" />
                 Create New Resume
@@ -194,10 +194,10 @@ const Dashboard = () => {
 
           {/* Stats Cards */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
-            <div className="bg-white dark:bg-zinc-950 rounded-xl p-6 border border-gray-200 dark:border-zinc-800">
+            <div className="bg-white dark:bg-black rounded-2xl p-6 border border-gray-200 dark:border-white/10 shadow-sm dark:shadow-none">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-500 dark:text-gray-500 dark:text-gray-500 mb-1 font-medium">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-1 font-medium uppercase tracking-wide">
                     Total Resumes
                   </p>
                   <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">
@@ -210,10 +210,10 @@ const Dashboard = () => {
               </div>
             </div>
 
-            <div className="bg-white dark:bg-zinc-950 rounded-xl p-6 border border-gray-200 dark:border-zinc-800">
+            <div className="bg-white dark:bg-black rounded-2xl p-6 border border-gray-200 dark:border-white/10 shadow-sm dark:shadow-none">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-500 mb-1 font-medium">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-1 font-medium uppercase tracking-wide">
                     Last Updated
                   </p>
                   <p className="text-lg font-bold text-gray-900 dark:text-gray-100">
@@ -231,10 +231,10 @@ const Dashboard = () => {
               </div>
             </div>
 
-            <div className="bg-white dark:bg-zinc-950 rounded-xl p-6 border border-gray-200 dark:border-zinc-800">
+            <div className="bg-white dark:bg-black rounded-2xl p-6 border border-gray-200 dark:border-white/10 shadow-sm dark:shadow-none">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-500 mb-1 font-medium">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-1 font-medium uppercase tracking-wide">
                     AI Enhanced
                   </p>
                   <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">
@@ -250,7 +250,7 @@ const Dashboard = () => {
 
           {/* Resume Grid */}
           {resumes.length === 0 ? (
-            <div className="bg-white dark:bg-zinc-950 rounded-2xl p-12 sm:p-16 text-center border border-gray-200 dark:border-zinc-800">
+            <div className="bg-white dark:bg-black rounded-3xl p-12 sm:p-16 text-center border border-gray-200 dark:border-white/10 shadow-sm dark:shadow-none">
               <div className="w-20 h-20 mx-auto mb-6 bg-gray-100 dark:bg-zinc-800 rounded-full flex items-center justify-center">
                 <FileText className="w-10 h-10 text-gray-600 dark:text-gray-400" />
               </div>
@@ -263,7 +263,7 @@ const Dashboard = () => {
               </p>
               <Link
                 to="/upload"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-gray-900 dark:text-white font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 font-semibold rounded-full transition-all duration-200 shadow-sm hover:shadow-md"
               >
                 <Plus className="w-4 h-4" />
                 Upload Your First Resume
@@ -274,7 +274,7 @@ const Dashboard = () => {
               {resumes.map((resume) => (
                 <div
                   key={resume._id}
-                  className="group bg-white dark:bg-zinc-950 rounded-xl p-6 border border-gray-200 dark:border-zinc-800 hover:border-primary-500 dark:hover:border-primary-500 transition-all duration-200"
+                  className="group bg-white dark:bg-black rounded-2xl p-6 border border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20 transition-all duration-200 shadow-sm dark:shadow-none"
                 >
                   {/* Resume Header */}
                   <div className="flex items-start justify-between mb-4">
@@ -319,7 +319,7 @@ const Dashboard = () => {
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleLoad(resume._id)}
-                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-primary-600 hover:bg-primary-700 text-gray-900 dark:text-white font-medium rounded-lg transition-all duration-200 text-sm"
+                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-gray-900 hover:bg-gray-800 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 font-medium rounded-lg transition-all duration-200 text-sm"
                     >
                       <Edit className="w-4 h-4" />
                       Edit
@@ -342,7 +342,7 @@ const Dashboard = () => {
       {/* Edit Name & Description Modal */}
       {editingResume && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-zinc-950 rounded-2xl shadow-2xl max-w-md w-full p-6 border border-gray-200 dark:border-zinc-800">
+          <div className="bg-white dark:bg-black rounded-3xl shadow-2xl max-w-md w-full p-6 border border-gray-200 dark:border-white/10">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                 Edit Resume Info
@@ -402,7 +402,7 @@ const Dashboard = () => {
               </button>
               <button
                 onClick={handleSaveInfo}
-                className="flex-1 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-gray-900 dark:text-white font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md text-sm"
+                className="flex-1 px-4 py-2.5 bg-gray-900 hover:bg-gray-800 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md text-sm"
               >
                 Save Changes
               </button>

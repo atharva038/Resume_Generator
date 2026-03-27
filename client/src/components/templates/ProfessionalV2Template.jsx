@@ -728,7 +728,7 @@ const ProfessionalV2Template = forwardRef(
         </div>
 
         {/* Styles */}
-        <style jsx>{`
+        <style>{`
           .professional-v2-template {
             --pv2-primary: #1d4ed8;
             --pv2-secondary: #2563eb;

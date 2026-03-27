@@ -11,12 +11,15 @@ import {
   User,
   Building,
   Clock,
-  Sparkles,
   Lightbulb,
   Bug,
   ThumbsUp,
   Trash2,
   Loader2,
+  Wrench,
+  PartyPopper,
+  CircleX,
+  TriangleAlert,
 } from "lucide-react";
 import {contactAPI} from "@/api/api";
 import {feedbackAPI} from "@/api/feedback.api";
@@ -69,14 +72,14 @@ const Contact = () => {
 
   const [
     feedbackLoading,
-    toggleFeedbackLoading,
+    ,
     setFeedbackLoadingTrue,
     setFeedbackLoadingFalse,
   ] = useToggle(false);
   const [myFeedback, setMyFeedback] = useState([]);
   const [
     loadingFeedback,
-    toggleLoadingFeedback,
+    ,
     setLoadingFeedbackTrue,
     setLoadingFeedbackFalse,
   ] = useToggle(false);
@@ -112,9 +115,9 @@ const Contact = () => {
   };
 
   const categories = [
-    {value: "general", label: "General Inquiry", icon: "💬"},
-    {value: "support", label: "Technical Support", icon: "🛠️"},
-    {value: "business", label: "Business Inquiry", icon: "💼"},
+    {value: "general", label: "General Inquiry", icon: MessageSquare},
+    {value: "support", label: "Technical Support", icon: Wrench},
+    {value: "business", label: "Business Inquiry", icon: Building},
   ];
 
   const feedbackTypes = [
@@ -151,6 +154,21 @@ const Contact = () => {
     {value: "other", label: "Other"},
   ];
 
+  const feedbackTypeStyles = {
+    improvement: {
+      selected: "border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20",
+      icon: "text-yellow-600",
+    },
+    feedback: {
+      selected: "border-blue-500 bg-blue-50 dark:bg-blue-900/20",
+      icon: "text-blue-600",
+    },
+    bug: {
+      selected: "border-red-500 bg-red-50 dark:bg-red-900/20",
+      icon: "text-red-600",
+    },
+  };
+
   const validateForm = async () => {
     const {isValid, errors: validationErrors} = await validateWithSchema(
       contactSchema,
@@ -184,7 +202,7 @@ const Contact = () => {
 
       setStatus({loading: false, success: true, error: null});
       toast.success("Message sent successfully! We'll get back to you soon.", {
-        icon: "✅",
+        icon: <CheckCircle className="w-4 h-4 text-green-600" />,
         duration: 3000,
       });
 
@@ -229,7 +247,7 @@ const Contact = () => {
 
     if (!isValid) {
       toast.error(Object.values(validationErrors)[0], {
-        icon: "⚠️",
+        icon: <TriangleAlert className="w-4 h-4 text-amber-600" />,
         duration: 4000,
       });
       return;
@@ -240,7 +258,7 @@ const Contact = () => {
     try {
       await feedbackAPI.submitFeedback(feedbackForm);
       toast.success("Feedback submitted successfully! Thank you!", {
-        icon: "🎉",
+        icon: <PartyPopper className="w-4 h-4 text-indigo-600" />,
         duration: 3000,
       });
 
@@ -260,7 +278,7 @@ const Contact = () => {
       fetchStats();
     } catch (error) {
       toast.error(parseValidationErrors(error), {
-        icon: "❌",
+        icon: <CircleX className="w-4 h-4 text-red-600" />,
         duration: 4000,
       });
     } finally {
@@ -272,7 +290,10 @@ const Contact = () => {
     try {
       await feedbackAPI.upvoteFeedback(id);
       fetchMyFeedback();
-      toast.success("Vote updated!", {icon: "👍", duration: 1500});
+      toast.success("Vote updated!", {
+        icon: <ThumbsUp className="w-4 h-4 text-blue-600" />,
+        duration: 1500,
+      });
     } catch (error) {
       console.error("Error upvoting:", error);
     }
@@ -285,11 +306,14 @@ const Contact = () => {
         fetchMyFeedback();
         fetchStats();
         toast.success("Feedback deleted successfully!", {
-          icon: "🗑️",
+          icon: <Trash2 className="w-4 h-4 text-red-600" />,
           duration: 2000,
         });
       } catch (error) {
-        toast.error("Failed to delete feedback", {icon: "❌", duration: 2000});
+        toast.error("Failed to delete feedback", {
+          icon: <CircleX className="w-4 h-4 text-red-600" />,
+          duration: 2000,
+        });
       }
     }
   };
@@ -335,7 +359,7 @@ const Contact = () => {
               "@type": "Organization",
               name: "SmartNShine",
               url: "https://www.smartnshine.app",
-              logo: "https://www.smartnshine.app/New-logo_SNS.png",
+              logo: "https://www.smartnshine.app/orb-logo.png",
               contactPoint: {
                 "@type": "ContactPoint",
                 contactType: "Customer Support",
@@ -348,25 +372,25 @@ const Contact = () => {
       </Helmet>
 
       <div className="min-h-screen bg-white dark:bg-black py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-7xl mx-auto pt-14">
           {/* Header */}
           <div className="mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-3 tracking-tight">
+            <h1 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-3 tracking-tight">
               Contact & Feedback
             </h1>
-            <p className="text-gray-600 dark:text-gray-400 max-w-2xl">
+            <p className="text-gray-600 dark:text-gray-400 max-w-2xl font-light">
               Have a question or feedback? We'd love to hear from you.
             </p>
           </div>
 
           {/* Tab Navigation */}
-          <div className="flex gap-2 mb-8 border-b border-gray-200 dark:border-zinc-800">
+          <div className="flex gap-2 mb-8 border-b border-gray-200 dark:border-white/10 overflow-x-auto pb-3">
             <button
               onClick={() => setActiveTab("contact")}
-              className={`flex items-center gap-2 py-3 px-4 font-medium transition-all duration-200 border-b-2 ${
+              className={`inline-flex items-center gap-2 py-2.5 px-5 rounded-full font-semibold transition-all duration-200 border ${
                 activeTab === "contact"
-                  ? "border-primary-600 text-primary-600 dark:text-primary-400"
-                  : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                  ? "bg-gray-900 text-white dark:bg-white dark:text-black border-gray-900 dark:border-white"
+                  : "bg-white dark:bg-black text-gray-600 dark:text-gray-400 border-gray-200 dark:border-white/10 hover:text-gray-900 dark:hover:text-white hover:border-gray-300 dark:hover:border-white/20"
               }`}
             >
               <Mail className="w-4 h-4" />
@@ -374,10 +398,10 @@ const Contact = () => {
             </button>
             <button
               onClick={() => setActiveTab("feedback")}
-              className={`flex items-center gap-2 py-3 px-4 font-medium transition-all duration-200 border-b-2 ${
+              className={`inline-flex items-center gap-2 py-2.5 px-5 rounded-full font-semibold transition-all duration-200 border ${
                 activeTab === "feedback"
-                  ? "border-primary-600 text-primary-600 dark:text-primary-400"
-                  : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                  ? "bg-gray-900 text-white dark:bg-white dark:text-black border-gray-900 dark:border-white"
+                  : "bg-white dark:bg-black text-gray-600 dark:text-gray-400 border-gray-200 dark:border-white/10 hover:text-gray-900 dark:hover:text-white hover:border-gray-300 dark:hover:border-white/20"
               }`}
             >
               <MessageSquare className="w-4 h-4" />
@@ -390,7 +414,7 @@ const Contact = () => {
             <div className="grid lg:grid-cols-3 gap-8">
               {/* Contact Information */}
               <div className="lg:col-span-1 space-y-4">
-                <div className="bg-zinc-900 rounded-xl p-6 border border-gray-200 dark:border-zinc-800">
+                <div className="bg-white dark:bg-black rounded-3xl p-6 border border-gray-200 dark:border-white/10 shadow-sm dark:shadow-none">
                   <h3 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white tracking-tight">
                     Contact Information
                   </h3>
@@ -402,7 +426,7 @@ const Contact = () => {
                         <Mail className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                       </div>
                       <div>
-                        <p className="text-xs text-gray-500 dark:text-gray-500 dark:text-gray-500 dark:text-gray-500 mb-1 font-medium">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1 font-medium uppercase tracking-wide">
                           Email
                         </p>
                         <a
@@ -420,7 +444,7 @@ const Contact = () => {
                         <Phone className="w-5 h-5 text-green-600 dark:text-green-400" />
                       </div>
                       <div>
-                        <p className="text-xs text-gray-500 dark:text-gray-500 dark:text-gray-500 dark:text-gray-500 mb-1 font-medium">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1 font-medium uppercase tracking-wide">
                           Phone
                         </p>
                         <a
@@ -438,10 +462,10 @@ const Contact = () => {
                         <MapPin className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                       </div>
                       <div>
-                        <p className="text-xs text-gray-500 dark:text-gray-500 dark:text-gray-500 dark:text-gray-500 mb-1 font-medium">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1 font-medium uppercase tracking-wide">
                           Location
                         </p>
-                        <p className="text-sm text-white">
+                        <p className="text-sm text-gray-900 dark:text-white">
                           Cidco, Nanded
                           <br />
                           Maharashtra, India
@@ -450,15 +474,15 @@ const Contact = () => {
                     </div>
 
                     {/* Working Hours */}
-                    <div className="flex items-start gap-4 group">
-                      <div className="w-10 h-10 bg-gray-900 dark:bg-white rounded-lg flex items-center justify-center flex-shrink-0">
-                        <Clock className="w-5 h-5 text-gray-900 dark:text-white dark:text-gray-900" />
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 bg-gray-100 dark:bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <Clock className="w-5 h-5 text-gray-700 dark:text-gray-300" />
                       </div>
                       <div>
-                        <p className="text-sm text-gray-500 dark:text-gray-500 dark:text-gray-600 dark:text-gray-400 mb-1 font-medium">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1 font-medium uppercase tracking-wide">
                           Working Hours
                         </p>
-                        <p className="text-gray-900 dark:text-white font-medium">
+                        <p className="text-gray-900 dark:text-white font-medium text-sm">
                           Mon - Fri: 9:00 AM - 6:00 PM
                           <br />
                           Sat - Sun: Closed
@@ -471,9 +495,9 @@ const Contact = () => {
 
               {/* Contact Form */}
               <div className="lg:col-span-2">
-                <div className="bg-white dark:bg-zinc-950 rounded-xl p-8 border border-gray-200 dark:border-zinc-800">
+                <div className="bg-white dark:bg-black rounded-3xl p-8 border border-gray-200 dark:border-white/10 shadow-sm dark:shadow-none">
                   <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white flex items-center gap-2">
-                    <Send className="w-6 h-6 text-primary-600" />
+                    <Send className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                     Send us a Message
                   </h2>
 
@@ -518,27 +542,28 @@ const Contact = () => {
                         Category
                       </label>
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                        {categories.map((cat) => (
+                        {categories.map((cat) => {
+                          const Icon = cat.icon;
+                          return (
                           <button
                             key={cat.value}
                             type="button"
                             onClick={() =>
                               setFormData({...formData, category: cat.value})
                             }
-                            className={`p-4 rounded-lg border transition-colors ${
+                            className={`p-4 rounded-xl border transition-colors ${
                               formData.category === cat.value
-                                ? "border-primary-600 bg-primary-50 dark:bg-primary-900/20"
-                                : "border-gray-300 dark:border-gray-700 hover:border-primary-400 bg-white dark:bg-zinc-950"
+                                ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
+                                : "border-gray-300 dark:border-white/10 hover:border-gray-400 dark:hover:border-white/20 bg-white dark:bg-black"
                             }`}
                           >
-                            <span className="text-2xl mb-1 block">
-                              {cat.icon}
-                            </span>
-                            <span className="text-xs font-medium text-gray-300">
+                            <Icon className="w-5 h-5 mb-2 mx-auto text-gray-700 dark:text-gray-300" />
+                            <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
                               {cat.label}
                             </span>
                           </button>
-                        ))}
+                          );
+                        })}
                       </div>
                     </div>
 
@@ -559,8 +584,8 @@ const Contact = () => {
                             className={`w-full pl-12 pr-4 py-3 rounded-lg border ${
                               errors.name
                                 ? "border-red-500 focus:ring-red-500"
-                                : "border-gray-300 dark:border-gray-700 focus:ring-primary-500"
-                            } bg-black focus:ring-2 dark:text-gray-900 dark:text-white transition-colors`}
+                                : "border-gray-300 dark:border-white/10 focus:ring-blue-500"
+                            } bg-white dark:bg-black focus:ring-2 text-gray-900 dark:text-white transition-colors`}
                             placeholder="John Doe"
                           />
                         </div>
@@ -586,8 +611,8 @@ const Contact = () => {
                             className={`w-full pl-12 pr-4 py-3 rounded-lg border ${
                               errors.email
                                 ? "border-red-500 focus:ring-red-500"
-                                : "border-gray-300 dark:border-gray-700 focus:ring-primary-500"
-                            } bg-black focus:ring-2 dark:text-gray-900 dark:text-white transition-colors`}
+                                : "border-gray-300 dark:border-white/10 focus:ring-blue-500"
+                            } bg-white dark:bg-black focus:ring-2 text-gray-900 dark:text-white transition-colors`}
                             placeholder="john@example.com"
                           />
                         </div>
@@ -612,7 +637,7 @@ const Contact = () => {
                             name="phone"
                             value={formData.phone}
                             onChange={handleChange}
-                            className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-black focus:ring-2 focus:ring-primary-500 dark:text-gray-900 dark:text-white transition-colors"
+                            className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-black focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white transition-colors"
                             placeholder="+1 234 567 8900"
                           />
                         </div>
@@ -629,7 +654,7 @@ const Contact = () => {
                             name="company"
                             value={formData.company}
                             onChange={handleChange}
-                            className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-black focus:ring-2 focus:ring-primary-500 dark:text-gray-900 dark:text-white transition-colors"
+                            className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-black focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white transition-colors"
                             placeholder="Your Company"
                           />
                         </div>
@@ -650,8 +675,8 @@ const Contact = () => {
                         className={`w-full px-4 py-3 rounded-lg border ${
                           errors.subject
                             ? "border-red-500 focus:ring-red-500"
-                            : "border-gray-300 dark:border-gray-700 focus:ring-primary-500"
-                        } bg-black focus:ring-2 dark:text-gray-900 dark:text-white transition-colors`}
+                            : "border-gray-300 dark:border-white/10 focus:ring-blue-500"
+                        } bg-white dark:bg-black focus:ring-2 text-gray-900 dark:text-white transition-colors`}
                         placeholder="How can we help?"
                       />
                       {errors.subject && (
@@ -675,8 +700,8 @@ const Contact = () => {
                         className={`w-full px-4 py-3 rounded-lg border ${
                           errors.message
                             ? "border-red-500 focus:ring-red-500"
-                            : "border-gray-300 dark:border-gray-700 focus:ring-primary-500"
-                        } bg-black focus:ring-2 dark:text-gray-900 dark:text-white transition-colors resize-none`}
+                            : "border-gray-300 dark:border-white/10 focus:ring-blue-500"
+                        } bg-white dark:bg-black focus:ring-2 text-gray-900 dark:text-white transition-colors resize-none`}
                         placeholder="Tell us more about your inquiry..."
                       />
                       {errors.message && (
@@ -690,7 +715,7 @@ const Contact = () => {
                     <button
                       type="submit"
                       disabled={status.loading}
-                      className="w-full bg-primary-600 hover:bg-primary-700 text-gray-900 dark:text-white font-medium py-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      className="w-full bg-gray-900 hover:bg-gray-800 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 font-medium py-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                       {status.loading ? (
                         <>
@@ -716,15 +741,15 @@ const Contact = () => {
               {/* Feedback Stats */}
               {stats && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="bg-white dark:bg-zinc-950 rounded-xl p-6 border border-gray-200 dark:border-zinc-800">
-                    <div className="text-3xl font-bold text-white">
+                  <div className="bg-white dark:bg-black rounded-xl p-6 border border-gray-200 dark:border-white/10">
+                    <div className="text-3xl font-bold text-gray-900 dark:text-white">
                       {stats.total || 0}
                     </div>
                     <div className="text-sm text-gray-600 dark:text-gray-400 mt-1 font-medium">
                       Total Submitted
                     </div>
                   </div>
-                  <div className="bg-white dark:bg-zinc-950 rounded-xl p-6 border border-gray-200 dark:border-zinc-800">
+                  <div className="bg-white dark:bg-black rounded-xl p-6 border border-gray-200 dark:border-white/10">
                     <div className="text-3xl font-bold text-yellow-600">
                       {stats.open || 0}
                     </div>
@@ -732,7 +757,7 @@ const Contact = () => {
                       Open
                     </div>
                   </div>
-                  <div className="bg-white dark:bg-zinc-950 rounded-xl p-6 border border-gray-200 dark:border-zinc-800">
+                  <div className="bg-white dark:bg-black rounded-xl p-6 border border-gray-200 dark:border-white/10">
                     <div className="text-3xl font-bold text-blue-600">
                       {stats.inProgress || 0}
                     </div>
@@ -740,7 +765,7 @@ const Contact = () => {
                       In Progress
                     </div>
                   </div>
-                  <div className="bg-white dark:bg-zinc-950 rounded-xl p-6 border border-gray-200 dark:border-zinc-800">
+                  <div className="bg-white dark:bg-black rounded-xl p-6 border border-gray-200 dark:border-white/10">
                     <div className="text-3xl font-bold text-green-600">
                       {stats.resolved || 0}
                     </div>
@@ -752,13 +777,14 @@ const Contact = () => {
               )}
 
               {/* Feedback Type Selection */}
-              <div className="bg-white dark:bg-zinc-950 rounded-xl p-8 border border-gray-200 dark:border-zinc-800">
+              <div className="bg-white dark:bg-black rounded-3xl p-8 border border-gray-200 dark:border-white/10 shadow-sm dark:shadow-none">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
                   What would you like to share?
                 </h3>
                 <div className="grid md:grid-cols-3 gap-4 mb-8">
                   {feedbackTypes.map((type) => {
                     const Icon = type.icon;
+                    const typeStyle = feedbackTypeStyles[type.id];
                     return (
                       <button
                         key={type.id}
@@ -768,14 +794,14 @@ const Contact = () => {
                         }
                         className={`p-6 rounded-lg border transition-colors ${
                           feedbackForm.type === type.id
-                            ? `border-${type.color}-500 bg-${type.color}-50 dark:bg-${type.color}-900/20`
-                            : "border-gray-300 dark:border-gray-700 hover:border-gray-400 bg-white dark:bg-zinc-950"
+                            ? typeStyle.selected
+                            : "border-gray-300 dark:border-white/10 hover:border-gray-400 dark:hover:border-white/20 bg-white dark:bg-black"
                         }`}
                       >
                         <Icon
                           className={`w-10 h-10 mx-auto mb-3 ${
                             feedbackForm.type === type.id
-                              ? `text-${type.color}-600`
+                              ? typeStyle.icon
                               : "text-gray-400"
                           }`}
                         />
@@ -808,7 +834,7 @@ const Contact = () => {
                           title: e.target.value,
                         })
                       }
-                      className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-black focus:ring-2 focus:ring-primary-500 dark:text-gray-900 dark:text-white transition-colors"
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-black focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white transition-colors"
                       placeholder="Brief summary of your feedback"
                     />
                   </div>
@@ -829,7 +855,7 @@ const Contact = () => {
                           description: e.target.value,
                         })
                       }
-                      className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-black focus:ring-2 focus:ring-primary-500 dark:text-gray-900 dark:text-white transition-colors resize-none"
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-black focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white transition-colors resize-none"
                       placeholder="Provide detailed information..."
                     />
                   </div>
@@ -848,7 +874,7 @@ const Contact = () => {
                             priority: e.target.value,
                           })
                         }
-                        className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-black focus:ring-2 focus:ring-primary-500 dark:text-gray-900 dark:text-white transition-colors"
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-black focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white transition-colors"
                       >
                         <option value="low">Low</option>
                         <option value="medium">Medium</option>
@@ -868,7 +894,7 @@ const Contact = () => {
                             category: e.target.value,
                           })
                         }
-                        className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-black focus:ring-2 focus:ring-primary-500 dark:text-gray-900 dark:text-white transition-colors"
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-black focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white transition-colors"
                       >
                         {feedbackCategories.map((cat) => (
                           <option key={cat.value} value={cat.value}>
@@ -883,7 +909,7 @@ const Contact = () => {
                   <button
                     type="submit"
                     disabled={feedbackLoading}
-                    className="w-full bg-primary-600 hover:bg-primary-700 text-gray-900 dark:text-white font-medium py-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="w-full bg-gray-900 hover:bg-gray-800 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 font-medium py-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {feedbackLoading ? (
                       <>
@@ -907,18 +933,18 @@ const Contact = () => {
                 </div>
               ) : myFeedback.length > 0 ? (
                 <div className="space-y-4">
-                  <h3 className="text-xl font-bold text-white">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                     Your Feedback History
                   </h3>
                   {myFeedback.map((item) => (
                     <div
                       key={item._id}
-                      className="bg-white dark:bg-zinc-950 rounded-xl p-6 border border-gray-200 dark:border-zinc-800"
+                      className="bg-white dark:bg-black rounded-xl p-6 border border-gray-200 dark:border-white/10"
                     >
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2 flex-wrap">
-                            <h4 className="font-medium text-white">
+                            <h4 className="font-medium text-gray-900 dark:text-white">
                               {item.title}
                             </h4>
                             <span
@@ -939,7 +965,7 @@ const Contact = () => {
                               </span>
                             </div>
                           </div>
-                          <p className="text-sm text-gray-400">
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
                             {item.description}
                           </p>
                         </div>
@@ -962,11 +988,11 @@ const Contact = () => {
                         </div>
                       </div>
                       {item.adminResponse && (
-                        <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-zinc-800">
+                        <div className="mt-4 p-4 bg-gray-50 dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-white/10">
                           <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
                             Admin Response:
                           </p>
-                          <p className="text-sm text-gray-300">
+                          <p className="text-sm text-gray-700 dark:text-gray-300">
                             {item.adminResponse}
                           </p>
                         </div>

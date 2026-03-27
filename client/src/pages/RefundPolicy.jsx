@@ -1,18 +1,27 @@
 import {Link} from "react-router-dom";
-import {RotateCcw, Calendar, Mail, CheckCircle, XCircle} from "lucide-react";
+import {
+  RotateCcw,
+  Calendar,
+  Mail,
+  CheckCircle,
+  XCircle,
+  TriangleAlert,
+  ClipboardList,
+  Lightbulb,
+} from "lucide-react";
 
 const RefundPolicy = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-gray-900 py-12 px-4">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-white dark:bg-black py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto pt-14">
         {/* Header */}
-        <div className="bg-white/80 backdrop-blur-xl dark:bg-gray-800/80 rounded-2xl shadow-xl p-8 mb-8 border border-purple-100 dark:border-purple-900/30">
+        <div className="bg-white dark:bg-black rounded-3xl shadow-sm dark:shadow-none p-8 mb-8 border border-gray-200 dark:border-white/10">
           <div className="flex items-center gap-4 mb-4">
-            <div className="p-3 bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900 dark:to-blue-900 rounded-lg">
-              <RotateCcw className="w-8 h-8 text-purple-600 dark:text-purple-400" />
+            <div className="p-3 bg-gray-100 dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-white/10">
+              <RotateCcw className="w-8 h-8 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400">
+              <h1 className="text-4xl font-black tracking-tight text-gray-900 dark:text-white">
                 Refund & Cancellation Policy
               </h1>
               <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mt-2">
@@ -28,25 +37,27 @@ const RefundPolicy = () => {
         </div>
 
         {/* Content */}
-        <div className="bg-white/80 backdrop-blur-xl dark:bg-gray-800/80 rounded-2xl shadow-xl p-8 space-y-8 border border-purple-100 dark:border-purple-900/30">
+        <div className="bg-white dark:bg-black rounded-3xl shadow-sm dark:shadow-none p-8 space-y-8 border border-gray-200 dark:border-white/10">
           {/* Section 1 */}
           <section>
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400 mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
               1. Refund Policy Overview
             </h2>
-            <div className="bg-yellow-50 dark:bg-gray-700 rounded-lg p-5 mb-4">
-              <p className="text-gray-700 dark:text-gray-700 dark:text-gray-300 leading-relaxed font-semibold">
-                ⚠️{" "}
-                <strong className="text-gray-900 dark:text-white">
-                  Important:
-                </strong>{" "}
-                We operate a strict 24-hour refund policy. Once you start using
-                the service and 24 hours have passed, refunds are NOT available
-                except for payment failures or technical issues preventing
-                service delivery.
+            <div className="bg-yellow-50 dark:bg-yellow-950/20 rounded-xl p-5 mb-4 border border-yellow-200 dark:border-yellow-900/40">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed font-semibold flex items-start gap-2">
+                <TriangleAlert className="w-4 h-4 mt-0.5 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+                <span>
+                  <strong className="text-gray-900 dark:text-white">
+                    Important:
+                  </strong>{" "}
+                  We operate a strict 24-hour refund policy. Once you start
+                  using the service and 24 hours have passed, refunds are NOT
+                  available except for payment failures or technical issues
+                  preventing service delivery.
+                </span>
               </p>
             </div>
-            <p className="text-gray-700 dark:text-gray-700 dark:text-gray-300 leading-relaxed">
+            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
               At SmartNShine, we provide instant digital access to our resume
               building platform. Since our service is delivered immediately upon
               payment, we maintain a limited refund window. Please ensure you
@@ -56,20 +67,20 @@ const RefundPolicy = () => {
 
           {/* Section 2 */}
           <section>
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400 mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
               2. Eligibility for Refunds
             </h2>
 
             <div className="space-y-4">
               {/* One-Time Plan */}
-              <div className="bg-blue-50 dark:bg-gray-700 rounded-lg p-5">
+              <div className="bg-blue-50 dark:bg-blue-950/20 rounded-xl p-5 border border-blue-200 dark:border-blue-900/40">
                 <div className="flex items-start gap-3">
                   <CheckCircle className="w-6 h-6 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-1" />
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                       One-Time Plan (₹49 for 21 days)
                     </h3>
-                    <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-700 dark:text-gray-300 ml-4">
+                    <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300 ml-4">
                       <li>
                         <strong>24-Hour Refund Window:</strong> Full refund
                         available within 24 hours of purchase ONLY
@@ -92,14 +103,14 @@ const RefundPolicy = () => {
               </div>
 
               {/* Pro Monthly */}
-              <div className="bg-purple-50 dark:bg-gray-700 rounded-lg p-5">
+              <div className="bg-purple-50 dark:bg-purple-950/20 rounded-xl p-5 border border-purple-200 dark:border-purple-900/40">
                 <div className="flex items-start gap-3">
-                  <CheckCircle className="w-6 h-6 text-purple-600 dark:text-purple-400 flex-shrink-0 mt-1" />
+                  <CheckCircle className="w-6 h-6 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-1" />
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                       Pro Monthly Plan (₹199/month)
                     </h3>
-                    <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-700 dark:text-gray-300 ml-4">
+                    <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300 ml-4">
                       <li>
                         <strong>24-Hour Refund Window:</strong> Full refund
                         within 24 hours of first payment ONLY
@@ -118,11 +129,11 @@ const RefundPolicy = () => {
               </div>
 
               {/* Free Plan */}
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-5">
+              <div className="bg-white dark:bg-black rounded-xl p-5 border border-gray-200 dark:border-white/10">
                 <div className="flex items-start gap-3">
-                  <XCircle className="w-6 h-6 text-gray-600 dark:text-gray-600 dark:text-gray-400 flex-shrink-0 mt-1" />
+                  <XCircle className="w-6 h-6 text-gray-600 dark:text-gray-400 flex-shrink-0 mt-1" />
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                       Free Plan (₹0)
                     </h3>
                     <p className="text-gray-700 dark:text-gray-300">
@@ -133,14 +144,14 @@ const RefundPolicy = () => {
               </div>
 
               {/* Payment Failures - ALWAYS REFUNDED */}
-              <div className="bg-green-50 dark:bg-gray-700 rounded-lg p-5 border-2 border-green-300 dark:border-green-600">
+              <div className="bg-green-50 dark:bg-green-950/20 rounded-xl p-5 border border-green-300 dark:border-green-800">
                 <div className="flex items-start gap-3">
                   <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400 flex-shrink-0 mt-1" />
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                       Payment Failures & Technical Issues
                     </h3>
-                    <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-700 dark:text-gray-300 ml-4">
+                    <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300 ml-4">
                       <li>
                         <strong>ALWAYS REFUNDED:</strong> Money deducted but
                         service not activated
@@ -163,17 +174,17 @@ const RefundPolicy = () => {
 
           {/* Section 3 */}
           <section>
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400 mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
               3. Non-Refundable Situations
             </h2>
-            <div className="bg-red-50 dark:bg-gray-700 rounded-lg p-5">
-              <p className="text-gray-700 dark:text-gray-700 dark:text-gray-300 mb-3 font-semibold">
+            <div className="bg-red-50 dark:bg-red-950/20 rounded-xl p-5 border border-red-200 dark:border-red-900/40">
+              <p className="text-gray-700 dark:text-gray-300 mb-3 font-semibold">
                 <strong className="text-red-600 dark:text-red-400">
                   NO REFUNDS
                 </strong>{" "}
                 will be provided in the following cases:
               </p>
-              <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-700 dark:text-gray-300 ml-4">
+              <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300 ml-4">
                 <li>
                   <strong>After 24 hours:</strong> Request made after the
                   24-hour window
@@ -212,12 +223,12 @@ const RefundPolicy = () => {
 
           {/* Section 4 */}
           <section>
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400 mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
               4. Cancellation Policy
             </h2>
             <div className="space-y-4 text-gray-700 dark:text-gray-300">
               <div>
-                <h3 className="font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
                   4.1 How to Cancel
                 </h3>
                 <p className="mb-2">You can cancel your subscription:</p>
@@ -229,7 +240,7 @@ const RefundPolicy = () => {
               </div>
 
               <div>
-                <h3 className="font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
                   4.2 When Cancellation Takes Effect
                 </h3>
                 <ul className="list-disc list-inside space-y-1 ml-4">
@@ -256,7 +267,7 @@ const RefundPolicy = () => {
               </div>
 
               <div>
-                <h3 className="font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-2">
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
                   4.3 One-Time Plan Cancellation
                 </h3>
                 <p>
@@ -267,10 +278,10 @@ const RefundPolicy = () => {
                 </p>
               </div>
 
-              <div className="bg-yellow-50 dark:bg-gray-700 rounded-lg p-4 mt-4">
+              <div className="bg-yellow-50 dark:bg-yellow-950/20 rounded-xl p-5 mt-4 border border-yellow-200 dark:border-yellow-900/40">
                 <p className="text-gray-700 dark:text-gray-300">
-                  <strong className="text-yellow-800 dark:text-yellow-400">
-                    ⚠️ Important:
+                  <strong className="text-yellow-800 dark:text-yellow-400 inline-flex items-center gap-1.5">
+                    <TriangleAlert className="w-4 h-4" /> Important:
                   </strong>
                   Cancelling your subscription only stops future charges. It
                   does NOT entitle you to a refund for the current billing
@@ -282,15 +293,16 @@ const RefundPolicy = () => {
 
           {/* Section 5 */}
           <section>
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400 mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
               5. Refund Process & Timeline
             </h2>
 
-            <div className="bg-blue-50 dark:bg-gray-700 rounded-lg p-5 mb-4">
-              <h3 className="font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-3">
-                📋 Information Needed for Refund Request:
+            <div className="bg-blue-50 dark:bg-blue-950/20 rounded-xl p-5 mb-4 border border-blue-200 dark:border-blue-900/40">
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-3 inline-flex items-center gap-2">
+                <ClipboardList className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                Information Needed for Refund Request:
               </h3>
-              <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-700 dark:text-gray-300 ml-4">
+              <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300 ml-4">
                 <li>
                   <strong>Your registered email address</strong>
                 </li>
@@ -306,9 +318,12 @@ const RefundPolicy = () => {
                   <strong>Transaction date</strong> (if you remember)
                 </li>
               </ul>
-              <p className="text-sm text-gray-600 dark:text-gray-600 dark:text-gray-400 mt-3 italic">
-                💡 Tip: Check your email for "Payment Successful" notification
-                from Razorpay - it contains your Payment ID
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-3 italic inline-flex items-start gap-2">
+                <Lightbulb className="w-4 h-4 mt-0.5 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+                <span>
+                  Tip: Check your email for "Payment Successful" notification
+                  from Razorpay - it contains your Payment ID
+                </span>
               </p>
             </div>
 
@@ -361,7 +376,7 @@ const RefundPolicy = () => {
 
           {/* Section 6 */}
           <section>
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400 mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
               6. Payment Method & Currency
             </h2>
             <div className="space-y-3 text-gray-700 dark:text-gray-300">
@@ -394,17 +409,17 @@ const RefundPolicy = () => {
 
           {/* Section 7 */}
           <section>
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400 mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
               7. Subscription Renewal
             </h2>
-            <div className="bg-yellow-50 dark:bg-gray-700 rounded-lg p-5">
-              <p className="text-gray-700 dark:text-gray-700 dark:text-gray-300 mb-3">
+            <div className="bg-yellow-50 dark:bg-yellow-950/20 rounded-xl p-5 border border-yellow-200 dark:border-yellow-900/40">
+              <p className="text-gray-700 dark:text-gray-300 mb-3">
                 <strong className="text-gray-900 dark:text-white">
                   Important:
                 </strong>{" "}
                 Pro Monthly subscriptions auto-renew unless cancelled.
               </p>
-              <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-700 dark:text-gray-300 ml-4">
+              <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300 ml-4">
                 <li>You will receive an email reminder before renewal</li>
                 <li>
                   <strong>
@@ -424,19 +439,19 @@ const RefundPolicy = () => {
 
           {/* Section 8 */}
           <section>
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400 mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
               8. Disputes & Chargebacks
             </h2>
-            <p className="text-gray-700 dark:text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
+            <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
               Please contact us before initiating a chargeback with your bank.
               Chargebacks may result in:
             </p>
-            <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-700 dark:text-gray-300 ml-4">
+            <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300 ml-4">
               <li>Immediate account suspension</li>
               <li>Loss of access to all features and data</li>
               <li>Inability to create new accounts</li>
             </ul>
-            <p className="text-gray-700 dark:text-gray-700 dark:text-gray-300 mt-3">
+            <p className="text-gray-700 dark:text-gray-300 mt-3">
               We're committed to resolving issues amicably through our refund
               process.
             </p>
@@ -444,10 +459,10 @@ const RefundPolicy = () => {
 
           {/* Section 9 */}
           <section>
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400 mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
               9. Service Modifications
             </h2>
-            <p className="text-gray-700 dark:text-gray-700 dark:text-gray-300 leading-relaxed">
+            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
               We reserve the right to modify pricing, features, or discontinue
               services with 30 days notice. Active subscribers will be notified
               and given the option to cancel for a pro-rated refund if
@@ -457,13 +472,13 @@ const RefundPolicy = () => {
 
           {/* Section 10 */}
           <section>
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400 mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
               10. Questions & Support
             </h2>
-            <p className="text-gray-700 dark:text-gray-700 dark:text-gray-300 mb-3">
+            <p className="text-gray-700 dark:text-gray-300 mb-3">
               If you have questions about refunds or cancellations:
             </p>
-            <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-700 dark:text-gray-300 ml-4">
+            <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300 ml-4">
               <li>Check your subscription status in account settings</li>
               <li>Review our FAQ section</li>
               <li>Contact support before requesting refund</li>
@@ -471,9 +486,9 @@ const RefundPolicy = () => {
           </section>
 
           {/* Contact Section */}
-          <section className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-lg p-6 border border-purple-200 dark:border-purple-800">
+          <section className="bg-purple-50 dark:bg-purple-950/20 rounded-xl p-5 border border-purple-200 dark:border-purple-900/40">
             <div className="flex items-center gap-3 mb-3">
-              <Mail className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+              <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                 Contact Us
               </h3>
@@ -484,7 +499,7 @@ const RefundPolicy = () => {
             <div className="space-y-2">
               <p className="text-gray-700 dark:text-gray-300">
                 <strong>Email:</strong>{" "}
-                <span className="text-purple-600 dark:text-purple-400 font-semibold">
+                <span className="text-blue-600 dark:text-blue-400 font-semibold">
                   support@smartnshine.app
                 </span>
               </p>
@@ -499,19 +514,19 @@ const RefundPolicy = () => {
         <div className="mt-8 flex flex-wrap gap-4 justify-center">
           <Link
             to="/terms-and-conditions"
-            className="px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
+            className="px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
           >
             Terms & Conditions
           </Link>
           <Link
             to="/pricing"
-            className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
+            className="px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
           >
             View Pricing
           </Link>
           <Link
             to="/"
-            className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
+            className="px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
           >
             Back to Home
           </Link>

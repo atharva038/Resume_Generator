@@ -1,21 +1,14 @@
 import {Link} from "react-router-dom";
 import {
-  Sparkles,
   Mail,
-  MessageCircle,
-  Linkedin,
-  Twitter,
-  Github,
-  Shield,
   Heart,
 } from "lucide-react";
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useRef} from "react";
 import {useToggle} from "@/hooks";
 
 const Footer = () => {
   const footerRef = useRef(null);
-  const [isVisible, toggleVisible, setIsVisibleTrue, setIsVisibleFalse] =
-    useToggle(false);
+  const [isVisible, , setIsVisibleTrue] = useToggle(false);
 
   // Intersection Observer for fade-in animation
   useEffect(() => {
@@ -25,7 +18,7 @@ const Footer = () => {
           setIsVisibleTrue();
         }
       },
-      {threshold: 0.1}
+      { threshold: 0.1 }
     );
 
     if (footerRef.current) {
@@ -40,19 +33,19 @@ const Footer = () => {
   }, [setIsVisibleTrue]);
 
   const productLinks = [
-    {name: "AI Resume Builder", path: "/upload"},
-    {name: "ATS Checker", path: "/upload"},
-    {name: "Resume Templates", path: "/templates"},
-    {name: "AI Enhancer", path: "/upload"},
-    {name: "Pricing", path: "/pricing"},
+    { name: "AI Resume Builder", path: "/upload" },
+    { name: "ATS Checker", path: "/upload" },
+    { name: "Resume Templates", path: "/templates" },
+    { name: "AI Enhancer", path: "/upload" },
+    { name: "Pricing", path: "/pricing" },
   ];
 
   // Legal & Policies (REQUIRED FOR RAZORPAY APPROVAL)
   const resourceLinks = [
-    {name: "Terms & Conditions", path: "/terms-and-conditions"},
-    {name: "Privacy Policy", path: "/privacy-policy"},
-    {name: "Refund Policy", path: "/refund-policy"},
-    {name: "Shipping Policy", path: "/shipping-policy"},
+    { name: "Terms & Conditions", path: "/terms-and-conditions" },
+    { name: "Privacy Policy", path: "/privacy-policy" },
+    { name: "Refund Policy", path: "/refund-policy" },
+    { name: "Shipping Policy", path: "/shipping-policy" },
   ];
 
   // Hidden until connected to real data
@@ -80,21 +73,21 @@ const Footer = () => {
   return (
     <footer
       ref={footerRef}
-      className={`bg-white dark:bg-black border-t border-gray-200 dark:border-zinc-800 text-gray-600 dark:text-gray-400 transition-all duration-1000 no-print ${
+      className={`bg-white dark:bg-black border-t border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-400 transition-all duration-1000 no-print ${
         isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
       }`}
     >
-      <div className="container mx-auto px-4 lg:px-6 py-12 lg:py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           {/* Brand Section */}
           <div className="space-y-4">
             <Link to="/" className="flex items-center group">
               <img
-                src="/New-logo_SNS.png"
+                src="/orb-logo.png"
                 alt="SmartNShine"
-                className="h-14 w-auto object-contain group-hover:scale-105 transition-transform duration-300 -mr-1"
+                className="h-14 w-auto object-contain group-hover:scale-105 transition-all duration-300 -mr-1 dark:brightness-100 dark:saturate-100 brightness-50 contrast-125 saturate-200"
               />
-              <span className="text-lg font-bold bg-gradient-to-r from-primary-600 to-purple-600 bg-clip-text text-transparent tracking-tight">
+              <span className="text-lg font-bold bg-gradient-to-r from-[#5d8ff0] via-[#6f7fe4] to-[#8b67df] dark:from-[#6aa0ff] dark:via-[#7f8ce7] dark:to-[#9b78ea] bg-clip-text text-transparent tracking-tight">
                 SmartNShine
               </span>
             </Link>
@@ -113,7 +106,7 @@ const Footer = () => {
                       href={social.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-2 border border-gray-200 dark:border-zinc-800 rounded-lg text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 hover:border-primary-500 transition-all duration-200"
+                      className="p-2 border border-gray-200 dark:border-white/10 rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-300 dark:hover:border-white/20 transition-all duration-200"
                       aria-label={social.name}
                     >
                       <Icon className="w-4 h-4" />
@@ -126,7 +119,7 @@ const Footer = () => {
 
           {/* Product Column */}
           <div>
-            <h3 className="text-gray-900 dark:text-white font-semibold text-sm mb-4 tracking-tight">
+            <h3 className="text-gray-900 dark:text-white font-semibold text-xs uppercase tracking-[0.16em] mb-4">
               Product
             </h3>
             <ul className="space-y-2.5">
@@ -146,7 +139,7 @@ const Footer = () => {
           {/* Legal & Policies Column (REQUIRED FOR RAZORPAY) */}
           {resourceLinks.length > 0 && (
             <div>
-              <h3 className="text-gray-900 dark:text-white font-semibold text-sm mb-4 tracking-tight">
+              <h3 className="text-gray-900 dark:text-white font-semibold text-xs uppercase tracking-[0.16em] mb-4">
                 Legal & Policies
               </h3>
               <ul className="space-y-2.5">
@@ -178,14 +171,14 @@ const Footer = () => {
 
           {/* Contact Column */}
           <div>
-            <h3 className="text-gray-900 dark:text-white font-semibold text-sm mb-4 tracking-tight">
+            <h3 className="text-gray-900 dark:text-white font-semibold text-xs uppercase tracking-[0.16em] mb-4">
               Contact
             </h3>
             <ul className="space-y-2.5">
               <li>
                 <Link
                   to="/contact"
-                  className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-900 dark:text-white transition-colors duration-200"
+                  className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-200"
                 >
                   Contact Us
                 </Link>
@@ -193,7 +186,7 @@ const Footer = () => {
               <li>
                 <a
                   href="mailto:support@smartnshine.app"
-                  className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-900 dark:text-white transition-colors duration-200 inline-flex items-center gap-2 group"
+                  className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-200 inline-flex items-center gap-2 group"
                 >
                   <Mail className="w-4 h-4" />
                   <span>support@smartnshine.app</span>
@@ -219,15 +212,15 @@ const Footer = () => {
         </div>
 
         {/* Divider */}
-        <div className="border-t border-gray-200 dark:border-zinc-800 mt-10 lg:mt-12 pt-8">
+        <div className="border-t border-gray-200 dark:border-white/10 mt-10 lg:mt-12 pt-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             {/* Copyright */}
-            <p className="text-xs text-gray-500 dark:text-gray-500 dark:text-gray-500 dark:text-gray-500 text-center md:text-left">
+            <p className="text-xs text-gray-500 dark:text-gray-400 text-center md:text-left">
               © {new Date().getFullYear()} SmartNShine. All rights reserved.
             </p>
 
             {/* Built with Love */}
-            <p className="text-xs text-gray-500 dark:text-gray-500 dark:text-gray-500 dark:text-gray-500 flex items-center gap-1.5">
+            <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
               Built with
               <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500" />
               for job seekers worldwide

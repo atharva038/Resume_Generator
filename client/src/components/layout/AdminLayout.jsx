@@ -147,7 +147,7 @@ const AdminLayout = () => {
   return (
     <div className="min-h-screen bg-white dark:bg-[#0C0C0C] overflow-x-hidden">
       {/* Subtle grid background pattern */}
-      <div className="fixed inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none"></div>
+      {/* Grid background removed per design update */}
 
       {/* Ambient gradient blur effects */}
       <div className="fixed top-20 left-10 w-[400px] h-[400px] bg-purple-500/20 dark:bg-purple-500/10 rounded-full blur-[120px] pointer-events-none"></div>
