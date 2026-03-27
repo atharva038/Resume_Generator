@@ -23,6 +23,7 @@ import Creative2Template from "@/components/templates/Creative2Template";
 import StrategicLeadershipTemplate from "@/components/templates/StrategicLeadershipTemplate";
 import ImpactProTemplate from "@/components/templates/ImpactProTemplate";
 import GitHubStyleTemplate from "@/components/templates/GitHubStyleTemplate";
+import StructuredPhotoTemplate from "@/components/templates/StructuredPhotoTemplate";
 
 // Sample resume data for preview - matches template structure
 const sampleResumeData = {
@@ -248,6 +249,21 @@ const templates = [
     ],
     colors: ["#24292e", "#ffffff"],
   },
+  {
+    id: "structured-photo",
+    name: "Structured Photo Pro",
+    component: StructuredPhotoTemplate,
+    category: "Professional",
+    atsScore: 90,
+    description:
+      "A structured, elegant template with distinctive section layouts and modern typography.",
+    features: [
+      "Dual Column",
+      "Elegant",
+      "Modern Typography",
+    ],
+    colors: ["#2f678e", "#e05c5c", "#ffffff"],
+  },
 ];
 
 // Color theme configurations (same as Editor.jsx)
@@ -307,6 +323,11 @@ const TEMPLATE_COLOR_THEMES = {
     {id: "forest", name: "Forest Green", primary: "#1b5e20"},
     {id: "maroon", name: "Maroon", primary: "#880e4f"},
     {id: "navy", name: "Navy Blue", primary: "#003366"},
+  ],
+  "structured-photo": [
+    {id: "coral", name: "Coral", primary: "#2f678e"},
+    {id: "terracotta", name: "Terracotta", primary: "#2f678e"},
+    {id: "rose", name: "Rose", primary: "#2f678e"},
   ],
 };
 
