@@ -274,7 +274,6 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-
               {/* 404 Not Found - Must be last route in this Route group */}
               <Route path="*" element={<NotFound />} />
             </Route>
