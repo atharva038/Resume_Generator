@@ -6,8 +6,6 @@ import {
   FaCrown,
   FaStar,
   FaRocket,
-  FaGraduationCap,
-  FaInfinity,
 } from "react-icons/fa";
 import {getPricing, getSubscriptionStatus} from "@/api/subscription.api";
 import PaymentModal from "@/components/common/PaymentModal";
@@ -22,10 +20,9 @@ const Pricing = () => {
   const navigate = useNavigate();
   const [pricing, setPricing] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [selectedTier, setSelectedTier] = useState(null);
   const [
     showPaymentModal,
-    togglePaymentModal,
+    ,
     setShowPaymentModalTrue,
     setShowPaymentModalFalse,
   ] = useToggle(false);
@@ -84,13 +81,13 @@ const Pricing = () => {
     },
     pro: {
       icon: (
-        <FaCrown className="text-4xl text-purple-500 dark:text-purple-400" />
+        <FaCrown className="text-4xl text-indigo-500 dark:text-indigo-400" />
       ),
-      color: "purple",
+      color: "indigo",
       popular: true,
-      bgGradient: "bg-purple-50 dark:bg-zinc-900/30",
-      borderColor: "border-purple-300 dark:border-white/10",
-      buttonColor: "bg-purple-600 hover:bg-purple-700",
+      bgGradient: "bg-indigo-50 dark:bg-zinc-900/30",
+      borderColor: "border-indigo-200 dark:border-white/10",
+      buttonColor: "bg-indigo-600 hover:bg-indigo-700",
     },
   };
 
@@ -158,7 +155,7 @@ const Pricing = () => {
     return (
       <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto"></div>
           <p className="mt-4 text-gray-600 dark:text-gray-400">
             Loading pricing...
           </p>
@@ -233,15 +230,15 @@ const Pricing = () => {
         </script>
       </Helmet>
 
-      <div className="min-h-screen bg-white dark:bg-black py-12 px-4">
-        <div className="max-w-7xl mx-auto">
+      <div className="min-h-screen bg-white dark:bg-black py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto pt-14">
           {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-5xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-              Choose Your Plan
+          <div className="text-center mb-12 sm:mb-14">
+            <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-gray-900 dark:text-white mb-3">
+              Pricing Plans
             </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
-              Get the perfect plan for your resume building needs
+            <p className="text-lg sm:text-xl font-light text-gray-600 dark:text-gray-400">
+              Choose the plan that fits your resume-building workflow.
             </p>
           </div>
 
@@ -264,9 +261,9 @@ const Pricing = () => {
                 return (
                   <div
                     key={tier}
-                    className={`relative bg-white dark:bg-zinc-900/50 dark:backdrop-blur-xl rounded-2xl shadow-sm dark:shadow-lg border border-gray-200 dark:border-white/10 overflow-hidden transform transition-all duration-300 hover:scale-105 ${
+                    className={`relative bg-white dark:bg-zinc-900/50 dark:backdrop-blur-xl rounded-3xl shadow-sm dark:shadow-lg border border-gray-200 dark:border-white/10 overflow-hidden transition-all duration-300 hover:shadow-md ${
                       isPopular
-                        ? "ring-4 ring-purple-400 dark:ring-purple-600 -mt-4 lg:scale-105"
+                        ? "ring-2 ring-indigo-300 dark:ring-indigo-500"
                         : ""
                     }`}
                   >
@@ -280,7 +277,7 @@ const Pricing = () => {
 
                     {/* Popular Badge */}
                     {isPopular && !isActivePlan && (
-                      <div className="absolute top-0 right-0 bg-purple-600 text-white px-4 py-1 rounded-bl-lg font-semibold text-sm">
+                      <div className="absolute top-0 right-0 bg-indigo-600 text-white px-4 py-1 rounded-bl-lg font-semibold text-sm">
                         MOST POPULAR
                       </div>
                     )}
@@ -353,7 +350,7 @@ const Pricing = () => {
           </div>
 
           {/* Feature Comparison Table */}
-          <div className="bg-white dark:bg-zinc-900/50 dark:backdrop-blur-xl rounded-2xl shadow-sm dark:shadow-lg border border-gray-200 dark:border-white/10 p-8 mb-12">
+          <div className="bg-white dark:bg-zinc-900/50 dark:backdrop-blur-xl rounded-3xl shadow-sm dark:shadow-lg border border-gray-200 dark:border-white/10 p-8 mb-12">
             <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6 text-center">
               Compare All Features
             </h2>
@@ -455,7 +452,7 @@ const Pricing = () => {
           </div>
 
           {/* FAQ Section */}
-          <div className="bg-white dark:bg-black rounded-2xl shadow-sm dark:shadow-lg border border-gray-200 dark:border-zinc-800 p-8">
+          <div className="bg-white dark:bg-black rounded-3xl shadow-sm dark:shadow-lg border border-gray-200 dark:border-zinc-800 p-8">
             <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6 text-center">
               Frequently Asked Questions
             </h2>
@@ -512,7 +509,7 @@ const Pricing = () => {
               Need help choosing?{" "}
               <a
                 href="/contact"
-                className="text-purple-600 dark:text-purple-400 hover:underline"
+                className="text-blue-600 dark:text-blue-400 hover:underline"
               >
                 Contact us
               </a>

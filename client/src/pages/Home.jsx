@@ -70,6 +70,14 @@ const testimonials = [
   { name: "Vibhanshu Titirmare", role: "Student", company: "", text: "Proof that great design doesn't mean chaotic layouts. The typography rules and constraints result in beautiful minimalism." }
 ];
 
+const SectionDivider = () => (
+  <div className="relative z-10 h-14 sm:h-16 bg-white dark:bg-black overflow-hidden" aria-hidden="true">
+    <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent dark:via-white/10" />
+    <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent dark:via-white/20" />
+    <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent dark:via-white/10" />
+  </div>
+);
+
 const Home = () => {
   const [openFAQ, setOpenFAQ] = useState(null);
   const scrollContainerRef = useRef(null);
@@ -96,10 +104,9 @@ const Home = () => {
       <FAQSchema faqs={faqs} />
 
       {/* Main container handling background light/dark transition */}
-      <div className="min-h-screen bg-[#FAFAFA] dark:bg-[#0A0A0A] text-gray-900 dark:text-white selection:bg-black/10 dark:selection:bg-white/30 selection:text-black dark:selection:text-white font-sans overflow-x-hidden transition-colors duration-300">
+      <div className="min-h-screen bg-white dark:bg-black text-gray-900 dark:text-white selection:bg-black/10 dark:selection:bg-white/30 selection:text-black dark:selection:text-white font-sans overflow-x-hidden transition-colors duration-300">
         
-        {/* Subtle Grid Pattern Background */}
-        <div className="hidden sm:block fixed inset-0 bg-[linear-gradient(to_right,#00000008_1px,transparent_1px),linear-gradient(to_bottom,#00000008_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none z-0"></div>
+        {/* Grid pattern background removed per design update */}
 
         {/* HERO SECTION */}
         <section className="relative pt-32 pb-20 px-6 lg:px-12 min-h-[90vh] flex flex-col justify-center z-10">
@@ -111,7 +118,7 @@ const Home = () => {
                 initial={reduceMotion ? false : {opacity: 0, y: 20}}
                 animate={reduceMotion ? false : {opacity: 1, y: 0}}
                 transition={reduceMotion ? {duration: 0} : {duration: 0.6}}
-                className="inline-flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 shadow-[0_2px_10px_rgba(0,0,0,0.05)] dark:shadow-none rounded-full text-xs font-semibold text-gray-700 dark:text-gray-300"
+                className="inline-flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-black border border-gray-200 dark:border-white/10 shadow-[0_2px_10px_rgba(0,0,0,0.05)] dark:shadow-none rounded-full text-xs font-semibold text-gray-700 dark:text-gray-300"
               >
                 <Sparkles className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
                 <span>Powered by Gemini & OpenAI</span>
@@ -203,7 +210,7 @@ const Home = () => {
                       alt={`Template ${t.id}`}
                       className="w-full h-auto block object-cover"
                       loading={index === 0 ? "eager" : "lazy"}
-                      fetchPriority={index === 0 ? "high" : "auto"}
+                      fetchpriority={index === 0 ? "high" : "auto"}
                       decoding="async"
                     />
                   </picture>
@@ -214,8 +221,10 @@ const Home = () => {
           </div>
         </section>
 
+        <SectionDivider />
+
         {/* TRUST STRIP */}
-        <section className="relative py-12 border-y border-gray-200 dark:border-white/5 bg-white dark:bg-white/[0.02] z-10 shadow-sm dark:shadow-none">
+        <section className="relative py-12 bg-white dark:bg-black z-10 shadow-sm dark:shadow-none">
           <div className="max-w-7xl mx-auto px-6 lg:px-12">
             <p className="text-center text-sm font-mono font-bold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400 mb-6">
               Built for real job outcomes
@@ -224,7 +233,7 @@ const Home = () => {
                 {trustHighlights.map((label) => (
                 <span
                   key={label}
-                  className="px-4 py-2 rounded-full border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/[0.02] text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300"
+                  className="px-4 py-2 rounded-full border border-gray-200 dark:border-white/10 bg-white dark:bg-black text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300"
                 >
                   {label}
                 </span>
@@ -232,6 +241,8 @@ const Home = () => {
             </div>
           </div>
         </section>
+
+        <SectionDivider />
 
         {/* BENTO GRID - HOW IT WORKS */}
         <section className="relative py-24 sm:py-32 px-6 lg:px-12 z-10">
@@ -243,8 +254,8 @@ const Home = () => {
 
             <div className="grid md:grid-cols-3 gap-6 sm:gap-8">
               {/* Step 1 */}
-              <div className="bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/5 p-8 sm:p-10 rounded-3xl hover:border-gray-300 dark:hover:bg-white/[0.04] transition-all group shadow-sm hover:shadow-md dark:shadow-none">
-                <div className="w-14 h-14 rounded-full border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-transparent flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
+              <div className="bg-white dark:bg-black border border-gray-200 dark:border-white/10 p-8 sm:p-10 rounded-3xl hover:border-gray-300 dark:hover:bg-black transition-all group shadow-sm hover:shadow-md dark:shadow-none">
+                <div className="w-14 h-14 rounded-full border border-gray-200 dark:border-white/10 bg-white dark:bg-black flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
                   <Upload className="w-6 h-6 text-gray-700 dark:text-gray-300" />
                 </div>
                 <div className="text-sm font-mono font-bold text-blue-600 dark:text-blue-400 mb-3">01</div>
@@ -255,11 +266,11 @@ const Home = () => {
               </div>
 
               {/* Step 2 */}
-              <div className="bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/5 p-8 sm:p-10 rounded-3xl hover:border-gray-300 dark:hover:bg-white/[0.04] transition-all group relative overflow-hidden shadow-sm hover:shadow-md dark:shadow-none">
+              <div className="bg-white dark:bg-black border border-gray-200 dark:border-white/10 p-8 sm:p-10 rounded-3xl hover:border-gray-300 dark:hover:bg-black transition-all group relative overflow-hidden shadow-sm hover:shadow-md dark:shadow-none">
                 <div className="absolute top-0 right-0 p-8 opacity-5 dark:opacity-10 group-hover:opacity-10 dark:group-hover:opacity-20 transition-opacity">
                   <Brain className="w-32 h-32 text-indigo-600 dark:text-white" />
                 </div>
-                <div className="w-14 h-14 rounded-full border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-transparent flex items-center justify-center mb-8 group-hover:scale-110 transition-transform relative z-10">
+                <div className="w-14 h-14 rounded-full border border-gray-200 dark:border-white/10 bg-white dark:bg-black flex items-center justify-center mb-8 group-hover:scale-110 transition-transform relative z-10">
                   <Sparkles className="w-6 h-6 text-gray-700 dark:text-gray-300" />
                 </div>
                 <div className="text-sm font-mono font-bold text-indigo-600 dark:text-indigo-400 mb-3 relative z-10">02</div>
@@ -270,8 +281,8 @@ const Home = () => {
               </div>
 
               {/* Step 3 */}
-              <div className="bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/5 p-8 sm:p-10 rounded-3xl hover:border-gray-300 dark:hover:bg-white/[0.04] transition-all group shadow-sm hover:shadow-md dark:shadow-none">
-                <div className="w-14 h-14 rounded-full border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-transparent flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
+              <div className="bg-white dark:bg-black border border-gray-200 dark:border-white/10 p-8 sm:p-10 rounded-3xl hover:border-gray-300 dark:hover:bg-black transition-all group shadow-sm hover:shadow-md dark:shadow-none">
+                <div className="w-14 h-14 rounded-full border border-gray-200 dark:border-white/10 bg-white dark:bg-black flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
                   <TrendingUp className="w-6 h-6 text-gray-700 dark:text-gray-300" />
                 </div>
                 <div className="text-sm font-mono font-bold text-purple-600 dark:text-purple-400 mb-3">03</div>
@@ -284,11 +295,13 @@ const Home = () => {
           </div>
         </section>
 
+        <SectionDivider />
+
         {/* FEATURE SHOWCASES (Vercel Style Split Layout) */}
         <section className="relative py-20 z-10 [content-visibility:auto] [contain-intrinsic-size:1200px]">
           
           {/* Feature 1: The Templates */}
-          <div className="py-20 sm:py-28 px-6 lg:px-12 border-t border-gray-200 dark:border-white/5 bg-[#FAFAFA] dark:bg-transparent">
+          <div className="py-20 sm:py-28 px-6 lg:px-12 bg-white dark:bg-black">
             <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
               <div className="order-2 lg:order-1 relative aspect-square sm:aspect-[4/3] flex items-center justify-center">
                 {/* 3 staggered premium templates - proper absolute positioning to avoid clashing/spilling */}
@@ -347,16 +360,16 @@ const Home = () => {
           </div>
 
           {/* Feature 2: Scoring */}
-          <div className="py-20 sm:py-28 px-6 lg:px-12 border-t border-gray-200 dark:border-white/5 bg-white dark:bg-white/[0.01]">
+          <div className="py-20 sm:py-28 px-6 lg:px-12 bg-white dark:bg-black">
             <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
               
-              <div className="order-2 lg:order-1 relative aspect-square sm:aspect-[4/3] bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/10 rounded-3xl p-6 sm:p-12 flex flex-col justify-center shadow-inner dark:shadow-none">
-                <div className="p-8 border border-gray-200 dark:border-white/10 rounded-2xl bg-white dark:bg-[#111] shadow-[0_20px_40px_rgba(0,0,0,0.08)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.5)]">
+              <div className="order-2 lg:order-1 relative aspect-square sm:aspect-[4/3] bg-white dark:bg-black border border-gray-200 dark:border-white/10 rounded-3xl p-6 sm:p-12 flex flex-col justify-center shadow-inner dark:shadow-none">
+                <div className="p-8 border border-gray-200 dark:border-white/10 rounded-2xl bg-white dark:bg-black shadow-[0_20px_40px_rgba(0,0,0,0.08)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.5)]">
                   <div className="flex justify-between items-center mb-6">
                     <span className="font-mono text-sm tracking-wide text-gray-500 dark:text-gray-400 font-bold">ATS COMPATIBILITY</span>
                     <span className="text-green-600 dark:text-green-400 font-bold font-mono text-2xl">95%</span>
                   </div>
-                  <div className="w-full h-3 bg-gray-100 dark:bg-white/10 rounded-full overflow-hidden mb-8">
+                  <div className="w-full h-3 bg-gray-100 dark:bg-black border border-gray-200 dark:border-white/10 rounded-full overflow-hidden mb-8">
                     <div className="w-[95%] h-full bg-green-500 dark:bg-green-400 rounded-full"></div>
                   </div>
                   <div className="space-y-4">
@@ -390,8 +403,10 @@ const Home = () => {
           </div>
         </section>
 
+        <SectionDivider />
+
         {/* TEMPLATES CAROUSEL WITH ARROWS */}
-        <section id="templates" className="relative py-24 sm:py-32 px-6 lg:px-12 z-10 border-t border-gray-200 dark:border-white/5 bg-[#FAFAFA] dark:bg-transparent overflow-hidden [content-visibility:auto] [contain-intrinsic-size:1000px]">
+        <section id="templates" className="relative py-24 sm:py-32 px-6 lg:px-12 z-10 bg-white dark:bg-black overflow-hidden [content-visibility:auto] [contain-intrinsic-size:1000px]">
           <div className="max-w-7xl mx-auto">
             <div className="flex flex-col sm:flex-row items-center justify-between mb-16 gap-6">
               <div className="text-center sm:text-left">
@@ -403,13 +418,13 @@ const Home = () => {
               <div className="hidden sm:flex items-center gap-3">
                 <button 
                   onClick={() => scroll("left")}
-                  className="w-12 h-12 rounded-full border border-gray-200 dark:border-white/10 bg-white dark:bg-[#111] flex items-center justify-center hover:bg-gray-50 dark:hover:bg-white/5 transition-colors shadow-sm dark:shadow-none z-20"
+                  className="w-12 h-12 rounded-full border border-gray-200 dark:border-white/10 bg-white dark:bg-black flex items-center justify-center hover:bg-gray-50 dark:hover:bg-black transition-colors shadow-sm dark:shadow-none z-20"
                 >
                   <ChevronLeft className="w-6 h-6 text-gray-600 dark:text-gray-300" />
                 </button>
                 <button 
                   onClick={() => scroll("right")}
-                  className="w-12 h-12 rounded-full border border-gray-200 dark:border-white/10 bg-white dark:bg-[#111] flex items-center justify-center hover:bg-gray-50 dark:hover:bg-white/5 transition-colors shadow-sm dark:shadow-none z-20"
+                  className="w-12 h-12 rounded-full border border-gray-200 dark:border-white/10 bg-white dark:bg-black flex items-center justify-center hover:bg-gray-50 dark:hover:bg-black transition-colors shadow-sm dark:shadow-none z-20"
                 >
                   <ChevronRight className="w-6 h-6 text-gray-600 dark:text-gray-300" />
                 </button>
@@ -418,19 +433,19 @@ const Home = () => {
             
             <div className="relative group">
               {/* Left/Right masks for fade effect */}
-              <div className="absolute inset-y-0 left-0 w-8 sm:w-16 bg-gradient-to-r from-[#FAFAFA] dark:from-[#0A0A0A] to-transparent z-10 pointer-events-none"></div>
-              <div className="absolute inset-y-0 right-0 w-8 sm:w-16 bg-gradient-to-l from-[#FAFAFA] dark:from-[#0A0A0A] to-transparent z-10 pointer-events-none"></div>
+              <div className="absolute inset-y-0 left-0 w-8 sm:w-16 bg-gradient-to-r from-white dark:from-black to-transparent z-10 pointer-events-none"></div>
+              <div className="absolute inset-y-0 right-0 w-8 sm:w-16 bg-gradient-to-l from-white dark:from-black to-transparent z-10 pointer-events-none"></div>
 
               {/* Mobile Arrows (inside image container) */}
               <button 
                   onClick={() => scroll("left")}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 sm:hidden w-10 h-10 rounded-full border border-gray-200 dark:border-white/10 bg-white/80 dark:bg-black/80 backdrop-blur-md flex items-center justify-center shadow-lg z-20 active:scale-95 transition-transform"
+                  className="absolute left-2 top-1/2 -translate-y-1/2 sm:hidden w-10 h-10 rounded-full border border-gray-200 dark:border-white/10 bg-white/80 dark:bg-black backdrop-blur-md flex items-center justify-center shadow-lg z-20 active:scale-95 transition-transform"
               >
                   <ChevronLeft className="w-5 h-5 text-gray-600 dark:text-gray-300" />
               </button>
               <button 
                   onClick={() => scroll("right")}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 sm:hidden w-10 h-10 rounded-full border border-gray-200 dark:border-white/10 bg-white/80 dark:bg-black/80 backdrop-blur-md flex items-center justify-center shadow-lg z-20 active:scale-95 transition-transform"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 sm:hidden w-10 h-10 rounded-full border border-gray-200 dark:border-white/10 bg-white/80 dark:bg-black backdrop-blur-md flex items-center justify-center shadow-lg z-20 active:scale-95 transition-transform"
               >
                   <ChevronRight className="w-5 h-5 text-gray-600 dark:text-gray-300" />
               </button>
@@ -464,8 +479,10 @@ const Home = () => {
           </div>
         </section>
 
+        <SectionDivider />
+
         {/* STATS SECTION */}
-        <section className="relative py-24 sm:py-32 border-t border-gray-200 dark:border-white/5 bg-white dark:bg-white/[0.01] z-10 px-6 lg:px-12">
+        <section className="relative py-24 sm:py-32 bg-white dark:bg-black z-10 px-6 lg:px-12">
           <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 text-center divide-y md:divide-y-0 md:divide-x divide-gray-200 dark:divide-white/10">
             <div className="py-8 md:py-0">
               <div className="text-7xl lg:text-8xl font-black tracking-tighter mb-4 text-gray-900 dark:text-white">5<span className="text-4xl text-gray-400">min</span></div>
@@ -482,13 +499,15 @@ const Home = () => {
           </div>
         </section>
 
+        <SectionDivider />
+
         {/* TESTIMONIALS */}
-        <section className="relative py-24 sm:py-32 px-6 lg:px-12 z-10 border-t border-gray-200 dark:border-white/5 bg-[#FAFAFA] dark:bg-transparent [content-visibility:auto] [contain-intrinsic-size:700px]">
+        <section className="relative py-24 sm:py-32 px-6 lg:px-12 z-10 bg-white dark:bg-black [content-visibility:auto] [contain-intrinsic-size:700px]">
           <div className="max-w-7xl mx-auto">
             <h2 className="text-4xl sm:text-5xl font-black tracking-tighter mb-16 text-center text-gray-900 dark:text-white">Engineered for your success.</h2>
             <div className="grid md:grid-cols-3 gap-8">
               {testimonials.map((t, idx) => (
-                <div key={idx} className="p-8 sm:p-10 border border-gray-200 dark:border-white/10 rounded-3xl bg-white dark:bg-white/[0.02] transition-colors shadow-sm dark:shadow-none hover:shadow-md dark:hover:bg-white/[0.04] flex flex-col justify-between h-full">
+                <div key={idx} className="p-8 sm:p-10 border border-gray-200 dark:border-white/10 rounded-3xl bg-white dark:bg-black transition-colors shadow-sm dark:shadow-none hover:shadow-md dark:hover:bg-black flex flex-col justify-between h-full">
                   <p className="text-gray-700 dark:text-gray-300 mb-10 text-lg leading-relaxed font-light">"{t.text}"</p>
                   <div>
                     <div className="font-bold text-gray-900 dark:text-white mb-1.5">{t.name}</div>
@@ -500,13 +519,15 @@ const Home = () => {
           </div>
         </section>
 
+        <SectionDivider />
+
         {/* FAQ - Minimal */}
-        <section className="relative py-24 sm:py-32 border-t border-gray-200 dark:border-white/5 bg-white dark:bg-white/[0.01] z-10 px-6 lg:px-12">
+        <section className="relative py-24 sm:py-32 bg-white dark:bg-black z-10 px-6 lg:px-12">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-4xl sm:text-5xl font-black tracking-tighter mb-12 sm:mb-16 text-center text-gray-900 dark:text-white">Frequently Asked Questions</h2>
             <div className="space-y-4">
               {faqs.map((faq, idx) => (
-                <div key={idx} className="border border-gray-200 dark:border-white/10 rounded-2xl overflow-hidden bg-[#FAFAFA] dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/20 transition-all">
+                <div key={idx} className="border border-gray-200 dark:border-white/10 rounded-2xl overflow-hidden bg-white dark:bg-black hover:border-gray-300 dark:hover:border-white/20 transition-all">
                   <button 
                     onClick={() => setOpenFAQ(openFAQ === idx ? null : idx)}
                     className="w-full flex justify-between items-center p-6 sm:p-8 text-left focus:outline-none"
@@ -530,8 +551,10 @@ const Home = () => {
           </div>
         </section>
         
+        <SectionDivider />
+
         {/* FINAL CTA */}
-        <section className="relative py-32 sm:py-48 border-t border-gray-200 dark:border-white/5 z-10 px-6 lg:px-12 text-center bg-[#FAFAFA] dark:bg-[#0A0A0A]">
+        <section className="relative py-32 sm:py-48 z-10 px-6 lg:px-12 text-center bg-white dark:bg-black">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tighter mb-8 text-gray-900 dark:text-white">Ready to deploy?</h2>
             <p className="text-xl sm:text-2xl text-gray-600 dark:text-gray-400 mb-12 font-light">Stop fighting layout bugs. Start getting interviews.</p>

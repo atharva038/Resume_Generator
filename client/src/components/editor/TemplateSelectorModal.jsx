@@ -57,7 +57,6 @@ const TemplateSelectorModal = ({
 }) => {
   const [templateSearchQuery, setTemplateSearchQuery] = useState("");
   const [templateCategoryFilter, setTemplateCategoryFilter] = useState("All");
-  const [templateSortBy, setTemplateSortBy] = useState("ats-desc");
   const [templateDraftSelection, setTemplateDraftSelection] =
     useState(selectedTemplate);
 
@@ -66,7 +65,6 @@ const TemplateSelectorModal = ({
     setTemplateDraftSelection(selectedTemplate);
     setTemplateSearchQuery("");
     setTemplateCategoryFilter("All");
-    setTemplateSortBy("ats-desc");
   }, [isOpen, selectedTemplate]);
 
   const templateCategories = useMemo(() => {
@@ -88,14 +86,22 @@ const TemplateSelectorModal = ({
       return matchCategory && matchQuery;
     });
 
-    filtered = [...filtered].sort((a, b) => {
-      if (templateSortBy === "ats-desc") return b.atsScore - a.atsScore;
-      if (templateSortBy === "ats-asc") return a.atsScore - b.atsScore;
-      return a.name.localeCompare(b.name);
-    });
+    filtered = [...filtered].sort((a, b) => b.atsScore - a.atsScore);
 
     return filtered;
-  }, [templates, templateSearchQuery, templateCategoryFilter, templateSortBy]);
+  }, [templates, templateSearchQuery, templateCategoryFilter]);
+
+  const draftTemplateName = useMemo(() => {
+    return templates.find((template) => template.id === templateDraftSelection)
+      ?.name;
+  }, [templates, templateDraftSelection]);
+
+  const applyAndClose = () => {
+    if (templateDraftSelection) {
+      onApplyTemplate(templateDraftSelection);
+    }
+    onClose();
+  };
 
   if (!isOpen) return null;
 
@@ -105,10 +111,10 @@ const TemplateSelectorModal = ({
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-zinc-950 rounded-xl w-full max-w-7xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden border border-gray-200 dark:border-zinc-800"
+        className="bg-white dark:bg-zinc-950 rounded-none sm:rounded-xl w-full max-w-7xl h-[100dvh] sm:h-auto sm:max-h-[90vh] overflow-hidden border-0 sm:border border-gray-200 dark:border-zinc-800 flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="bg-white dark:bg-zinc-950 p-4 sm:p-6 border-b border-gray-200 dark:border-zinc-800">
+        <div className="bg-white dark:bg-zinc-950 p-4 sm:p-6 border-b border-gray-200 dark:border-zinc-800 shrink-0">
           <div className="flex justify-between items-start gap-4">
             <div>
               <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1">
@@ -138,17 +144,24 @@ const TemplateSelectorModal = ({
             </button>
           </div>
 
-          <div className="mt-4 grid grid-cols-1 lg:grid-cols-3 gap-3">
-            <div className="lg:col-span-1">
+          <div className="mt-4 space-y-3">
+            <div className="flex items-center gap-2">
               <input
                 value={templateSearchQuery}
                 onChange={(e) => setTemplateSearchQuery(e.target.value)}
                 placeholder="Search templates"
-                className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 dark:focus:ring-zinc-500"
+                className="w-full sm:max-w-sm px-3 py-2.5 rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 dark:focus:ring-zinc-500"
               />
+              <button
+                onClick={applyAndClose}
+                disabled={!templateDraftSelection}
+                className="px-4 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg font-semibold text-sm disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                Apply
+              </button>
             </div>
 
-            <div className="lg:col-span-1 flex items-center gap-2 overflow-x-auto pb-1">
+            <div className="flex items-center gap-2 overflow-x-auto pb-1">
               {templateCategories.map((category) => (
                 <button
                   key={category}
@@ -163,22 +176,10 @@ const TemplateSelectorModal = ({
                 </button>
               ))}
             </div>
-
-            <div className="lg:col-span-1 flex justify-start lg:justify-end">
-              <select
-                value={templateSortBy}
-                onChange={(e) => setTemplateSortBy(e.target.value)}
-                className="w-full lg:w-auto px-3 py-2.5 rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-400 dark:focus:ring-zinc-500"
-              >
-                <option value="ats-desc">Sort: ATS High to Low</option>
-                <option value="ats-asc">Sort: ATS Low to High</option>
-                <option value="name">Sort: Name A to Z</option>
-              </select>
-            </div>
           </div>
         </div>
 
-        <div className="overflow-auto max-h-[calc(95vh-245px)] sm:max-h-[calc(90vh-270px)] p-3 sm:p-6">
+        <div className="flex-1 min-h-0 overflow-auto p-3 sm:p-6">
           <div className="flex items-center justify-between mb-4">
             <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
               Showing {filteredTemplateOptions.length} template
@@ -209,11 +210,6 @@ const TemplateSelectorModal = ({
                     {isCurrent && (
                       <span className="bg-white/95 dark:bg-zinc-900/95 text-gray-800 dark:text-gray-100 text-[11px] font-semibold px-2.5 py-1 rounded-md border border-gray-200 dark:border-zinc-700">
                         Current
-                      </span>
-                    )}
-                    {isDraft && (
-                      <span className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-[11px] font-semibold px-2.5 py-1 rounded-md border border-gray-900 dark:border-white">
-                        Selected
                       </span>
                     )}
                   </div>
@@ -265,7 +261,7 @@ const TemplateSelectorModal = ({
           </div>
         </div>
 
-        <div className="p-3 sm:p-4 bg-gray-50 dark:bg-zinc-900 border-t border-gray-200 dark:border-zinc-800 flex flex-col sm:flex-row justify-between items-center gap-3">
+        <div className="hidden sm:flex p-3 sm:p-4 bg-gray-50 dark:bg-zinc-900 border-t border-gray-200 dark:border-zinc-800 flex-col sm:flex-row justify-between items-center gap-3 shrink-0 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]">
           <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 text-center sm:text-left">
             Your content stays unchanged. Only the visual design is applied.
           </div>
@@ -277,12 +273,7 @@ const TemplateSelectorModal = ({
               Close
             </button>
             <button
-              onClick={() => {
-                if (templateDraftSelection) {
-                  onApplyTemplate(templateDraftSelection);
-                }
-                onClose();
-              }}
+              onClick={applyAndClose}
               disabled={!templateDraftSelection}
               className="flex-1 sm:flex-none px-4 sm:px-6 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors font-semibold text-sm disabled:opacity-60 disabled:cursor-not-allowed"
             >

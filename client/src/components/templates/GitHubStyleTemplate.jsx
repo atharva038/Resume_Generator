@@ -643,13 +643,19 @@ const GitHubStyleTemplate = forwardRef(
     };
 
     const contacts = [
-      formatContactItem("Email", resumeData?.contact?.email),
-      formatContactItem("Phone", resumeData?.contact?.phone),
-      formatContactItem("Location", resumeData?.contact?.location),
-      formatContactItem("LinkedIn", resumeData?.contact?.linkedin),
-      formatContactItem("GitHub", resumeData?.contact?.github),
-      formatContactItem("Website", resumeData?.contact?.website),
-    ].filter(Boolean);
+      ["Email", resumeData?.contact?.email],
+      ["Phone", resumeData?.contact?.phone],
+      ["Location", resumeData?.contact?.location],
+      ["LinkedIn", resumeData?.contact?.linkedin],
+      ["GitHub", resumeData?.contact?.github],
+      ["Website", resumeData?.contact?.website],
+    ]
+      .map(([label, value]) => {
+        const item = formatContactItem(label, value);
+        if (!item) return null;
+        return <span key={`${label}-${value}`}>{item}</span>;
+      })
+      .filter(Boolean);
 
     return (
       <div

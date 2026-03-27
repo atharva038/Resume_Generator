@@ -1,6 +1,5 @@
 import {Link, useLocation} from "react-router-dom";
 import {BlockableLink} from "@/components/auth";
-import {useState} from "react";
 import {
   Home,
   Grid,
@@ -11,18 +10,16 @@ import {
   LayoutDashboard,
   ChevronLeft,
   ChevronRight,
-  Sparkles,
   Shield,
-  TrendingUp,
   UserCircle,
   Tag,
-  Mic,
 } from "lucide-react";
 import {useAuth} from "@/context/AuthContext";
 
-const Sidebar = ({isOpen, setIsOpen}) => {
+const Sidebar = ({ isOpen, setIsOpen }) => {
   const location = useLocation();
   const {user} = useAuth();
+  const isAdmin = user?.role === "admin";
 
   const navLinks = [
     {
@@ -116,13 +113,15 @@ const Sidebar = ({isOpen, setIsOpen}) => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-screen bg-white dark:bg-black border-r border-gray-200 dark:border-zinc-800 z-50 transition-all duration-300 ease-in-out ${
-          isOpen ? "w-64" : "w-0 lg:w-20"
-        } overflow-hidden`}
+        className={`fixed top-0 left-0 h-screen bg-white dark:bg-black border-r border-gray-200 dark:border-white/10 z-50 overflow-hidden will-change-transform will-change-[width] transition-[width,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          isOpen
+            ? "translate-x-0 w-64"
+            : "-translate-x-full w-64 lg:translate-x-0 lg:w-20"
+        }`}
       >
         <div className="flex flex-col h-full">
           {/* Logo Section */}
-          <div className="h-16 flex items-center justify-between px-4 border-b border-gray-200 dark:border-zinc-800">
+          <div className="h-16 flex items-center justify-between px-4 border-b border-gray-200 dark:border-white/10">
             {/* Expanded Logo */}
             {isOpen && (
               <Link
@@ -130,11 +129,11 @@ const Sidebar = ({isOpen, setIsOpen}) => {
                 className="flex items-center text-xl font-bold group"
               >
                 <img
-                  src="/New-logo_SNS.png"
+                  src="/orb-logo.png"
                   alt="SmartNShine"
-                  className="h-16 w-auto object-contain group-hover:scale-105 transition-transform duration-300 -mr-1"
+                  className="h-16 w-auto object-contain group-hover:scale-105 transition-all duration-300 -mr-1 dark:brightness-100 dark:saturate-100 brightness-50 contrast-125 saturate-200"
                 />
-                <span className="bg-gradient-to-r from-primary-600 to-purple-600 bg-clip-text text-transparent tracking-tight">
+                <span className="bg-gradient-to-r from-[#5d8ff0] via-[#6f7fe4] to-[#8b67df] dark:from-[#6aa0ff] dark:via-[#7f8ce7] dark:to-[#9b78ea] bg-clip-text text-transparent tracking-tight">
                   SmartNShine
                 </span>
               </Link>
@@ -147,9 +146,9 @@ const Sidebar = ({isOpen, setIsOpen}) => {
                 className="hidden lg:flex items-center justify-center w-full group"
               >
                 <img
-                  src="/New-logo_SNS.png"
+                  src="/orb-logo.png"
                   alt="SmartNShine"
-                  className="h-16 w-auto object-contain group-hover:scale-105 transition-transform duration-300"
+                  className="h-16 w-auto object-contain group-hover:scale-105 transition-all duration-300 dark:brightness-100 dark:saturate-100 brightness-50 contrast-125 saturate-200"
                 />
               </Link>
             )}
@@ -172,29 +171,28 @@ const Sidebar = ({isOpen, setIsOpen}) => {
           <nav className="flex-1 overflow-y-auto py-4 px-3 flex flex-col">
             <div className="space-y-1 flex-1">
               {/* Admin Panel Link */}
-              {user && user.role === "admin" && (
+              {isAdmin && (
                 <BlockableLink
                   to="/admin/dashboard"
                   onClick={() => setIsOpen(false)}
                   className={`group flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
                     location.pathname.startsWith("/admin")
-                      ? "bg-purple-950/30 text-purple-400"
-                      : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-zinc-900 hover:text-gray-200"
+                      ? "bg-gray-900/10 text-gray-900 dark:bg-white/10 dark:text-white"
+                      : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-zinc-900 hover:text-gray-900 dark:hover:text-white"
                   }`}
                   title={!isOpen ? "Admin Panel" : ""}
                 >
                   <Shield
-                    className={`w-5 h-5 flex-shrink-0 ${
-                      location.pathname.startsWith("/admin")
-                        ? ""
-                        : "group-hover:scale-110 transition-transform duration-200"
-                    }`}
+                    className={`w-5 h-5 flex-shrink-0 ${location.pathname.startsWith("/admin")
+                      ? ""
+                      : "group-hover:scale-110 transition-transform duration-200"
+                      }`}
                   />
                   {isOpen && (
                     <span className="font-medium text-sm">Admin Panel</span>
                   )}
                   {isOpen && location.pathname.startsWith("/admin") && (
-                    <span className="ml-auto bg-purple-900/30 text-purple-400 text-xs px-2 py-0.5 rounded-full font-semibold">
+                    <span className="ml-auto bg-gray-900/10 dark:bg-white/10 text-gray-900 dark:text-white text-xs px-2 py-0.5 rounded-full font-semibold">
                       Active
                     </span>
                   )}
@@ -211,23 +209,22 @@ const Sidebar = ({isOpen, setIsOpen}) => {
 
                 const linkClass = `group flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
                   isActive
-                    ? "bg-primary-950/30 text-primary-400"
+                    ? "bg-gray-900/10 text-gray-900 dark:bg-white/10 dark:text-white"
                     : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-zinc-900 hover:text-gray-900 dark:hover:text-white"
                 }`;
 
                 const content = (
                   <>
                     <Icon
-                      className={`w-5 h-5 flex-shrink-0 ${
-                        !isActive &&
+                      className={`w-5 h-5 flex-shrink-0 ${!isActive &&
                         "group-hover:scale-110 transition-transform duration-200"
-                      }`}
+                        }`}
                     />
                     {isOpen && (
                       <div className="flex-1 flex items-center justify-between">
                         <span className="font-medium text-sm">{link.name}</span>
                         {link.badge && (
-                          <span className="bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 text-xs px-2 py-0.5 rounded-full font-semibold">
+                          <span className="bg-gray-100 dark:bg-zinc-900 text-gray-700 dark:text-gray-300 text-xs px-2 py-0.5 rounded-full font-semibold">
                             {link.badge}
                           </span>
                         )}
@@ -261,7 +258,7 @@ const Sidebar = ({isOpen, setIsOpen}) => {
             </div>
 
             {/* Bottom Navigation Links (Profile, Pricing & Contact) */}
-            <div className="space-y-1 mt-auto pt-2 border-t border-gray-200 dark:border-zinc-800">
+            <div className="space-y-1 mt-auto pt-2 border-t border-gray-200 dark:border-white/10">
               {navLinks.slice(-3).map((link) => {
                 // Skip Profile link if user is not logged in
                 if (link.requiresAuth && !user) return null;
@@ -271,23 +268,22 @@ const Sidebar = ({isOpen, setIsOpen}) => {
 
                 const linkClass = `group flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
                   isActive
-                    ? "bg-primary-950/30 text-primary-400"
+                    ? "bg-gray-900/10 text-gray-900 dark:bg-white/10 dark:text-white"
                     : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-zinc-900 hover:text-gray-900 dark:hover:text-white"
                 }`;
 
                 const content = (
                   <>
                     <Icon
-                      className={`w-5 h-5 flex-shrink-0 ${
-                        !isActive &&
+                      className={`w-5 h-5 flex-shrink-0 ${!isActive &&
                         "group-hover:scale-110 transition-transform duration-200"
-                      }`}
+                        }`}
                     />
                     {isOpen && (
                       <div className="flex-1 flex items-center justify-between">
                         <span className="font-medium text-sm">{link.name}</span>
                         {link.badge && (
-                          <span className="bg-primary-900/30 text-primary-400 text-xs px-2 py-0.5 rounded-full font-semibold">
+                          <span className="bg-gray-100 dark:bg-zinc-900 text-gray-700 dark:text-gray-300 text-xs px-2 py-0.5 rounded-full font-semibold">
                             {link.badge}
                           </span>
                         )}
@@ -313,7 +309,7 @@ const Sidebar = ({isOpen, setIsOpen}) => {
 
           {/* Footer */}
           {isOpen && (
-            <div className="border-t border-gray-200 dark:border-zinc-800 p-4">
+            <div className="border-t border-gray-200 dark:border-white/10 p-4">
               <p className="text-xs text-gray-500 dark:text-gray-500 text-center font-medium">
                 © 2026 SmartNShine
               </p>
