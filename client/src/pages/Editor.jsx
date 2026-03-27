@@ -1,8 +1,16 @@
-import {useState, useEffect, useRef, useMemo} from "react";
+import {memo, useState, useEffect, useRef, useMemo, useCallback} from "react";
 import {useLocation, useNavigate} from "react-router-dom";
 import {useAuth} from "@/context/AuthContext";
-import {useNavigationBlocker} from "@/context/NavigationBlockerContext";
-import {useLocalStorage, useToggle, useMediaQuery} from "@/hooks";
+import {
+  useLocalStorage,
+  useToggle,
+  useMediaQuery,
+  useSectionCompletion,
+  isSectionCompleteForResume,
+  useFloatingSectionNav,
+  useEditorPersistence,
+  useResumeSaveActions,
+} from "@/hooks";
 import {resumeAPI} from "@/api/api";
 import {parseValidationErrors} from "@/utils/errorHandler";
 import logger from "@/utils/logger";
@@ -18,12 +26,12 @@ import {
   Eye,
   EyeOff,
   FileText,
-  Github,
   GraduationCap,
   LayoutTemplate,
   Lightbulb,
   Loader2,
   Lock,
+  List,
   PenSquare,
   PencilLine,
   Rocket,
@@ -33,6 +41,7 @@ import {
   Target,
   Trophy,
   User,
+  X,
 } from "lucide-react";
 import {
   ResumePreview,
@@ -71,14 +80,306 @@ const DEFAULT_SECTION_ORDER = [
   "customSections",
 ];
 
+const SECTION_META = {
+  personal: {label: "Personal Info", icon: User},
+  summary: {label: "Summary", icon: FileText},
+  skills: {label: "Skills", icon: Target},
+  experience: {label: "Experience", icon: BriefcaseBusiness},
+  education: {label: "Education", icon: GraduationCap},
+  projects: {label: "Projects", icon: Rocket},
+  certifications: {label: "Certifications", icon: ScrollText},
+  achievements: {label: "Achievements", icon: Trophy},
+  customSections: {label: "Custom Sections", icon: PenSquare},
+};
+
+const SectionOutlineList = memo(
+  ({sectionIds, activeSectionId, sectionCompletionMap, onSelectSection}) => (
+    <>
+      {sectionIds.map((sectionId) => {
+        const section = SECTION_META[sectionId];
+        if (!section) return null;
+
+        const Icon = section.icon;
+        const isActive = activeSectionId === sectionId;
+        const complete = sectionCompletionMap[sectionId];
+
+        return (
+          <button
+            key={sectionId}
+            onClick={() => onSelectSection(sectionId)}
+            className={`w-full text-left px-2.5 py-2 rounded-lg transition-colors flex items-center gap-2 ${
+              isActive
+                ? "bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800"
+                : "hover:bg-gray-50 dark:hover:bg-zinc-900 border border-transparent"
+            }`}
+          >
+            <Icon
+              className={`w-4 h-4 ${
+                isActive
+                  ? "text-blue-600 dark:text-blue-400"
+                  : "text-gray-500 dark:text-gray-400"
+              }`}
+            />
+            <span
+              className={`text-sm flex-1 ${
+                isActive
+                  ? "text-blue-700 dark:text-blue-300 font-semibold"
+                  : "text-gray-700 dark:text-gray-300"
+              }`}
+            >
+              {section.label}
+            </span>
+            <span
+              className={`w-2 h-2 rounded-full ${
+                complete ? "bg-emerald-500" : "bg-gray-300 dark:bg-zinc-600"
+              }`}
+            />
+          </button>
+        );
+      })}
+    </>
+  )
+);
+
+// Memoized to avoid re-rendering this large mobile-only tree when unrelated editor state changes.
+const MobileActionBar = memo(
+  ({
+    showFloatingNav,
+    onToggleSections,
+    showPreview,
+    onTogglePreview,
+    onSave,
+    saving,
+    autoSaving,
+    hasUnsavedChanges,
+    onExport,
+    isExportLocked,
+    isWizardMode,
+    completedSectionsCount,
+    totalTrackableSections,
+    completionPercentage,
+    onJumpToFirstIncomplete,
+    onExpandAll,
+    onCollapseAll,
+    trackableSectionIds,
+    activeSectionId,
+    sectionCompletionMap,
+    onSelectSection,
+  }) => (
+    <div
+      className="lg:hidden sticky z-30 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl border-b border-gray-200 dark:border-zinc-800 shadow-sm -mx-2 sm:-mx-4 px-2 sm:px-4 pt-2.5 mb-4 no-print"
+      style={{
+        top: "calc(4rem + env(safe-area-inset-top, 0px))",
+        paddingBottom: "max(0.625rem, env(safe-area-inset-bottom, 0px))",
+      }}
+    >
+      <div className="grid grid-cols-4 gap-2">
+        <button
+          onClick={onToggleSections}
+          className={`h-11 rounded-xl border transition-colors flex flex-col items-center justify-center gap-0.5 ${
+            showFloatingNav
+              ? "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300"
+              : "bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-700 text-gray-600 dark:text-gray-300"
+          }`}
+        >
+          {showFloatingNav ? <X className="w-4 h-4" /> : <List className="w-4 h-4" />}
+          <span className="text-[10px] font-semibold">Sections</span>
+        </button>
+
+        <button
+          onClick={onTogglePreview}
+          className={`h-11 rounded-xl border transition-colors flex flex-col items-center justify-center gap-0.5 ${
+            showPreview
+              ? "bg-violet-50 dark:bg-violet-900/20 border-violet-200 dark:border-violet-800 text-violet-700 dark:text-violet-300"
+              : "bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-700 text-gray-600 dark:text-gray-300"
+          }`}
+        >
+          {showPreview ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+          <span className="text-[10px] font-semibold">Preview</span>
+        </button>
+
+        <button
+          onClick={onSave}
+          disabled={saving || autoSaving}
+          className={`h-11 rounded-xl border transition-colors relative flex flex-col items-center justify-center gap-0.5 ${
+            saving || autoSaving
+              ? "bg-gray-100 dark:bg-zinc-800 border-gray-200 dark:border-zinc-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+              : hasUnsavedChanges
+                ? "bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-300"
+                : "bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-700 text-gray-600 dark:text-gray-300"
+          }`}
+        >
+          {hasUnsavedChanges && !saving && !autoSaving && (
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-orange-500" />
+          )}
+          {saving || autoSaving ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : hasUnsavedChanges ? (
+            <Download className="w-4 h-4" />
+          ) : (
+            <Check className="w-4 h-4" />
+          )}
+          <span className="text-[10px] font-semibold">
+            {saving || autoSaving ? "Saving" : hasUnsavedChanges ? "Save" : "Saved"}
+          </span>
+        </button>
+
+        <button
+          onClick={onExport}
+          disabled={isExportLocked}
+          className={`h-11 rounded-xl border transition-colors flex flex-col items-center justify-center gap-0.5 ${
+            isExportLocked
+              ? "bg-gray-100 dark:bg-zinc-800 border-gray-200 dark:border-zinc-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+              : "bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-700 text-gray-600 dark:text-gray-300 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-700 dark:hover:text-green-300"
+          }`}
+        >
+          {isExportLocked ? <Lock className="w-4 h-4" /> : <Download className="w-4 h-4" />}
+          <span className="text-[10px] font-semibold">Export</span>
+        </button>
+      </div>
+
+      {!isWizardMode && (
+        <div className="mt-2 flex items-center gap-2">
+          <div className="flex-1 h-9 rounded-lg border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-2.5 flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+            <span className="text-xs font-semibold text-gray-700 dark:text-gray-200">
+              {completedSectionsCount}/{totalTrackableSections} complete
+            </span>
+            <span className="ml-auto text-xs font-bold text-emerald-600 dark:text-emerald-400">
+              {completionPercentage}%
+            </span>
+          </div>
+          <button
+            onClick={onJumpToFirstIncomplete}
+            className="h-9 px-3 rounded-lg border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-xs font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors"
+          >
+            Next
+          </button>
+        </div>
+      )}
+
+      {showFloatingNav && !isWizardMode && (
+        <div className="mt-2 rounded-xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-2 shadow-lg">
+          <div className="flex items-center justify-between text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide px-1 pb-1">
+            <span>Section Outline</span>
+            <span className="text-emerald-600 dark:text-emerald-400">
+              {completionPercentage}%
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5 mb-1">
+            <button
+              onClick={onExpandAll}
+              className="px-2 py-1 rounded-md border border-gray-200 dark:border-zinc-700 text-[10px] font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-900 transition-colors"
+            >
+              Expand all
+            </button>
+            <button
+              onClick={onCollapseAll}
+              className="px-2 py-1 rounded-md border border-gray-200 dark:border-zinc-700 text-[10px] font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-900 transition-colors"
+            >
+              Collapse all
+            </button>
+          </div>
+          <div className="space-y-1 max-h-60 overflow-auto">
+            <SectionOutlineList
+              sectionIds={trackableSectionIds}
+              activeSectionId={activeSectionId}
+              sectionCompletionMap={sectionCompletionMap}
+              onSelectSection={onSelectSection}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  )
+);
+
+// Memoized desktop floating nav to keep editor re-renders from repainting the full outline panel.
+const DesktopFloatingSectionNav = memo(
+  ({
+    floatingNavContainerRef,
+    floatingNavOffset,
+    showFloatingNav,
+    onDragStart,
+    onToggleFloatingNav,
+    completionPercentage,
+    onJumpToFirstIncomplete,
+    onExpandAll,
+    onCollapseAll,
+    trackableSectionIds,
+    activeSectionId,
+    sectionCompletionMap,
+    onSelectSection,
+  }) => (
+    <div
+      ref={floatingNavContainerRef}
+      className="hidden xl:block fixed right-6 bottom-20 z-50 no-print"
+      style={{
+        transform: `translate(${floatingNavOffset?.x || 0}px, ${floatingNavOffset?.y || 0}px)`,
+      }}
+    >
+      <button
+        onMouseDown={onDragStart}
+        onClick={onToggleFloatingNav}
+        className="w-11 h-11 rounded-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 shadow-lg border border-gray-700 dark:border-gray-300 hover:shadow-xl transition-all flex items-center justify-center cursor-grab active:cursor-grabbing"
+        title="Drag or toggle section navigation"
+      >
+        {showFloatingNav ? <X className="w-4 h-4" /> : <List className="w-4 h-4" />}
+      </button>
+
+      {showFloatingNav && (
+        <div className="mt-3 w-64 bg-white dark:bg-zinc-950 rounded-xl border border-gray-200 dark:border-zinc-800 shadow-2xl p-3">
+          <div className="flex items-center justify-between mb-2 px-1">
+            <h3 className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wide">
+              Section Outline
+            </h3>
+            <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+              {completionPercentage}%
+            </span>
+          </div>
+          <button
+            onClick={onJumpToFirstIncomplete}
+            className="w-full mb-2 px-2.5 py-2 rounded-lg border border-gray-200 dark:border-zinc-700 text-xs font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-zinc-900 transition-colors"
+          >
+            Jump to first incomplete
+          </button>
+          <div className="flex items-center gap-1.5 mb-2">
+            <button
+              onClick={onExpandAll}
+              className="flex-1 px-2 py-1.5 rounded-md border border-gray-200 dark:border-zinc-700 text-[11px] font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-900 transition-colors"
+            >
+              Expand all
+            </button>
+            <button
+              onClick={onCollapseAll}
+              className="flex-1 px-2 py-1.5 rounded-md border border-gray-200 dark:border-zinc-700 text-[11px] font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-900 transition-colors"
+            >
+              Collapse all
+            </button>
+          </div>
+          <div className="h-px bg-gray-200 dark:bg-zinc-800 mb-2" />
+          <div className="space-y-1">
+            <SectionOutlineList
+              sectionIds={trackableSectionIds}
+              activeSectionId={activeSectionId}
+              sectionCompletionMap={sectionCompletionMap}
+              onSelectSection={onSelectSection}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  )
+);
+
 const Editor = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const {user} = useAuth();
-  const {blockNavigation, unblockNavigation} = useNavigationBlocker();
   const resumePreviewRef = useRef(null);
   const previewSectionRef = useRef(null);
   const colorDropdownRef = useRef(null);
+  const sectionElementRefs = useRef({});
 
   // Helper function to check if subscription is expired
   const isSubscriptionExpired = () => {
@@ -99,23 +400,6 @@ const Editor = () => {
   };
   const [resumeData, setResumeData] = useState(null);
   const [originalResumeData, setOriginalResumeData] = useState(null); // Track original data
-  const [
-    hasUnsavedChanges,
-    toggleUnsavedChanges,
-    setHasUnsavedChangesTrue,
-    setHasUnsavedChangesFalse,
-  ] = useToggle(false);
-  const [
-    showUnsavedModal,
-    toggleUnsavedModal,
-    showUnsavedModalTrue,
-    showUnsavedModalFalse,
-  ] = useToggle(false);
-  const [pendingNavigation, setPendingNavigation] = useState(null);
-  const [saving, toggleSaving, setSavingTrue, setSavingFalse] =
-    useToggle(false);
-  const [autoSaving, toggleAutoSaving, setAutoSavingTrue, setAutoSavingFalse] =
-    useToggle(false);
   const [showPreview, togglePreview, setShowPreviewTrue, setShowPreviewFalse] =
     useToggle(false);
   const isMobile = useMediaQuery("(max-width: 1023px)");
@@ -139,9 +423,28 @@ const Editor = () => {
     "resumeSectionOrder",
     DEFAULT_SECTION_ORDER
   );
+  const [activeSectionId, setActiveSectionId] = useState(
+    DEFAULT_SECTION_ORDER[0]
+  );
+  // Wizard mode for new resumes
+  const [
+    isWizardMode,
+    toggleWizardMode,
+    setIsWizardModeTrue,
+    setIsWizardModeFalse,
+  ] = useToggle(false);
+  const {
+    showFloatingNav,
+    floatingNavOffset,
+    floatingNavContainerRef,
+    toggleFloatingNav,
+    closeFloatingNav,
+    handleFloatingNavDragStart,
+  } = useFloatingSectionNav({isWizardMode});
   const [draggedSection, setDraggedSection] = useState(null);
   const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [forceSectionExpand, setForceSectionExpand] = useState(null);
 
   const atsScore = useMemo(() => {
     if (!resumeData) return null;
@@ -169,6 +472,35 @@ const Editor = () => {
   ] = useToggle(false);
   const [upgradeMessage, setUpgradeMessage] = useState("");
 
+  const {
+    saving,
+    saveResume: saveResumeAction,
+    handleSave,
+  } = useResumeSaveActions({
+    user,
+    navigate,
+    resumeData,
+    setResumeData,
+    setOriginalResumeData,
+    setUpgradeMessage,
+    showUpgradeModalTrue,
+  });
+
+  const {
+    hasUnsavedChanges,
+    autoSaving,
+    showUnsavedModal,
+    commitPendingNavigation,
+    cancelPendingNavigation,
+  } = useEditorPersistence({
+    resumeData,
+    originalResumeData,
+    setResumeData,
+    setOriginalResumeData,
+    user,
+    saving,
+  });
+
   useEffect(() => {
     const onScroll = () => setShowScrollTop(window.scrollY > 300);
     window.addEventListener("scroll", onScroll, {passive: true});
@@ -190,158 +522,6 @@ const Editor = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showColorThemeSelector, showColorThemeSelectorFalse]);
-
-
-  // Wizard mode for new resumes
-  const [
-    isWizardMode,
-    toggleWizardMode,
-    setIsWizardModeTrue,
-    setIsWizardModeFalse,
-  ] = useToggle(false);
-
-  // Setup navigation blocker when there are unsaved changes
-  useEffect(() => {
-    if (hasUnsavedChanges) {
-      blockNavigation((to) => {
-        // Show modal and store pending navigation
-        showUnsavedModalTrue();
-        setPendingNavigation(to);
-        return false; // Block navigation
-      });
-    } else {
-      unblockNavigation();
-    }
-
-    return () => {
-      unblockNavigation();
-    };
-  }, [hasUnsavedChanges, blockNavigation, unblockNavigation]);
-
-  // Track unsaved changes
-  useEffect(() => {
-    if (!resumeData || !originalResumeData) return;
-
-    const hasChanges =
-      JSON.stringify(resumeData) !== JSON.stringify(originalResumeData);
-    if (hasChanges) {
-      setHasUnsavedChangesTrue();
-    } else {
-      setHasUnsavedChangesFalse();
-    }
-  }, [
-    resumeData,
-    originalResumeData,
-    setHasUnsavedChangesTrue,
-    setHasUnsavedChangesFalse,
-  ]);
-
-
-  // Auto-save functionality
-  useEffect(() => {
-    // Don't auto-save if:
-    // - No unsaved changes
-    // - No resume ID (new resume not saved yet)
-    // - Currently saving manually
-    // - Already auto-saving
-    if (
-      !hasUnsavedChanges ||
-      !resumeData?._id ||
-      saving ||
-      autoSaving ||
-      !user
-    ) {
-      return;
-    }
-
-    // Set up auto-save timer (30 seconds after last change)
-    const autoSaveTimer = setTimeout(async () => {
-      setAutoSavingTrue();
-
-      try {
-        const response = await resumeAPI.update(resumeData._id, resumeData);
-        const savedResume = response.data;
-
-        // Update state with saved data
-        setResumeData(savedResume);
-        setOriginalResumeData(JSON.parse(JSON.stringify(savedResume)));
-        setHasUnsavedChangesFalse();
-
-        // Show success toast
-        toast.success("Auto-saved", {
-          duration: 2000,
-          position: "bottom-right",
-          style: {
-            background: "#10b981",
-            color: "#fff",
-            fontSize: "14px",
-            fontWeight: "500",
-          },
-        });
-      } catch (error) {
-        logger.error("❌ Auto-save failed:", error);
-        // Don't show error toast for auto-save failures to avoid annoying users
-        // They can still manually save if needed
-      } finally {
-        setAutoSavingFalse();
-      }
-    }, 30000); // 30 seconds
-
-    // Cleanup timer on unmount or when dependencies change
-    return () => {
-      clearTimeout(autoSaveTimer);
-    };
-  }, [hasUnsavedChanges, resumeData, saving, autoSaving, user]);
-
-  // Warn before leaving page with unsaved changes
-  useEffect(() => {
-    const handleBeforeUnload = (e) => {
-      if (hasUnsavedChanges) {
-        e.preventDefault();
-        e.returnValue = ""; // Chrome requires returnValue to be set
-      }
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [hasUnsavedChanges]);
-
-  // Intercept navigation attempts
-  useEffect(() => {
-    if (!hasUnsavedChanges) return;
-
-    const handlePopState = (e) => {
-      if (hasUnsavedChanges) {
-        // Store the current state before showing modal
-        const currentPath = window.location.pathname;
-
-        showUnsavedModalTrue();
-        setPendingNavigation("back");
-
-        // Push a new state to prevent navigation
-        window.history.pushState(
-          {preventNav: true, originalPath: currentPath},
-          "",
-          currentPath
-        );
-      }
-    };
-
-    // Add initial state to enable back button interception
-    if (!window.history.state?.preventNav) {
-      window.history.pushState(
-        {preventNav: false},
-        "",
-        window.location.pathname
-      );
-    }
-
-    window.addEventListener("popstate", handlePopState);
-
-    return () => {
-      window.removeEventListener("popstate", handlePopState);
-    };
-  }, [hasUnsavedChanges]);
 
   // Load resume data on mount
   useEffect(() => {
@@ -484,67 +664,6 @@ const Editor = () => {
     loadResumeData();
   }, [location, navigate, user]);
 
-  const handleSave = async () => {
-    if (!user) {
-      toast.error("Please login to save your resume", {
-        duration: 3000,
-      });
-      navigate("/login");
-      return;
-    }
-
-    setSavingTrue();
-    try {
-      let savedResume;
-      if (resumeData._id) {
-        // Update existing resume
-        const response = await resumeAPI.update(resumeData._id, resumeData);
-        savedResume = response.data;
-        toast.success("Resume updated successfully!", {
-          duration: 2500,
-        });
-      } else {
-        // Save new resume
-        const response = await resumeAPI.save(resumeData);
-        savedResume = response.data;
-        toast.success("Resume saved successfully!", {
-          duration: 2500,
-        });
-      }
-
-      // Update the resumeData with the saved version (includes _id if it's new)
-      if (savedResume && savedResume._id) {
-        setResumeData(savedResume);
-        localStorage.setItem("currentResumeId", savedResume._id);
-        // Update original data to current state after successful save
-        setOriginalResumeData(JSON.parse(JSON.stringify(savedResume)));
-        setHasUnsavedChangesFalse();
-      }
-    } catch (err) {
-      logger.error("Save error:", err);
-
-      // Check if it's a subscription/upgrade error (403 with upgradeRequired or quotaExceeded)
-      if (
-        err.response?.status === 403 &&
-        (err.response?.data?.upgradeRequired ||
-          err.response?.data?.quotaExceeded)
-      ) {
-        const errorData = err.response.data;
-        setUpgradeMessage(
-          errorData.message ||
-            "Upgrade required to access this premium feature!"
-        );
-        showUpgradeModalTrue();
-      } else {
-        toast.error("Failed to save resume: " + parseValidationErrors(err), {
-          duration: 4000,
-        });
-      }
-    } finally {
-      setSavingFalse();
-    }
-  };
-
   // Handle PDF download with subscription and limit validation
   const handleDownloadPDF = async () => {
     if (!user) {
@@ -617,37 +736,18 @@ const Editor = () => {
 
   // Handle unsaved changes modal actions
   const handleSaveAndNavigate = async () => {
-    await handleSave();
-    // Temporarily unblock navigation
-    unblockNavigation();
-    setHasUnsavedChangesFalse();
-
-    if (pendingNavigation === "back") {
-      window.history.back();
-    } else if (pendingNavigation) {
-      navigate(pendingNavigation);
+    const wasSaved = await handleSave();
+    if (wasSaved) {
+      commitPendingNavigation(navigate);
     }
-    showUnsavedModalFalse();
-    setPendingNavigation(null);
   };
 
   const handleDiscardAndNavigate = () => {
-    // Temporarily unblock navigation
-    unblockNavigation();
-    setHasUnsavedChangesFalse();
-
-    if (pendingNavigation === "back") {
-      window.history.back();
-    } else if (pendingNavigation) {
-      navigate(pendingNavigation);
-    }
-    showUnsavedModalFalse();
-    setPendingNavigation(null);
+    commitPendingNavigation(navigate);
   };
 
   const handleCancelNavigation = () => {
-    showUnsavedModalFalse();
-    setPendingNavigation(null);
+    cancelPendingNavigation();
   };
 
   // Handle wizard completion
@@ -927,39 +1027,15 @@ const Editor = () => {
     setTimeout(async () => {
       if (updatedResumeData && user) {
         logger.log("💾 Auto-saving imported data...", updatedResumeData);
-        try {
-          setSavingTrue();
-          let savedResume;
-          if (updatedResumeData._id) {
-            // Update existing resume
-            const response = await resumeAPI.update(
-              updatedResumeData._id,
-              updatedResumeData
-            );
-            savedResume = response.data;
-            logger.log("✅ Resume auto-saved successfully!");
-          } else {
-            // Save new resume
-            const response = await resumeAPI.save(updatedResumeData);
-            savedResume = response.data;
-            logger.log("✅ Resume auto-saved successfully!");
-          }
+        const result = await saveResumeAction({
+          dataToSave: updatedResumeData,
+          showSuccessToast: false,
+          requireAuthRedirect: false,
+          errorMessagePrefix: "Failed to auto-save imported data: ",
+        });
 
-          // Update the resumeData with the saved version
-          if (savedResume && savedResume._id) {
-            setResumeData(savedResume);
-            localStorage.setItem("currentResumeId", savedResume._id);
-          }
-        } catch (err) {
-          logger.error("❌ Auto-save error:", err);
-          toast.error(
-            "Failed to auto-save imported data: " + parseValidationErrors(err),
-            {
-              duration: 4000,
-            }
-          );
-        } finally {
-          setSavingFalse();
+        if (result.ok) {
+          logger.log("✅ Resume auto-saved successfully!");
         }
       }
     }, 1000);
@@ -1109,6 +1185,118 @@ const Editor = () => {
     }
   };
 
+  useEffect(() => {
+    if (isWizardMode) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+
+        if (!visible.length) return;
+
+        const id = visible[0].target.getAttribute("data-section-id");
+        if (id) setActiveSectionId(id);
+      },
+      {
+        root: null,
+        rootMargin: "-30% 0px -55% 0px",
+        threshold: [0.1, 0.25, 0.5],
+      }
+    );
+
+    sectionOrder.forEach((sectionId) => {
+      const element = sectionElementRefs.current[sectionId];
+      if (element) observer.observe(element);
+    });
+
+    return () => observer.disconnect();
+  }, [isWizardMode, sectionOrder]);
+
+  const isTrackableSection = useCallback(
+    (sectionId) => Boolean(SECTION_META[sectionId]),
+    []
+  );
+
+  const {
+    trackableSectionIds,
+    sectionCompletionMap,
+    completedSectionsCount,
+    completionPercentage,
+    firstIncompleteSectionId,
+  } = useSectionCompletion({
+    sectionOrder,
+    resumeData,
+    isTrackableSection,
+  });
+
+  useEffect(() => {
+    const handleSectionShortcuts = (event) => {
+      const target = event.target;
+      const isTypingTarget =
+        target instanceof HTMLElement &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.isContentEditable);
+
+      if (isTypingTarget || isWizardMode) return;
+
+      const hasLegacyChord = event.altKey && event.shiftKey;
+      const hasMacChord = event.metaKey && event.shiftKey;
+      if (!hasLegacyChord && !hasMacChord) return;
+
+      const key = event.key.toLowerCase();
+
+      if (key === "e") {
+        event.preventDefault();
+        setForceSectionExpand(true);
+      }
+
+      if (key === "c") {
+        event.preventDefault();
+        setForceSectionExpand(false);
+      }
+
+      if (key === "n") {
+        event.preventDefault();
+
+        const firstIncompleteSectionId = sectionOrder.find(
+          (sectionId) =>
+            SECTION_META[sectionId] &&
+            !isSectionCompleteForResume(sectionId, resumeData)
+        );
+
+        if (!firstIncompleteSectionId) {
+          toast.success("All sections look complete.", {
+            duration: 2000,
+            position: "bottom-right",
+          });
+          return;
+        }
+
+        const element = sectionElementRefs.current[firstIncompleteSectionId];
+        if (!element) return;
+        element.scrollIntoView({behavior: "smooth", block: "start"});
+        setActiveSectionId(firstIncompleteSectionId);
+        closeFloatingNav();
+      }
+    };
+
+    window.addEventListener("keydown", handleSectionShortcuts);
+    return () => window.removeEventListener("keydown", handleSectionShortcuts);
+  }, [isWizardMode, resumeData, sectionOrder, closeFloatingNav]);
+  const availableColorThemes = useMemo(
+    () => TEMPLATE_COLOR_THEMES[selectedTemplate] || [],
+    [selectedTemplate]
+  );
+  const activeColorTheme = useMemo(
+    () =>
+      availableColorThemes.find((theme) => theme.id === resumeData?.colorTheme) ||
+      availableColorThemes[0],
+    [availableColorThemes, resumeData?.colorTheme]
+  );
+
   if (!resumeData) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
@@ -1132,6 +1320,7 @@ const Editor = () => {
           onDragOver={handleDragOver}
           onDrop={handleDrop}
           isDragging={draggedSection === "combinedScore"}
+          forceExpanded={forceSectionExpand}
         >
           <div className="space-y-6">
             {/* Overall ATS Score */}
@@ -1165,6 +1354,7 @@ const Editor = () => {
           onDragOver={handleDragOver}
           onDrop={handleDrop}
           isDragging={draggedSection === "personal"}
+          forceExpanded={forceSectionExpand}
         >
           <div className="space-y-3">
             <input
@@ -1229,6 +1419,7 @@ const Editor = () => {
           onDragOver={handleDragOver}
           onDrop={handleDrop}
           isDragging={draggedSection === "summary"}
+          forceExpanded={forceSectionExpand}
         >
           <div className="-m-6">
             <EditableSection
@@ -1254,6 +1445,7 @@ const Editor = () => {
           onDragOver={handleDragOver}
           onDrop={handleDrop}
           isDragging={draggedSection === "recommendations"}
+          forceExpanded={forceSectionExpand}
         >
           <div className="-m-6">
             <RecommendationsPanel
@@ -1276,6 +1468,7 @@ const Editor = () => {
           onDragOver={handleDragOver}
           onDrop={handleDrop}
           isDragging={draggedSection === "skills"}
+          forceExpanded={forceSectionExpand}
         >
           <SkillsSection resumeData={resumeData} updateField={updateField} />
         </CollapsibleSection>
@@ -1293,6 +1486,7 @@ const Editor = () => {
           onDragOver={handleDragOver}
           onDrop={handleDrop}
           isDragging={draggedSection === "experience"}
+          forceExpanded={forceSectionExpand}
         >
           <ExperienceSection
             resumeData={resumeData}
@@ -1317,6 +1511,7 @@ const Editor = () => {
           onDragOver={handleDragOver}
           onDrop={handleDrop}
           isDragging={draggedSection === "education"}
+          forceExpanded={forceSectionExpand}
         >
           <EducationSection
             resumeData={resumeData}
@@ -1340,6 +1535,7 @@ const Editor = () => {
           onDragOver={handleDragOver}
           onDrop={handleDrop}
           isDragging={draggedSection === "projects"}
+          forceExpanded={forceSectionExpand}
         >
           <ProjectsSection
             resumeData={resumeData}
@@ -1363,6 +1559,7 @@ const Editor = () => {
           onDragOver={handleDragOver}
           onDrop={handleDrop}
           isDragging={draggedSection === "certifications"}
+          forceExpanded={forceSectionExpand}
         >
           <CertificationsSection
             resumeData={resumeData}
@@ -1385,6 +1582,7 @@ const Editor = () => {
           onDragOver={handleDragOver}
           onDrop={handleDrop}
           isDragging={draggedSection === "achievements"}
+          forceExpanded={forceSectionExpand}
         >
           <AchievementsSection
             resumeData={resumeData}
@@ -1405,6 +1603,7 @@ const Editor = () => {
           onDragOver={handleDragOver}
           onDrop={handleDrop}
           isDragging={draggedSection === "customSections"}
+          forceExpanded={forceSectionExpand}
         >
           <CustomSectionsManager
             resumeData={resumeData}
@@ -1417,10 +1616,29 @@ const Editor = () => {
     return sections[sectionId] || null;
   };
 
-  const availableColorThemes = TEMPLATE_COLOR_THEMES[selectedTemplate] || [];
-  const activeColorTheme =
-    availableColorThemes.find((theme) => theme.id === resumeData?.colorTheme) ||
-    availableColorThemes[0];
+  const scrollToSection = (sectionId) => {
+    const element = sectionElementRefs.current[sectionId];
+    if (!element) return;
+    element.scrollIntoView({behavior: "smooth", block: "start"});
+    setActiveSectionId(sectionId);
+    closeFloatingNav();
+  };
+
+  const jumpToFirstIncompleteSection = () => {
+    if (!firstIncompleteSectionId) {
+      toast.success("All sections look complete.", {
+        duration: 2000,
+        position: "bottom-right",
+      });
+      return;
+    }
+
+    scrollToSection(firstIncompleteSectionId);
+  };
+
+  const isExportLocked = isSubscriptionExpired();
+  const expandAllSections = () => setForceSectionExpand(true);
+  const collapseAllSections = () => setForceSectionExpand(false);
 
   return (
     <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
@@ -1462,7 +1680,7 @@ const Editor = () => {
             {!isWizardMode && (
               <button
                 onClick={handleResetOrder}
-                className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 border border-gray-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-black text-gray-900 dark:text-gray-300 text-xs sm:text-sm font-semibold hover:border-orange-500 hover:text-orange-600 dark:hover:text-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors flex items-center justify-center gap-1"
+                className="flex-1 sm:flex-none h-12 px-3 sm:px-4 border border-gray-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-black text-gray-900 dark:text-gray-300 text-xs sm:text-sm font-semibold hover:border-orange-500 hover:text-orange-600 dark:hover:text-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors flex items-center justify-center gap-1"
                 title="Reset section order to default"
               >
                 <RotateCcw className="hidden sm:inline w-4 h-4" />
@@ -1472,18 +1690,19 @@ const Editor = () => {
             {/* Template Selector Button */}
             <button
               onClick={() => showTemplateSelectorTrue()}
-              className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 border border-gray-300 dark:border-zinc-700 rounded-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs sm:text-sm font-semibold hover:bg-gray-800 dark:hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-700 dark:focus:ring-gray-300 transition-all flex items-center justify-center gap-1.5"
+              className="flex-1 sm:flex-none h-12 px-3 sm:px-4 border border-gray-300 dark:border-zinc-700 rounded-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs sm:text-sm font-semibold hover:bg-gray-800 dark:hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-700 dark:focus:ring-gray-300 transition-all flex items-center justify-center gap-1.5"
               title="Change template"
             >
               <LayoutTemplate className="w-4 h-4" />
-              <span>Change Template</span>
+              <span className="hidden sm:inline whitespace-nowrap">Change Template</span>
+              <span className="sm:hidden whitespace-nowrap">Template</span>
             </button>
             {/* Color Theme Selector Button - Only show for templates with color themes */}
             {availableColorThemes.length > 0 && (
-              <div ref={colorDropdownRef} className="relative flex-none">
+              <div ref={colorDropdownRef} className="relative flex-none z-40">
                 <button
                   onClick={toggleColorThemeSelector}
-                  className="min-w-[142px] max-w-[168px] px-3 py-2.5 border border-gray-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-900 text-gray-900 dark:text-white text-xs sm:text-sm font-semibold hover:bg-gray-50 dark:hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-gray-400 dark:focus:ring-zinc-600 transition-all flex items-center justify-between gap-2"
+                  className="w-12 h-12 px-3 border border-gray-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-900 text-gray-900 dark:text-white text-xs sm:text-sm font-semibold hover:bg-gray-50 dark:hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-gray-400 dark:focus:ring-zinc-600 transition-all duration-200 flex items-center justify-between gap-2"
                   title="Change color theme"
                   aria-haspopup="listbox"
                   aria-expanded={showColorThemeSelector}
@@ -1493,9 +1712,6 @@ const Editor = () => {
                       className="w-3 h-3 rounded-full border border-gray-300 dark:border-zinc-600 flex-shrink-0"
                       style={{backgroundColor: activeColorTheme?.primary || "#374151"}}
                     />
-                    <span className="truncate">
-                      {activeColorTheme?.name || "Select color"}
-                    </span>
                   </span>
                   {showColorThemeSelector ? (
                     <ChevronUp className="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" />
@@ -1505,7 +1721,7 @@ const Editor = () => {
                 </button>
 
                 {showColorThemeSelector && (
-                  <div className="absolute top-full left-0 mt-1.5 w-52 max-w-[68vw] bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-lg shadow-xl z-50 overflow-hidden">
+                  <div className="absolute top-full right-0 mt-1.5 w-44 sm:w-52 max-w-[calc(100vw-1rem)] bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-lg shadow-xl z-40 overflow-hidden">
                     <div className="max-h-56 overflow-auto py-1">
                       {availableColorThemes.map((theme) => (
                         <button
@@ -1554,96 +1770,29 @@ const Editor = () => {
           </div>
         </div>
 
-        {/* Enhanced Mobile Action Bar */}
-        <div className="lg:hidden sticky top-0 z-40 bg-gradient-to-r from-white/98 via-gray-50/98 to-white/98 dark:from-zinc-950/98 dark:via-zinc-900/98 dark:to-zinc-950/98 backdrop-blur-xl border-b-2 border-gray-200 dark:border-zinc-800 shadow-lg -mx-2 sm:-mx-4 px-2 sm:px-4 py-3 mb-4 no-print">
-          <div className="flex gap-2 justify-between items-stretch">
-            {/* Preview Toggle - Mobile */}
-            <button
-              onClick={togglePreview}
-              className={`flex-1 px-3 py-2.5 rounded-xl font-bold transition-all duration-300 text-xs flex flex-col items-center justify-center shadow-md hover:shadow-lg active:scale-95 ${
-                showPreview
-                  ? "bg-gradient-to-br from-purple-600 via-blue-600 to-pink-600 text-white"
-                  : "bg-white dark:bg-zinc-900 text-gray-700 dark:text-gray-300 border-2 border-gray-300 dark:border-zinc-700 hover:border-purple-500 dark:hover:border-purple-500"
-              }`}
-            >
-              {showPreview ? (
-                <Eye className="w-4 h-4 mb-1" />
-              ) : (
-                <EyeOff className="w-4 h-4 mb-1" />
-              )}
-              <span className="text-[10px] tracking-wide">
-                {showPreview ? "HIDE" : "SHOW"}
-              </span>
-            </button>
-
-            {/* Save Button - Mobile (Most Important) */}
-            <button
-              onClick={handleSave}
-              disabled={saving || autoSaving}
-              className={`flex-1 px-3 py-2.5 rounded-xl font-bold transition-all duration-300 text-xs relative flex flex-col items-center justify-center shadow-md hover:shadow-lg active:scale-95 ${
-                saving || autoSaving
-                  ? "bg-gray-400 dark:bg-gray-600 cursor-not-allowed text-white"
-                  : hasUnsavedChanges
-                    ? "bg-gradient-to-br from-orange-600 via-red-600 to-pink-600 text-white animate-pulse"
-                    : "bg-gradient-to-br from-blue-600 via-cyan-600 to-teal-600 text-white"
-              }`}
-            >
-              {hasUnsavedChanges && !saving && !autoSaving && (
-                <>
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white dark:border-gray-800 animate-ping"></span>
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white dark:border-gray-800 flex items-center justify-center text-[8px] font-bold">
-                    !
-                  </span>
-                </>
-              )}
-              {saving || autoSaving ? (
-                <Loader2 className="w-4 h-4 mb-1 animate-spin" />
-              ) : hasUnsavedChanges ? (
-                <Download className="w-4 h-4 mb-1" />
-              ) : (
-                <Check className="w-4 h-4 mb-1" />
-              )}
-              <span className="text-[10px] tracking-wide">
-                {saving
-                  ? "WAIT"
-                  : autoSaving
-                    ? "AUTO"
-                    : hasUnsavedChanges
-                      ? "SAVE"
-                      : "SAVED"}
-              </span>
-            </button>
-
-            {/* Export PDF - Mobile */}
-            <button
-              onClick={handleDownloadPDF}
-              disabled={isSubscriptionExpired()}
-              className={`flex-1 px-3 py-2.5 rounded-xl font-bold transition-all duration-300 text-xs flex flex-col items-center justify-center shadow-md active:scale-95 ${
-                isSubscriptionExpired()
-                  ? "bg-gray-400 dark:bg-gray-700 cursor-not-allowed text-white"
-                  : "bg-gradient-to-br from-green-600 via-emerald-600 to-teal-600 text-white hover:shadow-lg"
-              }`}
-            >
-              {isSubscriptionExpired() ? (
-                <Lock className="w-4 h-4 mb-1" />
-              ) : (
-                <Download className="w-4 h-4 mb-1" />
-              )}
-              <span className="text-[10px] tracking-wide">
-                {isSubscriptionExpired() ? "LOCKED" : "EXPORT"}
-              </span>
-            </button>
-
-            {/* GitHub Import - Mobile */}
-            <button
-              onClick={() => showGitHubImportModalTrue()}
-              className="flex-1 px-3 py-2.5 rounded-xl font-bold bg-gradient-to-br from-gray-900 via-gray-800 to-black dark:from-white dark:via-gray-100 dark:to-gray-200 text-white dark:text-gray-900 transition-all duration-300 text-xs flex flex-col items-center justify-center shadow-md hover:shadow-lg active:scale-95"
-            >
-              <Github className="w-4 h-4 mb-1" />
-              <span className="text-[10px] tracking-wide">IMPORT</span>
-            </button>
-          </div>
-        </div>
+        <MobileActionBar
+          showFloatingNav={showFloatingNav}
+          onToggleSections={toggleFloatingNav}
+          showPreview={showPreview}
+          onTogglePreview={togglePreview}
+          onSave={handleSave}
+          saving={saving}
+          autoSaving={autoSaving}
+          hasUnsavedChanges={hasUnsavedChanges}
+          onExport={handleDownloadPDF}
+          isExportLocked={isExportLocked}
+          isWizardMode={isWizardMode}
+          completedSectionsCount={completedSectionsCount}
+          totalTrackableSections={trackableSectionIds.length}
+          completionPercentage={completionPercentage}
+          onJumpToFirstIncomplete={jumpToFirstIncompleteSection}
+          onExpandAll={expandAllSections}
+          onCollapseAll={collapseAllSections}
+          trackableSectionIds={trackableSectionIds}
+          activeSectionId={activeSectionId}
+          sectionCompletionMap={sectionCompletionMap}
+          onSelectSection={scrollToSection}
+        />
 
         {/* Compact Floating Action Rail - Desktop Only */}
         <div className="hidden lg:block fixed right-5 top-1/2 -translate-y-1/2 z-50 no-print">
@@ -1875,6 +2024,25 @@ const Editor = () => {
           </div>
         </div>
 
+        {/* Floating Section Navigation - Desktop */}
+        {!isWizardMode && (
+          <DesktopFloatingSectionNav
+            floatingNavContainerRef={floatingNavContainerRef}
+            floatingNavOffset={floatingNavOffset}
+            showFloatingNav={showFloatingNav}
+            onDragStart={handleFloatingNavDragStart}
+            onToggleFloatingNav={toggleFloatingNav}
+            completionPercentage={completionPercentage}
+            onJumpToFirstIncomplete={jumpToFirstIncompleteSection}
+            onExpandAll={() => setForceSectionExpand(true)}
+            onCollapseAll={() => setForceSectionExpand(false)}
+            trackableSectionIds={trackableSectionIds}
+            activeSectionId={activeSectionId}
+            sectionCompletionMap={sectionCompletionMap}
+            onSelectSection={scrollToSection}
+          />
+        )}
+
         {/* Conditional: Show Wizard for New Resumes, Normal Editor for Existing */}
         {isWizardMode ? (
           // Step-by-Step Wizard for New Resumes
@@ -1922,8 +2090,18 @@ const Editor = () => {
           >
             {/* Editor Panel - Dynamic Sections */}
             <div className="space-y-4 sm:space-y-6 order-2 xl:order-1">
-
-              {sectionOrder.map((sectionId) => renderSection(sectionId))}
+              {sectionOrder.map((sectionId) => (
+                <div
+                  key={sectionId}
+                  data-section-id={sectionId}
+                  ref={(el) => {
+                    if (el) sectionElementRefs.current[sectionId] = el;
+                  }}
+                  className="scroll-mt-28"
+                >
+                  {renderSection(sectionId)}
+                </div>
+              ))}
             </div>
 
             {/* Preview Panel */}

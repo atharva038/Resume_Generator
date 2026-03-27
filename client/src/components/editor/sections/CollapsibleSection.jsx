@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 /**
  * CollapsibleSection - Wrapper component for collapsible, draggable sections
@@ -12,6 +12,7 @@ import {useState} from "react";
  * @param {function} onDrop - Drop handler
  * @param {string} sectionId - Unique section identifier
  * @param {boolean} isDragging - Whether this section is being dragged
+ * @param {boolean|null} forceExpanded - Optional external expand/collapse control
  */
 const CollapsibleSection = ({
   title,
@@ -24,8 +25,15 @@ const CollapsibleSection = ({
   onDrop,
   sectionId,
   isDragging = false,
+  forceExpanded = null,
 }) => {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
+
+  useEffect(() => {
+    if (typeof forceExpanded === "boolean") {
+      setIsExpanded(forceExpanded);
+    }
+  }, [forceExpanded]);
 
   return (
     <div

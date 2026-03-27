@@ -90,7 +90,7 @@ const Footer = () => {
           <div className="space-y-4">
             <Link to="/" className="flex items-center group">
               <img
-                src="/Logo_Main.png"
+                src="/New-logo_SNS.png"
                 alt="SmartNShine"
                 className="h-14 w-auto object-contain group-hover:scale-105 transition-transform duration-300 -mr-1"
               />

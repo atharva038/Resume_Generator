@@ -65,7 +65,7 @@ const Navbar = ({toggleSidebar, isSidebarOpen}) => {
             {/* Logo */}
             <Link to="/" className="flex items-center text-xl font-bold group">
               <img
-                src="/Logo_Main.png"
+                src="/New-logo_SNS.png"
                 alt="SmartNShine"
                 className="h-16 w-auto object-contain group-hover:scale-105 transition-transform duration-300 -mr-1"
               />

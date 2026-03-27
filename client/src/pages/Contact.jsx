@@ -335,7 +335,7 @@ const Contact = () => {
               "@type": "Organization",
               name: "SmartNShine",
               url: "https://www.smartnshine.app",
-              logo: "https://www.smartnshine.app/Logo_Main.png",
+              logo: "https://www.smartnshine.app/New-logo_SNS.png",
               contactPoint: {
                 "@type": "ContactPoint",
                 contactType: "Customer Support",
