@@ -1299,8 +1299,10 @@ const Editor = () => {
 
   if (!resumeData) {
     return (
-      <div className="container mx-auto px-4 py-16 text-center">
-        <p>Loading...</p>
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-100 dark:from-zinc-950 dark:via-zinc-950 dark:to-zinc-900">
+        <div className="container mx-auto px-4 py-16 text-center">
+          <p>Loading...</p>
+        </div>
       </div>
     );
   }
@@ -1641,8 +1643,9 @@ const Editor = () => {
   const collapseAllSections = () => setForceSectionExpand(false);
 
   return (
-    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-100 dark:from-zinc-950 dark:via-zinc-950 dark:to-zinc-900">
+      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+        <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 no-print">
           <h1 className="text-2xl sm:text-3xl font-bold dark:text-gray-100">
@@ -2319,21 +2322,22 @@ const Editor = () => {
             </div>
           </div>
         )}
+        </div>
+
+        {/* Toast Notifications */}
+        <Toaster position="bottom-right" />
+
+        {/* Upgrade Modal */}
+        {showUpgradeModal && (
+          <UpgradeRequiredModal
+            isOpen={showUpgradeModal}
+            onClose={() => showUpgradeModalFalse()}
+            message={upgradeMessage}
+            title="Upgrade Required"
+            feature="AI-Powered Features"
+          />
+        )}
       </div>
-
-      {/* Toast Notifications */}
-      <Toaster position="bottom-right" />
-
-      {/* Upgrade Modal */}
-      {showUpgradeModal && (
-        <UpgradeRequiredModal
-          isOpen={showUpgradeModal}
-          onClose={() => showUpgradeModalFalse()}
-          message={upgradeMessage}
-          title="Upgrade Required"
-          feature="AI-Powered Features"
-        />
-      )}
     </div>
   );
 };

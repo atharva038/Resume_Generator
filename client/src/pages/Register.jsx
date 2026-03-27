@@ -276,7 +276,7 @@ const Register = () => {
           {/* Login Link */}
           <Link
             to="/login"
-            className="block w-full text-center px-4 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-gray-900 dark:text-white font-medium rounded-lg transition-all duration-200 text-sm"
+            className="block w-full text-center px-4 py-2.5 bg-primary-50 dark:bg-primary-900/40 hover:bg-primary-100 dark:hover:bg-primary-900/60 text-primary-700 dark:text-primary-200 border border-primary-200/70 dark:border-primary-700/60 font-medium rounded-lg transition-all duration-200 text-sm"
           >
             Log in instead
           </Link>

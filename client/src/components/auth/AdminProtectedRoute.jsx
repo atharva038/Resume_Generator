@@ -7,9 +7,9 @@ const AdminProtectedRoute = ({children}) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-indigo-950 dark:to-purple-950">
+      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-black">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600 dark:border-blue-500 mx-auto mb-4"></div>
           <p className="text-gray-600 dark:text-gray-400 text-lg">Loading...</p>
         </div>
       </div>
@@ -26,7 +26,7 @@ const AdminProtectedRoute = ({children}) => {
   if (user.role !== "admin") {
     // Redirect to dashboard if not admin
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-indigo-950 dark:to-purple-950">
+      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-black">
         <div className="text-center max-w-md p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl">
           <div className="text-6xl mb-4">🔒</div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
@@ -51,7 +51,7 @@ const AdminProtectedRoute = ({children}) => {
   // Check if user account is active
   if (user.status === "disabled") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-indigo-950 dark:to-purple-950">
+      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-black">
         <div className="text-center max-w-md p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl">
           <div className="text-6xl mb-4">⚠️</div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
