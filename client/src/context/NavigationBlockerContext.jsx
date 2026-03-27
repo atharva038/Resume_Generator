@@ -1,5 +1,5 @@
 import {createContext, useContext, useState, useCallback} from "react";
-import {useToggle} from "@/hooks";
+import {useToggle} from "@/hooks/useToggle";
 
 const NavigationBlockerContext = createContext(null);
 

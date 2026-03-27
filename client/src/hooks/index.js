@@ -16,3 +16,7 @@ export {useDebounce} from "./useDebounce";
 export {useMediaQuery} from "./useMediaQuery";
 export {useClickOutside} from "./useClickOutside";
 export {useToggle} from "./useToggle";
+export {useSectionCompletion, isSectionCompleteForResume} from "./useSectionCompletion";
+export {useFloatingSectionNav} from "./useFloatingSectionNav";
+export {useEditorPersistence} from "./useEditorPersistence";
+export {useResumeSaveActions} from "./useResumeSaveActions";
