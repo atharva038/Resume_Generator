@@ -1,9 +1,13 @@
 import {useState, useEffect} from "react";
 import {calculateResumeScore} from "@/utils/resumeScoring";
+import {getScoreTierMeta} from "@/utils/scorePresentation";
+import {Lightbulb, Target, CircleCheck} from "lucide-react";
 
 const ScoreCard = ({resumeData, expanded = false}) => {
   const [scoreData, setScoreData] = useState(null);
   const [showDetails, setShowDetails] = useState(expanded);
+  const [showAllRecommendations, setShowAllRecommendations] = useState(false);
+  const [showBreakdown, setShowBreakdown] = useState(expanded);
 
   useEffect(() => {
     if (resumeData) {
@@ -16,28 +20,29 @@ const ScoreCard = ({resumeData, expanded = false}) => {
 
   const {totalScore, breakdown, recommendations, level} = scoreData;
 
-  // Color based on score
-  const getColor = (score) => {
-    if (score >= 80)
-      return "text-green-600 border-green-500 bg-green-50 dark:bg-green-900/20 dark:border-green-700 dark:text-green-400";
-    if (score >= 60)
-      return "text-yellow-600 border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20 dark:border-yellow-700 dark:text-yellow-400";
-    return "text-red-600 border-red-500 bg-red-50 dark:bg-red-900/20 dark:border-red-700 dark:text-red-400";
-  };
-
-  const getProgressColor = (score) => {
-    if (score >= 80) return "#10b981"; // green-500
-    if (score >= 60) return "#f59e0b"; // yellow-500
-    return "#ef4444"; // red-500
-  };
-
-  const colorClass = getColor(totalScore);
-  const progressColor = getProgressColor(totalScore);
+  const tierMeta = getScoreTierMeta(totalScore, {high: 80, medium: 60});
+  const colorClass = tierMeta.panelClass;
+  const progressColor = tierMeta.solid;
+  const previewRecommendations = showAllRecommendations
+    ? recommendations
+    : recommendations.slice(0, 5);
+  const weakAreas = Object.entries(breakdown)
+    .map(([category, data]) => ({
+      category,
+      percent: (data.score / data.maxScore) * 100,
+      score: data.score,
+      maxScore: data.maxScore,
+    }))
+    .sort((a, b) => a.percent - b.percent)
+    .slice(0, 2);
 
   return (
     <div
-      className="card p-6 shadow-lg border-l-4"
-      style={{borderLeftColor: progressColor}}
+      className="card p-6 shadow-lg border"
+      style={{
+        borderColor: `${progressColor}66`,
+        boxShadow: `0 0 0 1px ${progressColor}1f`,
+      }}
     >
       {/* Header */}
       <div className="flex justify-between items-start mb-4">
@@ -58,36 +63,36 @@ const ScoreCard = ({resumeData, expanded = false}) => {
       </div>
 
       {/* Score Circle */}
-      <div className="flex items-center gap-6 mb-6">
-        <div className="relative">
-          <svg className="w-32 h-32 transform -rotate-90">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-5">
+        <div className="relative mx-auto sm:mx-0">
+          <svg className="w-28 h-28 transform -rotate-90">
             {/* Background circle */}
             <circle
-              cx="64"
-              cy="64"
-              r="56"
+              cx="56"
+              cy="56"
+              r="48"
               stroke="#e5e7eb"
               strokeWidth="8"
               fill="none"
             />
             {/* Progress circle */}
             <circle
-              cx="64"
-              cy="64"
-              r="56"
+              cx="56"
+              cy="56"
+              r="48"
               stroke={progressColor}
               strokeWidth="8"
               fill="none"
-              strokeDasharray={`${(totalScore / 100) * 351.86} 351.86`}
+              strokeDasharray={`${(totalScore / 100) * 301.59} 301.59`}
               strokeLinecap="round"
               className="transition-all duration-1000 ease-out"
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-4xl font-bold" style={{color: progressColor}}>
+            <span className="text-3xl font-bold" style={{color: progressColor}}>
               {totalScore}
             </span>
-            <span className="text-sm text-gray-600 dark:text-gray-400">
+            <span className="text-xs text-gray-600 dark:text-gray-400">
               / 100
             </span>
           </div>
@@ -103,24 +108,21 @@ const ScoreCard = ({resumeData, expanded = false}) => {
             {level.description}
           </p>
 
-          {/* Quick stats */}
-          <div className="grid grid-cols-2 gap-2 mt-3">
-            <div className="text-xs">
-              <span className="text-gray-500 dark:text-gray-400">
-                Experience:
-              </span>
-              <span className="font-semibold ml-1 dark:text-gray-300">
-                {breakdown.experience.score}/{breakdown.experience.maxScore}
-              </span>
-            </div>
-            <div className="text-xs">
-              <span className="text-gray-500 dark:text-gray-400">
-                Keywords:
-              </span>
-              <span className="font-semibold ml-1 dark:text-gray-300">
-                {breakdown.keywords.score}/{breakdown.keywords.maxScore}
-              </span>
-            </div>
+          {/* Quick weak-area summary */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">
+            {weakAreas.map((area) => (
+              <div
+                key={area.category}
+                className="text-xs px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-zinc-900"
+              >
+                <span className="text-gray-500 dark:text-gray-400 capitalize">
+                  {area.category === "extras" ? "projects & certs" : area.category}
+                </span>
+                <span className="font-semibold ml-1 dark:text-gray-300">
+                  {area.score}/{area.maxScore}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -128,11 +130,19 @@ const ScoreCard = ({resumeData, expanded = false}) => {
       {/* Expandable Details */}
       {showDetails && (
         <div className="border-t dark:border-gray-700 pt-4 space-y-4">
-          {/* Category Breakdown */}
-          <div>
-            <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-3 text-sm">
+          <div className="flex items-center justify-between">
+            <h4 className="font-semibold text-gray-900 dark:text-gray-100 text-sm">
               Score Breakdown
             </h4>
+            <button
+              onClick={() => setShowBreakdown(!showBreakdown)}
+              className="text-xs text-primary-600 dark:text-primary-400 font-medium"
+            >
+              {showBreakdown ? "Collapse" : "Expand"}
+            </button>
+          </div>
+
+          {showBreakdown && (
             <div className="space-y-2">
               {Object.entries(breakdown).map(([category, data]) => (
                 <div key={category} className="group">
@@ -144,35 +154,34 @@ const ScoreCard = ({resumeData, expanded = false}) => {
                       {data.score}/{data.maxScore}
                     </span>
                   </div>
-                  {/* Progress bar */}
                   <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
                     <div
                       className="h-2 rounded-full transition-all duration-500"
                       style={{
                         width: `${(data.score / data.maxScore) * 100}%`,
-                        backgroundColor: getProgressColor(
-                          (data.score / data.maxScore) * 100
-                        ),
+                        backgroundColor: getScoreTierMeta(
+                          (data.score / data.maxScore) * 100,
+                          {high: 80, medium: 60}
+                        ).solid,
                       }}
                     />
                   </div>
-                  {/* Details tooltip */}
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                     {data.details}
                   </p>
                 </div>
               ))}
             </div>
-          </div>
+          )}
 
           {/* Top Recommendations */}
           <div>
             <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-3 text-sm flex items-center gap-2">
-              <span>🎯</span>
+              <Target className="w-4 h-4 text-primary-600 dark:text-primary-400" />
               Top Recommendations
             </h4>
             <div className="space-y-2">
-              {recommendations.slice(0, 5).map((rec, index) => (
+              {previewRecommendations.map((rec, index) => (
                 <div key={index} className="flex items-start gap-2 text-xs">
                   <span className="text-primary-600 dark:text-primary-400 mt-0.5">
                     •
@@ -184,8 +193,13 @@ const ScoreCard = ({resumeData, expanded = false}) => {
               ))}
             </div>
             {recommendations.length > 5 && (
-              <button className="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-500 font-medium mt-2">
-                View all {recommendations.length} recommendations →
+              <button
+                onClick={() => setShowAllRecommendations(!showAllRecommendations)}
+                className="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-500 font-medium mt-2"
+              >
+                {showAllRecommendations
+                  ? "Show fewer recommendations"
+                  : `View all ${recommendations.length} recommendations`}
               </button>
             )}
           </div>
@@ -193,17 +207,30 @@ const ScoreCard = ({resumeData, expanded = false}) => {
           {/* Improvement Tips */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 dark:bg-blue-900/20 dark:border-blue-800">
             <h4 className="font-semibold text-blue-900 dark:text-blue-300 mb-2 text-xs flex items-center gap-1">
-              <span>💡</span>
+              <Lightbulb className="w-3.5 h-3.5" />
               Quick Tips to Improve
             </h4>
             <ul className="text-xs text-blue-800 dark:text-blue-400 space-y-1">
-              <li>
-                • Start bullets with action verbs (Led, Developed, Achieved)
+              <li className="flex items-start gap-1.5">
+                <CircleCheck className="w-3.5 h-3.5 mt-0.5 text-blue-700 dark:text-blue-300" />
+                Start bullets with action verbs (Led, Developed, Achieved)
               </li>
-              <li>• Add numbers and metrics (increased revenue by 30%)</li>
-              <li>• Keep it to 1 page (400-800 words optimal)</li>
-              <li>• Include 12-30 relevant skills across 3-5 categories</li>
-              <li>• Add LinkedIn and portfolio links</li>
+              <li className="flex items-start gap-1.5">
+                <CircleCheck className="w-3.5 h-3.5 mt-0.5 text-blue-700 dark:text-blue-300" />
+                Add numbers and metrics (increased revenue by 30%)
+              </li>
+              <li className="flex items-start gap-1.5">
+                <CircleCheck className="w-3.5 h-3.5 mt-0.5 text-blue-700 dark:text-blue-300" />
+                Keep it to 1 page (400-800 words optimal)
+              </li>
+              <li className="flex items-start gap-1.5">
+                <CircleCheck className="w-3.5 h-3.5 mt-0.5 text-blue-700 dark:text-blue-300" />
+                Include 12-30 relevant skills across 3-5 categories
+              </li>
+              <li className="flex items-start gap-1.5">
+                <CircleCheck className="w-3.5 h-3.5 mt-0.5 text-blue-700 dark:text-blue-300" />
+                Add LinkedIn and portfolio links
+              </li>
             </ul>
           </div>
         </div>

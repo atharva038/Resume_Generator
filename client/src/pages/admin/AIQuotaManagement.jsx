@@ -1,4 +1,4 @@
-import {useState, useEffect} from "react";
+import {useState, useEffect, useCallback, useRef} from "react";
 import toast from "react-hot-toast";
 import {
   Users,
@@ -10,7 +10,6 @@ import {
   Shield,
   CheckCircle,
   XCircle,
-  Clock,
 } from "lucide-react";
 import {
   getUserQuotaStatus,
@@ -21,39 +20,80 @@ import {useToggle} from "@/hooks";
 
 const AIQuotaManagement = () => {
   const [quotaData, setQuotaData] = useState(null);
-  const [loading, toggleLoading, setLoadingTrue, setLoadingFalse] =
-    useToggle(true);
+  const [loading, , setLoadingTrue, setLoadingFalse] = useToggle(true);
+  const [searchLoading, setSearchLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("usage");
   const [selectedUser, setSelectedUser] = useState(null);
   const [
     showUserDetails,
-    toggleUserDetails,
     setShowUserDetailsTrue,
     setShowUserDetailsFalse,
   ] = useToggle(false);
+  const hasLoadedRef = useRef(false);
+  const initializedRef = useRef(false);
+
+  const fetchQuotaStatus = useCallback(
+    async ({showPageLoader = false, searchOverride} = {}) => {
+      try {
+        if (showPageLoader || !hasLoadedRef.current) {
+          setLoadingTrue();
+        } else {
+          setSearchLoading(true);
+        }
+
+        const effectiveSearch =
+          typeof searchOverride === "string" ? searchOverride : searchTerm;
+
+        const response = await getUserQuotaStatus({
+          sortBy,
+          search: effectiveSearch,
+        });
+
+        setQuotaData(response.data);
+        setError(null);
+        hasLoadedRef.current = true;
+      } catch (err) {
+        console.error("Error fetching quota status:", err);
+        setError(err.response?.data?.error || "Failed to load quota data");
+      } finally {
+        if (showPageLoader || !hasLoadedRef.current) {
+          setLoadingFalse();
+        }
+        setSearchLoading(false);
+      }
+    },
+    [searchTerm, sortBy, setLoadingTrue, setLoadingFalse]
+  );
 
   useEffect(() => {
-    fetchQuotaStatus();
-  }, [sortBy, searchTerm]);
+    if (initializedRef.current) return;
+    initializedRef.current = true;
+    fetchQuotaStatus({showPageLoader: true});
+  }, [fetchQuotaStatus]);
 
-  const fetchQuotaStatus = async () => {
-    try {
-      setLoadingTrue();
-      const response = await getUserQuotaStatus({
-        sortBy,
-        search: searchTerm,
-      });
-      setQuotaData(response.data);
-      setError(null);
-    } catch (err) {
-      console.error("Error fetching quota status:", err);
-      setError(err.response?.data?.error || "Failed to load quota data");
-    } finally {
-      setLoadingFalse();
+  useEffect(() => {
+    if (!hasLoadedRef.current) return;
+
+    const trimmedSearch = searchTerm.trim();
+
+    // Skip fetches for very short inputs; query must be >2 chars or empty.
+    if (trimmedSearch.length > 0 && trimmedSearch.length <= 2) {
+      setSearchLoading(false);
+      return;
     }
-  };
+
+    // Debounce search/sort requests to avoid page flicker on each keystroke.
+    const timer = setTimeout(() => {
+      fetchQuotaStatus({
+        showPageLoader: false,
+        searchOverride: trimmedSearch,
+      });
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [sortBy, searchTerm, fetchQuotaStatus]);
 
   const handleResetQuota = async (userId, userName) => {
     if (
@@ -103,14 +143,6 @@ const AIQuotaManagement = () => {
     return "text-green-600";
   };
 
-  const getQuotaStatusBg = (percentage, tier) => {
-    if (tier === "admin") return "bg-purple-100 dark:bg-purple-900/20";
-    if (percentage >= 100) return "bg-red-100 dark:bg-red-900/20";
-    if (percentage >= 80) return "bg-orange-100 dark:bg-orange-900/20";
-    if (percentage >= 50) return "bg-yellow-100 dark:bg-yellow-900/20";
-    return "bg-green-100 dark:bg-green-900/20";
-  };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center h-[60vh]">
@@ -156,7 +188,7 @@ const AIQuotaManagement = () => {
           </p>
         </div>
         <button
-          onClick={fetchQuotaStatus}
+          onClick={() => fetchQuotaStatus({showPageLoader: false})}
           className="flex items-center gap-2 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 text-white rounded-xl transition-all"
         >
           <RefreshCw className="w-4 h-4" />
@@ -323,6 +355,11 @@ const AIQuotaManagement = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-black border border-gray-200 dark:border-white/10 rounded-xl text-gray-900 dark:text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500/40 transition-all"
             />
+            {searchLoading && (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                <RefreshCw className="w-4 h-4 text-gray-400 animate-spin" />
+              </div>
+            )}
           </div>
           <select
             value={sortBy}
