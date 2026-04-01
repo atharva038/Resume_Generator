@@ -155,7 +155,7 @@ const Earnings = () => {
 
         <div className="flex items-center gap-3">
           {/* Date Range Filter */}
-          <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl p-1">
+          <div className="flex items-center gap-2 bg-white dark:bg-black border border-gray-200 dark:border-white/10 rounded-xl p-1">
             {["1m", "3m", "6m", "1y"].map((range) => (
               <button
                 key={range}
@@ -163,7 +163,7 @@ const Earnings = () => {
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                   dateRange === range
                     ? "bg-green-500/20 text-green-400 border border-green-500/30"
-                    : "text-gray-400 hover:text-white hover:bg-white/5"
+                    : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5"
                 }`}
               >
                 {range.toUpperCase()}
@@ -174,7 +174,7 @@ const Earnings = () => {
           {/* Refresh Button */}
           <button
             onClick={fetchEarningsData}
-            className="p-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all"
+            className="p-2.5 bg-white dark:bg-black hover:bg-gray-100 dark:hover:bg-white/10 border border-gray-200 dark:border-white/10 rounded-xl transition-all"
             title="Refresh Data"
           >
             <RefreshCw className="w-4 h-4 text-gray-400" />
@@ -185,7 +185,7 @@ const Earnings = () => {
       {/* Main Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Total Earnings INR */}
-        <div className="group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:bg-white/[0.07] hover:border-white/20 transition-all duration-300">
+        <div className="group relative bg-white dark:bg-black border border-gray-200 dark:border-white/10 rounded-2xl p-6 hover:bg-gray-50 dark:hover:bg-white/[0.07] hover:border-gray-300 dark:hover:border-white/20 transition-all duration-300">
           <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-emerald-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
           <div className="relative">
             <div className="flex items-center justify-between mb-4">
@@ -224,30 +224,30 @@ const Earnings = () => {
               </div>
             </div>
             <p className="text-sm text-gray-400 mb-1">Total Earnings (USD)</p>
-            <p className="text-3xl font-bold text-white">
+            <p className="text-3xl font-bold text-gray-900 dark:text-white">
               ${totalUSD.toLocaleString("en-US")}
             </p>
           </div>
         </div>
 
         {/* Active Subscriptions */}
-        <div className="group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:bg-white/[0.07] hover:border-white/20 transition-all duration-300">
+        <div className="group relative bg-white dark:bg-black border border-gray-200 dark:border-white/10 rounded-2xl p-6 hover:bg-gray-50 dark:hover:bg-white/[0.07] hover:border-gray-300 dark:hover:border-white/20 transition-all duration-300">
           <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-violet-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
           <div className="relative">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/25">
+              <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-blue-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
                 <Crown className="w-6 h-6 text-white" />
               </div>
             </div>
             <p className="text-sm text-gray-400 mb-1">Active Subscriptions</p>
-            <p className="text-3xl font-bold text-white">
+            <p className="text-3xl font-bold text-gray-900 dark:text-white">
               {subscriptionCounts?.active || 0}
             </p>
           </div>
         </div>
 
         {/* Total Subscriptions */}
-        <div className="group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:bg-white/[0.07] hover:border-white/20 transition-all duration-300">
+        <div className="group relative bg-white dark:bg-black border border-gray-200 dark:border-white/10 rounded-2xl p-6 hover:bg-gray-50 dark:hover:bg-white/[0.07] hover:border-gray-300 dark:hover:border-white/20 transition-all duration-300">
           <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-amber-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
           <div className="relative">
             <div className="flex items-center justify-between mb-4">
@@ -256,7 +256,7 @@ const Earnings = () => {
               </div>
             </div>
             <p className="text-sm text-gray-400 mb-1">Total Subscriptions</p>
-            <p className="text-3xl font-bold text-white">
+            <p className="text-3xl font-bold text-gray-900 dark:text-white">
               {(subscriptionCounts?.active || 0) +
                 (subscriptionCounts?.expired || 0)}
             </p>
@@ -267,10 +267,10 @@ const Earnings = () => {
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Monthly Revenue Chart */}
-        <div className="lg:col-span-2 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
+        <div className="lg:col-span-2 bg-white dark:bg-black border border-gray-200 dark:border-white/10 rounded-2xl p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-lg font-semibold text-white">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Monthly Revenue
               </h3>
               <p className="text-sm text-gray-400">
@@ -340,9 +340,9 @@ const Earnings = () => {
         </div>
 
         {/* Revenue by Tier */}
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
+        <div className="bg-white dark:bg-black border border-gray-200 dark:border-white/10 rounded-2xl p-6">
           <div className="mb-6">
-            <h3 className="text-lg font-semibold text-white">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
               Revenue by Tier
             </h3>
             <p className="text-sm text-gray-400">
@@ -446,18 +446,18 @@ const Earnings = () => {
       </div>
 
       {/* Recent Subscriptions Table */}
-      <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden">
+      <div className="bg-white dark:bg-black border border-gray-200 dark:border-white/10 rounded-2xl overflow-hidden">
         <div className="p-6 border-b border-white/10">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-semibold text-white">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Recent Subscriptions
               </h3>
               <p className="text-sm text-gray-400">
                 Latest subscription purchases
               </p>
             </div>
-            <button className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-sm text-gray-300 flex items-center gap-2 transition-all">
+            <button className="px-4 py-2 bg-white dark:bg-black hover:bg-gray-100 dark:hover:bg-white/10 border border-gray-200 dark:border-white/10 rounded-xl text-sm text-gray-700 dark:text-gray-300 flex items-center gap-2 transition-all">
               <Download className="w-4 h-4" />
               Export
             </button>
@@ -496,7 +496,7 @@ const Earnings = () => {
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white font-medium">
+                          <div className="w-10 h-10 rounded-full bg-gray-900 dark:bg-white flex items-center justify-center text-white dark:text-black font-medium">
                             {sub.userId?.name?.charAt(0) ||
                               sub.user?.name?.charAt(0) ||
                               "U"}

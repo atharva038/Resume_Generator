@@ -156,13 +156,13 @@ const ContactMessages = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <span className="px-3 py-1 bg-purple-500/10 border border-purple-500/20 rounded-full text-purple-400 text-xs font-medium inline-block mb-3">
+        <span className="px-3 py-1 bg-primary-50 dark:bg-primary-500/15 border border-primary-200 dark:border-primary-500/25 rounded-full text-primary-700 dark:text-primary-300 text-xs font-medium inline-block mb-3">
           Messages
         </span>
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-white via-purple-200 to-white bg-clip-text text-transparent">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
           Contact Messages
         </h1>
-        <p className="text-gray-400 mt-2">
+        <p className="text-gray-600 dark:text-gray-400 mt-2">
           Manage and respond to user contact messages
         </p>
       </div>
@@ -170,11 +170,11 @@ const ContactMessages = () => {
       {/* Statistics Cards */}
       {stats && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-          <div className="bg-white/5 dark:border-white/10 backdrop-blur-xl rounded-2xl p-5 border border-white/10">
+          <div className="bg-white dark:bg-black rounded-2xl p-5 border border-gray-200 dark:border-white/10">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-400">Total</p>
-                <p className="text-2xl font-bold text-white mt-1">
+                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
                   {stats.total}
                 </p>
               </div>
@@ -184,7 +184,7 @@ const ContactMessages = () => {
             </div>
           </div>
 
-          <div className="bg-white/5 dark:border-white/10 backdrop-blur-xl rounded-2xl p-5 border border-white/10">
+          <div className="bg-white dark:bg-black rounded-2xl p-5 border border-gray-200 dark:border-white/10">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-400">New</p>
@@ -198,7 +198,7 @@ const ContactMessages = () => {
             </div>
           </div>
 
-          <div className="bg-white/5 dark:border-white/10 backdrop-blur-xl rounded-2xl p-5 border border-white/10">
+          <div className="bg-white dark:bg-black rounded-2xl p-5 border border-gray-200 dark:border-white/10">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-400">Read</p>
@@ -212,7 +212,7 @@ const ContactMessages = () => {
             </div>
           </div>
 
-          <div className="bg-white/5 dark:border-white/10 backdrop-blur-xl rounded-2xl p-5 border border-white/10">
+          <div className="bg-white dark:bg-black rounded-2xl p-5 border border-gray-200 dark:border-white/10">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-400">Replied</p>
@@ -226,7 +226,7 @@ const ContactMessages = () => {
             </div>
           </div>
 
-          <div className="bg-white/5 dark:border-white/10 backdrop-blur-xl rounded-2xl p-5 border border-white/10">
+          <div className="bg-white dark:bg-black rounded-2xl p-5 border border-gray-200 dark:border-white/10">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-400">Recent (7d)</p>
@@ -243,11 +243,11 @@ const ContactMessages = () => {
       )}
 
       {/* Filters */}
-      <div className="bg-white/5 dark:border-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
+      <div className="bg-white dark:bg-black rounded-2xl p-6 border border-gray-200 dark:border-white/10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {/* Search */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Search
             </label>
             <div className="relative">
@@ -259,14 +259,14 @@ const ContactMessages = () => {
                 onChange={(e) =>
                   setFilters({...filters, search: e.target.value, page: 1})
                 }
-                className="w-full pl-10 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
+                className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-black border border-gray-200 dark:border-white/10 rounded-xl text-gray-900 dark:text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-all"
               />
             </div>
           </div>
 
           {/* Status Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Status
             </label>
             <select
@@ -274,21 +274,21 @@ const ContactMessages = () => {
               onChange={(e) =>
                 setFilters({...filters, status: e.target.value, page: 1})
               }
-              className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
+              className="w-full px-4 py-2.5 bg-white dark:bg-black border border-gray-200 dark:border-white/10 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-all"
             >
-              <option value="" className="bg-gray-900">
+              <option value="" className="bg-white dark:bg-gray-900">
                 All Statuses
               </option>
-              <option value="new" className="bg-gray-900">
+              <option value="new" className="bg-white dark:bg-gray-900">
                 New
               </option>
-              <option value="read" className="bg-gray-900">
+              <option value="read" className="bg-white dark:bg-gray-900">
                 Read
               </option>
-              <option value="replied" className="bg-gray-900">
+              <option value="replied" className="bg-white dark:bg-gray-900">
                 Replied
               </option>
-              <option value="archived" className="bg-gray-900">
+              <option value="archived" className="bg-white dark:bg-gray-900">
                 Archived
               </option>
             </select>
@@ -296,7 +296,7 @@ const ContactMessages = () => {
 
           {/* Category Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Category
             </label>
             <select
@@ -304,27 +304,27 @@ const ContactMessages = () => {
               onChange={(e) =>
                 setFilters({...filters, category: e.target.value, page: 1})
               }
-              className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
+              className="w-full px-4 py-2.5 bg-white dark:bg-black border border-gray-200 dark:border-white/10 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-all"
             >
-              <option value="" className="bg-gray-900">
+              <option value="" className="bg-white dark:bg-gray-900">
                 All Categories
               </option>
-              <option value="general" className="bg-gray-900">
+              <option value="general" className="bg-white dark:bg-gray-900">
                 General
               </option>
-              <option value="support" className="bg-gray-900">
+              <option value="support" className="bg-white dark:bg-gray-900">
                 Support
               </option>
-              <option value="feedback" className="bg-gray-900">
+              <option value="feedback" className="bg-white dark:bg-gray-900">
                 Feedback
               </option>
-              <option value="business" className="bg-gray-900">
+              <option value="business" className="bg-white dark:bg-gray-900">
                 Business
               </option>
-              <option value="bug-report" className="bg-gray-900">
+              <option value="bug-report" className="bg-white dark:bg-gray-900">
                 Bug Report
               </option>
-              <option value="feature-request" className="bg-gray-900">
+              <option value="feature-request" className="bg-white dark:bg-gray-900">
                 Feature Request
               </option>
             </select>
@@ -332,7 +332,7 @@ const ContactMessages = () => {
 
           {/* Per Page */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Per Page
             </label>
             <select
@@ -344,15 +344,15 @@ const ContactMessages = () => {
                   page: 1,
                 })
               }
-              className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
+              className="w-full px-4 py-2.5 bg-white dark:bg-black border border-gray-200 dark:border-white/10 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-all"
             >
-              <option value="10" className="bg-gray-900">
+              <option value="10" className="bg-white dark:bg-gray-900">
                 10
               </option>
-              <option value="20" className="bg-gray-900">
+              <option value="20" className="bg-white dark:bg-gray-900">
                 20
               </option>
-              <option value="50" className="bg-gray-900">
+              <option value="50" className="bg-white dark:bg-gray-900">
                 50
               </option>
             </select>
@@ -361,7 +361,7 @@ const ContactMessages = () => {
       </div>
 
       {/* Messages Table */}
-      <div className="bg-white/5 dark:border-white/10 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden">
+      <div className="bg-white dark:bg-black rounded-2xl border border-gray-200 dark:border-white/10 overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center py-16">
             <div className="relative">
@@ -380,7 +380,7 @@ const ContactMessages = () => {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-white/10">
+              <thead className="bg-gray-50 dark:bg-white/5 border-b border-gray-200 dark:border-white/10">
                 <tr>
                   <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                     Contact Info
@@ -402,15 +402,15 @@ const ContactMessages = () => {
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/10">
+              <tbody className="divide-y divide-gray-100 dark:divide-white/10">
                 {messages.map((message) => (
                   <tr
                     key={message._id}
-                    className="hover:bg-white/5 transition-colors"
+                    className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
                   >
                     <td className="px-6 py-4">
                       <div>
-                        <div className="font-medium text-white">
+                        <div className="font-medium text-gray-900 dark:text-white">
                           {message.name}
                         </div>
                         <div className="text-sm text-gray-400">
@@ -424,7 +424,7 @@ const ContactMessages = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-sm text-white max-w-md truncate">
+                      <div className="text-sm text-gray-900 dark:text-white max-w-md truncate">
                         {message.subject}
                       </div>
                     </td>
@@ -455,7 +455,7 @@ const ContactMessages = () => {
                           setSelectedMessage(message);
                           setShowModalTrue();
                         }}
-                        className="p-2 hover:bg-purple-500/20 rounded-xl text-purple-400 transition-colors"
+                        className="p-2 hover:bg-primary-50 dark:hover:bg-primary-500/20 rounded-xl text-primary-700 dark:text-primary-400 transition-colors"
                       >
                         <Eye className="w-5 h-5" />
                       </button>
@@ -469,7 +469,7 @@ const ContactMessages = () => {
 
         {/* Pagination */}
         {pagination.totalPages > 1 && (
-          <div className="px-6 py-4 border-t border-white/10 flex items-center justify-between">
+          <div className="px-6 py-4 border-t border-gray-200 dark:border-white/10 flex items-center justify-between bg-gray-50 dark:bg-white/5">
             <div className="text-sm text-gray-400">
               Showing {(pagination.page - 1) * pagination.limit + 1} to{" "}
               {Math.min(pagination.page * pagination.limit, pagination.total)}{" "}
@@ -479,17 +479,17 @@ const ContactMessages = () => {
               <button
                 onClick={() => setFilters({...filters, page: filters.page - 1})}
                 disabled={filters.page === 1}
-                className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-xl text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/10 transition-all"
+                className="px-3 py-1.5 bg-white dark:bg-black border border-gray-200 dark:border-white/10 rounded-xl text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-white/10 transition-all"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
-              <span className="px-4 py-1.5 text-sm text-gray-300">
+              <span className="px-4 py-1.5 text-sm text-gray-700 dark:text-gray-300">
                 Page {pagination.page} of {pagination.totalPages}
               </span>
               <button
                 onClick={() => setFilters({...filters, page: filters.page + 1})}
                 disabled={filters.page === pagination.totalPages}
-                className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-xl text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/10 transition-all"
+                className="px-3 py-1.5 bg-white dark:bg-black border border-gray-200 dark:border-white/10 rounded-xl text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-white/10 transition-all"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
@@ -507,15 +507,15 @@ const ContactMessages = () => {
               onClick={setShowModalFalse}
             ></div>
 
-            <div className="inline-block w-full max-w-3xl my-8 overflow-hidden text-left align-middle transition-all transform bg-gray-900/95 backdrop-blur-xl shadow-2xl rounded-2xl border border-white/10">
+            <div className="inline-block w-full max-w-3xl my-8 overflow-hidden text-left align-middle transition-all transform bg-white dark:bg-black shadow-2xl rounded-2xl border border-gray-200 dark:border-white/10">
               {/* Modal Header */}
-              <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between">
-                <h3 className="text-xl font-bold text-white">
+              <div className="px-6 py-4 border-b border-gray-200 dark:border-white/10 flex items-center justify-between">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                   Contact Message Details
                 </h3>
                 <button
                   onClick={setShowModalFalse}
-                  className="text-gray-400 hover:text-gray-300 p-1 hover:bg-white/10 rounded-lg transition-colors"
+                  className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg transition-colors"
                 >
                   <X className="w-6 h-6" />
                 </button>
@@ -526,12 +526,12 @@ const ContactMessages = () => {
                 {/* Contact Info */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex items-start gap-3">
-                    <div className="p-2 bg-purple-500/20 rounded-lg">
-                      <User className="w-5 h-5 text-purple-400" />
+                    <div className="p-2 bg-primary-100 dark:bg-primary-500/20 rounded-lg">
+                      <User className="w-5 h-5 text-primary-700 dark:text-primary-300" />
                     </div>
                     <div>
                       <p className="text-sm text-gray-400">Name</p>
-                      <p className="font-medium text-white">
+                      <p className="font-medium text-gray-900 dark:text-white">
                         {selectedMessage.name}
                       </p>
                     </div>
@@ -543,7 +543,7 @@ const ContactMessages = () => {
                     </div>
                     <div>
                       <p className="text-sm text-gray-400">Email</p>
-                      <p className="font-medium text-white">
+                      <p className="font-medium text-gray-900 dark:text-white">
                         {selectedMessage.email}
                       </p>
                     </div>
@@ -556,7 +556,7 @@ const ContactMessages = () => {
                       </div>
                       <div>
                         <p className="text-sm text-gray-400">Phone</p>
-                        <p className="font-medium text-white">
+                        <p className="font-medium text-gray-900 dark:text-white">
                           {selectedMessage.phone}
                         </p>
                       </div>
@@ -570,7 +570,7 @@ const ContactMessages = () => {
                       </div>
                       <div>
                         <p className="text-sm text-gray-400">Company</p>
-                        <p className="font-medium text-white">
+                        <p className="font-medium text-gray-900 dark:text-white">
                           {selectedMessage.company}
                         </p>
                       </div>
@@ -583,7 +583,7 @@ const ContactMessages = () => {
                     </div>
                     <div>
                       <p className="text-sm text-gray-400">Received</p>
-                      <p className="font-medium text-white">
+                      <p className="font-medium text-gray-900 dark:text-white">
                         {new Date(selectedMessage.createdAt).toLocaleString()}
                       </p>
                     </div>
@@ -609,7 +609,7 @@ const ContactMessages = () => {
                 {/* Subject */}
                 <div>
                   <p className="text-sm text-gray-400 mb-2">Subject</p>
-                  <p className="text-lg font-medium text-white">
+                  <p className="text-lg font-medium text-gray-900 dark:text-white">
                     {selectedMessage.subject}
                   </p>
                 </div>
@@ -617,8 +617,8 @@ const ContactMessages = () => {
                 {/* Message */}
                 <div>
                   <p className="text-sm text-gray-400 mb-2">Message</p>
-                  <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                    <p className="text-white whitespace-pre-wrap">
+                  <div className="bg-gray-50 dark:bg-white/5 rounded-xl p-4 border border-gray-200 dark:border-white/10">
+                    <p className="text-gray-900 dark:text-white whitespace-pre-wrap">
                       {selectedMessage.message}
                     </p>
                   </div>
@@ -641,21 +641,21 @@ const ContactMessages = () => {
                   <div>
                     <p className="text-sm text-gray-400 mb-2">Admin Notes</p>
                     <div className="bg-yellow-500/10 rounded-xl p-4 border border-yellow-500/20">
-                      <p className="text-white">{selectedMessage.notes}</p>
+                      <p className="text-gray-900 dark:text-white">{selectedMessage.notes}</p>
                     </div>
                   </div>
                 )}
               </div>
 
               {/* Modal Actions */}
-              <div className="px-6 py-4 border-t border-white/10 flex flex-wrap gap-3">
+              <div className="px-6 py-4 border-t border-gray-200 dark:border-white/10 flex flex-wrap gap-3 bg-gray-50 dark:bg-white/5">
                 {selectedMessage.status !== "read" && (
                   <button
                     onClick={() =>
                       handleStatusUpdate(selectedMessage._id, "read")
                     }
                     disabled={updating}
-                    className="px-4 py-2 bg-white/5 border border-white/10 text-gray-300 rounded-xl hover:bg-white/10 transition-all disabled:opacity-50 flex items-center gap-2 font-medium"
+                    className="px-4 py-2 bg-white dark:bg-black border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-100 dark:hover:bg-white/10 transition-all disabled:opacity-50 flex items-center gap-2 font-medium"
                   >
                     {updating ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -672,7 +672,7 @@ const ContactMessages = () => {
                       handleStatusUpdate(selectedMessage._id, "replied")
                     }
                     disabled={updating}
-                    className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all disabled:opacity-50 flex items-center gap-2 font-medium shadow-lg shadow-green-500/25"
+                    className="px-4 py-2 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 text-white rounded-xl transition-all disabled:opacity-50 flex items-center gap-2 font-medium shadow-sm"
                   >
                     {updating ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -689,7 +689,7 @@ const ContactMessages = () => {
                       handleStatusUpdate(selectedMessage._id, "archived")
                     }
                     disabled={updating}
-                    className="px-4 py-2 bg-gradient-to-r from-purple-500 to-violet-500 text-white rounded-xl hover:from-purple-600 hover:to-violet-600 transition-all disabled:opacity-50 flex items-center gap-2 font-medium shadow-lg shadow-purple-500/25"
+                    className="px-4 py-2 bg-white dark:bg-black border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-100 dark:hover:bg-white/10 transition-all disabled:opacity-50 flex items-center gap-2 font-medium"
                   >
                     {updating ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -702,7 +702,7 @@ const ContactMessages = () => {
 
                 <button
                   onClick={() => handleDelete(selectedMessage._id)}
-                  className="px-4 py-2 bg-gradient-to-r from-red-500 to-rose-500 text-white rounded-xl hover:from-red-600 hover:to-rose-600 transition-all flex items-center gap-2 font-medium ml-auto shadow-lg shadow-red-500/25"
+                  className="px-4 py-2 bg-white dark:bg-black border border-red-200 dark:border-red-500/30 text-red-600 dark:text-red-400 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/30 transition-all flex items-center gap-2 font-medium ml-auto"
                 >
                   <Trash2 className="w-4 h-4" />
                   Delete

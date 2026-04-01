@@ -61,7 +61,7 @@ const AdminDashboard = () => {
       <div className="flex items-center justify-center h-[60vh]">
         <div className="flex flex-col items-center gap-4">
           <div className="relative">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-500 via-violet-500 to-blue-500 animate-pulse shadow-2xl shadow-purple-500/30"></div>
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary-600 to-blue-600 animate-pulse shadow-2xl shadow-blue-500/30"></div>
             <div className="absolute inset-0 flex items-center justify-center">
               <BarChart3 className="w-8 h-8 text-white animate-pulse" />
             </div>
@@ -111,8 +111,8 @@ const AdminDashboard = () => {
       title: "AI API Calls",
       value: stats?.stats?.totalAICalls || 0,
       icon: Sparkles,
-      gradient: "from-purple-500 to-violet-500",
-      bgGradient: "from-purple-500/10 to-violet-500/10",
+      gradient: "from-indigo-500 to-blue-500",
+      bgGradient: "from-indigo-500/10 to-blue-500/10",
       change: "+24%",
       trend: "up",
     },
@@ -172,7 +172,7 @@ const AdminDashboard = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-full text-sm font-medium text-purple-400 mb-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-primary-50 dark:bg-primary-500/15 border border-primary-200 dark:border-primary-500/25 rounded-full text-sm font-medium text-primary-700 dark:text-primary-300 mb-3">
             <BarChart3 className="w-4 h-4" />
             Analytics Overview
           </div>
@@ -185,7 +185,7 @@ const AdminDashboard = () => {
         </div>
         <button
           onClick={fetchDashboardStats}
-          className="self-start sm:self-auto px-4 py-2.5 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white rounded-xl font-medium transition-all shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 flex items-center gap-2"
+          className="self-start sm:self-auto px-4 py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 text-white rounded-xl font-medium transition-all shadow-sm hover:shadow-md flex items-center gap-2"
         >
           <Activity className="w-4 h-4" />
           Refresh
@@ -216,7 +216,7 @@ const AdminDashboard = () => {
                     <Icon className="w-6 h-6 text-white" />
                   </div>
                   <div
-                    className={`flex items-center gap-1 text-xs font-medium ${stat.trend === "up" ? "text-green-400" : "text-red-400"} bg-white/10 dark:bg-white/5 px-2 py-1 rounded-full`}
+                    className={`flex items-center gap-1 text-xs font-medium ${stat.trend === "up" ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"} bg-white/70 dark:bg-white/5 px-2 py-1 rounded-full`}
                   >
                     <TrendIcon className="w-3 h-3" />
                     <span>{stat.change}</span>
@@ -428,7 +428,7 @@ const AdminDashboard = () => {
                 className="flex items-center justify-between p-3 bg-gray-50 dark:bg-white/5 rounded-xl border border-gray-100 dark:border-white/5 hover:border-gray-200 dark:hover:border-white/10 transition-all"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white font-semibold text-sm">
+                  <div className="w-10 h-10 rounded-full bg-gray-900 dark:bg-white flex items-center justify-center text-white dark:text-black font-semibold text-sm">
                     {user.name?.charAt(0)?.toUpperCase() || "U"}
                   </div>
                   <div className="min-w-0">
@@ -600,7 +600,7 @@ const AdminDashboard = () => {
                 >
                   <td className="py-4 px-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white text-xs font-semibold">
+                      <div className="w-8 h-8 rounded-full bg-gray-900 dark:bg-white flex items-center justify-center text-white dark:text-black text-xs font-semibold">
                         {sub.userId?.name?.charAt(0)?.toUpperCase() || "U"}
                       </div>
                       <div className="min-w-0">
@@ -617,7 +617,7 @@ const AdminDashboard = () => {
                     <span
                       className={`px-2.5 py-1 rounded-lg text-xs font-medium ${
                         sub.tier === "pro"
-                          ? "bg-purple-500/10 text-purple-400"
+                          ? "bg-primary-100 text-primary-700 dark:bg-primary-500/15 dark:text-primary-300"
                           : sub.tier === "one-time"
                             ? "bg-blue-500/10 text-blue-400"
                             : sub.tier === "student"

@@ -215,7 +215,7 @@ const AdminSettings = () => {
         <div className="flex gap-3">
           <button
             onClick={fetchData}
-            className="flex items-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-xl transition-all"
+            className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-black hover:bg-gray-100 dark:hover:bg-white/10 border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-xl transition-all"
           >
             <RefreshCw className="w-4 h-4" />
             Refresh
@@ -231,7 +231,7 @@ const AdminSettings = () => {
           <button
             onClick={handleSaveSettings}
             disabled={saving}
-            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-xl hover:opacity-90 transition-all disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 text-white rounded-xl transition-all disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
             {saving ? "Saving..." : "Save Changes"}
@@ -241,14 +241,14 @@ const AdminSettings = () => {
 
       {/* Success/Error Messages */}
       {success && (
-        <div className="bg-green-500/10 border border-green-500/20 rounded-2xl p-4 flex items-center gap-3">
+        <div className="bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 rounded-2xl p-4 flex items-center gap-3">
           <CheckCircle className="w-5 h-5 text-green-400" />
           <p className="text-green-400">{success}</p>
         </div>
       )}
 
       {error && (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 flex items-center gap-3">
+        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-2xl p-4 flex items-center gap-3">
           <AlertCircle className="w-5 h-5 text-red-400" />
           <p className="text-red-400">{error}</p>
         </div>
@@ -313,7 +313,7 @@ const AdminSettings = () => {
                   {systemStats.storage.used} MB
                 </p>
               </div>
-              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/25">
+              <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-blue-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
                 <HardDrive className="w-6 h-6 text-white" />
               </div>
             </div>

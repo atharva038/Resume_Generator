@@ -193,13 +193,13 @@ const AdminFeedback = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <span className="px-3 py-1 bg-purple-500/10 border border-purple-500/20 rounded-full text-purple-400 text-xs font-medium inline-block mb-3">
+        <span className="px-3 py-1 bg-primary-50 dark:bg-primary-500/15 border border-primary-200 dark:border-primary-500/25 rounded-full text-primary-700 dark:text-primary-300 text-xs font-medium inline-block mb-3">
           Feedback Center
         </span>
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-white via-purple-200 to-white bg-clip-text text-transparent">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
           User Feedback Management
         </h1>
-        <p className="text-gray-400 mt-1">
+        <p className="text-gray-600 dark:text-gray-400 mt-1">
           View and manage user feedback, suggestions, and bug reports
         </p>
       </div>
@@ -207,11 +207,11 @@ const AdminFeedback = () => {
       {/* Statistics Cards */}
       {stats && (
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          <div className="bg-white/5 dark:border-white/10 backdrop-blur-xl rounded-2xl p-5 border border-white/10">
+          <div className="bg-white dark:bg-black rounded-2xl p-5 border border-gray-200 dark:border-white/10">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-400">Total Feedback</p>
-                <p className="text-2xl font-bold text-white mt-1">
+                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
                   {stats.total}
                 </p>
               </div>
@@ -220,7 +220,7 @@ const AdminFeedback = () => {
               </div>
             </div>
           </div>
-          <div className="bg-white/5 dark:border-white/10 backdrop-blur-xl rounded-2xl p-5 border border-white/10">
+          <div className="bg-white dark:bg-black rounded-2xl p-5 border border-gray-200 dark:border-white/10">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-400">Open</p>
@@ -233,7 +233,7 @@ const AdminFeedback = () => {
               </div>
             </div>
           </div>
-          <div className="bg-white/5 dark:border-white/10 backdrop-blur-xl rounded-2xl p-5 border border-white/10">
+          <div className="bg-white dark:bg-black rounded-2xl p-5 border border-gray-200 dark:border-white/10">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-400">In Progress</p>
@@ -246,7 +246,7 @@ const AdminFeedback = () => {
               </div>
             </div>
           </div>
-          <div className="bg-white/5 dark:border-white/10 backdrop-blur-xl rounded-2xl p-5 border border-white/10">
+          <div className="bg-white dark:bg-black rounded-2xl p-5 border border-gray-200 dark:border-white/10">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-400">Resolved</p>
@@ -259,7 +259,7 @@ const AdminFeedback = () => {
               </div>
             </div>
           </div>
-          <div className="bg-white/5 dark:border-white/10 backdrop-blur-xl rounded-2xl p-5 border border-white/10">
+          <div className="bg-white dark:bg-black rounded-2xl p-5 border border-gray-200 dark:border-white/10">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-400">Bugs Reported</p>
@@ -276,7 +276,7 @@ const AdminFeedback = () => {
       )}
 
       {/* Filters */}
-      <div className="bg-white/5 dark:border-white/10 backdrop-blur-xl rounded-2xl p-5 border border-white/10">
+      <div className="bg-white dark:bg-black rounded-2xl p-5 border border-gray-200 dark:border-white/10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {/* Search */}
           <div className="relative">
@@ -288,7 +288,7 @@ const AdminFeedback = () => {
               onChange={(e) =>
                 setFilters({...filters, search: e.target.value, page: 1})
               }
-              className="w-full pl-10 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
+              className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-black border border-gray-200 dark:border-white/10 rounded-xl text-gray-900 dark:text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-all"
             />
           </div>
 
@@ -298,18 +298,18 @@ const AdminFeedback = () => {
             onChange={(e) =>
               setFilters({...filters, type: e.target.value, page: 1})
             }
-            className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
+            className="w-full px-4 py-2.5 bg-white dark:bg-black border border-gray-200 dark:border-white/10 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-all"
           >
-            <option value="" className="bg-gray-900">
+            <option value="" className="bg-white dark:bg-gray-900">
               All Types
             </option>
-            <option value="improvement" className="bg-gray-900">
+            <option value="improvement" className="bg-white dark:bg-gray-900">
               Improvements
             </option>
-            <option value="feedback" className="bg-gray-900">
+            <option value="feedback" className="bg-white dark:bg-gray-900">
               Feedback
             </option>
-            <option value="bug" className="bg-gray-900">
+            <option value="bug" className="bg-white dark:bg-gray-900">
               Bugs
             </option>
           </select>
@@ -320,21 +320,21 @@ const AdminFeedback = () => {
             onChange={(e) =>
               setFilters({...filters, status: e.target.value, page: 1})
             }
-            className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
+            className="w-full px-4 py-2.5 bg-white dark:bg-black border border-gray-200 dark:border-white/10 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-all"
           >
-            <option value="" className="bg-gray-900">
+            <option value="" className="bg-white dark:bg-gray-900">
               All Status
             </option>
-            <option value="open" className="bg-gray-900">
+            <option value="open" className="bg-white dark:bg-gray-900">
               Open
             </option>
-            <option value="in-progress" className="bg-gray-900">
+            <option value="in-progress" className="bg-white dark:bg-gray-900">
               In Progress
             </option>
-            <option value="resolved" className="bg-gray-900">
+            <option value="resolved" className="bg-white dark:bg-gray-900">
               Resolved
             </option>
-            <option value="closed" className="bg-gray-900">
+            <option value="closed" className="bg-white dark:bg-gray-900">
               Closed
             </option>
           </select>
@@ -345,21 +345,21 @@ const AdminFeedback = () => {
             onChange={(e) =>
               setFilters({...filters, priority: e.target.value, page: 1})
             }
-            className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
+            className="w-full px-4 py-2.5 bg-white dark:bg-black border border-gray-200 dark:border-white/10 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-all"
           >
-            <option value="" className="bg-gray-900">
+            <option value="" className="bg-white dark:bg-gray-900">
               All Priorities
             </option>
-            <option value="low" className="bg-gray-900">
+            <option value="low" className="bg-white dark:bg-gray-900">
               Low
             </option>
-            <option value="medium" className="bg-gray-900">
+            <option value="medium" className="bg-white dark:bg-gray-900">
               Medium
             </option>
-            <option value="high" className="bg-gray-900">
+            <option value="high" className="bg-white dark:bg-gray-900">
               High
             </option>
-            <option value="critical" className="bg-gray-900">
+            <option value="critical" className="bg-white dark:bg-gray-900">
               Critical
             </option>
           </select>
@@ -367,7 +367,7 @@ const AdminFeedback = () => {
       </div>
 
       {/* Feedback List */}
-      <div className="bg-white/5 dark:border-white/10 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden">
+      <div className="bg-white dark:bg-black rounded-2xl border border-gray-200 dark:border-white/10 overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center py-16">
             <div className="relative">
@@ -384,19 +384,19 @@ const AdminFeedback = () => {
             <p className="text-gray-400">No feedback found</p>
           </div>
         ) : (
-          <div className="divide-y divide-white/10">
+          <div className="divide-y divide-gray-100 dark:divide-white/10">
             {feedbacks.map((feedback) => {
               const statusBadge = getStatusBadge(feedback.status);
               return (
                 <div
                   key={feedback._id}
-                  className="p-6 hover:bg-white/5 transition-colors"
+                  className="p-6 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
                         {getTypeIcon(feedback.type)}
-                        <h3 className="font-semibold text-white text-lg">
+                        <h3 className="font-semibold text-gray-900 dark:text-white text-lg">
                           {feedback.title}
                         </h3>
                         <span
@@ -434,11 +434,11 @@ const AdminFeedback = () => {
                       </div>
 
                       {feedback.adminResponse && (
-                        <div className="mt-4 p-4 bg-purple-500/10 rounded-xl border border-purple-500/20">
-                          <p className="text-xs font-medium text-purple-400 mb-1">
+                        <div className="mt-4 p-4 bg-primary-50 dark:bg-primary-500/10 rounded-xl border border-primary-200 dark:border-primary-500/20">
+                          <p className="text-xs font-medium text-primary-700 dark:text-primary-300 mb-1">
                             Admin Response:
                           </p>
-                          <p className="text-sm text-gray-300">
+                          <p className="text-sm text-gray-700 dark:text-gray-300">
                             {feedback.adminResponse}
                           </p>
                         </div>
@@ -452,7 +452,7 @@ const AdminFeedback = () => {
                           onClick={() =>
                             handleStatusUpdate(feedback._id, "in-progress")
                           }
-                          className="px-3 py-1.5 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white text-sm rounded-lg font-medium transition-all shadow-lg shadow-yellow-500/25"
+                          className="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-sm rounded-lg font-medium transition-all"
                           title="Mark as In Progress"
                         >
                           In Progress
@@ -464,7 +464,7 @@ const AdminFeedback = () => {
                           onClick={() =>
                             handleStatusUpdate(feedback._id, "resolved")
                           }
-                          className="px-3 py-1.5 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white text-sm rounded-lg font-medium transition-all shadow-lg shadow-green-500/25"
+                          className="px-3 py-1.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 text-white text-sm rounded-lg font-medium transition-all"
                           title="Mark as Resolved"
                         >
                           Resolve
@@ -478,7 +478,7 @@ const AdminFeedback = () => {
                           setStatusUpdate(feedback.status);
                           setShowModalTrue();
                         }}
-                        className="p-2 hover:bg-purple-500/20 rounded-xl text-purple-400 transition-colors"
+                        className="p-2 hover:bg-primary-50 dark:hover:bg-primary-500/20 rounded-xl text-primary-700 dark:text-primary-400 transition-colors"
                         title="Add Response"
                       >
                         <MessageCircle className="w-5 h-5" />
@@ -503,13 +503,13 @@ const AdminFeedback = () => {
       {/* Response Modal */}
       {showModal && selectedFeedback && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-900/95 backdrop-blur-xl rounded-2xl max-w-2xl w-full p-6 border border-white/10 shadow-2xl">
-            <h3 className="text-xl font-bold text-white mb-4">
+          <div className="bg-white dark:bg-black rounded-2xl max-w-2xl w-full p-6 border border-gray-200 dark:border-white/10 shadow-2xl">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
               Respond to Feedback
             </h3>
 
-            <div className="mb-4 p-4 bg-white/5 rounded-xl border border-white/10">
-              <p className="font-semibold text-white mb-2">
+            <div className="mb-4 p-4 bg-gray-50 dark:bg-white/5 rounded-xl border border-gray-200 dark:border-white/10">
+              <p className="font-semibold text-gray-900 dark:text-white mb-2">
                 {selectedFeedback.title}
               </p>
               <p className="text-sm text-gray-400">
@@ -519,34 +519,34 @@ const AdminFeedback = () => {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Status
                 </label>
                 <select
                   value={statusUpdate}
                   onChange={(e) => setStatusUpdate(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
+                  className="w-full px-4 py-2.5 bg-white dark:bg-black border border-gray-200 dark:border-white/10 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-all"
                 >
-                  <option value="open" className="bg-gray-900">
+                  <option value="open" className="bg-white dark:bg-gray-900">
                     Open
                   </option>
-                  <option value="in-progress" className="bg-gray-900">
+                  <option value="in-progress" className="bg-white dark:bg-gray-900">
                     In Progress
                   </option>
-                  <option value="resolved" className="bg-gray-900">
+                  <option value="resolved" className="bg-white dark:bg-gray-900">
                     Resolved
                   </option>
-                  <option value="closed" className="bg-gray-900">
+                  <option value="closed" className="bg-white dark:bg-gray-900">
                     Closed
                   </option>
-                  <option value="duplicate" className="bg-gray-900">
+                  <option value="duplicate" className="bg-white dark:bg-gray-900">
                     Duplicate
                   </option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Response
                 </label>
                 <textarea
@@ -554,14 +554,14 @@ const AdminFeedback = () => {
                   onChange={(e) => setResponseText(e.target.value)}
                   rows={4}
                   placeholder="Write your response to the user..."
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all resize-none"
+                  className="w-full px-4 py-3 bg-white dark:bg-black border border-gray-200 dark:border-white/10 rounded-xl text-gray-900 dark:text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-all resize-none"
                 />
               </div>
 
               <div className="flex gap-3 pt-2">
                 <button
                   onClick={handleResponseSubmit}
-                  className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-2.5 px-4 rounded-xl font-medium transition-all shadow-lg shadow-purple-500/25"
+                  className="flex-1 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 text-white py-2.5 px-4 rounded-xl font-medium transition-all"
                 >
                   Submit Response
                 </button>
@@ -572,7 +572,7 @@ const AdminFeedback = () => {
                     setResponseText("");
                     setStatusUpdate("");
                   }}
-                  className="px-6 py-2.5 bg-white/5 border border-white/10 text-gray-300 rounded-xl hover:bg-white/10 transition-all font-medium"
+                  className="px-6 py-2.5 bg-white dark:bg-black border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-100 dark:hover:bg-white/10 transition-all font-medium"
                 >
                   Cancel
                 </button>
