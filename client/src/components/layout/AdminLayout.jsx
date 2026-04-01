@@ -169,8 +169,12 @@ const AdminLayout = () => {
             </button>
 
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 bg-gray-900 dark:bg-white rounded-xl flex items-center justify-center shadow-sm">
-                <Shield className="w-5 h-5 text-white" />
+              <div className="w-9 h-9 bg-white dark:bg-zinc-900 rounded-xl flex items-center justify-center shadow-sm border border-gray-200 dark:border-white/10 overflow-hidden">
+                <img
+                  src="/orb-logo.png"
+                  alt="SmartNShine logo"
+                  className="w-7 h-7 object-contain"
+                />
               </div>
               <div>
                 <h1 className="text-lg font-bold text-gray-900 dark:text-white">
