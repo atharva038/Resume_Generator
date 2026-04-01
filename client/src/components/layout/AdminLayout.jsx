@@ -4,14 +4,12 @@ import {useToggle} from "@/hooks";
 import {
   LayoutDashboard,
   Users,
-  FileText,
   BarChart3,
   MessageSquare,
   Settings,
   Shield,
   LogOut,
   Menu,
-  X,
   FileBox, 
   Activity,
   Moon,
@@ -144,18 +142,15 @@ const AdminLayout = () => {
     setIsMobileMenuOpenFalse();
   };
 
-  return (
-    <div className="min-h-screen bg-white dark:bg-[#0C0C0C] overflow-x-hidden">
-      {/* Subtle grid background pattern */}
-      {/* Grid background removed per design update */}
+  const activeMenuItem =
+    menuItems.find((item) => location.pathname.startsWith(item.path)) ||
+    menuItems[0];
 
-      {/* Ambient gradient blur effects */}
-      <div className="fixed top-20 left-10 w-[400px] h-[400px] bg-purple-500/20 dark:bg-purple-500/10 rounded-full blur-[120px] pointer-events-none"></div>
-      <div className="fixed bottom-20 right-10 w-[350px] h-[350px] bg-blue-500/20 dark:bg-blue-500/10 rounded-full blur-[120px] pointer-events-none"></div>
-      <div className="fixed top-1/2 left-1/2 w-[300px] h-[300px] bg-cyan-500/10 dark:bg-cyan-500/5 rounded-full blur-[100px] pointer-events-none"></div>
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 overflow-x-hidden">
 
       {/* Top Navigation Bar */}
-      <nav className="bg-white/70 dark:bg-black/50 backdrop-blur-xl border-b border-gray-200/50 dark:border-white/10 fixed top-0 left-0 right-0 z-30">
+      <nav className="bg-white/90 dark:bg-black/90 backdrop-blur-xl border-b border-gray-200 dark:border-white/10 fixed top-0 left-0 right-0 z-30">
         <div className="px-4 sm:px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4">
             {/* Single Menu Toggle for All Devices */}
@@ -167,27 +162,30 @@ const AdminLayout = () => {
                   toggleSidebarOpen();
                 }
               }}
-              className="p-2 hover:bg-white/50 dark:hover:bg-white/10 rounded-lg transition-all duration-200"
+              className="p-2 hover:bg-gray-100 dark:hover:bg-zinc-900 rounded-lg transition-all duration-200"
               aria-label="Toggle menu"
             >
               <Menu className="w-5 h-5 text-gray-700 dark:text-gray-300" />
             </button>
 
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 bg-gradient-to-br from-purple-500 via-violet-500 to-blue-500 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/25">
+              <div className="w-9 h-9 bg-gray-900 dark:bg-white rounded-xl flex items-center justify-center shadow-sm">
                 <Shield className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1 className="text-lg font-bold bg-gradient-to-r from-purple-500 via-violet-500 to-blue-500 bg-clip-text text-transparent">
+                <h1 className="text-lg font-bold text-gray-900 dark:text-white">
                   Admin Panel
                 </h1>
+                <p className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">
+                  {activeMenuItem?.label}
+                </p>
               </div>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
             {/* User Info */}
-            <div className="text-right hidden md:block px-3 py-1.5 bg-white/50 dark:bg-white/5 rounded-lg border border-gray-200/50 dark:border-white/10">
+            <div className="text-right hidden md:block px-3 py-1.5 bg-white dark:bg-black rounded-lg border border-gray-200 dark:border-white/10">
               <p className="text-sm font-medium text-gray-900 dark:text-white">
                 {user?.name || "Admin"}
               </p>
@@ -199,7 +197,7 @@ const AdminLayout = () => {
             {/* Dark Mode Toggle */}
             <button
               onClick={toggleDarkMode}
-              className="p-2.5 bg-white/50 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 rounded-lg transition-all duration-200 border border-gray-200/50 dark:border-white/10"
+              className="p-2.5 bg-white dark:bg-black hover:bg-gray-100 dark:hover:bg-zinc-900 rounded-lg transition-all duration-200 border border-gray-200 dark:border-white/10"
               title={isDarkMode ? "Light Mode" : "Dark Mode"}
               aria-label={
                 isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"
@@ -215,7 +213,7 @@ const AdminLayout = () => {
             {/* Logout Button */}
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white rounded-lg transition-all duration-200 shadow-lg shadow-red-500/25 hover:shadow-red-500/40"
+              className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-black hover:bg-red-50 dark:hover:bg-red-950/30 text-red-600 dark:text-red-400 rounded-lg transition-all duration-200 border border-gray-200 dark:border-white/10"
               aria-label="Logout"
             >
               <LogOut className="w-4 h-4" />
@@ -235,7 +233,7 @@ const AdminLayout = () => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-16 bottom-0 bg-white/70 dark:bg-black/50 backdrop-blur-xl border-r border-gray-200/50 dark:border-white/10 transition-all duration-300 overflow-hidden
+        className={`fixed top-16 bottom-0 bg-white dark:bg-black border-r border-gray-200 dark:border-white/10 transition-all duration-300 overflow-hidden
           ${isMobileMenuOpen ? "left-0 z-40" : "-left-full z-40"} 
           w-64 
           lg:z-20
@@ -257,8 +255,8 @@ const AdminLayout = () => {
                   onClick={closeMobileMenu}
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
                     isActive
-                      ? "bg-gradient-to-r from-purple-500/20 to-blue-500/20 text-purple-600 dark:text-purple-300 font-medium border border-purple-500/30"
-                      : "text-gray-600 dark:text-gray-400 hover:bg-white/50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white"
+                      ? "bg-gray-900/10 text-gray-900 dark:bg-white/10 dark:text-white font-medium"
+                      : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-900 hover:text-gray-900 dark:hover:text-white"
                   }`}
                 >
                   <Icon
@@ -277,9 +275,9 @@ const AdminLayout = () => {
             <Link
               to="/"
               onClick={closeMobileMenu}
-              className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-xl hover:from-purple-600 hover:to-blue-600 transition-all duration-200 shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40"
+              className="flex items-center gap-3 px-4 py-3 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 text-white rounded-xl transition-all duration-200"
             >
-              <FileText className="w-5 h-5 flex-shrink-0" />
+              <Shield className="w-5 h-5 flex-shrink-0" />
               <span className="font-medium">Back to Site</span>
             </Link>
           </div>
@@ -290,7 +288,7 @@ const AdminLayout = () => {
       {!isSidebarOpen && (
         <button
           onClick={setIsSidebarOpenTrue}
-          className="hidden lg:flex fixed left-4 top-20 z-30 p-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 items-center justify-center group"
+          className="hidden lg:flex fixed left-4 top-20 z-30 p-3 bg-gray-900 dark:bg-white text-white dark:text-black rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 items-center justify-center group"
           aria-label="Open sidebar"
           title="Open Menu"
         >

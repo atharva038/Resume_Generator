@@ -40,14 +40,14 @@ const AdminLogs = () => {
         </p>
       </div>
 
-      <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
+      <div className="bg-white dark:bg-black rounded-2xl p-6 border border-gray-200 dark:border-white/10">
         {loading ? (
           <div className="flex items-center justify-center py-16">
             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-500 animate-pulse"></div>
           </div>
         ) : logs.length === 0 ? (
           <div className="text-center py-16">
-            <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-gray-100 dark:bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <Activity className="w-8 h-8 text-gray-400" />
             </div>
             <p className="text-gray-400">No activity logs yet</p>
@@ -57,14 +57,14 @@ const AdminLogs = () => {
             {logs.map((log, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between p-4 bg-white/5 hover:bg-white/[0.07] rounded-xl border border-white/5 hover:border-white/10 transition-all"
+                className="flex items-center justify-between p-4 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 rounded-xl border border-gray-200 dark:border-white/5 hover:border-gray-300 dark:hover:border-white/10 transition-all"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white text-sm font-medium">
+                  <div className="w-10 h-10 rounded-xl bg-gray-900 dark:bg-white flex items-center justify-center text-white dark:text-black text-sm font-medium">
                     {log.adminId?.name?.charAt(0) || "A"}
                   </div>
                   <div>
-                    <p className="font-medium text-white">{log.description}</p>
+                    <p className="font-medium text-gray-900 dark:text-white">{log.description}</p>
                     <p className="text-sm text-gray-400">
                       by {log.adminId?.name || "Unknown Admin"}
                     </p>

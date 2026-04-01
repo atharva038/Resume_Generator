@@ -241,7 +241,7 @@ const UserManagement = () => {
       </div>
 
       {/* Filters */}
-      <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
+      <div className="bg-white dark:bg-black rounded-2xl p-6 border border-gray-200 dark:border-white/10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {/* Search */}
           <div className="md:col-span-2">
@@ -258,7 +258,7 @@ const UserManagement = () => {
                     page: 1,
                   }))
                 }
-                className="w-full pl-10 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 text-white placeholder-gray-500 transition-all"
+                className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-black border border-gray-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 text-gray-900 dark:text-white placeholder-gray-500 transition-all"
               />
             </div>
           </div>
@@ -270,15 +270,15 @@ const UserManagement = () => {
               onChange={(e) =>
                 setFilters((prev) => ({...prev, role: e.target.value, page: 1}))
               }
-              className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-purple-500/50 text-white transition-all"
+              className="w-full px-4 py-2.5 bg-white dark:bg-black border border-gray-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-primary-500/40 text-gray-900 dark:text-white transition-all"
             >
-              <option value="" className="bg-[#1a1a1a]">
+              <option value="" className="bg-white dark:bg-[#1a1a1a]">
                 All Roles
               </option>
-              <option value="user" className="bg-[#1a1a1a]">
+              <option value="user" className="bg-white dark:bg-[#1a1a1a]">
                 User
               </option>
-              <option value="admin" className="bg-[#1a1a1a]">
+              <option value="admin" className="bg-white dark:bg-[#1a1a1a]">
                 Admin
               </option>
             </select>
@@ -295,15 +295,15 @@ const UserManagement = () => {
                   page: 1,
                 }))
               }
-              className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-purple-500/50 text-white transition-all"
+              className="w-full px-4 py-2.5 bg-white dark:bg-black border border-gray-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-primary-500/40 text-gray-900 dark:text-white transition-all"
             >
-              <option value="" className="bg-[#1a1a1a]">
+              <option value="" className="bg-white dark:bg-[#1a1a1a]">
                 All Status
               </option>
-              <option value="active" className="bg-[#1a1a1a]">
+              <option value="active" className="bg-white dark:bg-[#1a1a1a]">
                 Active
               </option>
-              <option value="disabled" className="bg-[#1a1a1a]">
+              <option value="disabled" className="bg-white dark:bg-[#1a1a1a]">
                 Disabled
               </option>
             </select>
@@ -312,7 +312,7 @@ const UserManagement = () => {
       </div>
 
       {/* Users Table */}
-      <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden">
+      <div className="bg-white dark:bg-black rounded-2xl border border-gray-200 dark:border-white/10 overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center h-64">
             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-blue-500 animate-pulse"></div>
@@ -325,7 +325,7 @@ const UserManagement = () => {
           <>
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-white/5 border-b border-white/10">
+                <thead className="bg-gray-50 dark:bg-white/5 border-b border-gray-200 dark:border-white/10">
                   <tr>
                     <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                       User
@@ -347,19 +347,19 @@ const UserManagement = () => {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5">
+                <tbody className="divide-y divide-gray-100 dark:divide-white/5">
                   {users.map((user) => (
                     <tr
                       key={user._id}
-                      className="hover:bg-white/5 transition-colors"
+                      className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
                     >
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white font-medium">
+                          <div className="w-10 h-10 rounded-full bg-gray-900 dark:bg-white flex items-center justify-center text-white dark:text-black font-medium">
                             {user.name?.charAt(0) || "U"}
                           </div>
                           <div>
-                            <div className="text-sm font-medium text-white">
+                            <div className="text-sm font-medium text-gray-900 dark:text-white">
                               {user.name}
                             </div>
                             <div className="text-sm text-gray-400">
@@ -374,12 +374,12 @@ const UserManagement = () => {
                           onChange={(e) =>
                             handleRoleChange(user._id, e.target.value)
                           }
-                          className="text-sm bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-white"
+                          className="text-sm bg-white dark:bg-black border border-gray-200 dark:border-white/10 rounded-lg px-3 py-1.5 text-gray-900 dark:text-white"
                         >
-                          <option value="user" className="bg-[#1a1a1a]">
+                          <option value="user" className="bg-white dark:bg-[#1a1a1a]">
                             User
                           </option>
-                          <option value="admin" className="bg-[#1a1a1a]">
+                          <option value="admin" className="bg-white dark:bg-[#1a1a1a]">
                             Admin
                           </option>
                         </select>
@@ -398,7 +398,7 @@ const UserManagement = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
-                            <span className="text-purple-400">
+                            <span className="text-primary-700 dark:text-primary-300">
                               {user.resumeCount || 0}
                             </span>{" "}
                             resumes
@@ -456,7 +456,7 @@ const UserManagement = () => {
             </div>
 
             {/* Pagination */}
-            <div className="bg-white/5 px-6 py-4 flex items-center justify-between border-t border-white/10">
+            <div className="bg-gray-50 dark:bg-white/5 px-6 py-4 flex items-center justify-between border-t border-gray-200 dark:border-white/10">
               <div className="text-sm text-gray-400">
                 Showing {(pagination.page - 1) * filters.limit + 1} to{" "}
                 {Math.min(pagination.page * filters.limit, pagination.total)} of{" "}
@@ -466,17 +466,17 @@ const UserManagement = () => {
                 <button
                   onClick={() => handlePageChange(pagination.page - 1)}
                   disabled={pagination.page === 1}
-                  className="p-2 bg-white/5 border border-white/10 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/10 transition-all"
+                  className="p-2 bg-white dark:bg-black border border-gray-200 dark:border-white/10 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-white/10 transition-all"
                 >
                   <ChevronLeft className="w-4 h-4 text-gray-400" />
                 </button>
-                <span className="text-sm text-gray-300 px-3">
+                <span className="text-sm text-gray-700 dark:text-gray-300 px-3">
                   Page {pagination.page} of {pagination.totalPages}
                 </span>
                 <button
                   onClick={() => handlePageChange(pagination.page + 1)}
                   disabled={pagination.page === pagination.totalPages}
-                  className="p-2 bg-white/5 border border-white/10 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/10 transition-all"
+                  className="p-2 bg-white dark:bg-black border border-gray-200 dark:border-white/10 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-white/10 transition-all"
                 >
                   <ChevronRight className="w-4 h-4 text-gray-400" />
                 </button>
