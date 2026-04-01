@@ -1453,6 +1453,7 @@ const Editor = () => {
             <RecommendationsPanel
               resumeData={resumeData}
               onEnhanceAll={handleEnhanceAll}
+              compact={true}
             />
           </div>
         </CollapsibleSection>
@@ -2201,7 +2202,7 @@ const Editor = () => {
                 {/* ATS Score + Job Match side by side */}
                 <div className="grid grid-cols-1 gap-4">
                   <div className="bg-white dark:bg-zinc-950 rounded-xl border border-gray-200 dark:border-zinc-800">
-                    <ScoreCard resumeData={resumeData} expanded={true} />
+                    <ScoreCard resumeData={resumeData} expanded={false} />
                   </div>
                   <div className="bg-white dark:bg-zinc-950 rounded-xl border border-gray-200 dark:border-zinc-800">
                     <JobSpecificScoreCard
@@ -2214,14 +2215,26 @@ const Editor = () => {
                 {/* Recommendations */}
                 <div className="bg-white dark:bg-zinc-950 rounded-xl border border-gray-200 dark:border-zinc-800">
                   <div className="p-4 sm:p-6">
-                    <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
-                      <Lightbulb className="w-4 h-4" />
-                      Improvement Recommendations
-                    </h3>
-                    <RecommendationsPanel
-                      resumeData={resumeData}
-                      onEnhanceAll={handleEnhanceAll}
-                    />
+                    <details>
+                      <summary className="list-none cursor-pointer">
+                        <div className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center justify-between gap-2">
+                          <span className="flex items-center gap-2">
+                            <Lightbulb className="w-4 h-4" />
+                            Improvement Recommendations
+                          </span>
+                          <span className="text-xs text-gray-500 dark:text-gray-400 font-normal">
+                            Expand
+                          </span>
+                        </div>
+                      </summary>
+                      <div className="mt-4">
+                        <RecommendationsPanel
+                          resumeData={resumeData}
+                          onEnhanceAll={handleEnhanceAll}
+                          compact={true}
+                        />
+                      </div>
+                    </details>
                   </div>
                 </div>
               </div>

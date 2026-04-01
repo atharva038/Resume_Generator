@@ -4,7 +4,6 @@ import SEO from "../components/common/SEO";
 import {
   Upload,
   FileText,
-  Sparkles,
   CheckCircle,
   XCircle,
   AlertCircle,
@@ -13,34 +12,29 @@ import {
   Zap,
   Brain,
   Award,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import {resumeAPI} from "@/api/api";
-import {JobMatchAnalyzer} from "@/components/features";
 import {useToggle} from "@/hooks";
 import {handleApiError} from "@/utils/errorHandler";
+import {getScoreTierMeta} from "@/utils/scorePresentation";
 
 const ATSAnalyzer = () => {
-  const [activeTab, setActiveTab] = useState("ats"); // "ats" or "ml"
+  const [activeTab] = useState("ats"); // "ats" or "ml"
   const [jobDescription, setJobDescription] = useState("");
   const [selectedResume, setSelectedResume] = useState(null);
   const [uploadedFile, setUploadedFile] = useState(null);
-  const [analyzing, toggleAnalyzing, setAnalyzingTrue, setAnalyzingFalse] =
-    useToggle(false);
+  const [analyzing, , setAnalyzingTrue, setAnalyzingFalse] = useToggle(false);
   const [analysisResult, setAnalysisResult] = useState(null);
   const [userResumes, setUserResumes] = useState([]);
-  const [
-    loadingResumes,
-    toggleLoadingResumes,
-    setLoadingResumesTrue,
-    setLoadingResumesFalse,
-  ] = useToggle(true);
-  const [selectedResumeData, setSelectedResumeData] = useState(null);
-  const [
-    loadingResumeData,
-    toggleLoadingResumeData,
-    setLoadingResumeDataTrue,
-    setLoadingResumeDataFalse,
-  ] = useToggle(false);
+  const [loadingResumes, , , setLoadingResumesFalse] = useToggle(true);
+  const [showAllImprovements, setShowAllImprovements] = useState(false);
+  const [expandedSections, setExpandedSections] = useState({
+    recommendations: true,
+    strengths: false,
+    keywords: false,
+  });
 
   // Load user's resumes on component mount
   useEffect(() => {
@@ -56,38 +50,6 @@ const ATSAnalyzer = () => {
     };
     loadResumes();
   }, [setLoadingResumesFalse]);
-
-  // Load selected resume data for ML analysis
-  useEffect(() => {
-    const loadResumeData = async () => {
-      if (selectedResume && activeTab === "ml") {
-        setLoadingResumeDataTrue();
-        try {
-          const response = await resumeAPI.getById(selectedResume);
-          // Backend returns resume directly, not wrapped in {data: {resume: ...}}
-          const resumeData = response.data;
-          console.log("Loaded resume data:", resumeData);
-          setSelectedResumeData(resumeData);
-          toast.success(
-            `Loaded: ${resumeData.title || resumeData.name || "Resume"}`,
-            {
-              icon: "📄",
-              duration: 2000,
-            }
-          );
-        } catch (error) {
-          console.error("Failed to load resume data:", error);
-          toast.error("Failed to load resume data");
-          setSelectedResumeData(null);
-        } finally {
-          setLoadingResumeDataFalse();
-        }
-      } else if (!selectedResume) {
-        setSelectedResumeData(null);
-      }
-    };
-    loadResumeData();
-  }, [selectedResume, activeTab]);
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
@@ -126,6 +88,12 @@ const ATSAnalyzer = () => {
 
     setAnalyzingTrue();
     setAnalysisResult(null);
+    setShowAllImprovements(false);
+    setExpandedSections({
+      recommendations: true,
+      strengths: false,
+      keywords: false,
+    });
 
     try {
       const formData = new FormData();
@@ -151,16 +119,11 @@ const ATSAnalyzer = () => {
     }
   };
 
-  const getScoreColor = (score) => {
-    if (score >= 75) return "text-green-600 dark:text-green-400";
-    if (score >= 50) return "text-orange-600 dark:text-orange-400";
-    return "text-red-600 dark:text-red-400";
-  };
-
-  const getScoreBgColor = (score) => {
-    if (score >= 75) return "bg-green-100 dark:bg-green-900/20";
-    if (score >= 50) return "bg-orange-100 dark:bg-orange-900/20";
-    return "bg-red-100 dark:bg-red-900/20";
+  const toggleSection = (section) => {
+    setExpandedSections((prev) => ({
+      ...prev,
+      [section]: !prev[section],
+    }));
   };
 
   return (
@@ -424,207 +387,304 @@ const ATSAnalyzer = () => {
                 )}
 
                 {analysisResult && (
-                  <div className="space-y-6">
-                    {/* Match Score Card */}
-                    <div className="bg-white dark:bg-zinc-950 rounded-xl p-8 border border-gray-200 dark:border-zinc-800">
-                      <div className="text-center">
-                        <h3 className="text-lg font-semibold mb-6 text-white">
-                          ATS Match Score
-                        </h3>
-                        <div className="relative w-48 h-48 mx-auto mb-6">
-                          {/* Background Circle */}
-                          <svg className="w-full h-full transform -rotate-90">
-                            <circle
-                              cx="96"
-                              cy="96"
-                              r="80"
-                              stroke="currentColor"
-                              strokeWidth="16"
-                              fill="none"
-                              className="text-gray-200 dark:text-gray-700"
-                            />
-                            <circle
-                              cx="96"
-                              cy="96"
-                              r="80"
-                              stroke="url(#gradient)"
-                              strokeWidth="16"
-                              fill="none"
-                              strokeDasharray={`${2 * Math.PI * 80}`}
-                              strokeDashoffset={`${
-                                2 *
-                                Math.PI *
-                                80 *
-                                (1 - analysisResult.match_score / 100)
-                              }`}
-                              strokeLinecap="round"
-                              style={{
-                                transition:
-                                  "stroke-dashoffset 1.5s ease-in-out",
-                              }}
-                            />
-                            <defs>
-                              <linearGradient
-                                id="gradient"
-                                x1="0%"
-                                y1="0%"
-                                x2="100%"
-                                y2="100%"
-                              >
-                                <stop
-                                  offset="0%"
-                                  stopColor={
-                                    analysisResult.match_score >= 75
-                                      ? "#10b981"
-                                      : analysisResult.match_score >= 50
-                                        ? "#f59e0b"
-                                        : "#ef4444"
-                                  }
-                                />
-                                <stop
-                                  offset="100%"
-                                  stopColor={
-                                    analysisResult.match_score >= 75
-                                      ? "#059669"
-                                      : analysisResult.match_score >= 50
-                                        ? "#d97706"
-                                        : "#dc2626"
-                                  }
-                                />
-                              </linearGradient>
-                            </defs>
-                          </svg>
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="text-center">
-                              <div
-                                className={`text-5xl font-bold ${getScoreColor(
-                                  analysisResult.match_score || 0
-                                )}`}
-                              >
-                                {analysisResult.match_score || 0}%
-                              </div>
-                              <div className="text-sm text-gray-600 dark:text-gray-400 mt-1 font-medium">
-                                Match Rate
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                  <div className="space-y-4">
+                    {(() => {
+                      const matchScore = analysisResult.match_score || 0;
+                      const scoreMeta = getScoreTierMeta(matchScore);
+                      const improvements = analysisResult.improvements || [];
+                      const strengths = analysisResult.strengths || [];
+                      const missingKeywords = analysisResult.missing_keywords || [];
+                      const visibleImprovements = showAllImprovements
+                        ? improvements
+                        : improvements.slice(0, 5);
 
-                        <div
-                          className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium ${
-                            analysisResult.eligible
-                              ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
-                              : "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300"
-                          }`}
-                        >
-                          {analysisResult.eligible ? (
-                            <>
-                              <CheckCircle className="w-5 h-5" />
-                              Strong Match
-                            </>
-                          ) : (
-                            <>
-                              <AlertCircle className="w-5 h-5" />
-                              Room for Improvement
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Strengths */}
-                    {analysisResult.strengths &&
-                      analysisResult.strengths.length > 0 && (
-                        <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-6 border border-green-200 dark:border-green-800">
-                          <div className="flex items-center gap-3 mb-4">
-                            <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
-                              <CheckCircle className="w-6 h-6 text-white" />
-                            </div>
-                            <h3 className="text-lg font-bold text-green-800 dark:text-green-300">
-                              Your Strengths
-                            </h3>
-                          </div>
-                          <ul className="space-y-3">
-                            {analysisResult.strengths.map((strength, index) => (
-                              <li
-                                key={index}
-                                className="flex items-start gap-3 p-3 bg-black/30 rounded-lg"
+                      return (
+                        <>
+                          {/* Compact Score Hero */}
+                          <div className="bg-white dark:bg-zinc-950 rounded-xl p-5 border border-gray-200 dark:border-zinc-800">
+                            <div className="flex items-start justify-between gap-4 mb-4">
+                              <div>
+                                <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                                  ATS Match Score
+                                </h3>
+                                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                  Quick fit summary before deep details
+                                </p>
+                              </div>
+                              <span
+                                className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-semibold ${scoreMeta.badgeClass}`}
                               >
-                                <div className="flex-shrink-0 w-5 h-5 text-green-600 dark:text-green-400 mt-0.5">
-                                  <CheckCircle className="w-5 h-5" />
+                                {analysisResult.eligible ? (
+                                  <CheckCircle className="w-4 h-4" />
+                                ) : (
+                                  <AlertCircle className="w-4 h-4" />
+                                )}
+                                {analysisResult.eligible
+                                  ? "Eligible"
+                                  : "Improve & Retry"}
+                              </span>
+                            </div>
+
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-5">
+                              <div className="relative w-32 h-32 shrink-0 mx-auto sm:mx-0">
+                                <svg className="w-full h-full transform -rotate-90">
+                                  <circle
+                                    cx="64"
+                                    cy="64"
+                                    r="54"
+                                    stroke="currentColor"
+                                    strokeWidth="10"
+                                    fill="none"
+                                    className="text-gray-200 dark:text-zinc-700"
+                                  />
+                                  <circle
+                                    cx="64"
+                                    cy="64"
+                                    r="54"
+                                    stroke="url(#atsGradientCompact)"
+                                    strokeWidth="10"
+                                    fill="none"
+                                    strokeDasharray={`${2 * Math.PI * 54}`}
+                                    strokeDashoffset={`${
+                                      2 * Math.PI * 54 * (1 - matchScore / 100)
+                                    }`}
+                                    strokeLinecap="round"
+                                    style={{
+                                      transition:
+                                        "stroke-dashoffset 1.2s ease-in-out",
+                                    }}
+                                  />
+                                  <defs>
+                                    <linearGradient
+                                      id="atsGradientCompact"
+                                      x1="0%"
+                                      y1="0%"
+                                      x2="100%"
+                                      y2="100%"
+                                    >
+                                      <stop
+                                        offset="0%"
+                                        stopColor={scoreMeta.ringStart}
+                                      />
+                                      <stop
+                                        offset="100%"
+                                        stopColor={scoreMeta.ringEnd}
+                                      />
+                                    </linearGradient>
+                                  </defs>
+                                </svg>
+                                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                  <span
+                                    className={`text-3xl font-bold ${scoreMeta.textClass}`}
+                                  >
+                                    {matchScore}%
+                                  </span>
+                                  <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                    Match
+                                  </span>
                                 </div>
-                                <span className="text-gray-800 dark:text-gray-200 font-medium">
-                                  {strength}
-                                </span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
+                              </div>
 
-                    {/* Missing Keywords */}
-                    {analysisResult.missing_keywords &&
-                      analysisResult.missing_keywords.length > 0 && (
-                        <div className="bg-orange-50 dark:bg-orange-900/20 rounded-xl p-6 border border-orange-200 dark:border-orange-800">
-                          <div className="flex items-center gap-3 mb-4">
-                            <div className="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center">
-                              <XCircle className="w-6 h-6 text-white" />
+                              <div className="flex-1 space-y-3">
+                                <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
+                                  {scoreMeta.level}. Focus on the top actions below
+                                  to increase your score quickly.
+                                </p>
+                                <div className="grid grid-cols-2 gap-2 text-xs">
+                                  <div className="rounded-lg border border-gray-200 dark:border-zinc-800 px-3 py-2 bg-gray-50 dark:bg-zinc-900">
+                                    <p className="text-gray-500 dark:text-gray-400">
+                                      Recommendations
+                                    </p>
+                                    <p className="text-base font-semibold text-gray-900 dark:text-white">
+                                      {improvements.length}
+                                    </p>
+                                  </div>
+                                  <div className="rounded-lg border border-gray-200 dark:border-zinc-800 px-3 py-2 bg-gray-50 dark:bg-zinc-900">
+                                    <p className="text-gray-500 dark:text-gray-400">
+                                      Missing Keywords
+                                    </p>
+                                    <p className="text-base font-semibold text-gray-900 dark:text-white">
+                                      {missingKeywords.length}
+                                    </p>
+                                  </div>
+                                  <div className="rounded-lg border border-gray-200 dark:border-zinc-800 px-3 py-2 bg-gray-50 dark:bg-zinc-900 col-span-2">
+                                    <p className="text-gray-500 dark:text-gray-400">
+                                      Strength Signals
+                                    </p>
+                                    <p className="text-base font-semibold text-gray-900 dark:text-white">
+                                      {strengths.length}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
-                            <h3 className="text-lg font-bold text-orange-800 dark:text-orange-300">
-                              Missing Keywords
-                            </h3>
                           </div>
-                          <p className="text-sm text-orange-700 dark:text-orange-300 mb-4">
-                            Add these keywords to improve your match score:
-                          </p>
-                          <div className="flex flex-wrap gap-2">
-                            {analysisResult.missing_keywords.map(
-                              (keyword, index) => (
-                                <span
-                                  key={index}
-                                  className="px-4 py-2 bg-black text-orange-700 dark:text-orange-300 rounded-lg text-sm font-medium border border-orange-300 dark:border-orange-700"
-                                >
-                                  {keyword}
-                                </span>
-                              )
+
+                          {/* Top Recommendations */}
+                          <div className="bg-white dark:bg-zinc-950 rounded-xl p-5 border border-gray-200 dark:border-zinc-800">
+                            <button
+                              type="button"
+                              onClick={() => toggleSection("recommendations")}
+                              className="w-full flex items-center justify-between gap-3"
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 bg-primary-600 rounded-lg flex items-center justify-center">
+                                  <TrendingUp className="w-5 h-5 text-white" />
+                                </div>
+                                <div className="text-left">
+                                  <h4 className="text-base font-bold text-gray-900 dark:text-white">
+                                    Top Recommendations
+                                  </h4>
+                                  <p className="text-xs text-gray-600 dark:text-gray-400">
+                                    Showing top 5 first for focus
+                                  </p>
+                                </div>
+                              </div>
+                              {expandedSections.recommendations ? (
+                                <ChevronUp className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                              ) : (
+                                <ChevronDown className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                              )}
+                            </button>
+
+                            {expandedSections.recommendations && (
+                              <div className="mt-4 space-y-2">
+                                {visibleImprovements.length > 0 ? (
+                                  visibleImprovements.map((tip, index) => (
+                                    <div
+                                      key={index}
+                                      className="flex items-start gap-3 rounded-lg border border-gray-200 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-900 p-3"
+                                    >
+                                      <span className="text-xs mt-1 text-primary-600 dark:text-primary-400 font-semibold">
+                                        #{index + 1}
+                                      </span>
+                                      <p className="text-sm text-gray-800 dark:text-gray-200">
+                                        {tip}
+                                      </p>
+                                    </div>
+                                  ))
+                                ) : (
+                                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                                    No actionable recommendations were generated.
+                                  </p>
+                                )}
+
+                                {improvements.length > 5 && (
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      setShowAllImprovements((prev) => !prev)
+                                    }
+                                    className="text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300"
+                                  >
+                                    {showAllImprovements
+                                      ? "Show less"
+                                      : `Show ${improvements.length - 5} more`}
+                                  </button>
+                                )}
+                              </div>
                             )}
                           </div>
-                        </div>
-                      )}
 
-                    {/* AI Improvement Tips */}
-                    {analysisResult.improvements &&
-                      analysisResult.improvements.length > 0 && (
-                        <div className="bg-zinc-900 rounded-xl p-6 border border-gray-200 dark:border-zinc-800">
-                          <div className="flex items-center gap-3 mb-4">
-                            <div className="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center">
-                              <Brain className="w-6 h-6 text-white" />
-                            </div>
-                            <h3 className="text-lg font-bold text-white">
-                              AI Improvement Tips
-                            </h3>
-                          </div>
-                          <ul className="space-y-3 mb-6">
-                            {analysisResult.improvements.map((tip, index) => (
-                              <li
-                                key={index}
-                                className="flex items-start gap-3 p-4 bg-black rounded-lg border border-gray-200 dark:border-zinc-800"
-                              >
-                                <div className="flex-shrink-0 w-6 h-6 bg-primary-600 rounded-full flex items-center justify-center mt-0.5">
-                                  <TrendingUp className="w-4 h-4 text-white" />
+                          {/* Missing Keywords */}
+                          <div className="bg-white dark:bg-zinc-950 rounded-xl p-5 border border-gray-200 dark:border-zinc-800">
+                            <button
+                              type="button"
+                              onClick={() => toggleSection("keywords")}
+                              className="w-full flex items-center justify-between gap-3"
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 bg-orange-500 rounded-lg flex items-center justify-center">
+                                  <XCircle className="w-5 h-5 text-white" />
                                 </div>
-                                <span className="text-gray-800 dark:text-gray-200 font-medium">
-                                  {tip}
-                                </span>
-                              </li>
-                            ))}
-                          </ul>
-                          <button className="w-full py-3 px-6 bg-primary-600 text-gray-900 dark:text-white font-bold rounded-lg hover:bg-primary-700 transition-colors flex items-center justify-center gap-2">
-                            <Sparkles className="w-5 h-5" />
-                            Apply AI Suggestions to Resume
-                          </button>
-                        </div>
-                      )}
+                                <div className="text-left">
+                                  <h4 className="text-base font-bold text-gray-900 dark:text-white">
+                                    Missing Keywords
+                                  </h4>
+                                  <p className="text-xs text-gray-600 dark:text-gray-400">
+                                    {missingKeywords.length} terms suggested by AI
+                                  </p>
+                                </div>
+                              </div>
+                              {expandedSections.keywords ? (
+                                <ChevronUp className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                              ) : (
+                                <ChevronDown className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                              )}
+                            </button>
+
+                            {expandedSections.keywords && (
+                              <div className="mt-4 flex flex-wrap gap-2">
+                                {missingKeywords.length > 0 ? (
+                                  missingKeywords.map((keyword, index) => (
+                                    <span
+                                      key={index}
+                                      className="px-3 py-1.5 bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 rounded-lg text-xs font-medium border border-orange-200 dark:border-orange-800"
+                                    >
+                                      {keyword}
+                                    </span>
+                                  ))
+                                ) : (
+                                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                                    No missing keywords detected.
+                                  </p>
+                                )}
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Strengths */}
+                          <div className="bg-white dark:bg-zinc-950 rounded-xl p-5 border border-gray-200 dark:border-zinc-800">
+                            <button
+                              type="button"
+                              onClick={() => toggleSection("strengths")}
+                              className="w-full flex items-center justify-between gap-3"
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 bg-green-600 rounded-lg flex items-center justify-center">
+                                  <CheckCircle className="w-5 h-5 text-white" />
+                                </div>
+                                <div className="text-left">
+                                  <h4 className="text-base font-bold text-gray-900 dark:text-white">
+                                    Strengths
+                                  </h4>
+                                  <p className="text-xs text-gray-600 dark:text-gray-400">
+                                    What already aligns with the role
+                                  </p>
+                                </div>
+                              </div>
+                              {expandedSections.strengths ? (
+                                <ChevronUp className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                              ) : (
+                                <ChevronDown className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                              )}
+                            </button>
+
+                            {expandedSections.strengths && (
+                              <ul className="mt-4 space-y-2">
+                                {strengths.length > 0 ? (
+                                  strengths.map((strength, index) => (
+                                    <li
+                                      key={index}
+                                      className="flex items-start gap-3 rounded-lg border border-green-200 dark:border-green-900 bg-green-50 dark:bg-green-900/15 p-3"
+                                    >
+                                      <CheckCircle className="w-4 h-4 mt-0.5 text-green-600 dark:text-green-400 shrink-0" />
+                                      <p className="text-sm text-green-800 dark:text-green-200">
+                                        {strength}
+                                      </p>
+                                    </li>
+                                  ))
+                                ) : (
+                                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                                    No strengths were returned by the analysis.
+                                  </p>
+                                )}
+                              </ul>
+                            )}
+                          </div>
+                        </>
+                      );
+                    })()}
                   </div>
                 )}
               </div>

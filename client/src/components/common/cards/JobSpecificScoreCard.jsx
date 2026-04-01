@@ -6,22 +6,25 @@ import {
 } from "@/utils/jobProfiles";
 import {calculateJobSpecificScore} from "@/utils/jobSpecificScoring";
 import {useToggle} from "@/hooks";
+import {
+  BriefcaseBusiness,
+  ChevronDown,
+  Lightbulb,
+  CircleAlert,
+  Zap,
+  Info,
+  Circle,
+} from "lucide-react";
 
 const JobSpecificScoreCard = ({resumeData, onUpdateField}) => {
   const [customTechStack, setCustomTechStack] = useState("");
-  const [
-    showCustomTech,
-    toggleCustomTech,
-    setShowCustomTechTrue,
-    setShowCustomTechFalse,
-  ] = useToggle(false);
+  const [showCustomTech, toggleCustomTech] = useToggle(false);
   const [scoreData, setScoreData] = useState(null);
-  const [
-    isCalculating,
-    toggleCalculating,
-    setIsCalculatingTrue,
-    setIsCalculatingFalse,
-  ] = useToggle(false);
+  const [isCalculating, , setIsCalculatingTrue, setIsCalculatingFalse] =
+    useToggle(false);
+  const [showDetails, setShowDetails] = useState(false);
+  const [showBreakdown, setShowBreakdown] = useState(false);
+  const [showAllRecommendations, setShowAllRecommendations] = useState(false);
 
   // New state for cascading dropdowns
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -54,7 +57,8 @@ const JobSpecificScoreCard = ({resumeData, onUpdateField}) => {
   ];
 
   // Map job keys to subcategories
-  const jobSubCategoryMap = {
+  const jobSubCategoryMap = useMemo(
+    () => ({
     // Frontend - All Modern Frameworks
     "frontend-developer": "frontend",
     "react-developer": "frontend",
@@ -154,7 +158,9 @@ const JobSpecificScoreCard = ({resumeData, onUpdateField}) => {
     // Testing & QA
     "test-automation-engineer": "testing",
     "qa-engineer": "testing",
-  };
+    }),
+    []
+  );
 
   // Experience level options
   const experienceLevels = [
@@ -183,7 +189,7 @@ const JobSpecificScoreCard = ({resumeData, onUpdateField}) => {
         }
       }
     }
-  }, [selectedJob, allJobs, selectedCategory]);
+  }, [selectedJob, allJobs, selectedCategory, jobSubCategoryMap]);
 
   // Filter jobs based on selected category, subcategory, and experience level
   useEffect(() => {
@@ -204,7 +210,13 @@ const JobSpecificScoreCard = ({resumeData, onUpdateField}) => {
     // For now, show all jobs in category
 
     setFilteredJobs(jobs);
-  }, [selectedCategory, selectedSubCategory, selectedExperienceLevel, allJobs]);
+  }, [
+    selectedCategory,
+    selectedSubCategory,
+    selectedExperienceLevel,
+    allJobs,
+    jobSubCategoryMap,
+  ]);
 
   // Calculate score when job or tech stack changes
   const calculateScore = useCallback(() => {
@@ -290,15 +302,25 @@ const JobSpecificScoreCard = ({resumeData, onUpdateField}) => {
   };
 
   return (
-    <div className="card p-6 space-y-6">
+    <div className="card p-4 sm:p-5 space-y-5">
       {/* Header */}
-      <div>
-        <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-          🎯 Job-Specific ATS Score
-        </h3>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          See how well your resume matches specific job roles and tech stacks
-        </p>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1 flex items-center gap-2">
+            <BriefcaseBusiness className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+            Job-Specific ATS Score
+          </h3>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            See how well your resume matches specific job roles and tech stacks
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setShowDetails((prev) => !prev)}
+          className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium"
+        >
+          {showDetails ? "Hide Details" : "Show Details"}
+        </button>
       </div>
 
       {/* Job Selection */}
@@ -420,12 +442,15 @@ const JobSpecificScoreCard = ({resumeData, onUpdateField}) => {
         </div>
 
         {/* Helper Text */}
-        <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-          <p className="text-xs text-blue-800 dark:text-blue-300">
-            💡 <strong>Tip:</strong>{" "}
+        <div className="p-3 bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-lg">
+          <p className="text-xs text-gray-700 dark:text-gray-300 flex items-start gap-1.5">
+            <Lightbulb className="w-3.5 h-3.5 mt-0.5 text-primary-600 dark:text-primary-400" />
+            <span>
+              <strong>Tip:</strong>{" "}
             {selectedCategory === "Engineering"
               ? "Select Engineering specialization to see focused roles (e.g., Frontend, Backend, Full Stack)"
               : "Select a category first to narrow down job roles, then choose your experience level for better matching"}
+            </span>
           </p>
         </div>
 
@@ -433,9 +458,12 @@ const JobSpecificScoreCard = ({resumeData, onUpdateField}) => {
         <div>
           <button
             onClick={toggleCustomTech}
-            className="text-sm text-primary-600 dark:text-primary-400 hover:underline"
+            className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 inline-flex items-center gap-1"
           >
-            {showCustomTech ? "- Hide" : "+"} Add Custom Tech Stack
+            <ChevronDown
+              className={`w-4 h-4 transition-transform ${showCustomTech ? "rotate-180" : ""}`}
+            />
+            {showCustomTech ? "Hide" : "Add"} Custom Tech Stack
           </button>
 
           {showCustomTech && (
@@ -457,7 +485,7 @@ const JobSpecificScoreCard = ({resumeData, onUpdateField}) => {
 
       {/* Score Display */}
       {isCalculating ? (
-        <div className="flex flex-col items-center justify-center p-12 space-y-4">
+        <div className="flex flex-col items-center justify-center p-10 space-y-3">
           <svg
             className="animate-spin h-12 w-12 text-primary-600 dark:text-primary-400"
             xmlns="http://www.w3.org/2000/svg"
@@ -486,36 +514,43 @@ const JobSpecificScoreCard = ({resumeData, onUpdateField}) => {
         scoreData &&
         scoreData.breakdown && (
           <div className="space-y-4">
+            {(() => {
+              const visibleRecommendations = showAllRecommendations
+                ? scoreData.recommendations
+                : scoreData.recommendations.slice(0, 5);
+
+              return (
+                <>
             {/* Main Score Circle */}
-            <div className="flex items-center gap-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 bg-gray-50 dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-800">
               <div className="relative">
-                <svg className="w-32 h-32 transform -rotate-90">
+                <svg className="w-28 h-28 transform -rotate-90">
                   <circle
-                    cx="64"
-                    cy="64"
-                    r="56"
+                    cx="56"
+                    cy="56"
+                    r="48"
                     stroke="#e5e7eb"
                     strokeWidth="8"
                     fill="none"
                     className="dark:stroke-gray-700"
                   />
                   <circle
-                    cx="64"
-                    cy="64"
-                    r="56"
+                    cx="56"
+                    cy="56"
+                    r="48"
                     stroke={getProgressColor(scoreData.totalScore)}
                     strokeWidth="8"
                     fill="none"
                     strokeDasharray={`${
-                      (scoreData.totalScore / 100) * 351.86
-                    } 351.86`}
+                      (scoreData.totalScore / 100) * 301.59
+                    } 301.59`}
                     strokeLinecap="round"
                     className="transition-all duration-1000"
                   />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
                   <span
-                    className={`text-4xl font-bold ${getScoreColor(
+                    className={`text-3xl font-bold ${getScoreColor(
                       scoreData.totalScore
                     )}`}
                   >
@@ -559,12 +594,24 @@ const JobSpecificScoreCard = ({resumeData, onUpdateField}) => {
               </div>
             </div>
 
+            {showDetails && (
+              <>
             {/* Detailed Breakdown */}
             <div>
-              <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
-                Score Breakdown
-              </h4>
-              <div className="space-y-3">
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                  Score Breakdown
+                </h4>
+                <button
+                  type="button"
+                  onClick={() => setShowBreakdown((prev) => !prev)}
+                  className="text-xs text-primary-600 dark:text-primary-400 font-medium"
+                >
+                  {showBreakdown ? "Collapse" : "Expand"}
+                </button>
+              </div>
+
+              {showBreakdown && <div className="space-y-3">
                 {/* Technical Score */}
                 <div>
                   <div className="flex justify-between items-center mb-1">
@@ -684,18 +731,18 @@ const JobSpecificScoreCard = ({resumeData, onUpdateField}) => {
                     {scoreData.breakdown.education.details}
                   </p>
                 </div>
-              </div>
+              </div>}
             </div>
 
             {/* Top Recommendations */}
             {scoreData.recommendations.length > 0 && (
               <div className="border-t dark:border-gray-700 pt-4">
                 <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
-                  <span>💡</span>
+                  <Lightbulb className="w-4 h-4 text-primary-600 dark:text-primary-400" />
                   Top Recommendations for This Role
                 </h4>
                 <div className="space-y-2">
-                  {scoreData.recommendations.slice(0, 5).map((rec, index) => (
+                  {visibleRecommendations.map((rec, index) => (
                     <div
                       key={index}
                       className={`p-3 rounded-lg text-sm ${
@@ -716,11 +763,13 @@ const JobSpecificScoreCard = ({resumeData, onUpdateField}) => {
                                 : "text-blue-600 dark:text-blue-400"
                           }`}
                         >
-                          {rec.priority === "high"
-                            ? "⚠️"
-                            : rec.priority === "medium"
-                              ? "⚡"
-                              : "ℹ️"}
+                          {rec.priority === "high" ? (
+                            <CircleAlert className="w-4 h-4" />
+                          ) : rec.priority === "medium" ? (
+                            <Zap className="w-4 h-4" />
+                          ) : (
+                            <Info className="w-4 h-4" />
+                          )}
                         </span>
                         <div className="flex-1">
                           <p className="font-medium text-gray-900 dark:text-gray-100 mb-1">
@@ -737,13 +786,27 @@ const JobSpecificScoreCard = ({resumeData, onUpdateField}) => {
                     </div>
                   ))}
                 </div>
+                {scoreData.recommendations.length > 5 && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setShowAllRecommendations((prev) => !prev)
+                    }
+                    className="mt-2 text-xs font-medium text-primary-600 dark:text-primary-400"
+                  >
+                    {showAllRecommendations
+                      ? "Show fewer recommendations"
+                      : `Show all ${scoreData.recommendations.length} recommendations`}
+                  </button>
+                )}
               </div>
             )}
 
             {/* Missing Skills */}
             {scoreData.missingSkills.length > 0 && (
               <div className="border-t dark:border-gray-700 pt-4">
-                <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
+                  <Circle className="w-3 h-3 text-primary-600 dark:text-primary-400 fill-current" />
                   Missing Skills for This Role
                 </h4>
                 <div className="flex flex-wrap gap-2">
@@ -758,6 +821,11 @@ const JobSpecificScoreCard = ({resumeData, onUpdateField}) => {
                 </div>
               </div>
             )}
+              </>
+            )}
+                </>
+              );
+            })()}
           </div>
         )
       )}
