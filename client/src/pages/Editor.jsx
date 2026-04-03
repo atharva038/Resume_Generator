@@ -1941,16 +1941,16 @@ const Editor = () => {
                   style={{
                     backgroundColor:
                       atsScore.totalScore >= 80
-                        ? "#dcfce7"
+                        ? "#dcfce7" // green-100
                         : atsScore.totalScore >= 60
-                          ? "#fef9c3"
-                          : "#fee2e2",
+                          ? "#fef9c3" // yellow-100
+                          : "#fee2e2", // red-100
                     color:
                       atsScore.totalScore >= 80
-                        ? "#16a34a"
+                        ? "#15803d" // green-700
                         : atsScore.totalScore >= 60
-                          ? "#ca8a04"
-                          : "#dc2626",
+                          ? "#854d0e" // yellow-800
+                          : "#b91c1c", // red-700
                   }}
                 >
                   <span

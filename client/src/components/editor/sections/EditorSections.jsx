@@ -326,7 +326,7 @@ export const ExperienceSection = ({
             bullets: [""],
           })
         }
-        className="text-primary-600 hover:text-primary-700 font-medium"
+        className="text-primary-700 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300 font-medium"
       >
         + Add Experience
       </button>
@@ -382,7 +382,7 @@ export const EducationSection = ({
             bullets: [],
           })
         }
-        className="text-primary-600 hover:text-primary-700 font-medium"
+        className="text-primary-700 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300 font-medium"
       >
         + Add Education
       </button>
@@ -410,7 +410,7 @@ export const EducationSection = ({
           </div>
           <button
             onClick={() => removeArrayItem("education", index)}
-            className="text-red-600 hover:text-red-700"
+            className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
           >
             Remove
           </button>
@@ -531,7 +531,7 @@ export const ProjectsSection = ({
             bullets: [""],
           })
         }
-        className="text-primary-600 hover:text-primary-700 font-medium"
+        className="text-primary-700 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300 font-medium"
       >
         + Add Project
       </button>
@@ -583,7 +583,7 @@ export const CertificationsSection = ({
             link: "",
           })
         }
-        className="text-primary-600 hover:text-primary-700 font-medium"
+        className="text-primary-700 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300 font-medium"
       >
         + Add Certification
       </button>
@@ -593,7 +593,7 @@ export const CertificationsSection = ({
         <div className="flex justify-end mb-2">
           <button
             onClick={() => removeArrayItem("certifications", index)}
-            className="text-red-600 hover:text-red-700"
+            className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
           >
             Remove
           </button>
