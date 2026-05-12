@@ -146,10 +146,69 @@ const ResumePreview = forwardRef(
       `,
     });
 
-    const handleMobilePrint = useCallback(async () => {
+    const handleMobilePrint = useCallback(async ({targetWindow} = {}) => {
       const printNode = printTemplateRef.current;
       if (!printNode) {
         handlePrint();
+        return;
+      }
+
+      const printWindow = targetWindow || window.open("", "_blank");
+      if (printWindow) {
+        const documentTitle = `${resumeData?.name || "Resume"}_Resume`;
+        const styleMarkup = Array.from(
+          document.querySelectorAll('style, link[rel="stylesheet"]')
+        )
+          .map((node) => node.outerHTML)
+          .join("\n");
+
+        printWindow.document.open();
+        printWindow.document.write(`
+          <!doctype html>
+          <html>
+            <head>
+              <title>${documentTitle}</title>
+              <meta name="viewport" content="width=device-width, initial-scale=1" />
+              ${styleMarkup}
+              <style>
+                @page { size: A4; margin: 0; }
+                html, body {
+                  margin: 0;
+                  padding: 0;
+                  width: 210mm;
+                  min-height: 297mm;
+                  background: #ffffff;
+                  color: #000000;
+                  -webkit-print-color-adjust: exact;
+                  print-color-adjust: exact;
+                }
+                body {
+                  display: block;
+                }
+                .resume-preview {
+                  box-shadow: none !important;
+                  border: none !important;
+                  margin: 0 auto !important;
+                }
+                .no-print {
+                  display: none !important;
+                }
+              </style>
+            </head>
+            <body>
+              ${printNode.cloneNode(true).outerHTML}
+              <script>
+                window.addEventListener("load", function () {
+                  setTimeout(function () {
+                    window.focus();
+                    window.print();
+                  }, 250);
+                });
+              </script>
+            </body>
+          </html>
+        `);
+        printWindow.document.close();
         return;
       }
 
@@ -179,11 +238,11 @@ const ResumePreview = forwardRef(
 
       window.print();
       window.setTimeout(cleanup, 10000);
-    }, [handlePrint]);
+    }, [handlePrint, resumeData?.name]);
 
-    const downloadPDF = useCallback(() => {
+    const downloadPDF = useCallback((options) => {
       if (isMobile) {
-        handleMobilePrint();
+        handleMobilePrint(options);
         return;
       }
 

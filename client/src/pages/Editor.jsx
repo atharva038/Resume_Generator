@@ -684,6 +684,32 @@ const Editor = () => {
       return;
     }
 
+    const mobilePrintWindow = isMobile ? window.open("", "_blank") : null;
+    if (mobilePrintWindow) {
+      mobilePrintWindow.document.write(`
+        <!doctype html>
+        <html>
+          <head>
+            <title>Preparing resume...</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <style>
+              body {
+                margin: 0;
+                min-height: 100vh;
+                display: grid;
+                place-items: center;
+                font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+                color: #111827;
+                background: #ffffff;
+              }
+            </style>
+          </head>
+          <body>Preparing your resume...</body>
+        </html>
+      `);
+      mobilePrintWindow.document.close();
+    }
+
     try {
       // First, call track-download API to check subscription and limits
       // Pass resumeId for subscription validation
@@ -692,8 +718,11 @@ const Editor = () => {
       const exportPreview = exportResumePreviewRef.current || resumePreviewRef.current;
 
       if (exportPreview?.downloadPDF) {
-        exportPreview.downloadPDF();
+        exportPreview.downloadPDF({targetWindow: mobilePrintWindow});
       } else if (!showPreview) {
+        if (mobilePrintWindow && !mobilePrintWindow.closed) {
+          mobilePrintWindow.close();
+        }
         setShowPreviewTrue();
         toast.error("Preview is still loading. Please tap Export again.", {
           duration: 2500,
@@ -705,6 +734,10 @@ const Editor = () => {
         duration: 2000,
       });
     } catch (err) {
+      if (mobilePrintWindow && !mobilePrintWindow.closed) {
+        mobilePrintWindow.close();
+      }
+
       logger.error("Download error:", err);
       logger.error("Download error response:", err.response?.data);
 
