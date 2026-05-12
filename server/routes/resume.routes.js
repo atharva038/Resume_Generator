@@ -142,7 +142,6 @@ router.post(
   "/export-pdf",
   authenticateToken,
   checkSubscription,
-  checkResumeSubscriptionAccess,
   checkUsageLimit("resumeDownloadsPerMonth"),
   exportResumePdf
 );

@@ -1,14 +1,15 @@
 import puppeteer from "puppeteer";
 
-const getClientBaseUrl = () =>
+const getClientBaseUrl = (baseUrl) =>
   (
+    baseUrl ||
     process.env.PDF_RENDER_BASE_URL ||
     process.env.CLIENT_URL ||
     process.env.CLIENT_ORIGIN ||
     "http://localhost:5173"
   ).replace(/\/$/, "");
 
-export const renderResumePdf = async (token) => {
+export const renderResumePdf = async (token, baseUrl) => {
   const browser = await puppeteer.launch({
     headless: true,
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
@@ -18,7 +19,7 @@ export const renderResumePdf = async (token) => {
     const page = await browser.newPage();
     await page.setViewport({width: 794, height: 1123, deviceScaleFactor: 1});
 
-    const renderUrl = `${getClientBaseUrl()}/pdf-render/${token}`;
+    const renderUrl = `${getClientBaseUrl(baseUrl)}/pdf-render/${token}`;
     await page.goto(renderUrl, {
       waitUntil: "networkidle0",
       timeout: 60000,

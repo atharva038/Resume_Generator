@@ -377,7 +377,6 @@ const Editor = () => {
   const navigate = useNavigate();
   const {user} = useAuth();
   const resumePreviewRef = useRef(null);
-  const exportResumePreviewRef = useRef(null);
   const previewSectionRef = useRef(null);
   const colorDropdownRef = useRef(null);
   const sectionElementRefs = useRef({});
@@ -685,47 +684,24 @@ const Editor = () => {
     }
 
     try {
-      if (isMobile) {
-        const response = await resumeAPI.exportPDF({
-          resumeId: resumeData?._id,
-          resumeData,
-          template: selectedTemplate,
-        });
+      const response = await resumeAPI.exportPDF({
+        resumeId: resumeData?._id,
+        resumeData,
+        template: selectedTemplate,
+      });
 
-        const blob = new Blob([response.data], {type: "application/pdf"});
-        const url = URL.createObjectURL(blob);
-        const safeName = (resumeData?.name || "Resume")
-          .replace(/[^a-z0-9]+/gi, "_")
-          .replace(/^_+|_+$/g, "");
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `${safeName || "Resume"}_Resume.pdf`;
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        URL.revokeObjectURL(url);
-
-        toast.success("Resume download started!", {
-          duration: 2000,
-        });
-        return;
-      }
-
-      // First, call track-download API to check subscription and limits
-      // Pass resumeId for subscription validation
-      await resumeAPI.trackDownload(resumeData?._id);
-
-      const exportPreview = exportResumePreviewRef.current || resumePreviewRef.current;
-
-      if (exportPreview?.downloadPDF) {
-        exportPreview.downloadPDF();
-      } else if (!showPreview) {
-        setShowPreviewTrue();
-        toast.error("Preview is still loading. Please tap Export again.", {
-          duration: 2500,
-        });
-        return;
-      }
+      const blob = new Blob([response.data], {type: "application/pdf"});
+      const url = URL.createObjectURL(blob);
+      const safeName = (resumeData?.name || "Resume")
+        .replace(/[^a-z0-9]+/gi, "_")
+        .replace(/^_+|_+$/g, "");
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${safeName || "Resume"}_Resume.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
 
       toast.success("Resume download started!", {
         duration: 2000,
@@ -734,18 +710,18 @@ const Editor = () => {
       logger.error("Download error:", err);
       logger.error("Download error response:", err.response?.data);
 
+      let errorData = err.response?.data;
+
+      if (errorData instanceof Blob) {
+        try {
+          errorData = JSON.parse(await errorData.text());
+        } catch {
+          errorData = {};
+        }
+      }
+
       // Check if it's a subscription/upgrade error (403 with upgradeRequired)
       if (err.response?.status === 403) {
-        let errorData = err.response.data;
-
-        if (errorData instanceof Blob) {
-          try {
-            errorData = JSON.parse(await errorData.text());
-          } catch {
-            errorData = {};
-          }
-        }
-
         // Show upgrade modal for any 403 error
         setUpgradeMessage(
           errorData.message ||
@@ -755,7 +731,8 @@ const Editor = () => {
         showUpgradeModalTrue();
       } else {
         toast.error(
-          "Failed to download resume: " + parseValidationErrors(err),
+          "Failed to download resume: " +
+            (errorData?.message || parseValidationErrors(err)),
           {
             duration: 4000,
           }
@@ -1675,19 +1652,6 @@ const Editor = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-100 dark:from-zinc-950 dark:via-zinc-950 dark:to-zinc-900">
-      {resumeData && (
-        <div
-          aria-hidden="true"
-          className="fixed left-[-200vw] top-0 w-[210mm] pointer-events-none opacity-0"
-        >
-          <ResumePreview
-            ref={exportResumePreviewRef}
-            resumeData={resumeData}
-            template={selectedTemplate}
-          />
-        </div>
-      )}
-
       <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
         <div className="max-w-7xl mx-auto">
         {/* Header */}

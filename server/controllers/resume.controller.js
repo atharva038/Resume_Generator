@@ -817,7 +817,7 @@ export const exportResumePdf = async (req, res) => {
     }
 
     token = createPdfExportSession({resumeData, template});
-    const pdfBuffer = await renderResumePdf(token);
+    const pdfBuffer = await renderResumePdf(token, req.get("origin"));
 
     const userId = req.user._id || req.user.userId;
     await User.findByIdAndUpdate(userId, {
