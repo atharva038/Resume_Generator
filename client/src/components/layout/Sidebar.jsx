@@ -13,6 +13,7 @@ import {
   Shield,
   UserCircle,
   Tag,
+  Mic
 } from "lucide-react";
 import {useAuth} from "@/context/AuthContext";
 

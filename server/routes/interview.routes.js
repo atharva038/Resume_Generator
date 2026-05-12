@@ -125,6 +125,26 @@ router.post(
 );
 
 /**
+ * Pause an interview session
+ * POST /api/interview/sessions/:sessionId/pause
+ */
+router.post(
+  "/sessions/:sessionId/pause",
+  authenticateToken,
+  interviewController.pauseSession
+);
+
+/**
+ * Resume an interview session
+ * POST /api/interview/sessions/:sessionId/resume
+ */
+router.post(
+  "/sessions/:sessionId/resume",
+  authenticateToken,
+  interviewController.resumeSession
+);
+
+/**
  * Get session details
  * GET /api/interview/sessions/:sessionId
  */

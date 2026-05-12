@@ -9,17 +9,6 @@ echo "================================================"
 # Navigate to chatterbox-service directory
 cd "$(dirname "$0")"
 
-# Check Python version
-PYTHON_VERSION=$(python3 --version 2>&1 | awk '{print $2}' | cut -d. -f1,2)
-echo "🐍 Python version: $PYTHON_VERSION"
-
-if [[ "$PYTHON_VERSION" == "3.13" ]]; then
-    echo "⚠️  WARNING: Python 3.13 detected"
-    echo "   Chatterbox works best with Python 3.11 or 3.12"
-    echo "   You may encounter compatibility issues"
-    echo ""
-fi
-
 # Check if virtual environment exists
 if [ ! -d "venv" ]; then
     echo "📦 Creating virtual environment..."
@@ -28,6 +17,17 @@ fi
 
 # Activate virtual environment
 source venv/bin/activate
+
+# Check Python version used by the virtual environment
+PYTHON_VERSION=$(python --version 2>&1 | awk '{print $2}' | cut -d. -f1,2)
+echo "🐍 Python version: $PYTHON_VERSION"
+
+if [[ "$PYTHON_VERSION" == "3.13" ]]; then
+    echo "⚠️  WARNING: Python 3.13 detected"
+    echo "   Chatterbox works best with Python 3.11 or 3.12"
+    echo "   You may encounter compatibility issues"
+    echo ""
+fi
 
 # Upgrade pip and install setuptools first
 echo "📥 Upgrading pip and setuptools..."

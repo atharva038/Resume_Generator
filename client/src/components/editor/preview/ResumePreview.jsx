@@ -4,6 +4,7 @@ import {
   useImperativeHandle,
   useState,
   useEffect,
+  useCallback,
 } from "react";
 import {useReactToPrint} from "react-to-print";
 import {useToggle, useMediaQuery} from "@/hooks";
@@ -145,9 +146,53 @@ const ResumePreview = forwardRef(
       `,
     });
 
+    const handleMobilePrint = useCallback(async () => {
+      const printNode = printTemplateRef.current;
+      if (!printNode) {
+        handlePrint();
+        return;
+      }
+
+      const existingPrintRoot = document.getElementById(
+        "mobile-resume-print-root"
+      );
+      if (existingPrintRoot) existingPrintRoot.remove();
+
+      const printRoot = document.createElement("div");
+      printRoot.id = "mobile-resume-print-root";
+      printRoot.appendChild(printNode.cloneNode(true));
+
+      document.body.appendChild(printRoot);
+      document.body.classList.add("printing-resume-template");
+
+      const cleanup = () => {
+        document.body.classList.remove("printing-resume-template");
+        printRoot.remove();
+        window.removeEventListener("afterprint", cleanup);
+      };
+
+      window.addEventListener("afterprint", cleanup);
+
+      await new Promise((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(resolve))
+      );
+
+      window.print();
+      window.setTimeout(cleanup, 10000);
+    }, [handlePrint]);
+
+    const downloadPDF = useCallback(() => {
+      if (isMobile) {
+        handleMobilePrint();
+        return;
+      }
+
+      handlePrint();
+    }, [handleMobilePrint, handlePrint, isMobile]);
+
     useImperativeHandle(ref, () => ({
-      downloadPDF: handlePrint,
-    }));
+      downloadPDF,
+    }), [downloadPDF]);
 
     if (!resumeData) return null;
 
@@ -161,7 +206,7 @@ const ResumePreview = forwardRef(
           {/* Download Button */}
           <div className="mb-4 no-print flex-shrink-0">
             <button
-              onClick={handlePrint}
+              onClick={downloadPDF}
               className="w-full bg-gray-900 dark:bg-white hover:bg-gray-800 dark:hover:bg-gray-100 text-white dark:text-gray-900 font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center gap-3"
             >
               <span className="text-2xl">📥</span>

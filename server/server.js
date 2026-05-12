@@ -245,10 +245,18 @@ async function checkVoiceServices() {
   }
 
   try {
-    await fetch(`${chatterboxUrl}/health`, {
+    const response = await fetch(`${chatterboxUrl}/health`, {
       signal: AbortSignal.timeout(3000),
     });
-    console.log("✅ Chatterbox TTS service: available on", chatterboxUrl);
+    const data = await response.json().catch(() => ({}));
+
+    if (response.ok && data.chatterbox_available === true) {
+      console.log("✅ Chatterbox TTS service: available on", chatterboxUrl);
+    } else {
+      console.warn(
+        `⚠️  Chatterbox TTS service reachable on ${chatterboxUrl}, but model is not loaded (Browser TTS will be used as fallback)`
+      );
+    }
   } catch {
     console.warn(
       `⚠️  Chatterbox TTS service not reachable on ${chatterboxUrl} (Browser TTS will be used as fallback)`
@@ -256,10 +264,15 @@ async function checkVoiceServices() {
   }
 }
 
+import { startCleanupJob } from "./services/interview-cleanup.service.js";
+
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
   console.log(`📝 Environment: ${process.env.NODE_ENV || "development"}`);
+
+  // Start background jobs
+  startCleanupJob();
 
   // Check voice services after startup (non-blocking)
   checkVoiceServices();

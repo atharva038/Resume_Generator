@@ -195,6 +195,26 @@ const interviewSessionSchema = new mongoose.Schema(
       default: "created",
       index: true,
     },
+    stateHistory: [
+      {
+        state: String,
+        timestamp: { type: Date, default: Date.now },
+        reason: String,
+      }
+    ],
+    pausedAt: {
+      type: Date,
+    },
+    resumedAt: {
+      type: Date,
+    },
+    pauseDurations: [
+      {
+        startedAt: Date,
+        endedAt: Date,
+        durationSeconds: Number,
+      }
+    ],
     currentQuestionIndex: {
       type: Number,
       default: 0,
@@ -267,27 +287,8 @@ interviewSessionSchema.virtual("averageScore").get(function () {
   return Math.round(totalScore / evaluatedQuestions.length);
 });
 
-// Pre-save middleware to update status
-interviewSessionSchema.pre("save", function (next) {
-  // Auto-complete if all questions answered
-  if (this.status === "in-progress") {
-    const answeredCount = this.questions.filter(
-      (q) => q.userAnswer || q.skipped
-    ).length;
-    if (answeredCount >= this.totalQuestions) {
-      this.status = "completed";
-      this.completedAt = new Date();
-
-      // Calculate total duration
-      if (this.startedAt) {
-        this.totalDurationSeconds = Math.round(
-          (this.completedAt - this.startedAt) / 1000
-        );
-      }
-    }
-  }
-  next();
-});
+// Removed brittle auto-complete pre-save hook.
+// State Machine now handles auto-completion.
 
 // Method to add a question
 interviewSessionSchema.methods.addQuestion = function (questionData) {
