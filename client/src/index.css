@@ -111,6 +111,11 @@
   display: none;
 }
 
+@page {
+  size: A4;
+  margin: 0;
+}
+
 /* Print styles for ATS-friendly PDF */
 @media print {
   body {
@@ -145,8 +150,7 @@
   .resume-preview {
     box-shadow: none !important;
     border: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
+    margin: 0 auto !important;
   }
 }
 

@@ -377,6 +377,7 @@ const Editor = () => {
   const navigate = useNavigate();
   const {user} = useAuth();
   const resumePreviewRef = useRef(null);
+  const exportResumePreviewRef = useRef(null);
   const previewSectionRef = useRef(null);
   const colorDropdownRef = useRef(null);
   const sectionElementRefs = useRef({});
@@ -688,21 +689,16 @@ const Editor = () => {
       // Pass resumeId for subscription validation
       await resumeAPI.trackDownload(resumeData?._id);
 
-      // If successful, proceed with PDF download
-      if (!showPreview) {
+      const exportPreview = exportResumePreviewRef.current || resumePreviewRef.current;
+
+      if (exportPreview?.downloadPDF) {
+        exportPreview.downloadPDF();
+      } else if (!showPreview) {
         setShowPreviewTrue();
-        setTimeout(() => {
-          if (
-            resumePreviewRef.current &&
-            resumePreviewRef.current.downloadPDF
-          ) {
-            resumePreviewRef.current.downloadPDF();
-          }
-        }, 300);
-      } else {
-        if (resumePreviewRef.current && resumePreviewRef.current.downloadPDF) {
-          resumePreviewRef.current.downloadPDF();
-        }
+        toast.error("Preview is still loading. Please tap Export again.", {
+          duration: 2500,
+        });
+        return;
       }
 
       toast.success("Resume download started!", {
@@ -1645,6 +1641,19 @@ const Editor = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-100 dark:from-zinc-950 dark:via-zinc-950 dark:to-zinc-900">
+      {resumeData && (
+        <div
+          aria-hidden="true"
+          className="fixed left-[-200vw] top-0 w-[210mm] pointer-events-none opacity-0"
+        >
+          <ResumePreview
+            ref={exportResumePreviewRef}
+            resumeData={resumeData}
+            template={selectedTemplate}
+          />
+        </div>
+      )}
+
       <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
         <div className="max-w-7xl mx-auto">
         {/* Header */}

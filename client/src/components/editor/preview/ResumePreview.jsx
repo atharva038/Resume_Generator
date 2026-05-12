@@ -139,7 +139,7 @@ const ResumePreview = forwardRef(
       contentRef: printTemplateRef,
       documentTitle: `${resumeData?.name || "Resume"}_Resume`,
       pageStyle: `
-        @page { size: A4; margin: 0.5in; }
+        @page { size: A4; margin: 0; }
         @media print {
           body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
