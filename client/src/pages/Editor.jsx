@@ -684,33 +684,33 @@ const Editor = () => {
       return;
     }
 
-    const mobilePrintWindow = isMobile ? window.open("", "_blank") : null;
-    if (mobilePrintWindow) {
-      mobilePrintWindow.document.write(`
-        <!doctype html>
-        <html>
-          <head>
-            <title>Preparing resume...</title>
-            <meta name="viewport" content="width=device-width, initial-scale=1" />
-            <style>
-              body {
-                margin: 0;
-                min-height: 100vh;
-                display: grid;
-                place-items: center;
-                font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-                color: #111827;
-                background: #ffffff;
-              }
-            </style>
-          </head>
-          <body>Preparing your resume...</body>
-        </html>
-      `);
-      mobilePrintWindow.document.close();
-    }
-
     try {
+      if (isMobile) {
+        const response = await resumeAPI.exportPDF({
+          resumeId: resumeData?._id,
+          resumeData,
+          template: selectedTemplate,
+        });
+
+        const blob = new Blob([response.data], {type: "application/pdf"});
+        const url = URL.createObjectURL(blob);
+        const safeName = (resumeData?.name || "Resume")
+          .replace(/[^a-z0-9]+/gi, "_")
+          .replace(/^_+|_+$/g, "");
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `${safeName || "Resume"}_Resume.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+
+        toast.success("Resume download started!", {
+          duration: 2000,
+        });
+        return;
+      }
+
       // First, call track-download API to check subscription and limits
       // Pass resumeId for subscription validation
       await resumeAPI.trackDownload(resumeData?._id);
@@ -718,11 +718,8 @@ const Editor = () => {
       const exportPreview = exportResumePreviewRef.current || resumePreviewRef.current;
 
       if (exportPreview?.downloadPDF) {
-        exportPreview.downloadPDF({targetWindow: mobilePrintWindow});
+        exportPreview.downloadPDF();
       } else if (!showPreview) {
-        if (mobilePrintWindow && !mobilePrintWindow.closed) {
-          mobilePrintWindow.close();
-        }
         setShowPreviewTrue();
         toast.error("Preview is still loading. Please tap Export again.", {
           duration: 2500,
@@ -734,16 +731,20 @@ const Editor = () => {
         duration: 2000,
       });
     } catch (err) {
-      if (mobilePrintWindow && !mobilePrintWindow.closed) {
-        mobilePrintWindow.close();
-      }
-
       logger.error("Download error:", err);
       logger.error("Download error response:", err.response?.data);
 
       // Check if it's a subscription/upgrade error (403 with upgradeRequired)
       if (err.response?.status === 403) {
-        const errorData = err.response.data;
+        let errorData = err.response.data;
+
+        if (errorData instanceof Blob) {
+          try {
+            errorData = JSON.parse(await errorData.text());
+          } catch {
+            errorData = {};
+          }
+        }
 
         // Show upgrade modal for any 403 error
         setUpgradeMessage(

@@ -30,7 +30,7 @@ const MIN_CONTENT_PX = 100;
 const OVERFLOW_THRESHOLD_PX = 80;
 
 const ResumePreview = forwardRef(
-  ({resumeData, template = "classic", onPageUsageChange}, ref) => {
+  ({resumeData, template = "classic", onPageUsageChange, onDownload}, ref) => {
     const printTemplateRef = useRef();
     const templateRef = useRef(); // page-0 template wrapper — used for DOM section measurement
     const [showFullPreview, , setShowFullPreviewTrue, setShowFullPreviewFalse] =
@@ -265,7 +265,7 @@ const ResumePreview = forwardRef(
           {/* Download Button */}
           <div className="mb-4 no-print flex-shrink-0">
             <button
-              onClick={downloadPDF}
+              onClick={onDownload || downloadPDF}
               className="w-full bg-gray-900 dark:bg-white hover:bg-gray-800 dark:hover:bg-gray-100 text-white dark:text-gray-900 font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center gap-3"
             >
               <span className="text-2xl">📥</span>

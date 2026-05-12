@@ -313,6 +313,21 @@ export const resumeAPI = {
    * @returns {Promise} Axios response confirming tracking
    */
   trackDownload: (resumeId) => api.post("/resume/track-download", {resumeId}),
+
+  /**
+   * Export current resume data as a server-generated PDF
+   * @param {Object} data - Export payload
+   * @returns {Promise} Axios response with PDF blob
+   */
+  exportPDF: (data) =>
+    api.post("/resume/export-pdf", data, {responseType: "blob"}),
+
+  /**
+   * Get short-lived PDF render payload by token
+   * @param {string} token - Export session token
+   * @returns {Promise} Axios response with resume data and template
+   */
+  getPdfSession: (token) => api.get(`/resume/pdf-session/${token}`),
 };
 
 /**

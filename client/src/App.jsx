@@ -53,6 +53,7 @@ const Earnings = lazy(() => import("./pages/admin/Earnings"));
 const AIInterview = lazy(() => import("./pages/AIInterview"));
 const InterviewHistory = lazy(() => import("./pages/InterviewHistory"));
 const InterviewResult = lazy(() => import("./pages/InterviewResult"));
+const PdfRender = lazy(() => import("./pages/PdfRender"));
 
 import {DarkModeProvider} from "./context/DarkModeContext";
 import {NavigationBlockerProvider} from "./context/NavigationBlockerContext";
@@ -118,6 +119,7 @@ function App() {
         />
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
+            <Route path="/pdf-render/:token" element={<PdfRender />} />
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
               {/* Protected Routes - Require Authentication */}
