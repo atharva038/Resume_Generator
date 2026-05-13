@@ -44,6 +44,14 @@ import {
   getAIExtractionUsage,
   resetUserExtractionCounter,
 } from "../controllers/admin.controller.js";
+import {
+  archiveNotification,
+  deleteNotification,
+  getAdminNotifications,
+  getAdminNotificationStats,
+  markAllNotificationsRead,
+  markNotificationRead,
+} from "../controllers/adminNotification.controller.js";
 
 const router = express.Router();
 
@@ -55,6 +63,14 @@ router.use(logAdminAction);
 
 // Dashboard
 router.get("/dashboard/stats", getDashboardStats);
+
+// Notifications
+router.get("/notifications", getAdminNotifications);
+router.get("/notifications/stats", getAdminNotificationStats);
+router.patch("/notifications/read-all", markAllNotificationsRead);
+router.patch("/notifications/:id/read", validateMongoId, markNotificationRead);
+router.patch("/notifications/:id/archive", validateMongoId, archiveNotification);
+router.delete("/notifications/:id", validateMongoId, deleteNotification);
 
 // User Management
 router.get("/users", getAllUsers);

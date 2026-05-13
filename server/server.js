@@ -25,6 +25,7 @@ import {
   corsOptions,
   securityLogger,
 } from "./middleware/security.middleware.js";
+import {notifySystemError} from "./services/adminNotification.service.js";
 
 // Load environment variables
 dotenv.config();
@@ -218,6 +219,12 @@ app.get("/api/health", (req, res) => {
 // Global error handler
 app.use((err, req, res, next) => {
   console.error("Error:", err);
+  notifySystemError({
+    source: "express",
+    error: err,
+    path: req.originalUrl,
+    method: req.method,
+  });
   res.status(err.status || 500).json({
     error: err.message || "Internal server error",
     ...(process.env.NODE_ENV === "development" && {stack: err.stack}),

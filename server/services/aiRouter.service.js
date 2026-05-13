@@ -2,6 +2,7 @@ import * as geminiService from "./gemini.service.js";
 import * as openaiService from "./openai.service.js";
 import UsageLog from "../models/UsageLog.model.js";
 import AIUsage from "../models/AIUsage.model.js";
+import {notifyAIFailure} from "./adminNotification.service.js";
 
 /**
  * AI Router Service
@@ -152,6 +153,16 @@ async function logUsage(
         ...metadata,
       },
     });
+
+    if (!success) {
+      notifyAIFailure({
+        userId,
+        feature,
+        aiProvider,
+        aiModel,
+        error: metadata.error || "AI request failed",
+      });
+    }
   } catch (error) {
     console.error("❌ Failed to log usage:", error.message);
     // Don't throw - logging failure shouldn't break the main operation

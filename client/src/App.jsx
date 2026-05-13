@@ -46,6 +46,9 @@ const AIExtractionManagement = lazy(
 const ContactMessages = lazy(() => import("./pages/admin/ContactMessages"));
 const AdminFeedback = lazy(() => import("./pages/admin/AdminFeedback"));
 const AdminLogs = lazy(() => import("./pages/admin/AdminLogs"));
+const AdminNotifications = lazy(
+  () => import("./pages/admin/AdminNotifications")
+);
 const TemplateManagement = lazy(
   () => import("./pages/admin/TemplateManagement")
 );
@@ -304,6 +307,7 @@ function App() {
               <Route path="contacts" element={<ContactMessages />} />
               <Route path="feedback" element={<AdminFeedback />} />
               <Route path="logs" element={<AdminLogs />} />
+              <Route path="notifications" element={<AdminNotifications />} />
               <Route path="settings" element={<AdminSettings />} />
             </Route>
           </Routes>

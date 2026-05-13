@@ -2,6 +2,7 @@ import passport from "passport";
 import {Strategy as GoogleStrategy} from "passport-google-oauth20";
 import {Strategy as GitHubStrategy} from "passport-github2";
 import User from "../models/User.model.js";
+import {notifyNewUser} from "../services/adminNotification.service.js";
 
 /**
  * Passport Configuration for OAuth Authentication
@@ -79,6 +80,7 @@ if (
             profilePicture: profile.photos[0]?.value,
             lastLogin: new Date(),
           });
+          notifyNewUser(user, "google");
 
           done(null, user);
         } catch (error) {
@@ -152,6 +154,7 @@ if (
             profilePicture: profile.photos[0]?.value,
             lastLogin: new Date(),
           });
+          notifyNewUser(user, "github");
 
           done(null, user);
         } catch (error) {
