@@ -20,6 +20,8 @@ const adminLogSchema = new mongoose.Schema(
         "template_enabled",
         "feedback_viewed",
         "settings_updated",
+        "reset_ai_extraction_counter",
+        "reset_user_quota",
         "login",
         "other",
       ],

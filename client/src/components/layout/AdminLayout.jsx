@@ -1,4 +1,4 @@
-import {useState, useEffect} from "react";
+import {useEffect} from "react";
 import {Link, Outlet, useLocation, useNavigate} from "react-router-dom";
 import {useToggle} from "@/hooks";
 import {
@@ -31,7 +31,6 @@ const AdminLayout = () => {
   const [
     isMobileMenuOpen,
     toggleMobileMenu,
-    setIsMobileMenuOpenTrue,
     setIsMobileMenuOpenFalse,
   ] = useToggle(false);
   const location = useLocation();
@@ -250,7 +249,7 @@ const AdminLayout = () => {
           <nav className="p-4 space-y-1">
             {menuItems.map((item) => {
               const Icon = item.icon;
-              const isActive = location.pathname === item.path;
+              const isActive = location.pathname.startsWith(item.path);
 
               return (
                 <Link

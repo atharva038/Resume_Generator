@@ -37,6 +37,7 @@ const SubscriptionDashboard = lazy(
 const Profile = lazy(() => import("./pages/Profile"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const UserManagement = lazy(() => import("./pages/admin/UserManagement"));
+const UserDetails = lazy(() => import("./pages/admin/UserDetails"));
 const AIAnalytics = lazy(() => import("./pages/admin/AIAnalytics"));
 const AIQuotaManagement = lazy(() => import("./pages/admin/AIQuotaManagement"));
 const AIExtractionManagement = lazy(
@@ -292,6 +293,7 @@ function App() {
               <Route path="dashboard" element={<AdminDashboard />} />
               <Route path="earnings" element={<Earnings />} />
               <Route path="users" element={<UserManagement />} />
+              <Route path="users/:userId" element={<UserDetails />} />
               <Route path="templates" element={<TemplateManagement />} />
               <Route path="ai-analytics" element={<AIAnalytics />} />
               <Route path="ai-quota" element={<AIQuotaManagement />} />
