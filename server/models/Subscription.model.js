@@ -182,7 +182,7 @@ subscriptionSchema.statics.getUserSubscriptionHistory = async function (
 ) {
   return this.find({userId})
     .select(
-      "tier plan status amount currency receiptId paymentId orderId startDate endDate createdAt autoRenew cancelledAt unlockedResumeId assignmentStatus assignedAt"
+      "tier plan status amount currency paymentMethod receiptId paymentId orderId invoiceUrl startDate endDate createdAt updatedAt autoRenew cancelledAt cancelReason cancelledBy unlockedResumeId assignmentStatus assignedAt notes"
     )
     .sort({createdAt: -1})
     .lean();

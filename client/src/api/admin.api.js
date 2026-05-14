@@ -78,6 +78,14 @@ export const getDashboardStats = () => adminAPI.get("/dashboard/stats");
 // User Management
 export const getAllUsers = (params) => adminAPI.get("/users", {params});
 export const getUserDetails = (userId) => adminAPI.get(`/users/${userId}`);
+export const activateUserSubscription = (userId, data) =>
+  adminAPI.post(`/users/${userId}/subscription/activate`, data);
+export const extendUserSubscription = (userId, data) =>
+  adminAPI.post(`/users/${userId}/subscription/extend`, data);
+export const cancelUserSubscription = (userId, data) =>
+  adminAPI.post(`/users/${userId}/subscription/cancel`, data);
+export const downgradeUserSubscription = (userId, data) =>
+  adminAPI.post(`/users/${userId}/subscription/downgrade`, data);
 export const updateUserStatus = (userId, status) =>
   adminAPI.patch(`/users/${userId}/status`, {status});
 export const updateUserRole = (userId, role) =>
