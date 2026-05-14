@@ -5,6 +5,7 @@ import {
   sendPasswordResetEmail,
   sendPasswordChangeConfirmation,
 } from "../services/email.service.js";
+import {notifyNewUser} from "../services/adminNotification.service.js";
 
 /**
  * Register new user
@@ -30,6 +31,7 @@ export const register = async (req, res) => {
     // Create new user
     const user = new User({email, password, name});
     await user.save();
+    notifyNewUser(user, "local");
 
     // Generate token
     const token = generateToken(user._id, user.email);

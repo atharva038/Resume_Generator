@@ -2,6 +2,12 @@ import Resume from "../models/Resume.model.js";
 import User from "../models/User.model.js";
 import Subscription from "../models/Subscription.model.js";
 import {extractTextFromFile, deleteFile} from "../utils/fileExtractor.js";
+import {
+  createPdfExportSession,
+  deletePdfExportSession,
+  getPdfExportSession,
+} from "../services/pdfExportSession.service.js";
+import {renderResumePdf} from "../services/pdfExport.service.js";
 // Import ALL AI functions from OpenAI (Gemini has quota limits)
 import {
   parseResumeWithAI as parseResumeWithOpenAI,
@@ -769,5 +775,79 @@ export const trackDownload = async (req, res) => {
     res.status(500).json({
       error: error.message || "Failed to track download",
     });
+  }
+};
+
+/**
+ * Get short-lived resume data for Puppeteer PDF rendering
+ * GET /api/resume/pdf-session/:token
+ */
+export const getPdfSession = async (req, res) => {
+  const session = getPdfExportSession(req.params.token);
+
+  if (!session) {
+    return res.status(404).json({
+      success: false,
+      message: "PDF export session expired or not found",
+    });
+  }
+
+  res.json({
+    success: true,
+    resumeData: session.resumeData,
+    template: session.template,
+  });
+};
+
+/**
+ * Export resume as a server-generated PDF
+ * POST /api/resume/export-pdf
+ */
+export const exportResumePdf = async (req, res) => {
+  let token = null;
+
+  try {
+    const {resumeData, template = "classic"} = req.body;
+
+    if (!resumeData || typeof resumeData !== "object") {
+      return res.status(400).json({
+        success: false,
+        message: "Resume data is required for PDF export",
+      });
+    }
+
+    token = createPdfExportSession({resumeData, template});
+    const pdfBuffer = await renderResumePdf(token, req.get("origin"));
+
+    const userId = req.user._id || req.user.userId;
+    await User.findByIdAndUpdate(userId, {
+      $inc: {
+        "usage.resumesDownloaded": 1,
+        "usage.resumesDownloadedThisMonth": 1,
+      },
+    });
+
+    const safeName = (resumeData.name || "Resume")
+      .replace(/[^a-z0-9]+/gi, "_")
+      .replace(/^_+|_+$/g, "")
+      .slice(0, 80);
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${safeName || "Resume"}_Resume.pdf"`
+    );
+    res.setHeader("Content-Length", pdfBuffer.length);
+    res.send(pdfBuffer);
+  } catch (error) {
+    console.error("PDF export error:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message || "Failed to export resume PDF",
+    });
+  } finally {
+    if (token) {
+      deletePdfExportSession(token);
+    }
   }
 };

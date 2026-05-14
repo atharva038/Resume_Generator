@@ -2,7 +2,7 @@
 import InterviewResult from "../models/InterviewResult.model.js";
 import Resume from "../models/Resume.model.js";
 import * as interviewService from "../services/interview.service.js";
-import * as chatterboxService from "../services/chatterbox.service.js";
+import * as interviewStateManager from "../services/interview-state.service.js";
 import axios from "axios";
 import FormData from "form-data";
 
@@ -10,38 +10,6 @@ import FormData from "form-data";
  * Interview Controller
  * Handles all interview-related API endpoints
  */
-
-/**
- * Helper function to generate audio for question text
- * @param {string} text - Question text
- * @param {boolean} liveMode - Whether live mode is enabled
- * @returns {Promise<Object|null>} Audio data or null
- */
-const generateQuestionAudio = async (text, liveMode = false) => {
-  if (!liveMode) {
-    return null;
-  }
-
-  try {
-    const isAvailable = await chatterboxService.isAvailable();
-    if (!isAvailable) {
-      return null; // Frontend will use browser TTS fallback
-    }
-
-    const audioBuffer = await chatterboxService.textToSpeech(text, {
-      language: "en",
-    });
-
-    return {
-      audioBase64: audioBuffer.toString("base64"),
-      contentType: "audio/wav",
-      estimatedDuration: Math.ceil((text.length / 5 / 150) * 60),
-    };
-  } catch (error) {
-    console.error("Failed to generate question audio:", error);
-    return null; // Frontend will use browser TTS fallback
-  }
-};
 
 /**
  * Get interview configuration options
@@ -239,16 +207,14 @@ export const startSession = async (req, res) => {
       return res.status(404).json({success: false, error: "Session not found"});
     }
 
-    if (session.status !== "created") {
+    try {
+      await interviewStateManager.transitionTo(session, interviewStateManager.STATES.IN_PROGRESS, "User started session");
+    } catch (err) {
       return res.status(400).json({
         success: false,
-        error: `Cannot start session with status: ${session.status}`,
+        error: err.message,
       });
     }
-
-    // Update session status
-    session.status = "in-progress";
-    session.startedAt = new Date();
 
     // Generate first question
     const questionConfig = {
@@ -279,13 +245,6 @@ export const startSession = async (req, res) => {
 
     await session.save();
 
-    // Generate audio for live mode
-    const isLiveMode = session.mode === "live";
-    const questionAudio = await generateQuestionAudio(
-      questionData.question,
-      isLiveMode
-    );
-
     console.log(
       `✅ Interview session started: ${session._id} (mode: ${session.mode})`
     );
@@ -301,7 +260,7 @@ export const startSession = async (req, res) => {
           text: questionData.question,
           type: questionData.questionType,
           category: questionData.category,
-          audio: questionAudio, // null for text/voice mode, base64 audio for live mode
+          audio: null,
         },
         progress: {
           current: 1,
@@ -340,7 +299,7 @@ export const submitAnswer = async (req, res) => {
       return res.status(404).json({success: false, error: "Session not found"});
     }
 
-    if (session.status !== "in-progress") {
+    if (session.status !== interviewStateManager.STATES.IN_PROGRESS && session.status !== interviewStateManager.STATES.PAUSED) {
       return res.status(400).json({
         success: false,
         error: `Cannot submit answer for session with status: ${session.status}`,
@@ -489,13 +448,9 @@ export const submitAnswer = async (req, res) => {
       }
     }
 
+    // This will auto-transition to completed if all questions are answered
+    await interviewStateManager.checkAutoComplete(session);
     await session.save();
-
-    // Generate audio for next question in live mode
-    const isLiveMode = session.mode === "live";
-    if (nextQuestion && isLiveMode) {
-      nextQuestion.audio = await generateQuestionAudio(nextQuestion.text, true);
-    }
 
     const response = {
       success: true,
@@ -607,21 +562,16 @@ export const skipQuestion = async (req, res) => {
         difficulty: questionData.difficulty,
       });
 
-      // Generate audio for live mode
-      const questionAudio =
-        session.mode === "live"
-          ? await generateQuestionAudio(questionData.question, true)
-          : null;
-
       nextQuestion = {
         number: session.questions.length,
         text: questionData.question,
         type: questionData.questionType,
         category: questionData.category,
-        audio: questionAudio,
+        audio: null,
       };
     }
 
+    await interviewStateManager.checkAutoComplete(session);
     await session.save();
 
     res.json({
@@ -659,23 +609,19 @@ export const completeSession = async (req, res) => {
       return res.status(404).json({success: false, error: "Session not found"});
     }
 
-    if (session.status === "completed") {
+    if (session.status === interviewStateManager.STATES.COMPLETED) {
       // Return existing result
       const existingResult = await InterviewResult.findOne({sessionId});
       if (existingResult) {
         return res.json({success: true, data: existingResult});
       }
+    } else {
+      try {
+        await interviewStateManager.transitionTo(session, interviewStateManager.STATES.COMPLETED, "Manual completion triggered");
+      } catch (err) {
+        return res.status(400).json({success: false, error: err.message});
+      }
     }
-
-    // Mark session as completed
-    session.status = "completed";
-    session.completedAt = new Date();
-    if (session.startedAt) {
-      session.totalDurationSeconds = Math.round(
-        (session.completedAt - session.startedAt) / 1000
-      );
-    }
-    await session.save();
 
     // Generate comprehensive report
     const reportData = await interviewService.generateReport(session, req.user);
@@ -904,6 +850,52 @@ export const getStats = async (req, res) => {
  * Abandon/cancel an interview session
  * POST /api/interview/sessions/:sessionId/abandon
  */
+/**
+ * Pause interview session
+ * POST /api/interview/sessions/:sessionId/pause
+ */
+export const pauseSession = async (req, res) => {
+  try {
+    const {sessionId} = req.params;
+    const userId = req.user.userId || req.user._id;
+
+    const session = await InterviewSession.findOne({_id: sessionId, userId});
+    if (!session) {
+      return res.status(404).json({success: false, error: "Session not found"});
+    }
+
+    await interviewStateManager.transitionTo(session, interviewStateManager.STATES.PAUSED, "User paused session");
+
+    res.json({success: true, message: "Interview session paused", status: session.status});
+  } catch (error) {
+    console.error("❌ Pause session error:", error);
+    res.status(400).json({success: false, error: error.message});
+  }
+};
+
+/**
+ * Resume interview session
+ * POST /api/interview/sessions/:sessionId/resume
+ */
+export const resumeSession = async (req, res) => {
+  try {
+    const {sessionId} = req.params;
+    const userId = req.user.userId || req.user._id;
+
+    const session = await InterviewSession.findOne({_id: sessionId, userId});
+    if (!session) {
+      return res.status(404).json({success: false, error: "Session not found"});
+    }
+
+    await interviewStateManager.transitionTo(session, interviewStateManager.STATES.IN_PROGRESS, "User resumed session");
+
+    res.json({success: true, message: "Interview session resumed", status: session.status});
+  } catch (error) {
+    console.error("❌ Resume session error:", error);
+    res.status(400).json({success: false, error: error.message});
+  }
+};
+
 export const abandonSession = async (req, res) => {
   try {
     const {sessionId} = req.params;
@@ -914,14 +906,17 @@ export const abandonSession = async (req, res) => {
       return res.status(404).json({success: false, error: "Session not found"});
     }
 
-    if (session.status === "completed") {
+    if (session.status === interviewStateManager.STATES.COMPLETED) {
       return res
         .status(400)
         .json({success: false, error: "Cannot abandon a completed session"});
     }
 
-    session.status = "abandoned";
-    await session.save();
+    try {
+      await interviewStateManager.transitionTo(session, interviewStateManager.STATES.ABANDONED, "User abandoned session");
+    } catch (err) {
+      return res.status(400).json({success: false, error: err.message});
+    }
 
     res.json({success: true, message: "Interview session abandoned"});
   } catch (error) {
@@ -1210,15 +1205,8 @@ export const submitVoiceAnswer = async (req, res) => {
         text: questionData.question,
         type: questionData.questionType,
         category: questionData.category,
+        audio: null,
       };
-
-      // Generate audio for next question in live mode
-      if (session.mode === "live") {
-        nextQuestion.audio = await generateQuestionAudio(
-          nextQuestion.text,
-          true
-        );
-      }
     }
 
     await session.save();

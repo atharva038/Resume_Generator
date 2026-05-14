@@ -37,6 +37,7 @@ const SubscriptionDashboard = lazy(
 const Profile = lazy(() => import("./pages/Profile"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const UserManagement = lazy(() => import("./pages/admin/UserManagement"));
+const UserDetails = lazy(() => import("./pages/admin/UserDetails"));
 const AIAnalytics = lazy(() => import("./pages/admin/AIAnalytics"));
 const AIQuotaManagement = lazy(() => import("./pages/admin/AIQuotaManagement"));
 const AIExtractionManagement = lazy(
@@ -45,6 +46,9 @@ const AIExtractionManagement = lazy(
 const ContactMessages = lazy(() => import("./pages/admin/ContactMessages"));
 const AdminFeedback = lazy(() => import("./pages/admin/AdminFeedback"));
 const AdminLogs = lazy(() => import("./pages/admin/AdminLogs"));
+const AdminNotifications = lazy(
+  () => import("./pages/admin/AdminNotifications")
+);
 const TemplateManagement = lazy(
   () => import("./pages/admin/TemplateManagement")
 );
@@ -53,6 +57,7 @@ const Earnings = lazy(() => import("./pages/admin/Earnings"));
 const AIInterview = lazy(() => import("./pages/AIInterview"));
 const InterviewHistory = lazy(() => import("./pages/InterviewHistory"));
 const InterviewResult = lazy(() => import("./pages/InterviewResult"));
+const PdfRender = lazy(() => import("./pages/PdfRender"));
 
 import {DarkModeProvider} from "./context/DarkModeContext";
 import {NavigationBlockerProvider} from "./context/NavigationBlockerContext";
@@ -118,6 +123,7 @@ function App() {
         />
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
+            <Route path="/pdf-render/:token" element={<PdfRender />} />
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
               {/* Protected Routes - Require Authentication */}
@@ -290,6 +296,7 @@ function App() {
               <Route path="dashboard" element={<AdminDashboard />} />
               <Route path="earnings" element={<Earnings />} />
               <Route path="users" element={<UserManagement />} />
+              <Route path="users/:userId" element={<UserDetails />} />
               <Route path="templates" element={<TemplateManagement />} />
               <Route path="ai-analytics" element={<AIAnalytics />} />
               <Route path="ai-quota" element={<AIQuotaManagement />} />
@@ -300,6 +307,7 @@ function App() {
               <Route path="contacts" element={<ContactMessages />} />
               <Route path="feedback" element={<AdminFeedback />} />
               <Route path="logs" element={<AdminLogs />} />
+              <Route path="notifications" element={<AdminNotifications />} />
               <Route path="settings" element={<AdminSettings />} />
             </Route>
           </Routes>

@@ -6,7 +6,24 @@
  */
 
 const CHATTERBOX_SERVICE_URL =
-  process.env.CHATTERBOX_SERVICE_URL || "http://localhost:5002";
+  process.env.CHATTERBOX_SERVICE_URL || "http://127.0.0.1:5002";
+let lastAvailabilityLogKey = null;
+
+function getFetchErrorMessage(error) {
+  return error?.cause?.code || error?.code || error?.message || "request failed";
+}
+
+function logUnavailableOnce(error) {
+  const message = getFetchErrorMessage(error);
+  const logKey = `${CHATTERBOX_SERVICE_URL}:${message}`;
+
+  if (lastAvailabilityLogKey !== logKey) {
+    lastAvailabilityLogKey = logKey;
+    console.warn(
+      `Chatterbox service not available at ${CHATTERBOX_SERVICE_URL}: ${message}`
+    );
+  }
+}
 
 /**
  * Check if Chatterbox TTS service is available
@@ -25,7 +42,7 @@ export async function isAvailable() {
     const data = await response.json();
     return data.status === "healthy" && data.chatterbox_available === true;
   } catch (error) {
-    console.warn("Chatterbox service not available:", error.message);
+    logUnavailableOnce(error);
     return false;
   }
 }
@@ -35,7 +52,9 @@ export async function isAvailable() {
  */
 export async function getHealth() {
   try {
-    const response = await fetch(`${CHATTERBOX_SERVICE_URL}/health`);
+    const response = await fetch(`${CHATTERBOX_SERVICE_URL}/health`, {
+      signal: AbortSignal.timeout(5000),
+    });
 
     if (!response.ok) {
       throw new Error(`Health check failed: ${response.status}`);

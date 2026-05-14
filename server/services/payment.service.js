@@ -3,6 +3,7 @@ import crypto from "crypto";
 import Subscription from "../models/Subscription.model.js";
 import User from "../models/User.model.js";
 import {sendPaymentConfirmationEmail} from "./email.service.js";
+import {notifyPaymentFailure} from "./adminNotification.service.js";
 
 /**
  * Payment Service (Razorpay Integration)
@@ -588,6 +589,10 @@ async function handlePaymentFailed(payment) {
       user.subscription.status = "failed";
       await user.save();
     }
+
+    notifyPaymentFailure({user, payment, subscription});
+  } else {
+    notifyPaymentFailure({payment});
   }
 }
 

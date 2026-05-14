@@ -99,6 +99,20 @@ export const deleteContactMessage = (id) => adminAPI.delete(`/contacts/${id}`);
 // Admin Logs
 export const getAdminLogs = (params) => adminAPI.get("/logs", {params});
 
+// Admin Notifications
+export const getAdminNotifications = (params) =>
+  adminAPI.get("/notifications", {params});
+export const getAdminNotificationStats = () =>
+  adminAPI.get("/notifications/stats");
+export const markNotificationRead = (id) =>
+  adminAPI.patch(`/notifications/${id}/read`);
+export const markAllNotificationsRead = () =>
+  adminAPI.patch("/notifications/read-all");
+export const archiveNotification = (id) =>
+  adminAPI.patch(`/notifications/${id}/archive`);
+export const deleteNotification = (id) =>
+  adminAPI.delete(`/notifications/${id}`);
+
 // Template Management
 export const getAllTemplates = (params) => adminAPI.get("/templates", {params});
 export const updateTemplateStatus = (templateId, isActive) =>

@@ -684,26 +684,24 @@ const Editor = () => {
     }
 
     try {
-      // First, call track-download API to check subscription and limits
-      // Pass resumeId for subscription validation
-      await resumeAPI.trackDownload(resumeData?._id);
+      const response = await resumeAPI.exportPDF({
+        resumeId: resumeData?._id,
+        resumeData,
+        template: selectedTemplate,
+      });
 
-      // If successful, proceed with PDF download
-      if (!showPreview) {
-        setShowPreviewTrue();
-        setTimeout(() => {
-          if (
-            resumePreviewRef.current &&
-            resumePreviewRef.current.downloadPDF
-          ) {
-            resumePreviewRef.current.downloadPDF();
-          }
-        }, 300);
-      } else {
-        if (resumePreviewRef.current && resumePreviewRef.current.downloadPDF) {
-          resumePreviewRef.current.downloadPDF();
-        }
-      }
+      const blob = new Blob([response.data], {type: "application/pdf"});
+      const url = URL.createObjectURL(blob);
+      const safeName = (resumeData?.name || "Resume")
+        .replace(/[^a-z0-9]+/gi, "_")
+        .replace(/^_+|_+$/g, "");
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${safeName || "Resume"}_Resume.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
 
       toast.success("Resume download started!", {
         duration: 2000,
@@ -712,10 +710,18 @@ const Editor = () => {
       logger.error("Download error:", err);
       logger.error("Download error response:", err.response?.data);
 
+      let errorData = err.response?.data;
+
+      if (errorData instanceof Blob) {
+        try {
+          errorData = JSON.parse(await errorData.text());
+        } catch {
+          errorData = {};
+        }
+      }
+
       // Check if it's a subscription/upgrade error (403 with upgradeRequired)
       if (err.response?.status === 403) {
-        const errorData = err.response.data;
-
         // Show upgrade modal for any 403 error
         setUpgradeMessage(
           errorData.message ||
@@ -725,7 +731,8 @@ const Editor = () => {
         showUpgradeModalTrue();
       } else {
         toast.error(
-          "Failed to download resume: " + parseValidationErrors(err),
+          "Failed to download resume: " +
+            (errorData?.message || parseValidationErrors(err)),
           {
             duration: 4000,
           }
@@ -1941,16 +1948,16 @@ const Editor = () => {
                   style={{
                     backgroundColor:
                       atsScore.totalScore >= 80
-                        ? "#dcfce7"
+                        ? "#dcfce7" // green-100
                         : atsScore.totalScore >= 60
-                          ? "#fef9c3"
-                          : "#fee2e2",
+                          ? "#fef9c3" // yellow-100
+                          : "#fee2e2", // red-100
                     color:
                       atsScore.totalScore >= 80
-                        ? "#16a34a"
+                        ? "#15803d" // green-700
                         : atsScore.totalScore >= 60
-                          ? "#ca8a04"
-                          : "#dc2626",
+                          ? "#854d0e" // yellow-800
+                          : "#b91c1c", // red-700
                   }}
                 >
                   <span

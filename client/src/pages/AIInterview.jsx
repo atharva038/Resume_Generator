@@ -59,8 +59,8 @@ const CONVERSATION_PHASES = {
 
 // Silence detection settings
 const SILENCE_THRESHOLD = 20; // Audio level below this is considered silence
-const SILENCE_DURATION = 2000; // 2 seconds of silence to end recording (after user speaks)
-const MIN_RECORDING_DURATION = 1500; // Minimum 1.5 seconds before silence detection
+const SILENCE_DURATION = 1200; // 1.2 seconds of silence to end recording (after user speaks)
+const MIN_RECORDING_DURATION = 1000; // Minimum 1 second before silence detection
 const EXTENDED_SILENCE_DURATION = 8000; // 8 seconds - user hasn't said anything at all
 const MAX_WAITING_SILENCE = 15000; // 15 seconds - max time to wait before prompting again
 
@@ -109,6 +109,9 @@ const AIInterview = () => {
   const [serverTtsAvailable, setServerTtsAvailable] = useState(false); // Chatterbox running?
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [audioRef, setAudioRef] = useState(null);
+  const audioElementRef = useRef(null);
+  const speechRunRef = useRef(0);
+  const speechTimeoutsRef = useRef(new Set());
   const [isMuted, setIsMuted] = useState(false); // Mute AI speech
   const [isSpeaking, setIsSpeaking] = useState(false); // AI is currently speaking (even if muted)
   const [isTestingVoice, setIsTestingVoice] = useState(false); // Testing voice
@@ -176,19 +179,28 @@ const AIInterview = () => {
             .catch(() => ({data: {available: false}})),
         ]);
 
-        setConfig(configRes.data);
+        const configData = configRes.data || configRes;
+        const voiceData = voiceRes.data || voiceRes;
+        const ttsData = ttsRes.data || ttsRes;
+        const isVoiceAvailable =
+          voiceData?.available || voiceData?.whisper_available || false;
+        const isTtsAvailable =
+          ttsData?.available ||
+          ttsData?.providers?.browser?.available ||
+          configData?.ttsAvailable ||
+          false;
+
+        setConfig(configData);
         setResumes(resumesRes.data.resumes || []);
-        setVoiceAvailable(voiceRes.data?.available || false);
-        setTtsAvailable(
-          ttsRes.data?.available || configRes.data?.ttsAvailable || false
-        );
+        setVoiceAvailable(isVoiceAvailable);
+        setTtsAvailable(isTtsAvailable);
         setServerTtsAvailable(
-          ttsRes.data?.providers?.chatterbox?.available || false
+          ttsData?.providers?.chatterbox?.available || false
         );
 
         // Set defaults
-        if (configRes.data?.experienceLevels?.length > 0) {
-          setSelectedLevel(configRes.data.experienceLevels[2]?.id || "mid");
+        if (configData?.experienceLevels?.length > 0) {
+          setSelectedLevel(configData.experienceLevels[2]?.id || "mid");
         }
       } catch (error) {
         console.error("Failed to load interview config:", error);
@@ -278,6 +290,17 @@ const AIInterview = () => {
   // Cleanup audio resources on unmount
   useEffect(() => {
     return () => {
+      speechRunRef.current += 1;
+      speechTimeoutsRef.current.forEach((timeoutId) => clearTimeout(timeoutId));
+      speechTimeoutsRef.current.clear();
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+      if (audioElementRef.current) {
+        audioElementRef.current.pause();
+        audioElementRef.current.src = "";
+        audioElementRef.current = null;
+      }
       if (audioContextRef.current) {
         audioContextRef.current.close();
       }
@@ -300,35 +323,99 @@ const AIInterview = () => {
   // Generate natural, emotionally expressive introduction for live mode
   const generateIntroduction = useCallback(() => {
     const greetings = [
-      `Hi there! Oh, it's so great to meet you! Thanks for joining me today!`,
-      `Hello! Welcome! I'm really excited to chat with you today!`,
-      `Hey! Thanks so much for being here! I'm really looking forward to this!`,
-      `Hi! Wonderful to meet you! Thanks for taking the time to speak with me!`,
+      `Hi, welcome! Thanks for joining me today.`,
+      `Hello! Great to meet you.`,
+      `Hey, thanks for being here.`,
+      `Hi! I'm glad we could talk today.`,
     ];
 
     const setups = [
-      `So, I'll be conducting a friendly interview for the ${selectedRole} position. We've got about ${interviewDuration} minutes together, and I'd absolutely love to learn more about your background and experience!`,
-      `I'm here to chat with you about the ${selectedRole} role! We have around ${interviewDuration} minutes, and honestly, I'm really curious to hear about your experience and how you approach things!`,
-      `Today we'll be discussing the ${selectedRole} position! For the next ${interviewDuration} minutes or so, let's just have a natural conversation about your skills and what makes you tick!`,
-    ];
-
-    const encouragements = [
-      "Just relax and be yourself! There's no rush at all, and think of this as a friendly chat, not an interrogation!",
-      "Feel free to take all the time you need with your answers! I'm genuinely excited to hear your perspective!",
-      "Don't worry about being perfect! I really just want to understand how you think and hear your story!",
+      `We'll discuss the ${selectedRole} role for about ${interviewDuration} minutes.`,
+      `This will be a short conversation about your ${selectedRole} experience.`,
+      `I'll ask a few questions about your background and approach.`,
     ];
 
     const warmUpQuestion = [
-      "So to kick things off, could you tell me a bit about yourself? Maybe your background, what you're currently working on, or what gets you excited about this field?",
-      "Before we dive in, I'd love to hear about you! What's your background, and what brings you here today?",
-      "Let's start with something fun! Can you give me a quick introduction about yourself? What have you been up to lately?",
-      "To begin, I'd really love to hear about yourself! Your background, your interests, what got you into this field?",
+      "To start, please tell me a little about yourself.",
+      "Let's begin with your background. What are you working on lately?",
+      "Could you give me a quick introduction about yourself?",
+      "What got you interested in this field?",
     ];
 
     const randomPick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
-    return `${randomPick(greetings)} ${randomPick(setups)} ${randomPick(encouragements)} ${randomPick(warmUpQuestion)}`;
+    return `${randomPick(greetings)} ${randomPick(setups)} ${randomPick(warmUpQuestion)}`;
   }, [selectedRole, interviewDuration]);
+
+  const clearSpeechTimeouts = useCallback(() => {
+    speechTimeoutsRef.current.forEach((timeoutId) => clearTimeout(timeoutId));
+    speechTimeoutsRef.current.clear();
+  }, []);
+
+  const setManagedSpeechTimeout = useCallback((callback, delay) => {
+    const timeoutId = setTimeout(() => {
+      speechTimeoutsRef.current.delete(timeoutId);
+      callback();
+    }, delay);
+
+    speechTimeoutsRef.current.add(timeoutId);
+    return timeoutId;
+  }, []);
+
+  const stopLocalAudio = useCallback(
+    ({advanceToListening = false} = {}) => {
+      speechRunRef.current += 1;
+      clearSpeechTimeouts();
+
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+
+      if (audioElementRef.current) {
+        audioElementRef.current.pause();
+        audioElementRef.current.currentTime = 0;
+        audioElementRef.current.src = "";
+        audioElementRef.current = null;
+      }
+
+      setAudioRef(null);
+      setIsPlayingAudio(false);
+      setIsSpeaking(false);
+
+      if (advanceToListening && isInterviewActiveRef.current) {
+        setInterviewPhase("waiting");
+        if (selectedMode === "live" && voiceAvailable) {
+          setManagedSpeechTimeout(() => startRecordingRef.current?.(true), 300);
+        }
+      }
+    },
+    [clearSpeechTimeouts, selectedMode, setManagedSpeechTimeout, voiceAvailable]
+  );
+
+  const splitSpeechIntoChunks = useCallback((text) => {
+    const sentences = text
+      .split(/(?<=[.!?])\s+/)
+      .map((sentence) => sentence.trim())
+      .filter(Boolean);
+
+    if (sentences.length <= 1) return [text];
+
+    const chunks = [];
+    let currentChunk = "";
+
+    sentences.forEach((sentence) => {
+      const nextChunk = currentChunk ? `${currentChunk} ${sentence}` : sentence;
+      if (nextChunk.length > 130 && currentChunk) {
+        chunks.push(currentChunk);
+        currentChunk = sentence;
+      } else {
+        currentChunk = nextChunk;
+      }
+    });
+
+    if (currentChunk) chunks.push(currentChunk);
+    return chunks;
+  }, []);
 
   // Speak text and then trigger callback (for continuous conversation flow)
   const speakAndListen = useCallback(
@@ -339,9 +426,83 @@ const AIInterview = () => {
       );
 
       // Cancel any in-progress audio to prevent overlapping playback
-      if (window.speechSynthesis?.speaking) {
-        window.speechSynthesis.cancel();
-      }
+      stopLocalAudio();
+
+      const speechRunId = speechRunRef.current + 1;
+      speechRunRef.current = speechRunId;
+
+      const isCurrentSpeech = () =>
+        speechRunRef.current === speechRunId && isInterviewActiveRef.current;
+
+      const completeSpeech = () => {
+        if (!isCurrentSpeech()) return;
+        setIsPlayingAudio(false);
+        setIsSpeaking(false);
+        if (onComplete) onComplete();
+      };
+
+      const playChatterboxChunk = async (chunkText) => {
+        console.log(
+          "📡 Calling Chatterbox TTS API (binary):",
+          chunkText.substring(0, 50) + "..."
+        );
+        const audioBlob = await interviewAPI.synthesizeSpeech(chunkText);
+        console.log("📡 TTS Response - Blob received:", {
+          type: audioBlob?.type,
+          size: audioBlob?.size,
+          isBlob: audioBlob instanceof Blob,
+        });
+
+        if (!audioBlob || !(audioBlob instanceof Blob) || audioBlob.size === 0) {
+          throw new Error("Empty Chatterbox audio response");
+        }
+
+        if (!isCurrentSpeech()) return;
+
+        console.log("✅ Chatterbox audio received, creating audio element");
+        const audioUrl = URL.createObjectURL(audioBlob);
+        const audio = new Audio(audioUrl);
+
+        audioElementRef.current = audio;
+        setAudioRef(audio);
+
+        await new Promise((resolve, reject) => {
+          audio.onended = () => {
+            console.log("🔊 Chatterbox audio chunk ended");
+            URL.revokeObjectURL(audioUrl);
+            if (audioElementRef.current === audio) {
+              audioElementRef.current = null;
+              setAudioRef(null);
+            }
+            resolve();
+          };
+
+          audio.onerror = (e) => {
+            console.error("❌ Chatterbox audio playback failed:", e);
+            URL.revokeObjectURL(audioUrl);
+            if (audioElementRef.current === audio) {
+              audioElementRef.current = null;
+              setAudioRef(null);
+            }
+            reject(new Error("Chatterbox audio playback failed"));
+          };
+
+          console.log("▶️ Playing Chatterbox audio chunk...");
+          audio.play().catch(reject);
+        });
+      };
+
+      const playChatterboxText = async () => {
+        const chunks = splitSpeechIntoChunks(text);
+        console.log(`🎙️ Chatterbox chunked playback: ${chunks.length} chunk(s)`);
+
+        for (const chunk of chunks) {
+          if (!isCurrentSpeech()) return;
+          await playChatterboxChunk(chunk);
+        }
+
+        completeSpeech();
+      };
 
       // Always show the message as subtitle, even when muted
       setAiMessage(text);
@@ -357,11 +518,7 @@ const AIInterview = () => {
           const wordCount = text.split(" ").length;
           const readingTimeMs = Math.max(3000, (wordCount / 150) * 60 * 1000);
 
-          setTimeout(() => {
-            setIsPlayingAudio(false);
-            setIsSpeaking(false);
-            if (onComplete) onComplete();
-          }, readingTimeMs);
+          setManagedSpeechTimeout(completeSpeech, readingTimeMs);
           return;
         }
 
@@ -371,44 +528,9 @@ const AIInterview = () => {
           if (!serverTtsAvailable) {
             throw new Error("Chatterbox not running, using browser TTS");
           }
-          console.log("📡 Calling TTS API (binary)...");
-          const audioBlob = await interviewAPI.synthesizeSpeech(text);
-          console.log("📡 TTS Response - Blob received:", {
-            type: audioBlob?.type,
-            size: audioBlob?.size,
-            isBlob: audioBlob instanceof Blob,
-          });
 
-          if (audioBlob && audioBlob instanceof Blob && audioBlob.size > 0) {
-            console.log("✅ Audio blob received, creating audio element");
-
-            // Create object URL from blob (more efficient than base64)
-            const audioUrl = URL.createObjectURL(audioBlob);
-            const audio = new Audio(audioUrl);
-
-            setAudioRef(audio);
-
-            audio.onended = () => {
-              console.log("🔊 Audio playback ended");
-              // Clean up the object URL to prevent memory leaks
-              URL.revokeObjectURL(audioUrl);
-              setIsPlayingAudio(false);
-              setIsSpeaking(false);
-              if (onComplete) onComplete();
-            };
-
-            audio.onerror = (e) => {
-              console.error("❌ Audio playback failed:", e);
-              URL.revokeObjectURL(audioUrl);
-              setIsPlayingAudio(false);
-              setIsSpeaking(false);
-              if (onComplete) onComplete();
-            };
-
-            console.log("▶️ Playing audio...");
-            await audio.play();
-            return; // Success - exit early
-          }
+          await playChatterboxText();
+          return;
         } catch (ttsError) {
           console.warn(
             "⚠️ Server TTS unavailable, using browser TTS:",
@@ -481,20 +603,31 @@ const AIInterview = () => {
             utterance.volume = 1.0; // Full volume
 
             utterance.onend = () => {
+              if (!isCurrentSpeech()) {
+                resolve();
+                return;
+              }
+
               console.log("🗣️ Browser TTS ended");
-              setIsPlayingAudio(false);
-              setIsSpeaking(false);
-              if (onComplete) onComplete();
+              completeSpeech();
               resolve();
             };
 
             utterance.onerror = (e) => {
+              if (!isCurrentSpeech()) {
+                resolve();
+                return;
+              }
+
               console.error("❌ Browser TTS error:", e);
-              setIsPlayingAudio(false);
-              setIsSpeaking(false);
-              if (onComplete) onComplete();
+              completeSpeech();
               resolve();
             };
+
+            if (!isCurrentSpeech()) {
+              resolve();
+              return;
+            }
 
             window.speechSynthesis.speak(utterance);
           });
@@ -505,22 +638,21 @@ const AIInterview = () => {
         const wordCount = text.split(" ").length;
         const readingTimeMs = Math.max(3000, (wordCount / 150) * 60 * 1000);
 
-        setTimeout(() => {
-          setIsPlayingAudio(false);
-          setIsSpeaking(false);
-          if (onComplete) onComplete();
-        }, readingTimeMs);
+        setManagedSpeechTimeout(completeSpeech, readingTimeMs);
       } catch (error) {
         console.error("❌ TTS error:", error);
         // On error, show subtitle for a few seconds then proceed
-        setTimeout(() => {
-          setIsPlayingAudio(false);
-          setIsSpeaking(false);
-          if (onComplete) onComplete();
-        }, 4000);
+        setManagedSpeechTimeout(completeSpeech, 4000);
       }
     },
-    [isMuted, serverTtsAvailable]
+    [
+      isMuted,
+      selectedMode,
+      serverTtsAvailable,
+      setManagedSpeechTimeout,
+      splitSpeechIntoChunks,
+      stopLocalAudio,
+    ]
   );
 
   // Generate natural, emotionally expressive acknowledgment after user's answer
@@ -607,21 +739,32 @@ const AIInterview = () => {
         const audioUrl = URL.createObjectURL(audioBlob);
         const audio = new Audio(audioUrl);
 
+        audioElementRef.current = audio;
         setAudioRef(audio);
 
         audio.onended = () => {
+          if (!isInterviewActiveRef.current) return;
           console.log("🔊 Question audio ended");
           setIsPlayingAudio(false);
           setIsSpeaking(false);
           URL.revokeObjectURL(audioUrl);
+          if (audioElementRef.current === audio) {
+            audioElementRef.current = null;
+            setAudioRef(null);
+          }
           setInterviewPhase("waiting");
           autoStartRecording();
         };
 
         audio.onerror = () => {
+          if (!isInterviewActiveRef.current) return;
           console.error("❌ Question audio playback failed");
           setIsPlayingAudio(false);
           setIsSpeaking(false);
+          if (audioElementRef.current === audio) {
+            audioElementRef.current = null;
+            setAudioRef(null);
+          }
           setInterviewPhase("waiting");
           autoStartRecording();
         };
@@ -640,22 +783,7 @@ const AIInterview = () => {
 
   // Stop any in-progress audio playback (prevents race conditions from overlapping audio)
   const stopAudio = () => {
-    // Cancel browser speech synthesis if active
-    if (window.speechSynthesis?.speaking) {
-      window.speechSynthesis.cancel();
-    }
-    if (audioRef) {
-      audioRef.pause();
-      audioRef.currentTime = 0;
-    }
-    setIsPlayingAudio(false);
-    setIsSpeaking(false);
-    // Transition to waiting phase when user skips audio
-    setInterviewPhase("waiting");
-    // Start recording if in live mode
-    if (selectedMode === "live" && voiceAvailable) {
-      setTimeout(() => startRecordingRef.current?.(true), 300);
-    }
+    stopLocalAudio({advanceToListening: true});
   };
 
   // Test voice - play sample to hear how AI interviewer sounds
@@ -681,7 +809,55 @@ const AIInterview = () => {
 
       const testText = samplePhrases[preset] || samplePhrases.greeting;
 
-      // Use browser TTS directly
+      if (serverTtsAvailable) {
+        try {
+          console.log("📡 Testing Chatterbox voice...");
+          const audioBlob = await interviewAPI.synthesizeSpeech(testText);
+
+          if (audioBlob && audioBlob instanceof Blob && audioBlob.size > 0) {
+            const audioUrl = URL.createObjectURL(audioBlob);
+            const audio = new Audio(audioUrl);
+
+            audioElementRef.current = audio;
+            setAudioRef(audio);
+            setIsPlayingAudio(true);
+
+            audio.onended = () => {
+              URL.revokeObjectURL(audioUrl);
+              if (audioElementRef.current === audio) {
+                audioElementRef.current = null;
+                setAudioRef(null);
+              }
+              setIsPlayingAudio(false);
+              setIsTestingVoice(false);
+              toast.success("Chatterbox voice test completed!");
+            };
+
+            audio.onerror = (e) => {
+              console.error("❌ Chatterbox voice test error:", e);
+              URL.revokeObjectURL(audioUrl);
+              if (audioElementRef.current === audio) {
+                audioElementRef.current = null;
+                setAudioRef(null);
+              }
+              setIsPlayingAudio(false);
+              setIsTestingVoice(false);
+              toast.error("Chatterbox voice test failed");
+            };
+
+            await audio.play();
+            toast.success(`Testing ${preset} voice with Chatterbox...`);
+            return;
+          }
+        } catch (serverTtsError) {
+          console.warn(
+            "⚠️ Chatterbox voice test unavailable, using browser TTS:",
+            serverTtsError.message
+          );
+        }
+      }
+
+      // Browser TTS fallback
       if (!window.speechSynthesis) {
         throw new Error("Browser TTS not supported");
       }
@@ -942,65 +1118,20 @@ const AIInterview = () => {
                 Math.floor(Math.random() * acknowledgments.length)
               ];
 
-            try {
-              setInterviewPhase("transitioning");
-              const ackResponse =
-                await interviewAPI.synthesizeSpeech(randomAck);
-              if (ackResponse.success && ackResponse.data?.audio) {
-                const ackAudioUrl = `data:audio/mpeg;base64,${ackResponse.data.audio}`;
-                const ackAudio = new Audio(ackAudioUrl);
-                setIsPlayingAudio(true);
-
-                ackAudio.onended = () => {
-                  setIsPlayingAudio(false);
-                  updateCurrentQuestion(response.data.nextQuestion);
-                  setAnswer("");
-                  setEvaluation(null);
-                  setInterviewPhase("asking");
-
-                  if (response.data.nextQuestion?.audio) {
-                    setTimeout(
-                      () =>
-                        playQuestionAudio(
-                          response.data.nextQuestion.audio,
-                          response.data.nextQuestion.text
-                        ),
-                      300
-                    );
-                  } else if (response.data.nextQuestion?.text) {
-                    speakAndListen(response.data.nextQuestion.text, () => {
-                      setInterviewPhase("waiting");
-                      setTimeout(() => startRecording(true), 500);
-                    });
-                  }
-                };
-
-                await ackAudio.play();
-              } else {
-                throw new Error("No audio");
-              }
-            } catch {
-              // TTS failed, proceed directly
+            setInterviewPhase("transitioning");
+            speakAndListen(randomAck, () => {
               updateCurrentQuestion(response.data.nextQuestion);
               setAnswer("");
               setEvaluation(null);
               setInterviewPhase("asking");
-              if (response.data.nextQuestion?.audio) {
-                setTimeout(
-                  () =>
-                    playQuestionAudio(
-                      response.data.nextQuestion.audio,
-                      response.data.nextQuestion.text
-                    ),
-                  500
-                );
-              } else if (response.data.nextQuestion?.text) {
+
+              if (response.data.nextQuestion?.text) {
                 speakAndListen(response.data.nextQuestion.text, () => {
                   setInterviewPhase("waiting");
                   setTimeout(() => startRecording(true), 500);
                 });
               }
-            }
+            });
           } else {
             // Non-live mode
             updateCurrentQuestion(response.data.nextQuestion);
@@ -1818,9 +1949,15 @@ const AIInterview = () => {
     const currentSession = sessionRef.current;
 
     // Stop all recording/audio resources first
+    stopLocalAudio();
+
     if (silenceCheckIntervalRef.current) {
       clearInterval(silenceCheckIntervalRef.current);
       silenceCheckIntervalRef.current = null;
+    }
+
+    if (mediaRecorder && mediaRecorder.state === "recording") {
+      mediaRecorder.stop();
     }
 
     if (streamRef.current) {
@@ -1836,11 +1973,6 @@ const AIInterview = () => {
       }
       audioContextRef.current = null;
       analyserRef.current = null;
-    }
-
-    if (audioRef) {
-      audioRef.pause();
-      setIsPlayingAudio(false);
     }
 
     setIsRecording(false);
@@ -1881,6 +2013,8 @@ const AIInterview = () => {
     console.log("🚫 Abandoning interview:", currentSession?.id);
 
     try {
+      stopLocalAudio();
+
       // Stop silence detection interval
       if (silenceCheckIntervalRef.current) {
         clearInterval(silenceCheckIntervalRef.current);
@@ -1910,13 +2044,6 @@ const AIInterview = () => {
         analyserRef.current = null;
       }
 
-      // Stop any playing audio
-      if (audioRef) {
-        audioRef.pause();
-        audioRef.currentTime = 0;
-        setIsPlayingAudio(false);
-      }
-
       // Call backend to abandon session
       if (currentSession?.id) {
         await interviewAPI.abandonSession(currentSession.id);
@@ -1938,6 +2065,8 @@ const AIInterview = () => {
 
   // Reset state
   const resetState = () => {
+    stopLocalAudio();
+
     // Clear all intervals and timeouts
     if (silenceCheckIntervalRef.current) {
       clearInterval(silenceCheckIntervalRef.current);
@@ -2000,10 +2129,10 @@ const AIInterview = () => {
           {/* Animated loader */}
           <div className="relative w-20 h-20">
             {/* Outer spinning ring */}
-            <div className="absolute inset-0 rounded-full border-4 border-purple-500/20"></div>
-            <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-purple-500 animate-spin"></div>
+            <div className="absolute inset-0 rounded-full border-4 border-blue-500/20"></div>
+            <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-500 animate-spin"></div>
             {/* Inner pulsing circle */}
-            <div className="absolute inset-3 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 animate-pulse"></div>
+            <div className="absolute inset-3 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 animate-pulse"></div>
             {/* Center icon */}
             <div className="absolute inset-0 flex items-center justify-center">
               <Sparkles className="w-6 h-6 text-white" />
@@ -2025,8 +2154,8 @@ const AIInterview = () => {
   return (
     <div className="min-h-screen bg-white dark:bg-[#0C0C0C] overflow-x-hidden">
       {/* Ambient gradient blur effects */}
-      <div className="fixed top-40 left-20 w-[500px] h-[500px] bg-purple-500/10 dark:bg-purple-500/5 rounded-full blur-[150px] pointer-events-none"></div>
-      <div className="fixed top-60 right-20 w-[400px] h-[400px] bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-[150px] pointer-events-none"></div>
+      <div className="fixed top-40 left-20 w-[500px] h-[500px] bg-slate-300/20 dark:bg-transparent rounded-full blur-[150px] pointer-events-none"></div>
+      <div className="fixed top-60 right-20 w-[400px] h-[400px] bg-blue-500/10 dark:bg-transparent rounded-full blur-[150px] pointer-events-none"></div>
 
       <div className="relative max-w-5xl mx-auto px-4 py-12">
         {/* Header */}
@@ -2040,13 +2169,13 @@ const AIInterview = () => {
             <span className="hidden sm:inline">Interview History</span>
           </button>
 
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500/10 to-blue-500/10 dark:backdrop-blur-xl border border-purple-500/20 dark:border-white/10 rounded-full text-sm font-medium text-purple-600 dark:text-purple-300 shadow-lg mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-slate-100 to-blue-100 dark:from-blue-500/10 dark:to-cyan-500/10 dark:backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-full text-sm font-medium text-slate-700 dark:text-blue-300 shadow-lg mb-6">
             <Sparkles className="w-4 h-4" />
             AI-Powered Mock Interviews
           </div>
           <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white tracking-tight">
             Practice with{" "}
-            <span className="bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-blue-500 via-cyan-400 to-teal-400 bg-clip-text text-transparent">
               AI Interviewer
             </span>
           </h1>
@@ -2161,7 +2290,7 @@ const SetupStep = ({
       {/* Interview Type Selection */}
       <div className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-white/10 shadow-xl p-6">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-          <Target className="w-5 h-5 text-purple-500" />
+          <Target className="w-5 h-5 text-blue-600 dark:text-blue-400" />
           Select Interview Type
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -2173,12 +2302,12 @@ const SetupStep = ({
                 onClick={() => setSelectedType(type.id)}
                 className={`p-4 rounded-xl border-2 text-left transition-all duration-300 ${
                   selectedType === type.id
-                    ? "border-purple-500 bg-gradient-to-br from-purple-500/10 to-blue-500/10 dark:from-purple-500/20 dark:to-blue-500/20 shadow-lg shadow-purple-500/20"
-                    : "border-gray-200 dark:border-white/10 hover:border-purple-300 dark:hover:border-purple-500/50 bg-white dark:bg-white/5"
+                    ? "border-blue-500 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 dark:from-blue-500/20 dark:to-cyan-500/20 shadow-lg shadow-blue-500/20"
+                    : "border-gray-200 dark:border-white/10 hover:border-blue-300 dark:hover:border-blue-500/50 bg-white dark:bg-white/5"
                 }`}
               >
                 <Icon
-                  className={`w-6 h-6 mb-2 ${selectedType === type.id ? "text-purple-500" : "text-gray-500 dark:text-gray-400"}`}
+                  className={`w-6 h-6 mb-2 ${selectedType === type.id ? "text-blue-600 dark:text-blue-400" : "text-gray-500 dark:text-gray-400"}`}
                 />
                 <h3 className="font-semibold text-gray-900 dark:text-white">
                   {type.name}
@@ -2197,13 +2326,13 @@ const SetupStep = ({
         {/* Role Selection */}
         <div className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-white/10 shadow-xl p-6">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <Briefcase className="w-5 h-5 text-purple-500" />
+            <Briefcase className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             Target Role
           </h2>
           <select
             value={selectedRole}
             onChange={(e) => setSelectedRole(e.target.value)}
-            className="w-full p-3 border border-gray-200 dark:border-white/10 rounded-xl bg-white dark:bg-white/5 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+            className="w-full p-3 border border-gray-200 dark:border-white/10 rounded-xl bg-white dark:bg-white/5 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
           >
             <option value="">Select a role...</option>
             {config?.roles?.map((role) => (
@@ -2217,13 +2346,13 @@ const SetupStep = ({
         {/* Experience Level */}
         <div className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-white/10 shadow-xl p-6">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <Award className="w-5 h-5 text-purple-500" />
+            <Award className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             Experience Level
           </h2>
           <select
             value={selectedLevel}
             onChange={(e) => setSelectedLevel(e.target.value)}
-            className="w-full p-3 border border-gray-200 dark:border-white/10 rounded-xl bg-white dark:bg-white/5 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+            className="w-full p-3 border border-gray-200 dark:border-white/10 rounded-xl bg-white dark:bg-white/5 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
           >
             {config?.experienceLevels?.map((level) => (
               <option key={level.id} value={level.id}>
@@ -2238,13 +2367,13 @@ const SetupStep = ({
       {selectedType === "resume-based" && (
         <div className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-white/10 shadow-xl p-6">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <FileText className="w-5 h-5 text-purple-500" />
+            <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             Select Resume
           </h2>
           {resumes.length === 0 ? (
             <p className="text-gray-500 dark:text-gray-400">
               No resumes found.{" "}
-              <a href="/upload" className="text-purple-500 hover:underline">
+              <a href="/upload" className="text-blue-600 hover:underline">
                 Create one first
               </a>
               .
@@ -2253,7 +2382,7 @@ const SetupStep = ({
             <select
               value={selectedResume}
               onChange={(e) => setSelectedResume(e.target.value)}
-              className="w-full p-3 border border-gray-200 dark:border-white/10 rounded-xl bg-white dark:bg-white/5 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+              className="w-full p-3 border border-gray-200 dark:border-white/10 rounded-xl bg-white dark:bg-white/5 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             >
               <option value="">Select a resume...</option>
               {resumes.map((resume) => (
@@ -2269,7 +2398,7 @@ const SetupStep = ({
       {selectedType === "job-description" && (
         <div className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-white/10 shadow-xl p-6">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <Briefcase className="w-5 h-5 text-purple-500" />
+            <Briefcase className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             Job Description
           </h2>
           <textarea
@@ -2277,7 +2406,7 @@ const SetupStep = ({
             onChange={(e) => setJobDescription(e.target.value)}
             placeholder="Paste the job description here..."
             rows={6}
-            className="w-full p-3 border border-gray-200 dark:border-white/10 rounded-xl bg-white dark:bg-white/5 text-gray-900 dark:text-white resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+            className="w-full p-3 border border-gray-200 dark:border-white/10 rounded-xl bg-white dark:bg-white/5 text-gray-900 dark:text-white resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
           />
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
             {jobDescription.length}/50 characters minimum
@@ -2290,7 +2419,7 @@ const SetupStep = ({
         {/* Interview Mode */}
         <div className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-white/10 shadow-xl p-6">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <MessageSquare className="w-5 h-5 text-purple-500" />
+            <MessageSquare className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             Answer Mode
           </h2>
           <div className="flex gap-3">
@@ -2298,12 +2427,12 @@ const SetupStep = ({
               onClick={() => setSelectedMode("text")}
               className={`flex-1 p-4 rounded-xl border-2 flex flex-col items-center gap-2 transition-all duration-300 ${
                 selectedMode === "text"
-                  ? "border-purple-500 bg-gradient-to-br from-purple-500/10 to-blue-500/10 dark:from-purple-500/20 dark:to-blue-500/20 shadow-lg shadow-purple-500/20"
-                  : "border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 hover:border-purple-300 dark:hover:border-purple-500/50"
+                  ? "border-blue-500 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 dark:from-blue-500/20 dark:to-cyan-500/20 shadow-lg shadow-blue-500/20"
+                  : "border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 hover:border-blue-300 dark:hover:border-blue-500/50"
               }`}
             >
               <MessageSquare
-                className={`w-6 h-6 ${selectedMode === "text" ? "text-purple-500" : "text-gray-500 dark:text-gray-400"}`}
+                className={`w-6 h-6 ${selectedMode === "text" ? "text-blue-600 dark:text-blue-400" : "text-gray-500 dark:text-gray-400"}`}
               />
               <span className="font-medium text-gray-900 dark:text-white">
                 Text
@@ -2328,7 +2457,7 @@ const SetupStep = ({
               </span>
               {!voiceAvailable && (
                 <span className="text-xs text-gray-500 dark:text-gray-500">
-                  Unavailable
+                  Start Whisper STT
                 </span>
               )}
             </button>
@@ -2353,7 +2482,7 @@ const SetupStep = ({
               </span>
               {!voiceAvailable || !ttsAvailable ? (
                 <span className="text-xs text-gray-500 dark:text-gray-500">
-                  Unavailable
+                  {!voiceAvailable ? "Needs Whisper STT" : "Needs TTS"}
                 </span>
               ) : (
                 <span className="text-xs text-emerald-500">Voice-to-Voice</span>
@@ -2370,16 +2499,16 @@ const SetupStep = ({
 
           {/* Voice Test Section - Only show when TTS is available */}
           {ttsAvailable && (
-            <div className="mt-4 p-4 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-xl border border-purple-200 dark:border-purple-500/20">
+            <div className="mt-4 p-4 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900/30 dark:to-blue-900/20 rounded-xl border border-slate-200 dark:border-white/10">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <Volume2 className="w-4 h-4 text-purple-500" />
+                  <Volume2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Test AI Interviewer Voice (Rachel)
                   </span>
                 </div>
                 {isPlayingAudio && (
-                  <span className="text-xs text-purple-500 animate-pulse flex items-center gap-1">
+                  <span className="text-xs text-blue-500 animate-pulse flex items-center gap-1">
                     <Radio className="w-3 h-3" />
                     Playing...
                   </span>
@@ -2389,7 +2518,7 @@ const SetupStep = ({
                 <button
                   onClick={() => onTestVoice("greeting")}
                   disabled={isTestingVoice || isPlayingAudio}
-                  className="px-3 py-1.5 text-xs rounded-lg bg-white dark:bg-white/10 border border-purple-200 dark:border-purple-500/30 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  className="px-3 py-1.5 text-xs rounded-lg bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-slate-600/40 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/40 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
                   🎙️ Greeting
                 </button>
@@ -2426,7 +2555,7 @@ const SetupStep = ({
         {/* Interview Duration */}
         <div className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-white/10 shadow-xl p-6">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <Timer className="w-5 h-5 text-purple-500" />
+            <Timer className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             Interview Duration
           </h2>
           <input
@@ -2435,11 +2564,11 @@ const SetupStep = ({
             max="20"
             value={interviewDuration}
             onChange={(e) => setInterviewDuration(parseInt(e.target.value))}
-            className="w-full h-2 bg-gray-200 dark:bg-white/10 rounded-lg appearance-none cursor-pointer accent-purple-500"
+            className="w-full h-2 bg-gray-200 dark:bg-white/10 rounded-lg appearance-none cursor-pointer accent-blue-500"
           />
           <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400 mt-3">
             <span>5 min (Quick)</span>
-            <span className="font-bold text-purple-500 text-lg">
+            <span className="font-bold text-blue-600 text-lg">
               {interviewDuration} min
             </span>
             <span>20 min (Thorough)</span>
@@ -2454,7 +2583,7 @@ const SetupStep = ({
       <button
         onClick={onStart}
         disabled={isSubmitting || !selectedType || !selectedRole}
-        className="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold rounded-xl flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40 disabled:shadow-none"
+        className="w-full py-4 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold rounded-xl flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 disabled:shadow-none"
       >
         {isSubmitting ? (
           <>
@@ -2522,9 +2651,9 @@ const InterviewStep = ({
         return {
           icon: Bot,
           text: "Listening to interviewer...",
-          bgClass: "bg-purple-50 dark:bg-purple-900/20",
-          iconClass: "text-purple-500",
-          textClass: "text-purple-600 dark:text-purple-400",
+          bgClass: "bg-blue-50 dark:bg-blue-900/20",
+          iconClass: "text-blue-500",
+          textClass: "text-blue-600 dark:text-blue-400",
         };
       case "waiting":
         return {
@@ -2609,7 +2738,7 @@ const InterviewStep = ({
             className={`h-2.5 rounded-full transition-all duration-500 ${
               selectedMode === "live"
                 ? "bg-gradient-to-r from-emerald-500 to-teal-500"
-                : "bg-gradient-to-r from-purple-500 to-blue-500"
+                : "bg-gradient-to-r from-blue-500 to-cyan-500"
             }`}
             style={{
               width:
@@ -2635,10 +2764,10 @@ const InterviewStep = ({
 
       {/* Natural Conversation Interface - Only for Live Mode */}
       {selectedMode === "live" && (
-        <div className="bg-gradient-to-br from-slate-900 via-purple-900/50 to-slate-900 dark:from-slate-950 dark:via-purple-950/50 dark:to-slate-950 backdrop-blur-xl rounded-2xl border border-purple-500/30 dark:border-white/10 shadow-2xl overflow-hidden min-h-[400px] relative">
+        <div className="bg-gradient-to-br from-white via-gray-50 to-white dark:from-[#0C0C0C] dark:via-[#0F0F0F] dark:to-[#0C0C0C] backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-white/10 shadow-2xl overflow-hidden min-h-[400px] relative">
           {/* Video call style background pattern */}
           <div className="absolute inset-0 opacity-5">
-            <div className="absolute top-10 left-10 w-32 h-32 bg-purple-500 rounded-full blur-3xl" />
+            <div className="absolute top-10 left-10 w-32 h-32 bg-slate-400 rounded-full blur-3xl" />
             <div className="absolute bottom-10 right-10 w-40 h-40 bg-blue-500 rounded-full blur-3xl" />
           </div>
 
@@ -2646,14 +2775,14 @@ const InterviewStep = ({
           <div className="relative p-6 flex flex-col h-full min-h-[400px]">
             {/* Header - interviewer info */}
             <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3">
                 <div className={`relative`}>
                   <div
-                    className={`w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center shadow-lg ${
+                    className={`w-12 h-12 rounded-full bg-gradient-to-br from-blue-600 to-cyan-600 flex items-center justify-center shadow-lg ${
                       isPlayingAudio ||
                       interviewPhase === "greeting" ||
                       interviewPhase === "transitioning"
-                        ? "ring-2 ring-purple-400/50 animate-pulse"
+                        ? "ring-2 ring-blue-400/50 animate-pulse"
                         : ""
                     }`}
                   >
@@ -2661,9 +2790,9 @@ const InterviewStep = ({
                   </div>
                   {/* Status dot */}
                   <div
-                    className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-slate-900 ${
+                    className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-gray-200 dark:border-slate-900 ${
                       isPlayingAudio
-                        ? "bg-purple-500 animate-pulse"
+                        ? "bg-blue-500 animate-pulse"
                         : isRecording
                           ? "bg-green-500"
                           : interviewPhase === "processing"
@@ -2673,10 +2802,10 @@ const InterviewStep = ({
                   />
                 </div>
                 <div>
-                  <h3 className="text-white font-medium text-sm">
+                  <h3 className="text-gray-900 dark:text-white font-medium text-sm">
                     AI Interviewer
                   </h3>
-                  <p className="text-gray-400 text-xs">
+                  <p className="text-gray-600 dark:text-gray-400 text-xs">
                     {isPlayingAudio
                       ? "Speaking..."
                       : isRecording
@@ -2690,10 +2819,10 @@ const InterviewStep = ({
 
               {/* Time remaining */}
               <div
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-full ${
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-full border ${
                   isTimeWarning
-                    ? "bg-orange-500/20 text-orange-400"
-                    : "bg-white/10 text-gray-300"
+                    ? "bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-500/20 dark:text-orange-400 dark:border-orange-500/30"
+                    : "bg-white/70 text-gray-700 border-gray-200/70 dark:bg-white/10 dark:text-gray-300 dark:border-white/10"
                 }`}
               >
                 <Clock className="w-4 h-4" />
@@ -2712,14 +2841,14 @@ const InterviewStep = ({
                   className={`relative mx-auto mb-6 ${isPlayingAudio ? "scale-110" : ""} transition-transform duration-300`}
                 >
                   <div
-                    className={`w-32 h-32 rounded-full bg-gradient-to-br from-purple-500/30 to-blue-500/30 flex items-center justify-center ${
+                    className={`w-32 h-32 rounded-full bg-gradient-to-br from-gray-100 to-gray-50 dark:from-blue-500/30 dark:to-cyan-500/30 flex items-center justify-center ${
                       isPlayingAudio ? "animate-pulse" : ""
                     }`}
                   >
                     <div
-                      className={`w-24 h-24 rounded-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center shadow-2xl ${
+                      className={`w-24 h-24 rounded-full bg-gradient-to-br from-blue-600 to-cyan-600 flex items-center justify-center shadow-2xl ${
                         isPlayingAudio
-                          ? "ring-4 ring-purple-400/50"
+                          ? "ring-4 ring-blue-400/50"
                           : isRecording
                             ? "ring-4 ring-green-400/50"
                             : ""
@@ -2754,11 +2883,11 @@ const InterviewStep = ({
                   {isPlayingAudio && (
                     <>
                       <div
-                        className="absolute inset-0 rounded-full border-2 border-purple-400/30 animate-ping"
+                        className="absolute inset-0 rounded-full border-2 border-blue-400/30 animate-ping"
                         style={{animationDuration: "1.5s"}}
                       />
                       <div
-                        className="absolute inset-0 rounded-full border-2 border-purple-400/20 animate-ping"
+                        className="absolute inset-0 rounded-full border-2 border-blue-400/20 animate-ping"
                         style={{
                           animationDuration: "2s",
                           animationDelay: "0.5s",
@@ -2769,7 +2898,7 @@ const InterviewStep = ({
                 </div>
 
                 {/* Status text */}
-                <p className="text-gray-400 text-sm mb-2">
+                <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">
                   {isPlayingAudio
                     ? "Interviewer is speaking"
                     : isRecording
@@ -2806,12 +2935,12 @@ const InterviewStep = ({
                   interviewPhase === "greeting" ||
                   interviewPhase === "transitioning" ||
                   interviewPhase === "asking") && (
-                  <div className="bg-black/70 backdrop-blur-sm rounded-xl px-6 py-4 mb-3">
+                  <div className="bg-white/90 dark:bg-black/70 border border-gray-200/80 dark:border-white/10 backdrop-blur-sm rounded-xl px-6 py-4 mb-3">
                     <div className="flex items-start gap-3">
-                      <div className="w-6 h-6 rounded-full bg-purple-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 mt-0.5">
                         <Bot className="w-3.5 h-3.5 text-white" />
                       </div>
-                      <p className="text-white text-base leading-relaxed">
+                      <p className="text-gray-900 dark:text-white text-base leading-relaxed">
                         {aiMessage}
                       </p>
                     </div>
@@ -2822,12 +2951,12 @@ const InterviewStep = ({
               {answer &&
                 (interviewPhase === "processing" ||
                   interviewPhase === "transitioning") && (
-                  <div className="bg-green-900/50 backdrop-blur-sm rounded-xl px-6 py-4">
+                  <div className="bg-emerald-50 dark:bg-green-900/50 border border-emerald-200 dark:border-green-500/20 backdrop-blur-sm rounded-xl px-6 py-4">
                     <div className="flex items-start gap-3">
                       <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-0.5">
                         <User className="w-3.5 h-3.5 text-white" />
                       </div>
-                      <p className="text-white text-base leading-relaxed italic">
+                      <p className="text-emerald-700 dark:text-white text-base leading-relaxed italic">
                         "{answer}"
                       </p>
                     </div>
@@ -2836,12 +2965,12 @@ const InterviewStep = ({
 
               {/* Recording indicator subtitle */}
               {isRecording && interviewPhase === "waiting" && !answer && (
-                <div className="bg-green-900/50 backdrop-blur-sm rounded-xl px-6 py-4">
+                <div className="bg-emerald-50 dark:bg-green-900/50 border border-emerald-200 dark:border-green-500/20 backdrop-blur-sm rounded-xl px-6 py-4">
                   <div className="flex items-center gap-3">
                     <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center animate-pulse">
                       <Mic className="w-3.5 h-3.5 text-white" />
                     </div>
-                    <p className="text-green-300 text-base">
+                    <p className="text-emerald-700 dark:text-green-300 text-base">
                       Speak now... I'll know when you're done
                     </p>
                     <div className="flex gap-1 ml-auto">
@@ -2863,8 +2992,8 @@ const InterviewStep = ({
           </div>
 
           {/* Bottom controls bar */}
-          <div className="border-t border-white/10 bg-black/30 backdrop-blur-sm px-6 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-2 text-xs text-gray-400">
+          <div className="border-t border-gray-200 dark:border-white/10 bg-white/80 dark:bg-black/30 backdrop-blur-sm px-6 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
               <div
                 className={`w-2 h-2 rounded-full ${
                   isPlayingAudio || isRecording
@@ -2887,8 +3016,8 @@ const InterviewStep = ({
                 onClick={onToggleMute}
                 className={`px-3 py-1.5 text-xs rounded-lg transition-all flex items-center gap-1.5 ${
                   isMuted
-                    ? "bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-400"
-                    : "bg-white/10 hover:bg-white/20 text-gray-300"
+                    ? "bg-yellow-100 hover:bg-yellow-200 text-yellow-700 dark:bg-yellow-500/20 dark:hover:bg-yellow-500/30 dark:text-yellow-400"
+                    : "bg-gray-100/80 hover:bg-gray-200 text-gray-700 dark:bg-white/10 dark:hover:bg-white/20 dark:text-gray-300"
                 }`}
                 title={isMuted ? "Unmute AI" : "Mute AI"}
               >
@@ -2903,7 +3032,7 @@ const InterviewStep = ({
               {isPlayingAudio && (
                 <button
                   onClick={onStopAudio}
-                  className="px-3 py-1.5 text-xs bg-white/10 hover:bg-white/20 rounded-lg text-gray-300 transition-all flex items-center gap-1.5"
+                  className="px-3 py-1.5 text-xs bg-gray-100/80 hover:bg-gray-200 dark:bg-white/10 dark:hover:bg-white/20 rounded-lg text-gray-700 dark:text-gray-300 transition-all flex items-center gap-1.5"
                 >
                   <SkipForward className="w-3.5 h-3.5" />
                   Skip
@@ -2911,7 +3040,7 @@ const InterviewStep = ({
               )}
               <button
                 onClick={onAbandon}
-                className="px-3 py-1.5 text-xs bg-red-500/20 hover:bg-red-500/30 rounded-lg text-red-400 transition-all flex items-center gap-1.5"
+                className="px-3 py-1.5 text-xs bg-red-100 hover:bg-red-200 dark:bg-red-500/20 dark:hover:bg-red-500/30 rounded-lg text-red-600 dark:text-red-400 transition-all flex items-center gap-1.5"
               >
                 <PhoneOff className="w-3.5 h-3.5" />
                 End Interview
@@ -2925,14 +3054,14 @@ const InterviewStep = ({
       {selectedMode !== "live" && (
         <div className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-white/10 shadow-xl p-6">
           <div className="flex items-start gap-4">
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 bg-gradient-to-br from-purple-500/20 to-blue-500/20 dark:from-purple-500/30 dark:to-blue-500/30">
-              <span className="text-purple-600 dark:text-purple-400 font-bold text-lg">
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 dark:from-blue-500/30 dark:to-cyan-500/30">
+              <span className="text-blue-600 dark:text-blue-400 font-bold text-lg">
                 {currentQuestion?.number}
               </span>
             </div>
             <div className="flex-1">
               <div className="flex gap-2 mb-3 flex-wrap">
-                <span className="px-3 py-1 bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 text-xs rounded-full font-medium">
+                <span className="px-3 py-1 bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 text-xs rounded-full font-medium">
                   {currentQuestion?.type}
                 </span>
                 {currentQuestion?.category && (
@@ -2946,7 +3075,7 @@ const InterviewStep = ({
                   </span>
                 )}
                 {selectedMode === "live" && (
-                  <span className="px-3 py-1 bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 text-xs rounded-full flex items-center gap-1 font-medium">
+                  <span className="px-3 py-1 bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 text-xs rounded-full flex items-center gap-1 font-medium">
                     <Volume2 className="w-3 h-3" />
                     Live
                   </span>
@@ -2974,7 +3103,7 @@ const InterviewStep = ({
               placeholder="Type your answer here... Be specific and provide examples when possible."
               rows={6}
               disabled={isSubmitting}
-              className="w-full p-4 border border-gray-200 dark:border-white/10 rounded-xl bg-white dark:bg-white/5 text-gray-900 dark:text-white resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+              className="w-full p-4 border border-gray-200 dark:border-white/10 rounded-xl bg-white dark:bg-white/5 text-gray-900 dark:text-white resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             />
           ) : (
             <div className="flex flex-col items-center py-8">
@@ -3011,7 +3140,7 @@ const InterviewStep = ({
               <button
                 onClick={onSubmitAnswer}
                 disabled={isSubmitting || !answer.trim()}
-                className="flex-1 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold rounded-xl flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-purple-500/30 hover:shadow-xl disabled:shadow-none"
+                className="flex-1 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold rounded-xl flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-blue-500/30 hover:shadow-xl disabled:shadow-none"
               >
                 {isSubmitting ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
@@ -3026,7 +3155,7 @@ const InterviewStep = ({
             <button
               onClick={onSkip}
               disabled={isSubmitting}
-              className="px-6 py-3 bg-white/10 hover:bg-white/20 border border-gray-300 dark:border-white/20 text-gray-700 dark:text-gray-300 rounded-xl hover:border-gray-400 dark:hover:border-white/30 flex items-center gap-2 transition-all"
+              className="px-6 py-3 bg-gray-100/80 hover:bg-gray-200 dark:bg-white/10 dark:hover:bg-white/20 border border-gray-300 dark:border-white/20 text-gray-700 dark:text-gray-300 rounded-xl hover:border-gray-400 dark:hover:border-white/30 flex items-center gap-2 transition-all"
             >
               <SkipForward className="w-5 h-5" />
               Skip
@@ -3153,7 +3282,7 @@ const ResultStep = ({
     <div className="space-y-6">
       {/* Overall Score */}
       <div className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-white/10 shadow-xl p-8 text-center">
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500/10 to-blue-500/10 dark:backdrop-blur-xl border border-purple-500/20 dark:border-white/10 rounded-full text-sm font-medium text-purple-600 dark:text-purple-300 shadow-lg mb-6">
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-slate-100 to-blue-100 dark:from-blue-500/10 dark:to-cyan-500/10 dark:backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-full text-sm font-medium text-slate-700 dark:text-blue-300 shadow-lg mb-6">
           <Award className="w-4 h-4" />
           Interview Complete
         </div>
@@ -3245,7 +3374,7 @@ const ResultStep = ({
       {/* Skill Breakdown */}
       <div className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-white/10 shadow-xl p-6">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-5 flex items-center gap-2">
-          <BarChart3 className="w-5 h-5 text-purple-500" />
+          <BarChart3 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
           Skill Breakdown
         </h3>
         <div className="space-y-5">
@@ -3321,14 +3450,14 @@ const ResultStep = ({
       {result.practiceAreas?.length > 0 && (
         <div className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-white/10 shadow-xl p-6">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <BookOpen className="w-5 h-5 text-purple-500" />
+            <BookOpen className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             Recommended Practice Areas
           </h3>
           <div className="flex flex-wrap gap-2">
             {result.practiceAreas.map((area, i) => (
               <span
                 key={i}
-                className="px-4 py-2 bg-gradient-to-r from-purple-500/10 to-blue-500/10 dark:from-purple-500/20 dark:to-blue-500/20 text-purple-600 dark:text-purple-400 rounded-full text-sm font-medium border border-purple-500/20"
+                className="px-4 py-2 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 dark:from-blue-500/20 dark:to-cyan-500/20 text-blue-600 dark:text-blue-400 rounded-full text-sm font-medium border border-blue-500/20"
               >
                 {area}
               </span>
@@ -3341,14 +3470,14 @@ const ResultStep = ({
       <div className="flex gap-4">
         <button
           onClick={onNewInterview}
-          className="flex-1 py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-semibold rounded-xl flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40"
+          className="flex-1 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-semibold rounded-xl flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40"
         >
           <RefreshCw className="w-5 h-5" />
           Practice Again
         </button>
         <button
           onClick={onViewHistory}
-          className="flex-1 py-4 bg-white/10 hover:bg-white/20 border border-purple-500/30 text-purple-600 dark:text-purple-400 hover:border-purple-500/50 font-semibold rounded-xl flex items-center justify-center gap-2 transition-all"
+          className="flex-1 py-4 bg-gray-100/80 hover:bg-gray-200 dark:bg-white/10 dark:hover:bg-white/20 border border-blue-500/30 text-blue-600 dark:text-blue-400 hover:border-blue-500/50 font-semibold rounded-xl flex items-center justify-center gap-2 transition-all"
         >
           <BarChart3 className="w-5 h-5" />
           View History

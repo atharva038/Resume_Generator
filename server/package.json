@@ -6,7 +6,7 @@
     "type": "module",
     "scripts": {
         "dev-v": "node --env-file=.env --watch server.js",
-        "dev": "nodemon --exec \"node --env-file=.env\" server.js",
+        "dev": "./node_modules/.bin/nodemon --exec \"node --env-file=.env\" server.js",
         "dev:native": "node --env-file=.env --watch-path=./routes --watch-path=./controllers --watch-path=./models --watch-path=./middleware --watch-path=./services --watch-path=./utils --watch-path=./config --watch-path=./server.js --watch-preserve-output server.js",
         "start": "node server.js",
         "create-admin": "node --env-file=.env scripts/createAdmin.js",
@@ -55,6 +55,7 @@
         "passport-google-oauth20": "^2.0.0",
         "pdf-parse": "1.1.1",
         "pdf.js-extract": "^0.2.1",
+        "puppeteer": "^24.43.1",
         "razorpay": "^2.9.2",
         "validator": "^13.15.20",
         "xss-clean": "^0.1.4"

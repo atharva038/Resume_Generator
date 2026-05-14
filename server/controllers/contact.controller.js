@@ -1,4 +1,5 @@
 import Contact from "../models/Contact.js";
+import {notifyContactSubmitted} from "../services/adminNotification.service.js";
 
 /**
  * @desc    Submit contact form
@@ -23,6 +24,7 @@ export const submitContact = async (req, res) => {
     });
 
     await contact.save();
+    notifyContactSubmitted(contact);
 
     // Send success response
     res.status(201).json({

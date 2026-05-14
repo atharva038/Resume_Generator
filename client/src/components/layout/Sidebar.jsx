@@ -13,6 +13,7 @@ import {
   Shield,
   UserCircle,
   Tag,
+  Mic
 } from "lucide-react";
 import {useAuth} from "@/context/AuthContext";
 
@@ -130,7 +131,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
               >
                 <img
                   src="/orb-logo.png"
-                  alt="SmartNShine"
+                  alt=""
                   className="h-16 w-auto object-contain group-hover:scale-105 transition-all duration-300 -mr-1 dark:brightness-100 dark:saturate-100 brightness-50 contrast-125 saturate-200"
                 />
                 <span className="bg-gradient-to-r from-[#5d8ff0] via-[#6f7fe4] to-[#8b67df] dark:from-[#6aa0ff] dark:via-[#7f8ce7] dark:to-[#9b78ea] bg-clip-text text-transparent tracking-tight">

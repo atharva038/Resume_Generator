@@ -34,6 +34,8 @@ import {
   segregateAchievements,
   processCustomSection,
   trackDownload,
+  exportResumePdf,
+  getPdfSession,
 } from "../controllers/resume.controller.js";
 
 const router = express.Router();
@@ -135,6 +137,16 @@ router.post(
   checkUsageLimit("resumeDownloadsPerMonth"),
   trackDownload
 );
+
+router.post(
+  "/export-pdf",
+  authenticateToken,
+  checkSubscription,
+  checkUsageLimit("resumeDownloadsPerMonth"),
+  exportResumePdf
+);
+
+router.get("/pdf-session/:token", getPdfSession);
 
 router.put("/:id", authenticateToken, validateResumeUpdate, updateResume);
 router.get("/list", authenticateToken, getResumes);

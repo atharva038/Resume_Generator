@@ -7,6 +7,7 @@ import Template from "../models/Template.model.js";
 import Feedback from "../models/Feedback.model.js";
 import Settings from "../models/Settings.model.js";
 import Subscription from "../models/Subscription.model.js";
+import InterviewSession from "../models/InterviewSession.model.js";
 
 // Get Dashboard Statistics nicely
 export const getDashboardStats = async (req, res) => {
@@ -350,7 +351,9 @@ export const getUserDetails = async (req, res) => {
   try {
     const {userId} = req.params;
 
-    const user = await User.findById(userId).select("-password");
+    const user = await User.findById(userId).select(
+      "-password -resetPasswordToken -resetPasswordExpires"
+    );
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -358,74 +361,236 @@ export const getUserDetails = async (req, res) => {
       });
     }
 
-    // Get user's resumes
-    const resumes = await Resume.find({userId}).sort({createdAt: -1});
+    const safeLimit = (limitType) => {
+      const limit = user.getUsageLimit(limitType);
+      return {
+        limit,
+        unlimited: limit === Infinity,
+      };
+    };
 
-    // Get user's AI usage
-    const aiUsage = await AIUsage.find({userId})
-      .sort({createdAt: -1})
-      .limit(20);
-
-    // Get AI usage stats
-    const aiStats = await AIUsage.aggregate([
-      {$match: {userId: user._id}},
-      {
-        $group: {
-          _id: "$feature",
-          count: {$sum: 1},
-          totalTokens: {$sum: "$tokensUsed"},
-          totalCost: {$sum: "$cost"},
-        },
+    const usageLimits = {
+      resumesPerMonth: {
+        used: user.usage?.resumesThisMonth || 0,
+        ...safeLimit("resumesPerMonth"),
       },
+      resumeDownloadsPerMonth: {
+        used: user.usage?.resumesDownloadedThisMonth || 0,
+        ...safeLimit("resumeDownloadsPerMonth"),
+      },
+      atsScansPerMonth: {
+        used: user.usage?.atsScansThisMonth || 0,
+        ...safeLimit("atsScansPerMonth"),
+      },
+      jobMatchesPerDay: {
+        used: user.usage?.jobMatchesToday || 0,
+        ...safeLimit("jobMatchesPerDay"),
+      },
+      coverLettersPerMonth: {
+        used: user.usage?.coverLettersThisMonth || 0,
+        ...safeLimit("coverLettersPerMonth"),
+      },
+      aiGenerationsPerMonth: {
+        used: user.usage?.aiGenerationsThisMonth || 0,
+        ...safeLimit("aiGenerationsPerMonth"),
+      },
+      aiResumeExtractionsPerDay: {
+        used: user.usage?.aiResumeExtractionsToday || 0,
+        ...safeLimit("aiResumeExtractionsPerDay"),
+        lastReset: user.usage?.lastDailyReset,
+      },
+    };
+
+    const [
+      resumes,
+      resumeCount,
+      aiUsage,
+      aiStats,
+      aiSummaryByProvider,
+      aiSummaryByStatus,
+      subscriptionHistory,
+      interviewSessions,
+      interviewCounts,
+      adminActivity,
+    ] = await Promise.all([
+      Resume.find({userId})
+        .select(
+          "resumeTitle description name contact.email templateId colorTheme subscriptionInfo createdAt updatedAt"
+        )
+        .sort({createdAt: -1})
+        .limit(25)
+        .lean(),
+      Resume.countDocuments({userId}),
+      AIUsage.find({userId})
+        .sort({createdAt: -1})
+        .limit(20)
+        .select(
+          "aiProvider aiModel feature tokensUsed cost responseTime status countTowardsQuota errorMessage createdAt"
+        )
+        .lean(),
+      AIUsage.aggregate([
+        {$match: {userId: user._id}},
+        {
+          $group: {
+            _id: "$feature",
+            count: {$sum: 1},
+            successCount: {
+              $sum: {$cond: [{$eq: ["$status", "success"]}, 1, 0]},
+            },
+            errorCount: {
+              $sum: {$cond: [{$eq: ["$status", "error"]}, 1, 0]},
+            },
+            timeoutCount: {
+              $sum: {$cond: [{$eq: ["$status", "timeout"]}, 1, 0]},
+            },
+            totalTokens: {$sum: "$tokensUsed"},
+            totalCost: {$sum: "$cost"},
+            avgResponseTime: {$avg: "$responseTime"},
+          },
+        },
+        {$sort: {count: -1}},
+      ]),
+      AIUsage.aggregate([
+        {$match: {userId: user._id}},
+        {
+          $group: {
+            _id: "$aiProvider",
+            count: {$sum: 1},
+            totalTokens: {$sum: "$tokensUsed"},
+            totalCost: {$sum: "$cost"},
+            avgResponseTime: {$avg: "$responseTime"},
+          },
+        },
+        {$sort: {count: -1}},
+      ]),
+      AIUsage.aggregate([
+        {$match: {userId: user._id}},
+        {
+          $group: {
+            _id: "$status",
+            count: {$sum: 1},
+            totalTokens: {$sum: "$tokensUsed"},
+            totalCost: {$sum: "$cost"},
+          },
+        },
+      ]),
+      Subscription.getUserSubscriptionHistory(userId),
+      InterviewSession.find({userId})
+        .select(
+          "interviewType role experienceLevel mode status currentQuestionIndex totalQuestions questions.evaluation.score questions.userAnswer questions.skipped startedAt completedAt totalDurationSeconds createdAt updatedAt"
+        )
+        .sort({createdAt: -1})
+        .limit(10),
+      InterviewSession.aggregate([
+        {$match: {userId: user._id}},
+        {
+          $group: {
+            _id: "$status",
+            count: {$sum: 1},
+            totalDurationSeconds: {$sum: "$totalDurationSeconds"},
+          },
+        },
+      ]),
+      AdminLog.find({targetType: "user", targetId: user._id})
+        .populate("adminId", "name email")
+        .sort({createdAt: -1})
+        .limit(10)
+        .select("adminId action targetType targetId description createdAt")
+        .lean(),
     ]);
+
+    const interviewSessionSummaries = interviewSessions.map((session) => {
+      const answeredQuestions = session.questions.filter(
+        (question) => question.userAnswer || question.skipped
+      ).length;
+      const scoredQuestions = session.questions.filter(
+        (question) => question.evaluation?.score > 0
+      );
+      const averageScore =
+        scoredQuestions.length > 0
+          ? Math.round(
+              scoredQuestions.reduce(
+                (sum, question) => sum + question.evaluation.score,
+                0
+              ) / scoredQuestions.length
+            )
+          : 0;
+
+      return {
+        _id: session._id,
+        interviewType: session.interviewType,
+        role: session.role,
+        experienceLevel: session.experienceLevel,
+        mode: session.mode,
+        status: session.status,
+        currentQuestionIndex: session.currentQuestionIndex,
+        totalQuestions: session.totalQuestions,
+        answeredQuestions,
+        progress:
+          session.totalQuestions > 0
+            ? Math.round((answeredQuestions / session.totalQuestions) * 100)
+            : 0,
+        averageScore,
+        startedAt: session.startedAt,
+        completedAt: session.completedAt,
+        totalDurationSeconds: session.totalDurationSeconds,
+        createdAt: session.createdAt,
+        updatedAt: session.updatedAt,
+      };
+    });
+
+    const aiTotals = aiStats.reduce(
+      (totals, item) => ({
+        calls: totals.calls + item.count,
+        success: totals.success + item.successCount,
+        errors: totals.errors + item.errorCount,
+        timeouts: totals.timeouts + item.timeoutCount,
+        tokens: totals.tokens + item.totalTokens,
+        cost: totals.cost + item.totalCost,
+      }),
+      {calls: 0, success: 0, errors: 0, timeouts: 0, tokens: 0, cost: 0}
+    );
+
+    const activeSubscription =
+      subscriptionHistory.find((subscription) => subscription.status === "active") ||
+      subscriptionHistory[0] ||
+      null;
 
     res.json({
       success: true,
       data: {
         user,
         resumes,
+        resumeSummary: {
+          total: resumeCount,
+          returned: resumes.length,
+        },
         aiUsage,
         aiStats,
-        usageLimits: {
-          resumesPerMonth: {
-            used: user.usage?.resumesThisMonth || 0,
-            limit: user.getUsageLimit("resumesPerMonth"),
-            unlimited: user.getUsageLimit("resumesPerMonth") === Infinity,
-          },
-          resumeDownloadsPerMonth: {
-            used: user.usage?.resumesDownloadedThisMonth || 0,
-            limit: user.getUsageLimit("resumeDownloadsPerMonth"),
-            unlimited:
-              user.getUsageLimit("resumeDownloadsPerMonth") === Infinity,
-          },
-          atsScansPerMonth: {
-            used: user.usage?.atsScansThisMonth || 0,
-            limit: user.getUsageLimit("atsScansPerMonth"),
-            unlimited: user.getUsageLimit("atsScansPerMonth") === Infinity,
-          },
-          jobMatchesPerDay: {
-            used: user.usage?.jobMatchesToday || 0,
-            limit: user.getUsageLimit("jobMatchesPerDay"),
-            unlimited: user.getUsageLimit("jobMatchesPerDay") === Infinity,
-          },
-          coverLettersPerMonth: {
-            used: user.usage?.coverLettersThisMonth || 0,
-            limit: user.getUsageLimit("coverLettersPerMonth"),
-            unlimited: user.getUsageLimit("coverLettersPerMonth") === Infinity,
-          },
-          aiGenerationsPerMonth: {
-            used: user.usage?.aiGenerationsThisMonth || 0,
-            limit: user.getUsageLimit("aiGenerationsPerMonth"),
-            unlimited: user.getUsageLimit("aiGenerationsPerMonth") === Infinity,
-          },
-          aiResumeExtractionsPerDay: {
-            used: user.usage?.aiResumeExtractionsToday || 0,
-            limit: user.getUsageLimit("aiResumeExtractionsPerDay"),
-            unlimited:
-              user.getUsageLimit("aiResumeExtractionsPerDay") === Infinity,
-            lastReset: user.usage?.lastDailyReset,
+        aiSummary: {
+          totals: aiTotals,
+          byFeature: aiStats,
+          byProvider: aiSummaryByProvider,
+          byStatus: aiSummaryByStatus,
+        },
+        subscription: {
+          current: user.subscription || null,
+          activeRecord: activeSubscription,
+          history: subscriptionHistory,
+        },
+        interviews: {
+          sessions: interviewSessionSummaries,
+          summary: {
+            total: interviewCounts.reduce((sum, item) => sum + item.count, 0),
+            byStatus: interviewCounts,
+            totalDurationSeconds: interviewCounts.reduce(
+              (sum, item) => sum + (item.totalDurationSeconds || 0),
+              0
+            ),
           },
         },
+        activity: adminActivity,
+        usageLimits,
       },
     });
   } catch (error) {
@@ -1896,6 +2061,18 @@ export const resetUserDailyQuota = async (req, res) => {
       }
     );
 
+    await AdminLog.create({
+      adminId: req.user.userId || req.user._id,
+      action: "reset_user_quota",
+      targetType: "user",
+      targetId: userId,
+      description: `Usage quotas reset for ${user.email}`,
+      metadata: {
+        resetRecords: result.modifiedCount,
+      },
+      ipAddress: req.ip,
+    });
+
     res.json({
       message: `All usage counters reset successfully for ${user.name}`,
       resetRecords: result.modifiedCount,
@@ -2339,11 +2516,13 @@ export const resetUserExtractionCounter = async (req, res) => {
       action: "reset_ai_extraction_counter",
       targetType: "user",
       targetId: userId,
-      details: {
+      description: `AI extraction counter reset for ${user.email}`,
+      metadata: {
         userEmail: user.email,
         userName: user.name,
         resetAt: new Date(),
       },
+      ipAddress: req.ip,
     });
 
     res.json({

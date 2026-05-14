@@ -11,15 +11,29 @@ import os
 import io
 import torch
 import torchaudio as ta
+import perth
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for Node.js backend
+
+
+class NoOpWatermarker:
+    """Fallback when Perth's native implicit watermarker is unavailable."""
+
+    def apply_watermark(self, wav, sample_rate=None, **kwargs):
+        return wav
+
+
+if not callable(getattr(perth, "PerthImplicitWatermarker", None)):
+    print("⚠️ Perth implicit watermarker unavailable; continuing without audio watermarking")
+    perth.PerthImplicitWatermarker = NoOpWatermarker
 
 # ============================================
 # CHATTERBOX TTS SETUP
 # ============================================
 
 chatterbox_model = None
+model_load_error = None
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 MODEL_TYPE = os.environ.get('CHATTERBOX_MODEL', 'turbo')  # turbo, standard, or multilingual
 
@@ -47,9 +61,11 @@ try:
         chatterbox_model = ChatterboxTTS.from_pretrained(device=DEVICE)
         print(f"✅ Chatterbox loaded successfully!")
 except ImportError as e:
+    model_load_error = str(e)
     print(f"⚠️ Chatterbox not installed: {e}")
     print("   To enable: pip install chatterbox-tts")
 except Exception as e:
+    model_load_error = str(e)
     print(f"⚠️ Failed to load Chatterbox model: {e}")
 
 
@@ -60,11 +76,21 @@ except Exception as e:
 @app.route('/health', methods=['GET'])
 def health_check():
     """Health check endpoint"""
+    model_available = chatterbox_model is not None
+    watermarker = getattr(chatterbox_model, "watermarker", None)
+    watermarking_available = model_available and not isinstance(
+        watermarker,
+        NoOpWatermarker
+    )
+
     return jsonify({
-        "status": "healthy",
-        "chatterbox_available": chatterbox_model is not None,
-        "model_type": MODEL_TYPE if chatterbox_model else None,
+        "status": "healthy" if model_available else "degraded",
+        "chatterbox_available": model_available,
+        "model_type": MODEL_TYPE if model_available else None,
+        "configured_model_type": MODEL_TYPE,
         "device": DEVICE,
+        "watermarking_available": watermarking_available,
+        "model_load_error": model_load_error,
         "service": "Chatterbox TTS Service"
     })
 

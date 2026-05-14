@@ -107,10 +107,40 @@
   }
 }
 
+#mobile-resume-print-root {
+  display: none;
+}
+
+@page {
+  size: A4;
+  margin: 0;
+}
+
 /* Print styles for ATS-friendly PDF */
 @media print {
   body {
     @apply bg-white;
+  }
+
+  body.printing-resume-template > *:not(#mobile-resume-print-root) {
+    display: none !important;
+  }
+
+  #mobile-resume-print-root {
+    display: block !important;
+    width: 210mm !important;
+    min-height: 297mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  #mobile-resume-print-root .resume-preview {
+    width: 210mm !important;
+    min-height: 297mm !important;
   }
 
   .no-print {
@@ -120,8 +150,7 @@
   .resume-preview {
     box-shadow: none !important;
     border: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
+    margin: 0 auto !important;
   }
 }
 

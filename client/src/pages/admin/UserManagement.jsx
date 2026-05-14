@@ -1,13 +1,12 @@
-import {useState, useEffect} from "react";
+import {useState, useEffect, useCallback} from "react";
+import {useNavigate} from "react-router-dom";
 import toast from "react-hot-toast";
 import {
   Search,
-  Filter,
   UserX,
   UserCheck,
   Trash2,
   Eye,
-  Shield,
   User as UserIcon,
   ChevronLeft,
   ChevronRight,
@@ -22,6 +21,7 @@ import {parseValidationErrors} from "@/utils/errorHandler";
 import {ConfirmationModal} from "@/components/common/modals";
 
 const UserManagement = () => {
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -37,7 +37,6 @@ const UserManagement = () => {
     page: 1,
     totalPages: 1,
   });
-  const [selectedUser, setSelectedUser] = useState(null);
   const [deleteModal, setDeleteModal] = useState({
     isOpen: false,
     userId: null,
@@ -45,11 +44,7 @@ const UserManagement = () => {
     loading: false,
   });
 
-  useEffect(() => {
-    fetchUsers();
-  }, [filters]);
-
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
       const response = await getAllUsers(filters);
@@ -62,7 +57,11 @@ const UserManagement = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters]);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
 
   const handleStatusChange = async (userId, newStatus) => {
     try {
@@ -416,6 +415,13 @@ const UserManagement = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => navigate(`/admin/users/${user._id}`)}
+                            className="p-2 text-cyan-500 hover:bg-cyan-500/10 border border-transparent hover:border-cyan-500/20 rounded-lg transition-all"
+                            title="Inspect user"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
                           <button
                             onClick={() =>
                               handleStatusChange(

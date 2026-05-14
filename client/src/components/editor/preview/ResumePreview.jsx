@@ -4,6 +4,7 @@ import {
   useImperativeHandle,
   useState,
   useEffect,
+  useCallback,
 } from "react";
 import {useReactToPrint} from "react-to-print";
 import {useToggle, useMediaQuery} from "@/hooks";
@@ -29,7 +30,7 @@ const MIN_CONTENT_PX = 100;
 const OVERFLOW_THRESHOLD_PX = 80;
 
 const ResumePreview = forwardRef(
-  ({resumeData, template = "classic", onPageUsageChange}, ref) => {
+  ({resumeData, template = "classic", onPageUsageChange, onDownload}, ref) => {
     const printTemplateRef = useRef();
     const templateRef = useRef(); // page-0 template wrapper — used for DOM section measurement
     const [showFullPreview, , setShowFullPreviewTrue, setShowFullPreviewFalse] =
@@ -138,16 +139,119 @@ const ResumePreview = forwardRef(
       contentRef: printTemplateRef,
       documentTitle: `${resumeData?.name || "Resume"}_Resume`,
       pageStyle: `
-        @page { size: A4; margin: 0.5in; }
+        @page { size: A4; margin: 0; }
         @media print {
           body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
       `,
     });
 
+    const handleMobilePrint = useCallback(async ({targetWindow} = {}) => {
+      const printNode = printTemplateRef.current;
+      if (!printNode) {
+        handlePrint();
+        return;
+      }
+
+      const printWindow = targetWindow || window.open("", "_blank");
+      if (printWindow) {
+        const documentTitle = `${resumeData?.name || "Resume"}_Resume`;
+        const styleMarkup = Array.from(
+          document.querySelectorAll('style, link[rel="stylesheet"]')
+        )
+          .map((node) => node.outerHTML)
+          .join("\n");
+
+        printWindow.document.open();
+        printWindow.document.write(`
+          <!doctype html>
+          <html>
+            <head>
+              <title>${documentTitle}</title>
+              <meta name="viewport" content="width=device-width, initial-scale=1" />
+              ${styleMarkup}
+              <style>
+                @page { size: A4; margin: 0; }
+                html, body {
+                  margin: 0;
+                  padding: 0;
+                  width: 210mm;
+                  min-height: 297mm;
+                  background: #ffffff;
+                  color: #000000;
+                  -webkit-print-color-adjust: exact;
+                  print-color-adjust: exact;
+                }
+                body {
+                  display: block;
+                }
+                .resume-preview {
+                  box-shadow: none !important;
+                  border: none !important;
+                  margin: 0 auto !important;
+                }
+                .no-print {
+                  display: none !important;
+                }
+              </style>
+            </head>
+            <body>
+              ${printNode.cloneNode(true).outerHTML}
+              <script>
+                window.addEventListener("load", function () {
+                  setTimeout(function () {
+                    window.focus();
+                    window.print();
+                  }, 250);
+                });
+              </script>
+            </body>
+          </html>
+        `);
+        printWindow.document.close();
+        return;
+      }
+
+      const existingPrintRoot = document.getElementById(
+        "mobile-resume-print-root"
+      );
+      if (existingPrintRoot) existingPrintRoot.remove();
+
+      const printRoot = document.createElement("div");
+      printRoot.id = "mobile-resume-print-root";
+      printRoot.appendChild(printNode.cloneNode(true));
+
+      document.body.appendChild(printRoot);
+      document.body.classList.add("printing-resume-template");
+
+      const cleanup = () => {
+        document.body.classList.remove("printing-resume-template");
+        printRoot.remove();
+        window.removeEventListener("afterprint", cleanup);
+      };
+
+      window.addEventListener("afterprint", cleanup);
+
+      await new Promise((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(resolve))
+      );
+
+      window.print();
+      window.setTimeout(cleanup, 10000);
+    }, [handlePrint, resumeData?.name]);
+
+    const downloadPDF = useCallback((options) => {
+      if (isMobile) {
+        handleMobilePrint(options);
+        return;
+      }
+
+      handlePrint();
+    }, [handleMobilePrint, handlePrint, isMobile]);
+
     useImperativeHandle(ref, () => ({
-      downloadPDF: handlePrint,
-    }));
+      downloadPDF,
+    }), [downloadPDF]);
 
     if (!resumeData) return null;
 
@@ -161,7 +265,7 @@ const ResumePreview = forwardRef(
           {/* Download Button */}
           <div className="mb-4 no-print flex-shrink-0">
             <button
-              onClick={handlePrint}
+              onClick={onDownload || downloadPDF}
               className="w-full bg-gray-900 dark:bg-white hover:bg-gray-800 dark:hover:bg-gray-100 text-white dark:text-gray-900 font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center gap-3"
             >
               <span className="text-2xl">📥</span>

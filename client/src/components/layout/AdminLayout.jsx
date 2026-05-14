@@ -1,4 +1,4 @@
-import {useState, useEffect} from "react";
+import {useEffect, useState} from "react";
 import {Link, Outlet, useLocation, useNavigate} from "react-router-dom";
 import {useToggle} from "@/hooks";
 import {
@@ -16,10 +16,12 @@ import {
   Sun,
   TrendingUp,
   Sparkles,
+  Bell,
 } from "lucide-react";
 import {useAuth} from "@/context/AuthContext";
 import {useDarkMode} from "@/context/DarkModeContext";
 import {PageTransition} from "@/components/common";
+import {getAdminNotificationStats} from "@/api/admin.api";
 
 const AdminLayout = () => {
   const [
@@ -31,13 +33,13 @@ const AdminLayout = () => {
   const [
     isMobileMenuOpen,
     toggleMobileMenu,
-    setIsMobileMenuOpenTrue,
     setIsMobileMenuOpenFalse,
   ] = useToggle(false);
   const location = useLocation();
   const navigate = useNavigate();
   const {user, logout} = useAuth();
   const {isDarkMode, toggleDarkMode} = useDarkMode();
+  const [notificationStats, setNotificationStats] = useState(null);
 
   // Set initial sidebar state based on screen size
   useEffect(() => {
@@ -122,6 +124,12 @@ const AdminLayout = () => {
       color: "text-cyan-500",
     },
     {
+      path: "/admin/notifications",
+      icon: Bell,
+      label: "Notifications",
+      color: "text-rose-500",
+    },
+    {
       path: "/admin/settings",
       icon: Settings,
       label: "Settings",
@@ -133,6 +141,31 @@ const AdminLayout = () => {
     logout();
     navigate("/login");
   };
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchNotificationStats = async () => {
+      try {
+        const response = await getAdminNotificationStats();
+        if (isMounted) {
+          setNotificationStats(response.data.data);
+        }
+      } catch {
+        if (isMounted) {
+          setNotificationStats(null);
+        }
+      }
+    };
+
+    fetchNotificationStats();
+    const interval = window.setInterval(fetchNotificationStats, 60000);
+
+    return () => {
+      isMounted = false;
+      window.clearInterval(interval);
+    };
+  }, [location.pathname]);
 
   const toggleSidebar = () => {
     toggleMobileMenu();
@@ -188,6 +221,22 @@ const AdminLayout = () => {
           </div>
 
           <div className="flex items-center gap-3">
+            <Link
+              to="/admin/notifications"
+              className="relative p-2.5 bg-white dark:bg-black hover:bg-gray-100 dark:hover:bg-zinc-900 rounded-lg transition-all duration-200 border border-gray-200 dark:border-white/10"
+              title="Notifications"
+              aria-label="Notifications"
+            >
+              <Bell className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+              {notificationStats?.unread > 0 && (
+                <span className="absolute -right-1 -top-1 min-w-5 h-5 px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
+                  {notificationStats.unread > 99
+                    ? "99+"
+                    : notificationStats.unread}
+                </span>
+              )}
+            </Link>
+
             {/* User Info */}
             <div className="text-right hidden md:block px-3 py-1.5 bg-white dark:bg-black rounded-lg border border-gray-200 dark:border-white/10">
               <p className="text-sm font-medium text-gray-900 dark:text-white">
@@ -250,7 +299,7 @@ const AdminLayout = () => {
           <nav className="p-4 space-y-1">
             {menuItems.map((item) => {
               const Icon = item.icon;
-              const isActive = location.pathname === item.path;
+              const isActive = location.pathname.startsWith(item.path);
 
               return (
                 <Link

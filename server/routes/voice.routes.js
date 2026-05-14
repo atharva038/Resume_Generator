@@ -5,6 +5,45 @@ import {authenticateToken} from "../middleware/auth.middleware.js";
 import * as chatterboxService from "../services/chatterbox.service.js";
 
 const router = express.Router();
+const unavailableVoiceHealthLogs = new Set();
+
+function getVoiceServiceUrl() {
+  return (
+    process.env.VOICE_SERVICE_URL ||
+    process.env.ML_SERVICE_URL ||
+    "http://localhost:5001"
+  );
+}
+
+function logVoiceServiceUnavailable(serviceName, serviceUrl, error) {
+  const logKey = `${serviceName}:${serviceUrl}`;
+  const message = error?.cause?.code || error?.code || error?.message;
+
+  if (!unavailableVoiceHealthLogs.has(logKey)) {
+    unavailableVoiceHealthLogs.add(logKey);
+    console.warn(
+      `${serviceName} health check unavailable on ${serviceUrl}: ${
+        message || "request failed"
+      }`
+    );
+  }
+}
+
+async function fetchVoiceHealth(path) {
+  const voiceServiceUrl = getVoiceServiceUrl();
+  const response = await fetch(`${voiceServiceUrl}${path}`, {
+    signal: AbortSignal.timeout(3000),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Voice service returned ${response.status}`);
+  }
+
+  return {
+    data: await response.json(),
+    voiceServiceUrl,
+  };
+}
 
 /**
  * Voice Routes
@@ -23,20 +62,17 @@ const router = express.Router();
  * @access  Public
  */
 router.get("/health", async (req, res) => {
+  const voiceServiceUrl = getVoiceServiceUrl();
+
   try {
-    const voiceServiceUrl =
-      process.env.VOICE_SERVICE_URL ||
-      process.env.ML_SERVICE_URL ||
-      "http://localhost:5001";
-    const response = await fetch(`${voiceServiceUrl}/health`);
-    const data = await response.json();
+    const {data} = await fetchVoiceHealth("/health");
 
     res.json({
       success: true,
       data,
     });
   } catch (error) {
-    console.error("Voice service health check error:", error);
+    logVoiceServiceUnavailable("Voice service", voiceServiceUrl, error);
     res.json({
       success: true,
       data: {
@@ -100,20 +136,17 @@ router.get("/tts/health", async (req, res) => {
  * @access  Private
  */
 router.get("/transcribe/health", authenticateToken, async (req, res) => {
+  const voiceServiceUrl = getVoiceServiceUrl();
+
   try {
-    const voiceServiceUrl =
-      process.env.VOICE_SERVICE_URL ||
-      process.env.ML_SERVICE_URL ||
-      "http://localhost:5001";
-    const response = await fetch(`${voiceServiceUrl}/transcribe/health`);
-    const data = await response.json();
+    const {data} = await fetchVoiceHealth("/transcribe/health");
 
     res.json({
       success: true,
       data,
     });
   } catch (error) {
-    console.error("Transcription health check error:", error);
+    logVoiceServiceUnavailable("Transcription service", voiceServiceUrl, error);
     res.json({
       success: true,
       data: {

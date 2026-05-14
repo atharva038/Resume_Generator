@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import Feedback from "../models/Feedback.model.js";
 import User from "../models/User.model.js";
+import {notifyFeedbackSubmitted} from "../services/adminNotification.service.js";
 
 /**
  * Submit new feedback
@@ -52,6 +53,7 @@ export const submitFeedback = async (req, res) => {
 
     // Populate user info
     await feedback.populate("userId", "name email");
+    notifyFeedbackSubmitted(feedback);
 
     res.status(201).json({
       message: "Feedback submitted successfully",
