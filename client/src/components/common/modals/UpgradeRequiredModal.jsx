@@ -1,5 +1,5 @@
 import {useNavigate} from "react-router-dom";
-import {X, Sparkles, Crown, Zap} from "lucide-react";
+import {X, Crown, CheckCircle2, Lock} from "lucide-react";
 
 /**
  * UpgradeRequiredModal - Shows when user needs to upgrade to access a feature
@@ -15,51 +15,46 @@ const UpgradeRequiredModal = ({isOpen, onClose, message, title, feature}) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden animate-slideUp">
-        {/* Header with Gradient */}
-        <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 p-6 text-white relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
-          <div className="relative z-10">
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex items-center gap-3">
-                <div className="bg-white/20 p-3 rounded-xl backdrop-blur-sm">
-                  <Crown className="w-8 h-8" />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-bold">
-                    {title || "Upgrade Required"}
-                  </h2>
-                  {feature && (
-                    <p className="text-purple-100 text-sm mt-1">{feature}</p>
-                  )}
-                </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-950/60 p-4 backdrop-blur-sm dark:bg-black/70 animate-fadeIn">
+      <div className="w-full max-w-lg overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-white/10 dark:bg-zinc-950 animate-slideUp">
+        <div className="border-b border-gray-200 bg-white p-5 dark:border-white/10 dark:bg-zinc-950 sm:p-6">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex min-w-0 items-center gap-4">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-primary-100 bg-primary-50 text-primary-600 dark:border-primary-500/20 dark:bg-primary-500/10 dark:text-primary-300">
+                <Crown className="h-7 w-7" />
               </div>
-              <button
-                onClick={onClose}
-                className="text-white/80 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-lg"
-                aria-label="Close modal"
-              >
-                <X className="w-6 h-6" />
-              </button>
+              <div className="min-w-0">
+                <h2 className="text-2xl font-bold text-gray-950 dark:text-white">
+                  {title || "Upgrade Required"}
+                </h2>
+                {feature && (
+                  <p className="mt-1 text-sm font-medium text-gray-500 dark:text-gray-400">
+                    {feature}
+                  </p>
+                )}
+              </div>
             </div>
+            <button
+              onClick={onClose}
+              className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-950 dark:text-gray-400 dark:hover:bg-white/10 dark:hover:text-white"
+              aria-label="Close modal"
+            >
+              <X className="h-5 w-5" />
+            </button>
           </div>
         </div>
 
-        {/* Content */}
-        <div className="p-6 space-y-6">
-          {/* Message */}
-          <div className="bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-xl p-5 border border-purple-200 dark:border-purple-700">
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+        <div className="space-y-6 p-5 sm:p-6">
+          <div className="rounded-xl border border-gray-200 bg-gray-50 p-5 dark:border-white/10 dark:bg-white/[0.04]">
+            <p className="text-base leading-relaxed text-gray-700 dark:text-gray-200">
               {message ||
-                "This feature is only available for Pro, Premium, and Lifetime subscribers. Upgrade your plan to unlock unlimited AI-powered features!"}
+                "This feature requires a Pro subscription to continue."}
             </p>
           </div>
 
-          {/* Features List */}
           <div className="space-y-3">
-            <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+            <h3 className="flex items-center gap-2 font-semibold text-gray-950 dark:text-white">
+              <Crown className="h-5 w-5 text-primary-600 dark:text-primary-300" />
               What You'll Get with Pro:
             </h3>
             <ul className="space-y-2">
@@ -73,37 +68,34 @@ const UpgradeRequiredModal = ({isOpen, onClose, message, title, feature}) => {
               ].map((feature, idx) => (
                 <li
                   key={idx}
-                  className="flex items-start gap-3 text-sm text-gray-600 dark:text-gray-400"
+                  className="flex items-start gap-3 text-sm font-medium text-gray-600 dark:text-gray-300"
                 >
-                  <Zap className="w-4 h-4 text-purple-600 dark:text-purple-400 flex-shrink-0 mt-0.5" />
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary-600 dark:text-primary-300" />
                   <span>{feature}</span>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex gap-3">
+          <div className="flex flex-col gap-3 sm:flex-row">
             <button
               onClick={handleUpgrade}
-              className="flex-1 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center gap-2"
+              className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary-600 px-6 py-3 font-semibold text-white shadow-lg shadow-primary-600/20 transition-colors hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-zinc-950"
             >
-              <Crown className="w-5 h-5" />
+              <Crown className="h-5 w-5" />
               Upgrade Now
             </button>
             <button
               onClick={onClose}
-              className="px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium"
+              className="rounded-lg border border-gray-200 bg-white px-6 py-3 font-semibold text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 focus:ring-offset-white dark:border-white/10 dark:bg-white/10 dark:text-gray-200 dark:hover:bg-white/15 dark:focus:ring-white/20 dark:focus:ring-offset-zinc-950"
             >
               Maybe Later
             </button>
           </div>
 
-          {/* Trust Badge */}
-          <div className="text-center">
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              🔒 Secure payment • Cancel anytime • 30-day money-back guarantee
-            </p>
+          <div className="flex items-center justify-center gap-2 pt-1 text-center text-xs font-medium text-gray-500 dark:text-gray-400">
+            <Lock className="h-4 w-4 shrink-0" />
+            <span>Secure payment • Cancel anytime • 30-day money-back guarantee</span>
           </div>
         </div>
       </div>

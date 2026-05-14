@@ -350,12 +350,17 @@ const AdminSettings = () => {
               <div className="bg-white/5 rounded-xl p-4 border border-white/5">
                 <h4 className="font-semibold text-white mb-2">AI Quotas</h4>
                 <p className="text-sm text-gray-400">
-                  Free: {settings.aiQuota.free.daily} daily,{" "}
-                  {settings.aiQuota.free.monthly} monthly
+                  Free: {settings.aiQuota?.free?.daily ?? 10} daily,{" "}
+                  {settings.aiQuota?.free?.monthly ?? 200} monthly
                 </p>
                 <p className="text-sm text-gray-400">
-                  Premium: {settings.aiQuota.premium.daily} daily,{" "}
-                  {settings.aiQuota.premium.monthly} monthly
+                  One-Time: {settings.aiQuota?.["one-time"]?.daily ?? 150}{" "}
+                  daily, {settings.aiQuota?.["one-time"]?.monthly ?? 150}{" "}
+                  monthly
+                </p>
+                <p className="text-sm text-gray-400">
+                  Pro: {settings.aiQuota?.pro?.daily ?? "∞"} daily,{" "}
+                  {settings.aiQuota?.pro?.monthly ?? "∞"} monthly
                 </p>
               </div>
 

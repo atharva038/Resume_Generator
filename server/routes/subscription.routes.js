@@ -1,10 +1,7 @@
 import express from "express";
 import * as subscriptionController from "../controllers/subscription.controller.js";
 import {authenticateToken} from "../middleware/auth.middleware.js";
-import {
-  checkSubscription,
-  requirePremium,
-} from "../middleware/subscription.middleware.js";
+import {checkSubscription} from "../middleware/subscription.middleware.js";
 
 const router = express.Router();
 
@@ -37,12 +34,5 @@ router.get("/compare", subscriptionController.comparePlans);
 // AI Configuration
 router.get("/ai-config", subscriptionController.getAIConfig);
 router.post("/ai-preference", subscriptionController.updateAIPreference);
-
-// Webhook (public, no auth)
-router.post(
-  "/webhook",
-  express.raw({type: "application/json"}),
-  subscriptionController.handleWebhook
-);
 
 export default router;

@@ -664,6 +664,28 @@ const Editor = () => {
     loadResumeData();
   }, [location, navigate, user]);
 
+  const resumeAccess = resumeData?.access || {};
+  const isPaidActionLocked = Boolean(
+    resumeData?._id &&
+      (resumeAccess.upgradeRequired ||
+        resumeAccess.canDownload === false ||
+        resumeAccess.canUseAI === false)
+  );
+  const isReadOnlyResume = Boolean(resumeData?._id && resumeAccess.canEdit === false);
+  const lockedResumeMessage =
+    resumeAccess.lockReason ||
+    "Paid actions are locked for your current subscription. You can still edit this resume manually.";
+
+  const guardedHandleSave = async () => {
+    if (isReadOnlyResume) {
+      setUpgradeMessage(lockedResumeMessage);
+      showUpgradeModalTrue();
+      return false;
+    }
+
+    return handleSave();
+  };
+
   // Handle PDF download with subscription and limit validation
   const handleDownloadPDF = async () => {
     if (!user) {
@@ -671,6 +693,12 @@ const Editor = () => {
         duration: 3000,
       });
       navigate("/login");
+      return;
+    }
+
+    if (isPaidActionLocked || resumeAccess.canDownload === false) {
+      setUpgradeMessage(lockedResumeMessage);
+      showUpgradeModalTrue();
       return;
     }
 
@@ -743,7 +771,7 @@ const Editor = () => {
 
   // Handle unsaved changes modal actions
   const handleSaveAndNavigate = async () => {
-    const wasSaved = await handleSave();
+    const wasSaved = await guardedHandleSave();
     if (wasSaved) {
       commitPendingNavigation(navigate);
     }
@@ -766,10 +794,12 @@ const Editor = () => {
   };
 
   const updateField = (field, value, skipTracking = false) => {
+    if (isReadOnlyResume) return;
     setResumeData((prev) => ({...prev, [field]: value}));
   };
 
   const updateContact = (field, value) => {
+    if (isReadOnlyResume) return;
     setResumeData((prev) => ({
       ...prev,
       contact: {...prev.contact, [field]: value},
@@ -783,6 +813,7 @@ const Editor = () => {
     value,
     skipTracking = false
   ) => {
+    if (isReadOnlyResume) return;
     setResumeData((prev) => {
       const newArray = [...prev[section]];
       newArray[index] = {...newArray[index], [field]: value};
@@ -791,6 +822,7 @@ const Editor = () => {
   };
 
   const addArrayItem = (section, template) => {
+    if (isReadOnlyResume) return;
     setResumeData((prev) => ({
       ...prev,
       [section]: [...(prev[section] || []), template],
@@ -798,6 +830,7 @@ const Editor = () => {
   };
 
   const removeArrayItem = (section, index) => {
+    if (isReadOnlyResume) return;
     setResumeData((prev) => ({
       ...prev,
       [section]: prev[section].filter((_, i) => i !== index),
@@ -805,6 +838,7 @@ const Editor = () => {
   };
 
   const moveItem = (section, fromIndex, toIndex) => {
+    if (isReadOnlyResume) return;
     setResumeData((prev) => {
       const newArray = [...prev[section]];
       const [moved] = newArray.splice(fromIndex, 1);
@@ -1646,7 +1680,7 @@ const Editor = () => {
     scrollToSection(firstIncompleteSectionId);
   };
 
-  const isExportLocked = isSubscriptionExpired();
+  const isExportLocked = isSubscriptionExpired() || isReadOnlyResume;
   const expandAllSections = () => setForceSectionExpand(true);
   const collapseAllSections = () => setForceSectionExpand(false);
 
@@ -1786,7 +1820,7 @@ const Editor = () => {
           onToggleSections={toggleFloatingNav}
           showPreview={showPreview}
           onTogglePreview={togglePreview}
-          onSave={handleSave}
+          onSave={guardedHandleSave}
           saving={saving}
           autoSaving={autoSaving}
           hasUnsavedChanges={hasUnsavedChanges}
@@ -1837,7 +1871,7 @@ const Editor = () => {
 
             {/* Save */}
             <button
-              onClick={handleSave}
+              onClick={guardedHandleSave}
               disabled={saving || autoSaving}
               className={`group relative w-9 h-9 flex items-center justify-center rounded-xl transition-colors ${
                 saving || autoSaving
@@ -2021,6 +2055,26 @@ const Editor = () => {
         )}
 
 
+        {isPaidActionLocked && (
+          <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-900 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-100">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-start gap-3">
+                <Lock className="mt-0.5 h-5 w-5 shrink-0" />
+                <div>
+                  <p className="font-semibold">Paid actions locked</p>
+                  <p className="text-sm opacity-90">{lockedResumeMessage}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => navigate("/pricing")}
+                className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-amber-700"
+              >
+                Unlock Access
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Divider with Label */}
         <div className="relative mb-6 sm:mb-8">
           <div className="absolute inset-0 flex items-center">
@@ -2100,7 +2154,11 @@ const Editor = () => {
             } gap-4 sm:gap-6`}
           >
             {/* Editor Panel - Dynamic Sections */}
-            <div className="space-y-4 sm:space-y-6 order-2 xl:order-1">
+            <div
+              className={`space-y-4 sm:space-y-6 order-2 xl:order-1 ${
+                isReadOnlyResume ? "pointer-events-none opacity-75" : ""
+              }`}
+            >
               {sectionOrder.map((sectionId) => (
                 <div
                   key={sectionId}

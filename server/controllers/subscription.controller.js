@@ -31,7 +31,7 @@ export async function getPricing(req, res) {
  */
 export async function createPaymentOrder(req, res) {
   try {
-    const {tier, plan} = req.body;
+    const {tier, plan, resumeId} = req.body;
     const userId = req.user._id;
 
     // Validate inputs
@@ -43,7 +43,7 @@ export async function createPaymentOrder(req, res) {
     }
 
     // Create order
-    const order = await paymentService.createOrder(tier, plan, userId);
+    const order = await paymentService.createOrder(tier, plan, userId, resumeId);
 
     res.json({
       success: true,
@@ -52,7 +52,12 @@ export async function createPaymentOrder(req, res) {
     });
   } catch (error) {
     console.error("❌ Create payment order error:", error.message);
-    res.status(500).json({
+    const statusCode = error.message?.includes("Invalid subscription") ||
+      error.message?.includes("select a resume") ||
+      error.message?.includes("Selected resume")
+      ? 400
+      : 500;
+    res.status(statusCode).json({
       success: false,
       message: error.message || "Failed to create payment order",
     });
@@ -64,8 +69,9 @@ export async function createPaymentOrder(req, res) {
  */
 export async function verifyPayment(req, res) {
   try {
-    const {orderId, paymentId, signature, tier, plan, amount} = req.body;
+    const {orderId, paymentId, signature, tier, plan, resumeId} = req.body;
     const userId = req.user._id;
+    const expectedAmount = paymentService.getPlanAmount(tier, plan);
 
     console.log("💳 Payment verification request:", {
       orderId,
@@ -73,19 +79,19 @@ export async function verifyPayment(req, res) {
       signature: signature ? "Present" : "Missing",
       tier,
       plan,
-      amount,
+      resumeId,
+      amount: expectedAmount,
       userId,
     });
 
     // Validate inputs
-    if (!orderId || !paymentId || !tier || !plan || !amount) {
+    if (!orderId || !paymentId || !tier || !plan) {
       console.error("❌ Missing required fields:", {
         orderId: !!orderId,
         paymentId: !!paymentId,
         signature: !!signature,
         tier: !!tier,
         plan: !!plan,
-        amount: !!amount,
       });
       return res.status(400).json({
         success: false,
@@ -100,18 +106,24 @@ export async function verifyPayment(req, res) {
     if (signature && signature !== "UPI_PAYMENT") {
       // Verify signature (for card payments, net banking, etc.)
       console.log("🔐 Verifying payment signature...");
-      isValid = paymentService.verifyPaymentSignature(
+      const hasValidSignature = paymentService.verifyPaymentSignature(
         orderId,
         paymentId,
         signature
       );
+      const hasCapturedPayment = await paymentService.verifyPaymentViaAPI(
+        paymentId,
+        orderId,
+        expectedAmount
+      );
+      isValid = hasValidSignature && hasCapturedPayment;
     } else {
       // For UPI payments, verify via Razorpay API
       console.log("💳 Verifying UPI payment via Razorpay API...");
       isValid = await paymentService.verifyPaymentViaAPI(
         paymentId,
         orderId,
-        amount
+        expectedAmount
       );
     }
 
@@ -120,6 +132,22 @@ export async function verifyPayment(req, res) {
       return res.status(400).json({
         success: false,
         message: "Invalid payment signature or payment verification failed",
+      });
+    }
+
+    const isOrderValid = await paymentService.verifyOrderForPlan(
+      orderId,
+      userId,
+      tier,
+      plan,
+      resumeId
+    );
+
+    if (!isOrderValid) {
+      console.error("❌ Payment order validation failed");
+      return res.status(400).json({
+        success: false,
+        message: "Payment order does not match selected subscription plan",
       });
     }
 
@@ -132,7 +160,8 @@ export async function verifyPayment(req, res) {
       plan,
       paymentId,
       orderId,
-      amount
+      expectedAmount,
+      resumeId
     );
 
     console.log("✅ Subscription created successfully:", {
@@ -157,6 +186,8 @@ export async function verifyPayment(req, res) {
         status: subscription.status,
         startDate: subscription.startDate,
         endDate: subscription.endDate,
+        unlockedResumeId: subscription.unlockedResumeId,
+        assignmentStatus: subscription.assignmentStatus,
       },
       user: {
         _id: updatedUser._id,
@@ -167,7 +198,14 @@ export async function verifyPayment(req, res) {
     });
   } catch (error) {
     console.error("❌ Verify payment error:", error.message);
-    res.status(500).json({
+    const statusCode =
+      error.message?.includes("Invalid subscription") ||
+      error.message?.includes("amount does not match") ||
+      error.message?.includes("select a resume") ||
+      error.message?.includes("Selected resume")
+        ? 400
+        : 500;
+    res.status(statusCode).json({
       success: false,
       message: error.message || "Failed to verify payment",
     });
@@ -195,20 +233,21 @@ export async function getSubscriptionStatus(req, res) {
     // If there's an active subscription, use its data
     // Otherwise, fall back to user.subscription or free tier
     const subscriptionData = subscription || user?.subscription;
+    const tier = paymentService.normalizeTier(subscriptionData?.tier || "free");
+    const plan = tier === "free" ? "free" : subscriptionData?.plan;
 
     res.json({
       success: true,
       subscription: {
-        tier: subscriptionData?.tier || "free",
-        plan: subscriptionData?.plan || "lifetime",
-        status: subscriptionData?.status || "active",
+        tier,
+        plan,
+        status: tier === "free" ? "active" : subscriptionData?.status || "active",
         startDate: subscriptionData?.startDate,
         endDate: subscriptionData?.endDate,
         daysRemaining: subscription ? subscription.daysRemaining() : null,
         autoRenew: subscriptionData?.autoRenew || false,
         features:
-          paymentService.PRICING[subscriptionData?.tier || "free"]?.features ||
-          [],
+          paymentService.PRICING[tier]?.features || [],
       },
     });
   } catch (error) {
@@ -409,7 +448,7 @@ export async function getAdvancedAnalytics(req, res) {
     const tier = user.subscription?.tier || "free";
 
     // Check if user has access to advanced analytics
-    if (!["pro", "premium", "lifetime"].includes(tier)) {
+    if (tier !== "pro") {
       return res.status(403).json({
         success: false,
         error: "Advanced Analytics - Pro Feature",
@@ -519,7 +558,7 @@ export async function getAdvancedAnalytics(req, res) {
     // 5. Subscription Info
     const subscriptionInfo = {
       tier,
-      plan: user.subscription?.plan || "lifetime",
+      plan: user.subscription?.plan || "free",
       status: user.subscription?.status || "active",
       startDate: user.subscription?.startDate,
       endDate: user.subscription?.endDate,
@@ -590,9 +629,12 @@ export async function getAdvancedAnalytics(req, res) {
 export async function handleWebhook(req, res) {
   try {
     const signature = req.headers["x-razorpay-signature"];
-    const event = req.body;
+    const rawBody = Buffer.isBuffer(req.body)
+      ? req.body.toString("utf8")
+      : JSON.stringify(req.body);
+    const event = Buffer.isBuffer(req.body) ? JSON.parse(rawBody) : req.body;
 
-    await paymentService.handleWebhook(event, signature);
+    await paymentService.handleWebhook(event, signature, rawBody);
 
     res.json({success: true});
   } catch (error) {
@@ -610,6 +652,13 @@ export async function handleWebhook(req, res) {
 export async function comparePlans(req, res) {
   try {
     const {fromTier, toTier} = req.query;
+
+    if (!fromTier && !toTier) {
+      return res.json({
+        success: true,
+        plans: paymentService.PRICING,
+      });
+    }
 
     if (!fromTier || !toTier) {
       return res.status(400).json({
@@ -640,8 +689,7 @@ export async function comparePlans(req, res) {
           features: toPlan.features,
         },
         isUpgrade:
-          ["pro", "premium", "lifetime"].includes(toTier) &&
-          !["pro", "premium", "lifetime"].includes(fromTier),
+          toTier === "pro" && fromTier !== "pro",
       },
     });
   } catch (error) {
@@ -666,20 +714,19 @@ export async function getAIConfig(req, res) {
     const TIER_AI_MAPPING = {
       free: "gemini",
       pro: "hybrid",
-      premium: "gpt4o",
       "one-time": "gpt4o",
-      lifetime: "gpt4o",
     };
 
+    const aiModel = TIER_AI_MAPPING[tier] || TIER_AI_MAPPING.free;
     const config = {
-      tier,
-      aiModel: TIER_AI_MAPPING[tier],
-      isHybrid: TIER_AI_MAPPING[tier] === "hybrid",
+      tier: paymentService.normalizeTier(tier),
+      aiModel,
+      isHybrid: aiModel === "hybrid",
       description: {
         gemini: "Gemini Flash - Fast and efficient",
         gpt4o: "GPT-4o - Premium quality",
         hybrid: "Hybrid - 70% Gemini + 30% GPT-4o",
-      }[TIER_AI_MAPPING[tier]],
+      }[aiModel],
     };
 
     res.json({
@@ -709,12 +756,10 @@ export async function updateAIPreference(req, res) {
     const TIER_AI_MAPPING = {
       free: "gemini",
       pro: "hybrid",
-      premium: "gpt4o",
       "one-time": "gpt4o",
-      lifetime: "gpt4o",
     };
 
-    const aiModel = TIER_AI_MAPPING[tier];
+    const aiModel = TIER_AI_MAPPING[tier] || TIER_AI_MAPPING.free;
 
     res.json({
       success: true,

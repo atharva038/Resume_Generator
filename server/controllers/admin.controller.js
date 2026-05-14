@@ -9,6 +9,20 @@ import Settings from "../models/Settings.model.js";
 import Subscription from "../models/Subscription.model.js";
 import InterviewSession from "../models/InterviewSession.model.js";
 
+const ACTIVE_SUBSCRIPTION_TIERS = ["free", "one-time", "pro"];
+const AI_QUOTA_LIMITS = {
+  free: {daily: 10, monthly: 200},
+  "one-time": {daily: 150, monthly: 150},
+  pro: {daily: Infinity, monthly: Infinity},
+  admin: {daily: Infinity, monthly: Infinity},
+};
+
+const getEffectiveTier = (user) => {
+  if (user.role === "admin") return "admin";
+  const tier = user.subscription?.tier || "free";
+  return ACTIVE_SUBSCRIPTION_TIERS.includes(tier) ? tier : "free";
+};
+
 // Get Dashboard Statistics nicely
 export const getDashboardStats = async (req, res) => {
   try {
@@ -131,10 +145,8 @@ export const getDashboardStats = async (req, res) => {
             $switch: {
               branches: [
                 {case: {$eq: ["$subscription.tier", "free"]}, then: 1},
-                {case: {$eq: ["$subscription.tier", "one-time"]}, then: 10},
-                {case: {$eq: ["$subscription.tier", "pro"]}, then: 10},
-                {case: {$eq: ["$subscription.tier", "premium"]}, then: 10},
-                {case: {$eq: ["$subscription.tier", "lifetime"]}, then: 10},
+                {case: {$eq: ["$subscription.tier", "one-time"]}, then: 0},
+                {case: {$eq: ["$subscription.tier", "pro"]}, then: 2},
               ],
               default: 1,
             },
@@ -1647,7 +1659,7 @@ export const getUserQuotaStatus = async (req, res) => {
       : {};
 
     const users = await User.find(searchFilter).select(
-      "name email role status createdAt"
+      "name email role status subscription.tier createdAt"
     );
 
     // Calculate quota status for each user
@@ -1746,13 +1758,8 @@ export const getUserQuotaStatus = async (req, res) => {
           }
         });
 
-        const tier = user.role === "admin" ? "admin" : "free"; // TODO: Add premium tier support
-        const limits = {
-          free: {daily: 10, monthly: 200},
-          premium: {daily: 100, monthly: 2000},
-          admin: {daily: Infinity, monthly: Infinity},
-        };
-
+        const tier = getEffectiveTier(user);
+        const limits = AI_QUOTA_LIMITS;
         const dailyLimit = limits[tier].daily;
         const monthlyLimit = limits[tier].monthly;
 
@@ -1865,7 +1872,9 @@ export const getUserQuotaDetails = async (req, res) => {
   try {
     const {userId} = req.params;
 
-    const user = await User.findById(userId).select("name email role status");
+    const user = await User.findById(userId).select(
+      "name email role status subscription.tier"
+    );
     if (!user) {
       return res.status(404).json({error: "User not found"});
     }
@@ -1951,12 +1960,8 @@ export const getUserQuotaDetails = async (req, res) => {
       }),
     ]);
 
-    const tier = user.role === "admin" ? "admin" : "free";
-    const limits = {
-      free: {daily: 10, monthly: 200},
-      premium: {daily: 100, monthly: 2000},
-      admin: {daily: Infinity, monthly: Infinity},
-    };
+    const tier = getEffectiveTier(user);
+    const limits = AI_QUOTA_LIMITS;
 
     res.json({
       user: {
@@ -1990,7 +1995,7 @@ export const getUserQuotaDetails = async (req, res) => {
 };
 
 /**
- * Update user's AI quota tier (for future premium support)
+ * Update user's subscription tier for quota/admin support.
  * PATCH /api/admin/ai-quota/users/:userId/tier
  */
 export const updateUserTier = async (req, res) => {
@@ -1998,18 +2003,28 @@ export const updateUserTier = async (req, res) => {
     const {userId} = req.params;
     const {tier} = req.body;
 
-    if (!["free", "premium"].includes(tier)) {
+    if (!ACTIVE_SUBSCRIPTION_TIERS.includes(tier)) {
       return res
         .status(400)
-        .json({error: "Invalid tier. Must be 'free' or 'premium'"});
+        .json({error: "Invalid tier. Must be 'free', 'one-time', or 'pro'"});
     }
 
-    // TODO: Add tier field to User model
-    // For now, return a message
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({error: "User not found"});
+    }
+
+    user.subscription.tier = tier;
+    user.subscription.plan =
+      tier === "pro" ? user.subscription.plan || "monthly" : tier;
+    user.subscription.status = "active";
+    user.subscription.startDate = user.subscription.startDate || new Date();
+    user.subscription.endDate = tier === "free" ? undefined : user.subscription.endDate;
+    await user.save();
+
     res.json({
-      message:
-        "Tier update feature coming soon. Please add 'tier' field to User model first.",
-      note: "Currently, tier is determined by role: admin = unlimited, user = free",
+      message: `User tier updated to ${tier}`,
+      tier: user.subscription.tier,
     });
   } catch (error) {
     console.error("Update user tier error:", error);
@@ -2258,10 +2273,10 @@ export const updateAIQuotaLimits = async (req, res) => {
   try {
     const {tier, daily, monthly} = req.body;
 
-    if (!["free", "premium"].includes(tier)) {
+    if (!["free", "one-time", "pro"].includes(tier)) {
       return res
         .status(400)
-        .json({error: "Invalid tier. Must be 'free' or 'premium'"});
+        .json({error: "Invalid tier. Must be 'free', 'one-time', or 'pro'"});
     }
 
     if (daily < 1 || monthly < 1) {
@@ -2269,6 +2284,9 @@ export const updateAIQuotaLimits = async (req, res) => {
     }
 
     const settings = await Settings.getSettings();
+    if (!settings.aiQuota[tier]) {
+      settings.aiQuota[tier] = {};
+    }
     settings.aiQuota[tier].daily = daily;
     settings.aiQuota[tier].monthly = monthly;
     settings.lastUpdatedBy = req.user.id;
@@ -2394,14 +2412,20 @@ export const getAIExtractionUsage = async (req, res) => {
       const limit = user.getUsageLimit("aiResumeExtractionsPerDay");
       const used = user.usage?.aiResumeExtractionsToday || 0;
       const percentage =
-        limit === Infinity ? 0 : Math.round((used / limit) * 100);
-      const isAtLimit = limit !== Infinity && used >= limit;
+        limit === Infinity || limit === 0
+          ? 0
+          : Math.round((used / limit) * 100);
+      const isAtLimit = limit !== Infinity && limit > 0 && used >= limit;
+      const rawTier = user.subscription?.tier || "free";
+      const tier = ACTIVE_SUBSCRIPTION_TIERS.includes(rawTier)
+        ? rawTier
+        : "free";
 
       return {
         _id: user._id,
         name: user.name,
         email: user.email,
-        tier: user.subscription?.tier || "free",
+        tier,
         status: user.status,
         extractionsToday: used,
         dailyLimit: limit,
@@ -2434,26 +2458,19 @@ export const getAIExtractionUsage = async (req, res) => {
           totalExtractions: 0,
           atLimit: 0,
         },
-        premium: {
-          count: 0,
-          totalExtractions: 0,
-          atLimit: 0,
-        },
-        lifetime: {
-          count: 0,
-          totalExtractions: 0,
-          atLimit: 0,
-        },
       },
       totalExtractionsToday: 0,
       totalUsersAtLimit: 0,
     };
 
     allUsers.forEach((user) => {
-      const tier = user.subscription?.tier || "free";
+      const rawTier = user.subscription?.tier || "free";
+      const tier = ACTIVE_SUBSCRIPTION_TIERS.includes(rawTier)
+        ? rawTier
+        : "free";
       const used = user.usage?.aiResumeExtractionsToday || 0;
       const limit = user.getUsageLimit("aiResumeExtractionsPerDay");
-      const isAtLimit = limit !== Infinity && used >= limit;
+      const isAtLimit = limit !== Infinity && limit > 0 && used >= limit;
 
       if (overview.byTier[tier]) {
         overview.byTier[tier].count++;

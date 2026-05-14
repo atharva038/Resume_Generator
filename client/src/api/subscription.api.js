@@ -59,26 +59,26 @@ export const comparePlans = async () => {
 
 /**
  * Create a payment order
- * @param {string} tier - Subscription tier (pro, premium, etc.)
+ * @param {string} tier - Subscription tier (one-time or pro)
  * @param {string} plan - Billing plan (monthly, yearly, etc.)
  * @returns {Promise<Object>} Order details with orderId, amount, currency
  */
-export const createPaymentOrder = async (tier, plan) => {
+export const createPaymentOrder = async (tier, plan, resumeId = null) => {
   try {
     const authHeader = getAuthHeader();
-    console.log("Creating payment order with:", {tier, plan});
+    console.log("Creating payment order with:", {tier, plan, resumeId});
     console.log("Auth headers:", authHeader);
     console.log("Request URL:", `${API_BASE_URL}/subscription/create-order`);
     console.log("Full request config:", {
       url: `${API_BASE_URL}/subscription/create-order`,
       method: "POST",
       headers: authHeader,
-      data: {tier, plan},
+      data: {tier, plan, resumeId},
     });
 
     const response = await axios.post(
       `${API_BASE_URL}/subscription/create-order`,
-      {tier, plan},
+      {tier, plan, ...(resumeId && {resumeId})},
       {headers: authHeader}
     );
     return response.data;

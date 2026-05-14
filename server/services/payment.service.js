@@ -2,6 +2,7 @@ import Razorpay from "razorpay";
 import crypto from "crypto";
 import Subscription from "../models/Subscription.model.js";
 import User from "../models/User.model.js";
+import Resume from "../models/Resume.model.js";
 import {sendPaymentConfirmationEmail} from "./email.service.js";
 import {notifyPaymentFailure} from "./adminNotification.service.js";
 
@@ -34,7 +35,7 @@ const razorpay =
 export const PRICING = {
   free: {
     amount: 0,
-    plan: "lifetime",
+    plan: "free",
     features: ["1 resume/month", "Gemini AI", "1 template"],
   },
   "one-time": {
@@ -73,6 +74,87 @@ export const PRICING = {
   },
 };
 
+export const ACTIVE_TIERS = ["free", "one-time", "pro"];
+export const PAID_TIERS = ["one-time", "pro"];
+export const PLAN_DURATIONS = {
+  free: ["free"],
+  "one-time": ["one-time"],
+  pro: ["monthly", "yearly"],
+};
+
+export function normalizeTier(tier) {
+  return ACTIVE_TIERS.includes(tier) ? tier : "free";
+}
+
+export function getPlanAmount(tier, plan) {
+  const pricing = PRICING[tier];
+
+  if (!pricing || !PLAN_DURATIONS[tier]?.includes(plan)) {
+    throw new Error(`Invalid subscription selection: ${tier}/${plan}`);
+  }
+
+  if (tier === "pro") {
+    return pricing[plan]?.amount;
+  }
+
+  return pricing.amount;
+}
+
+export function assertPaidPlan(tier, plan) {
+  if (!PAID_TIERS.includes(tier)) {
+    throw new Error("Cannot create an order for a free or legacy tier");
+  }
+
+  const amount = getPlanAmount(tier, plan);
+  if (!amount || amount <= 0) {
+    throw new Error("Cannot create an order for an invalid amount");
+  }
+
+  return amount;
+}
+
+function getEndDateForPlan(plan, fromDate = new Date()) {
+  const endDate = new Date(fromDate);
+
+  switch (plan) {
+    case "monthly":
+      endDate.setMonth(endDate.getMonth() + 1);
+      break;
+    case "yearly":
+      endDate.setFullYear(endDate.getFullYear() + 1);
+      break;
+    case "one-time":
+      endDate.setDate(endDate.getDate() + 21);
+      break;
+    default:
+      throw new Error(`Invalid plan: ${plan}`);
+  }
+
+  return endDate;
+}
+
+function getResetUsage(existingUsage = {}) {
+  return {
+    resumesCreated: 0,
+    resumesThisMonth: 0,
+    resumesDownloaded: existingUsage.resumesDownloaded || 0,
+    resumesDownloadedThisMonth: 0,
+    atsScans: 0,
+    atsScansThisMonth: 0,
+    jobMatches: 0,
+    jobMatchesToday: 0,
+    coverLetters: 0,
+    coverLettersThisMonth: 0,
+    aiResumeExtractions: existingUsage.aiResumeExtractions || 0,
+    aiResumeExtractionsToday: 0,
+    aiGenerationsUsed: 0,
+    aiGenerationsThisMonth: 0,
+    tokensUsed: 0,
+    lastResetDate: new Date(),
+    lastDailyReset: new Date(),
+  };
+}
+
 /**
  * Create a Razorpay order for payment
  * @param {string} tier - Subscription tier
@@ -80,7 +162,20 @@ export const PRICING = {
  * @param {string} userId - User ID
  * @returns {Promise<Object>} - Order details
  */
-export async function createOrder(tier, plan, userId) {
+async function assertOwnedResume(userId, resumeId) {
+  if (!resumeId) {
+    throw new Error("Please select a resume for the one-time plan");
+  }
+
+  const resume = await Resume.findOne({_id: resumeId, userId}).select("_id");
+  if (!resume) {
+    throw new Error("Selected resume was not found for this account");
+  }
+
+  return resume;
+}
+
+export async function createOrder(tier, plan, userId, resumeId = null) {
   try {
     console.log(
       `📝 Creating order for tier: ${tier}, plan: ${plan}, userId: ${userId}`
@@ -102,29 +197,11 @@ export async function createOrder(tier, plan, userId) {
       );
     }
 
-    // Get pricing
-    const pricing = PRICING[tier];
-    if (!pricing) {
-      throw new Error(`Invalid tier: ${tier}`);
-    }
+    const amount = assertPaidPlan(tier, plan);
+    const normalizedResumeId = resumeId || null;
 
-    console.log(`📊 Pricing structure for ${tier}:`, pricing);
-
-    // Extract amount based on tier structure
-    let amount;
-    if (tier === "pro") {
-      // Pro tier has monthly/yearly sub-objects
-      if (plan === "monthly" || plan === "yearly") {
-        amount = pricing[plan]?.amount;
-      } else {
-        amount = pricing.monthly?.amount; // Default to monthly
-      }
-    } else if (tier === "one-time" || tier === "student") {
-      // Direct amount property
-      amount = pricing.amount;
-    } else {
-      // Free tier or others
-      amount = pricing.amount;
+    if (tier === "one-time") {
+      await assertOwnedResume(userId, normalizedResumeId);
     }
 
     console.log(`💰 Extracted amount: ${amount}`);
@@ -147,7 +224,7 @@ export async function createOrder(tier, plan, userId) {
       currency: "INR",
       receipt: receipt,
       receiptLength: receipt.length,
-      notes: {userId, tier, plan},
+      notes: {userId, tier, plan, resumeId: normalizedResumeId},
     });
 
     const order = await razorpay.orders.create({
@@ -158,6 +235,7 @@ export async function createOrder(tier, plan, userId) {
         userId: userId.toString(),
         tier,
         plan,
+        ...(normalizedResumeId && {resumeId: normalizedResumeId.toString()}),
       },
     });
 
@@ -166,9 +244,11 @@ export async function createOrder(tier, plan, userId) {
     return {
       orderId: order.id,
       amount: amount,
+      amountPaise: amount * 100,
       currency: "INR",
       tier,
       plan,
+      resumeId: normalizedResumeId,
     };
   } catch (error) {
     console.error("❌ Razorpay order creation error:", error);
@@ -256,6 +336,56 @@ export async function verifyPaymentViaAPI(paymentId, orderId, amount) {
   }
 }
 
+export async function verifyOrderForPlan(
+  orderId,
+  userId,
+  tier,
+  plan,
+  resumeId = null
+) {
+  try {
+    if (!razorpay) {
+      throw new Error("Razorpay not configured");
+    }
+
+    const expectedAmount = assertPaidPlan(tier, plan);
+    const order = await razorpay.orders.fetch(orderId);
+
+    const orderUserId = order.notes?.userId?.toString();
+    const orderResumeId = order.notes?.resumeId?.toString() || null;
+    const expectedResumeId = resumeId?.toString() || null;
+    const isValid =
+      order.id === orderId &&
+      order.amount === expectedAmount * 100 &&
+      order.currency === "INR" &&
+      order.notes?.tier === tier &&
+      order.notes?.plan === plan &&
+      orderUserId === userId.toString() &&
+      (tier !== "one-time" || orderResumeId === expectedResumeId);
+
+    if (!isValid) {
+      console.error("❌ Razorpay order metadata mismatch:", {
+        orderId,
+        expectedAmount,
+        actualAmount: order.amount,
+        expectedTier: tier,
+        actualTier: order.notes?.tier,
+        expectedPlan: plan,
+        actualPlan: order.notes?.plan,
+        expectedUserId: userId.toString(),
+        actualUserId: orderUserId,
+        expectedResumeId,
+        actualResumeId: orderResumeId,
+      });
+    }
+
+    return isValid;
+  } catch (error) {
+    console.error("❌ Razorpay order validation error:", error.message);
+    return false;
+  }
+}
+
 /**
  * Create subscription after successful payment
  * @param {string} userId - User ID
@@ -272,7 +402,8 @@ export async function createSubscription(
   plan,
   paymentId,
   orderId,
-  amount
+  amount,
+  resumeId = null
 ) {
   try {
     const user = await User.findById(userId);
@@ -284,28 +415,18 @@ export async function createSubscription(
     const receiptId = generateReceiptId();
     console.log(`📧 Generated Receipt ID: ${receiptId}`);
 
-    // Calculate end date based on plan
     const startDate = new Date();
-    let endDate = new Date();
+    const expectedAmount = assertPaidPlan(tier, plan);
 
-    switch (plan) {
-      case "monthly":
-        endDate.setMonth(endDate.getMonth() + 1);
-        break;
-      case "yearly":
-        endDate.setFullYear(endDate.getFullYear() + 1);
-        break;
-      case "3-months":
-        endDate.setMonth(endDate.getMonth() + 3);
-        break;
-      case "one-time":
-        endDate.setDate(endDate.getDate() + 21); // 21 days access
-        break;
-      case "lifetime":
-        endDate.setFullYear(endDate.getFullYear() + 100); // 100 years
-        break;
-      default:
-        throw new Error(`Invalid plan: ${plan}`);
+    if (Number(amount) !== expectedAmount) {
+      throw new Error("Payment amount does not match selected plan");
+    }
+
+    const endDate = getEndDateForPlan(plan, startDate);
+    const normalizedResumeId = resumeId || null;
+
+    if (tier === "one-time") {
+      await assertOwnedResume(userId, normalizedResumeId);
     }
 
     // Create subscription record
@@ -323,7 +444,25 @@ export async function createSubscription(
       orderId,
       receiptId, // Add receipt ID
       autoRenew: plan === "monthly" || plan === "yearly",
+      unlockedResumeId: tier === "one-time" ? normalizedResumeId : null,
+      assignmentStatus:
+        tier === "one-time" && normalizedResumeId ? "assigned" : "pending",
+      assignedAt: tier === "one-time" && normalizedResumeId ? startDate : null,
     });
+
+    if (tier === "one-time" && normalizedResumeId) {
+      await Resume.findOneAndUpdate(
+        {_id: normalizedResumeId, userId},
+        {
+          $set: {
+            "subscriptionInfo.subscriptionId": subscription._id,
+            "subscriptionInfo.createdWithTier": "one-time",
+            "subscriptionInfo.createdWithSubscription": true,
+            "subscriptionInfo.linkedAt": startDate,
+          },
+        }
+      );
+    }
 
     // Update user subscription
     user.subscription = {
@@ -341,19 +480,7 @@ export async function createSubscription(
     // Reset usage counters when new subscription is purchased
     // This allows users to buy the same plan again (e.g., one-time plan)
     // Reset both monthly/daily and total counters
-    user.usage = {
-      resumesCreated: 0,
-      resumesThisMonth: 0,
-      atsScans: 0,
-      atsScansThisMonth: 0,
-      jobMatches: 0,
-      jobMatchesToday: 0,
-      coverLetters: 0,
-      coverLettersThisMonth: 0,
-      tokensUsed: 0,
-      lastResetDate: new Date(),
-      lastDailyReset: new Date(),
-    };
+    user.usage = getResetUsage(user.usage);
 
     await user.save();
 
@@ -410,6 +537,10 @@ export async function cancelSubscription(userId, reason = "User requested") {
       throw new Error("No active subscription found");
     }
 
+    if (subscription.tier !== "pro") {
+      throw new Error("Only active Pro subscriptions can be cancelled");
+    }
+
     // Cancel subscription
     await subscription.cancel(reason);
 
@@ -448,22 +579,15 @@ export async function renewSubscription(userId, paymentId, orderId) {
       throw new Error("No subscription to renew");
     }
 
-    // Calculate new end date
     const currentEndDate = new Date(currentSub.endDate);
     const now = new Date();
     const startDate = currentEndDate > now ? currentEndDate : now;
-    let newEndDate = new Date(startDate);
 
-    switch (currentSub.plan) {
-      case "monthly":
-        newEndDate.setMonth(newEndDate.getMonth() + 1);
-        break;
-      case "yearly":
-        newEndDate.setFullYear(newEndDate.getFullYear() + 1);
-        break;
-      default:
-        throw new Error(`Cannot renew ${currentSub.plan} plan`);
+    if (currentSub.tier !== "pro") {
+      throw new Error(`Cannot renew ${currentSub.tier} plan`);
     }
+
+    const newEndDate = getEndDateForPlan(currentSub.plan, startDate);
 
     // Renew subscription
     await currentSub.renew(newEndDate);
@@ -498,10 +622,11 @@ export async function renewSubscription(userId, paymentId, orderId) {
  * @param {string} signature - Razorpay signature
  * @returns {Promise<void>}
  */
-export async function handleWebhook(event, signature) {
+export async function handleWebhook(event, signature, rawBody = null) {
   try {
     // Verify webhook signature
-    const isValid = verifyWebhookSignature(JSON.stringify(event), signature);
+    const body = rawBody || JSON.stringify(event);
+    const isValid = verifyWebhookSignature(body, signature);
     if (!isValid) {
       throw new Error("Invalid webhook signature");
     }
@@ -637,6 +762,8 @@ export async function refundPayment(paymentId, amount = null) {
 export default {
   createOrder,
   verifyPaymentSignature,
+  verifyPaymentViaAPI,
+  verifyOrderForPlan,
   createSubscription,
   cancelSubscription,
   renewSubscription,

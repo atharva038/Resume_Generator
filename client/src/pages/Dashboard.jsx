@@ -12,11 +12,14 @@ import {
   Calendar,
   Sparkles,
   Edit3,
-  X,
   CheckCircle2,
+  X,
   CircleX,
   NotepadText,
+  Lock,
+  CreditCard,
 } from "lucide-react";
+import PaymentModal from "@/components/common/PaymentModal";
 
 const Dashboard = () => {
   const {user} = useAuth();
@@ -25,6 +28,7 @@ const Dashboard = () => {
   const [error, setError] = useState("");
   const [editingResume, setEditingResume] = useState(null);
   const [editForm, setEditForm] = useState({name: "", description: ""});
+  const [unlockPaymentData, setUnlockPaymentData] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -69,7 +73,11 @@ const Dashboard = () => {
   const handleLoad = async (id) => {
     try {
       const response = await resumeAPI.getById(id);
-      navigate("/editor", {state: {resumeData: response.data}});
+      navigate("/editor", {
+        state: {
+          resumeData: response.data,
+        },
+      });
     } catch (err) {
       toast.error("Failed to load resume", {
         icon: <CircleX className="w-4 h-4 text-red-600" />,
@@ -77,6 +85,51 @@ const Dashboard = () => {
       });
       console.error(err);
     }
+  };
+
+  const handleUnlockOneTime = (resume) => {
+    setUnlockPaymentData({
+      tier: "one-time",
+      plan: "one-time",
+      resumeId: resume._id,
+      resumeTitle: resume.resumeTitle || resume.name || "Untitled Resume",
+    });
+  };
+
+  const getResumeAccessBadge = (resume) => {
+    if (resume.access?.upgradeRequired) {
+      return {
+        label: "Paid actions locked",
+        icon: Lock,
+        className:
+          "bg-amber-100 text-amber-800 dark:bg-amber-400/10 dark:text-amber-200",
+      };
+    }
+
+    if (resume.access?.accessTier === "pro") {
+      return {
+        label: "Pro access",
+        icon: CheckCircle2,
+        className:
+          "bg-emerald-100 text-emerald-800 dark:bg-emerald-400/10 dark:text-emerald-200",
+      };
+    }
+
+    if (resume.access?.accessTier === "one-time") {
+      return {
+        label: "One-time access",
+        icon: CheckCircle2,
+        className:
+          "bg-blue-100 text-blue-800 dark:bg-blue-400/10 dark:text-blue-200",
+      };
+    }
+
+    return {
+      label: "Free access",
+      icon: FileText,
+      className:
+        "bg-gray-100 text-gray-700 dark:bg-white/10 dark:text-gray-300",
+    };
   };
 
   const handleEditInfo = (resume) => {
@@ -271,17 +324,40 @@ const Dashboard = () => {
             </div>
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {resumes.map((resume) => (
+              {resumes.map((resume) => {
+                const isLocked = resume.access?.upgradeRequired;
+                const badge = getResumeAccessBadge(resume);
+                const BadgeIcon = badge.icon;
+                return (
                 <div
                   key={resume._id}
-                  className="group bg-white dark:bg-black rounded-2xl p-6 border border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20 transition-all duration-200 shadow-sm dark:shadow-none"
+                  className={`group bg-white dark:bg-black rounded-2xl p-6 border transition-all duration-200 shadow-sm dark:shadow-none ${
+                    isLocked
+                      ? "border-amber-200 dark:border-amber-400/20"
+                      : "border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20"
+                  }`}
                 >
                   {/* Resume Header */}
                   <div className="flex items-start justify-between mb-4">
                     <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <FileText className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+                      {isLocked ? (
+                        <Lock className="w-5 h-5 text-amber-600 dark:text-amber-300" />
+                      ) : (
+                        <FileText className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+                      )}
                     </div>
                     <div className="flex gap-2">
+                      <span
+                        className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold ${badge.className}`}
+                        title={
+                          isLocked
+                            ? "Manual editing is available. AI and downloads require access."
+                            : "Manual editing is available. Paid actions follow this resume access level."
+                        }
+                      >
+                        <BadgeIcon className="h-3 w-3" />
+                        {badge.label}
+                      </span>
                       <button
                         onClick={() => handleEditInfo(resume)}
                         className="p-1.5 text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
@@ -314,6 +390,13 @@ const Dashboard = () => {
                       })}
                     </span>
                   </div>
+                  <p className="mb-4 text-xs text-gray-500 dark:text-gray-500">
+                    {isLocked
+                      ? "Manual edits allowed. AI and downloads are locked."
+                      : resume.access?.accessTier === "free"
+                        ? "Manual edits allowed. AI/downloads use free limits."
+                        : "AI and downloads available while access is active."}
+                  </p>
 
                   {/* Action Buttons */}
                   <div className="flex gap-2">
@@ -324,16 +407,37 @@ const Dashboard = () => {
                       <Edit className="w-4 h-4" />
                       Edit
                     </button>
-                    <button
-                      onClick={() => handleDelete(resume._id)}
-                      className="px-3 py-2 border border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:border-red-500 dark:hover:border-red-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-all duration-200"
-                      title="Delete Resume"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    {isLocked && (
+                      <button
+                        onClick={() => handleUnlockOneTime(resume)}
+                        className="px-3 py-2 border border-primary-200 bg-primary-50 text-primary-700 hover:bg-primary-100 dark:border-primary-500/20 dark:bg-primary-500/10 dark:text-primary-200 dark:hover:bg-primary-500/20 rounded-lg transition-all duration-200"
+                        title="Unlock with One-Time"
+                      >
+                        <CreditCard className="w-4 h-4" />
+                      </button>
+                    )}
+                    {!isLocked && (
+                      <button
+                        onClick={() => handleDelete(resume._id)}
+                        className="px-3 py-2 border border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:border-red-500 dark:hover:border-red-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-all duration-200"
+                        title="Delete Resume"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                    {isLocked && (
+                      <button
+                        onClick={() => handleDelete(resume._id)}
+                        className="px-3 py-2 border border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:border-red-500 dark:hover:border-red-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-all duration-200"
+                        title="Delete Resume"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
                   </div>
                 </div>
-              ))}
+              );
+              })}
             </div>
           )}
         </div>
@@ -409,6 +513,20 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {unlockPaymentData && (
+        <PaymentModal
+          tier={unlockPaymentData.tier}
+          plan={unlockPaymentData.plan}
+          resumeId={unlockPaymentData.resumeId}
+          resumeTitle={unlockPaymentData.resumeTitle}
+          onClose={() => setUnlockPaymentData(null)}
+          onSuccess={() => {
+            setUnlockPaymentData(null);
+            fetchResumes();
+          }}
+        />
       )}
     </div>
   );

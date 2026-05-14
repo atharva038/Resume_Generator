@@ -9,7 +9,6 @@ import {
   Users,
   Crown,
   Zap,
-  GraduationCap,
   ArrowUpRight,
   ArrowDownRight,
   RefreshCw,
@@ -62,15 +61,13 @@ const Earnings = () => {
   const COLORS = {
     pro: "#8B5CF6",
     "one-time": "#3B82F6",
-    student: "#10B981",
-    basic: "#F59E0B",
+    free: "#F59E0B",
   };
 
   const tierIcons = {
     pro: Crown,
     "one-time": Zap,
-    student: GraduationCap,
-    basic: CreditCard,
+    free: CreditCard,
   };
 
   if (loading) {

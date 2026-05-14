@@ -10,12 +10,12 @@ const subscriptionSchema = new mongoose.Schema(
     },
     tier: {
       type: String,
-      enum: ["free", "one-time", "pro", "student"],
+      enum: ["free", "one-time", "pro"],
       required: true,
     },
     plan: {
       type: String,
-      enum: ["monthly", "yearly", "3-months", "one-time"],
+      enum: ["free", "monthly", "yearly", "one-time"],
       required: true,
     },
     status: {
@@ -62,6 +62,21 @@ const subscriptionSchema = new mongoose.Schema(
     },
     razorpaySubscriptionId: {
       type: String,
+    },
+    unlockedResumeId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Resume",
+      default: null,
+      index: true,
+    },
+    assignmentStatus: {
+      type: String,
+      enum: ["pending", "assigned"],
+      default: "pending",
+    },
+    assignedAt: {
+      type: Date,
+      default: null,
     },
     invoiceUrl: {
       type: String,
@@ -112,6 +127,7 @@ const subscriptionSchema = new mongoose.Schema(
 
 // Indexes for performance
 subscriptionSchema.index({userId: 1, status: 1});
+subscriptionSchema.index({userId: 1, unlockedResumeId: 1, status: 1});
 subscriptionSchema.index({endDate: 1, status: 1});
 subscriptionSchema.index({createdAt: -1});
 
@@ -166,7 +182,7 @@ subscriptionSchema.statics.getUserSubscriptionHistory = async function (
 ) {
   return this.find({userId})
     .select(
-      "tier plan status amount currency receiptId paymentId orderId startDate endDate createdAt autoRenew cancelledAt"
+      "tier plan status amount currency receiptId paymentId orderId startDate endDate createdAt autoRenew cancelledAt unlockedResumeId assignmentStatus assignedAt"
     )
     .sort({createdAt: -1})
     .lean();

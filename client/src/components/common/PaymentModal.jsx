@@ -20,17 +20,22 @@ import {useToggle} from "@/hooks";
  * Payment Modal Component
  * Handles Razorpay checkout integration
  */
-const PaymentModal = ({tier: propTier, plan: propPlan, onClose}) => {
+const PaymentModal = ({
+  tier: propTier,
+  plan: propPlan,
+  resumeId = null,
+  resumeTitle = "",
+  onClose,
+  onSuccess,
+}) => {
   const navigate = useNavigate();
 
   // Use props if provided, otherwise fall back to route state for backwards compatibility
   const tier = propTier;
   const plan = propPlan;
 
-  const [loading, toggleLoading, setLoadingTrue, setLoadingFalse] =
-    useToggle(false);
+  const [loading, , setLoadingTrue, setLoadingFalse] = useToggle(false);
   const [pricing, setPricing] = useState(null);
-  const [orderDetails, setOrderDetails] = useState(null);
 
   useEffect(() => {
     if (!tier || !plan) {
@@ -88,8 +93,7 @@ const PaymentModal = ({tier: propTier, plan: propPlan, onClose}) => {
       }
 
       // Create order
-      const orderData = await createPaymentOrder(tier, plan);
-      setOrderDetails(orderData);
+      const orderData = await createPaymentOrder(tier, plan, resumeId);
 
       // Get user details
       const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -97,7 +101,7 @@ const PaymentModal = ({tier: propTier, plan: propPlan, onClose}) => {
       // Razorpay options
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID || orderData.key,
-        amount: orderData.order.amount,
+        amount: orderData.order.amountPaise || orderData.order.amount * 100,
         currency: orderData.order.currency,
         name: "ATS Resume Generator",
         description: `${tier.toUpperCase()} - ${plan} subscription`,
@@ -110,6 +114,7 @@ const PaymentModal = ({tier: propTier, plan: propPlan, onClose}) => {
         notes: {
           tier,
           plan,
+          ...(resumeId && {resumeId}),
           userId: user._id || user.id,
         },
         theme: {
@@ -134,10 +139,6 @@ const PaymentModal = ({tier: propTier, plan: propPlan, onClose}) => {
               "💼 Order details JSON:",
               JSON.stringify(orderData, null, 2)
             );
-
-            // Get the amount from orderDetails
-            const paymentAmount =
-              orderData?.order?.amount || getAmount(tier, plan, pricing);
 
             // Extract Razorpay response fields
             // For UPI payments, Razorpay only returns razorpay_payment_id
@@ -179,7 +180,7 @@ const PaymentModal = ({tier: propTier, plan: propPlan, onClose}) => {
               signature: signature,
               tier: tier,
               plan: plan,
-              amount: paymentAmount,
+              ...(resumeId && {resumeId}),
             };
 
             console.log("Verifying payment with data:", verifyData);
@@ -206,6 +207,11 @@ const PaymentModal = ({tier: propTier, plan: propPlan, onClose}) => {
             // Close modal and navigate to subscription dashboard
             if (onClose) {
               onClose();
+            }
+
+            if (onSuccess) {
+              onSuccess(result);
+              return;
             }
 
             // Always navigate to subscription page with success state
@@ -281,7 +287,6 @@ const PaymentModal = ({tier: propTier, plan: propPlan, onClose}) => {
 
   const getPlanName = () => {
     if (tier === "one-time") return "One-Time";
-    if (tier === "lifetime") return "Lifetime";
     if (plan === "monthly") return "Monthly";
     if (plan === "yearly") return "Yearly";
     return plan;
@@ -334,6 +339,16 @@ const PaymentModal = ({tier: propTier, plan: propPlan, onClose}) => {
                   {tier.toUpperCase()} - {getPlanName()}
                 </span>
               </div>
+              {tier === "one-time" && resumeTitle && (
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                    Resume:
+                  </span>
+                  <span className="max-w-[220px] truncate font-semibold text-sm text-gray-900 dark:text-white bg-white dark:bg-white/5 px-3 py-1.5 rounded-lg border dark:border-white/10">
+                    {resumeTitle}
+                  </span>
+                </div>
+              )}
               {pricing && (
                 <>
                   <div className="flex justify-between items-baseline pt-2 border-t border-gray-200 dark:border-white/10">

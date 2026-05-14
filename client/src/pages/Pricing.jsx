@@ -6,8 +6,11 @@ import {
   FaCrown,
   FaStar,
   FaRocket,
+  FaLock,
+  FaFileAlt,
 } from "react-icons/fa";
 import {getPricing, getSubscriptionStatus} from "@/api/subscription.api";
+import {resumeAPI} from "@/api/api";
 import PaymentModal from "@/components/common/PaymentModal";
 import toast from "react-hot-toast";
 import {useToggle} from "@/hooks";
@@ -28,6 +31,10 @@ const Pricing = () => {
   ] = useToggle(false);
   const [paymentData, setPaymentData] = useState(null);
   const [currentSubscription, setCurrentSubscription] = useState(null);
+  const [resumeChooserOpen, setResumeChooserOpen] = useState(false);
+  const [selectableResumes, setSelectableResumes] = useState([]);
+  const [pendingOneTimePlan, setPendingOneTimePlan] = useState(null);
+  const [loadingResumes, setLoadingResumes] = useState(false);
 
   useEffect(() => {
     fetchPricing();
@@ -91,7 +98,7 @@ const Pricing = () => {
     },
   };
 
-  const handleSelectPlan = (tier, plan = "monthly") => {
+  const handleSelectPlan = async (tier, plan = "monthly") => {
     const token = localStorage.getItem("token");
     if (!token) {
       toast.error("Please login to subscribe");
@@ -107,8 +114,8 @@ const Pricing = () => {
     // Prevent users from purchasing their current active plan
     const isCurrentActivePlan =
       currentSubscription?.tier === tier &&
-      (tier === "one-time" ||
-        (tier === "pro" && currentSubscription?.status === "active"));
+      tier === "pro" &&
+      currentSubscription?.status === "active";
 
     if (isCurrentActivePlan) {
       toast.error(
@@ -117,8 +124,41 @@ const Pricing = () => {
       return;
     }
 
-    // Open payment modal instead of navigating
+    if (tier === "one-time") {
+      try {
+        setLoadingResumes(true);
+        const response = await resumeAPI.list();
+        const resumes = response.data.resumes || [];
+
+        if (resumes.length === 0) {
+          toast.error("Create or upload a resume before buying one-time access");
+          navigate("/upload");
+          return;
+        }
+
+        setSelectableResumes(resumes);
+        setPendingOneTimePlan({tier, plan});
+        setResumeChooserOpen(true);
+      } catch (error) {
+        toast.error("Failed to load your resumes");
+        console.error(error);
+      } finally {
+        setLoadingResumes(false);
+      }
+      return;
+    }
+
     setPaymentData({tier, plan});
+    setShowPaymentModalTrue();
+  };
+
+  const handleChooseResumeForOneTime = (resume) => {
+    setResumeChooserOpen(false);
+    setPaymentData({
+      ...pendingOneTimePlan,
+      resumeId: resume._id,
+      resumeTitle: resume.resumeTitle || resume.name || "Untitled Resume",
+    });
     setShowPaymentModalTrue();
   };
 
@@ -171,7 +211,7 @@ const Pricing = () => {
         <title>Pricing Plans - SmartNShine AI Resume Builder</title>
         <meta
           name="description"
-          content="Choose from Free, One-Time, or Pro subscription plans. Build ATS-optimized resumes with AI assistance starting at ₹199/month or ₹1999 one-time payment."
+          content="Choose from Free, One-Time, or Pro subscription plans. Build ATS-optimized resumes with AI assistance starting at ₹49 one-time or ₹199/month."
         />
         <meta
           name="keywords"
@@ -199,16 +239,16 @@ const Pricing = () => {
                 priceCurrency: "INR",
                 availability: "https://schema.org/InStock",
                 description:
-                  "3 resume creations, 10 AI generations, 2 ATS scans, 5 job matches per month",
+                  "1 resume per month, 10 AI generations, and 1 AI resume extraction per day",
               },
               {
                 "@type": "Offer",
                 name: "One-Time Plan",
-                price: "1999",
+                price: "49",
                 priceCurrency: "INR",
                 availability: "https://schema.org/InStock",
                 description:
-                  "Unlimited resumes for 1 year, 150 AI generations, 30 ATS scans, 100 job matches",
+                  "1 resume, 150 AI requests, 1 ATS scan, and 21-day access",
               },
               {
                 "@type": "Offer",
@@ -254,7 +294,6 @@ const Pricing = () => {
                 const isActivePlan =
                   isCurrentPlan &&
                   (tier === "free" ||
-                    tier === "one-time" ||
                     (tier === "pro" &&
                       currentSubscription?.status === "active"));
 
@@ -316,30 +355,55 @@ const Pricing = () => {
                       </ul>
 
                       {/* CTA Button */}
-                      <button
-                        onClick={() => handleSelectPlan(tier, tierData.plan)}
-                        className={`w-full py-3 rounded-lg font-semibold text-white transition-all shadow-md hover:shadow-lg ${
-                          isActivePlan
-                            ? "bg-gray-400 dark:bg-zinc-700 cursor-not-allowed"
-                            : config.buttonColor
-                        }`}
-                        disabled={isActivePlan}
-                      >
-                        {isActivePlan
-                          ? "Current Plan ✓"
-                          : tier === "free"
-                            ? "Get Started Free"
-                            : "Choose Plan"}
-                      </button>
+                      {tier === "pro" ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          <button
+                            onClick={() => handleSelectPlan(tier, "monthly")}
+                            className={`w-full py-3 rounded-lg font-semibold text-white transition-all shadow-md hover:shadow-lg ${
+                              isActivePlan
+                                ? "bg-gray-400 dark:bg-zinc-700 cursor-not-allowed"
+                                : config.buttonColor
+                            }`}
+                            disabled={isActivePlan}
+                          >
+                            {isActivePlan ? "Current Plan ✓" : "Monthly"}
+                          </button>
+                          <button
+                            onClick={() => handleSelectPlan(tier, "yearly")}
+                            className={`w-full py-3 rounded-lg font-semibold text-white transition-all shadow-md hover:shadow-lg ${
+                              isActivePlan
+                                ? "bg-gray-400 dark:bg-zinc-700 cursor-not-allowed"
+                                : "bg-purple-700 hover:bg-purple-800"
+                            }`}
+                            disabled={isActivePlan}
+                          >
+                            {isActivePlan ? "Current Plan ✓" : "Yearly"}
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => handleSelectPlan(tier, tierData.plan)}
+                          className={`w-full py-3 rounded-lg font-semibold text-white transition-all shadow-md hover:shadow-lg ${
+                            isActivePlan
+                              ? "bg-gray-400 dark:bg-zinc-700 cursor-not-allowed"
+                              : config.buttonColor
+                          }`}
+                          disabled={isActivePlan}
+                        >
+                          {isActivePlan
+                            ? "Current Plan ✓"
+                            : tier === "free"
+                              ? "Get Started Free"
+                              : "Choose Plan"}
+                        </button>
+                      )}
 
                       {/* Show message for active subscribers */}
                       {isActivePlan && tier !== "free" && (
                         <div className="mt-3 text-center">
                           <p className="text-sm text-green-600 dark:text-green-400 font-medium flex items-center justify-center">
                             <FaCheck className="mr-2" />
-                            {tier === "pro"
-                              ? "You're on our best plan!"
-                              : "You have access to premium features"}
+                            You're on our best plan!
                           </p>
                         </div>
                       )}
@@ -517,11 +581,77 @@ const Pricing = () => {
           </div>
         </div>
 
+        {resumeChooserOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+            <div className="w-full max-w-2xl rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-white/10 dark:bg-zinc-950">
+              <div className="border-b border-gray-200 p-5 dark:border-white/10">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-950 dark:text-white">
+                      Choose Resume to Unlock
+                    </h2>
+                    <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                      One-time access applies to one resume for 21 days.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setResumeChooserOpen(false)}
+                    className="rounded-lg px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/10"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+
+              <div className="max-h-[60vh] space-y-3 overflow-y-auto p-5">
+                {loadingResumes ? (
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Loading resumes...
+                  </p>
+                ) : (
+                  selectableResumes.map((resume) => {
+                    const isLocked = resume.access?.upgradeRequired;
+                    return (
+                      <button
+                        key={resume._id}
+                        onClick={() => handleChooseResumeForOneTime(resume)}
+                        className="flex w-full items-center gap-4 rounded-xl border border-gray-200 bg-white p-4 text-left transition-colors hover:border-primary-300 hover:bg-primary-50 dark:border-white/10 dark:bg-white/[0.03] dark:hover:border-primary-400/50 dark:hover:bg-primary-500/10"
+                      >
+                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary-50 text-primary-600 dark:bg-primary-500/10 dark:text-primary-300">
+                          {isLocked ? <FaLock /> : <FaFileAlt />}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2">
+                            <p className="truncate font-semibold text-gray-950 dark:text-white">
+                              {resume.resumeTitle || resume.name || "Untitled Resume"}
+                            </p>
+                            {isLocked && (
+                              <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800 dark:bg-amber-400/10 dark:text-amber-200">
+                                Locked
+                              </span>
+                            )}
+                          </div>
+                          <p className="truncate text-sm text-gray-500 dark:text-gray-400">
+                            Updated{" "}
+                            {new Date(resume.updatedAt).toLocaleDateString("en-IN")}
+                          </p>
+                        </div>
+                      </button>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Payment Modal */}
         {showPaymentModal && paymentData && (
           <PaymentModal
             tier={paymentData.tier}
             plan={paymentData.plan}
+            resumeId={paymentData.resumeId}
+            resumeTitle={paymentData.resumeTitle}
             onClose={() => {
               setShowPaymentModalFalse();
               setPaymentData(null);

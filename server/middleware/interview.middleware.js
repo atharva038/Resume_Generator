@@ -11,10 +11,7 @@ import InterviewSession from "../models/InterviewSession.model.js";
 const INTERVIEW_LIMITS = {
   free: 999, // Unlimited for testing
   "one-time": 999,
-  student: 999,
   pro: 999,
-  premium: 999,
-  lifetime: 999,
 };
 
 // Cooldown between interviews (in milliseconds)
@@ -22,10 +19,7 @@ const INTERVIEW_LIMITS = {
 const INTERVIEW_COOLDOWN = {
   free: 0, // No cooldown for testing
   "one-time": 0,
-  student: 0,
   pro: 0,
-  premium: 0,
-  lifetime: 0,
 };
 
 /**
@@ -147,7 +141,7 @@ export async function checkInterviewLimit(req, res, next) {
 
 /**
  * Check if user can use voice mode
- * Voice mode is a premium feature
+ * Voice mode is a paid feature
  */
 export function checkVoiceAccess(req, res, next) {
   const user = req.user;
@@ -161,13 +155,7 @@ export function checkVoiceAccess(req, res, next) {
   }
 
   // Voice/live mode is available for paid tiers
-  const voiceEnabledTiers = [
-    "one-time",
-    "pro",
-    "premium",
-    "student",
-    "lifetime",
-  ];
+  const voiceEnabledTiers = ["one-time", "pro"];
 
   // Only check when creating session (mode is in body)
   // For voice-answer submissions, skip this check (mode is already validated at session creation)

@@ -33,8 +33,6 @@ export const UsageBadge = ({compact = false}) => {
       free: "bg-gray-500",
       "one-time": "bg-blue-500",
       pro: "bg-purple-500",
-      premium: "bg-yellow-500",
-      lifetime: "bg-pink-500",
     };
     return colors[tier] || "bg-gray-500";
   };
@@ -202,8 +200,6 @@ export const TierIndicator = ({showUpgrade = true}) => {
       free: {label: "Free", color: "gray", icon: "⭐"},
       "one-time": {label: "One-Time", color: "blue", icon: "🚀"},
       pro: {label: "Pro", color: "purple", icon: "👑"},
-      premium: {label: "Premium", color: "yellow", icon: "👑"},
-      lifetime: {label: "Lifetime", color: "pink", icon: "♾️"},
     };
     return info[tier] || info.free;
   };
