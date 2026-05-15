@@ -9,6 +9,7 @@ import {checkAIQuota} from "../middleware/aiUsageTracker.middleware.js";
 import {
   checkSubscription,
   checkUsageLimit,
+  checkResumeActionAccess,
   checkResumeSubscriptionAccess,
 } from "../middleware/subscription.middleware.js";
 import {
@@ -133,7 +134,7 @@ router.post(
   "/track-download",
   authenticateToken,
   checkSubscription,
-  checkResumeSubscriptionAccess, // NEW: Check if resume's subscription is active
+  checkResumeActionAccess("download"),
   checkUsageLimit("resumeDownloadsPerMonth"),
   trackDownload
 );
@@ -142,15 +143,23 @@ router.post(
   "/export-pdf",
   authenticateToken,
   checkSubscription,
+  checkResumeActionAccess("download"),
   checkUsageLimit("resumeDownloadsPerMonth"),
   exportResumePdf
 );
 
 router.get("/pdf-session/:token", getPdfSession);
 
-router.put("/:id", authenticateToken, validateResumeUpdate, updateResume);
-router.get("/list", authenticateToken, getResumes);
-router.get("/:id", authenticateToken, validateResumeId, getResumeById);
+router.put(
+  "/:id",
+  authenticateToken,
+  checkSubscription,
+  checkResumeActionAccess("edit"),
+  validateResumeUpdate,
+  updateResume
+);
+router.get("/list", authenticateToken, checkSubscription, getResumes);
+router.get("/:id", authenticateToken, checkSubscription, validateResumeId, getResumeById);
 router.delete("/:id", authenticateToken, validateResumeId, deleteResume);
 
 export default router;

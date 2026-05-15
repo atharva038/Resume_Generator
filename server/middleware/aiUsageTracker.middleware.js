@@ -10,7 +10,7 @@ import AIUsage from "../models/AIUsage.model.js";
 // - Daily/Monthly quota enforcement per user
 // - Real-time cost tracking
 // - Token usage monitoring
-// - User tier-based limits (free/premium)
+// - User tier-based limits (free/one-time/pro)
 // - Admin bypass capability
 //
 // Gemini API Pricing (as of 2024):
@@ -33,14 +33,6 @@ const QUOTA_LIMITS = {
   pro: {
     daily: Infinity, // No daily limit
     monthly: Infinity, // Unlimited for pro users
-  },
-  premium: {
-    daily: Infinity, // No daily limit
-    monthly: Infinity, // Unlimited for premium users
-  },
-  lifetime: {
-    daily: Infinity, // No daily limit
-    monthly: Infinity, // Unlimited for lifetime users
   },
   admin: {
     daily: Infinity, // Unlimited for admins
@@ -88,14 +80,15 @@ const getUsageCount = async (userId, startDate) => {
 };
 
 /**
- * Get user's tier (free/one-time/pro/premium/lifetime/admin)
+ * Get user's tier (free/one-time/pro/admin)
  * @param {Object} user - User object from req.user
  * @returns {string} User tier
  */
 const getUserTier = (user) => {
   if (user.role === "admin") return "admin";
   // Get tier from user's subscription
-  return user.subscription?.tier || "free";
+  const tier = user.subscription?.tier || "free";
+  return QUOTA_LIMITS[tier] ? tier : "free";
 };
 
 /**
@@ -224,7 +217,7 @@ export const checkAIQuota = async (req, res, next) => {
       return next();
     }
 
-    // For other tiers (free, pro, premium, lifetime): monthly quota
+    // For other tiers (free, pro): monthly quota
     const startOfDay = new Date(
       now.getFullYear(),
       now.getMonth(),
@@ -274,7 +267,7 @@ export const checkAIQuota = async (req, res, next) => {
       return res.status(429).json({
         success: false,
         error: "Monthly AI quota exceeded",
-        message: `You have reached your monthly limit of ${limits.monthly} AI requests. Upgrade to premium for higher limits.`,
+        message: `You have reached your monthly limit of ${limits.monthly} AI requests. Upgrade to Pro for unlimited AI requests.`,
         quota: {
           tier: userTier,
           daily: {

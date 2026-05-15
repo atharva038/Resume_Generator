@@ -26,9 +26,13 @@ const settingsSchema = new mongoose.Schema(
         daily: {type: Number, default: 10},
         monthly: {type: Number, default: 200},
       },
-      premium: {
-        daily: {type: Number, default: 100},
-        monthly: {type: Number, default: 2000},
+      "one-time": {
+        daily: {type: Number, default: 150},
+        monthly: {type: Number, default: 150},
+      },
+      pro: {
+        daily: {type: Number, default: 1000},
+        monthly: {type: Number, default: 10000},
       },
     },
 

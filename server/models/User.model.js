@@ -66,13 +66,13 @@ const userSchema = new mongoose.Schema(
     subscription: {
       tier: {
         type: String,
-        enum: ["free", "one-time", "pro", "premium", "student", "lifetime"],
+        enum: ["free", "one-time", "pro"],
         default: "free",
         index: true,
       },
       plan: {
         type: String,
-        enum: ["monthly", "yearly", "3-months", "lifetime", "one-time"],
+        enum: ["free", "monthly", "yearly", "one-time"],
       },
       status: {
         type: String,
@@ -232,7 +232,7 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
 // Subscription helper methods
 userSchema.methods.hasActiveSubscription = function () {
   return (
-    this.subscription.status === "active" &&
+    this.subscription?.status === "active" &&
     (!this.subscription.endDate || this.subscription.endDate > new Date())
   );
 };
@@ -240,9 +240,7 @@ userSchema.methods.hasActiveSubscription = function () {
 userSchema.methods.isPremiumUser = function () {
   return (
     this.hasActiveSubscription() &&
-    ["one-time", "pro", "premium", "student", "lifetime"].includes(
-      this.subscription.tier
-    )
+    ["one-time", "pro"].includes(this.subscription.tier)
   );
 };
 
@@ -255,33 +253,8 @@ userSchema.methods.canAccessFeature = function (feature) {
       "basic-resume",
       "all-templates",
       "ats-score",
-      "cover-letter",
-      "job-match",
-      "portfolio",
     ],
     pro: [
-      "unlimited-resumes",
-      "all-templates",
-      "ats-score",
-      "cover-letter",
-      "job-match",
-      "portfolio",
-      "analytics",
-      "ai-resume-extraction",
-    ],
-    premium: [
-      "unlimited-resumes",
-      "all-templates",
-      "ats-score",
-      "cover-letter",
-      "job-match",
-      "portfolio",
-      "analytics",
-      "interview-qa",
-      "priority-support",
-      "ai-resume-extraction",
-    ],
-    lifetime: [
       "unlimited-resumes",
       "all-templates",
       "ats-score",
@@ -317,37 +290,19 @@ userSchema.methods.getUsageLimit = function (limitType) {
     "one-time": {
       resumesPerMonth: 1, // One-time purchase allows creating only 1 NEW resume
       resumeDownloadsPerMonth: Infinity, // Unlimited downloads
-      atsScansPerMonth: 5,
-      jobMatchesPerDay: 3,
-      coverLettersPerMonth: 5,
+      atsScansPerMonth: 1,
+      jobMatchesPerDay: 0,
+      coverLettersPerMonth: 0,
       aiGenerationsPerMonth: 150, // 150 AI requests for 21-day period (not monthly!)
-      aiResumeExtractionsPerDay: 10, // 10 AI resume extractions per day
+      aiResumeExtractionsPerDay: 0,
     },
     pro: {
       resumesPerMonth: Infinity,
       resumeDownloadsPerMonth: Infinity,
       atsScansPerMonth: Infinity,
-      jobMatchesPerDay: 10,
+      jobMatchesPerDay: 0,
       coverLettersPerMonth: Infinity,
-      aiResumeExtractionsPerDay: 10, // 10 AI resume extractions per day
-      aiGenerationsPerMonth: Infinity,
-    },
-    premium: {
-      resumesPerMonth: Infinity,
-      resumeDownloadsPerMonth: Infinity,
-      atsScansPerMonth: Infinity,
-      jobMatchesPerDay: Infinity,
-      coverLettersPerMonth: Infinity,
-      aiResumeExtractionsPerDay: 10, // 10 AI resume extractions per day
-      aiGenerationsPerMonth: Infinity,
-    },
-    lifetime: {
-      resumesPerMonth: Infinity,
-      resumeDownloadsPerMonth: Infinity,
-      atsScansPerMonth: Infinity,
-      jobMatchesPerDay: 10,
-      coverLettersPerMonth: Infinity,
-      aiResumeExtractionsPerDay: 10, // 10 AI resume extractions per day
+      aiResumeExtractionsPerDay: 2,
       aiGenerationsPerMonth: Infinity,
     },
   };
@@ -428,12 +383,11 @@ userSchema.methods.resetDailyUsage = async function () {
 userSchema.methods.checkSubscriptionExpiry = async function () {
   if (this.subscription.endDate && this.subscription.endDate < new Date()) {
     if (this.subscription.status === "active") {
-      this.subscription.status = "expired";
-
-      // Downgrade to free tier
-      if (["one-time", "student"].includes(this.subscription.tier)) {
-        this.subscription.tier = "free";
-      }
+      this.subscription.tier = "free";
+      this.subscription.plan = "free";
+      this.subscription.status = "active";
+      this.subscription.endDate = undefined;
+      this.subscription.autoRenew = false;
 
       await this.save();
       return true; // Subscription expired

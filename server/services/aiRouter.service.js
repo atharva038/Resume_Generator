@@ -25,9 +25,6 @@ const TIER_AI_MAPPING = {
   free: GEMINI_ENABLED ? "gemini" : "gpt4o", // Fallback to OpenAI if Gemini disabled
   "one-time": "gpt4o",
   pro: GEMINI_ENABLED ? "hybrid" : "gpt4o", // Fallback to OpenAI if Gemini disabled
-  premium: "gpt4o",
-  student: GEMINI_ENABLED ? "hybrid" : "gpt4o", // Fallback to OpenAI if Gemini disabled
-  lifetime: "gpt4o",
 };
 
 // Action types that support hybrid mode (can use Gemini for some operations)
@@ -46,13 +43,13 @@ const HYBRID_COMPATIBLE_ACTIONS = [
 function selectAIService(user, action = "resume_created") {
   // Get default model for user's tier
   const userTier = user.subscription?.tier || "free";
-  let tierModel = TIER_AI_MAPPING[userTier];
+  let tierModel = TIER_AI_MAPPING[userTier] || TIER_AI_MAPPING.free;
 
   console.log(
     `🎯 AI Selection: User tier "${userTier}" → Model "${tierModel}"`
   );
 
-  // Handle hybrid mode (for pro and student tiers)
+  // Handle hybrid mode (for pro tier)
   if (tierModel === "hybrid") {
     // For hybrid, use Gemini for lighter tasks, GPT-4o for critical tasks
     if (HYBRID_COMPATIBLE_ACTIONS.includes(action)) {
@@ -578,10 +575,10 @@ export async function generateCoverLetter(
  */
 export function getAIServiceInfo(user) {
   const tier = user.subscription?.tier || "free";
-  const aiModel = TIER_AI_MAPPING[tier];
+  const aiModel = TIER_AI_MAPPING[tier] || TIER_AI_MAPPING.free;
 
   return {
-    tier,
+    tier: TIER_AI_MAPPING[tier] ? tier : "free",
     aiModel,
     isHybrid: aiModel === "hybrid",
   };

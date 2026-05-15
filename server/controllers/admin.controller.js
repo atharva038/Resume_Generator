@@ -8,6 +8,69 @@ import Feedback from "../models/Feedback.model.js";
 import Settings from "../models/Settings.model.js";
 import Subscription from "../models/Subscription.model.js";
 import InterviewSession from "../models/InterviewSession.model.js";
+import {getPlanAmount, PLAN_DURATIONS} from "../services/payment.service.js";
+
+const ACTIVE_SUBSCRIPTION_TIERS = ["free", "one-time", "pro"];
+const MANAGEABLE_SUBSCRIPTION_TIERS = ["one-time", "pro"];
+const SUBSCRIPTION_CURRENCIES = ["INR", "USD"];
+const PLAN_DEFAULT_DAYS = {
+  "one-time": 21,
+  monthly: 30,
+  yearly: 365,
+};
+const AI_QUOTA_LIMITS = {
+  free: {daily: 10, monthly: 200},
+  "one-time": {daily: 150, monthly: 150},
+  pro: {daily: Infinity, monthly: Infinity},
+  admin: {daily: Infinity, monthly: Infinity},
+};
+
+const getEffectiveTier = (user) => {
+  if (user.role === "admin") return "admin";
+  const tier = user.subscription?.tier || "free";
+  return ACTIVE_SUBSCRIPTION_TIERS.includes(tier) ? tier : "free";
+};
+
+const createManualReceiptId = () =>
+  `manual_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+
+const addDays = (fromDate, days) => {
+  const nextDate = new Date(fromDate);
+  nextDate.setDate(nextDate.getDate() + Number(days));
+  return nextDate;
+};
+
+const getDefaultPlanDuration = (plan) => PLAN_DEFAULT_DAYS[plan] || 30;
+
+const getResetPeriodUsage = (usage = {}) => {
+  const currentUsage =
+    typeof usage?.toObject === "function" ? usage.toObject() : usage;
+
+  return {
+    ...currentUsage,
+    resumesThisMonth: 0,
+    resumesDownloadedThisMonth: 0,
+    atsScansThisMonth: 0,
+    jobMatchesToday: 0,
+    coverLettersThisMonth: 0,
+    aiResumeExtractionsToday: 0,
+    aiGenerationsThisMonth: 0,
+    lastResetDate: new Date(),
+    lastDailyReset: new Date(),
+  };
+};
+
+const validateSubscriptionSelection = (tier, plan) => {
+  if (!MANAGEABLE_SUBSCRIPTION_TIERS.includes(tier)) {
+    return "Tier must be one-time or pro";
+  }
+
+  if (!PLAN_DURATIONS[tier]?.includes(plan)) {
+    return `Plan must be one of: ${PLAN_DURATIONS[tier].join(", ")}`;
+  }
+
+  return null;
+};
 
 // Get Dashboard Statistics nicely
 export const getDashboardStats = async (req, res) => {
@@ -131,10 +194,8 @@ export const getDashboardStats = async (req, res) => {
             $switch: {
               branches: [
                 {case: {$eq: ["$subscription.tier", "free"]}, then: 1},
-                {case: {$eq: ["$subscription.tier", "one-time"]}, then: 10},
-                {case: {$eq: ["$subscription.tier", "pro"]}, then: 10},
-                {case: {$eq: ["$subscription.tier", "premium"]}, then: 10},
-                {case: {$eq: ["$subscription.tier", "lifetime"]}, then: 10},
+                {case: {$eq: ["$subscription.tier", "one-time"]}, then: 0},
+                {case: {$eq: ["$subscription.tier", "pro"]}, then: 2},
               ],
               default: 1,
             },
@@ -555,6 +616,44 @@ export const getUserDetails = async (req, res) => {
       subscriptionHistory.find((subscription) => subscription.status === "active") ||
       subscriptionHistory[0] ||
       null;
+    const successfulPaymentStatuses = ["active", "cancelled", "expired"];
+    const paymentSummary = subscriptionHistory.reduce(
+      (summary, subscription) => {
+        const amount = Number(subscription.amount || 0);
+        const currency = subscription.currency || "INR";
+
+        summary.totalPayments += 1;
+        summary.byStatus[subscription.status] =
+          (summary.byStatus[subscription.status] || 0) + 1;
+
+        if (subscription.receiptId) {
+          summary.receipts += 1;
+        }
+
+        if (subscription.status === "failed") {
+          summary.failedPayments += 1;
+          summary.failedAmountByCurrency[currency] =
+            (summary.failedAmountByCurrency[currency] || 0) + amount;
+        }
+
+        if (successfulPaymentStatuses.includes(subscription.status)) {
+          summary.successfulPayments += 1;
+          summary.paidAmountByCurrency[currency] =
+            (summary.paidAmountByCurrency[currency] || 0) + amount;
+        }
+
+        return summary;
+      },
+      {
+        totalPayments: 0,
+        successfulPayments: 0,
+        failedPayments: 0,
+        receipts: 0,
+        paidAmountByCurrency: {},
+        failedAmountByCurrency: {},
+        byStatus: {},
+      }
+    );
 
     res.json({
       success: true,
@@ -577,6 +676,16 @@ export const getUserDetails = async (req, res) => {
           current: user.subscription || null,
           activeRecord: activeSubscription,
           history: subscriptionHistory,
+        },
+        payments: {
+          summary: paymentSummary,
+          history: subscriptionHistory,
+          failed: subscriptionHistory.filter(
+            (subscription) => subscription.status === "failed"
+          ),
+          receipts: subscriptionHistory.filter(
+            (subscription) => subscription.receiptId || subscription.invoiceUrl
+          ),
         },
         interviews: {
           sessions: interviewSessionSummaries,
@@ -704,6 +813,355 @@ export const updateUserRole = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to update user role",
+      error: error.message,
+    });
+  }
+};
+
+// Manually Activate User Subscription
+export const activateUserSubscription = async (req, res) => {
+  try {
+    const {userId} = req.params;
+    const {
+      tier,
+      plan,
+      durationDays,
+      amount,
+      currency = "INR",
+      autoRenew = false,
+      notes = "",
+    } = req.body;
+
+    const validationMessage = validateSubscriptionSelection(tier, plan);
+    if (validationMessage) {
+      return res.status(400).json({
+        success: false,
+        message: validationMessage,
+      });
+    }
+
+    if (!SUBSCRIPTION_CURRENCIES.includes(currency)) {
+      return res.status(400).json({
+        success: false,
+        message: "Currency must be INR or USD",
+      });
+    }
+
+    const normalizedDurationDays = Number(
+      durationDays || getDefaultPlanDuration(plan)
+    );
+    if (!Number.isFinite(normalizedDurationDays) || normalizedDurationDays < 1) {
+      return res.status(400).json({
+        success: false,
+        message: "Duration days must be a positive number",
+      });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const now = new Date();
+    const endDate = addDays(now, normalizedDurationDays);
+    const normalizedAmount =
+      amount === "" || amount === null || amount === undefined
+        ? getPlanAmount(tier, plan)
+        : Number(amount);
+
+    if (!Number.isFinite(normalizedAmount) || normalizedAmount < 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Amount must be a valid number",
+      });
+    }
+
+    await Subscription.updateMany(
+      {userId, status: "active"},
+      {
+        $set: {
+          status: "expired",
+          autoRenew: false,
+          notes: "Replaced by admin manual activation",
+        },
+      }
+    );
+
+    const receiptId = createManualReceiptId();
+    const subscription = await Subscription.create({
+      userId,
+      tier,
+      plan,
+      status: "active",
+      startDate: now,
+      endDate,
+      amount: normalizedAmount,
+      currency,
+      paymentMethod: "manual",
+      receiptId,
+      paymentId: receiptId,
+      orderId: receiptId,
+      autoRenew: Boolean(autoRenew),
+      notes: notes || "Manually activated by admin",
+      metadata: {
+        activatedByAdminId: req.user.userId,
+        durationDays: normalizedDurationDays,
+      },
+    });
+
+    user.subscription = {
+      tier,
+      plan,
+      status: "active",
+      startDate: now,
+      endDate,
+      paymentId: subscription.paymentId,
+      orderId: subscription.orderId,
+      receiptId,
+      autoRenew: Boolean(autoRenew),
+    };
+    user.usage = getResetPeriodUsage(user.usage);
+    await user.save();
+
+    await AdminLog.create({
+      adminId: req.user.userId,
+      action: "other",
+      targetType: "user",
+      targetId: userId,
+      description: `Subscription for ${user.email} manually activated as ${tier}/${plan}`,
+      metadata: {
+        tier,
+        plan,
+        durationDays: normalizedDurationDays,
+        subscriptionId: subscription._id,
+      },
+      ipAddress: req.ip,
+    });
+
+    res.json({
+      success: true,
+      message: "Subscription activated successfully",
+      data: {subscription, user},
+    });
+  } catch (error) {
+    console.error("Activate user subscription error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to activate subscription",
+      error: error.message,
+    });
+  }
+};
+
+// Extend User Subscription
+export const extendUserSubscription = async (req, res) => {
+  try {
+    const {userId} = req.params;
+    const {days, reason = ""} = req.body;
+    const normalizedDays = Number(days);
+
+    if (!Number.isFinite(normalizedDays) || normalizedDays < 1) {
+      return res.status(400).json({
+        success: false,
+        message: "Days must be a positive number",
+      });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if (
+      !MANAGEABLE_SUBSCRIPTION_TIERS.includes(user.subscription?.tier) ||
+      user.subscription?.status !== "active"
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Only active paid subscriptions can be extended",
+      });
+    }
+
+    const activeSubscription = await Subscription.getActiveSubscription(userId);
+    if (!activeSubscription) {
+      return res.status(400).json({
+        success: false,
+        message: "No active subscription record found. Activate a new subscription instead.",
+      });
+    }
+
+    const baseDate =
+      user.subscription?.endDate && user.subscription.endDate > new Date()
+        ? user.subscription.endDate
+        : new Date();
+    const newEndDate = addDays(baseDate, normalizedDays);
+
+    activeSubscription.endDate = newEndDate;
+    activeSubscription.status = "active";
+    activeSubscription.notes = [
+      activeSubscription.notes,
+      `Extended by admin for ${normalizedDays} days${reason ? `: ${reason}` : ""}`,
+    ]
+      .filter(Boolean)
+      .join("\n");
+    activeSubscription.metadata = {
+      ...(activeSubscription.metadata || {}),
+      lastExtendedByAdminId: req.user.userId,
+      lastExtensionDays: normalizedDays,
+      lastExtensionAt: new Date(),
+    };
+    await activeSubscription.save();
+
+    user.subscription.status = "active";
+    user.subscription.endDate = newEndDate;
+    await user.save();
+
+    await AdminLog.create({
+      adminId: req.user.userId,
+      action: "other",
+      targetType: "user",
+      targetId: userId,
+      description: `Subscription for ${user.email} extended by ${normalizedDays} days`,
+      metadata: {days: normalizedDays, reason, newEndDate},
+      ipAddress: req.ip,
+    });
+
+    res.json({
+      success: true,
+      message: "Subscription extended successfully",
+      data: {subscription: activeSubscription, user},
+    });
+  } catch (error) {
+    console.error("Extend user subscription error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to extend subscription",
+      error: error.message,
+    });
+  }
+};
+
+// Cancel User Subscription Renewal/Access
+export const cancelUserSubscription = async (req, res) => {
+  try {
+    const {userId} = req.params;
+    const {reason = "Cancelled by admin"} = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if (!MANAGEABLE_SUBSCRIPTION_TIERS.includes(user.subscription?.tier)) {
+      return res.status(400).json({
+        success: false,
+        message: "Only paid subscriptions can be cancelled",
+      });
+    }
+
+    const activeSubscription = await Subscription.getActiveSubscription(userId);
+    if (activeSubscription) {
+      await activeSubscription.cancel(reason, "admin");
+    }
+
+    user.subscription.status = "cancelled";
+    user.subscription.cancelledAt = new Date();
+    user.subscription.cancelReason = reason;
+    user.subscription.autoRenew = false;
+    await user.save();
+
+    await AdminLog.create({
+      adminId: req.user.userId,
+      action: "other",
+      targetType: "user",
+      targetId: userId,
+      description: `Subscription for ${user.email} cancelled by admin`,
+      metadata: {reason, subscriptionId: activeSubscription?._id},
+      ipAddress: req.ip,
+    });
+
+    res.json({
+      success: true,
+      message: "Subscription cancelled successfully",
+      data: {subscription: activeSubscription, user},
+    });
+  } catch (error) {
+    console.error("Cancel user subscription error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to cancel subscription",
+      error: error.message,
+    });
+  }
+};
+
+// Downgrade User To Free Plan
+export const downgradeUserSubscription = async (req, res) => {
+  try {
+    const {userId} = req.params;
+    const {reason = "Downgraded by admin"} = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const now = new Date();
+    await Subscription.updateMany(
+      {userId, status: "active"},
+      {
+        $set: {
+          status: "cancelled",
+          cancelledAt: now,
+          cancelReason: reason,
+          cancelledBy: "admin",
+          autoRenew: false,
+        },
+      }
+    );
+
+    user.subscription = {
+      tier: "free",
+      plan: "free",
+      status: "active",
+      startDate: now,
+      autoRenew: false,
+    };
+    user.usage = getResetPeriodUsage(user.usage);
+    await user.save();
+
+    await AdminLog.create({
+      adminId: req.user.userId,
+      action: "other",
+      targetType: "user",
+      targetId: userId,
+      description: `Subscription for ${user.email} downgraded to free`,
+      metadata: {reason},
+      ipAddress: req.ip,
+    });
+
+    res.json({
+      success: true,
+      message: "User downgraded to free successfully",
+      data: {user},
+    });
+  } catch (error) {
+    console.error("Downgrade user subscription error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to downgrade subscription",
       error: error.message,
     });
   }
@@ -1647,7 +2105,7 @@ export const getUserQuotaStatus = async (req, res) => {
       : {};
 
     const users = await User.find(searchFilter).select(
-      "name email role status createdAt"
+      "name email role status subscription.tier createdAt"
     );
 
     // Calculate quota status for each user
@@ -1746,13 +2204,8 @@ export const getUserQuotaStatus = async (req, res) => {
           }
         });
 
-        const tier = user.role === "admin" ? "admin" : "free"; // TODO: Add premium tier support
-        const limits = {
-          free: {daily: 10, monthly: 200},
-          premium: {daily: 100, monthly: 2000},
-          admin: {daily: Infinity, monthly: Infinity},
-        };
-
+        const tier = getEffectiveTier(user);
+        const limits = AI_QUOTA_LIMITS;
         const dailyLimit = limits[tier].daily;
         const monthlyLimit = limits[tier].monthly;
 
@@ -1865,7 +2318,9 @@ export const getUserQuotaDetails = async (req, res) => {
   try {
     const {userId} = req.params;
 
-    const user = await User.findById(userId).select("name email role status");
+    const user = await User.findById(userId).select(
+      "name email role status subscription.tier"
+    );
     if (!user) {
       return res.status(404).json({error: "User not found"});
     }
@@ -1951,12 +2406,8 @@ export const getUserQuotaDetails = async (req, res) => {
       }),
     ]);
 
-    const tier = user.role === "admin" ? "admin" : "free";
-    const limits = {
-      free: {daily: 10, monthly: 200},
-      premium: {daily: 100, monthly: 2000},
-      admin: {daily: Infinity, monthly: Infinity},
-    };
+    const tier = getEffectiveTier(user);
+    const limits = AI_QUOTA_LIMITS;
 
     res.json({
       user: {
@@ -1990,7 +2441,7 @@ export const getUserQuotaDetails = async (req, res) => {
 };
 
 /**
- * Update user's AI quota tier (for future premium support)
+ * Update user's subscription tier for quota/admin support.
  * PATCH /api/admin/ai-quota/users/:userId/tier
  */
 export const updateUserTier = async (req, res) => {
@@ -1998,18 +2449,28 @@ export const updateUserTier = async (req, res) => {
     const {userId} = req.params;
     const {tier} = req.body;
 
-    if (!["free", "premium"].includes(tier)) {
+    if (!ACTIVE_SUBSCRIPTION_TIERS.includes(tier)) {
       return res
         .status(400)
-        .json({error: "Invalid tier. Must be 'free' or 'premium'"});
+        .json({error: "Invalid tier. Must be 'free', 'one-time', or 'pro'"});
     }
 
-    // TODO: Add tier field to User model
-    // For now, return a message
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({error: "User not found"});
+    }
+
+    user.subscription.tier = tier;
+    user.subscription.plan =
+      tier === "pro" ? user.subscription.plan || "monthly" : tier;
+    user.subscription.status = "active";
+    user.subscription.startDate = user.subscription.startDate || new Date();
+    user.subscription.endDate = tier === "free" ? undefined : user.subscription.endDate;
+    await user.save();
+
     res.json({
-      message:
-        "Tier update feature coming soon. Please add 'tier' field to User model first.",
-      note: "Currently, tier is determined by role: admin = unlimited, user = free",
+      message: `User tier updated to ${tier}`,
+      tier: user.subscription.tier,
     });
   } catch (error) {
     console.error("Update user tier error:", error);
@@ -2258,10 +2719,10 @@ export const updateAIQuotaLimits = async (req, res) => {
   try {
     const {tier, daily, monthly} = req.body;
 
-    if (!["free", "premium"].includes(tier)) {
+    if (!["free", "one-time", "pro"].includes(tier)) {
       return res
         .status(400)
-        .json({error: "Invalid tier. Must be 'free' or 'premium'"});
+        .json({error: "Invalid tier. Must be 'free', 'one-time', or 'pro'"});
     }
 
     if (daily < 1 || monthly < 1) {
@@ -2269,6 +2730,9 @@ export const updateAIQuotaLimits = async (req, res) => {
     }
 
     const settings = await Settings.getSettings();
+    if (!settings.aiQuota[tier]) {
+      settings.aiQuota[tier] = {};
+    }
     settings.aiQuota[tier].daily = daily;
     settings.aiQuota[tier].monthly = monthly;
     settings.lastUpdatedBy = req.user.id;
@@ -2394,14 +2858,20 @@ export const getAIExtractionUsage = async (req, res) => {
       const limit = user.getUsageLimit("aiResumeExtractionsPerDay");
       const used = user.usage?.aiResumeExtractionsToday || 0;
       const percentage =
-        limit === Infinity ? 0 : Math.round((used / limit) * 100);
-      const isAtLimit = limit !== Infinity && used >= limit;
+        limit === Infinity || limit === 0
+          ? 0
+          : Math.round((used / limit) * 100);
+      const isAtLimit = limit !== Infinity && limit > 0 && used >= limit;
+      const rawTier = user.subscription?.tier || "free";
+      const tier = ACTIVE_SUBSCRIPTION_TIERS.includes(rawTier)
+        ? rawTier
+        : "free";
 
       return {
         _id: user._id,
         name: user.name,
         email: user.email,
-        tier: user.subscription?.tier || "free",
+        tier,
         status: user.status,
         extractionsToday: used,
         dailyLimit: limit,
@@ -2434,26 +2904,19 @@ export const getAIExtractionUsage = async (req, res) => {
           totalExtractions: 0,
           atLimit: 0,
         },
-        premium: {
-          count: 0,
-          totalExtractions: 0,
-          atLimit: 0,
-        },
-        lifetime: {
-          count: 0,
-          totalExtractions: 0,
-          atLimit: 0,
-        },
       },
       totalExtractionsToday: 0,
       totalUsersAtLimit: 0,
     };
 
     allUsers.forEach((user) => {
-      const tier = user.subscription?.tier || "free";
+      const rawTier = user.subscription?.tier || "free";
+      const tier = ACTIVE_SUBSCRIPTION_TIERS.includes(rawTier)
+        ? rawTier
+        : "free";
       const used = user.usage?.aiResumeExtractionsToday || 0;
       const limit = user.getUsageLimit("aiResumeExtractionsPerDay");
-      const isAtLimit = limit !== Infinity && used >= limit;
+      const isAtLimit = limit !== Infinity && limit > 0 && used >= limit;
 
       if (overview.byTier[tier]) {
         overview.byTier[tier].count++;

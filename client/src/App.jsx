@@ -35,6 +35,11 @@ const SubscriptionDashboard = lazy(
   () => import("./pages/SubscriptionDashboard")
 );
 const Profile = lazy(() => import("./pages/Profile"));
+const PortfolioDashboard = lazy(() => import("./pages/PortfolioDashboard"));
+const PortfolioCreate = lazy(() => import("./pages/PortfolioCreate"));
+const PortfolioEditor = lazy(() => import("./pages/PortfolioEditor"));
+const PortfolioPreview = lazy(() => import("./pages/PortfolioPreview"));
+const PublicPortfolio = lazy(() => import("./pages/PublicPortfolio"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const UserManagement = lazy(() => import("./pages/admin/UserManagement"));
 const UserDetails = lazy(() => import("./pages/admin/UserDetails"));
@@ -124,6 +129,23 @@ function App() {
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
             <Route path="/pdf-render/:token" element={<PdfRender />} />
+            <Route path="/u/:slug" element={<PublicPortfolio />} />
+            <Route
+              path="/portfolio/:id/edit"
+              element={
+                <ProtectedRoute>
+                  <PortfolioEditor />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/portfolio/:id/preview"
+              element={
+                <ProtectedRoute>
+                  <PortfolioPreview />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
               {/* Protected Routes - Require Authentication */}
@@ -197,6 +219,22 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="portfolio"
+              element={
+                <ProtectedRoute>
+                  <PortfolioDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="portfolio/new"
+              element={
+                <ProtectedRoute>
+                  <PortfolioCreate />
                 </ProtectedRoute>
               }
             />

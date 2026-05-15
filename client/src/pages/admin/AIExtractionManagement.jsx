@@ -82,10 +82,6 @@ const AIExtractionManagement = () => {
       "one-time":
         "bg-gradient-to-r from-blue-500/20 to-cyan-500/20 text-blue-700 dark:text-blue-300 border-blue-500/30",
       pro: "bg-gradient-to-r from-indigo-500/20 to-blue-500/20 text-indigo-700 dark:text-indigo-300 border-indigo-500/30",
-      premium:
-        "bg-gradient-to-r from-orange-500/20 to-amber-500/20 text-orange-700 dark:text-orange-300 border-orange-500/30",
-      lifetime:
-        "bg-gradient-to-r from-emerald-500/20 to-green-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/30",
     };
     return colors[tier] || colors.free;
   };
@@ -312,12 +308,6 @@ const AIExtractionManagement = () => {
               </option>
               <option value="pro" className="bg-white dark:bg-gray-900">
                 Pro
-              </option>
-              <option value="premium" className="bg-white dark:bg-gray-900">
-                Premium
-              </option>
-              <option value="lifetime" className="bg-white dark:bg-gray-900">
-                Lifetime
               </option>
             </select>
           </div>

@@ -620,9 +620,7 @@ const AdminDashboard = () => {
                           ? "bg-primary-100 text-primary-700 dark:bg-primary-500/15 dark:text-primary-300"
                           : sub.tier === "one-time"
                             ? "bg-blue-500/10 text-blue-400"
-                            : sub.tier === "student"
-                              ? "bg-green-500/10 text-green-400"
-                              : "bg-gray-500/10 text-gray-400"
+                            : "bg-gray-500/10 text-gray-400"
                       }`}
                     >
                       {sub.tier}

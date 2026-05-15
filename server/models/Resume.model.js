@@ -110,7 +110,7 @@ const resumeSchema = new mongoose.Schema(
       },
       createdWithTier: {
         type: String,
-        enum: ["free", "one-time", "pro", "premium", "student", "lifetime"],
+        enum: ["free", "one-time", "pro"],
         default: "free",
       },
       createdWithSubscription: {

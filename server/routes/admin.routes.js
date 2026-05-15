@@ -14,6 +14,10 @@ import {
   getDashboardStats,
   getAllUsers,
   getUserDetails,
+  activateUserSubscription,
+  cancelUserSubscription,
+  downgradeUserSubscription,
+  extendUserSubscription,
   updateUserStatus,
   updateUserRole,
   deleteUser,
@@ -75,6 +79,26 @@ router.delete("/notifications/:id", validateMongoId, deleteNotification);
 // User Management
 router.get("/users", getAllUsers);
 router.get("/users/:userId", validateUserId, getUserDetails);
+router.post(
+  "/users/:userId/subscription/activate",
+  validateUserId,
+  activateUserSubscription
+);
+router.post(
+  "/users/:userId/subscription/extend",
+  validateUserId,
+  extendUserSubscription
+);
+router.post(
+  "/users/:userId/subscription/cancel",
+  validateUserId,
+  cancelUserSubscription
+);
+router.post(
+  "/users/:userId/subscription/downgrade",
+  validateUserId,
+  downgradeUserSubscription
+);
 router.patch("/users/:userId/status", validateUserId, updateUserStatus);
 router.patch("/users/:userId/role", validateUserRoleUpdate, updateUserRole);
 router.delete("/users/:userId", validateUserId, deleteUser);

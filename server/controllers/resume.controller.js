@@ -18,6 +18,7 @@ import {
   processCustomSectionWithAI,
 } from "../services/openai.service.js";
 import {trackAIUsage} from "../middleware/aiUsageTracker.middleware.js";
+import {getResumeAccess} from "../middleware/subscription.middleware.js";
 
 /**
  * Upload and parse resume file
@@ -38,7 +39,7 @@ export const uploadResume = async (req, res) => {
     const isAdmin = user?.role === "admin";
 
     // Admin users have unlimited access
-    const canUseAIExtraction = isAdmin || ["pro", "premium", "lifetime"].includes(tier);
+    const canUseAIExtraction = isAdmin || tier === "pro";
 
     // Get usage limits for response
     let limit = null;
@@ -85,7 +86,7 @@ export const uploadResume = async (req, res) => {
     );
     const responseTime = Date.now() - startTime;
 
-    // Increment AI extraction counter for pro/premium/lifetime users (skip for admins)
+    // Increment AI extraction counter for pro users (skip for admins)
     if (canUseAIExtraction && !isAdmin) {
       await User.findByIdAndUpdate(userId, {
         $inc: {
@@ -138,10 +139,10 @@ export const uploadResume = async (req, res) => {
       return res.status(403).json({
         error: "AI Parsing Limit Reached",
         message:
-          "The free AI resume parsing service has reached its daily limit. Upgrade to Pro, Premium, or Lifetime to get unlimited AI-powered resume parsing!",
+          "The free AI resume parsing service has reached its daily limit. Upgrade to Pro for AI-powered resume parsing.",
         upgradeRequired: true,
         feature: "AI Resume Parsing",
-        availableIn: ["pro", "premium", "lifetime"],
+        availableIn: ["pro"],
         quotaExceeded: true,
       });
     }
@@ -344,7 +345,7 @@ export const saveResume = async (req, res) => {
     const userTier = user.subscription?.tier || "free";
     const userStatus = user.subscription?.status || "expired";
 
-    // Find active subscription if user has premium tier
+    // Find active subscription if user has a paid tier
     let subscriptionInfo = {
       subscriptionId: null,
       createdWithTier: userTier,
@@ -352,16 +353,12 @@ export const saveResume = async (req, res) => {
       linkedAt: null,
     };
 
-    if (
-      ["one-time", "pro", "premium", "student", "lifetime"].includes(
-        userTier
-      ) &&
-      userStatus === "active"
-    ) {
+    if (["one-time", "pro"].includes(userTier) && userStatus === "active") {
       const activeSubscription = await Subscription.findOne({
         userId: user._id,
         tier: userTier,
         status: "active",
+        ...(userTier === "one-time" && {assignmentStatus: "pending"}),
       }).sort({createdAt: -1}); // Get the latest active subscription
 
       if (activeSubscription) {
@@ -465,12 +462,22 @@ export const getResumes = async (req, res) => {
     const userId = req.user._id || req.user.userId;
 
     const resumes = await Resume.find({userId})
-      .select("name resumeTitle description templateId createdAt updatedAt")
+      .select(
+        "name resumeTitle description templateId createdAt updatedAt subscriptionInfo"
+      )
       .sort({updatedAt: -1});
+
+    const resumesWithAccess = await Promise.all(
+      resumes.map(async (resume) => {
+        const resumeObject = resume.toObject();
+        resumeObject.access = await getResumeAccess(req.user, resume);
+        return resumeObject;
+      })
+    );
 
     res.json({
       message: "Resumes retrieved successfully",
-      resumes,
+      resumes: resumesWithAccess,
     });
   } catch (error) {
     console.error("Get resumes error:", error);
@@ -495,8 +502,10 @@ export const getResumeById = async (req, res) => {
       return res.status(404).json({error: "Resume not found"});
     }
 
-    // Return the resume object directly
-    res.json(resume);
+    const resumeObject = resume.toObject();
+    resumeObject.access = await getResumeAccess(req.user, resume);
+
+    res.json(resumeObject);
   } catch (error) {
     console.error("Get resume error:", error);
     res.status(500).json({

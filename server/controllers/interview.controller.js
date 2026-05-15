@@ -971,13 +971,13 @@ function convertResumeToText(resume) {
 
 function selectAIModel(user) {
   const tier = user.subscription?.tier || "free";
-  const paidTiers = ["one-time", "pro", "premium", "lifetime"];
+  const paidTiers = ["one-time", "pro"];
   return paidTiers.includes(tier) ? "gpt4o" : "gemini";
 }
 
 function isPremiumUser(user) {
   const tier = user.subscription?.tier || "free";
-  return ["pro", "premium", "lifetime"].includes(tier);
+  return tier === "pro";
 }
 
 /**

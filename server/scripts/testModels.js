@@ -121,14 +121,14 @@ async function runTests() {
       tier: "pro",
       plan: "monthly",
       status: "active",
-      amount: 149,
+      amount: 199,
       currency: "INR",
       startDate: new Date(),
       endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
     });
 
     const subCreated =
-      testSubscription.tier === "pro" && testSubscription.amount === 149;
+      testSubscription.tier === "pro" && testSubscription.amount === 199;
     if (logTest("Create subscription record", subCreated)) passedTests++;
 
     // Test 9: isActive method
@@ -188,14 +188,15 @@ async function runTests() {
     // ==================== HELPER METHODS TESTS ====================
     console.log("\n📋 Testing Helper Methods...\n");
 
-    // Test 13: Premium user methods
+    // Test 13: Pro user methods
     totalTests++;
-    testUser.subscription.tier = "premium";
+    testUser.subscription.tier = "pro";
+    testUser.subscription.plan = "monthly";
     const nowPremium = testUser.isPremiumUser();
     const unlimitedResumes =
       testUser.getUsageLimit("resumesPerMonth") === Infinity;
-    const premiumWorks = nowPremium && unlimitedResumes;
-    if (logTest("Premium tier gets unlimited limits", premiumWorks))
+    const proWorks = nowPremium && unlimitedResumes;
+    if (logTest("Pro tier gets unlimited limits", proWorks))
       passedTests++;
 
     // Test 14: Subscription expiry check

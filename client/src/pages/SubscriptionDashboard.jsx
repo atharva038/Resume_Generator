@@ -164,8 +164,6 @@ const SubscriptionDashboard = ({embedded = false}) => {
       free: "text-gray-600 dark:text-gray-300",
       "one-time": "text-blue-600",
       pro: "text-purple-600",
-      premium: "text-yellow-600",
-      lifetime: "text-pink-600",
     };
     return colors[tier] || "text-gray-600 dark:text-gray-300";
   };
@@ -179,12 +177,6 @@ const SubscriptionDashboard = ({embedded = false}) => {
         icon: <FaRocket />,
       },
       pro: {bg: "bg-purple-100", text: "text-purple-800", icon: <FaCrown />},
-      premium: {
-        bg: "bg-yellow-100",
-        text: "text-yellow-800",
-        icon: <FaCrown />,
-      },
-      lifetime: {bg: "bg-pink-100", text: "text-pink-800", icon: <FaCrown />},
     };
     return badges[tier] || badges.free;
   };
@@ -417,7 +409,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
                         </p>
                         <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
                           <li>🤖 Unlimited AI Requests</li>
-                          <li>📄 5 Resumes per month</li>
+                          <li>📄 Unlimited resumes</li>
                           <li>🎯 Premium AI Models (GPT-4o)</li>
                           <li>💎 Priority Support</li>
                         </ul>
@@ -429,7 +421,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
                         </p>
                         <p className="text-xs text-gray-500 dark:text-gray-500">
                           You'll be charged ₹
-                          {plan.plan === "monthly" ? "199" : "1999"} for the
+                          {plan.plan === "monthly" ? "199" : "1990"} for the
                           next billing cycle
                         </p>
                       </div>
@@ -718,7 +710,11 @@ const SubscriptionDashboard = ({embedded = false}) => {
               <p className="text-sm text-gray-600 dark:text-gray-300">
                 Current AI Model:{" "}
                 <span className="font-semibold">
-                  {aiConfig?.aiService?.toUpperCase() || "HYBRID"}
+                  {(
+                    aiConfig?.config?.aiModel ||
+                    aiConfig?.aiModel ||
+                    "hybrid"
+                  ).toUpperCase()}
                 </span>
               </p>
             </div>

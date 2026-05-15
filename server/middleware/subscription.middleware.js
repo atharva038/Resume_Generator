@@ -1,6 +1,14 @@
 import User from "../models/User.model.js";
 import Subscription from "../models/Subscription.model.js";
 
+const ACTIVE_TIERS = ["free", "one-time", "pro"];
+const ACTION_FIELD_MAP = {
+  edit: "canEdit",
+  download: "canDownload",
+  ai: "canUseAI",
+  view: "canView",
+};
+
 /**
  * Subscription Middleware
  * Handles subscription checks, usage limits, and tracking
@@ -27,6 +35,24 @@ export async function checkSubscription(req, res, next) {
         error: "User not found",
         message: "Your account could not be found. Please contact support.",
       });
+    }
+
+    await Subscription.updateMany(
+      {
+        userId,
+        status: "active",
+        endDate: {$lte: new Date()},
+      },
+      {$set: {status: "expired", autoRenew: false}}
+    );
+
+    if (!ACTIVE_TIERS.includes(user.subscription?.tier)) {
+      user.subscription.tier = "free";
+      user.subscription.plan = "free";
+      user.subscription.status = "active";
+      user.subscription.endDate = undefined;
+      user.subscription.autoRenew = false;
+      await user.save();
     }
 
     // Check subscription status and expiry
@@ -226,19 +252,7 @@ export function checkUsageLimit(limitType) {
             pro: {
               title: "Daily AI Extraction Limit Reached",
               message:
-                "You've used your 10 AI resume extractions for today. This limit resets at midnight!",
-              action: "Try Tomorrow",
-            },
-            premium: {
-              title: "Daily AI Extraction Limit Reached",
-              message:
-                "You've used your 10 AI resume extractions for today. This limit resets at midnight!",
-              action: "Try Tomorrow",
-            },
-            lifetime: {
-              title: "Daily AI Extraction Limit Reached",
-              message:
-                "You've used your 10 AI resume extractions for today. This limit resets at midnight!",
+                "You've used your 2 AI resume extractions for today. This limit resets at midnight!",
               action: "Try Tomorrow",
             },
           },
@@ -281,7 +295,7 @@ export function checkUsageLimit(limitType) {
 }
 
 /**
- * Require premium tier (pro, premium, or lifetime)
+ * Require paid tier (one-time or pro)
  */
 export async function requirePremium(req, res, next) {
   try {
@@ -293,7 +307,7 @@ export async function requirePremium(req, res, next) {
 
     if (!user.isPremiumUser()) {
       return res.status(403).json({
-        message: "This feature requires a premium subscription",
+        message: "This feature requires a paid subscription",
         tier: user.subscription?.tier || "free",
         upgradeRequired: true,
         upgradeUrl: "/pricing",
@@ -302,8 +316,8 @@ export async function requirePremium(req, res, next) {
 
     next();
   } catch (error) {
-    console.error("❌ Premium check error:", error.message);
-    res.status(500).json({message: "Failed to check premium status"});
+    console.error("❌ Paid subscription check error:", error.message);
+    res.status(500).json({message: "Failed to check subscription status"});
   }
 }
 
@@ -411,9 +425,6 @@ export function trackUsage(usageType) {
  * Free: 10 requests/hour
  * One-time: 20 requests/hour (during 21-day access)
  * Pro: 100 requests/hour
- * Premium: 500 requests/hour
- * Student: 100 requests/hour
- * Lifetime: 500 requests/hour
  */
 const rateLimitStore = new Map(); // Simple in-memory store (use Redis in production)
 
@@ -432,9 +443,6 @@ export function tierBasedRateLimit(req, res, next) {
       free: 10,
       "one-time": 20,
       pro: 100,
-      premium: 500,
-      student: 100,
-      lifetime: 500,
     };
 
     const limit = limits[tier] || limits.free;
@@ -521,23 +529,23 @@ export async function getUserUsageStats(req, res) {
       usage: {
         resumes: {
           used: user.usage?.resumesThisMonth || 0,
-          limit: user.getUsageLimit("resumes"),
-          unlimited: user.getUsageLimit("resumes") === Infinity,
+          limit: user.getUsageLimit("resumesPerMonth"),
+          unlimited: user.getUsageLimit("resumesPerMonth") === Infinity,
         },
         atsScans: {
           used: user.usage?.atsScansThisMonth || 0,
-          limit: user.getUsageLimit("atsScans"),
-          unlimited: user.getUsageLimit("atsScans") === Infinity,
+          limit: user.getUsageLimit("atsScansPerMonth"),
+          unlimited: user.getUsageLimit("atsScansPerMonth") === Infinity,
         },
         jobMatches: {
           used: user.usage?.jobMatchesToday || 0,
-          limit: user.getUsageLimit("jobMatches"),
-          unlimited: user.getUsageLimit("jobMatches") === Infinity,
+          limit: user.getUsageLimit("jobMatchesPerDay"),
+          unlimited: user.getUsageLimit("jobMatchesPerDay") === Infinity,
         },
         coverLetters: {
           used: user.usage?.coverLettersThisMonth || 0,
-          limit: user.getUsageLimit("coverLetters"),
-          unlimited: user.getUsageLimit("coverLetters") === Infinity,
+          limit: user.getUsageLimit("coverLettersPerMonth"),
+          unlimited: user.getUsageLimit("coverLettersPerMonth") === Infinity,
         },
       },
       subscription: {
@@ -554,13 +562,182 @@ export async function getUserUsageStats(req, res) {
   }
 }
 
+export async function getResumeAccess(user, resume) {
+  const baseAccess = {
+    canView: true,
+    canEdit: true,
+    canDownload: false,
+    canUseAI: false,
+    accessTier: "free",
+    lockReason: null,
+    upgradeRequired: false,
+  };
+
+  if (!user || !resume) {
+    return {
+      ...baseAccess,
+      canView: false,
+      canEdit: false,
+      lockReason: "Resume not found",
+      upgradeRequired: true,
+    };
+  }
+
+  if (user.role === "admin") {
+    return {
+      ...baseAccess,
+      canEdit: true,
+      canDownload: true,
+      canUseAI: true,
+      accessTier: "admin",
+    };
+  }
+
+  const now = new Date();
+  const userId = user._id || user.userId;
+  const resumeId = resume._id;
+
+  const activeSubscriptions = await Subscription.find({
+    userId,
+    status: "active",
+    $or: [{endDate: {$exists: false}}, {endDate: {$gt: now}}],
+  }).select("tier plan status endDate unlockedResumeId assignmentStatus");
+
+  const activePro = activeSubscriptions.find((sub) => sub.tier === "pro");
+  if (activePro) {
+    return {
+      ...baseAccess,
+      canEdit: true,
+      canDownload: true,
+      canUseAI: true,
+      accessTier: "pro",
+    };
+  }
+
+  const matchingOneTime = activeSubscriptions.find(
+    (sub) =>
+      sub.tier === "one-time" &&
+      sub.assignmentStatus === "assigned" &&
+      sub.unlockedResumeId?.toString() === resumeId.toString()
+  );
+
+  if (matchingOneTime) {
+    return {
+      ...baseAccess,
+      canEdit: true,
+      canDownload: true,
+      canUseAI: true,
+      accessTier: "one-time",
+    };
+  }
+
+  const hasActiveOneTime = activeSubscriptions.some(
+    (sub) => sub.tier === "one-time"
+  );
+
+  if (hasActiveOneTime) {
+    return {
+      ...baseAccess,
+      lockReason:
+        "Your one-time plan unlocks a different resume. Unlock this resume with another one-time purchase or upgrade to Pro.",
+      upgradeRequired: true,
+    };
+  }
+
+  const createdWithPaidPlan =
+    resume.subscriptionInfo?.createdWithSubscription &&
+    ["one-time", "pro"].includes(resume.subscriptionInfo?.createdWithTier);
+
+  if (createdWithPaidPlan) {
+    return {
+      ...baseAccess,
+      accessTier: resume.subscriptionInfo.createdWithTier,
+      lockReason:
+        "The subscription that unlocked this resume has expired. Renew one-time access for this resume or upgrade to Pro.",
+      upgradeRequired: true,
+    };
+  }
+
+  return {
+    ...baseAccess,
+    canDownload: true,
+    canUseAI: true,
+    accessTier: "free",
+  };
+}
+
+export function checkResumeActionAccess(action = "edit") {
+  return async (req, res, next) => {
+    try {
+      const user = req.user;
+      const resumeId = req.body.resumeId || req.params.id || req.params.resumeId;
+      const actionField = ACTION_FIELD_MAP[action] || ACTION_FIELD_MAP.edit;
+
+      if (!resumeId) {
+        return res.status(400).json({
+          error: "Resume ID required",
+          message: "Please provide a resume ID",
+        });
+      }
+
+      const Resume = (await import("../models/Resume.model.js")).default;
+      const resume = await Resume.findById(resumeId);
+
+      if (!resume) {
+        return res.status(404).json({
+          error: "Resume not found",
+          message: "The requested resume could not be found",
+        });
+      }
+
+      if (resume.userId.toString() !== user._id.toString()) {
+        return res.status(403).json({
+          error: "Access denied",
+          message: "You don't have permission to access this resume",
+        });
+      }
+
+      const access = await getResumeAccess(user, resume);
+
+      if (!access[actionField]) {
+        return res.status(403).json({
+          error: "Resume locked",
+          message:
+            access.lockReason ||
+            "This resume is locked for your current subscription.",
+          requiresUpgrade: true,
+          upgradeRequired: true,
+          access,
+          resumeAccess: access,
+          resumeId,
+        });
+      }
+
+      req.resume = resume;
+      req.resumeAccess = access;
+      return next();
+    } catch (error) {
+      console.error("❌ Resume access check error:", error);
+      return res.status(500).json({
+        error: "Access check failed",
+        message: "Failed to verify resume access. Please try again.",
+      });
+    }
+  };
+}
+
 /**
- * Check if the resume's subscription is still active
- * This middleware ensures that resumes created with one-time subscriptions
- * can only be used while that subscription is active
- * Pro users can access ALL resumes regardless of when they were created
+ * Backward-compatible alias for AI/edit access checks.
  */
 export async function checkResumeSubscriptionAccess(req, res, next) {
+  return checkResumeActionAccess("ai")(req, res, next);
+}
+
+/**
+ * Legacy implementation retained in git history.
+ */
+/*
+export async function checkResumeSubscriptionAccessLegacy(req, res, next) {
   try {
     const user = req.user;
 
@@ -602,9 +779,9 @@ export async function checkResumeSubscriptionAccess(req, res, next) {
       userStatus: user.subscription?.status || "N/A",
     });
 
-    // PRO/PREMIUM/LIFETIME USERS: Can access ALL resumes (even old resumes without tracking)
+    // PRO USERS: Can access ALL resumes (even old resumes without tracking)
     if (
-      ["pro", "premium", "lifetime"].includes(user.subscription?.tier) &&
+      user.subscription?.tier === "pro" &&
       user.subscription?.status === "active"
     ) {
       console.log(
@@ -639,9 +816,9 @@ export async function checkResumeSubscriptionAccess(req, res, next) {
       return next();
     }
 
-    // ONE-TIME/PRO/OTHER PREMIUM USERS: Check subscription status again for safety
+    // PRO USERS: Check subscription status again for safety
     if (
-      ["pro", "premium", "lifetime"].includes(user.subscription?.tier) &&
+      user.subscription?.tier === "pro" &&
       user.subscription?.status === "active"
     ) {
       console.log(
@@ -695,28 +872,6 @@ export async function checkResumeSubscriptionAccess(req, res, next) {
       return next();
     }
 
-    // STUDENT/OTHER PREMIUM TIERS: Check if user still has that tier active
-    if (["student"].includes(resume.subscriptionInfo?.createdWithTier)) {
-      if (
-        user.subscription?.tier === resume.subscriptionInfo.createdWithTier &&
-        user.subscription?.status === "active"
-      ) {
-        console.log(
-          `✅ ${resume.subscriptionInfo.createdWithTier.toUpperCase()} subscription active - access granted`
-        );
-        req.resume = resume;
-        return next();
-      } else {
-        return res.status(403).json({
-          error: "Subscription required",
-          message: `This resume requires an active ${resume.subscriptionInfo.createdWithTier} subscription. Please upgrade to continue.`,
-          requiresUpgrade: true,
-          resumeTier: resume.subscriptionInfo.createdWithTier,
-          suggestedAction: "upgrade_to_pro",
-        });
-      }
-    }
-
     // DEFAULT: If we reach here, deny access
     console.log("❌ No valid subscription found for resume access");
     return res.status(403).json({
@@ -734,6 +889,7 @@ export async function checkResumeSubscriptionAccess(req, res, next) {
     });
   }
 }
+*/
 
 export default {
   checkSubscription,
@@ -744,5 +900,7 @@ export default {
   trackUsage,
   tierBasedRateLimit,
   getUserUsageStats,
+  getResumeAccess,
+  checkResumeActionAccess,
   checkResumeSubscriptionAccess,
 };

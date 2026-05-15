@@ -63,9 +63,9 @@ async function runTests() {
     test("PRICING configuration exists", () => {
       if (!paymentService.PRICING) throw new Error("PRICING not exported");
       if (!paymentService.PRICING.free) throw new Error("FREE tier missing");
+      if (!paymentService.PRICING["one-time"])
+        throw new Error("ONE-TIME tier missing");
       if (!paymentService.PRICING.pro) throw new Error("PRO tier missing");
-      if (!paymentService.PRICING.premium)
-        throw new Error("PREMIUM tier missing");
     });
 
     test("PRICING has correct structure", () => {
@@ -74,19 +74,12 @@ async function runTests() {
 
       const proPricing = paymentService.PRICING.pro;
       if (!proPricing.monthly) throw new Error("PRO monthly price missing");
-      if (proPricing.monthly !== 149)
-        throw new Error("PRO monthly should be ₹149");
+      if (proPricing.monthly.amount !== 199)
+        throw new Error("PRO monthly should be ₹199");
     });
 
-    test("All 7 tiers are defined", () => {
-      const tiers = [
-        "free",
-        "one-time",
-        "pro",
-        "premium",
-        "student",
-        "lifetime",
-      ];
+    test("All active tiers are defined", () => {
+      const tiers = ["free", "one-time", "pro"];
       tiers.forEach((tier) => {
         if (!paymentService.PRICING[tier]) {
           throw new Error(`${tier} tier missing`);
@@ -106,7 +99,7 @@ async function runTests() {
         name: "AI Test User",
         subscription: {
           tier: "free",
-          plan: "lifetime",
+          plan: "free",
           status: "active",
         },
       });
@@ -116,9 +109,9 @@ async function runTests() {
     test("getAIServiceInfo() returns config", () => {
       const info = aiRouter.getAIServiceInfo(testUser);
       if (!info.tier) throw new Error("Missing tier");
-      if (!info.defaultModel) throw new Error("Missing defaultModel");
+      if (!info.aiModel) throw new Error("Missing aiModel");
       if (info.tier !== "free") throw new Error("Expected free tier");
-      if (info.defaultModel !== "gemini")
+      if (info.aiModel !== "gemini")
         throw new Error("Free tier should use Gemini");
     });
 
@@ -127,20 +120,21 @@ async function runTests() {
       async () => {
         // We can't actually call the AI without API credits, but we can test the logic
         const info = aiRouter.getAIServiceInfo(testUser);
-        if (info.defaultModel !== "gemini") {
+        if (info.aiModel !== "gemini") {
           throw new Error("Free tier should default to Gemini");
         }
       }
     );
 
-    // Test premium user
-    await asyncTest("Premium user gets GPT-4o", async () => {
-      testUser.subscription.tier = "premium";
+    // Test one-time user
+    await asyncTest("One-time user gets GPT-4o", async () => {
+      testUser.subscription.tier = "one-time";
+      testUser.subscription.plan = "one-time";
       await testUser.save();
 
       const info = aiRouter.getAIServiceInfo(testUser);
-      if (info.defaultModel !== "gpt4o") {
-        throw new Error("Premium tier should use GPT-4o");
+      if (info.aiModel !== "gpt4o") {
+        throw new Error("One-time tier should use GPT-4o");
       }
     });
 
@@ -150,7 +144,7 @@ async function runTests() {
       await testUser.save();
 
       const info = aiRouter.getAIServiceInfo(testUser);
-      if (info.defaultModel !== "hybrid") {
+      if (info.aiModel !== "hybrid") {
         throw new Error("Pro tier should use Hybrid");
       }
       if (!info.isHybrid) {
@@ -179,20 +173,21 @@ async function runTests() {
       testUser.usage.resumesThisMonth = 1; // Free tier limit
       await testUser.save();
 
-      const hasReached = testUser.hasReachedLimit("resumes");
+      const hasReached = testUser.hasReachedLimit("resumesPerMonth");
       if (!hasReached) {
         throw new Error("Free tier should have reached 1 resume limit");
       }
     });
 
-    await asyncTest("Premium users have unlimited limits", async () => {
-      testUser.subscription.tier = "premium";
+    await asyncTest("Pro users have unlimited limits", async () => {
+      testUser.subscription.tier = "pro";
+      testUser.subscription.plan = "monthly";
       testUser.usage.resumesThisMonth = 100;
       await testUser.save();
 
-      const hasReached = testUser.hasReachedLimit("resumes");
+      const hasReached = testUser.hasReachedLimit("resumesPerMonth");
       if (hasReached) {
-        throw new Error("Premium tier should have unlimited resumes");
+        throw new Error("Pro tier should have unlimited resumes");
       }
     });
 
@@ -221,7 +216,7 @@ async function runTests() {
         tier: "pro",
         plan: "monthly",
         status: "active",
-        amount: 149,
+        amount: 199,
         currency: "INR",
         paymentMethod: "razorpay",
         paymentId: "pay_test_123",
@@ -257,20 +252,26 @@ async function runTests() {
       testUser.subscription.tier = "free";
       await testUser.save();
 
-      const canAccess = testUser.canAccessFeature("coverLetters");
+      const canAccess = testUser.canAccessFeature("cover-letter");
       if (canAccess) {
         throw new Error("Free tier should not access cover letters");
       }
     });
 
-    await asyncTest("Premium tier can access all features", async () => {
-      testUser.subscription.tier = "premium";
+    await asyncTest("Pro tier can access paid features", async () => {
+      testUser.subscription.tier = "pro";
+      testUser.subscription.plan = "monthly";
       await testUser.save();
 
-      const features = ["resumes", "atsScans", "jobMatches", "coverLetters"];
+      const features = [
+        "unlimited-resumes",
+        "ats-score",
+        "job-match",
+        "cover-letter",
+      ];
       for (const feature of features) {
         if (!testUser.canAccessFeature(feature)) {
-          throw new Error(`Premium should access ${feature}`);
+          throw new Error(`Pro should access ${feature}`);
         }
       }
     });
@@ -279,14 +280,14 @@ async function runTests() {
       testUser.subscription.tier = "pro";
       await testUser.save();
 
-      const resumeLimit = testUser.getUsageLimit("resumes");
-      const jobMatchLimit = testUser.getUsageLimit("jobMatches");
+      const resumeLimit = testUser.getUsageLimit("resumesPerMonth");
+      const jobMatchLimit = testUser.getUsageLimit("jobMatchesPerDay");
 
       if (resumeLimit !== Infinity) {
         throw new Error("Pro tier should have unlimited resumes");
       }
-      if (jobMatchLimit !== 10) {
-        throw new Error("Pro tier should have 10 job matches/day limit");
+      if (jobMatchLimit !== 0) {
+        throw new Error("Pro tier should have job matching disabled while hidden");
       }
     });
 
@@ -350,7 +351,7 @@ async function runTests() {
           tier: "pro",
           plan: "monthly",
           status: "invalid_status", // Should fail
-          amount: 149,
+          amount: 199,
         });
         await invalidSub.save();
         throw new Error("Should have failed validation");
