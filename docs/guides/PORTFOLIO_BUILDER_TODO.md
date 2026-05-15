@@ -27,29 +27,33 @@ Use this as the implementation tracker. Tick items only after the code is actual
 - [x] Create `PortfolioEditor` page.
 - [x] Create `PortfolioPreview` page.
 - [x] Create `PublicPortfolio` page.
-- [ ] Create portfolio layout/editor components.
-- [ ] Create theme registry.
-- [ ] Create portfolio data adapter.
+- [x] Create portfolio layout/editor components.
+- [x] Create theme registry.
+- [x] Create portfolio data adapter.
 
 ## Phase 3: MVP Themes
 
-- [ ] Build Minimal Developer theme.
-- [ ] Build Modern Fresher theme.
-- [ ] Build Professional Corporate theme.
+- [x] Build Minimal Developer theme.
+- [x] Build Modern Fresher theme.
+- [x] Build Professional Corporate theme.
 - [x] Add theme picker UI.
-- [ ] Add desktop/mobile preview mode.
+- [x] Add desktop/mobile preview mode.
 - [x] Add empty-state handling for missing sections.
 - [x] Add public not-found/unpublished states.
 - [x] Add resume download CTA.
 - [x] Add social/contact/project click tracking.
+- [x] Render portfolio sections using saved `sectionOrder`.
+- [x] Add editor controls to reorder public sections.
+- [x] Add custom section editing and theme rendering.
+- [x] Make portfolio-owned section arrays authoritative after copy from resume.
 
 ## Phase 4: AI Helpers
 
-- [ ] Add AI endpoint for portfolio about section.
-- [ ] Add AI endpoint for project description improvement.
-- [ ] Add AI endpoint for SEO metadata.
-- [ ] Add AI buttons in editor.
-- [ ] Track AI usage and respect existing subscription limits.
+- [x] Add AI endpoint for portfolio about section.
+- [x] Add AI endpoint for project description improvement.
+- [x] Add AI endpoint for SEO metadata.
+- [x] Add AI buttons in editor.
+- [x] Track AI usage and respect existing subscription limits.
 
 ## Phase 5: Monetization And Limits
 

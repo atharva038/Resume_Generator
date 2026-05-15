@@ -130,6 +130,22 @@ function App() {
           <Routes>
             <Route path="/pdf-render/:token" element={<PdfRender />} />
             <Route path="/u/:slug" element={<PublicPortfolio />} />
+            <Route
+              path="/portfolio/:id/edit"
+              element={
+                <ProtectedRoute>
+                  <PortfolioEditor />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/portfolio/:id/preview"
+              element={
+                <ProtectedRoute>
+                  <PortfolioPreview />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
               {/* Protected Routes - Require Authentication */}
@@ -219,22 +235,6 @@ function App() {
               element={
                 <ProtectedRoute>
                   <PortfolioCreate />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="portfolio/:id/edit"
-              element={
-                <ProtectedRoute>
-                  <PortfolioEditor />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="portfolio/:id/preview"
-              element={
-                <ProtectedRoute>
-                  <PortfolioPreview />
                 </ProtectedRoute>
               }
             />

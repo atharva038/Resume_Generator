@@ -138,6 +138,70 @@ const portfolioSchema = new mongoose.Schema(
       type: [socialLinkSchema],
       default: [],
     },
+    skills: {
+      type: [
+        {
+          category: String,
+          items: [String],
+        },
+      ],
+      default: [],
+    },
+    experience: {
+      type: [
+        {
+          company: String,
+          title: String,
+          location: String,
+          startDate: String,
+          endDate: String,
+          current: Boolean,
+          bullets: [String],
+        },
+      ],
+      default: [],
+    },
+    education: {
+      type: [
+        {
+          institution: String,
+          degree: String,
+          field: String,
+          location: String,
+          startDate: String,
+          endDate: String,
+          gpa: String,
+          bullets: [String],
+        },
+      ],
+      default: [],
+    },
+    certifications: {
+      type: [
+        {
+          name: String,
+          issuer: String,
+          date: String,
+          credentialId: String,
+          link: String,
+        },
+      ],
+      default: [],
+    },
+    achievements: {
+      type: [String],
+      default: [],
+    },
+    customSections: {
+      type: [
+        {
+          id: String,
+          title: String,
+          items: [String],
+        },
+      ],
+      default: [],
+    },
     sections: {
       showAbout: {
         type: Boolean,
@@ -167,6 +231,10 @@ const portfolioSchema = new mongoose.Schema(
         type: Boolean,
         default: true,
       },
+      showCustomSections: {
+        type: Boolean,
+        default: true,
+      },
       showContact: {
         type: Boolean,
         default: true,
@@ -182,6 +250,7 @@ const portfolioSchema = new mongoose.Schema(
         "education",
         "certifications",
         "achievements",
+        "customSections",
         "contact",
       ],
     },

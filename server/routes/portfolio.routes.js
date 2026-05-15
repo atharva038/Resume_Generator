@@ -1,14 +1,22 @@
 import express from "express";
 import {authenticateToken} from "../middleware/auth.middleware.js";
-import {checkSubscription} from "../middleware/subscription.middleware.js";
+import {
+  checkSubscription,
+  checkUsageLimit,
+} from "../middleware/subscription.middleware.js";
+import {aiLimiter} from "../middleware/rateLimiter.middleware.js";
+import {checkAIQuota} from "../middleware/aiUsageTracker.middleware.js";
 import {
   createPortfolioFromResume,
   createPortfolioProject,
   deletePortfolio,
   deletePortfolioProject,
+  generatePortfolioAbout,
+  generatePortfolioSeo,
   getPortfolioById,
   getPortfolios,
   getPublicPortfolio,
+  improvePortfolioProjectDescription,
   publishPortfolio,
   trackContactClick,
   trackProjectClick,
@@ -50,6 +58,35 @@ router.post(
   authenticateToken,
   checkSubscription,
   unpublishPortfolio
+);
+
+// Protected AI helper routes.
+router.post(
+  "/:id/ai/about",
+  authenticateToken,
+  checkSubscription,
+  checkUsageLimit("aiGenerationsPerMonth"),
+  aiLimiter,
+  checkAIQuota,
+  generatePortfolioAbout
+);
+router.post(
+  "/:id/ai/project-description",
+  authenticateToken,
+  checkSubscription,
+  checkUsageLimit("aiGenerationsPerMonth"),
+  aiLimiter,
+  checkAIQuota,
+  improvePortfolioProjectDescription
+);
+router.post(
+  "/:id/ai/seo",
+  authenticateToken,
+  checkSubscription,
+  checkUsageLimit("aiGenerationsPerMonth"),
+  aiLimiter,
+  checkAIQuota,
+  generatePortfolioSeo
 );
 
 // Protected project routes.

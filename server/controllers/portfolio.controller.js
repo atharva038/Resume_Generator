@@ -2,6 +2,9 @@ import mongoose from "mongoose";
 import Portfolio from "../models/Portfolio.model.js";
 import PortfolioProject from "../models/PortfolioProject.model.js";
 import Resume from "../models/Resume.model.js";
+import User from "../models/User.model.js";
+import {chatCompletion} from "../services/openai.service.js";
+import {trackAIUsage} from "../middleware/aiUsageTracker.middleware.js";
 
 const DEFAULT_SECTION_ORDER = [
   "about",
@@ -11,6 +14,7 @@ const DEFAULT_SECTION_ORDER = [
   "education",
   "certifications",
   "achievements",
+  "customSections",
   "contact",
 ];
 
@@ -145,12 +149,23 @@ const getOwnedPortfolio = async (portfolioId, userId) => {
 };
 
 const getPortfolioWithProjects = async (portfolio) => {
-  const projects = await PortfolioProject.find({
-    portfolioId: portfolio._id,
-  }).sort({order: 1, createdAt: 1});
+  const [resume, projects] = await Promise.all([
+    portfolio.resumeId
+      ? Resume.findOne({
+          _id: portfolio.resumeId,
+          userId: portfolio.userId,
+        }).select(
+          "name summary skills experience education certifications achievements customSections"
+        )
+      : null,
+    PortfolioProject.find({
+      portfolioId: portfolio._id,
+    }).sort({order: 1, createdAt: 1}),
+  ]);
 
   return {
     portfolio,
+    resume: buildPortfolioResumeSnapshot(portfolio, resume),
     projects,
   };
 };
@@ -169,6 +184,7 @@ const handleDuplicateSlug = (error, res) => {
 const buildPublicPayload = (portfolio, resume, projects) => {
   const portfolioObject = portfolio.toObject();
   const resumeObject = resume?.toObject ? resume.toObject() : resume;
+  const portfolioResume = buildPortfolioResumeSnapshot(portfolioObject, resumeObject);
 
   return {
     portfolio: {
@@ -201,20 +217,105 @@ const buildPublicPayload = (portfolio, resume, projects) => {
         showPhone: portfolioObject.contact?.showPhone,
       },
     },
-    resume: resumeObject
-      ? {
-          name: resumeObject.name,
-          summary: resumeObject.summary,
-          skills: resumeObject.skills,
-          experience: resumeObject.experience,
-          education: resumeObject.education,
-          certifications: resumeObject.certifications,
-          achievements: resumeObject.achievements,
-          customSections: resumeObject.customSections,
-        }
-      : null,
+    resume: portfolioResume,
     projects,
   };
+};
+
+const usePortfolioArrayOrResume = (portfolioValue, resumeValue) => {
+  return Array.isArray(portfolioValue) ? portfolioValue : resumeValue || [];
+};
+
+const buildPortfolioResumeSnapshot = (portfolio, resume) => {
+  const portfolioObject = portfolio?.toObject ? portfolio.toObject() : portfolio;
+  const resumeObject = resume?.toObject ? resume.toObject() : resume;
+
+  return {
+    name: resumeObject?.name || portfolioObject?.title || "",
+    summary: portfolioObject?.about || resumeObject?.summary || "",
+    skills: usePortfolioArrayOrResume(
+      portfolioObject?.skills,
+      resumeObject?.skills
+    ),
+    experience: usePortfolioArrayOrResume(
+      portfolioObject?.experience,
+      resumeObject?.experience
+    ),
+    education: usePortfolioArrayOrResume(
+      portfolioObject?.education,
+      resumeObject?.education
+    ),
+    certifications: usePortfolioArrayOrResume(
+      portfolioObject?.certifications,
+      resumeObject?.certifications
+    ),
+    achievements: usePortfolioArrayOrResume(
+      portfolioObject?.achievements,
+      resumeObject?.achievements
+    ),
+    customSections: usePortfolioArrayOrResume(
+      portfolioObject?.customSections,
+      resumeObject?.customSections
+    ),
+  };
+};
+
+const parseJsonResponse = (text) => {
+  const trimmed = String(text || "").trim();
+  const withoutFence = trimmed
+    .replace(/^```(?:json)?/i, "")
+    .replace(/```$/i, "")
+    .trim();
+  const jsonMatch = withoutFence.match(/\{[\s\S]*\}/);
+
+  return JSON.parse(jsonMatch ? jsonMatch[0] : withoutFence);
+};
+
+const getPortfolioAIContext = async (portfolio) => {
+  const [resume, projects] = await Promise.all([
+    portfolio.resumeId
+      ? Resume.findOne({
+          _id: portfolio.resumeId,
+          userId: portfolio.userId,
+        })
+      : null,
+    PortfolioProject.find({
+      portfolioId: portfolio._id,
+      userId: portfolio.userId,
+    }).sort({order: 1, createdAt: 1}),
+  ]);
+
+  return {resume, projects};
+};
+
+const trackPortfolioAIUsage = async ({
+  req,
+  startTime,
+  tokenUsage,
+  status = "success",
+  errorMessage = null,
+}) => {
+  const userId = getUserId(req);
+
+  await trackAIUsage(
+    userId,
+    "ai_suggestions",
+    tokenUsage?.totalTokens || 0,
+    Date.now() - startTime,
+    status,
+    errorMessage,
+    "openai",
+    "gpt4o"
+  );
+
+  if (status === "success") {
+    await User.findByIdAndUpdate(userId, {
+      $inc: {
+        "usage.aiGenerationsUsed": 1,
+        "usage.aiGenerationsThisMonth": 1,
+      },
+    });
+  }
 };
 
 export const createPortfolioFromResume = async (req, res) => {
@@ -253,6 +354,12 @@ export const createPortfolioFromResume = async (req, res) => {
         showPhone: false,
       },
       socialLinks: getSocialLinksFromResume(resume),
+      skills: resume.skills || [],
+      experience: resume.experience || [],
+      education: resume.education || [],
+      certifications: resume.certifications || [],
+      achievements: resume.achievements || [],
+      customSections: resume.customSections || [],
       seo: {
         title: `${resume.name} | ${professionalTitle || "Portfolio"}`,
         description: resume.summary || "",
@@ -364,6 +471,12 @@ export const updatePortfolio = async (req, res) => {
       fontPreset,
       contact,
       socialLinks,
+      skills,
+      experience,
+      education,
+      certifications,
+      achievements,
+      customSections,
       sections,
       sectionOrder,
       seo,
@@ -421,6 +534,21 @@ export const updatePortfolio = async (req, res) => {
     if (socialLinks !== undefined) {
       portfolio.socialLinks = socialLinks;
     }
+
+    const portfolioSectionUpdates = {
+      skills,
+      experience,
+      education,
+      certifications,
+      achievements,
+      customSections,
+    };
+
+    Object.entries(portfolioSectionUpdates).forEach(([key, value]) => {
+      if (value !== undefined) {
+        portfolio[key] = value;
+      }
+    });
 
     if (sections !== undefined) {
       portfolio.sections = {
@@ -842,6 +970,212 @@ export const trackProjectClick = async (req, res) => {
     console.error("Track project click error:", error);
     res.status(500).json({
       error: error.message || "Failed to track project click",
+    });
+  }
+};
+
+export const generatePortfolioAbout = async (req, res) => {
+  const startTime = Date.now();
+
+  try {
+    const userId = getUserId(req);
+    const portfolio = await getOwnedPortfolio(req.params.id, userId);
+
+    if (!portfolio) {
+      return res.status(404).json({error: "Portfolio not found"});
+    }
+
+    const {resume, projects} = await getPortfolioAIContext(portfolio);
+    const targetRole = req.body?.targetRole || portfolio.professionalTitle || "";
+    const systemPrompt =
+      "You are an expert career branding writer. Write concise, honest portfolio copy using only the supplied facts. Do not invent employers, metrics, or experience.";
+    const userPrompt = `Create a polished portfolio About section.
+
+Target role: ${targetRole || "Not specified"}
+Portfolio title: ${portfolio.title}
+Professional title: ${portfolio.professionalTitle}
+Existing about: ${portfolio.about}
+
+Resume:
+${JSON.stringify(resume || {}, null, 2)}
+
+Portfolio projects:
+${JSON.stringify(projects || [], null, 2)}
+
+Rules:
+- 90 to 140 words.
+- Professional but human.
+- Mention strongest skills/projects if supported by data.
+- No markdown.
+- Return only the final about text.`;
+
+    const result = await chatCompletion(systemPrompt, userPrompt, {
+      temperature: 0.65,
+      maxTokens: 500,
+    });
+
+    await trackPortfolioAIUsage({
+      req,
+      startTime,
+      tokenUsage: result.tokenUsage,
+    });
+
+    res.json({
+      message: "Portfolio about generated successfully",
+      about: result.text.trim(),
+    });
+  } catch (error) {
+    console.error("Generate portfolio about error:", error);
+    await trackPortfolioAIUsage({
+      req,
+      startTime,
+      status: "error",
+      errorMessage: error.message,
+    });
+    res.status(500).json({
+      error: error.message || "Failed to generate portfolio about section",
+    });
+  }
+};
+
+export const improvePortfolioProjectDescription = async (req, res) => {
+  const startTime = Date.now();
+
+  try {
+    const userId = getUserId(req);
+    const portfolio = await getOwnedPortfolio(req.params.id, userId);
+
+    if (!portfolio) {
+      return res.status(404).json({error: "Portfolio not found"});
+    }
+
+    const project =
+      req.body?.projectId && mongoose.Types.ObjectId.isValid(req.body.projectId)
+        ? await PortfolioProject.findOne({
+            _id: req.body.projectId,
+            portfolioId: portfolio._id,
+            userId,
+          })
+        : req.body?.project;
+
+    if (!project) {
+      return res.status(400).json({
+        error: "Project data or projectId is required",
+      });
+    }
+
+    const systemPrompt =
+      "You are an expert portfolio writer. Improve project descriptions using only supplied facts. Return strict JSON.";
+    const userPrompt = `Improve this portfolio project for recruiter readability.
+
+Project:
+${JSON.stringify(project, null, 2)}
+
+Return ONLY valid JSON:
+{
+  "shortDescription": "35-55 words",
+  "longDescription": "80-120 words",
+  "highlights": ["specific highlight 1", "specific highlight 2", "specific highlight 3"]
+}
+
+Rules:
+- Do not invent metrics, users, companies, or features.
+- Keep language concrete and professional.
+- Use the existing tech stack when available.`;
+
+    const result = await chatCompletion(systemPrompt, userPrompt, {
+      temperature: 0.55,
+      maxTokens: 700,
+    });
+    const improved = parseJsonResponse(result.text);
+
+    await trackPortfolioAIUsage({
+      req,
+      startTime,
+      tokenUsage: result.tokenUsage,
+    });
+
+    res.json({
+      message: "Project description improved successfully",
+      project: improved,
+    });
+  } catch (error) {
+    console.error("Improve portfolio project error:", error);
+    await trackPortfolioAIUsage({
+      req,
+      startTime,
+      status: "error",
+      errorMessage: error.message,
+    });
+    res.status(500).json({
+      error: error.message || "Failed to improve project description",
+    });
+  }
+};
+
+export const generatePortfolioSeo = async (req, res) => {
+  const startTime = Date.now();
+
+  try {
+    const userId = getUserId(req);
+    const portfolio = await getOwnedPortfolio(req.params.id, userId);
+
+    if (!portfolio) {
+      return res.status(404).json({error: "Portfolio not found"});
+    }
+
+    const {resume, projects} = await getPortfolioAIContext(portfolio);
+    const systemPrompt =
+      "You are an SEO assistant for personal portfolio pages. Return strict JSON with concise metadata.";
+    const userPrompt = `Generate SEO metadata for this portfolio.
+
+Portfolio:
+${JSON.stringify(portfolio, null, 2)}
+
+Resume:
+${JSON.stringify(resume || {}, null, 2)}
+
+Projects:
+${JSON.stringify(projects || [], null, 2)}
+
+Return ONLY valid JSON:
+{
+  "title": "maximum 60 characters",
+  "description": "maximum 155 characters",
+  "keywords": ["keyword 1", "keyword 2", "keyword 3", "keyword 4", "keyword 5"]
+}
+
+Rules:
+- Include the person's name when available.
+- Avoid keyword stuffing.
+- Keep it recruiter/search friendly.`;
+
+    const result = await chatCompletion(systemPrompt, userPrompt, {
+      temperature: 0.35,
+      maxTokens: 450,
+    });
+    const seo = parseJsonResponse(result.text);
+
+    await trackPortfolioAIUsage({
+      req,
+      startTime,
+      tokenUsage: result.tokenUsage,
+    });
+
+    res.json({
+      message: "Portfolio SEO generated successfully",
+      seo,
+    });
+  } catch (error) {
+    console.error("Generate portfolio SEO error:", error);
+    await trackPortfolioAIUsage({
+      req,
+      startTime,
+      status: "error",
+      errorMessage: error.message,
+    });
+    res.status(500).json({
+      error: error.message || "Failed to generate portfolio SEO",
     });
   }
 };

@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
 import {Helmet} from "react-helmet-async";
 import {portfolioAPI} from "@/api/portfolio.api";
-import PortfolioPublicView from "@/components/portfolio/PortfolioPublicView";
+import PortfolioThemeRenderer from "@/components/portfolio/PortfolioThemeRenderer";
 
 const PublicPortfolio = () => {
   const {slug} = useParams();
@@ -83,10 +83,11 @@ const PublicPortfolio = () => {
         <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={description} />
       </Helmet>
-      <PortfolioPublicView
+      <PortfolioThemeRenderer
         portfolio={portfolio}
         resume={resume}
         projects={projects}
+        mode="public"
         onContactClick={trackContactClick}
         onProjectClick={trackProjectClick}
         onResumeClick={trackResumeClick}

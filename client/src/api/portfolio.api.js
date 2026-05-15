@@ -24,6 +24,12 @@ export const portfolioAPI = {
     api.post(`/portfolio/public/${slug}/contact-click`),
   trackProjectClick: (slug) =>
     api.post(`/portfolio/public/${slug}/project-click`),
+
+  generateAbout: (portfolioId, data = {}) =>
+    api.post(`/portfolio/${portfolioId}/ai/about`, data),
+  improveProjectDescription: (portfolioId, data) =>
+    api.post(`/portfolio/${portfolioId}/ai/project-description`, data),
+  generateSeo: (portfolioId) => api.post(`/portfolio/${portfolioId}/ai/seo`),
 };
 
 export default portfolioAPI;
