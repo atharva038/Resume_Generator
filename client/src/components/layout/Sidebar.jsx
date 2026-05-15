@@ -8,6 +8,7 @@ import {
   Target,
   Mail,
   LayoutDashboard,
+  Globe2,
   ChevronLeft,
   ChevronRight,
   Shield,
@@ -66,6 +67,13 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
       path: "/my-resumes",
       icon: LayoutDashboard,
       description: "Manage your resumes",
+    },
+    {
+      name: "Portfolios",
+      path: "/portfolio",
+      icon: Globe2,
+      description: "Manage portfolio websites",
+      requiresAuth: true,
     },
     // Temporarily disabled - Advanced Analytics
     // {

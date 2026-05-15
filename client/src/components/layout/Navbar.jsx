@@ -10,6 +10,7 @@ import {
   User,
   LogOut,
   LayoutDashboard,
+  Globe2,
   Tag,
   UserCircle,
   ArrowRight,
@@ -90,6 +91,16 @@ const Navbar = ({ toggleSidebar, isSidebarOpen }) => {
                 >
                   <LayoutDashboard className="w-4 h-4" />
                   <span>My Resumes</span>
+                </BlockableLink>
+
+                {/* Portfolios */}
+                <BlockableLink
+                  to="/portfolio"
+                  className="hidden lg:flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-lg transition-all duration-200"
+                  title="My Portfolios"
+                >
+                  <Globe2 className="w-4 h-4" />
+                  <span>Portfolios</span>
                 </BlockableLink>
 
                 {/* Profile */}

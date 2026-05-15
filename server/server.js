@@ -19,6 +19,7 @@ import voiceRoutes from "./routes/voice.routes.js";
 import subscriptionRoutes from "./routes/subscription.routes.js";
 import {handleWebhook as handleSubscriptionWebhook} from "./controllers/subscription.controller.js";
 import interviewRoutes from "./routes/interview.routes.js";
+import portfolioRoutes from "./routes/portfolio.routes.js";
 import {apiLimiter} from "./middleware/rateLimiter.middleware.js";
 import {
   securityHeaders,
@@ -214,6 +215,7 @@ app.use("/api/feedback", feedbackRoutes);
 app.use("/api/voice", voiceRoutes); // Voice transcription routes
 app.use("/api/subscription", subscriptionRoutes); // Subscription & payment routes
 app.use("/api/interview", interviewRoutes); // AI Interview routes
+app.use("/api/portfolio", portfolioRoutes); // Portfolio builder routes
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {
