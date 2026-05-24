@@ -1427,6 +1427,73 @@ const PortfolioEditor = () => {
                   </button>
                 ))}
               </div>
+
+              {/* ─── Accent colour customizer ─── */}
+              {(() => {
+                const activeTheme = portfolioThemeList.find(
+                  (t) => t.id === (form.themeId || "minimalDeveloper")
+                );
+                const presets = activeTheme?.accentPresets || [];
+                const currentAccent = form.themeAccent || "";
+
+                return (
+                  <div className="mt-5 border-t border-gray-100 dark:border-zinc-800 pt-4">
+                    <p className="mb-2 text-sm font-semibold">
+                      Accent colour
+                    </p>
+                    <div className="flex flex-wrap items-center gap-2">
+                      {presets.map((hex) => (
+                        <button
+                          key={hex}
+                          type="button"
+                          title={hex}
+                          onClick={() => updateField("themeAccent", hex)}
+                          style={{background: hex}}
+                          className={`h-7 w-7 rounded-full border-2 transition-transform hover:scale-110 ${
+                            currentAccent === hex
+                              ? "border-gray-900 dark:border-white scale-110 ring-2 ring-offset-1 ring-gray-400"
+                              : "border-transparent"
+                          }`}
+                        />
+                      ))}
+                      {/* Custom colour input */}
+                      <label
+                        className="relative h-7 w-7 cursor-pointer overflow-hidden rounded-full border-2 border-dashed border-gray-400 dark:border-zinc-600 hover:border-gray-600 transition-colors"
+                        title="Custom colour"
+                      >
+                        <input
+                          type="color"
+                          value={currentAccent || (presets[0] ?? "#6366f1")}
+                          onChange={(e) =>
+                            updateField("themeAccent", e.target.value)
+                          }
+                          className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                        />
+                        <span
+                          className="flex h-full w-full items-center justify-center text-xs font-bold text-gray-500 dark:text-zinc-400"
+                          aria-hidden="true"
+                        >
+                          +
+                        </span>
+                      </label>
+                      {currentAccent && (
+                        <button
+                          type="button"
+                          onClick={() => updateField("themeAccent", "")}
+                          className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 underline"
+                        >
+                          Reset
+                        </button>
+                      )}
+                    </div>
+                    {currentAccent && (
+                      <p className="mt-2 text-xs text-gray-400 dark:text-gray-500 font-mono">
+                        {currentAccent}
+                      </p>
+                    )}
+                  </div>
+                );
+              })()}
             </CollapsiblePanel>
 
             <CollapsiblePanel

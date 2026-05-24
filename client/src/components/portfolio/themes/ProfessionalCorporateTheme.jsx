@@ -38,18 +38,18 @@ const ProfessionalCorporateTheme = ({data}) => {
             {experience.map((item, index) => (
               <article
                 key={`${item.company}-${index}`}
-                className="min-w-0 rounded-lg border border-stone-300 bg-white p-5 sm:p-6"
+                className="min-w-0 rounded-lg border border-stone-300 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 sm:p-6 transition-colors duration-300"
               >
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                   <div>
-                    <h3 className="break-words text-xl font-black">{item.title}</h3>
-                    <p className="break-words text-gray-700">
+                    <h3 className="break-words text-xl font-black text-gray-950 dark:text-zinc-100">{item.title}</h3>
+                    <p className="break-words text-gray-700 dark:text-gray-400">
                       {item.company}
                       {item.location ? `, ${item.location}` : ""}
                     </p>
                   </div>
                   {item.dateRange && (
-                    <span className="rounded-full bg-stone-100 px-3 py-1 text-sm font-bold text-stone-700">
+                    <span className="rounded-full bg-stone-100 dark:bg-zinc-800 px-3 py-1 text-sm font-bold text-stone-700 dark:text-stone-300">
                       {item.dateRange}
                     </span>
                   )}
@@ -57,7 +57,7 @@ const ProfessionalCorporateTheme = ({data}) => {
                 {hasItems(item.bullets) && (
                   <ul className="mt-5 grid gap-3 md:grid-cols-2">
                     {item.bullets.map((bullet) => (
-                      <li key={bullet} className="flex min-w-0 gap-3 text-gray-700">
+                      <li key={bullet} className="flex min-w-0 gap-3 text-gray-700 dark:text-gray-300">
                         <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-emerald-700" />
                         <span className="break-words">{bullet}</span>
                       </li>
@@ -93,12 +93,12 @@ const ProfessionalCorporateTheme = ({data}) => {
             {skills.map((group, index) => (
               <article
                 key={`${group.category}-${index}`}
-                className="min-w-0 rounded-lg border border-stone-300 bg-white p-5"
+                className="min-w-0 rounded-lg border border-stone-300 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 transition-colors duration-300"
               >
-                <h3 className="break-words font-black">
+                <h3 className="break-words font-black text-gray-950 dark:text-zinc-100">
                   {group.category || "Skills"}
                 </h3>
-                <ul className="mt-4 space-y-2 text-gray-700">
+                <ul className="mt-4 space-y-2 text-gray-700 dark:text-gray-400">
                   {(group.items || []).map((skill) => (
                     <li key={skill} className="break-words">
                       {skill}
@@ -121,16 +121,16 @@ const ProfessionalCorporateTheme = ({data}) => {
             {projects.map((project) => (
               <article
                 key={project.id}
-                className="min-w-0 rounded-lg border border-stone-300 bg-white p-5"
+                className="min-w-0 rounded-lg border border-stone-300 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 transition-colors duration-300"
               >
-                <h3 className="break-words text-xl font-black">{project.title}</h3>
+                <h3 className="break-words text-xl font-black text-gray-950 dark:text-zinc-100">{project.title}</h3>
                 {project.description && (
-                  <p className="mt-3 break-words leading-7 text-gray-700">
+                  <p className="mt-3 break-words leading-7 text-gray-700 dark:text-gray-400">
                     {project.description}
                   </p>
                 )}
                 {project.impact && (
-                  <p className="mt-4 rounded-lg bg-emerald-50 p-3 text-sm font-semibold text-emerald-900 break-words">
+                  <p className="mt-4 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 p-3 text-sm font-semibold text-emerald-900 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/50 break-words">
                     {project.impact}
                   </p>
                 )}
@@ -152,10 +152,10 @@ const ProfessionalCorporateTheme = ({data}) => {
             {education.map((item, index) => (
               <article
                 key={`${item.institution}-${index}`}
-                className="min-w-0 rounded-lg border border-stone-300 bg-white p-5"
+                className="min-w-0 rounded-lg border border-stone-300 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 transition-colors duration-300"
               >
-                <h3 className="break-words font-black">{item.institution}</h3>
-                <p className="mt-1 text-gray-700">
+                <h3 className="break-words font-black text-gray-950 dark:text-zinc-100">{item.institution}</h3>
+                <p className="mt-1 text-gray-700 dark:text-gray-400">
                   {[item.degree, item.field].filter(Boolean).join(", ")}
                 </p>
               </article>
@@ -171,10 +171,10 @@ const ProfessionalCorporateTheme = ({data}) => {
             {certifications.map((item, index) => (
               <article
                 key={`${item.name}-${index}`}
-                className="min-w-0 rounded-lg border border-stone-300 bg-white p-5"
+                className="min-w-0 rounded-lg border border-stone-300 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 transition-colors duration-300"
               >
-                <h3 className="break-words font-black">{item.name}</h3>
-                <p className="mt-1 break-words text-gray-700">{item.issuer}</p>
+                <h3 className="break-words font-black text-gray-950 dark:text-zinc-100">{item.name}</h3>
+                <p className="mt-1 break-words text-gray-700 dark:text-gray-400">{item.issuer}</p>
               </article>
             ))}
           </div>
@@ -184,7 +184,7 @@ const ProfessionalCorporateTheme = ({data}) => {
       sections.showAbout && profile.about ? (
         <section key="about">
           <SectionHeading title="About" />
-          <p className="max-w-3xl break-words text-base leading-8 text-gray-700 sm:text-lg">
+          <p className="max-w-3xl break-words text-base leading-8 text-gray-700 dark:text-gray-300 sm:text-lg">
             {profile.about}
           </p>
         </section>
@@ -194,24 +194,24 @@ const ProfessionalCorporateTheme = ({data}) => {
         <CustomSections
           key="customSections"
           sections={customSections}
-          cardClassName="min-w-0 rounded-lg border border-stone-300 bg-white p-5"
+          cardClassName="min-w-0 rounded-lg border border-stone-300 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 transition-colors duration-300"
         />
       ) : null,
     contact: sections.showContact ? (
-      <section key="contact" id="contact" className="border-t border-stone-300 pt-10">
+      <section key="contact" id="contact" className="border-t border-stone-300 dark:border-zinc-800 pt-10">
         <SectionHeading title="Contact" />
         <SocialLinks
           links={links}
           onClick={actions.onContactClick}
-          itemClassName="inline-flex min-w-0 items-center justify-center gap-2 rounded-lg border border-stone-300 bg-white px-4 py-3 text-sm font-semibold text-stone-950 hover:bg-stone-50 sm:justify-start"
+          itemClassName="inline-flex min-w-0 items-center justify-center gap-2 rounded-lg border border-stone-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-3 text-sm font-semibold text-stone-950 dark:text-zinc-100 hover:bg-stone-50 dark:hover:bg-zinc-800 transition-colors sm:justify-start"
         />
       </section>
     ) : null,
   };
 
   return (
-    <main className="min-h-screen bg-[#f7f7f3] text-gray-950">
-      <section className="border-b border-stone-300 bg-[#fbfbf8]">
+    <main className="min-h-screen bg-[#f7f7f3] dark:bg-zinc-950 text-gray-950 dark:text-zinc-50 transition-colors duration-300">
+      <section className="border-b border-stone-300 dark:border-zinc-800 bg-[#fbfbf8] dark:bg-zinc-900 transition-colors duration-300">
         <div className="mx-auto grid max-w-6xl gap-10 px-5 py-16 sm:px-8 sm:py-20 lg:grid-cols-[1fr_300px]">
           <div>
             <p className="mb-4 text-sm font-bold uppercase text-stone-600">
@@ -224,7 +224,7 @@ const ProfessionalCorporateTheme = ({data}) => {
               {profile.title || "Professional"}
             </p>
             {profile.about && (
-              <p className="mt-6 max-w-3xl break-words text-base leading-8 text-gray-700 sm:text-lg">
+              <p className="mt-6 max-w-3xl break-words text-base leading-8 text-gray-700 dark:text-gray-300 sm:text-lg">
                 {profile.about}
               </p>
             )}
@@ -233,18 +233,18 @@ const ProfessionalCorporateTheme = ({data}) => {
                 profile={profile}
                 settings={settings}
                 actions={actions}
-                primaryClassName="bg-stone-900 text-white hover:bg-stone-800"
-                secondaryClassName="border-stone-300 text-stone-950 hover:bg-white"
+                primaryClassName="bg-stone-900 dark:bg-white text-white dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-gray-200 transition-colors"
+                secondaryClassName="border-stone-300 dark:border-zinc-700 text-stone-950 dark:text-zinc-100 hover:bg-white dark:hover:bg-zinc-800 transition-colors"
               />
             </div>
           </div>
 
-          <aside className="rounded-lg border border-stone-300 bg-white p-5">
-            <BriefcaseBusiness className="mb-4 h-7 w-7 text-stone-800" />
+          <aside className="rounded-lg border border-stone-300 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 p-5 backdrop-blur-sm">
+            <BriefcaseBusiness className="mb-4 h-7 w-7 text-stone-800 dark:text-stone-300" />
             <div className="space-y-4 text-sm">
               {profile.location && (
                 <div>
-                  <p className="font-bold text-stone-500">Location</p>
+                  <p className="font-bold text-stone-500 dark:text-stone-400">Location</p>
                   <p className="mt-1 inline-flex items-center gap-2">
                     <MapPin className="h-4 w-4" />
                     {profile.location}
@@ -252,11 +252,11 @@ const ProfessionalCorporateTheme = ({data}) => {
                 </div>
               )}
               <div>
-                <p className="font-bold text-stone-500">Experience Entries</p>
+                <p className="font-bold text-stone-500 dark:text-stone-400">Experience Entries</p>
                 <p className="mt-1 text-2xl font-black">{experience.length}</p>
               </div>
               <div>
-                <p className="font-bold text-stone-500">Core Skills</p>
+                <p className="font-bold text-stone-500 dark:text-stone-400">Core Skills</p>
                 <p className="mt-1 text-2xl font-black">
                   {skills.reduce(
                     (count, group) => count + (group.items?.length || 0),

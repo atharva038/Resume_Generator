@@ -467,6 +467,7 @@ export const updatePortfolio = async (req, res) => {
       profileImage,
       heroImage,
       themeId,
+      themeAccent,
       colorPreset,
       fontPreset,
       contact,
@@ -513,6 +514,7 @@ export const updatePortfolio = async (req, res) => {
       profileImage,
       heroImage,
       themeId,
+      themeAccent,
       colorPreset,
       fontPreset,
     };
