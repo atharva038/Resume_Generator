@@ -33,6 +33,7 @@ const AdminLayout = () => {
   const [
     isMobileMenuOpen,
     toggleMobileMenu,
+    setIsMobileMenuOpenTrue,
     setIsMobileMenuOpenFalse,
   ] = useToggle(false);
   const location = useLocation();
@@ -184,8 +185,8 @@ const AdminLayout = () => {
 
       {/* Top Navigation Bar */}
       <nav className="bg-white/90 dark:bg-black/90 backdrop-blur-xl border-b border-gray-200 dark:border-white/10 fixed top-0 left-0 right-0 z-30">
-        <div className="px-4 sm:px-6 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="px-2 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between">
+          <div className="flex items-center gap-1.5 sm:gap-4">
             {/* Single Menu Toggle for All Devices */}
             <button
               onClick={() => {
@@ -195,35 +196,35 @@ const AdminLayout = () => {
                   toggleSidebarOpen();
                 }
               }}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-zinc-900 rounded-lg transition-all duration-200"
+              className="p-1.5 sm:p-2 hover:bg-gray-100 dark:hover:bg-zinc-900 rounded-lg transition-all duration-200"
               aria-label="Toggle menu"
             >
               <Menu className="w-5 h-5 text-gray-700 dark:text-gray-300" />
             </button>
 
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 bg-white dark:bg-zinc-900 rounded-xl flex items-center justify-center shadow-sm border border-gray-200 dark:border-white/10 overflow-hidden">
+            <div className="flex items-center gap-1.5 sm:gap-3">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 bg-white dark:bg-zinc-900 rounded-xl flex items-center justify-center shadow-sm border border-gray-200 dark:border-white/10 overflow-hidden">
                 <img
                   src="/orb-logo.png"
                   alt="SmartNShine logo"
-                  className="w-7 h-7 object-contain"
+                  className="w-6 h-6 sm:w-7 sm:h-7 object-contain"
                 />
               </div>
               <div>
-                <h1 className="text-lg font-bold text-gray-900 dark:text-white">
+                <h1 className="text-sm sm:text-lg font-bold text-gray-900 dark:text-white">
                   Admin Panel
                 </h1>
-                <p className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">
+                <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 hidden sm:block">
                   {activeMenuItem?.label}
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-3">
             <Link
               to="/admin/notifications"
-              className="relative p-2.5 bg-white dark:bg-black hover:bg-gray-100 dark:hover:bg-zinc-900 rounded-lg transition-all duration-200 border border-gray-200 dark:border-white/10"
+              className="relative p-2 sm:p-2.5 bg-white dark:bg-black hover:bg-gray-100 dark:hover:bg-zinc-900 rounded-lg transition-all duration-200 border border-gray-200 dark:border-white/10"
               title="Notifications"
               aria-label="Notifications"
             >
@@ -250,7 +251,7 @@ const AdminLayout = () => {
             {/* Dark Mode Toggle */}
             <button
               onClick={toggleDarkMode}
-              className="p-2.5 bg-white dark:bg-black hover:bg-gray-100 dark:hover:bg-zinc-900 rounded-lg transition-all duration-200 border border-gray-200 dark:border-white/10"
+              className="p-2 sm:p-2.5 bg-white dark:bg-black hover:bg-gray-100 dark:hover:bg-zinc-900 rounded-lg transition-all duration-200 border border-gray-200 dark:border-white/10"
               title={isDarkMode ? "Light Mode" : "Dark Mode"}
               aria-label={
                 isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"
@@ -266,10 +267,10 @@ const AdminLayout = () => {
             {/* Logout Button */}
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-black hover:bg-red-50 dark:hover:bg-red-950/30 text-red-600 dark:text-red-400 rounded-lg transition-all duration-200 border border-gray-200 dark:border-white/10"
+              className="flex items-center gap-1.5 px-2.5 py-2 sm:px-4 sm:py-2.5 bg-white dark:bg-black hover:bg-red-50 dark:hover:bg-red-950/30 text-red-600 dark:text-red-400 rounded-lg transition-all duration-200 border border-gray-200 dark:border-white/10"
               aria-label="Logout"
             >
-              <LogOut className="w-4 h-4" />
+              <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               <span className="hidden sm:inline font-medium">Logout</span>
             </button>
           </div>
@@ -279,18 +280,17 @@ const AdminLayout = () => {
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden transition-opacity"
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300"
           onClick={closeMobileMenu}
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-16 bottom-0 bg-white dark:bg-black border-r border-gray-200 dark:border-white/10 transition-all duration-300 overflow-hidden
-          ${isMobileMenuOpen ? "left-0 z-40" : "-left-full z-40"} 
-          w-64 
-          lg:z-20
-          ${isSidebarOpen ? "lg:left-0 lg:w-64" : "lg:-left-full lg:w-0"}
+        className={`fixed top-16 bottom-0 bg-white dark:bg-black border-r border-gray-200 dark:border-white/10 transition-all duration-300 overflow-hidden w-64 z-50
+          ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"} 
+          lg:z-20 lg:translate-x-0
+          ${isSidebarOpen ? "lg:w-64" : "lg:w-0"}
         `}
       >
         {/* Sidebar Content with Scroll */}
@@ -351,14 +351,9 @@ const AdminLayout = () => {
 
       {/* Main Content */}
       <main
-        className={`pt-16 transition-all duration-300 min-h-screen
-          ${
-            // Desktop only: add margin when sidebar is open
-            isSidebarOpen ? "lg:ml-64" : "lg:ml-0"
-          }
-          // Mobile: always no margin (sidebar is overlay)
-          ml-0
-        `}
+        className={`pt-16 transition-all duration-300 min-h-screen ml-0 ${
+          isSidebarOpen ? "lg:ml-64" : "lg:ml-0"
+        }`}
       >
         <div className="p-3 sm:p-4 md:p-6">
           <PageTransition key={location.pathname}>

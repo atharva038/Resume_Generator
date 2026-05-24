@@ -29,7 +29,10 @@ export default defineConfig({
     port: 5173,
     proxy: {
       "/api": {
-        target: "http://localhost:5000",
+        // In Docker, VITE_PROXY_TARGET is set to http://server:5000 by
+        // docker-compose so the Vite dev server can reach the API container.
+        // For local dev (no Docker) it falls back to localhost:5000.
+        target: process.env.VITE_PROXY_TARGET || "http://localhost:5000",
         changeOrigin: true,
       },
     },

@@ -1,0 +1,111 @@
+# =============================================================
+# SmartNShine – Docker Compose (local dev)
+#
+# Core services (always started):
+#   server   – Node/Express API on :5000
+#   client   – React/Vite dev server on :5173
+#
+# MongoDB is NOT containerised here – the app connects to
+# MongoDB Atlas. Set MONGODB_URI in server/.env.docker.
+#
+# Optional voice services (start with --profile voice):
+#   voice       – Whisper STT on :5001
+#   chatterbox  – Chatterbox TTS on :5002
+#
+# Quick start:
+#   Fill MONGODB_URI (and other keys) in server/.env.docker
+#   docker compose up --build
+#
+# With voice services:
+#   docker compose --profile voice up --build
+# =============================================================
+
+services:
+  # -----------------------------------------------------------
+  # Node / Express backend
+  # Uses MongoDB Atlas – MONGODB_URI is set in server/.env.docker
+  # -----------------------------------------------------------
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: smartnshine-server
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    # Load env vars (including MONGODB_URI for Atlas) from template file
+    env_file:
+      - ./server/.env.docker
+    # These override anything in the env_file – always correct for Docker
+    environment:
+      - NODE_ENV=development
+      - CLIENT_ORIGIN=http://localhost:5173
+      - ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
+      - VOICE_SERVICE_URL=http://voice:5001
+      - ML_SERVICE_URL=http://voice:5001
+      - CHATTERBOX_SERVICE_URL=http://chatterbox:5002
+      # Puppeteer (PDF export) must reach the Vite dev server inside Docker
+      - PDF_RENDER_BASE_URL=http://client:5173
+      - CLIENT_URL=http://localhost:5173
+      # OAuth callbacks – must match what is registered in Google/GitHub consoles
+      - SERVER_URL=http://localhost:5000
+    networks:
+      - smartnshine-net
+
+  # -----------------------------------------------------------
+  # React / Vite frontend
+  # -----------------------------------------------------------
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: smartnshine-client
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    env_file:
+      - ./client/.env.docker
+    environment:
+      # Inside the container the Vite proxy must use the service name
+      - VITE_PROXY_TARGET=http://server:5000
+    depends_on:
+      - server
+    networks:
+      - smartnshine-net
+
+  # -----------------------------------------------------------
+  # Whisper STT – optional (--profile voice)
+  # -----------------------------------------------------------
+  voice:
+    build:
+      context: ./voice-service
+      dockerfile: Dockerfile
+    container_name: smartnshine-voice
+    restart: unless-stopped
+    ports:
+      - "5001:5001"
+    networks:
+      - smartnshine-net
+    profiles:
+      - voice
+
+  # -----------------------------------------------------------
+  # Chatterbox TTS – optional (--profile voice)
+  # -----------------------------------------------------------
+  chatterbox:
+    build:
+      context: ./chatterbox-service
+      dockerfile: Dockerfile
+    container_name: smartnshine-chatterbox
+    restart: unless-stopped
+    ports:
+      - "5002:5002"
+    networks:
+      - smartnshine-net
+    profiles:
+      - voice
+
+
+networks:
+  smartnshine-net:
+    driver: bridge
