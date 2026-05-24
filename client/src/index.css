@@ -292,3 +292,208 @@
 .animate-slideUp {
   animation: slideUp 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
+
+/* ===== Portfolio Theme CSS Custom Properties ===== */
+/* Scoped to the portfolio render root only — never bleeds into editor UI */
+
+[data-portfolio-theme] {
+  /* Defaults (minimalist fallbacks) */
+  --pt-accent: #6366f1;
+  --pt-accent-dim: #6366f120;
+  --pt-accent-text: #ffffff;
+  --pt-bg: #fafafa;
+  --pt-surface: #ffffff;
+  --pt-surface-alt: #f4f4f5;
+  --pt-border: #e4e4e7;
+  --pt-text: #18181b;
+  --pt-text-muted: #71717a;
+  --pt-heading-font: 'Inter', sans-serif;
+  --pt-body-font: 'Inter', sans-serif;
+  --pt-radius: 0.5rem;
+}
+
+/* ─── Minimal Developer (upgraded minimalist) ─── */
+[data-portfolio-theme="minimalDeveloper"] {
+  --pt-accent: #10b981;
+  --pt-accent-dim: #10b98118;
+  --pt-accent-text: #ffffff;
+  --pt-bg: #fafafa;
+  --pt-surface: #ffffff;
+  --pt-surface-alt: #f0fdf4;
+  --pt-border: #e4e4e7;
+  --pt-text: #09090b;
+  --pt-text-muted: #71717a;
+  --pt-heading-font: 'Inter', sans-serif;
+  --pt-radius: 0.5rem;
+}
+
+/* ─── Modern Fresher ─── */
+[data-portfolio-theme="modernFresher"] {
+  --pt-accent: #0ea5e9;
+  --pt-accent-dim: #0ea5e918;
+  --pt-accent-text: #ffffff;
+  --pt-bg: #f0f9ff;
+  --pt-surface: #ffffff;
+  --pt-surface-alt: #e0f2fe;
+  --pt-border: #bae6fd;
+  --pt-text: #0c4a6e;
+  --pt-text-muted: #0369a1;
+  --pt-heading-font: 'Inter', sans-serif;
+  --pt-radius: 0.75rem;
+}
+
+/* ─── Professional Corporate ─── */
+[data-portfolio-theme="professionalCorporate"] {
+  --pt-accent: #1c1917;
+  --pt-accent-dim: #1c191710;
+  --pt-accent-text: #ffffff;
+  --pt-bg: #f7f7f3;
+  --pt-surface: #ffffff;
+  --pt-surface-alt: #f5f5f4;
+  --pt-border: #d6d3d1;
+  --pt-text: #1c1917;
+  --pt-text-muted: #78716c;
+  --pt-heading-font: 'Inter', sans-serif;
+  --pt-radius: 0.375rem;
+}
+
+/* ─── Cyber Dev (NEW) ─── */
+[data-portfolio-theme="cyberDev"] {
+  --pt-accent: #00ff88;
+  --pt-accent-dim: #00ff8820;
+  --pt-accent-text: #0a0a0f;
+  --pt-bg: #0a0a0f;
+  --pt-surface: #111118;
+  --pt-surface-alt: #1a1a24;
+  --pt-border: rgba(255, 255, 255, 0.08);
+  --pt-text: #e2e8f0;
+  --pt-text-muted: #94a3b8;
+  --pt-heading-font: 'JetBrains Mono', 'Fira Code', monospace;
+  --pt-body-font: 'Inter', sans-serif;
+  --pt-radius: 0.375rem;
+}
+
+/* ─── Creative (NEW) ─── */
+[data-portfolio-theme="creative"] {
+  --pt-accent: #7c3aed;
+  --pt-accent-dim: #7c3aed20;
+  --pt-accent-secondary: #ec4899;
+  --pt-accent-text: #ffffff;
+  --pt-bg: #faf5ff;
+  --pt-surface: #ffffff;
+  --pt-surface-alt: #f5f3ff;
+  --pt-border: #ddd6fe;
+  --pt-text: #1e1b4b;
+  --pt-text-muted: #6d28d9;
+  --pt-heading-font: 'Inter', sans-serif;
+  --pt-radius: 1rem;
+  --pt-gradient: linear-gradient(135deg, var(--pt-accent), var(--pt-accent-secondary));
+}
+
+/* ─── Cyber Dev Animations ─── */
+@keyframes neonPulse {
+  0%, 100% { box-shadow: 0 0 5px var(--pt-accent), 0 0 10px var(--pt-accent-dim); }
+  50% { box-shadow: 0 0 15px var(--pt-accent), 0 0 30px var(--pt-accent-dim); }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes gradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes blobFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(20px, -15px) scale(1.05); }
+  66%  { transform: translate(-10px, 10px) scale(0.97); }
+}
+
+.pt-fade-slide-up {
+  animation: fadeSlideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.pt-gradient-animate {
+  background-size: 200% 200%;
+  animation: gradientShift 5s ease infinite;
+}
+
+.pt-blob {
+  animation: blobFloat 8s ease-in-out infinite;
+}
+
+.pt-cursor-blink::after {
+  content: '_';
+  animation: blink 1s step-end infinite;
+}
+
+.pt-neon-border {
+  border: 1px solid var(--pt-accent);
+  box-shadow: 0 0 8px var(--pt-accent-dim), inset 0 0 8px var(--pt-accent-dim);
+}
+
+/* ─── Creative card tilt (enhanced via JS, base CSS for hover) ─── */
+.pt-tilt-card {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
+  will-change: transform;
+}
+.pt-tilt-card:hover {
+  box-shadow: 0 20px 60px -10px color-mix(in srgb, var(--pt-accent) 30%, transparent);
+}
+
+/* Google Fonts imports for themes */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+/* ─── Dark Mode Overrides ─── */
+.dark [data-portfolio-theme="minimalDeveloper"] {
+  --pt-bg: #09090b;
+  --pt-surface: #18181b;
+  --pt-surface-alt: #022c22;
+  --pt-border: #27272a;
+  --pt-text: #f4f4f5;
+  --pt-text-muted: #a1a1aa;
+}
+
+.dark [data-portfolio-theme="modernFresher"] {
+  --pt-bg: #082f49;
+  --pt-surface: #0c4a6e;
+  --pt-surface-alt: #0369a1;
+  --pt-border: #0284c7;
+  --pt-text: #f0f9ff;
+  --pt-text-muted: #bae6fd;
+}
+
+.dark [data-portfolio-theme="professionalCorporate"] {
+  --pt-accent: #f5f5f4;
+  --pt-accent-dim: #f5f5f415;
+  --pt-accent-text: #1c1917;
+  --pt-bg: #0c0a09;
+  --pt-surface: #1c1917;
+  --pt-surface-alt: #292524;
+  --pt-border: #44403c;
+  --pt-text: #fafaf9;
+  --pt-text-muted: #a8a29e;
+}
+
+.dark [data-portfolio-theme="creative"] {
+  --pt-bg: #0f0728;
+  --pt-surface: #160a26;
+  --pt-surface-alt: #2e1065;
+  --pt-border: #4c1d95;
+  --pt-text: #f5f3ff;
+  --pt-text-muted: #c4b5fd;
+}

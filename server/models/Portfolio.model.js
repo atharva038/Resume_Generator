@@ -93,6 +93,11 @@ const portfolioSchema = new mongoose.Schema(
       trim: true,
       default: "minimalDeveloper",
     },
+    themeAccent: {
+      type: String,
+      trim: true,
+      default: "",
+    },
     colorPreset: {
       type: String,
       trim: true,

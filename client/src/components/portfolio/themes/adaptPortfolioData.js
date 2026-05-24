@@ -80,6 +80,8 @@ export const adaptPortfolioData = ({
     portfolio,
     sections,
     sectionOrder,
+    themeId: portfolio.themeId || 'minimalDeveloper',
+    themeAccent: portfolio.themeAccent || '',
     settings: portfolio.settings || {},
     profile: {
       name: resume?.name || portfolio.title || "Portfolio",
