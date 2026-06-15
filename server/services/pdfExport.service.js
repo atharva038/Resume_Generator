@@ -35,10 +35,42 @@ export const renderResumePdf = async (token, baseUrl) => {
     });
   } else {
     console.info("[pdf-export] launching local puppeteer browser");
-    browser = await puppeteer.launch({
+    const launchOptions = {
       headless: true,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    });
+    };
+
+    // Use environment-configured path first if set, otherwise try to auto-detect system browsers
+    if (process.env.PUPPETEER_EXECUTABLE_PATH) {
+      launchOptions.executablePath = process.env.PUPPETEER_EXECUTABLE_PATH;
+      console.info("[pdf-export] using environment-defined PUPPETEER_EXECUTABLE_PATH:", launchOptions.executablePath);
+    } else if (process.platform === "darwin" && existsSync("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")) {
+      launchOptions.executablePath = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+      console.info("[pdf-export] using system Google Chrome on macOS");
+    } else if (process.platform === "win32") {
+      const winPaths = [
+        "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+        "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe"
+      ];
+      const winPath = winPaths.find(p => existsSync(p));
+      if (winPath) {
+        launchOptions.executablePath = winPath;
+        console.info("[pdf-export] using system Google Chrome on Windows");
+      }
+    } else if (process.platform === "linux") {
+      const linuxPaths = [
+        "/usr/bin/google-chrome",
+        "/usr/bin/chromium",
+        "/usr/bin/chromium-browser"
+      ];
+      const linuxPath = linuxPaths.find(p => existsSync(p));
+      if (linuxPath) {
+        launchOptions.executablePath = linuxPath;
+        console.info("[pdf-export] using system Chrome/Chromium on Linux");
+      }
+    }
+
+    browser = await puppeteer.launch(launchOptions);
   }
 
   try {
