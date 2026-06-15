@@ -62,6 +62,7 @@ export const adaptPortfolioData = ({
   onContactClick,
   onProjectClick,
   onResumeClick,
+  resumeDownloadUrl,
 } = {}) => {
   const sections = normalizeSections(portfolio.sections);
   const sectionOrder = [
@@ -73,15 +74,17 @@ export const adaptPortfolioData = ({
   const visibleProjects = projects
     .filter((project) => project.visible !== false)
     .map(normalizeProject);
-  const featuredProjects = visibleProjects.filter((project) => project.featured);
+  const featuredProjects = visibleProjects.filter(
+    (project) => project.featured
+  );
 
   return {
     mode,
     portfolio,
     sections,
     sectionOrder,
-    themeId: portfolio.themeId || 'minimalDeveloper',
-    themeAccent: portfolio.themeAccent || '',
+    themeId: portfolio.themeId || "minimalDeveloper",
+    themeAccent: portfolio.themeAccent || "",
     settings: portfolio.settings || {},
     profile: {
       name: resume?.name || portfolio.title || "Portfolio",
@@ -96,20 +99,24 @@ export const adaptPortfolioData = ({
       profileImage: portfolio.profileImage || "",
       heroImage: portfolio.heroImage || "",
     },
-    links: portfolio.socialLinks || [],
+    links: (portfolio.socialLinks || []).filter((link) => link?.url),
     skills: pickArray(portfolio.skills, resume?.skills),
     projects: visibleProjects,
     featuredProjects: hasItems(featuredProjects)
       ? featuredProjects
       : visibleProjects.slice(0, 3),
-    experience: pickArray(portfolio.experience, resume?.experience).map((item) => ({
-      ...item,
-      dateRange: getDateRange(item),
-    })),
-    education: pickArray(portfolio.education, resume?.education).map((item) => ({
-      ...item,
-      dateRange: getDateRange(item),
-    })),
+    experience: pickArray(portfolio.experience, resume?.experience).map(
+      (item) => ({
+        ...item,
+        dateRange: getDateRange(item),
+      })
+    ),
+    education: pickArray(portfolio.education, resume?.education).map(
+      (item) => ({
+        ...item,
+        dateRange: getDateRange(item),
+      })
+    ),
     certifications: pickArray(portfolio.certifications, resume?.certifications),
     achievements: pickArray(portfolio.achievements, resume?.achievements),
     customSections: pickArray(portfolio.customSections, resume?.customSections),
@@ -117,6 +124,7 @@ export const adaptPortfolioData = ({
       onContactClick,
       onProjectClick,
       onResumeClick,
+      resumeDownloadUrl,
     },
   };
 };

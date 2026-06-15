@@ -2,10 +2,10 @@ import {useEffect, useState} from "react";
 import {Link} from "react-router-dom";
 import toast from "react-hot-toast";
 import {
-  BarChart3,
   Copy,
   Edit3,
   ExternalLink,
+  Eye,
   Globe2,
   Plus,
   Trash2,
@@ -150,6 +150,22 @@ const PortfolioDashboard = () => {
                       {portfolio.analytics?.resumeDownloads || 0}
                     </div>
                   </div>
+                  <div className="rounded-lg bg-gray-50 dark:bg-zinc-900 p-3">
+                    <div className="text-gray-500 dark:text-gray-400">
+                      Contact clicks
+                    </div>
+                    <div className="text-xl font-bold">
+                      {portfolio.analytics?.contactClicks || 0}
+                    </div>
+                  </div>
+                  <div className="rounded-lg bg-gray-50 dark:bg-zinc-900 p-3">
+                    <div className="text-gray-500 dark:text-gray-400">
+                      Project clicks
+                    </div>
+                    <div className="text-xl font-bold">
+                      {portfolio.analytics?.projectClicks || 0}
+                    </div>
+                  </div>
                 </div>
 
                 <div className="flex flex-wrap gap-2 mt-5">
@@ -164,7 +180,7 @@ const PortfolioDashboard = () => {
                     to={`/portfolio/${portfolio._id}/preview`}
                     className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 dark:border-zinc-700 text-sm font-semibold"
                   >
-                    <BarChart3 className="w-4 h-4" />
+                    <Eye className="w-4 h-4" />
                     Preview
                   </Link>
                   {portfolio.status === "published" && (

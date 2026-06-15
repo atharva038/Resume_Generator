@@ -175,6 +175,8 @@ export const corsOptions = {
           process.env.CLIENT_ORIGIN || "http://localhost:5173",
           "http://localhost:3000",
           "http://localhost:5173",
+          "http://client:5173",
+          "http://smartnshine-client:5173",
         ];
 
     // Allow requests with no origin (like mobile apps, Postman, curl)
@@ -218,7 +220,12 @@ export const corsOptions = {
   ],
 
   // Expose headers to client
-  exposedHeaders: ["Content-Range", "X-Content-Range", "X-Total-Count"],
+  exposedHeaders: [
+    "Content-Range",
+    "X-Content-Range",
+    "X-Total-Count",
+    "Content-Disposition",
+  ],
 
   // Preflight cache duration (24 hours)
   maxAge: 86400,

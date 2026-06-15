@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import toast from "react-hot-toast";
-import {ArrowRight, FileText, Globe2} from "lucide-react";
+import {ArrowRight, ChevronDown, FileText, Globe2} from "lucide-react";
 import {resumeAPI} from "@/api/api";
 import {portfolioAPI} from "@/api/portfolio.api";
 
@@ -10,6 +10,7 @@ const PortfolioCreate = () => {
   const [resumes, setResumes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [creatingId, setCreatingId] = useState(null);
+  const [showPlan, setShowPlan] = useState(false);
 
   useEffect(() => {
     fetchResumes();
@@ -58,6 +59,58 @@ const PortfolioCreate = () => {
           </p>
         </div>
 
+        <section className="mb-6 overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-zinc-800 dark:bg-zinc-950">
+          <button
+            type="button"
+            onClick={() => setShowPlan((current) => !current)}
+            className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left hover:bg-gray-100 dark:hover:bg-zinc-900"
+          >
+            <div>
+              <h2 className="font-bold">Portfolio creation plan</h2>
+              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                Resume import first, then edit theme, SEO, projects, images,
+                and publish settings in the editor.
+              </p>
+            </div>
+            <ChevronDown
+              className={`h-5 w-5 flex-shrink-0 text-gray-500 transition-transform ${
+                showPlan ? "rotate-180" : ""
+              }`}
+            />
+          </button>
+          {showPlan && (
+            <div className="grid gap-3 border-t border-gray-200 p-5 text-sm text-gray-700 dark:border-zinc-800 dark:text-gray-300 md:grid-cols-3">
+              <div className="rounded-lg bg-white p-4 dark:bg-black">
+                <h3 className="font-bold text-gray-950 dark:text-white">
+                  1. Import
+                </h3>
+                <p className="mt-1">
+                  We copy your resume profile, skills, experience, education,
+                  and projects into a portfolio draft.
+                </p>
+              </div>
+              <div className="rounded-lg bg-white p-4 dark:bg-black">
+                <h3 className="font-bold text-gray-950 dark:text-white">
+                  2. Refine
+                </h3>
+                <p className="mt-1">
+                  Add hero images, social links, richer project proof, SEO, and
+                  theme settings.
+                </p>
+              </div>
+              <div className="rounded-lg bg-white p-4 dark:bg-black">
+                <h3 className="font-bold text-gray-950 dark:text-white">
+                  3. Publish
+                </h3>
+                <p className="mt-1">
+                  Preview, download-test your resume, then publish your public
+                  recruiter link.
+                </p>
+              </div>
+            </div>
+          )}
+        </section>
+
         {loading ? (
           <div className="text-gray-600 dark:text-gray-400">
             Loading resumes...
@@ -82,16 +135,19 @@ const PortfolioCreate = () => {
                   <div className="p-3 rounded-lg bg-gray-100 dark:bg-zinc-900">
                     <FileText className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <h2 className="text-lg font-bold">
                       {resume.resumeTitle || resume.name || "Untitled Resume"}
                     </h2>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Updated{" "}
-                      {resume.updatedAt
-                        ? new Date(resume.updatedAt).toLocaleDateString()
-                        : "recently"}
-                    </p>
+                    <div className="mt-1 flex flex-wrap gap-2 text-sm text-gray-600 dark:text-gray-400">
+                      <span>
+                        Updated{" "}
+                        {resume.updatedAt
+                          ? new Date(resume.updatedAt).toLocaleDateString()
+                          : "recently"}
+                      </span>
+                      {resume.name && <span>{resume.name}</span>}
+                    </div>
                   </div>
                 </div>
                 <button

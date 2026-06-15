@@ -40,7 +40,7 @@ services:
     environment:
       - NODE_ENV=development
       - CLIENT_ORIGIN=http://localhost:5173
-      - ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
+      - ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000,http://client:5173,http://smartnshine-client:5173
       - VOICE_SERVICE_URL=http://voice:5001
       - ML_SERVICE_URL=http://voice:5001
       - CHATTERBOX_SERVICE_URL=http://chatterbox:5002

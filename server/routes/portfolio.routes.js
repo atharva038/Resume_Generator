@@ -4,13 +4,17 @@ import {
   checkSubscription,
   checkUsageLimit,
 } from "../middleware/subscription.middleware.js";
-import {aiLimiter} from "../middleware/rateLimiter.middleware.js";
+import {
+  aiLimiter,
+  portfolioAnalyticsLimiter,
+} from "../middleware/rateLimiter.middleware.js";
 import {checkAIQuota} from "../middleware/aiUsageTracker.middleware.js";
 import {
   createPortfolioFromResume,
   createPortfolioProject,
   deletePortfolio,
   deletePortfolioProject,
+  downloadPublicResume,
   generatePortfolioAbout,
   generatePortfolioSeo,
   getPortfolioById,
@@ -30,11 +34,24 @@ import {
 const router = express.Router();
 
 // Public portfolio routes.
+router.get("/public/:slug/resume", downloadPublicResume);
 router.get("/public/:slug", getPublicPortfolio);
-router.post("/public/:slug/view", trackPublicView);
-router.post("/public/:slug/resume-download", trackResumeDownload);
-router.post("/public/:slug/contact-click", trackContactClick);
-router.post("/public/:slug/project-click", trackProjectClick);
+router.post("/public/:slug/view", portfolioAnalyticsLimiter, trackPublicView);
+router.post(
+  "/public/:slug/resume-download",
+  portfolioAnalyticsLimiter,
+  trackResumeDownload
+);
+router.post(
+  "/public/:slug/contact-click",
+  portfolioAnalyticsLimiter,
+  trackContactClick
+);
+router.post(
+  "/public/:slug/project-click",
+  portfolioAnalyticsLimiter,
+  trackProjectClick
+);
 
 // Protected portfolio routes.
 router.post(

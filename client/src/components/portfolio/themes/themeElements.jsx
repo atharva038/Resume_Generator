@@ -56,16 +56,27 @@ export const ContactActions = ({
           Call
         </a>
       )}
-      {settings.showResumeDownload !== false && (
-        <button
-          type="button"
-          onClick={actions.onResumeClick}
-          className={`inline-flex min-w-0 items-center justify-center gap-2 rounded-lg border px-4 py-3 text-sm font-semibold transition-colors sm:justify-start ${secondary}`}
-        >
-          <Download className="h-4 w-4" />
-          Resume
-        </button>
-      )}
+      {settings.showResumeDownload !== false &&
+        (actions.resumeDownloadUrl ? (
+          <a
+            href={actions.resumeDownloadUrl}
+            download
+            onClick={actions.onResumeClick}
+            className={`inline-flex min-w-0 items-center justify-center gap-2 rounded-lg border px-4 py-3 text-sm font-semibold transition-colors sm:justify-start ${secondary}`}
+          >
+            <Download className="h-4 w-4" />
+            Resume
+          </a>
+        ) : (
+          <button
+            type="button"
+            onClick={actions.onResumeClick}
+            className={`inline-flex min-w-0 items-center justify-center gap-2 rounded-lg border px-4 py-3 text-sm font-semibold transition-colors sm:justify-start ${secondary}`}
+          >
+            <Download className="h-4 w-4" />
+            Resume
+          </button>
+        ))}
     </div>
   );
 };
@@ -79,7 +90,9 @@ export const SocialLinks = ({
   if (!hasItems(links)) return null;
 
   return (
-    <div className={`flex flex-col gap-3 sm:flex-row sm:flex-wrap ${className}`}>
+    <div
+      className={`flex flex-col gap-3 sm:flex-row sm:flex-wrap ${className}`}
+    >
       {links.map((link) => {
         const Icon = getSocialIcon(link.type);
 
@@ -115,7 +128,9 @@ export const ProjectLinks = ({project, onClick, className = ""}) => {
   if (!hasItems(links)) return null;
 
   return (
-    <div className={`flex flex-col gap-3 sm:flex-row sm:flex-wrap ${className}`}>
+    <div
+      className={`flex flex-col gap-3 sm:flex-row sm:flex-wrap ${className}`}
+    >
       {links.map(([label, url]) => (
         <a
           key={`${project.id}-${label}`}
@@ -133,7 +148,11 @@ export const ProjectLinks = ({project, onClick, className = ""}) => {
   );
 };
 
-export const SkillPills = ({skills = [], className = "", pillClassName = ""}) => {
+export const SkillPills = ({
+  skills = [],
+  className = "",
+  pillClassName = "",
+}) => {
   if (!hasItems(skills)) return null;
 
   return (
@@ -169,7 +188,10 @@ export const CustomSections = ({
           <SectionHeading title={section.title || "More"} />
           <div className="grid gap-3 md:grid-cols-2">
             {(section.items || []).map((item) => (
-              <div key={item} className={`${cardClassName} break-words ${textClassName}`}>
+              <div
+                key={item}
+                className={`${cardClassName} break-words ${textClassName}`}
+              >
                 {item}
               </div>
             ))}
@@ -180,14 +202,23 @@ export const CustomSections = ({
   );
 };
 
-export const SectionHeading = ({eyebrow, title, description, className = ""}) => (
-    <div className={`mb-6 min-w-0 ${className}`}>
+export const SectionHeading = ({
+  eyebrow,
+  title,
+  description,
+  className = "",
+}) => (
+  <div className={`mb-6 min-w-0 ${className}`}>
     {eyebrow && (
       <p className="mb-2 text-xs font-bold uppercase text-gray-500">
         {eyebrow}
       </p>
     )}
-    <h2 className="break-words text-2xl font-black text-gray-950 sm:text-3xl">{title}</h2>
-    {description && <p className="mt-2 max-w-2xl text-gray-600">{description}</p>}
+    <h2 className="break-words text-2xl font-black text-gray-950 sm:text-3xl">
+      {title}
+    </h2>
+    {description && (
+      <p className="mt-2 max-w-2xl text-gray-600">{description}</p>
+    )}
   </div>
 );
