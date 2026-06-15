@@ -24,10 +24,22 @@ const normalizeClientBaseUrl = (baseUrl) => {
 };
 
 export const renderResumePdf = async (token, baseUrl) => {
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-  });
+  let browser;
+  const wsEndpoint = process.env.BROWSER_WS_ENDPOINT || 
+    (process.env.BROWSERLESS_TOKEN ? `wss://chrome.browserless.io?token=${process.env.BROWSERLESS_TOKEN}` : null);
+
+  if (wsEndpoint) {
+    console.info("[pdf-export] connecting to remote browser at", wsEndpoint.split("?")[0]);
+    browser = await puppeteer.connect({
+      browserWSEndpoint: wsEndpoint,
+    });
+  } else {
+    console.info("[pdf-export] launching local puppeteer browser");
+    browser = await puppeteer.launch({
+      headless: true,
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
+  }
 
   try {
     const page = await browser.newPage();
