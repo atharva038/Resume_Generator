@@ -27,6 +27,7 @@ export default defineConfig({
     host: "0.0.0.0",
     // Allow access from network
     port: 5173,
+    allowedHosts: ["localhost", "127.0.0.1", "client", "smartnshine-client"],
     proxy: {
       "/api": {
         // In Docker, VITE_PROXY_TARGET is set to http://server:5000 by

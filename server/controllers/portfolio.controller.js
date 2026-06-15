@@ -5,6 +5,11 @@ import Resume from "../models/Resume.model.js";
 import User from "../models/User.model.js";
 import {chatCompletion} from "../services/openai.service.js";
 import {trackAIUsage} from "../middleware/aiUsageTracker.middleware.js";
+import {
+  createPdfExportSession,
+  deletePdfExportSession,
+} from "../services/pdfExportSession.service.js";
+import {renderResumePdf} from "../services/pdfExport.service.js";
 
 const DEFAULT_SECTION_ORDER = [
   "about",
@@ -184,7 +189,10 @@ const handleDuplicateSlug = (error, res) => {
 const buildPublicPayload = (portfolio, resume, projects) => {
   const portfolioObject = portfolio.toObject();
   const resumeObject = resume?.toObject ? resume.toObject() : resume;
-  const portfolioResume = buildPortfolioResumeSnapshot(portfolioObject, resumeObject);
+  const portfolioResume = buildPortfolioResumeSnapshot(
+    portfolioObject,
+    resumeObject
+  );
 
   return {
     portfolio: {
@@ -227,7 +235,9 @@ const usePortfolioArrayOrResume = (portfolioValue, resumeValue) => {
 };
 
 const buildPortfolioResumeSnapshot = (portfolio, resume) => {
-  const portfolioObject = portfolio?.toObject ? portfolio.toObject() : portfolio;
+  const portfolioObject = portfolio?.toObject
+    ? portfolio.toObject()
+    : portfolio;
   const resumeObject = resume?.toObject ? resume.toObject() : resume;
 
   return {
@@ -257,6 +267,95 @@ const buildPortfolioResumeSnapshot = (portfolio, resume) => {
       portfolioObject?.customSections,
       resumeObject?.customSections
     ),
+  };
+};
+
+const getSocialUrl = (links = [], type) => {
+  return links.find((link) => link?.type === type && link?.url)?.url || "";
+};
+
+const buildPublicResumePdfData = ({portfolio, resume, projects}) => {
+  const portfolioObject = portfolio?.toObject
+    ? portfolio.toObject()
+    : portfolio;
+  const resumeObject = resume?.toObject ? resume.toObject() : resume;
+  const socialLinks = portfolioObject?.socialLinks || [];
+
+  return {
+    ...(resumeObject || {}),
+    name: resumeObject?.name || portfolioObject?.title || "Resume",
+    resumeTitle:
+      resumeObject?.resumeTitle ||
+      portfolioObject?.professionalTitle ||
+      portfolioObject?.title ||
+      "Portfolio Resume",
+    contact: {
+      ...(resumeObject?.contact || {}),
+      email:
+        portfolioObject?.contact?.showEmail !== false
+          ? portfolioObject?.contact?.email ||
+            resumeObject?.contact?.email ||
+            ""
+          : "",
+      phone: portfolioObject?.contact?.showPhone
+        ? portfolioObject?.contact?.phone || resumeObject?.contact?.phone || ""
+        : "",
+      location:
+        portfolioObject?.location || resumeObject?.contact?.location || "",
+      linkedin:
+        getSocialUrl(socialLinks, "linkedin") ||
+        resumeObject?.contact?.linkedin ||
+        "",
+      github:
+        getSocialUrl(socialLinks, "github") ||
+        resumeObject?.contact?.github ||
+        "",
+      portfolio:
+        getSocialUrl(socialLinks, "website") ||
+        resumeObject?.contact?.portfolio ||
+        "",
+    },
+    summary: portfolioObject?.about || resumeObject?.summary || "",
+    skills: usePortfolioArrayOrResume(
+      portfolioObject?.skills,
+      resumeObject?.skills
+    ),
+    experience: usePortfolioArrayOrResume(
+      portfolioObject?.experience,
+      resumeObject?.experience
+    ),
+    education: usePortfolioArrayOrResume(
+      portfolioObject?.education,
+      resumeObject?.education
+    ),
+    projects: (projects || []).map((project) => ({
+      name: project.title || "Project",
+      description:
+        project.shortDescription ||
+        project.description ||
+        project.longDescription ||
+        "",
+      technologies: project.technologies || [],
+      link: project.links?.live || project.links?.github || "",
+      bullets:
+        project.highlights?.length > 0
+          ? project.highlights
+          : [project.problem, project.solution, project.impact].filter(Boolean),
+    })),
+    certifications: usePortfolioArrayOrResume(
+      portfolioObject?.certifications,
+      resumeObject?.certifications
+    ),
+    achievements: usePortfolioArrayOrResume(
+      portfolioObject?.achievements,
+      resumeObject?.achievements
+    ),
+    customSections: usePortfolioArrayOrResume(
+      portfolioObject?.customSections,
+      resumeObject?.customSections
+    ),
+    templateId: resumeObject?.templateId || "classic",
+    colorTheme: resumeObject?.colorTheme || null,
   };
 };
 
@@ -379,7 +478,8 @@ export const createPortfolioFromResume = async (req, res) => {
         resumeProjectId: project._id?.toString() || "",
         title: project.name || `Project ${index + 1}`,
         shortDescription: project.description || "",
-        longDescription: project.bullets?.join("\n") || project.description || "",
+        longDescription:
+          project.bullets?.join("\n") || project.description || "",
         technologies: project.technologies || [],
         links: {
           live: isValidUrl(project.link) ? project.link : "",
@@ -928,6 +1028,110 @@ export const trackResumeDownload = async (req, res) => {
   }
 };
 
+export const downloadPublicResume = async (req, res) => {
+  let token = null;
+
+  try {
+    const slug = normalizeSlug(req.params.slug);
+    console.info("[portfolio:resume-download] request received", {
+      slug,
+      ip: req.ip,
+      origin: req.get("origin") || null,
+      userAgent: req.get("user-agent") || null,
+    });
+
+    const portfolio = await Portfolio.findOne({
+      slug,
+      status: "published",
+    });
+
+    if (!portfolio) {
+      console.warn("[portfolio:resume-download] portfolio not found", {slug});
+      return res.status(404).json({error: "Portfolio not found"});
+    }
+
+    if (portfolio.settings?.showResumeDownload === false) {
+      console.warn("[portfolio:resume-download] disabled by settings", {
+        slug,
+        portfolioId: portfolio._id.toString(),
+      });
+      return res.status(404).json({error: "Resume download is not available"});
+    }
+
+    console.info("[portfolio:resume-download] loading source data", {
+      slug,
+      portfolioId: portfolio._id.toString(),
+      resumeId: portfolio.resumeId?.toString() || null,
+      userId: portfolio.userId?.toString() || null,
+    });
+
+    const [resume, projects] = await Promise.all([
+      portfolio.resumeId
+        ? Resume.findOne({
+            _id: portfolio.resumeId,
+            userId: portfolio.userId,
+          })
+        : null,
+      PortfolioProject.find({
+        portfolioId: portfolio._id,
+        visible: true,
+      }).sort({featured: -1, order: 1, createdAt: 1}),
+    ]);
+    const resumeData = buildPublicResumePdfData({
+      portfolio,
+      resume,
+      projects,
+    });
+    const template = resumeData.templateId || "classic";
+
+    console.info("[portfolio:resume-download] rendering pdf", {
+      slug,
+      template,
+      hasResume: Boolean(resume),
+      projectCount: projects.length,
+      baseUrl: req.get("origin") || null,
+    });
+
+    token = createPdfExportSession({resumeData, template});
+    const pdfBuffer = await renderResumePdf(token, req.get("origin"));
+
+    await Portfolio.findByIdAndUpdate(portfolio._id, {
+      $inc: {"analytics.resumeDownloads": 1},
+    });
+
+    const safeName = (resumeData.name || portfolio.title || "Resume")
+      .replace(/[^a-z0-9]+/gi, "_")
+      .replace(/^_+|_+$/g, "")
+      .slice(0, 80);
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${safeName || "Resume"}_Resume.pdf"`
+    );
+    res.setHeader("Content-Length", pdfBuffer.length);
+    console.info("[portfolio:resume-download] response ready", {
+      slug,
+      bytes: pdfBuffer.length,
+      filename: `${safeName || "Resume"}_Resume.pdf`,
+    });
+    res.send(pdfBuffer);
+  } catch (error) {
+    console.error("[portfolio:resume-download] failed", {
+      slug: req.params.slug,
+      message: error.message,
+      stack: error.stack,
+    });
+    res.status(500).json({
+      error: error.message || "Failed to download resume",
+    });
+  } finally {
+    if (token) {
+      deletePdfExportSession(token);
+    }
+  }
+};
+
 export const trackContactClick = async (req, res) => {
   try {
     const portfolio = await Portfolio.findOneAndUpdate(
@@ -988,7 +1192,8 @@ export const generatePortfolioAbout = async (req, res) => {
     }
 
     const {resume, projects} = await getPortfolioAIContext(portfolio);
-    const targetRole = req.body?.targetRole || portfolio.professionalTitle || "";
+    const targetRole =
+      req.body?.targetRole || portfolio.professionalTitle || "";
     const systemPrompt =
       "You are an expert career branding writer. Write concise, honest portfolio copy using only the supplied facts. Do not invent employers, metrics, or experience.";
     const userPrompt = `Create a polished portfolio About section.

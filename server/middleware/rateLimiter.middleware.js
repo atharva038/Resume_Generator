@@ -241,6 +241,30 @@ export const adminLimiter = rateLimit({
   },
 });
 
+/**
+ * Public Portfolio Analytics Rate Limiter
+ * Applied to: /api/portfolio/public/:slug tracking POST routes
+ * Purpose: Prevent anonymous view/click counter spam without affecting page reads
+ */
+export const portfolioAnalyticsLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: process.env.NODE_ENV === "development" ? 120 : 60,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res) => {
+    console.warn(
+      `⚠️  Portfolio analytics rate limit exceeded for IP: ${req.ip} on ${req.path}`
+    );
+    res.status(429).json({
+      error: "Too many portfolio analytics events. Please try again shortly.",
+      retryAfter: "1 minute",
+      type: "PORTFOLIO_ANALYTICS_RATE_LIMIT_EXCEEDED",
+      limit: process.env.NODE_ENV === "development" ? 120 : 60,
+      window: "1 minute",
+    });
+  },
+});
+
 // Export all rate limiters
 export default {
   authLimiter,
@@ -250,4 +274,5 @@ export default {
   contactLimiter,
   feedbackLimiter,
   adminLimiter,
+  portfolioAnalyticsLimiter,
 };

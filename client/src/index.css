@@ -373,6 +373,30 @@
   --pt-radius: 0.375rem;
 }
 
+[data-portfolio-theme="cyberDev"][data-color-mode="light"] {
+  --pt-accent: #047857;
+  --pt-accent-dim: #10b98118;
+  --pt-accent-text: #ecfdf5;
+  --pt-bg: #f8fafc;
+  --pt-surface: #ffffff;
+  --pt-surface-alt: #eef2f7;
+  --pt-border: rgba(15, 23, 42, 0.14);
+  --pt-text: #0f172a;
+  --pt-text-muted: #475569;
+}
+
+[data-portfolio-theme="cyberDev"][data-color-mode="dark"] {
+  --pt-accent: #00ff88;
+  --pt-accent-dim: #00ff8820;
+  --pt-accent-text: #0a0a0f;
+  --pt-bg: #0a0a0f;
+  --pt-surface: #111118;
+  --pt-surface-alt: #1a1a24;
+  --pt-border: rgba(255, 255, 255, 0.08);
+  --pt-text: #e2e8f0;
+  --pt-text-muted: #94a3b8;
+}
+
 /* ─── Creative (NEW) ─── */
 [data-portfolio-theme="creative"] {
   --pt-accent: #7c3aed;

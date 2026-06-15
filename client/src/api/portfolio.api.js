@@ -2,7 +2,8 @@ import api from "./api";
 
 export const portfolioAPI = {
   list: () => api.get("/portfolio"),
-  createFromResume: (resumeId) => api.post(`/portfolio/from-resume/${resumeId}`),
+  createFromResume: (resumeId) =>
+    api.post(`/portfolio/from-resume/${resumeId}`),
   getById: (id) => api.get(`/portfolio/${id}`),
   update: (id, data) => api.put(`/portfolio/${id}`, data),
   delete: (id) => api.delete(`/portfolio/${id}`),
@@ -17,6 +18,10 @@ export const portfolioAPI = {
     api.delete(`/portfolio/${portfolioId}/projects/${projectId}`),
 
   getPublic: (slug) => api.get(`/portfolio/public/${slug}`),
+  downloadResume: (slug) =>
+    api.get(`/portfolio/public/${slug}/resume`, {responseType: "blob"}),
+  getResumeDownloadUrl: (slug) =>
+    api.getUri({url: `/portfolio/public/${slug}/resume`}),
   trackView: (slug) => api.post(`/portfolio/public/${slug}/view`),
   trackResumeDownload: (slug) =>
     api.post(`/portfolio/public/${slug}/resume-download`),

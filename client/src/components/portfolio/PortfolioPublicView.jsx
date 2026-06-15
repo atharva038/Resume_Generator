@@ -23,6 +23,7 @@ const PortfolioPublicView = ({
   onContactClick,
   onProjectClick,
   onResumeClick,
+  resumeDownloadUrl,
 }) => {
   const sections = portfolio?.sections || {};
 
@@ -69,16 +70,27 @@ const PortfolioPublicView = ({
                   Call
                 </a>
               )}
-              {portfolio?.settings?.showResumeDownload && (
-                <button
-                  type="button"
-                  onClick={onResumeClick}
-                  className="inline-flex items-center gap-2 px-4 py-3 rounded-lg border border-gray-300 font-semibold"
-                >
-                  <Download className="w-4 h-4" />
-                  Resume
-                </button>
-              )}
+              {portfolio?.settings?.showResumeDownload &&
+                (resumeDownloadUrl ? (
+                  <a
+                    href={resumeDownloadUrl}
+                    download
+                    onClick={onResumeClick}
+                    className="inline-flex items-center gap-2 px-4 py-3 rounded-lg border border-gray-300 font-semibold"
+                  >
+                    <Download className="w-4 h-4" />
+                    Resume
+                  </a>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={onResumeClick}
+                    className="inline-flex items-center gap-2 px-4 py-3 rounded-lg border border-gray-300 font-semibold"
+                  >
+                    <Download className="w-4 h-4" />
+                    Resume
+                  </button>
+                ))}
             </div>
           </div>
         </div>

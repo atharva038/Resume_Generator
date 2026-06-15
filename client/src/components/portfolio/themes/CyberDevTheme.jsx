@@ -1,10 +1,9 @@
 import {useEffect, useRef} from "react";
-import {Code2, ExternalLink, Github, MapPin, Terminal, Zap} from "lucide-react";
+import {MapPin, Zap} from "lucide-react";
 import {
   ContactActions,
   CustomSections,
   ProjectLinks,
-  SectionHeading,
   SkillPills,
   SocialLinks,
   hasItems,
@@ -148,7 +147,7 @@ const CyberSectionHeading = ({eyebrow, title, description}) => (
           marginBottom: "0.25rem",
         }}
       >
-        // {eyebrow}
+        {`// ${eyebrow}`}
       </p>
     )}
     <h2

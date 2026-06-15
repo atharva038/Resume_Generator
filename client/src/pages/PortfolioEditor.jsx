@@ -1,5 +1,5 @@
 import {useEffect, useMemo, useState} from "react";
-import {Link, useNavigate, useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import toast from "react-hot-toast";
 import {
   ArrowLeft,
@@ -16,18 +16,41 @@ import {
 } from "lucide-react";
 import {portfolioAPI} from "@/api/portfolio.api";
 import {portfolioThemeList} from "@/components/portfolio/themes/themeRegistry";
+import {useAuth} from "@/hooks/useAuth";
+import {useNavigationBlocker} from "@/context/NavigationBlockerContext";
 
 const blankProject = {
   title: "",
   shortDescription: "",
+  longDescription: "",
+  problem: "",
+  solution: "",
+  impact: "",
+  role: "",
+  duration: "",
   technologies: [],
   links: {
     live: "",
     github: "",
+    caseStudy: "",
+    video: "",
   },
+  images: [],
+  highlights: [],
   featured: false,
   visible: true,
 };
+
+const socialLinkTypes = [
+  "linkedin",
+  "github",
+  "twitter",
+  "website",
+  "leetcode",
+  "behance",
+  "dribbble",
+  "other",
+];
 
 const getProjectDescriptionPreview = (project) => {
   return (
@@ -43,10 +66,42 @@ const getProjectTechnologiesText = (project) => {
   return (project.technologies || []).join(", ");
 };
 
+const getProjectHighlightsText = (project) => {
+  if (project.highlightsText !== undefined) return project.highlightsText;
+  return (project.highlights || []).join("\n");
+};
+
+const getProjectImagesText = (project) => {
+  if (project.imagesText !== undefined) return project.imagesText;
+  return (project.images || [])
+    .map((image) => [image.url, image.alt].filter(Boolean).join(" | "))
+    .join("\n");
+};
+
+const imageLinesToArray = (value) =>
+  String(value || "")
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line, index) => {
+      const [url, ...altParts] = line.split("|").map((part) => part.trim());
+
+      return {
+        url,
+        alt: altParts.join(" | "),
+        isCover: index === 0,
+      };
+    });
+
 const getProjectUpdatePayload = (project) => ({
   title: project.title,
   shortDescription: project.shortDescription || "",
   longDescription: project.longDescription || "",
+  problem: project.problem || "",
+  solution: project.solution || "",
+  impact: project.impact || "",
+  role: project.role || "",
+  duration: project.duration || "",
   technologies: getProjectTechnologiesText(project)
     .split(",")
     .map((item) => item.trim())
@@ -57,11 +112,13 @@ const getProjectUpdatePayload = (project) => ({
     caseStudy: project.links?.caseStudy || "",
     video: project.links?.video || "",
   },
+  images: imageLinesToArray(getProjectImagesText(project)),
+  highlights: linesToArray(getProjectHighlightsText(project)),
   featured: Boolean(project.featured),
   visible: project.visible !== false,
 });
 
-const useExistingOrFallback = (existing, fallback) => {
+const getExistingOrFallback = (existing, fallback) => {
   return Array.isArray(existing) ? existing : fallback || [];
 };
 
@@ -78,6 +135,16 @@ const commaToArray = (value) => {
     .map((item) => item.trim())
     .filter(Boolean);
 };
+
+const stableStringify = (value) => JSON.stringify(value || null);
+
+const getEditorSnapshot = ({form, projects}) =>
+  stableStringify({
+    form,
+    projects: (projects || [])
+      .filter((project) => project._id)
+      .map((project) => getProjectUpdatePayload(project)),
+  });
 
 const DEFAULT_SECTION_ORDER = [
   "about",
@@ -103,21 +170,30 @@ const sectionLabels = {
   contact: "Contact",
 };
 
-const normalizeSectionOrder = (sectionOrder) => [
-  ...new Set([
-    ...(Array.isArray(sectionOrder) ? sectionOrder : []),
-    ...DEFAULT_SECTION_ORDER,
-  ]),
-].filter((section) => DEFAULT_SECTION_ORDER.includes(section));
+const normalizeSectionOrder = (sectionOrder) =>
+  [
+    ...new Set([
+      ...(Array.isArray(sectionOrder) ? sectionOrder : []),
+      ...DEFAULT_SECTION_ORDER,
+    ]),
+  ].filter((section) => DEFAULT_SECTION_ORDER.includes(section));
 
 const CollapsiblePanel = ({
   title,
   description,
   defaultOpen = false,
+  forceState,
+  forceVersion,
   actions = null,
   children,
 }) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  useEffect(() => {
+    if (forceVersion) {
+      setIsOpen(Boolean(forceState));
+    }
+  }, [forceState, forceVersion]);
 
   return (
     <section className="border border-gray-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-zinc-950 overflow-hidden">
@@ -153,13 +229,20 @@ const CollapsiblePanel = ({
 const PortfolioEditor = () => {
   const {id} = useParams();
   const navigate = useNavigate();
+  const {user} = useAuth();
+  const {blockNavigation, unblockNavigation} = useNavigationBlocker();
   const [portfolio, setPortfolio] = useState(null);
   const [projects, setProjects] = useState([]);
   const [form, setForm] = useState(null);
+  const [savedSnapshot, setSavedSnapshot] = useState("");
   const [newProject, setNewProject] = useState(blankProject);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [aiAction, setAiAction] = useState("");
+  const [panelControl, setPanelControl] = useState({
+    version: 0,
+    open: null,
+  });
 
   useEffect(() => {
     fetchPortfolio();
@@ -169,6 +252,66 @@ const PortfolioEditor = () => {
     if (!portfolio?.slug) return "";
     return `${window.location.origin}/u/${portfolio.slug}`;
   }, [portfolio?.slug]);
+  const userTier =
+    user?.role === "admin" ? "pro" : user?.subscription?.tier || "free";
+  const isThemeAllowed = (theme) => theme.allowedTiers?.includes(userTier);
+  const currentSnapshot = useMemo(
+    () => (form ? getEditorSnapshot({form, projects}) : ""),
+    [form, projects]
+  );
+  const hasUnsavedChanges = Boolean(
+    form && savedSnapshot && currentSnapshot !== savedSnapshot
+  );
+
+  useEffect(() => {
+    const handleBeforeUnload = (event) => {
+      if (!hasUnsavedChanges) return;
+
+      event.preventDefault();
+      event.returnValue = "";
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [hasUnsavedChanges]);
+
+  useEffect(() => {
+    if (hasUnsavedChanges) {
+      blockNavigation(() =>
+        window.confirm("You have unsaved portfolio changes. Leave anyway?")
+      );
+    } else {
+      unblockNavigation();
+    }
+
+    return () => {
+      unblockNavigation();
+    };
+  }, [blockNavigation, hasUnsavedChanges, unblockNavigation]);
+
+  const confirmUnsavedNavigation = () => {
+    return (
+      !hasUnsavedChanges ||
+      window.confirm("You have unsaved portfolio changes. Leave anyway?")
+    );
+  };
+
+  const navigateWithUnsavedCheck = (to) => {
+    if (confirmUnsavedNavigation()) {
+      unblockNavigation();
+      navigate(to);
+    }
+  };
+
+  const setAllPanelsOpen = (open) => {
+    setPanelControl((current) => ({
+      version: current.version + 1,
+      open,
+    }));
+  };
 
   const fetchPortfolio = async () => {
     try {
@@ -178,24 +321,27 @@ const PortfolioEditor = () => {
       const hydratedPortfolio = {
         ...portfolioData,
         sectionOrder: normalizeSectionOrder(portfolioData.sectionOrder),
-        skills: useExistingOrFallback(portfolioData.skills, resumeSnapshot.skills),
-        experience: useExistingOrFallback(
+        skills: getExistingOrFallback(
+          portfolioData.skills,
+          resumeSnapshot.skills
+        ),
+        experience: getExistingOrFallback(
           portfolioData.experience,
           resumeSnapshot.experience
         ),
-        education: useExistingOrFallback(
+        education: getExistingOrFallback(
           portfolioData.education,
           resumeSnapshot.education
         ),
-        certifications: useExistingOrFallback(
+        certifications: getExistingOrFallback(
           portfolioData.certifications,
           resumeSnapshot.certifications
         ),
-        achievements: useExistingOrFallback(
+        achievements: getExistingOrFallback(
           portfolioData.achievements,
           resumeSnapshot.achievements
         ),
-        customSections: useExistingOrFallback(
+        customSections: getExistingOrFallback(
           portfolioData.customSections,
           resumeSnapshot.customSections
         ),
@@ -204,6 +350,12 @@ const PortfolioEditor = () => {
       setPortfolio(portfolioData);
       setProjects(response.data.projects || []);
       setForm(hydratedPortfolio);
+      setSavedSnapshot(
+        getEditorSnapshot({
+          form: hydratedPortfolio,
+          projects: response.data.projects || [],
+        })
+      );
     } catch (error) {
       toast.error("Failed to load portfolio");
       console.error(error);
@@ -257,19 +409,32 @@ const PortfolioEditor = () => {
     });
   };
 
-  const updateFirstSocialLink = (field, value) => {
-    setForm((current) => {
-      const socialLinks = current.socialLinks?.length
-        ? [...current.socialLinks]
-        : [{label: "Website", type: "website", url: ""}];
+  const updateSocialLink = (index, field, value) => {
+    setForm((current) => ({
+      ...current,
+      socialLinks: (current.socialLinks || []).map((link, linkIndex) =>
+        linkIndex === index ? {...link, [field]: value} : link
+      ),
+    }));
+  };
 
-      socialLinks[0] = {
-        ...socialLinks[0],
-        [field]: value,
-      };
+  const addSocialLink = () => {
+    setForm((current) => ({
+      ...current,
+      socialLinks: [
+        ...(current.socialLinks || []),
+        {label: "", type: "website", url: ""},
+      ],
+    }));
+  };
 
-      return {...current, socialLinks};
-    });
+  const removeSocialLink = (index) => {
+    setForm((current) => ({
+      ...current,
+      socialLinks: (current.socialLinks || []).filter(
+        (_, linkIndex) => linkIndex !== index
+      ),
+    }));
   };
 
   const updateProjectDraft = (projectId, updater) => {
@@ -336,6 +501,12 @@ const PortfolioEditor = () => {
       setPortfolio(response.data.portfolio);
       setForm(response.data.portfolio);
       setProjects(projectResponses.map((item) => item.data.project));
+      setSavedSnapshot(
+        getEditorSnapshot({
+          form: response.data.portfolio,
+          projects: projectResponses.map((item) => item.data.project),
+        })
+      );
       if (!silent) {
         toast.success("Portfolio saved");
       }
@@ -352,6 +523,7 @@ const PortfolioEditor = () => {
   const handlePreview = async () => {
     const saved = await handleSave({silent: true});
     if (saved) {
+      unblockNavigation();
       navigate(`/portfolio/${id}/preview`);
     }
   };
@@ -365,6 +537,12 @@ const PortfolioEditor = () => {
 
       setPortfolio(response.data.portfolio);
       setForm(response.data.portfolio);
+      setSavedSnapshot(
+        getEditorSnapshot({
+          form: response.data.portfolio,
+          projects,
+        })
+      );
       toast.success(
         response.data.portfolio.status === "published"
           ? "Portfolio published"
@@ -468,6 +646,14 @@ const PortfolioEditor = () => {
           item._id === project._id ? response.data.project : item
         )
       );
+      setSavedSnapshot(
+        getEditorSnapshot({
+          form,
+          projects: projects.map((item) =>
+            item._id === project._id ? response.data.project : item
+          ),
+        })
+      );
       toast.success("Portfolio project saved");
     } catch (error) {
       toast.error(error.response?.data?.error || "Failed to save project");
@@ -484,17 +670,18 @@ const PortfolioEditor = () => {
     try {
       const payload = {
         ...newProject,
-        technologies: newProject.technologiesText
-          ? newProject.technologiesText
-              .split(",")
-              .map((item) => item.trim())
-              .filter(Boolean)
-          : [],
+        technologies: commaToArray(newProject.technologiesText),
+        highlights: linesToArray(newProject.highlightsText),
+        images: imageLinesToArray(newProject.imagesText),
       };
       delete payload.technologiesText;
+      delete payload.highlightsText;
+      delete payload.imagesText;
 
       const response = await portfolioAPI.createProject(id, payload);
-      setProjects((items) => [...items, response.data.project]);
+      const nextProjects = [...projects, response.data.project];
+      setProjects(nextProjects);
+      setSavedSnapshot(getEditorSnapshot({form, projects: nextProjects}));
       setNewProject(blankProject);
       toast.success("Project added");
     } catch (error) {
@@ -508,7 +695,9 @@ const PortfolioEditor = () => {
 
     try {
       await portfolioAPI.deleteProject(id, projectId);
-      setProjects((items) => items.filter((item) => item._id !== projectId));
+      const nextProjects = projects.filter((item) => item._id !== projectId);
+      setProjects(nextProjects);
+      setSavedSnapshot(getEditorSnapshot({form, projects: nextProjects}));
       toast.success("Project deleted");
     } catch (error) {
       toast.error("Failed to delete project");
@@ -531,18 +720,26 @@ const PortfolioEditor = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between mb-8">
           <div>
-            <Link
-              to="/portfolio"
+            <button
+              type="button"
+              onClick={() => navigateWithUnsavedCheck("/portfolio")}
               className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-4"
             >
               <ArrowLeft className="w-4 h-4" />
               Back to portfolios
-            </Link>
+            </button>
             <h1 className="text-4xl font-black tracking-tight">
               Portfolio Editor
             </h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-2">
-              Status: <span className="capitalize">{portfolio.status}</span>
+            <p className="mt-2 flex flex-wrap items-center gap-2 text-gray-600 dark:text-gray-400">
+              <span>
+                Status: <span className="capitalize">{portfolio.status}</span>
+              </span>
+              {hasUnsavedChanges && (
+                <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-800 dark:bg-amber-500/15 dark:text-amber-200">
+                  Unsaved changes
+                </span>
+              )}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -589,17 +786,48 @@ const PortfolioEditor = () => {
 
         <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
           <div className="space-y-6">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-950">
+              <div>
+                <h2 className="text-sm font-bold">Editor sections</h2>
+                <p className="text-xs text-gray-600 dark:text-gray-400">
+                  Keep everything collapsed for quick scanning, or expand all
+                  when doing a full review.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => setAllPanelsOpen(true)}
+                  className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-semibold hover:bg-gray-100 dark:border-zinc-700 dark:bg-black dark:hover:bg-zinc-900"
+                >
+                  <ArrowDown className="h-4 w-4" />
+                  Expand all
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAllPanelsOpen(false)}
+                  className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-semibold hover:bg-gray-100 dark:border-zinc-700 dark:bg-black dark:hover:bg-zinc-900"
+                >
+                  <ArrowUp className="h-4 w-4" />
+                  Collapse all
+                </button>
+              </div>
+            </div>
+
             <CollapsiblePanel
               title="Profile"
               description="Portfolio title, role, slug, and about copy."
-              defaultOpen
+              forceState={panelControl.open}
+              forceVersion={panelControl.version}
             >
               <div className="grid gap-4 md:grid-cols-2">
                 <label className="block">
                   <span className="text-sm font-semibold">Title</span>
                   <input
                     value={form.title || ""}
-                    onChange={(event) => updateField("title", event.target.value)}
+                    onChange={(event) =>
+                      updateField("title", event.target.value)
+                    }
                     className="mt-2 w-full rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
                   />
                 </label>
@@ -619,7 +847,9 @@ const PortfolioEditor = () => {
                   <span className="text-sm font-semibold">Slug</span>
                   <input
                     value={form.slug || ""}
-                    onChange={(event) => updateField("slug", event.target.value)}
+                    onChange={(event) =>
+                      updateField("slug", event.target.value)
+                    }
                     className="mt-2 w-full rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
                   />
                 </label>
@@ -633,12 +863,38 @@ const PortfolioEditor = () => {
                     className="mt-2 w-full rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
                   />
                 </label>
+                <label className="block">
+                  <span className="text-sm font-semibold">
+                    Profile image URL
+                  </span>
+                  <input
+                    value={form.profileImage || ""}
+                    onChange={(event) =>
+                      updateField("profileImage", event.target.value)
+                    }
+                    placeholder="https://example.com/headshot.jpg"
+                    className="mt-2 w-full rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
+                  />
+                </label>
+                <label className="block">
+                  <span className="text-sm font-semibold">Hero image URL</span>
+                  <input
+                    value={form.heroImage || ""}
+                    onChange={(event) =>
+                      updateField("heroImage", event.target.value)
+                    }
+                    placeholder="https://example.com/hero.jpg"
+                    className="mt-2 w-full rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
+                  />
+                </label>
               </div>
               <label className="block mt-4">
                 <span className="text-sm font-semibold">Tagline</span>
                 <textarea
                   value={form.tagline || ""}
-                  onChange={(event) => updateField("tagline", event.target.value)}
+                  onChange={(event) =>
+                    updateField("tagline", event.target.value)
+                  }
                   rows={3}
                   className="mt-2 w-full rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
                 />
@@ -667,8 +923,9 @@ const PortfolioEditor = () => {
 
             <CollapsiblePanel
               title="Contact"
-              description="Public contact details and primary social link."
-              defaultOpen
+              description="Public contact details and social links."
+              forceState={panelControl.open}
+              forceVersion={panelControl.version}
             >
               <div className="grid gap-4 md:grid-cols-2">
                 <label className="block">
@@ -722,38 +979,72 @@ const PortfolioEditor = () => {
                   Show phone publicly
                 </label>
               </div>
-              <div className="grid gap-4 md:grid-cols-2 mt-4">
-                <label className="block">
-                  <span className="text-sm font-semibold">
-                    Primary social label
-                  </span>
-                  <input
-                    value={form.socialLinks?.[0]?.label || ""}
-                    onChange={(event) =>
-                      updateFirstSocialLink("label", event.target.value)
-                    }
-                    className="mt-2 w-full rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
-                  />
-                </label>
-                <label className="block">
-                  <span className="text-sm font-semibold">
-                    Primary social URL
-                  </span>
-                  <input
-                    value={form.socialLinks?.[0]?.url || ""}
-                    onChange={(event) =>
-                      updateFirstSocialLink("url", event.target.value)
-                    }
-                    className="mt-2 w-full rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
-                  />
-                </label>
+              <div className="mt-5 border-t border-gray-100 pt-4 dark:border-zinc-800">
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <h3 className="text-sm font-bold">Social links</h3>
+                  <button
+                    type="button"
+                    onClick={addSocialLink}
+                    className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm font-semibold dark:border-zinc-700"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {(form.socialLinks || []).map((link, index) => (
+                    <div
+                      key={`social-${index}`}
+                      className="grid gap-3 rounded-lg border border-gray-200 p-3 dark:border-zinc-800 md:grid-cols-[150px_1fr_1.5fr_auto]"
+                    >
+                      <select
+                        value={link.type || "other"}
+                        onChange={(event) =>
+                          updateSocialLink(index, "type", event.target.value)
+                        }
+                        className="rounded-lg border border-gray-300 bg-white px-3 py-3 capitalize dark:border-zinc-700 dark:bg-black"
+                      >
+                        {socialLinkTypes.map((type) => (
+                          <option key={type} value={type}>
+                            {type}
+                          </option>
+                        ))}
+                      </select>
+                      <input
+                        value={link.label || ""}
+                        onChange={(event) =>
+                          updateSocialLink(index, "label", event.target.value)
+                        }
+                        placeholder="Label"
+                        className="rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
+                      />
+                      <input
+                        value={link.url || ""}
+                        onChange={(event) =>
+                          updateSocialLink(index, "url", event.target.value)
+                        }
+                        placeholder="https://..."
+                        className="rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeSocialLink(index)}
+                        aria-label="Remove social link"
+                        className="rounded-lg p-2 text-gray-500 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10"
+                      >
+                        <Trash2 className="h-5 w-5" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
             </CollapsiblePanel>
 
             <CollapsiblePanel
               title="Projects"
               description="Portfolio-only project copy, links, visibility, and featured status."
-              defaultOpen
+              forceState={panelControl.open}
+              forceVersion={panelControl.version}
             >
               <div className="space-y-4 mb-6">
                 {projects.map((project) => (
@@ -840,6 +1131,71 @@ const PortfolioEditor = () => {
                         />
                       </label>
                       <label className="block">
+                        <span className="text-sm font-semibold">Your role</span>
+                        <input
+                          value={project.role || ""}
+                          onChange={(event) =>
+                            updateProjectDraft(project._id, {
+                              role: event.target.value,
+                            })
+                          }
+                          placeholder="Full-stack developer"
+                          className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
+                        />
+                      </label>
+                      <label className="block">
+                        <span className="text-sm font-semibold">Duration</span>
+                        <input
+                          value={project.duration || ""}
+                          onChange={(event) =>
+                            updateProjectDraft(project._id, {
+                              duration: event.target.value,
+                            })
+                          }
+                          placeholder="Jan 2026 - Mar 2026"
+                          className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
+                        />
+                      </label>
+                      <label className="block md:col-span-2">
+                        <span className="text-sm font-semibold">Problem</span>
+                        <textarea
+                          value={project.problem || ""}
+                          onChange={(event) =>
+                            updateProjectDraft(project._id, {
+                              problem: event.target.value,
+                            })
+                          }
+                          rows={3}
+                          className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
+                        />
+                      </label>
+                      <label className="block md:col-span-2">
+                        <span className="text-sm font-semibold">Solution</span>
+                        <textarea
+                          value={project.solution || ""}
+                          onChange={(event) =>
+                            updateProjectDraft(project._id, {
+                              solution: event.target.value,
+                            })
+                          }
+                          rows={3}
+                          className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
+                        />
+                      </label>
+                      <label className="block md:col-span-2">
+                        <span className="text-sm font-semibold">Impact</span>
+                        <textarea
+                          value={project.impact || ""}
+                          onChange={(event) =>
+                            updateProjectDraft(project._id, {
+                              impact: event.target.value,
+                            })
+                          }
+                          rows={3}
+                          className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
+                        />
+                      </label>
+                      <label className="block">
                         <span className="text-sm font-semibold">
                           Tech stack
                         </span>
@@ -883,6 +1239,72 @@ const PortfolioEditor = () => {
                               },
                             }))
                           }
+                          className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
+                        />
+                      </label>
+                      <label className="block">
+                        <span className="text-sm font-semibold">
+                          Case study URL
+                        </span>
+                        <input
+                          value={project.links?.caseStudy || ""}
+                          onChange={(event) =>
+                            updateProjectDraft(project._id, (current) => ({
+                              links: {
+                                ...(current.links || {}),
+                                caseStudy: event.target.value,
+                              },
+                            }))
+                          }
+                          className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
+                        />
+                      </label>
+                      <label className="block">
+                        <span className="text-sm font-semibold">
+                          Video URL
+                        </span>
+                        <input
+                          value={project.links?.video || ""}
+                          onChange={(event) =>
+                            updateProjectDraft(project._id, (current) => ({
+                              links: {
+                                ...(current.links || {}),
+                                video: event.target.value,
+                              },
+                            }))
+                          }
+                          className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
+                        />
+                      </label>
+                      <label className="block md:col-span-2">
+                        <span className="text-sm font-semibold">
+                          Highlights
+                        </span>
+                        <textarea
+                          value={getProjectHighlightsText(project)}
+                          onChange={(event) =>
+                            updateProjectDraft(project._id, {
+                              highlightsText: event.target.value,
+                            })
+                          }
+                          rows={4}
+                          placeholder="One highlight per line"
+                          className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
+                        />
+                      </label>
+                      <label className="block md:col-span-2">
+                        <span className="text-sm font-semibold">
+                          Project image URLs
+                        </span>
+                        <textarea
+                          value={getProjectImagesText(project)}
+                          onChange={(event) =>
+                            updateProjectDraft(project._id, {
+                              imagesText: event.target.value,
+                            })
+                          }
+                          rows={4}
+                          placeholder="https://example.com/screenshot.png | Dashboard screenshot"
                           className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
                         />
                       </label>
@@ -964,6 +1386,53 @@ const PortfolioEditor = () => {
                     }
                     className="rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
                   />
+                  <input
+                    placeholder="Case study URL"
+                    value={newProject.links.caseStudy}
+                    onChange={(event) =>
+                      setNewProject((current) => ({
+                        ...current,
+                        links: {
+                          ...current.links,
+                          caseStudy: event.target.value,
+                        },
+                      }))
+                    }
+                    className="rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
+                  />
+                  <input
+                    placeholder="Video URL"
+                    value={newProject.links.video}
+                    onChange={(event) =>
+                      setNewProject((current) => ({
+                        ...current,
+                        links: {...current.links, video: event.target.value},
+                      }))
+                    }
+                    className="rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
+                  />
+                  <input
+                    placeholder="Your role"
+                    value={newProject.role}
+                    onChange={(event) =>
+                      setNewProject((current) => ({
+                        ...current,
+                        role: event.target.value,
+                      }))
+                    }
+                    className="rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
+                  />
+                  <input
+                    placeholder="Duration"
+                    value={newProject.duration}
+                    onChange={(event) =>
+                      setNewProject((current) => ({
+                        ...current,
+                        duration: event.target.value,
+                      }))
+                    }
+                    className="rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
+                  />
                 </div>
                 <textarea
                   placeholder="Short project description"
@@ -975,6 +1444,80 @@ const PortfolioEditor = () => {
                     }))
                   }
                   rows={3}
+                  className="mt-4 w-full rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
+                />
+                <textarea
+                  placeholder="Detailed project description"
+                  value={newProject.longDescription}
+                  onChange={(event) =>
+                    setNewProject((current) => ({
+                      ...current,
+                      longDescription: event.target.value,
+                    }))
+                  }
+                  rows={4}
+                  className="mt-4 w-full rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
+                />
+                <div className="mt-4 grid gap-4 md:grid-cols-3">
+                  <textarea
+                    placeholder="Problem"
+                    value={newProject.problem}
+                    onChange={(event) =>
+                      setNewProject((current) => ({
+                        ...current,
+                        problem: event.target.value,
+                      }))
+                    }
+                    rows={4}
+                    className="rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
+                  />
+                  <textarea
+                    placeholder="Solution"
+                    value={newProject.solution}
+                    onChange={(event) =>
+                      setNewProject((current) => ({
+                        ...current,
+                        solution: event.target.value,
+                      }))
+                    }
+                    rows={4}
+                    className="rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
+                  />
+                  <textarea
+                    placeholder="Impact"
+                    value={newProject.impact}
+                    onChange={(event) =>
+                      setNewProject((current) => ({
+                        ...current,
+                        impact: event.target.value,
+                      }))
+                    }
+                    rows={4}
+                    className="rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
+                  />
+                </div>
+                <textarea
+                  placeholder="Highlights, one per line"
+                  value={newProject.highlightsText || ""}
+                  onChange={(event) =>
+                    setNewProject((current) => ({
+                      ...current,
+                      highlightsText: event.target.value,
+                    }))
+                  }
+                  rows={4}
+                  className="mt-4 w-full rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
+                />
+                <textarea
+                  placeholder="Image URLs, one per line. Optional format: URL | alt text"
+                  value={newProject.imagesText || ""}
+                  onChange={(event) =>
+                    setNewProject((current) => ({
+                      ...current,
+                      imagesText: event.target.value,
+                    }))
+                  }
+                  rows={4}
                   className="mt-4 w-full rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
                 />
                 <button
@@ -991,6 +1534,8 @@ const PortfolioEditor = () => {
             <CollapsiblePanel
               title="Experience"
               description="Portfolio-only copy of your resume experience."
+              forceState={panelControl.open}
+              forceVersion={panelControl.version}
               actions={
                 <button
                   type="button"
@@ -1105,6 +1650,8 @@ const PortfolioEditor = () => {
             <CollapsiblePanel
               title="Education"
               description="Edit the education shown only on this portfolio."
+              forceState={panelControl.open}
+              forceVersion={panelControl.version}
               actions={
                 <button
                   type="button"
@@ -1193,6 +1740,8 @@ const PortfolioEditor = () => {
             <CollapsiblePanel
               title="Skills"
               description="Edit the skill groups shown in your portfolio."
+              forceState={panelControl.open}
+              forceVersion={panelControl.version}
             >
               <div className="space-y-4">
                 {(form.skills || []).map((group, index) => (
@@ -1223,7 +1772,9 @@ const PortfolioEditor = () => {
                       />
                       <button
                         type="button"
-                        onClick={() => removePortfolioArrayItem("skills", index)}
+                        onClick={() =>
+                          removePortfolioArrayItem("skills", index)
+                        }
                         className="rounded-lg px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10"
                       >
                         Remove
@@ -1247,6 +1798,8 @@ const PortfolioEditor = () => {
             <CollapsiblePanel
               title="Achievements"
               description="One achievement per line."
+              forceState={panelControl.open}
+              forceVersion={panelControl.version}
             >
               <textarea
                 value={(form.achievements || []).join("\n")}
@@ -1262,6 +1815,8 @@ const PortfolioEditor = () => {
             <CollapsiblePanel
               title="Custom Sections"
               description="Extra portfolio-only sections imported from the resume or added manually."
+              forceState={panelControl.open}
+              forceVersion={panelControl.version}
               actions={
                 <button
                   type="button"
@@ -1328,6 +1883,8 @@ const PortfolioEditor = () => {
             <CollapsiblePanel
               title="Certifications"
               description="Portfolio-only certification list."
+              forceState={panelControl.open}
+              forceVersion={panelControl.version}
               actions={
                 <button
                   type="button"
@@ -1395,7 +1952,8 @@ const PortfolioEditor = () => {
             <CollapsiblePanel
               title="Theme"
               description="Choose how this portfolio is presented."
-              defaultOpen
+              forceState={panelControl.open}
+              forceVersion={panelControl.version}
             >
               <select
                 value={form.themeId || "minimalDeveloper"}
@@ -1403,29 +1961,48 @@ const PortfolioEditor = () => {
                 className="w-full rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
               >
                 {portfolioThemeList.map((theme) => (
-                  <option key={theme.id} value={theme.id}>
+                  <option
+                    key={theme.id}
+                    value={theme.id}
+                    disabled={!isThemeAllowed(theme)}
+                  >
                     {theme.name}
+                    {!isThemeAllowed(theme) ? " (upgrade)" : ""}
                   </option>
                 ))}
               </select>
               <div className="mt-4 space-y-3">
-                {portfolioThemeList.map((theme) => (
-                  <button
-                    key={theme.id}
-                    type="button"
-                    onClick={() => updateField("themeId", theme.id)}
-                    className={`w-full rounded-lg border p-3 text-left transition-colors ${
-                      form.themeId === theme.id
-                        ? "border-blue-600 bg-blue-50 text-blue-950 dark:bg-blue-500/10 dark:text-blue-100"
-                        : "border-gray-200 hover:bg-gray-50 dark:border-zinc-800 dark:hover:bg-zinc-900"
-                    }`}
-                  >
-                    <div className="font-bold">{theme.name}</div>
-                    <div className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                      {theme.description}
-                    </div>
-                  </button>
-                ))}
+                {portfolioThemeList.map((theme) => {
+                  const allowed = isThemeAllowed(theme);
+
+                  return (
+                    <button
+                      key={theme.id}
+                      type="button"
+                      onClick={() =>
+                        allowed && updateField("themeId", theme.id)
+                      }
+                      disabled={!allowed}
+                      className={`w-full rounded-lg border p-3 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-55 ${
+                        form.themeId === theme.id
+                          ? "border-blue-600 bg-blue-50 text-blue-950 dark:bg-blue-500/10 dark:text-blue-100"
+                          : "border-gray-200 hover:bg-gray-50 dark:border-zinc-800 dark:hover:bg-zinc-900"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <span className="font-bold">{theme.name}</span>
+                        {!allowed && (
+                          <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800 dark:bg-amber-500/15 dark:text-amber-200">
+                            Upgrade
+                          </span>
+                        )}
+                      </div>
+                      <div className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                        {theme.description}
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
 
               {/* ─── Accent colour customizer ─── */}
@@ -1438,9 +2015,7 @@ const PortfolioEditor = () => {
 
                 return (
                   <div className="mt-5 border-t border-gray-100 dark:border-zinc-800 pt-4">
-                    <p className="mb-2 text-sm font-semibold">
-                      Accent colour
-                    </p>
+                    <p className="mb-2 text-sm font-semibold">Accent colour</p>
                     <div className="flex flex-wrap items-center gap-2">
                       {presets.map((hex) => (
                         <button
@@ -1499,62 +2074,69 @@ const PortfolioEditor = () => {
             <CollapsiblePanel
               title="Sections"
               description="Control visibility and public ordering."
-              defaultOpen
+              forceState={panelControl.open}
+              forceVersion={panelControl.version}
             >
               <div className="space-y-2">
-                {normalizeSectionOrder(form.sectionOrder).map((section, index) => {
-                  const visibilityKey = `show${
-                    section.charAt(0).toUpperCase() + section.slice(1)
-                  }`;
+                {normalizeSectionOrder(form.sectionOrder).map(
+                  (section, index) => {
+                    const visibilityKey = `show${
+                      section.charAt(0).toUpperCase() + section.slice(1)
+                    }`;
 
-                  return (
-                    <div
-                      key={section}
-                      className="flex items-center justify-between gap-3 rounded-lg border border-gray-200 p-3 dark:border-zinc-800"
-                    >
-                      <label className="flex min-w-0 items-center gap-2 text-sm font-semibold">
-                        <input
-                          type="checkbox"
-                          checked={form.sections?.[visibilityKey] !== false}
-                          onChange={(event) =>
-                            updateSection(visibilityKey, event.target.checked)
-                          }
-                        />
-                        <span className="break-words">
-                          {sectionLabels[section]}
-                        </span>
-                      </label>
-                      <div className="flex flex-shrink-0 items-center gap-1">
-                        <button
-                          type="button"
-                          onClick={() => moveSection(section, -1)}
-                          disabled={index === 0}
-                          aria-label={`Move ${sectionLabels[section]} up`}
-                          className="rounded-md p-1.5 text-gray-500 hover:bg-gray-100 disabled:opacity-30 dark:hover:bg-zinc-800"
-                        >
-                          <ArrowUp className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => moveSection(section, 1)}
-                          disabled={
-                            index === normalizeSectionOrder(form.sectionOrder).length - 1
-                          }
-                          aria-label={`Move ${sectionLabels[section]} down`}
-                          className="rounded-md p-1.5 text-gray-500 hover:bg-gray-100 disabled:opacity-30 dark:hover:bg-zinc-800"
-                        >
-                          <ArrowDown className="h-4 w-4" />
-                        </button>
+                    return (
+                      <div
+                        key={section}
+                        className="flex items-center justify-between gap-3 rounded-lg border border-gray-200 p-3 dark:border-zinc-800"
+                      >
+                        <label className="flex min-w-0 items-center gap-2 text-sm font-semibold">
+                          <input
+                            type="checkbox"
+                            checked={form.sections?.[visibilityKey] !== false}
+                            onChange={(event) =>
+                              updateSection(visibilityKey, event.target.checked)
+                            }
+                          />
+                          <span className="break-words">
+                            {sectionLabels[section]}
+                          </span>
+                        </label>
+                        <div className="flex flex-shrink-0 items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => moveSection(section, -1)}
+                            disabled={index === 0}
+                            aria-label={`Move ${sectionLabels[section]} up`}
+                            className="rounded-md p-1.5 text-gray-500 hover:bg-gray-100 disabled:opacity-30 dark:hover:bg-zinc-800"
+                          >
+                            <ArrowUp className="h-4 w-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => moveSection(section, 1)}
+                            disabled={
+                              index ===
+                              normalizeSectionOrder(form.sectionOrder).length -
+                                1
+                            }
+                            aria-label={`Move ${sectionLabels[section]} down`}
+                            className="rounded-md p-1.5 text-gray-500 hover:bg-gray-100 disabled:opacity-30 dark:hover:bg-zinc-800"
+                          >
+                            <ArrowDown className="h-4 w-4" />
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  }
+                )}
               </div>
             </CollapsiblePanel>
 
             <CollapsiblePanel
               title="SEO"
               description="Search and social preview metadata."
+              forceState={panelControl.open}
+              forceVersion={panelControl.version}
               actions={
                 <button
                   type="button"
@@ -1588,6 +2170,89 @@ const PortfolioEditor = () => {
                   className="mt-2 w-full rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
                 />
               </label>
+              <label className="block mt-4">
+                <span className="text-sm font-semibold">SEO keywords</span>
+                <textarea
+                  value={(form.seo?.keywords || []).join(", ")}
+                  onChange={(event) =>
+                    updateNestedField(
+                      "seo",
+                      "keywords",
+                      commaToArray(event.target.value)
+                    )
+                  }
+                  rows={3}
+                  className="mt-2 w-full rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
+                />
+              </label>
+              <label className="block mt-4">
+                <span className="text-sm font-semibold">
+                  Social preview image URL
+                </span>
+                <input
+                  value={form.seo?.ogImage || ""}
+                  onChange={(event) =>
+                    updateNestedField("seo", "ogImage", event.target.value)
+                  }
+                  placeholder="https://example.com/portfolio-preview.jpg"
+                  className="mt-2 w-full rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
+                />
+              </label>
+            </CollapsiblePanel>
+
+            <CollapsiblePanel
+              title="Publish Settings"
+              description="Control public sharing, indexing, and branding."
+              forceState={panelControl.open}
+              forceVersion={panelControl.version}
+            >
+              <div className="space-y-3">
+                <label className="flex items-start gap-3 text-sm font-semibold">
+                  <input
+                    type="checkbox"
+                    checked={form.settings?.showResumeDownload !== false}
+                    onChange={(event) =>
+                      updateNestedField(
+                        "settings",
+                        "showResumeDownload",
+                        event.target.checked
+                      )
+                    }
+                    className="mt-1"
+                  />
+                  <span>Show resume download action</span>
+                </label>
+                <label className="flex items-start gap-3 text-sm font-semibold">
+                  <input
+                    type="checkbox"
+                    checked={form.settings?.allowIndexing !== false}
+                    onChange={(event) =>
+                      updateNestedField(
+                        "settings",
+                        "allowIndexing",
+                        event.target.checked
+                      )
+                    }
+                    className="mt-1"
+                  />
+                  <span>Allow search engines to index this portfolio</span>
+                </label>
+                <label className="flex items-start gap-3 text-sm font-semibold">
+                  <input
+                    type="checkbox"
+                    checked={form.settings?.showSmartNShineBranding !== false}
+                    onChange={(event) =>
+                      updateNestedField(
+                        "settings",
+                        "showSmartNShineBranding",
+                        event.target.checked
+                      )
+                    }
+                    className="mt-1"
+                  />
+                  <span>Show SmartNShine branding</span>
+                </label>
+              </div>
             </CollapsiblePanel>
           </aside>
         </div>
