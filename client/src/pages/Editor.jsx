@@ -758,13 +758,27 @@ const Editor = () => {
         );
         showUpgradeModalTrue();
       } else {
-        toast.error(
-          "Failed to download resume: " +
-            (errorData?.message || parseValidationErrors(err)),
+        // Log the failure and fallback to browser PDF printing
+        logger.warn("Server PDF generation failed, falling back to browser print...");
+        toast(
+          "Server-side PDF generation failed. Falling back to browser print...",
           {
+            icon: "⚠️",
             duration: 4000,
           }
         );
+        
+        if (resumePreviewRef.current) {
+          resumePreviewRef.current.downloadPDF();
+        } else {
+          toast.error(
+            "Failed to download resume: " +
+              (errorData?.message || parseValidationErrors(err)),
+            {
+              duration: 4000,
+            }
+          );
+        }
       }
     }
   };
