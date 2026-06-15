@@ -241,13 +241,14 @@ const ResumePreview = forwardRef(
     }, [handlePrint, resumeData?.name]);
 
     const downloadPDF = useCallback((options) => {
-      if (isMobile) {
+      const isMobileDevice = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+      if (isMobileDevice) {
         handleMobilePrint(options);
         return;
       }
 
       handlePrint();
-    }, [handleMobilePrint, handlePrint, isMobile]);
+    }, [handleMobilePrint, handlePrint]);
 
     useImperativeHandle(ref, () => ({
       downloadPDF,
