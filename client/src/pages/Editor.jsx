@@ -712,32 +712,20 @@ const Editor = () => {
     }
 
     try {
-      const response = await resumeAPI.exportPDF({
-        resumeId: resumeData?._id,
-        resumeData,
-        template: selectedTemplate,
-      });
+      // 1. Track the download on the server (handles download limit verification & usage metrics)
+      await resumeAPI.trackDownload(resumeData?._id);
 
-      const blob = new Blob([response.data], {type: "application/pdf"});
-      const url = URL.createObjectURL(blob);
-      const safeName = (resumeData?.name || "Resume")
-        .replace(/[^a-z0-9]+/gi, "_")
-        .replace(/^_+|_+$/g, "");
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `${safeName || "Resume"}_Resume.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      URL.revokeObjectURL(url);
-
-      toast.success("Resume download started!", {
-        duration: 2000,
-      });
+      // 2. Trigger browser-based print/download
+      if (resumePreviewRef.current) {
+        resumePreviewRef.current.downloadPDF();
+        toast.success("Resume download started!", {
+          duration: 2000,
+        });
+      } else {
+        toast.error("Could not trigger browser print. Please try again.");
+      }
     } catch (err) {
-      logger.error("Download error:", err);
-      logger.error("Download error response:", err.response?.data);
-
+      logger.error("Download tracking error:", err);
       let errorData = err.response?.data;
 
       if (errorData instanceof Blob) {
@@ -750,7 +738,6 @@ const Editor = () => {
 
       // Check if it's a subscription/upgrade error (403 with upgradeRequired)
       if (err.response?.status === 403) {
-        // Show upgrade modal for any 403 error
         setUpgradeMessage(
           errorData.message ||
             errorData.error ||
@@ -758,16 +745,7 @@ const Editor = () => {
         );
         showUpgradeModalTrue();
       } else {
-        // Log the failure and fallback to browser PDF printing
-        logger.warn("Server PDF generation failed, falling back to browser print...");
-        toast(
-          "Server-side PDF generation failed. Falling back to browser print...",
-          {
-            icon: "⚠️",
-            duration: 4000,
-          }
-        );
-        
+        // Fallback: If tracking fails due to a network/server issue, still allow printing
         if (resumePreviewRef.current) {
           resumePreviewRef.current.downloadPDF();
         } else {
@@ -2415,6 +2393,18 @@ const Editor = () => {
           </div>
         )}
         </div>
+
+        {/* Hidden ResumePreview instance for printing when preview panel is closed */}
+        {!showPreview && (
+          <div className="absolute pointer-events-none invisible -left-[9999px] w-0 h-0 overflow-hidden" aria-hidden="true">
+            <ResumePreview
+              ref={resumePreviewRef}
+              resumeData={resumeData}
+              template={selectedTemplate}
+              onDownload={handleDownloadPDF}
+            />
+          </div>
+        )}
 
         {/* Toast Notifications */}
         <Toaster position="bottom-right" />
