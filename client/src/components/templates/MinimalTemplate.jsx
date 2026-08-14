@@ -886,6 +886,23 @@ const MinimalTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
               GitHub
             </a>
           )}
+          {(resumeData.contact?.portfolio || resumeData.contact?.website) && (
+            <a
+              href={
+                (resumeData.contact.portfolio || resumeData.contact.website).startsWith("http")
+                  ? resumeData.contact.portfolio || resumeData.contact.website
+                  : `https://${resumeData.contact.portfolio || resumeData.contact.website}`
+              }
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                color: selectedTheme.textLight,
+                textDecoration: "none",
+              }}
+            >
+              Portfolio
+            </a>
+          )}
         </div>
       </header>
 

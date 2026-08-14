@@ -12,6 +12,7 @@ import {
   useResumeSaveActions,
 } from "@/hooks";
 import {resumeAPI} from "@/api/api";
+import {careerAPI} from "@/api";
 import {parseValidationErrors} from "@/utils/errorHandler";
 import logger from "@/utils/logger";
 import toast, {Toaster} from "react-hot-toast";
@@ -1090,6 +1091,36 @@ const Editor = () => {
     }
   };
 
+  // Import from Career Profile master data
+  const handleImportFromCareerProfile = async () => {
+    try {
+      const toastId = toast.loading("Fetching Career Profile data...");
+      const res = await careerAPI.getExportResumeFormat();
+      if (!res.data?.resumeData) {
+        toast.dismiss(toastId);
+        toast.error("No Career Profile data found. Please set up your Career Profile first.");
+        return;
+      }
+      const imported = res.data.resumeData;
+      setResumeData((prev) => ({
+        ...prev,
+        name: imported.name || prev?.name,
+        contact: { ...prev?.contact, ...imported.contact },
+        summary: imported.summary || prev?.summary,
+        skills: imported.skills?.length > 0 ? imported.skills : prev?.skills,
+        experience: imported.experience?.length > 0 ? imported.experience : prev?.experience,
+        education: imported.education?.length > 0 ? imported.education : prev?.education,
+        projects: imported.projects?.length > 0 ? imported.projects : prev?.projects,
+        certifications: imported.certifications?.length > 0 ? imported.certifications : prev?.certifications,
+        achievements: imported.achievements?.length > 0 ? imported.achievements : prev?.achievements,
+      }));
+      toast.dismiss(toastId);
+      toast.success("Resume populated from your master Career Profile! ✨");
+    } catch (err) {
+      toast.error("Failed to load Career Profile data");
+    }
+  };
+
   // Enhance all sections with AI
   const handleEnhanceAll = async (customPrompt = "") => {
     const confirmMessage = customPrompt
@@ -1438,6 +1469,23 @@ const Editor = () => {
                 className="input-field"
               />
             </div>
+            <input
+              type="url"
+              value={resumeData.contact?.portfolio || resumeData.contact?.website || ""}
+              onChange={(e) => {
+                const val = e.target.value;
+                setResumeData((prev) => ({
+                  ...prev,
+                  contact: {
+                    ...prev.contact,
+                    portfolio: val,
+                    website: val,
+                  },
+                }));
+              }}
+              placeholder="Portfolio / Website URL (e.g. https://yourportfolio.com)"
+              className="input-field"
+            />
           </div>
         </CollapsibleSection>
       ),
@@ -1713,6 +1761,16 @@ const Editor = () => {
               <span className="hidden sm:inline">💻</span>
               <span className="text-xs sm:text-sm">Import GitHub</span>
             </button> */}
+            {/* Import from Career Profile Button */}
+            <button
+              onClick={handleImportFromCareerProfile}
+              className="flex-1 sm:flex-none h-12 px-3 sm:px-4 border border-purple-200 dark:border-purple-800 rounded-lg bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 text-xs sm:text-sm font-semibold hover:bg-purple-100 dark:hover:bg-purple-900/60 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all flex items-center justify-center gap-1.5 shadow-xs"
+              title="Import data from your master Career Profile"
+            >
+              <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+              <span className="hidden sm:inline whitespace-nowrap">Career Profile</span>
+              <span className="sm:hidden whitespace-nowrap">Profile</span>
+            </button>
             {/* Reset Order Button - Hide in wizard mode */}
             {!isWizardMode && (
               <button

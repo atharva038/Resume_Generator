@@ -152,7 +152,8 @@ const GitHubStyleTemplate = forwardRef(
       } else if (
         label === "LinkedIn" ||
         label === "GitHub" ||
-        label === "Website"
+        label === "Website" ||
+        label === "Portfolio"
       ) {
         href = value.startsWith("www.") ? `https://${value}` : `https://${value}`;
       }
@@ -648,6 +649,7 @@ const GitHubStyleTemplate = forwardRef(
       ["Location", resumeData?.contact?.location],
       ["LinkedIn", resumeData?.contact?.linkedin],
       ["GitHub", resumeData?.contact?.github],
+      ["Portfolio", resumeData?.contact?.portfolio],
       ["Website", resumeData?.contact?.website],
     ]
       .map(([label, value]) => {

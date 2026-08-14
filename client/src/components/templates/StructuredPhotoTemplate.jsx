@@ -129,13 +129,13 @@ const StructuredPhotoTemplate = forwardRef(({resumeData, onPageUsageChange}, ref
     {key: "phone", label: contact.phone, icon: Phone, href: null},
     {key: "location", label: contact.location, icon: MapPin, href: null},
     {
-      key: "website",
-      label: contact.website,
+      key: "portfolio",
+      label: contact.portfolio || contact.website,
       icon: Globe,
-      href: contact.website
-        ? contact.website.startsWith("http")
-          ? contact.website
-          : `https://${contact.website}`
+      href: contact.portfolio || contact.website
+        ? (contact.portfolio || contact.website).startsWith("http")
+          ? contact.portfolio || contact.website
+          : `https://${contact.portfolio || contact.website}`
         : null,
     },
     {

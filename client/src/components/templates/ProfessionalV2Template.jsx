@@ -689,11 +689,15 @@ const ProfessionalV2Template = forwardRef(
                   </a>
                 </div>
               )}
-              {hasValue(contactInfo?.website) && (
+              {hasValue(contactInfo?.portfolio || contactInfo?.website) && (
                 <div className="contact-item">
                   <Globe size={12} className="contact-icon" />
                   <a
-                    href={contactInfo.website}
+                    href={
+                      (contactInfo.portfolio || contactInfo.website).startsWith("http")
+                        ? contactInfo.portfolio || contactInfo.website
+                        : `https://${contactInfo.portfolio || contactInfo.website}`
+                    }
                     target="_blank"
                     rel="noopener noreferrer"
                   >

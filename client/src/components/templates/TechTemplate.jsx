@@ -752,8 +752,8 @@ const TechTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
           {resumeData.contact?.github && (
             <span>💻 {resumeData.contact.github}</span>
           )}
-          {resumeData.contact?.website && (
-            <span>🌐 {resumeData.contact.website}</span>
+          {(resumeData.contact?.portfolio || resumeData.contact?.website) && (
+            <span>🌐 {resumeData.contact.portfolio || resumeData.contact.website}</span>
           )}
         </div>
       </header>

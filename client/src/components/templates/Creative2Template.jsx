@@ -1375,11 +1375,8 @@ const Creative2Template = forwardRef((props, ref) => {
               {resumeData.contact.github && (
                 <span>• {resumeData.contact.github}</span>
               )}
-              {resumeData.contact.website && (
-                <span>• {resumeData.contact.website}</span>
-              )}
-              {resumeData.contact.portfolio && (
-                <span>• {resumeData.contact.portfolio}</span>
+              {(resumeData.contact.portfolio || resumeData.contact.website) && (
+                <span>• {resumeData.contact.portfolio || resumeData.contact.website}</span>
               )}
             </div>
           )}

@@ -62,7 +62,7 @@ export const PersonalInfoSection = ({
       className="input-field"
       autoComplete="off"
     />
-    <div className="grid grid-cols-2 gap-3">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
       <input
         type="url"
         value={resumeData.contact?.linkedin || ""}
@@ -76,6 +76,14 @@ export const PersonalInfoSection = ({
         value={resumeData.contact?.github || ""}
         onChange={(e) => updateContact("github", e.target.value)}
         placeholder="GitHub URL"
+        className="input-field"
+        autoComplete="url"
+      />
+      <input
+        type="url"
+        value={resumeData.contact?.portfolio || ""}
+        onChange={(e) => updateContact("portfolio", e.target.value)}
+        placeholder="Portfolio / Website URL"
         className="input-field"
         autoComplete="url"
       />

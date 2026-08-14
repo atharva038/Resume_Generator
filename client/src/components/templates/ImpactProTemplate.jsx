@@ -1256,16 +1256,10 @@ const ImpactProTemplate = forwardRef((props, ref) => {
                   <span>{resumeData.contact.github}</span>
                 </>
               )}
-              {resumeData.contact.website && (
+              {(resumeData.contact.portfolio || resumeData.contact.website) && (
                 <>
                   <span style={{color: selectedTheme.border}}>•</span>
-                  <span>{resumeData.contact.website}</span>
-                </>
-              )}
-              {resumeData.contact.portfolio && (
-                <>
-                  <span style={{color: selectedTheme.border}}>•</span>
-                  <span>{resumeData.contact.portfolio}</span>
+                  <span>{resumeData.contact.portfolio || resumeData.contact.website}</span>
                 </>
               )}
             </div>

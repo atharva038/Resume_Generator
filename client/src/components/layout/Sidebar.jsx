@@ -69,6 +69,22 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
       description: "Manage your resumes",
     },
     {
+      name: "Career Profile",
+      path: "/career-profile",
+      icon: UserCircle,
+      description: "Your master career info",
+      requiresAuth: true,
+      openNewTab: true,
+    },
+    {
+      name: "Career Q&A",
+      path: "/career-qa",
+      icon: Mic,
+      description: "Personalized answer bank",
+      requiresAuth: true,
+      openNewTab: true,
+    },
+    {
       name: "Portfolios",
       path: "/portfolio",
       icon: Globe2,
@@ -256,6 +272,8 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                   <BlockableLink
                     key={link.name}
                     to={link.path}
+                    target={link.openNewTab ? "_blank" : undefined}
+                    rel={link.openNewTab ? "noopener noreferrer" : undefined}
                     onClick={() => setIsOpen(false)}
                     className={linkClass}
                     title={!isOpen ? link.name : ""}

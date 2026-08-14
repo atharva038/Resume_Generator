@@ -35,6 +35,11 @@ export {
   getSystemSettings,
   updateSystemSettings,
   updatePaymentSettings,
+  getAllAdminQuestions,
+  createAdminQuestion,
+  updateAdminQuestion,
+  toggleAdminQuestionStatus,
+  deleteAdminQuestion,
 } from "./admin.api";
 
 // Subscription API exports
@@ -57,3 +62,6 @@ export {feedbackAPI} from "./feedback.api";
 
 // Interview API exports
 export {default as interviewAPI} from "./interview.api";
+
+// Career Profile & Q&A API exports
+export {default as careerAPI} from "./career.api";

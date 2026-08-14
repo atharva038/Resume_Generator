@@ -9,7 +9,7 @@ import Resume from "../models/Resume.model.js";
  */
 export const analyzeResume = async (req, res) => {
   try {
-    const {jobDescription, resumeId} = req.body;
+    const {jobDescription, resumeId, useCareerProfile} = req.body;
     const resumeFile = req.file;
 
     if (!jobDescription || !jobDescription.trim()) {
@@ -18,8 +18,17 @@ export const analyzeResume = async (req, res) => {
 
     let resumeText = "";
 
-    // Extract resume text from uploaded file or database
-    if (resumeFile) {
+    // Extract resume text from uploaded file, career profile, or database
+    if (useCareerProfile === "true" || useCareerProfile === true) {
+      const CareerProfile = (await import("../models/CareerProfile.model.js")).default;
+      const {exportProfileToResumeFormat} = await import("../services/career.service.js");
+      const profile = await CareerProfile.findOne({userId: req.user.userId});
+      if (!profile) {
+        return res.status(404).json({error: "Career Profile not found"});
+      }
+      const resumeData = exportProfileToResumeFormat(profile);
+      resumeText = convertResumeDataToText(resumeData);
+    } else if (resumeFile) {
       // Extract text from uploaded file
       if (resumeFile.mimetype === "application/pdf") {
         const pdfData = await PDFParser(resumeFile.buffer);
@@ -47,7 +56,7 @@ export const analyzeResume = async (req, res) => {
     } else {
       return res
         .status(400)
-        .json({error: "Either resume file or resume ID is required"});
+        .json({error: "Either Career Profile, resume file, or resume ID is required"});
     }
 
     if (!resumeText || !resumeText.trim()) {
