@@ -1163,10 +1163,30 @@ const Professional2Template = forwardRef((props, ref) => {
                   </a>
                 </span>
               )}
-              {resumeData.contact.website && (
+              {resumeData.contact.portfolio && (
                 <span>
                   <a
-                    href={resumeData.contact.website}
+                    href={
+                      resumeData.contact.portfolio.startsWith("http")
+                        ? resumeData.contact.portfolio
+                        : `https://${resumeData.contact.portfolio}`
+                    }
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{color: selectedTheme.linkColor}}
+                  >
+                    Portfolio
+                  </a>
+                </span>
+              )}
+              {resumeData.contact.website && !resumeData.contact.portfolio && (
+                <span>
+                  <a
+                    href={
+                      resumeData.contact.website.startsWith("http")
+                        ? resumeData.contact.website
+                        : `https://${resumeData.contact.website}`
+                    }
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{color: selectedTheme.linkColor}}

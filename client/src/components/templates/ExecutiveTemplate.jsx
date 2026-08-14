@@ -908,6 +908,16 @@ const ExecutiveTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
               💼 {resumeData.contact.linkedin}
             </span>
           )}
+          {resumeData.contact?.github && (
+            <span style={{color: selectedTheme.linkColor}}>
+              💻 {resumeData.contact.github}
+            </span>
+          )}
+          {(resumeData.contact?.portfolio || resumeData.contact?.website) && (
+            <span style={{color: selectedTheme.linkColor}}>
+              🌐 {resumeData.contact.portfolio || resumeData.contact.website}
+            </span>
+          )}
         </div>
       </header>
 

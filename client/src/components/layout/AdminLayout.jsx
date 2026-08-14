@@ -17,6 +17,7 @@ import {
   TrendingUp,
   Sparkles,
   Bell,
+  HelpCircle,
 } from "lucide-react";
 import {useAuth} from "@/context/AuthContext";
 import {useDarkMode} from "@/context/DarkModeContext";
@@ -87,6 +88,12 @@ const AdminLayout = () => {
       icon: FileBox,
       label: "Templates",
       color: "text-purple-500",
+    },
+    {
+      path: "/admin/questions",
+      icon: HelpCircle,
+      label: "Question Bank",
+      color: "text-indigo-400",
     },
     {
       path: "/admin/ai-analytics",

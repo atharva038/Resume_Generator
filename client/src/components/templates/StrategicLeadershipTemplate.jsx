@@ -574,7 +574,10 @@ const StrategicLeadershipTemplate = forwardRef(
                 </div>
               )}
               {resumeData?.contact?.github && (
-                <div style={{wordBreak: "break-word"}}>{resumeData.contact.github}</div>
+                <div style={{marginBottom: "2px", wordBreak: "break-word"}}>{resumeData.contact.github}</div>
+              )}
+              {(resumeData?.contact?.portfolio || resumeData?.contact?.website) && (
+                <div style={{wordBreak: "break-word"}}>{resumeData.contact.portfolio || resumeData.contact.website}</div>
               )}
             </div>
           </div>

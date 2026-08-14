@@ -156,6 +156,21 @@ router.post(
   resetUserExtractionCounter
 );
 
+import {
+  getAllAdminQuestions,
+  createAdminQuestion,
+  updateAdminQuestion,
+  toggleAdminQuestionStatus,
+  deleteAdminQuestion,
+} from "../controllers/adminQuestion.controller.js";
+
+// Question Bank Management
+router.get("/questions", getAllAdminQuestions);
+router.post("/questions", createAdminQuestion);
+router.put("/questions/:id", validateMongoId, updateAdminQuestion);
+router.patch("/questions/:id/toggle-status", validateMongoId, toggleAdminQuestionStatus);
+router.delete("/questions/:id", validateMongoId, deleteAdminQuestion);
+
 // System Settings
 router.get("/settings", getSettings);
 router.get("/settings/stats", getSystemStats);

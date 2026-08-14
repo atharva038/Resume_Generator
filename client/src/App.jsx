@@ -35,6 +35,8 @@ const SubscriptionDashboard = lazy(
   () => import("./pages/SubscriptionDashboard")
 );
 const Profile = lazy(() => import("./pages/Profile"));
+const CareerProfile = lazy(() => import("./pages/CareerProfile"));
+const CareerQA = lazy(() => import("./pages/CareerQA"));
 const PortfolioDashboard = lazy(() => import("./pages/PortfolioDashboard"));
 const PortfolioCreate = lazy(() => import("./pages/PortfolioCreate"));
 const PortfolioEditor = lazy(() => import("./pages/PortfolioEditor"));
@@ -56,6 +58,9 @@ const AdminNotifications = lazy(
 );
 const TemplateManagement = lazy(
   () => import("./pages/admin/TemplateManagement")
+);
+const AdminQuestionManagement = lazy(
+  () => import("./pages/admin/AdminQuestionManagement")
 );
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
 const Earnings = lazy(() => import("./pages/admin/Earnings"));
@@ -143,6 +148,22 @@ function App() {
               element={
                 <ProtectedRoute>
                   <PortfolioPreview />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/career-profile"
+              element={
+                <ProtectedRoute>
+                  <CareerProfile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/career-qa"
+              element={
+                <ProtectedRoute>
+                  <CareerQA />
                 </ProtectedRoute>
               }
             />
@@ -336,6 +357,7 @@ function App() {
               <Route path="users" element={<UserManagement />} />
               <Route path="users/:userId" element={<UserDetails />} />
               <Route path="templates" element={<TemplateManagement />} />
+              <Route path="questions" element={<AdminQuestionManagement />} />
               <Route path="ai-analytics" element={<AIAnalytics />} />
               <Route path="ai-quota" element={<AIQuotaManagement />} />
               <Route

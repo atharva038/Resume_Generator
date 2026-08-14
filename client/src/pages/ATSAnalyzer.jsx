@@ -24,6 +24,7 @@ const ATSAnalyzer = () => {
   const [activeTab] = useState("ats"); // "ats" or "ml"
   const [jobDescription, setJobDescription] = useState("");
   const [selectedResume, setSelectedResume] = useState(null);
+  const [useCareerProfile, setUseCareerProfile] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [analyzing, , setAnalyzingTrue, setAnalyzingFalse] = useToggle(false);
   const [analysisResult, setAnalysisResult] = useState(null);
@@ -78,8 +79,8 @@ const ATSAnalyzer = () => {
       return;
     }
 
-    if (!selectedResume && !uploadedFile) {
-      toast.error("Please select a resume or upload a file", {
+    if (!useCareerProfile && !selectedResume && !uploadedFile) {
+      toast.error("Please choose Career Profile, select a resume, or upload a file", {
         icon: "📁",
         duration: 3000,
       });
@@ -99,7 +100,9 @@ const ATSAnalyzer = () => {
       const formData = new FormData();
       formData.append("jobDescription", jobDescription);
 
-      if (uploadedFile) {
+      if (useCareerProfile) {
+        formData.append("useCareerProfile", "true");
+      } else if (uploadedFile) {
         formData.append("resumeFile", uploadedFile);
       } else if (selectedResume) {
         formData.append("resumeId", selectedResume);
@@ -226,6 +229,46 @@ const ATSAnalyzer = () => {
                     </label>
                   </div>
 
+                  {/* Master Career Profile Option */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setUseCareerProfile(!useCareerProfile);
+                      setSelectedResume(null);
+                      setUploadedFile(null);
+                    }}
+                    className={`w-full p-3.5 rounded-xl border text-left transition-all mb-4 flex items-center justify-between ${
+                      useCareerProfile
+                        ? "bg-purple-50 dark:bg-purple-950/40 border-purple-400 dark:border-purple-600 shadow-sm"
+                        : "bg-gray-50 dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 hover:bg-gray-100 dark:hover:bg-zinc-800/80"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`p-2 rounded-lg ${
+                          useCareerProfile
+                            ? "bg-purple-600 text-white"
+                            : "bg-gray-200 dark:bg-zinc-800 text-gray-600 dark:text-gray-400"
+                        }`}
+                      >
+                        <Sparkles className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <div className="text-sm font-bold text-gray-900 dark:text-white">
+                          Use Master Career Profile
+                        </div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                          Analyze directly against your centralized career source of truth
+                        </div>
+                      </div>
+                    </div>
+                    {useCareerProfile && (
+                      <span className="text-xs font-semibold text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-950 px-2 py-0.5 rounded">
+                        Selected ✓
+                      </span>
+                    )}
+                  </button>
+
                   {/* Existing Resumes Dropdown */}
                   {loadingResumes ? (
                     <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-zinc-900 rounded-lg">
@@ -239,9 +282,11 @@ const ATSAnalyzer = () => {
                       value={selectedResume || ""}
                       onChange={(e) => {
                         setSelectedResume(e.target.value);
+                        setUseCareerProfile(false);
                         setUploadedFile(null);
                       }}
-                      className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors mb-4"
+                      disabled={useCareerProfile}
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors mb-4 disabled:opacity-50"
                     >
                       <option value="">
                         Choose from your saved resumes...

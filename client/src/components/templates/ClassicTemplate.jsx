@@ -934,6 +934,23 @@ const ClassicTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
                 GitHub
               </a>
             )}
+            {(data.contact?.portfolio || data.contact?.website) && (
+              <a
+                href={
+                  (data.contact.portfolio || data.contact.website).startsWith("http")
+                    ? data.contact.portfolio || data.contact.website
+                    : `https://${data.contact.portfolio || data.contact.website}`
+                }
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  color: selectedTheme.linkColor,
+                  textDecoration: "underline",
+                }}
+              >
+                Portfolio
+              </a>
+            )}
           </div>
         </div>
       </header>

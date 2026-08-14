@@ -164,4 +164,22 @@ export const toggleFeature = (feature, enabled) =>
 export const updateRateLimits = (data) =>
   adminAPI.patch("/settings/rate-limits", data);
 
+// Question Bank Management
+export const getAllAdminQuestions = (params) =>
+  adminAPI.get("/questions", {params});
+export const createAdminQuestion = (data) =>
+  adminAPI.post("/questions", data);
+export const updateAdminQuestion = (id, data) =>
+  adminAPI.put(`/questions/${id}`, data);
+export const toggleAdminQuestionStatus = (id) =>
+  adminAPI.patch(`/questions/${id}/toggle-status`);
+export const deleteAdminQuestion = (id) =>
+  adminAPI.delete(`/questions/${id}`);
+
+// Backward compatibility aliases
+export const resetUserQuota = resetUserDailyQuota;
+export const getSystemSettings = getSettings;
+export const updateSystemSettings = updateSettings;
+export const updatePaymentSettings = updateSettings;
+
 export default adminAPI;
