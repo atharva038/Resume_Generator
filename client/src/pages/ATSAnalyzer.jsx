@@ -14,6 +14,7 @@ import {
   Award,
   ChevronDown,
   ChevronUp,
+  Sparkles,
 } from "lucide-react";
 import {resumeAPI} from "@/api/api";
 import {useToggle} from "@/hooks";
@@ -370,7 +371,7 @@ const ATSAnalyzer = () => {
                   disabled={
                     analyzing ||
                     !jobDescription.trim() ||
-                    (!selectedResume && !uploadedFile)
+                    (!useCareerProfile && !selectedResume && !uploadedFile)
                   }
                   className="w-full py-4 px-6 bg-primary-600 text-gray-900 dark:text-white font-bold text-lg rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                 >
