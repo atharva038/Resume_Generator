@@ -672,7 +672,7 @@ export default function PortfolioEditor() {
             <div className="absolute inset-0 border-3 border-gray-200 dark:border-zinc-800 border-t-emerald-600 dark:border-t-emerald-500 rounded-full animate-spin"></div>
             <Globe2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
           </div>
-          <p className="text-xs text-gray-500 dark:text-zinc-400 font-semibold tracking-wide uppercase">
+          <p className="text-sm text-gray-600 dark:text-zinc-300 font-semibold tracking-wide uppercase">
             Loading Portfolio Editor...
           </p>
         </div>
@@ -704,62 +704,62 @@ export default function PortfolioEditor() {
 
       {/* Main Workspace Body */}
       <main className="flex-1 px-4 sm:px-8 lg:px-12 py-8 max-w-[1600px] w-full mx-auto space-y-8">
-        {/* Banner Section */}
-        <div className="relative overflow-hidden rounded-3xl border border-gray-200/80 dark:border-white/[0.08] bg-white dark:bg-gradient-to-b dark:from-zinc-900/90 dark:to-zinc-950/90 p-6 sm:p-8 shadow-sm dark:shadow-2xl">
+        {/* Hero Section Banner */}
+        <div className="relative overflow-hidden rounded-3xl border border-gray-200/90 dark:border-white/[0.1] bg-white dark:bg-gradient-to-b dark:from-zinc-900/95 dark:to-zinc-950/95 p-6 sm:p-8 shadow-sm dark:shadow-2xl">
           <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-emerald-500/10 blur-3xl" />
 
           <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2.5">
+            <div className="space-y-2.5">
+              <div className="flex items-center gap-3">
                 <span
-                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${
+                  className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-bold ${
                     isPublished
                       ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
                       : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
                   }`}
                 >
-                  <span className={`w-2 h-2 rounded-full ${isPublished ? "bg-emerald-500 animate-pulse" : "bg-amber-500"}`} />
+                  <span className={`w-2.5 h-2.5 rounded-full ${isPublished ? "bg-emerald-500 animate-pulse" : "bg-amber-500"}`} />
                   <span>{isPublished ? "Published & Live" : "Draft (Unpublished)"}</span>
                 </span>
                 {form.themeId && (
-                  <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-zinc-400 border border-gray-200 dark:border-white/[0.06] capitalize">
+                  <span className="text-xs sm:text-sm font-bold px-3 py-1.5 rounded-full bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 border border-gray-200 dark:border-white/[0.08] capitalize">
                     Theme: {form.themeId}
                   </span>
                 )}
               </div>
 
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+              <h1 className="text-2xl sm:text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">
                 {form.title || "Untitled Portfolio"}
               </h1>
-              <p className="text-xs sm:text-sm text-gray-600 dark:text-zinc-400 max-w-2xl">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-zinc-300 max-w-2xl leading-relaxed">
                 {form.professionalTitle || "Configure details, proof links, theme colors, and SEO."}
               </p>
             </div>
 
             {/* Public Link Pill Card */}
             {isPublished && (
-              <div className="flex flex-wrap items-center gap-2 p-3.5 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-500/30 shadow-xs">
-                <div className="flex items-center gap-2 text-xs font-medium text-emerald-900 dark:text-emerald-200">
-                  <Globe2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                  <span className="font-mono truncate max-w-xs sm:max-w-sm">{publicUrl}</span>
+              <div className="flex flex-wrap items-center gap-3 p-4 rounded-2xl bg-emerald-50/90 dark:bg-emerald-950/40 border border-emerald-500/30 shadow-xs">
+                <div className="flex items-center gap-2.5 text-sm font-medium text-emerald-950 dark:text-emerald-200">
+                  <Globe2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                  <span className="font-mono text-xs sm:text-sm truncate max-w-xs sm:max-w-md">{publicUrl}</span>
                 </div>
-                <div className="flex items-center gap-1.5 ml-auto">
+                <div className="flex items-center gap-2 ml-auto">
                   <button
                     type="button"
                     onClick={handleCopyPublicLink}
-                    className="p-1.5 rounded-lg bg-white dark:bg-zinc-900 text-gray-700 dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-800 border border-gray-200 dark:border-white/10 transition-all cursor-pointer shadow-2xs"
+                    className="p-2 rounded-xl bg-white dark:bg-zinc-900 text-gray-700 dark:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-800 border border-gray-200 dark:border-white/10 transition-all cursor-pointer shadow-2xs"
                     title="Copy live link"
                   >
-                    {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                    {copiedLink ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
                   </button>
                   <a
                     href={publicUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="p-1.5 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-all cursor-pointer shadow-2xs"
+                    className="p-2 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 transition-all cursor-pointer shadow-2xs"
                     title="Open live website in new tab"
                   >
-                    <ExternalLink className="w-3.5 h-3.5" />
+                    <ExternalLink className="w-4 h-4" />
                   </a>
                 </div>
               </div>
@@ -772,30 +772,30 @@ export default function PortfolioEditor() {
           {/* Left Column: Content Panels (8 cols) */}
           <div className="lg:col-span-8 space-y-6">
             {/* Quick Expand / Collapse Bar */}
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-gray-200/80 dark:border-white/[0.08] bg-white dark:bg-zinc-950 px-5 py-3.5 shadow-xs">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-gray-200/90 dark:border-white/[0.1] bg-white dark:bg-zinc-950 px-6 py-4 shadow-xs">
               <div>
-                <h2 className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-zinc-400">
+                <h2 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-gray-600 dark:text-zinc-300">
                   Content Sections
                 </h2>
-                <p className="text-xs text-gray-500 dark:text-zinc-500">
+                <p className="text-xs sm:text-sm text-gray-500 dark:text-zinc-400 mt-0.5">
                   Click any card to expand or edit fields.
                 </p>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2.5">
                 <button
                   type="button"
                   onClick={() => setAllPanelsOpen(true)}
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-gray-700 dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-all cursor-pointer"
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 px-3.5 py-2 text-xs sm:text-sm font-semibold text-gray-800 dark:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-all cursor-pointer"
                 >
-                  <ArrowDown className="h-3.5 w-3.5" />
+                  <ArrowDown className="h-4 w-4" />
                   <span>Expand All</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setAllPanelsOpen(false)}
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-gray-700 dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-all cursor-pointer"
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 px-3.5 py-2 text-xs sm:text-sm font-semibold text-gray-800 dark:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-all cursor-pointer"
                 >
-                  <ArrowUp className="h-3.5 w-3.5" />
+                  <ArrowUp className="h-4 w-4" />
                   <span>Collapse All</span>
                 </button>
               </div>
@@ -810,103 +810,103 @@ export default function PortfolioEditor() {
               forceState={panelControl.open}
               forceVersion={panelControl.version}
             >
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-5 md:grid-cols-2">
                 <div>
-                  <label className="text-xs font-bold text-gray-700 dark:text-zinc-300 mb-1.5 block">
+                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-2 block">
                     Portfolio Title
                   </label>
                   <input
                     value={form.title || ""}
                     onChange={(e) => updateField("title", e.target.value)}
-                    className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-sm font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                    className="w-full px-4 py-3.5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm sm:text-base font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-gray-700 dark:text-zinc-300 mb-1.5 block">
+                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-2 block">
                     Professional Title / Headline
                   </label>
                   <input
                     value={form.professionalTitle || ""}
                     onChange={(e) => updateField("professionalTitle", e.target.value)}
-                    className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-sm font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                    className="w-full px-4 py-3.5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm sm:text-base font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-gray-700 dark:text-zinc-300 mb-1.5 block">
+                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-2 block">
                     Custom URL Slug
                   </label>
                   <input
                     value={form.slug || ""}
                     onChange={(e) => updateField("slug", e.target.value)}
-                    className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-sm font-mono focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                    className="w-full px-4 py-3.5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm font-mono focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-gray-700 dark:text-zinc-300 mb-1.5 block">
+                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-2 block">
                     Location
                   </label>
                   <input
                     value={form.location || ""}
                     onChange={(e) => updateField("location", e.target.value)}
-                    className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-sm font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                    className="w-full px-4 py-3.5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm sm:text-base font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-gray-700 dark:text-zinc-300 mb-1.5 block">
+                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-2 block">
                     Profile Image URL
                   </label>
                   <input
                     value={form.profileImage || ""}
                     onChange={(e) => updateField("profileImage", e.target.value)}
                     placeholder="https://example.com/headshot.jpg"
-                    className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs font-mono focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                    className="w-full px-4 py-3.5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-xs sm:text-sm font-mono focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-gray-700 dark:text-zinc-300 mb-1.5 block">
+                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-2 block">
                     Hero Banner Image URL
                   </label>
                   <input
                     value={form.heroImage || ""}
                     onChange={(e) => updateField("heroImage", e.target.value)}
                     placeholder="https://example.com/hero.jpg"
-                    className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs font-mono focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                    className="w-full px-4 py-3.5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-xs sm:text-sm font-mono focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-xs font-bold text-gray-700 dark:text-zinc-300 mb-1.5 block">
+                <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-2 block">
                   Tagline / Elevator Pitch
                 </label>
                 <textarea
                   value={form.tagline || ""}
                   onChange={(e) => updateField("tagline", e.target.value)}
                   rows={2}
-                  className="w-full p-4 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs leading-relaxed focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                  className="w-full p-4 sm:p-5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm sm:text-base leading-relaxed focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                 />
               </div>
 
               <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-xs font-bold text-gray-700 dark:text-zinc-300">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200">
                     About / Executive Summary
                   </label>
                   <button
                     type="button"
                     onClick={handleGenerateAbout}
                     disabled={Boolean(aiAction)}
-                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 text-xs font-bold hover:bg-purple-100 transition-all cursor-pointer disabled:opacity-50"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 text-xs sm:text-sm font-bold hover:bg-purple-100 transition-all cursor-pointer disabled:opacity-50"
                   >
-                    <Sparkles className="w-3.5 h-3.5" />
+                    <Sparkles className="w-4 h-4" />
                     <span>{aiAction === "about" ? "Generating..." : "Generate with AI"}</span>
                   </button>
                 </div>
                 <textarea
                   value={form.about || ""}
                   onChange={(e) => updateField("about", e.target.value)}
-                  rows={5}
-                  className="w-full p-4 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs leading-relaxed focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                  rows={6}
+                  className="w-full p-4 sm:p-5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm sm:text-base leading-relaxed focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                 />
               </div>
             </PortfolioPanel>
@@ -919,31 +919,31 @@ export default function PortfolioEditor() {
               forceState={panelControl.open}
               forceVersion={panelControl.version}
             >
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-5 md:grid-cols-2">
                 <div>
-                  <label className="text-xs font-bold text-gray-700 dark:text-zinc-300 mb-1.5 block">
+                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-2 block">
                     Public Email
                   </label>
                   <input
                     value={form.contact?.email || ""}
                     onChange={(e) => updateNestedField("contact", "email", e.target.value)}
-                    className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                    className="w-full px-4 py-3.5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm sm:text-base focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-gray-700 dark:text-zinc-300 mb-1.5 block">
+                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-2 block">
                     Public Phone
                   </label>
                   <input
                     value={form.contact?.phone || ""}
                     onChange={(e) => updateNestedField("contact", "phone", e.target.value)}
-                    className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                    className="w-full px-4 py-3.5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm sm:text-base focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
                 </div>
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
-                <label className="flex items-center gap-2.5 p-3 rounded-2xl bg-white dark:bg-zinc-950 border border-gray-200/80 dark:border-white/[0.08] text-xs font-semibold cursor-pointer">
+                <label className="flex items-center gap-3 p-4 rounded-2xl bg-white dark:bg-zinc-950 border border-gray-200/90 dark:border-white/[0.1] text-xs sm:text-sm font-bold cursor-pointer">
                   <input
                     type="checkbox"
                     checked={form.contact?.showEmail !== false}
@@ -952,7 +952,7 @@ export default function PortfolioEditor() {
                   />
                   <span>Show email publicly</span>
                 </label>
-                <label className="flex items-center gap-2.5 p-3 rounded-2xl bg-white dark:bg-zinc-950 border border-gray-200/80 dark:border-white/[0.08] text-xs font-semibold cursor-pointer">
+                <label className="flex items-center gap-3 p-4 rounded-2xl bg-white dark:bg-zinc-950 border border-gray-200/90 dark:border-white/[0.1] text-xs sm:text-sm font-bold cursor-pointer">
                   <input
                     type="checkbox"
                     checked={Boolean(form.contact?.showPhone)}
@@ -963,17 +963,17 @@ export default function PortfolioEditor() {
                 </label>
               </div>
 
-              <div className="pt-4 border-t border-gray-100 dark:border-white/[0.08] space-y-3">
+              <div className="pt-5 border-t border-gray-100 dark:border-white/[0.08] space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-zinc-400">
+                  <h3 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-gray-600 dark:text-zinc-300">
                     Social & Portfolio Links
                   </h3>
                   <button
                     type="button"
                     onClick={addSocialLink}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold shadow-xs transition-all cursor-pointer"
                   >
-                    <Plus className="h-3.5 w-3.5" />
+                    <Plus className="h-4 w-4" />
                     <span>Add Link</span>
                   </button>
                 </div>
@@ -982,12 +982,12 @@ export default function PortfolioEditor() {
                   {(form.socialLinks || []).map((link, index) => (
                     <div
                       key={`social-${index}`}
-                      className="grid gap-3 rounded-2xl border border-gray-200/80 dark:border-white/[0.08] p-3.5 bg-white dark:bg-zinc-950 md:grid-cols-[150px_1fr_1.5fr_auto] items-center shadow-2xs"
+                      className="grid gap-3 rounded-2xl border border-gray-200/90 dark:border-white/[0.1] p-4 bg-white dark:bg-zinc-950 md:grid-cols-[160px_1fr_1.5fr_auto] items-center shadow-2xs"
                     >
                       <select
                         value={link.type || "other"}
                         onChange={(e) => updateSocialLink(index, "type", e.target.value)}
-                        className="rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 px-3 py-2.5 text-xs font-semibold capitalize"
+                        className="rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 px-3.5 py-3 text-xs sm:text-sm font-semibold capitalize"
                       >
                         {socialLinkTypes.map((type) => (
                           <option key={type} value={type}>
@@ -999,21 +999,21 @@ export default function PortfolioEditor() {
                         value={link.label || ""}
                         onChange={(e) => updateSocialLink(index, "label", e.target.value)}
                         placeholder="Label (e.g. GitHub)"
-                        className="rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 px-3 py-2.5 text-xs font-medium"
+                        className="rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 px-3.5 py-3 text-xs sm:text-sm font-medium"
                       />
                       <input
                         value={link.url || ""}
                         onChange={(e) => updateSocialLink(index, "url", e.target.value)}
                         placeholder="https://..."
-                        className="rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 px-3 py-2.5 text-xs font-mono"
+                        className="rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 px-3.5 py-3 text-xs sm:text-sm font-mono"
                       />
                       <button
                         type="button"
                         onClick={() => removeSocialLink(index)}
-                        className="p-2 rounded-xl text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors cursor-pointer"
+                        className="p-2.5 rounded-xl text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors cursor-pointer"
                         title="Remove social link"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-5 w-5" />
                       </button>
                     </div>
                   ))}
@@ -1030,17 +1030,17 @@ export default function PortfolioEditor() {
               forceState={panelControl.open}
               forceVersion={panelControl.version}
             >
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {projects.map((project) => (
                   <div
                     key={project._id}
-                    className="rounded-3xl border border-gray-200/80 dark:border-white/[0.08] p-5 bg-white dark:bg-zinc-950 space-y-4 shadow-xs"
+                    className="rounded-3xl border border-gray-200/90 dark:border-white/[0.1] p-6 bg-white dark:bg-zinc-950 space-y-5 shadow-xs"
                   >
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                       <input
                         value={project.title || ""}
                         onChange={(e) => updateProjectDraft(project._id, { title: e.target.value })}
-                        className="flex-1 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 px-3.5 py-2 text-sm font-bold"
+                        className="flex-1 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 px-4 py-3 text-sm sm:text-base font-bold text-gray-900 dark:text-white"
                         placeholder="Project title"
                       />
                       <div className="flex items-center gap-2">
@@ -1048,92 +1048,92 @@ export default function PortfolioEditor() {
                           type="button"
                           onClick={() => handleImproveProject(project)}
                           disabled={Boolean(aiAction)}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 text-xs font-bold hover:bg-purple-100 transition-all cursor-pointer disabled:opacity-50"
+                          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 text-xs sm:text-sm font-bold hover:bg-purple-100 transition-all cursor-pointer disabled:opacity-50"
                         >
-                          <Sparkles className="w-3.5 h-3.5" />
+                          <Sparkles className="w-4 h-4" />
                           <span>{aiAction === `project:${project._id}` ? "Improving..." : "AI Improve"}</span>
                         </button>
                         <button
                           type="button"
                           onClick={() => handleSaveProject(project)}
-                          className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-gray-900 text-white dark:bg-white dark:text-black text-xs font-bold shadow-xs cursor-pointer"
+                          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gray-900 text-white dark:bg-white dark:text-black text-xs sm:text-sm font-bold shadow-xs cursor-pointer"
                         >
-                          <Save className="w-3.5 h-3.5" />
+                          <Save className="w-4 h-4" />
                           <span>Save</span>
                         </button>
                         <button
                           type="button"
                           onClick={() => handleDeleteProject(project._id)}
-                          className="p-1.5 rounded-xl text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 cursor-pointer"
+                          className="p-2 rounded-xl text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 cursor-pointer"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="w-5 h-5" />
                         </button>
                       </div>
                     </div>
 
-                    <div className="grid gap-3 md:grid-cols-2">
+                    <div className="grid gap-4 md:grid-cols-2">
                       <div className="md:col-span-2">
-                        <label className="text-xs font-bold text-gray-700 dark:text-zinc-300 mb-1 block">
+                        <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
                           Short Overview
                         </label>
                         <textarea
                           value={project.shortDescription || ""}
                           onChange={(e) => updateProjectDraft(project._id, { shortDescription: e.target.value })}
                           rows={2}
-                          className="w-full p-3 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                          className="w-full p-4 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base leading-relaxed focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                         />
                       </div>
 
                       <div className="md:col-span-2">
-                        <label className="text-xs font-bold text-gray-700 dark:text-zinc-300 mb-1 block">
+                        <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
                           Detailed Description
                         </label>
                         <textarea
                           value={project.longDescription || ""}
                           onChange={(e) => updateProjectDraft(project._id, { longDescription: e.target.value })}
-                          rows={3}
-                          className="w-full p-3 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                          rows={4}
+                          className="w-full p-4 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base leading-relaxed focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                         />
                       </div>
 
                       <div>
-                        <label className="text-xs font-bold text-gray-700 dark:text-zinc-300 mb-1 block">
+                        <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
                           Role
                         </label>
                         <input
                           value={project.role || ""}
                           onChange={(e) => updateProjectDraft(project._id, { role: e.target.value })}
                           placeholder="e.g. Lead Architect"
-                          className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs"
+                          className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-medium"
                         />
                       </div>
 
                       <div>
-                        <label className="text-xs font-bold text-gray-700 dark:text-zinc-300 mb-1 block">
+                        <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
                           Duration
                         </label>
                         <input
                           value={project.duration || ""}
                           onChange={(e) => updateProjectDraft(project._id, { duration: e.target.value })}
                           placeholder="e.g. Jan 2026 - Mar 2026"
-                          className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs"
+                          className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-medium"
                         />
                       </div>
 
                       <div>
-                        <label className="text-xs font-bold text-gray-700 dark:text-zinc-300 mb-1 block">
+                        <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
                           Technologies (comma-separated)
                         </label>
                         <input
                           value={getProjectTechnologiesText(project)}
                           onChange={(e) => updateProjectDraft(project._id, { technologiesText: e.target.value })}
                           placeholder="React, Node.js, MongoDB"
-                          className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs"
+                          className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-medium"
                         />
                       </div>
 
                       <div>
-                        <label className="text-xs font-bold text-gray-700 dark:text-zinc-300 mb-1 block">
+                        <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
                           Live URL
                         </label>
                         <input
@@ -1143,12 +1143,12 @@ export default function PortfolioEditor() {
                               links: { ...(cur.links || {}), live: e.target.value },
                             }))
                           }
-                          className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs font-mono"
+                          className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs sm:text-sm font-mono"
                         />
                       </div>
 
                       <div>
-                        <label className="text-xs font-bold text-gray-700 dark:text-zinc-300 mb-1 block">
+                        <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
                           GitHub URL
                         </label>
                         <input
@@ -1158,12 +1158,12 @@ export default function PortfolioEditor() {
                               links: { ...(cur.links || {}), github: e.target.value },
                             }))
                           }
-                          className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs font-mono"
+                          className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs sm:text-sm font-mono"
                         />
                       </div>
 
                       <div>
-                        <label className="text-xs font-bold text-gray-700 dark:text-zinc-300 mb-1 block">
+                        <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
                           Case Study URL
                         </label>
                         <input
@@ -1173,30 +1173,30 @@ export default function PortfolioEditor() {
                               links: { ...(cur.links || {}), caseStudy: e.target.value },
                             }))
                           }
-                          className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs font-mono"
+                          className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs sm:text-sm font-mono"
                         />
                       </div>
 
-                      <div className="md:col-span-2 flex items-center gap-4 pt-2">
-                        <label className="flex items-center gap-2 text-xs font-bold cursor-pointer">
+                      <div className="md:col-span-2 flex items-center gap-6 pt-3">
+                        <label className="flex items-center gap-2.5 text-xs sm:text-sm font-bold cursor-pointer">
                           <input
                             type="checkbox"
                             checked={project.visible !== false}
                             onChange={(e) =>
                               updateProjectDraft(project._id, { visible: e.target.checked })
                             }
-                            className="rounded text-emerald-600"
+                            className="w-4 h-4 rounded text-emerald-600"
                           />
                           <span>Visible in Portfolio</span>
                         </label>
-                        <label className="flex items-center gap-2 text-xs font-bold cursor-pointer">
+                        <label className="flex items-center gap-2.5 text-xs sm:text-sm font-bold cursor-pointer">
                           <input
                             type="checkbox"
                             checked={Boolean(project.featured)}
                             onChange={(e) =>
                               updateProjectDraft(project._id, { featured: e.target.checked })
                             }
-                            className="rounded text-emerald-600"
+                            className="w-4 h-4 rounded text-emerald-600"
                           />
                           <span>Featured Hero Project ⭐</span>
                         </label>
@@ -1207,22 +1207,22 @@ export default function PortfolioEditor() {
               </div>
 
               {/* Add New Project Box */}
-              <div className="p-5 rounded-3xl bg-gray-50 dark:bg-zinc-900/60 border border-gray-200/80 dark:border-white/[0.08] space-y-3">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-zinc-400">
+              <div className="p-6 rounded-3xl bg-gray-50/90 dark:bg-zinc-900/60 border border-gray-200/90 dark:border-white/[0.1] space-y-4">
+                <h3 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-gray-600 dark:text-zinc-300">
                   Add New Project
                 </h3>
-                <div className="grid gap-3 md:grid-cols-2">
+                <div className="grid gap-4 md:grid-cols-2">
                   <input
                     placeholder="Project title *"
                     value={newProject.title}
                     onChange={(e) => setNewProject((cur) => ({ ...cur, title: e.target.value }))}
-                    className="px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs font-semibold"
+                    className="px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-sm sm:text-base font-bold"
                   />
                   <input
                     placeholder="Technologies (e.g. React, Node.js)"
                     value={newProject.technologiesText || ""}
                     onChange={(e) => setNewProject((cur) => ({ ...cur, technologiesText: e.target.value }))}
-                    className="px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs"
+                    className="px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-sm font-medium"
                   />
                   <input
                     placeholder="Live URL"
@@ -1230,7 +1230,7 @@ export default function PortfolioEditor() {
                     onChange={(e) =>
                       setNewProject((cur) => ({ ...cur, links: { ...cur.links, live: e.target.value } }))
                     }
-                    className="px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs font-mono"
+                    className="px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs sm:text-sm font-mono"
                   />
                   <input
                     placeholder="GitHub URL"
@@ -1238,7 +1238,7 @@ export default function PortfolioEditor() {
                     onChange={(e) =>
                       setNewProject((cur) => ({ ...cur, links: { ...cur.links, github: e.target.value } }))
                     }
-                    className="px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs font-mono"
+                    className="px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs sm:text-sm font-mono"
                   />
                 </div>
                 <textarea
@@ -1246,14 +1246,14 @@ export default function PortfolioEditor() {
                   value={newProject.shortDescription}
                   onChange={(e) => setNewProject((cur) => ({ ...cur, shortDescription: e.target.value }))}
                   rows={2}
-                  className="w-full p-3 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs"
+                  className="w-full p-4 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-sm sm:text-base leading-relaxed"
                 />
                 <button
                   type="button"
                   onClick={handleCreateProject}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-500/20 transition-all active:scale-95 cursor-pointer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow-md shadow-emerald-500/20 transition-all active:scale-95 cursor-pointer"
                 >
-                  <Plus className="w-3.5 h-3.5" />
+                  <Plus className="w-4 h-4" />
                   <span>Create Project</span>
                 </button>
               </div>
@@ -1281,71 +1281,96 @@ export default function PortfolioEditor() {
                       bullets: [],
                     })
                   }
-                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-blue-600 text-white text-xs font-bold cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 text-white text-xs sm:text-sm font-bold cursor-pointer"
                 >
-                  <Plus className="w-3.5 h-3.5" />
+                  <Plus className="w-4 h-4" />
                   <span>Add Role</span>
                 </button>
               }
             >
-              <div className="space-y-4">
+              <div className="space-y-5">
                 {(form.experience || []).map((item, index) => (
                   <div
                     key={`exp-${index}`}
-                    className="rounded-3xl border border-gray-200/80 dark:border-white/[0.08] p-5 bg-white dark:bg-zinc-950 space-y-3 shadow-xs"
+                    className="rounded-3xl border border-gray-200/90 dark:border-white/[0.1] p-6 bg-white dark:bg-zinc-950 space-y-4 shadow-xs"
                   >
-                    <div className="grid gap-3 md:grid-cols-2">
-                      <input
-                        value={item.title || ""}
-                        onChange={(e) => updatePortfolioArrayItem("experience", index, { title: e.target.value })}
-                        placeholder="Role Title"
-                        className="px-3.5 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs font-bold"
-                      />
-                      <input
-                        value={item.company || ""}
-                        onChange={(e) => updatePortfolioArrayItem("experience", index, { company: e.target.value })}
-                        placeholder="Company"
-                        className="px-3.5 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs"
-                      />
-                      <input
-                        value={item.location || ""}
-                        onChange={(e) => updatePortfolioArrayItem("experience", index, { location: e.target.value })}
-                        placeholder="Location"
-                        className="px-3.5 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs"
-                      />
-                      <div className="grid grid-cols-2 gap-2">
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div>
+                        <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
+                          Role Title
+                        </label>
                         <input
-                          value={item.startDate || ""}
-                          onChange={(e) => updatePortfolioArrayItem("experience", index, { startDate: e.target.value })}
-                          placeholder="Start date"
-                          className="px-3.5 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs"
+                          value={item.title || ""}
+                          onChange={(e) => updatePortfolioArrayItem("experience", index, { title: e.target.value })}
+                          placeholder="e.g. Full Stack Intern"
+                          className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-bold text-gray-900 dark:text-white"
                         />
+                      </div>
+                      <div>
+                        <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
+                          Company Name
+                        </label>
                         <input
-                          value={item.endDate || ""}
-                          onChange={(e) => updatePortfolioArrayItem("experience", index, { endDate: e.target.value })}
-                          placeholder="End date"
-                          className="px-3.5 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs"
+                          value={item.company || ""}
+                          onChange={(e) => updatePortfolioArrayItem("experience", index, { company: e.target.value })}
+                          placeholder="e.g. Acme Technologies"
+                          className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-medium text-gray-900 dark:text-white"
                         />
+                      </div>
+                      <div>
+                        <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
+                          Location
+                        </label>
+                        <input
+                          value={item.location || ""}
+                          onChange={(e) => updatePortfolioArrayItem("experience", index, { location: e.target.value })}
+                          placeholder="e.g. Remote / San Francisco, CA"
+                          className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-medium"
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
+                            Start Date
+                          </label>
+                          <input
+                            value={item.startDate || ""}
+                            onChange={(e) => updatePortfolioArrayItem("experience", index, { startDate: e.target.value })}
+                            placeholder="e.g. Apr 2025"
+                            className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm font-medium"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
+                            End Date
+                          </label>
+                          <input
+                            value={item.endDate || ""}
+                            onChange={(e) => updatePortfolioArrayItem("experience", index, { endDate: e.target.value })}
+                            placeholder="e.g. Jun 2025"
+                            className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm font-medium"
+                          />
+                        </div>
                       </div>
                     </div>
                     <div>
-                      <label className="text-xs font-bold text-gray-700 dark:text-zinc-300 mb-1 block">
+                      <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
                         Bullet Points (1 per line)
                       </label>
                       <textarea
                         value={(item.bullets || []).join("\n")}
                         onChange={(e) => updatePortfolioArrayItem("experience", index, { bullets: linesToArray(e.target.value) })}
-                        rows={3}
-                        className="w-full p-3 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs"
+                        rows={4}
+                        className="w-full p-4 sm:p-5 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base leading-relaxed text-gray-900 dark:text-zinc-100 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                       />
                     </div>
                     <button
                       type="button"
                       onClick={() => removePortfolioArrayItem("experience", index)}
-                      className="inline-flex items-center gap-1 text-xs text-red-500 hover:text-red-600 cursor-pointer"
+                      className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-red-500 hover:text-red-600 transition-colors cursor-pointer"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
-                      <span>Remove</span>
+                      <Trash2 className="w-4 h-4" />
+                      <span>Remove Experience</span>
                     </button>
                   </div>
                 ))}
@@ -1375,40 +1400,50 @@ export default function PortfolioEditor() {
                       bullets: [],
                     })
                   }
-                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-blue-600 text-white text-xs font-bold cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 text-white text-xs sm:text-sm font-bold cursor-pointer"
                 >
-                  <Plus className="w-3.5 h-3.5" />
+                  <Plus className="w-4 h-4" />
                   <span>Add Education</span>
                 </button>
               }
             >
-              <div className="space-y-4">
+              <div className="space-y-5">
                 {(form.education || []).map((item, index) => (
                   <div
                     key={`edu-${index}`}
-                    className="rounded-3xl border border-gray-200/80 dark:border-white/[0.08] p-5 bg-white dark:bg-zinc-950 space-y-3 shadow-xs"
+                    className="rounded-3xl border border-gray-200/90 dark:border-white/[0.1] p-6 bg-white dark:bg-zinc-950 space-y-4 shadow-xs"
                   >
-                    <div className="grid gap-3 md:grid-cols-2">
-                      <input
-                        value={item.institution || ""}
-                        onChange={(e) => updatePortfolioArrayItem("education", index, { institution: e.target.value })}
-                        placeholder="Institution"
-                        className="px-3.5 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs font-bold"
-                      />
-                      <input
-                        value={item.degree || ""}
-                        onChange={(e) => updatePortfolioArrayItem("education", index, { degree: e.target.value })}
-                        placeholder="Degree"
-                        className="px-3.5 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs"
-                      />
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div>
+                        <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
+                          Institution / University
+                        </label>
+                        <input
+                          value={item.institution || ""}
+                          onChange={(e) => updatePortfolioArrayItem("education", index, { institution: e.target.value })}
+                          placeholder="e.g. Stanford University"
+                          className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-bold"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
+                          Degree / Major
+                        </label>
+                        <input
+                          value={item.degree || ""}
+                          onChange={(e) => updatePortfolioArrayItem("education", index, { degree: e.target.value })}
+                          placeholder="e.g. B.S. in Computer Science"
+                          className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-medium"
+                        />
+                      </div>
                     </div>
                     <button
                       type="button"
                       onClick={() => removePortfolioArrayItem("education", index)}
-                      className="inline-flex items-center gap-1 text-xs text-red-500 hover:text-red-600 cursor-pointer"
+                      className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-red-500 hover:text-red-600 transition-colors cursor-pointer"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
-                      <span>Remove</span>
+                      <Trash2 className="w-4 h-4" />
+                      <span>Remove Education</span>
                     </button>
                   </div>
                 ))}
@@ -1427,37 +1462,37 @@ export default function PortfolioEditor() {
                 <button
                   type="button"
                   onClick={() => addPortfolioArrayItem("skills", { category: "", items: [] })}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-blue-600 text-white text-xs font-bold cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 text-white text-xs sm:text-sm font-bold cursor-pointer"
                 >
-                  <Plus className="w-3.5 h-3.5" />
+                  <Plus className="w-4 h-4" />
                   <span>Add Group</span>
                 </button>
               }
             >
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {(form.skills || []).map((group, index) => (
                   <div
                     key={`skills-${index}`}
-                    className="grid gap-3 rounded-2xl border border-gray-200/80 dark:border-white/[0.08] p-4 bg-white dark:bg-zinc-950 md:grid-cols-[200px_1fr_auto] items-center"
+                    className="grid gap-4 rounded-2xl border border-gray-200/90 dark:border-white/[0.1] p-5 bg-white dark:bg-zinc-950 md:grid-cols-[220px_1fr_auto] items-center"
                   >
                     <input
                       value={group.category || ""}
                       onChange={(e) => updatePortfolioArrayItem("skills", index, { category: e.target.value })}
-                      placeholder="Category"
-                      className="px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs font-bold"
+                      placeholder="Category (e.g. Frontend)"
+                      className="px-4 py-3 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-bold"
                     />
                     <input
                       value={(group.items || []).join(", ")}
                       onChange={(e) => updatePortfolioArrayItem("skills", index, { items: commaToArray(e.target.value) })}
-                      placeholder="React, Node.js, MongoDB"
-                      className="px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs"
+                      placeholder="React, TypeScript, Next.js, Tailwind CSS"
+                      className="px-4 py-3 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-medium"
                     />
                     <button
                       type="button"
                       onClick={() => removePortfolioArrayItem("skills", index)}
-                      className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 cursor-pointer"
+                      className="p-2.5 rounded-xl text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 cursor-pointer"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-5 h-5" />
                     </button>
                   </div>
                 ))}
@@ -1476,7 +1511,7 @@ export default function PortfolioEditor() {
                 value={(form.achievements || []).join("\n")}
                 onChange={(e) => updateField("achievements", linesToArray(e.target.value))}
                 rows={5}
-                className="w-full p-4 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs leading-relaxed focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                className="w-full p-4 sm:p-5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm sm:text-base leading-relaxed focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                 placeholder="• Winner - Smart India Hackathon 2025&#10;• AWS Certified Solutions Architect"
               />
             </PortfolioPanel>
@@ -1499,43 +1534,43 @@ export default function PortfolioEditor() {
                       items: [],
                     })
                   }
-                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-blue-600 text-white text-xs font-bold cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 text-white text-xs sm:text-sm font-bold cursor-pointer"
                 >
-                  <Plus className="w-3.5 h-3.5" />
+                  <Plus className="w-4 h-4" />
                   <span>Add Section</span>
                 </button>
               }
             >
-              <div className="space-y-4">
+              <div className="space-y-5">
                 {(form.customSections || []).map((item, index) => (
                   <div
                     key={item.id || `custom-section-${index}`}
-                    className="rounded-3xl border border-gray-200/80 dark:border-white/[0.08] p-5 bg-white dark:bg-zinc-950 space-y-3 shadow-xs"
+                    className="rounded-3xl border border-gray-200/90 dark:border-white/[0.1] p-6 bg-white dark:bg-zinc-950 space-y-4 shadow-xs"
                   >
                     <input
                       value={item.title || ""}
                       onChange={(e) => updatePortfolioArrayItem("customSections", index, { title: e.target.value })}
                       placeholder="Section Title (e.g. Open Source Contributions)"
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs font-bold"
+                      className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-bold"
                     />
                     <div>
-                      <label className="text-xs font-bold text-gray-700 dark:text-zinc-300 mb-1 block">
+                      <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
                         Items (1 per line)
                       </label>
                       <textarea
                         value={(item.items || []).join("\n")}
                         onChange={(e) => updatePortfolioArrayItem("customSections", index, { items: linesToArray(e.target.value) })}
                         rows={4}
-                        className="w-full p-3 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs"
+                        className="w-full p-4 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base leading-relaxed"
                       />
                     </div>
                     <button
                       type="button"
                       onClick={() => removePortfolioArrayItem("customSections", index)}
-                      className="inline-flex items-center gap-1 text-xs text-red-500 hover:text-red-600 cursor-pointer"
+                      className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-red-500 hover:text-red-600 cursor-pointer"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
-                      <span>Remove</span>
+                      <Trash2 className="w-4 h-4" />
+                      <span>Remove Section</span>
                     </button>
                   </div>
                 ))}
@@ -1554,7 +1589,7 @@ export default function PortfolioEditor() {
               forceState={panelControl.open}
               forceVersion={panelControl.version}
             >
-              <div className="space-y-3">
+              <div className="space-y-3.5">
                 {portfolioThemeList.map((theme) => {
                   const allowed = isThemeAllowed(theme);
                   const isSelected = form.themeId === theme.id;
@@ -1565,21 +1600,21 @@ export default function PortfolioEditor() {
                       type="button"
                       onClick={() => allowed && updateField("themeId", theme.id)}
                       disabled={!allowed}
-                      className={`w-full rounded-2xl border p-3.5 text-left transition-all cursor-pointer ${
+                      className={`w-full rounded-2xl border p-4 text-left transition-all cursor-pointer ${
                         isSelected
                           ? "border-emerald-500 bg-emerald-500/10 text-emerald-950 dark:text-emerald-100 ring-2 ring-emerald-500/30"
                           : "border-gray-200 dark:border-white/[0.08] hover:bg-gray-50 dark:hover:bg-zinc-900"
                       } ${!allowed ? "opacity-50 cursor-not-allowed" : ""}`}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="font-bold text-xs">{theme.name}</span>
+                        <span className="font-bold text-sm sm:text-base">{theme.name}</span>
                         {!allowed && (
-                          <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-400">
+                          <span className="rounded-full bg-amber-500/15 px-2.5 py-0.5 text-xs font-bold text-amber-600 dark:text-amber-400">
                             Upgrade
                           </span>
                         )}
                       </div>
-                      <p className="mt-1 text-[11px] text-gray-500 dark:text-zinc-400">
+                      <p className="mt-1 text-xs sm:text-sm text-gray-500 dark:text-zinc-400 leading-relaxed">
                         {theme.description}
                       </p>
                     </button>
@@ -1596,11 +1631,11 @@ export default function PortfolioEditor() {
                 const currentAccent = form.themeAccent || "";
 
                 return (
-                  <div className="pt-4 border-t border-gray-100 dark:border-white/[0.08] space-y-2">
-                    <p className="text-xs font-bold text-gray-700 dark:text-zinc-300">
+                  <div className="pt-5 border-t border-gray-100 dark:border-white/[0.08] space-y-2.5">
+                    <p className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200">
                       Theme Accent Color
                     </p>
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2.5">
                       {presets.map((hex) => (
                         <button
                           key={hex}
@@ -1608,7 +1643,7 @@ export default function PortfolioEditor() {
                           title={hex}
                           onClick={() => updateField("themeAccent", hex)}
                           style={{ background: hex }}
-                          className={`h-7 w-7 rounded-full border-2 transition-transform hover:scale-110 cursor-pointer ${
+                          className={`h-8 w-8 rounded-full border-2 transition-transform hover:scale-110 cursor-pointer ${
                             currentAccent === hex
                               ? "border-gray-900 dark:border-white scale-110 ring-2 ring-offset-1 ring-emerald-500"
                               : "border-transparent"
@@ -1629,16 +1664,16 @@ export default function PortfolioEditor() {
               forceState={panelControl.open}
               forceVersion={panelControl.version}
             >
-              <div className="space-y-2">
+              <div className="space-y-2.5">
                 {normalizeSectionOrder(form.sectionOrder).map((section, index) => {
                   const visibilityKey = `show${section.charAt(0).toUpperCase() + section.slice(1)}`;
 
                   return (
                     <div
                       key={section}
-                      className="flex items-center justify-between gap-3 rounded-2xl border border-gray-200/80 dark:border-white/[0.08] p-3 bg-white dark:bg-zinc-950"
+                      className="flex items-center justify-between gap-3 rounded-2xl border border-gray-200/90 dark:border-white/[0.1] p-3.5 bg-white dark:bg-zinc-950"
                     >
-                      <label className="flex items-center gap-2.5 text-xs font-bold cursor-pointer">
+                      <label className="flex items-center gap-3 text-xs sm:text-sm font-bold cursor-pointer">
                         <input
                           type="checkbox"
                           checked={form.sections?.[visibilityKey] !== false}
@@ -1652,17 +1687,17 @@ export default function PortfolioEditor() {
                           type="button"
                           onClick={() => moveSection(section, -1)}
                           disabled={index === 0}
-                          className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 disabled:opacity-30 cursor-pointer"
+                          className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 disabled:opacity-30 cursor-pointer"
                         >
-                          <ArrowUp className="h-3.5 w-3.5" />
+                          <ArrowUp className="h-4 w-4" />
                         </button>
                         <button
                           type="button"
                           onClick={() => moveSection(section, 1)}
                           disabled={index === normalizeSectionOrder(form.sectionOrder).length - 1}
-                          className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 disabled:opacity-30 cursor-pointer"
+                          className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 disabled:opacity-30 cursor-pointer"
                         >
-                          <ArrowDown className="h-3.5 w-3.5" />
+                          <ArrowDown className="h-4 w-4" />
                         </button>
                       </div>
                     </div>
@@ -1683,33 +1718,33 @@ export default function PortfolioEditor() {
                   type="button"
                   onClick={handleGenerateSeo}
                   disabled={Boolean(aiAction)}
-                  className="inline-flex items-center gap-1 px-3 py-1 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 text-xs font-bold hover:bg-purple-100 transition-all cursor-pointer disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 text-xs sm:text-sm font-bold hover:bg-purple-100 transition-all cursor-pointer disabled:opacity-50"
                 >
-                  <Sparkles className="w-3.5 h-3.5" />
+                  <Sparkles className="w-4 h-4" />
                   <span>{aiAction === "seo" ? "Generating..." : "AI SEO"}</span>
                 </button>
               }
             >
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <div>
-                  <label className="text-xs font-bold text-gray-700 dark:text-zinc-300 mb-1 block">
+                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
                     Meta Title
                   </label>
                   <input
                     value={form.seo?.title || ""}
                     onChange={(e) => updateNestedField("seo", "title", e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs"
+                    className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-sm sm:text-base"
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-gray-700 dark:text-zinc-300 mb-1 block">
+                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
                     Meta Description
                   </label>
                   <textarea
                     value={form.seo?.description || ""}
                     onChange={(e) => updateNestedField("seo", "description", e.target.value)}
                     rows={3}
-                    className="w-full p-3 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs"
+                    className="w-full p-4 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-sm leading-relaxed"
                   />
                 </div>
               </div>
@@ -1723,8 +1758,8 @@ export default function PortfolioEditor() {
               forceState={panelControl.open}
               forceVersion={panelControl.version}
             >
-              <div className="space-y-3">
-                <label className="flex items-start gap-2.5 text-xs font-bold cursor-pointer">
+              <div className="space-y-3.5">
+                <label className="flex items-start gap-3 text-xs sm:text-sm font-bold cursor-pointer">
                   <input
                     type="checkbox"
                     checked={form.settings?.showResumeDownload !== false}
@@ -1733,7 +1768,7 @@ export default function PortfolioEditor() {
                   />
                   <span>Show "Download Resume" button</span>
                 </label>
-                <label className="flex items-start gap-2.5 text-xs font-bold cursor-pointer">
+                <label className="flex items-start gap-3 text-xs sm:text-sm font-bold cursor-pointer">
                   <input
                     type="checkbox"
                     checked={form.settings?.allowIndexing !== false}
@@ -1742,7 +1777,7 @@ export default function PortfolioEditor() {
                   />
                   <span>Allow Google & search engine indexing</span>
                 </label>
-                <label className="flex items-start gap-2.5 text-xs font-bold cursor-pointer">
+                <label className="flex items-start gap-3 text-xs sm:text-sm font-bold cursor-pointer">
                   <input
                     type="checkbox"
                     checked={form.settings?.showSmartNShineBranding !== false}
