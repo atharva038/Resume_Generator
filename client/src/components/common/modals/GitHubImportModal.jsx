@@ -15,10 +15,11 @@ import {
   Award,
 } from "lucide-react";
 import axios from "axios";
-import {useToggle} from "@/hooks";
+import {useToggle, useBodyScrollLock} from "@/hooks";
 import {storage, STORAGE_KEYS} from "@/utils/storage";
 
 const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
+  useBodyScrollLock(isOpen);
   const [step, setStep] = useState("confirm"); // confirm, fetch, select, merge
   const [username, setUsername] = useState("");
   const [loading, toggleLoading, setLoadingTrue, setLoadingFalse] =

@@ -1,11 +1,13 @@
 import {useNavigate} from "react-router-dom";
 import {X, Crown, CheckCircle2, Lock} from "lucide-react";
+import {useBodyScrollLock} from "@/hooks";
 
 /**
  * UpgradeRequiredModal - Shows when user needs to upgrade to access a feature
  */
 const UpgradeRequiredModal = ({isOpen, onClose, message, title, feature}) => {
   const navigate = useNavigate();
+  useBodyScrollLock(isOpen);
 
   if (!isOpen) return null;
 

@@ -618,7 +618,11 @@ const ImpactProTemplate = forwardRef((props, ref) => {
                   >
                     {exp.achievements
                       .filter(
-                        (achievement) => achievement && achievement.trim()
+                        (achievement) =>
+                          achievement &&
+                          (typeof achievement === "string"
+                            ? achievement.trim()
+                            : achievement.title || achievement.description)
                       )
                       .map((achievement, achIndex) => (
                         <li
@@ -1010,7 +1014,13 @@ const ImpactProTemplate = forwardRef((props, ref) => {
               }}
             >
               {resumeData.achievements
-                .filter((achievement) => achievement && achievement.trim())
+                .filter(
+                  (achievement) =>
+                    achievement &&
+                    (typeof achievement === "string"
+                      ? achievement.trim()
+                      : achievement.title || achievement.description)
+                )
                 .map((achievement, index) => (
                   <li
                     key={index}

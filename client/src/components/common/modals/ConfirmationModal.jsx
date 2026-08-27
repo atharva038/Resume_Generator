@@ -1,4 +1,5 @@
 import {X, AlertTriangle, Trash2, UserX, CheckCircle} from "lucide-react";
+import {useBodyScrollLock} from "@/hooks";
 
 /**
  * Reusable Confirmation Modal Component
@@ -25,6 +26,7 @@ const ConfirmationModal = ({
   icon: CustomIcon,
   loading = false,
 }) => {
+  useBodyScrollLock(isOpen);
   if (!isOpen) return null;
 
   // Determine colors and icon based on type

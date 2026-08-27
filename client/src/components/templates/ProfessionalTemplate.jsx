@@ -548,7 +548,11 @@ const ProfessionalTemplate = forwardRef(
                     >
                       {exp.achievements
                         .filter(
-                          (achievement) => achievement && achievement.trim()
+                          (achievement) =>
+                            achievement &&
+                            (typeof achievement === "string"
+                              ? achievement.trim()
+                              : achievement.title || achievement.description)
                         )
                         .map((achievement, i) => (
                           <li

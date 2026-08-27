@@ -1,4 +1,5 @@
 import { Upload, X, RefreshCw } from "lucide-react";
+import { useBodyScrollLock } from "@/hooks";
 
 export default function ResumeImportModal({
   isOpen,
@@ -11,6 +12,7 @@ export default function ResumeImportModal({
   importing,
   onExecuteImport,
 }) {
+  useBodyScrollLock(isOpen);
   if (!isOpen) return null;
 
   return (

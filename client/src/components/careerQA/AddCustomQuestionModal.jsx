@@ -1,4 +1,5 @@
 import { X } from "lucide-react";
+import { useBodyScrollLock } from "@/hooks";
 
 export default function AddCustomQuestionModal({
   isOpen,
@@ -10,6 +11,7 @@ export default function AddCustomQuestionModal({
   setCustomQuestionText,
   onAddCustomQuestion,
 }) {
+  useBodyScrollLock(isOpen);
   if (!isOpen) return null;
 
   return (

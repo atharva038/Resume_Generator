@@ -1,5 +1,6 @@
 import {useEffect, useMemo, useRef, useState} from "react";
 import {Check} from "lucide-react";
+import {useBodyScrollLock} from "@/hooks";
 
 const THUMBNAIL_BASE_WIDTH_PX = 793.7; // 210mm at 96dpi
 
@@ -55,6 +56,7 @@ const TemplateSelectorModal = ({
   selectedTemplate,
   onApplyTemplate,
 }) => {
+  useBodyScrollLock(isOpen);
   const [templateSearchQuery, setTemplateSearchQuery] = useState("");
   const [templateCategoryFilter, setTemplateCategoryFilter] = useState("All");
   const [templateDraftSelection, setTemplateDraftSelection] =

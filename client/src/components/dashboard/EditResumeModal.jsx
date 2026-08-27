@@ -1,4 +1,5 @@
 import { X, CheckCircle2, NotepadText } from "lucide-react";
+import { useBodyScrollLock } from "@/hooks";
 
 export default function EditResumeModal({
   editForm,
@@ -6,6 +7,8 @@ export default function EditResumeModal({
   onClose,
   onSave,
 }) {
+  useBodyScrollLock(true);
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-200">
       <div className="bg-white dark:bg-zinc-950 rounded-3xl shadow-2xl max-w-lg w-full p-6 sm:p-8 border border-gray-200/90 dark:border-white/[0.1] space-y-6">

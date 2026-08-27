@@ -1,5 +1,14 @@
 import React from "react";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import {
+  AlertTriangle,
+  RefreshCw,
+  ArrowLeft,
+  Home,
+  LifeBuoy,
+  Terminal,
+  ChevronDown,
+} from "lucide-react";
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -12,15 +21,11 @@ class ErrorBoundary extends React.Component {
   }
 
   static getDerivedStateFromError(error) {
-    // Update state so the next render will show the fallback UI
-    return {hasError: true};
+    return { hasError: true };
   }
 
   componentDidCatch(error, errorInfo) {
-    // Log error to console for debugging
     console.error("Error caught by ErrorBoundary:", error, errorInfo);
-
-    // You can also log the error to an error reporting service here
     this.setState({
       error,
       errorInfo,
@@ -29,13 +34,12 @@ class ErrorBoundary extends React.Component {
 
   render() {
     if (this.state.hasError) {
-      // Render error UI
       return (
         <ErrorFallback
           error={this.state.error}
           errorInfo={this.state.errorInfo}
           resetError={() =>
-            this.setState({hasError: false, error: null, errorInfo: null})
+            this.setState({ hasError: false, error: null, errorInfo: null })
           }
         />
       );
@@ -45,8 +49,8 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-// Error Fallback Component
-function ErrorFallback({error, errorInfo, resetError}) {
+// Modern Error Fallback Component
+function ErrorFallback({ error, errorInfo, resetError }) {
   const navigate = useNavigate();
 
   const handleGoHome = () => {
@@ -64,163 +68,111 @@ function ErrorFallback({error, errorInfo, resetError}) {
     window.location.reload();
   };
 
+  const errorId = React.useMemo(
+    () => Date.now().toString(36).toUpperCase(),
+    []
+  );
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center px-4 py-8">
-      <div className="max-w-2xl w-full">
-        {/* Error Card */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden">
-          {/* Header with Icon */}
-          <div className="bg-gradient-to-r from-red-500 to-red-600 dark:from-red-600 dark:to-red-700 px-8 py-12 text-center">
-            <div className="inline-flex items-center justify-center w-24 h-24 bg-white dark:bg-gray-800 rounded-full mb-6 shadow-lg">
-              <svg
-                className="w-12 h-12 text-red-500 dark:text-red-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                />
-              </svg>
+    <div className="min-h-screen bg-gray-50 dark:bg-[#09090b] text-gray-900 dark:text-zinc-100 flex items-center justify-center p-4 sm:p-6 transition-colors duration-200">
+      {/* Background ambient lighting */}
+      <div className="pointer-events-none fixed -top-40 -left-40 h-96 w-96 rounded-full bg-rose-500/10 blur-3xl" />
+      <div className="pointer-events-none fixed -bottom-40 -right-40 h-96 w-96 rounded-full bg-purple-500/10 blur-3xl" />
+
+      <div className="relative z-10 max-w-2xl w-full">
+        {/* Main Error Card */}
+        <div className="bg-white dark:bg-zinc-900/90 rounded-3xl border border-gray-200/90 dark:border-white/[0.1] shadow-2xl overflow-hidden backdrop-blur-xl">
+          {/* Header Banner */}
+          <div className="relative overflow-hidden bg-gradient-to-r from-rose-500/10 via-rose-600/5 to-amber-500/10 dark:from-rose-950/40 dark:via-rose-900/20 dark:to-zinc-900/40 px-6 sm:px-8 py-8 sm:py-10 border-b border-gray-100 dark:border-white/5 text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-rose-500/15 dark:bg-rose-500/20 border border-rose-500/30 text-rose-600 dark:text-rose-400 mb-4 shadow-lg shadow-rose-500/10 animate-in zoom-in-90 duration-200">
+              <AlertTriangle className="w-8 h-8 sm:w-10 sm:h-10" />
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-gray-900 dark:text-white tracking-tight">
               Oops! Something Went Wrong
             </h1>
-            <p className="text-red-100 text-lg">
-              We encountered an unexpected error
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-zinc-300 mt-2 max-w-md mx-auto leading-relaxed">
+              We encountered an unexpected rendering error. Your data is safe and our diagnostic system has recorded this issue.
             </p>
           </div>
 
-          {/* Error Details */}
-          <div className="px-8 py-8">
-            <div className="space-y-6">
-              {/* Error Message */}
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                  Error Message:
-                </h2>
-                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-                  <p className="text-red-800 dark:text-red-200 font-mono text-sm break-words">
-                    {error?.message || "An unknown error occurred"}
-                  </p>
-                </div>
-              </div>
-
-              {/* Error Stack (Collapsible) */}
-              {import.meta.env.DEV && errorInfo && (
-                <details className="group">
-                  <summary className="cursor-pointer text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 flex items-center gap-2">
-                    <svg
-                      className="w-4 h-4 transform transition-transform group-open:rotate-90"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5l7 7-7 7"
-                      />
-                    </svg>
-                    View Technical Details
-                  </summary>
-                  <div className="mt-3 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-lg p-4 overflow-auto max-h-64">
-                    <pre className="text-xs text-gray-700 dark:text-gray-300 font-mono whitespace-pre-wrap">
-                      {errorInfo.componentStack}
-                    </pre>
-                  </div>
-                </details>
-              )}
-
-              {/* What to do next */}
-              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-                <h3 className="text-sm font-semibold text-blue-900 dark:text-blue-100 mb-2">
-                  💡 What you can do:
-                </h3>
-                <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1 list-disc list-inside">
-                  <li>Try refreshing the page</li>
-                  <li>Go back to the previous page</li>
-                  <li>Return to the home page</li>
-                  <li>If the problem persists, contact support</li>
-                </ul>
+          {/* Details & Actions */}
+          <div className="p-6 sm:p-8 space-y-6">
+            {/* Error Message Box */}
+            <div className="space-y-2">
+              <label className="block text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 uppercase tracking-wider">
+                Error Message:
+              </label>
+              <div className="p-4 rounded-2xl bg-rose-50/80 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/60 font-mono text-xs sm:text-sm text-rose-800 dark:text-rose-300 break-words leading-relaxed">
+                {error?.message || "An unknown component error occurred"}
               </div>
             </div>
 
+            {/* Collapsible Technical Stack */}
+            {import.meta.env.DEV && errorInfo && (
+              <details className="group rounded-2xl border border-gray-200 dark:border-white/5 bg-gray-50/60 dark:bg-zinc-950/60 p-4">
+                <summary className="cursor-pointer text-xs sm:text-sm font-bold text-gray-700 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-white flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    <Terminal className="w-4 h-4 text-blue-500" />
+                    <span>View Technical Stack Details</span>
+                  </span>
+                  <ChevronDown className="w-4 h-4 text-gray-400 group-open:rotate-180 transition-transform" />
+                </summary>
+                <div className="mt-3 pt-3 border-t border-gray-200 dark:border-white/5 overflow-auto max-h-56">
+                  <pre className="text-[11px] font-mono text-gray-600 dark:text-zinc-400 whitespace-pre-wrap leading-relaxed">
+                    {errorInfo.componentStack}
+                  </pre>
+                </div>
+              </details>
+            )}
+
+            {/* Quick Solutions */}
+            <div className="p-4 sm:p-5 rounded-2xl bg-blue-50/60 dark:bg-blue-950/30 border border-blue-200/70 dark:border-blue-800/50 space-y-2.5">
+              <div className="flex items-center gap-2 text-xs sm:text-sm font-bold text-blue-900 dark:text-blue-200">
+                <LifeBuoy className="w-4 h-4 text-blue-500 shrink-0" />
+                <span>Recommended Recovery Steps:</span>
+              </div>
+              <ul className="text-xs sm:text-sm text-blue-800/90 dark:text-blue-300/90 space-y-1.5 list-disc list-inside leading-relaxed pl-1">
+                <li>Refresh the page to reset active application state</li>
+                <li>Go back to the previous working page</li>
+                <li>Navigate to the homepage to restart your workflow</li>
+              </ul>
+            </div>
+
             {/* Action Buttons */}
-            <div className="flex flex-wrap gap-3 mt-8">
+            <div className="flex flex-wrap gap-3 pt-2">
               <button
                 onClick={handleReload}
-                className="flex-1 min-w-[140px] px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2"
+                className="flex-1 min-w-[140px] px-5 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-2xl shadow-md shadow-blue-500/20 active:scale-95 transition-all text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer"
               >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                  />
-                </svg>
-                Refresh Page
+                <RefreshCw className="w-4 h-4" />
+                <span>Refresh Page</span>
               </button>
 
               <button
                 onClick={handleGoBack}
-                className="flex-1 min-w-[140px] px-6 py-3 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2"
+                className="flex-1 min-w-[140px] px-5 py-3.5 bg-white dark:bg-zinc-800 hover:bg-gray-100 dark:hover:bg-zinc-700 text-gray-800 dark:text-zinc-200 font-bold rounded-2xl border border-gray-200 dark:border-white/10 shadow-2xs active:scale-95 transition-all text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer"
               >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                  />
-                </svg>
-                Go Back
+                <ArrowLeft className="w-4 h-4" />
+                <span>Go Back</span>
               </button>
 
               <button
                 onClick={handleGoHome}
-                className="flex-1 min-w-[140px] px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2"
+                className="flex-1 min-w-[140px] px-5 py-3.5 bg-gray-900 hover:bg-gray-800 dark:bg-white dark:text-gray-900 text-white font-bold rounded-2xl shadow-2xs active:scale-95 transition-all text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer"
               >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-                  />
-                </svg>
-                Go Home
+                <Home className="w-4 h-4" />
+                <span>Go Home</span>
               </button>
             </div>
           </div>
 
-          {/* Footer */}
-          <div className="bg-gray-50 dark:bg-gray-900/50 px-8 py-4 border-t border-gray-200 dark:border-gray-700">
-            <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
-              Error ID: {Date.now().toString(36).toUpperCase()} • Need help?{" "}
+          {/* Footer Metadata */}
+          <div className="bg-gray-50/70 dark:bg-zinc-950/70 px-6 sm:px-8 py-4 border-t border-gray-100 dark:border-white/5 text-center">
+            <p className="text-xs text-gray-500 dark:text-zinc-400">
+              Error ID: <span className="font-mono font-bold text-gray-700 dark:text-zinc-300">{errorId}</span> • Need assistance?{" "}
               <a
                 href="/contact"
-                className="text-blue-600 dark:text-blue-400 hover:underline"
+                className="font-bold text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1"
               >
                 Contact Support
               </a>
@@ -228,12 +180,9 @@ function ErrorFallback({error, errorInfo, resetError}) {
           </div>
         </div>
 
-        {/* Additional Help */}
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            This error has been logged. Our team is working to fix it.
-          </p>
-        </div>
+        <p className="mt-4 text-center text-xs text-gray-400 dark:text-zinc-500">
+          This exception has been recorded to ensure continuous system reliability.
+        </p>
       </div>
     </div>
   );

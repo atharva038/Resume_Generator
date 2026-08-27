@@ -31,13 +31,6 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
       description: "Back to homepage",
     },
     {
-      name: "Features",
-      path: "/#features",
-      icon: Grid,
-      description: "Explore features",
-      isHash: true,
-    },
-    {
       name: "Templates",
       path: "/templates",
       icon: Palette,
