@@ -1,0 +1,254 @@
+import {
+  MessageSquare,
+  Sparkles,
+  Star,
+  Copy,
+  Check,
+  Clock,
+  Volume2,
+  RefreshCw,
+  HelpCircle,
+  Target,
+  Edit3,
+  Bookmark,
+  Lightbulb,
+} from "lucide-react";
+
+export default function QAStudio({
+  selectedItem,
+  editedAnswer,
+  setEditedAnswer,
+  generating,
+  savingAnswer,
+  copied,
+  onCopy,
+  onToggleStar,
+  answerLength,
+  setAnswerLength,
+  answerTone,
+  setAnswerTone,
+  durationOptions,
+  toneOptions,
+  onGenerateAnswer,
+  onSaveToAnswerBank,
+  missingInfoTip,
+  talkingPoints,
+  categoryBadgeStyles,
+}) {
+  if (!selectedItem) {
+    return (
+      <div className="bg-white dark:bg-zinc-950/90 rounded-3xl p-16 border border-gray-200/80 dark:border-white/[0.08] shadow-sm text-center text-gray-400 space-y-3">
+        <MessageSquare className="w-12 h-12 mx-auto text-gray-300 dark:text-zinc-700" />
+        <h3 className="text-base font-bold text-gray-700 dark:text-zinc-300">
+          Select a question from the left bank
+        </h3>
+        <p className="text-xs max-w-sm mx-auto text-gray-500 dark:text-zinc-500 leading-relaxed">
+          Choose any HR, behavioral, or project question to generate answers grounded in your verified career history.
+        </p>
+      </div>
+    );
+  }
+
+  const categoryStyle =
+    categoryBadgeStyles[selectedItem.category] ||
+    "bg-purple-500/10 text-purple-600 border-purple-500/20";
+
+  return (
+    <div className="bg-white dark:bg-zinc-950/90 rounded-3xl p-6 sm:p-8 border border-gray-200/80 dark:border-white/[0.08] shadow-sm dark:shadow-2xl space-y-6">
+      {/* Active Question Header Card */}
+      <div className="space-y-4 pb-6 border-b border-gray-100 dark:border-white/[0.08]">
+        <div className="flex items-center justify-between gap-4">
+          <span className={`text-xs font-bold uppercase tracking-wider px-3.5 py-1.5 rounded-xl border ${categoryStyle}`}>
+            Category: {selectedItem.category}
+          </span>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={onCopy}
+              disabled={!editedAnswer}
+              className="flex items-center gap-2 text-xs font-semibold text-gray-700 dark:text-zinc-200 hover:text-gray-900 dark:hover:text-white px-4 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-all disabled:opacity-40 cursor-pointer"
+            >
+              {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
+              <span>{copied ? "Copied!" : "Copy Answer"}</span>
+            </button>
+
+            <button
+              onClick={(e) => onToggleStar(selectedItem, e)}
+              className={`p-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer ${
+                selectedItem.isStarred ? "text-amber-400" : "text-gray-400"
+              }`}
+              title="Star favorite"
+            >
+              <Star className={`w-4 h-4 ${selectedItem.isStarred ? "fill-amber-400 text-amber-400" : ""}`} />
+            </button>
+          </div>
+        </div>
+
+        <h2 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-gray-900 dark:text-white leading-snug tracking-tight">
+          "{selectedItem.question}"
+        </h2>
+
+        {/* Interviewer Tip */}
+        {selectedItem.hint && (
+          <div className="p-3.5 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-xs text-purple-900 dark:text-purple-300 flex items-start gap-3">
+            <Lightbulb className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0 mt-0.5" />
+            <div className="leading-relaxed">
+              <span className="font-bold">Interviewer Tip:</span> {selectedItem.hint}
+            </div>
+          </div>
+        )}
+
+        {/* Tags */}
+        {selectedItem.tags && selectedItem.tags.length > 0 && (
+          <div className="flex flex-wrap items-center gap-1.5 pt-1">
+            {selectedItem.tags.map((tag, idx) => (
+              <span
+                key={idx}
+                className="px-2.5 py-0.5 rounded-md text-[11px] font-medium bg-gray-100 dark:bg-zinc-900 text-gray-600 dark:text-zinc-400 border border-gray-200/50 dark:border-white/[0.05]"
+              >
+                #{tag}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Length & Tone Segmented Controls */}
+      <div className="p-4 sm:p-5 rounded-2xl bg-gray-50 dark:bg-zinc-900/60 border border-gray-200/80 dark:border-white/[0.08] space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Duration Option */}
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-700 dark:text-zinc-300">
+              <Clock className="w-3.5 h-3.5 text-purple-500" />
+              <span>Response Duration</span>
+            </div>
+            <div className="grid grid-cols-3 gap-1 bg-white dark:bg-zinc-950 p-1 rounded-xl border border-gray-200 dark:border-white/10">
+              {durationOptions.map((len) => (
+                <button
+                  key={len.id}
+                  onClick={() => setAnswerLength(len.id)}
+                  className={`py-1.5 px-2 rounded-lg text-[11px] font-semibold transition-all cursor-pointer ${
+                    answerLength === len.id
+                      ? "bg-purple-600 text-white shadow-xs"
+                      : "text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white"
+                  }`}
+                >
+                  {len.label.split(" ")[0]}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Tone Option */}
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-700 dark:text-zinc-300">
+              <Volume2 className="w-3.5 h-3.5 text-purple-500" />
+              <span>Speaking Tone</span>
+            </div>
+            <div className="grid grid-cols-3 gap-1 bg-white dark:bg-zinc-950 p-1 rounded-xl border border-gray-200 dark:border-white/10">
+              {toneOptions.map((t) => (
+                <button
+                  key={t.id}
+                  onClick={() => setAnswerTone(t.id)}
+                  className={`py-1.5 px-2 rounded-lg text-[11px] font-semibold transition-all cursor-pointer ${
+                    answerTone === t.id
+                      ? "bg-purple-600 text-white shadow-xs"
+                      : "text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white"
+                  }`}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* AI Generation Trigger Button */}
+      <div>
+        <button
+          onClick={onGenerateAnswer}
+          disabled={generating}
+          className="w-full flex items-center justify-center gap-2.5 py-3.5 px-6 bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-700 hover:via-indigo-700 hover:to-blue-700 text-white rounded-2xl text-xs font-bold shadow-lg shadow-purple-500/20 active:scale-[0.99] disabled:opacity-50 transition-all cursor-pointer"
+        >
+          {generating ? (
+            <RefreshCw className="w-4 h-4 animate-spin" />
+          ) : (
+            <Sparkles className="w-4 h-4" />
+          )}
+          <span>
+            {generating
+              ? "Synthesizing answer from your Career Profile..."
+              : editedAnswer
+              ? "Regenerate Answer with AI"
+              : "✨ Generate Personalized Answer"}
+          </span>
+        </button>
+      </div>
+
+      {/* Missing Info Feedback / Coach Tip */}
+      {missingInfoTip && (
+        <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-xs text-amber-800 dark:text-amber-300 flex items-start gap-3">
+          <HelpCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+          <div className="leading-relaxed">
+            <span className="font-bold">Coach Feedback:</span> {missingInfoTip}
+          </div>
+        </div>
+      )}
+
+      {/* Key Strategy & Talking Points */}
+      {talkingPoints && talkingPoints.length > 0 && (
+        <div className="p-4 bg-gray-50 dark:bg-zinc-900/60 border border-gray-200/80 dark:border-white/[0.08] rounded-2xl space-y-2 text-xs">
+          <div className="font-bold flex items-center gap-2 text-gray-900 dark:text-white">
+            <Target className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+            <span>Key Strategy & Talking Points:</span>
+          </div>
+          <ul className="list-disc pl-5 space-y-1.5 text-gray-600 dark:text-zinc-300 leading-relaxed text-xs">
+            {talkingPoints.map((tp, idx) => (
+              <li key={idx}>{tp}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Final Editable Answer Studio Box */}
+      <div className="space-y-2.5">
+        <div className="flex items-center justify-between text-xs">
+          <label className="font-bold text-gray-800 dark:text-zinc-200 flex items-center gap-2">
+            <Edit3 className="w-3.5 h-3.5 text-purple-500" />
+            <span>Your Custom / Final Saved Answer</span>
+          </label>
+          <span className="px-2.5 py-0.5 rounded-full bg-gray-100 dark:bg-zinc-900 border border-gray-200/60 dark:border-white/[0.06] text-[11px] font-semibold text-gray-500 dark:text-zinc-400">
+            {editedAnswer.split(/\s+/).filter(Boolean).length} words
+          </span>
+        </div>
+
+        <div className="relative rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/60 overflow-hidden focus-within:ring-2 focus-within:ring-purple-500 transition-all shadow-xs">
+          <textarea
+            rows={9}
+            value={editedAnswer}
+            onChange={(e) => setEditedAnswer(e.target.value)}
+            placeholder="Click 'Generate Personalized Answer' or write your custom talking points here..."
+            className="w-full p-4 sm:p-5 bg-transparent text-sm leading-relaxed text-gray-900 dark:text-zinc-100 placeholder-gray-400 dark:placeholder-zinc-600 focus:outline-none font-sans resize-y"
+          />
+        </div>
+      </div>
+
+      {/* Save Final Answer Button Bar */}
+      <div className="flex items-center justify-end gap-3 pt-2">
+        <button
+          onClick={onSaveToAnswerBank}
+          disabled={savingAnswer || !editedAnswer.trim()}
+          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-2xl text-xs shadow-md shadow-purple-500/20 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
+        >
+          {savingAnswer ? (
+            <RefreshCw className="w-4 h-4 animate-spin" />
+          ) : (
+            <Bookmark className="w-4 h-4" />
+          )}
+          <span>Save to My Answer Bank ⭐</span>
+        </button>
+      </div>
+    </div>
+  );
+}

@@ -1,11 +1,11 @@
-import {useEffect, useMemo, useState} from "react";
-import {useNavigate, useParams} from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import toast from "react-hot-toast";
+import SEO from "@/components/common/SEO";
 import {
   ArrowLeft,
   ArrowDown,
   ArrowUp,
-  ChevronDown,
   Eye,
   Globe2,
   Plus,
@@ -13,11 +13,27 @@ import {
   Send,
   Sparkles,
   Trash2,
+  User,
+  Phone,
+  Rocket,
+  Briefcase,
+  GraduationCap,
+  Trophy,
+  Layers,
+  Award,
+  Palette,
+  Sliders,
+  Search,
+  Copy,
+  Check,
+  ExternalLink,
 } from "lucide-react";
-import {portfolioAPI} from "@/api/portfolio.api";
-import {portfolioThemeList} from "@/components/portfolio/themes/themeRegistry";
-import {useAuth} from "@/hooks/useAuth";
-import {useNavigationBlocker} from "@/context/NavigationBlockerContext";
+import { portfolioAPI } from "@/api/portfolio.api";
+import { portfolioThemeList } from "@/components/portfolio/themes/themeRegistry";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigationBlocker } from "@/context/NavigationBlockerContext";
+import PortfolioEditorHeader from "@/components/portfolio/PortfolioEditorHeader";
+import PortfolioPanel from "@/components/portfolio/PortfolioPanel";
 
 const blankProject = {
   title: "",
@@ -138,7 +154,7 @@ const commaToArray = (value) => {
 
 const stableStringify = (value) => JSON.stringify(value || null);
 
-const getEditorSnapshot = ({form, projects}) =>
+const getEditorSnapshot = ({ form, projects }) =>
   stableStringify({
     form,
     projects: (projects || [])
@@ -178,59 +194,11 @@ const normalizeSectionOrder = (sectionOrder) =>
     ]),
   ].filter((section) => DEFAULT_SECTION_ORDER.includes(section));
 
-const CollapsiblePanel = ({
-  title,
-  description,
-  defaultOpen = false,
-  forceState,
-  forceVersion,
-  actions = null,
-  children,
-}) => {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
-
-  useEffect(() => {
-    if (forceVersion) {
-      setIsOpen(Boolean(forceState));
-    }
-  }, [forceState, forceVersion]);
-
-  return (
-    <section className="border border-gray-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-zinc-950 overflow-hidden">
-      <button
-        type="button"
-        onClick={() => setIsOpen((current) => !current)}
-        className="flex w-full items-start justify-between gap-4 px-5 py-4 text-left hover:bg-gray-50 dark:hover:bg-zinc-900 transition-colors"
-      >
-        <div className="min-w-0">
-          <h2 className="text-xl font-bold">{title}</h2>
-          {description && (
-            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-              {description}
-            </p>
-          )}
-        </div>
-        <ChevronDown
-          className={`mt-1 h-5 w-5 flex-shrink-0 text-gray-500 transition-transform ${
-            isOpen ? "rotate-180" : ""
-          }`}
-        />
-      </button>
-      {isOpen && (
-        <div className="border-t border-gray-200 dark:border-zinc-800 p-5">
-          {actions && <div className="mb-5 flex justify-end">{actions}</div>}
-          {children}
-        </div>
-      )}
-    </section>
-  );
-};
-
-const PortfolioEditor = () => {
-  const {id} = useParams();
+export default function PortfolioEditor() {
+  const { id } = useParams();
   const navigate = useNavigate();
-  const {user} = useAuth();
-  const {blockNavigation, unblockNavigation} = useNavigationBlocker();
+  const { user } = useAuth();
+  const { blockNavigation, unblockNavigation } = useNavigationBlocker();
   const [portfolio, setPortfolio] = useState(null);
   const [projects, setProjects] = useState([]);
   const [form, setForm] = useState(null);
@@ -239,6 +207,7 @@ const PortfolioEditor = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [aiAction, setAiAction] = useState("");
+  const [copiedLink, setCopiedLink] = useState(false);
   const [panelControl, setPanelControl] = useState({
     version: 0,
     open: null,
@@ -252,11 +221,13 @@ const PortfolioEditor = () => {
     if (!portfolio?.slug) return "";
     return `${window.location.origin}/u/${portfolio.slug}`;
   }, [portfolio?.slug]);
+
   const userTier =
     user?.role === "admin" ? "pro" : user?.subscription?.tier || "free";
   const isThemeAllowed = (theme) => theme.allowedTiers?.includes(userTier);
+
   const currentSnapshot = useMemo(
-    () => (form ? getEditorSnapshot({form, projects}) : ""),
+    () => (form ? getEditorSnapshot({ form, projects }) : ""),
     [form, projects]
   );
   const hasUnsavedChanges = Boolean(
@@ -266,13 +237,11 @@ const PortfolioEditor = () => {
   useEffect(() => {
     const handleBeforeUnload = (event) => {
       if (!hasUnsavedChanges) return;
-
       event.preventDefault();
       event.returnValue = "";
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
-
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
@@ -315,6 +284,7 @@ const PortfolioEditor = () => {
 
   const fetchPortfolio = async () => {
     try {
+      setLoading(true);
       const response = await portfolioAPI.getById(id);
       const portfolioData = response.data.portfolio;
       const resumeSnapshot = response.data.resume || {};
@@ -366,7 +336,7 @@ const PortfolioEditor = () => {
   };
 
   const updateField = (field, value) => {
-    setForm((current) => ({...current, [field]: value}));
+    setForm((current) => ({ ...current, [field]: value }));
   };
 
   const updateNestedField = (group, field, value) => {
@@ -405,7 +375,7 @@ const PortfolioEditor = () => {
         nextOrder[index],
       ];
 
-      return {...current, sectionOrder: nextOrder};
+      return { ...current, sectionOrder: nextOrder };
     });
   };
 
@@ -413,7 +383,7 @@ const PortfolioEditor = () => {
     setForm((current) => ({
       ...current,
       socialLinks: (current.socialLinks || []).map((link, linkIndex) =>
-        linkIndex === index ? {...link, [field]: value} : link
+        linkIndex === index ? { ...link, [field]: value } : link
       ),
     }));
   };
@@ -423,7 +393,7 @@ const PortfolioEditor = () => {
       ...current,
       socialLinks: [
         ...(current.socialLinks || []),
-        {label: "", type: "website", url: ""},
+        { label: "", type: "website", url: "" },
       ],
     }));
   };
@@ -480,7 +450,7 @@ const PortfolioEditor = () => {
     }));
   };
 
-  const handleSave = async ({silent = false} = {}) => {
+  const handleSave = async ({ silent = false } = {}) => {
     setSaving(true);
 
     try {
@@ -508,7 +478,7 @@ const PortfolioEditor = () => {
         })
       );
       if (!silent) {
-        toast.success("Portfolio saved");
+        toast.success("Portfolio saved successfully!");
       }
       return true;
     } catch (error) {
@@ -521,7 +491,7 @@ const PortfolioEditor = () => {
   };
 
   const handlePreview = async () => {
-    const saved = await handleSave({silent: true});
+    const saved = await handleSave({ silent: true });
     if (saved) {
       unblockNavigation();
       navigate(`/portfolio/${id}/preview`);
@@ -545,7 +515,7 @@ const PortfolioEditor = () => {
       );
       toast.success(
         response.data.portfolio.status === "published"
-          ? "Portfolio published"
+          ? "🎉 Portfolio published live!"
           : "Portfolio unpublished"
       );
     } catch (error) {
@@ -562,7 +532,7 @@ const PortfolioEditor = () => {
         targetRole: form.professionalTitle,
       });
       updateField("about", response.data.about);
-      toast.success("About section generated");
+      toast.success("AI generated your About section!");
     } catch (error) {
       toast.error(error.response?.data?.error || "Failed to generate about");
       console.error(error);
@@ -583,7 +553,7 @@ const PortfolioEditor = () => {
         response.data.seo?.description || ""
       );
       updateNestedField("seo", "keywords", response.data.seo?.keywords || []);
-      toast.success("SEO metadata generated");
+      toast.success("SEO metadata generated by AI!");
     } catch (error) {
       toast.error(error.response?.data?.error || "Failed to generate SEO");
       console.error(error);
@@ -598,31 +568,17 @@ const PortfolioEditor = () => {
     try {
       const response = await portfolioAPI.improveProjectDescription(id, {
         projectId: project._id,
+        currentTitle: project.title,
+        currentShortDescription: project.shortDescription,
+        currentLongDescription: project.longDescription,
       });
-      const improved = response.data.project || {};
-      const updatePayload = {
-        shortDescription:
-          improved.shortDescription || project.shortDescription || "",
-        longDescription:
-          improved.longDescription || project.longDescription || "",
-        highlights: improved.highlights || project.highlights || [],
-      };
-      const updateResponse = await portfolioAPI.updateProject(
-        id,
-        project._id,
-        updatePayload
-      );
-
-      setProjects((items) =>
-        items.map((item) =>
-          item._id === project._id ? updateResponse.data.project : item
-        )
-      );
-      toast.success("Project description improved");
+      updateProjectDraft(project._id, {
+        shortDescription: response.data.improved?.shortDescription,
+        longDescription: response.data.improved?.longDescription,
+      });
+      toast.success("Project description improved by AI!");
     } catch (error) {
-      toast.error(
-        error.response?.data?.error || "Failed to improve project description"
-      );
+      toast.error(error.response?.data?.error || "Failed to improve project");
       console.error(error);
     } finally {
       setAiAction("");
@@ -630,11 +586,6 @@ const PortfolioEditor = () => {
   };
 
   const handleSaveProject = async (project) => {
-    if (!project.title?.trim()) {
-      toast.error("Project title is required");
-      return;
-    }
-
     try {
       const response = await portfolioAPI.updateProject(
         id,
@@ -654,7 +605,7 @@ const PortfolioEditor = () => {
           ),
         })
       );
-      toast.success("Portfolio project saved");
+      toast.success("Project saved!");
     } catch (error) {
       toast.error(error.response?.data?.error || "Failed to save project");
       console.error(error);
@@ -681,9 +632,9 @@ const PortfolioEditor = () => {
       const response = await portfolioAPI.createProject(id, payload);
       const nextProjects = [...projects, response.data.project];
       setProjects(nextProjects);
-      setSavedSnapshot(getEditorSnapshot({form, projects: nextProjects}));
+      setSavedSnapshot(getEditorSnapshot({ form, projects: nextProjects }));
       setNewProject(blankProject);
-      toast.success("Project added");
+      toast.success("Project created!");
     } catch (error) {
       toast.error(error.response?.data?.error || "Failed to add project");
       console.error(error);
@@ -691,13 +642,13 @@ const PortfolioEditor = () => {
   };
 
   const handleDeleteProject = async (projectId) => {
-    if (!confirm("Delete this project?")) return;
+    if (!confirm("Are you sure you want to delete this project?")) return;
 
     try {
       await portfolioAPI.deleteProject(id, projectId);
       const nextProjects = projects.filter((item) => item._id !== projectId);
       setProjects(nextProjects);
-      setSavedSnapshot(getEditorSnapshot({form, projects: nextProjects}));
+      setSavedSnapshot(getEditorSnapshot({ form, projects: nextProjects }));
       toast.success("Project deleted");
     } catch (error) {
       toast.error("Failed to delete project");
@@ -705,304 +656,338 @@ const PortfolioEditor = () => {
     }
   };
 
+  const handleCopyPublicLink = () => {
+    if (!publicUrl) return;
+    navigator.clipboard.writeText(publicUrl);
+    setCopiedLink(true);
+    toast.success("Copied live portfolio link!");
+    setTimeout(() => setCopiedLink(false), 2000);
+  };
+
   if (loading || !form) {
     return (
-      <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
-        <p className="text-gray-600 dark:text-gray-400">
-          Loading portfolio editor...
-        </p>
+      <div className="min-h-screen bg-gray-50/50 dark:bg-[#09090b] flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="relative w-16 h-16 mx-auto">
+            <div className="absolute inset-0 border-3 border-gray-200 dark:border-zinc-800 border-t-emerald-600 dark:border-t-emerald-500 rounded-full animate-spin"></div>
+            <Globe2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+          </div>
+          <p className="text-sm text-gray-600 dark:text-zinc-300 font-semibold tracking-wide uppercase">
+            Loading Portfolio Editor...
+          </p>
+        </div>
       </div>
     );
   }
 
+  const isPublished = portfolio.status === "published";
+
   return (
-    <div className="min-h-screen bg-white dark:bg-black text-gray-900 dark:text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between mb-8">
-          <div>
-            <button
-              type="button"
-              onClick={() => navigateWithUnsavedCheck("/portfolio")}
-              className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-4"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back to portfolios
-            </button>
-            <h1 className="text-4xl font-black tracking-tight">
-              Portfolio Editor
-            </h1>
-            <p className="mt-2 flex flex-wrap items-center gap-2 text-gray-600 dark:text-gray-400">
-              <span>
-                Status: <span className="capitalize">{portfolio.status}</span>
-              </span>
-              {hasUnsavedChanges && (
-                <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-800 dark:bg-amber-500/15 dark:text-amber-200">
-                  Unsaved changes
+    <div className="min-h-screen bg-gray-50/50 dark:bg-[#09090b] text-gray-900 dark:text-zinc-100 flex flex-col font-sans transition-colors duration-200">
+      <SEO
+        title={`Editing: ${form.title || "Portfolio"} | SmartNShine`}
+        description="Edit, design, and configure your live developer portfolio website."
+      />
+
+      {/* Top Header */}
+      <PortfolioEditorHeader
+        onGoBack={() => navigateWithUnsavedCheck("/portfolio")}
+        hasUnsavedChanges={hasUnsavedChanges}
+        saving={saving}
+        onSave={() => handleSave()}
+        onPreview={handlePreview}
+        onPublishToggle={handlePublishToggle}
+        isPublished={isPublished}
+        publicUrl={publicUrl}
+        slug={portfolio.slug}
+      />
+
+      {/* Main Workspace Body */}
+      <main className="flex-1 px-4 sm:px-8 lg:px-12 py-8 max-w-[1600px] w-full mx-auto space-y-8">
+        {/* Hero Section Banner */}
+        <div className="relative overflow-hidden rounded-3xl border border-gray-200/90 dark:border-white/[0.1] bg-white dark:bg-gradient-to-b dark:from-zinc-900/95 dark:to-zinc-950/95 p-6 sm:p-8 shadow-sm dark:shadow-2xl">
+          <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-emerald-500/10 blur-3xl" />
+
+          <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+            <div className="space-y-2.5">
+              <div className="flex items-center gap-3">
+                <span
+                  className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-bold ${
+                    isPublished
+                      ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                      : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
+                  }`}
+                >
+                  <span className={`w-2.5 h-2.5 rounded-full ${isPublished ? "bg-emerald-500 animate-pulse" : "bg-amber-500"}`} />
+                  <span>{isPublished ? "Published & Live" : "Draft (Unpublished)"}</span>
                 </span>
-              )}
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={handlePreview}
-              className="inline-flex items-center gap-2 px-4 py-3 rounded-lg border border-gray-200 dark:border-zinc-700 font-semibold"
-            >
-              <Eye className="w-5 h-5" />
-              Preview
-            </button>
-            <button
-              type="button"
-              onClick={() => handleSave()}
-              disabled={saving}
-              className="inline-flex items-center gap-2 px-4 py-3 rounded-lg bg-gray-900 text-white dark:bg-white dark:text-black font-semibold disabled:opacity-60"
-            >
-              <Save className="w-5 h-5" />
-              {saving ? "Saving..." : "Save"}
-            </button>
-            <button
-              type="button"
-              onClick={handlePublishToggle}
-              className="inline-flex items-center gap-2 px-4 py-3 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700"
-            >
-              {portfolio.status === "published" ? (
-                <Globe2 className="w-5 h-5" />
-              ) : (
-                <Send className="w-5 h-5" />
-              )}
-              {portfolio.status === "published" ? "Unpublish" : "Publish"}
-            </button>
+                {form.themeId && (
+                  <span className="text-xs sm:text-sm font-bold px-3 py-1.5 rounded-full bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 border border-gray-200 dark:border-white/[0.08] capitalize">
+                    Theme: {form.themeId}
+                  </span>
+                )}
+              </div>
+
+              <h1 className="text-2xl sm:text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+                {form.title || "Untitled Portfolio"}
+              </h1>
+              <p className="text-sm sm:text-base text-gray-600 dark:text-zinc-300 max-w-2xl leading-relaxed">
+                {form.professionalTitle || "Configure details, proof links, theme colors, and SEO."}
+              </p>
+            </div>
+
+            {/* Public Link Pill Card */}
+            {isPublished && (
+              <div className="flex flex-wrap items-center gap-3 p-4 rounded-2xl bg-emerald-50/90 dark:bg-emerald-950/40 border border-emerald-500/30 shadow-xs">
+                <div className="flex items-center gap-2.5 text-sm font-medium text-emerald-950 dark:text-emerald-200">
+                  <Globe2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                  <span className="font-mono text-xs sm:text-sm truncate max-w-xs sm:max-w-md">{publicUrl}</span>
+                </div>
+                <div className="flex items-center gap-2 ml-auto">
+                  <button
+                    type="button"
+                    onClick={handleCopyPublicLink}
+                    className="p-2 rounded-xl bg-white dark:bg-zinc-900 text-gray-700 dark:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-800 border border-gray-200 dark:border-white/10 transition-all cursor-pointer shadow-2xs"
+                    title="Copy live link"
+                  >
+                    {copiedLink ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
+                  </button>
+                  <a
+                    href={publicUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="p-2 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 transition-all cursor-pointer shadow-2xs"
+                    title="Open live website in new tab"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
-        {portfolio.status === "published" && (
-          <div className="mb-6 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-900 p-4">
-            Public link:{" "}
-            <a href={publicUrl} className="font-semibold underline">
-              {publicUrl}
-            </a>
-          </div>
-        )}
-
-        <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
-          <div className="space-y-6">
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-950">
+        {/* Global Toolbar & Panel Grid */}
+        <div className="grid gap-8 lg:grid-cols-12 items-start">
+          {/* Left Column: Content Panels (8 cols) */}
+          <div className="lg:col-span-8 space-y-6">
+            {/* Quick Expand / Collapse Bar */}
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-gray-200/90 dark:border-white/[0.1] bg-white dark:bg-zinc-950 px-6 py-4 shadow-xs">
               <div>
-                <h2 className="text-sm font-bold">Editor sections</h2>
-                <p className="text-xs text-gray-600 dark:text-gray-400">
-                  Keep everything collapsed for quick scanning, or expand all
-                  when doing a full review.
+                <h2 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-gray-600 dark:text-zinc-300">
+                  Content Sections
+                </h2>
+                <p className="text-xs sm:text-sm text-gray-500 dark:text-zinc-400 mt-0.5">
+                  Click any card to expand or edit fields.
                 </p>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2.5">
                 <button
                   type="button"
                   onClick={() => setAllPanelsOpen(true)}
-                  className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-semibold hover:bg-gray-100 dark:border-zinc-700 dark:bg-black dark:hover:bg-zinc-900"
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 px-3.5 py-2 text-xs sm:text-sm font-semibold text-gray-800 dark:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-all cursor-pointer"
                 >
                   <ArrowDown className="h-4 w-4" />
-                  Expand all
+                  <span>Expand All</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setAllPanelsOpen(false)}
-                  className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-semibold hover:bg-gray-100 dark:border-zinc-700 dark:bg-black dark:hover:bg-zinc-900"
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 px-3.5 py-2 text-xs sm:text-sm font-semibold text-gray-800 dark:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-all cursor-pointer"
                 >
                   <ArrowUp className="h-4 w-4" />
-                  Collapse all
+                  <span>Collapse All</span>
                 </button>
               </div>
             </div>
 
-            <CollapsiblePanel
-              title="Profile"
-              description="Portfolio title, role, slug, and about copy."
+            {/* Profile Panel */}
+            <PortfolioPanel
+              title="Profile & Bio"
+              description="Portfolio title, role headline, slug, and bio narrative."
+              icon={User}
+              defaultOpen={true}
               forceState={panelControl.open}
               forceVersion={panelControl.version}
             >
-              <div className="grid gap-4 md:grid-cols-2">
-                <label className="block">
-                  <span className="text-sm font-semibold">Title</span>
+              <div className="grid gap-5 md:grid-cols-2">
+                <div>
+                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-2 block">
+                    Portfolio Title
+                  </label>
                   <input
                     value={form.title || ""}
-                    onChange={(event) =>
-                      updateField("title", event.target.value)
-                    }
-                    className="mt-2 w-full rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
+                    onChange={(e) => updateField("title", e.target.value)}
+                    className="w-full px-4 py-3.5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm sm:text-base font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
-                </label>
-                <label className="block">
-                  <span className="text-sm font-semibold">
-                    Professional title
-                  </span>
+                </div>
+                <div>
+                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-2 block">
+                    Professional Title / Headline
+                  </label>
                   <input
                     value={form.professionalTitle || ""}
-                    onChange={(event) =>
-                      updateField("professionalTitle", event.target.value)
-                    }
-                    className="mt-2 w-full rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
+                    onChange={(e) => updateField("professionalTitle", e.target.value)}
+                    className="w-full px-4 py-3.5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm sm:text-base font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
-                </label>
-                <label className="block">
-                  <span className="text-sm font-semibold">Slug</span>
+                </div>
+                <div>
+                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-2 block">
+                    Custom URL Slug
+                  </label>
                   <input
                     value={form.slug || ""}
-                    onChange={(event) =>
-                      updateField("slug", event.target.value)
-                    }
-                    className="mt-2 w-full rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
+                    onChange={(e) => updateField("slug", e.target.value)}
+                    className="w-full px-4 py-3.5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm font-mono focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
-                </label>
-                <label className="block">
-                  <span className="text-sm font-semibold">Location</span>
+                </div>
+                <div>
+                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-2 block">
+                    Location
+                  </label>
                   <input
                     value={form.location || ""}
-                    onChange={(event) =>
-                      updateField("location", event.target.value)
-                    }
-                    className="mt-2 w-full rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
+                    onChange={(e) => updateField("location", e.target.value)}
+                    className="w-full px-4 py-3.5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm sm:text-base font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
-                </label>
-                <label className="block">
-                  <span className="text-sm font-semibold">
-                    Profile image URL
-                  </span>
+                </div>
+                <div>
+                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-2 block">
+                    Profile Image URL
+                  </label>
                   <input
                     value={form.profileImage || ""}
-                    onChange={(event) =>
-                      updateField("profileImage", event.target.value)
-                    }
+                    onChange={(e) => updateField("profileImage", e.target.value)}
                     placeholder="https://example.com/headshot.jpg"
-                    className="mt-2 w-full rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
+                    className="w-full px-4 py-3.5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-xs sm:text-sm font-mono focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
-                </label>
-                <label className="block">
-                  <span className="text-sm font-semibold">Hero image URL</span>
+                </div>
+                <div>
+                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-2 block">
+                    Hero Banner Image URL
+                  </label>
                   <input
                     value={form.heroImage || ""}
-                    onChange={(event) =>
-                      updateField("heroImage", event.target.value)
-                    }
+                    onChange={(e) => updateField("heroImage", e.target.value)}
                     placeholder="https://example.com/hero.jpg"
-                    className="mt-2 w-full rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
+                    className="w-full px-4 py-3.5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-xs sm:text-sm font-mono focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
-                </label>
+                </div>
               </div>
-              <label className="block mt-4">
-                <span className="text-sm font-semibold">Tagline</span>
+
+              <div>
+                <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-2 block">
+                  Tagline / Elevator Pitch
+                </label>
                 <textarea
                   value={form.tagline || ""}
-                  onChange={(event) =>
-                    updateField("tagline", event.target.value)
-                  }
-                  rows={3}
-                  className="mt-2 w-full rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
+                  onChange={(e) => updateField("tagline", e.target.value)}
+                  rows={2}
+                  className="w-full p-4 sm:p-5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm sm:text-base leading-relaxed focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                 />
-              </label>
-              <div className="mt-4 flex items-center justify-between gap-3">
-                <span className="text-sm font-semibold">About</span>
-                <button
-                  type="button"
-                  onClick={handleGenerateAbout}
-                  disabled={Boolean(aiAction)}
-                  className="inline-flex items-center gap-2 rounded-lg border border-blue-200 px-3 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-50 disabled:opacity-60 dark:border-blue-500/30 dark:text-blue-300 dark:hover:bg-blue-500/10"
-                >
-                  <Sparkles className="w-4 h-4" />
-                  {aiAction === "about" ? "Generating..." : "Generate"}
-                </button>
               </div>
-              <label className="block">
+
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200">
+                    About / Executive Summary
+                  </label>
+                  <button
+                    type="button"
+                    onClick={handleGenerateAbout}
+                    disabled={Boolean(aiAction)}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 text-xs sm:text-sm font-bold hover:bg-purple-100 transition-all cursor-pointer disabled:opacity-50"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    <span>{aiAction === "about" ? "Generating..." : "Generate with AI"}</span>
+                  </button>
+                </div>
                 <textarea
                   value={form.about || ""}
-                  onChange={(event) => updateField("about", event.target.value)}
+                  onChange={(e) => updateField("about", e.target.value)}
                   rows={6}
-                  className="mt-2 w-full rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
+                  className="w-full p-4 sm:p-5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm sm:text-base leading-relaxed focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                 />
-              </label>
-            </CollapsiblePanel>
+              </div>
+            </PortfolioPanel>
 
-            <CollapsiblePanel
-              title="Contact"
-              description="Public contact details and social links."
+            {/* Contact Panel */}
+            <PortfolioPanel
+              title="Contact & Social Links"
+              description="Public contact details and social media profiles."
+              icon={Phone}
               forceState={panelControl.open}
               forceVersion={panelControl.version}
             >
-              <div className="grid gap-4 md:grid-cols-2">
-                <label className="block">
-                  <span className="text-sm font-semibold">Email</span>
+              <div className="grid gap-5 md:grid-cols-2">
+                <div>
+                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-2 block">
+                    Public Email
+                  </label>
                   <input
                     value={form.contact?.email || ""}
-                    onChange={(event) =>
-                      updateNestedField("contact", "email", event.target.value)
-                    }
-                    className="mt-2 w-full rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
+                    onChange={(e) => updateNestedField("contact", "email", e.target.value)}
+                    className="w-full px-4 py-3.5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm sm:text-base focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
-                </label>
-                <label className="block">
-                  <span className="text-sm font-semibold">Phone</span>
+                </div>
+                <div>
+                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-2 block">
+                    Public Phone
+                  </label>
                   <input
                     value={form.contact?.phone || ""}
-                    onChange={(event) =>
-                      updateNestedField("contact", "phone", event.target.value)
-                    }
-                    className="mt-2 w-full rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
+                    onChange={(e) => updateNestedField("contact", "phone", e.target.value)}
+                    className="w-full px-4 py-3.5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm sm:text-base focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
-                </label>
+                </div>
               </div>
-              <div className="grid gap-4 md:grid-cols-2 mt-4">
-                <label className="flex items-center gap-2 text-sm font-semibold">
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <label className="flex items-center gap-3 p-4 rounded-2xl bg-white dark:bg-zinc-950 border border-gray-200/90 dark:border-white/[0.1] text-xs sm:text-sm font-bold cursor-pointer">
                   <input
                     type="checkbox"
                     checked={form.contact?.showEmail !== false}
-                    onChange={(event) =>
-                      updateNestedField(
-                        "contact",
-                        "showEmail",
-                        event.target.checked
-                      )
-                    }
+                    onChange={(e) => updateNestedField("contact", "showEmail", e.target.checked)}
+                    className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500"
                   />
-                  Show email publicly
+                  <span>Show email publicly</span>
                 </label>
-                <label className="flex items-center gap-2 text-sm font-semibold">
+                <label className="flex items-center gap-3 p-4 rounded-2xl bg-white dark:bg-zinc-950 border border-gray-200/90 dark:border-white/[0.1] text-xs sm:text-sm font-bold cursor-pointer">
                   <input
                     type="checkbox"
                     checked={Boolean(form.contact?.showPhone)}
-                    onChange={(event) =>
-                      updateNestedField(
-                        "contact",
-                        "showPhone",
-                        event.target.checked
-                      )
-                    }
+                    onChange={(e) => updateNestedField("contact", "showPhone", e.target.checked)}
+                    className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500"
                   />
-                  Show phone publicly
+                  <span>Show phone publicly</span>
                 </label>
               </div>
-              <div className="mt-5 border-t border-gray-100 pt-4 dark:border-zinc-800">
-                <div className="mb-3 flex items-center justify-between gap-3">
-                  <h3 className="text-sm font-bold">Social links</h3>
+
+              <div className="pt-5 border-t border-gray-100 dark:border-white/[0.08] space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-gray-600 dark:text-zinc-300">
+                    Social & Portfolio Links
+                  </h3>
                   <button
                     type="button"
                     onClick={addSocialLink}
-                    className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm font-semibold dark:border-zinc-700"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold shadow-xs transition-all cursor-pointer"
                   >
                     <Plus className="h-4 w-4" />
-                    Add
+                    <span>Add Link</span>
                   </button>
                 </div>
+
                 <div className="space-y-3">
                   {(form.socialLinks || []).map((link, index) => (
                     <div
                       key={`social-${index}`}
-                      className="grid gap-3 rounded-lg border border-gray-200 p-3 dark:border-zinc-800 md:grid-cols-[150px_1fr_1.5fr_auto]"
+                      className="grid gap-3 rounded-2xl border border-gray-200/90 dark:border-white/[0.1] p-4 bg-white dark:bg-zinc-950 md:grid-cols-[160px_1fr_1.5fr_auto] items-center shadow-2xs"
                     >
                       <select
                         value={link.type || "other"}
-                        onChange={(event) =>
-                          updateSocialLink(index, "type", event.target.value)
-                        }
-                        className="rounded-lg border border-gray-300 bg-white px-3 py-3 capitalize dark:border-zinc-700 dark:bg-black"
+                        onChange={(e) => updateSocialLink(index, "type", e.target.value)}
+                        className="rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 px-3.5 py-3 text-xs sm:text-sm font-semibold capitalize"
                       >
                         {socialLinkTypes.map((type) => (
                           <option key={type} value={type}>
@@ -1012,25 +997,21 @@ const PortfolioEditor = () => {
                       </select>
                       <input
                         value={link.label || ""}
-                        onChange={(event) =>
-                          updateSocialLink(index, "label", event.target.value)
-                        }
-                        placeholder="Label"
-                        className="rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
+                        onChange={(e) => updateSocialLink(index, "label", e.target.value)}
+                        placeholder="Label (e.g. GitHub)"
+                        className="rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 px-3.5 py-3 text-xs sm:text-sm font-medium"
                       />
                       <input
                         value={link.url || ""}
-                        onChange={(event) =>
-                          updateSocialLink(index, "url", event.target.value)
-                        }
+                        onChange={(e) => updateSocialLink(index, "url", e.target.value)}
                         placeholder="https://..."
-                        className="rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
+                        className="rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 px-3.5 py-3 text-xs sm:text-sm font-mono"
                       />
                       <button
                         type="button"
                         onClick={() => removeSocialLink(index)}
-                        aria-label="Remove social link"
-                        className="rounded-lg p-2 text-gray-500 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10"
+                        className="p-2.5 rounded-xl text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors cursor-pointer"
+                        title="Remove social link"
                       >
                         <Trash2 className="h-5 w-5" />
                       </button>
@@ -1038,300 +1019,186 @@ const PortfolioEditor = () => {
                   ))}
                 </div>
               </div>
-            </CollapsiblePanel>
+            </PortfolioPanel>
 
-            <CollapsiblePanel
+            {/* Projects Panel */}
+            <PortfolioPanel
               title="Projects"
-              description="Portfolio-only project copy, links, visibility, and featured status."
+              description="Detailed project cards, live demos, and case studies."
+              icon={Rocket}
+              badge={`${projects.length} items`}
               forceState={panelControl.open}
               forceVersion={panelControl.version}
             >
-              <div className="space-y-4 mb-6">
+              <div className="space-y-6">
                 {projects.map((project) => (
                   <div
                     key={project._id}
-                    className="rounded-lg border border-gray-200 dark:border-zinc-800 p-4"
+                    className="rounded-3xl border border-gray-200/90 dark:border-white/[0.1] p-6 bg-white dark:bg-zinc-950 space-y-5 shadow-xs"
                   >
-                    <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-                      <div className="min-w-0 flex-1">
-                        <input
-                          value={project.title || ""}
-                          onChange={(event) =>
-                            updateProjectDraft(project._id, {
-                              title: event.target.value,
-                            })
-                          }
-                          className="w-full rounded-lg border border-gray-300 bg-white px-3 py-3 font-bold dark:border-zinc-700 dark:bg-black"
-                          placeholder="Project title"
-                        />
-                        <p className="mt-2 text-xs text-gray-500 dark:text-gray-500">
-                          Preview: {getProjectDescriptionPreview(project)}
-                        </p>
-                      </div>
-                      <div className="flex flex-shrink-0 flex-wrap items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => handleSaveProject(project)}
-                          className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-3 py-2 text-sm font-semibold text-white dark:bg-white dark:text-black"
-                        >
-                          <Save className="w-4 h-4" />
-                          Save
-                        </button>
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <input
+                        value={project.title || ""}
+                        onChange={(e) => updateProjectDraft(project._id, { title: e.target.value })}
+                        className="flex-1 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 px-4 py-3 text-sm sm:text-base font-bold text-gray-900 dark:text-white"
+                        placeholder="Project title"
+                      />
+                      <div className="flex items-center gap-2">
                         <button
                           type="button"
                           onClick={() => handleImproveProject(project)}
                           disabled={Boolean(aiAction)}
-                          className="inline-flex items-center gap-2 rounded-lg border border-blue-200 px-3 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-50 disabled:opacity-60 dark:border-blue-500/30 dark:text-blue-300 dark:hover:bg-blue-500/10"
+                          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 text-xs sm:text-sm font-bold hover:bg-purple-100 transition-all cursor-pointer disabled:opacity-50"
                         >
                           <Sparkles className="w-4 h-4" />
-                          {aiAction === `project:${project._id}`
-                            ? "Improving..."
-                            : "AI"}
+                          <span>{aiAction === `project:${project._id}` ? "Improving..." : "AI Improve"}</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleSaveProject(project)}
+                          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gray-900 text-white dark:bg-white dark:text-black text-xs sm:text-sm font-bold shadow-xs cursor-pointer"
+                        >
+                          <Save className="w-4 h-4" />
+                          <span>Save</span>
                         </button>
                         <button
                           type="button"
                           onClick={() => handleDeleteProject(project._id)}
-                          aria-label="Delete project"
-                          className="p-2 rounded-lg text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10"
+                          className="p-2 rounded-xl text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 cursor-pointer"
                         >
                           <Trash2 className="w-5 h-5" />
                         </button>
                       </div>
                     </div>
 
-                    <div className="mt-4 grid gap-4 md:grid-cols-2">
-                      <label className="block md:col-span-2">
-                        <span className="text-sm font-semibold">
-                          Short description
-                        </span>
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div className="md:col-span-2">
+                        <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
+                          Short Overview
+                        </label>
                         <textarea
                           value={project.shortDescription || ""}
-                          onChange={(event) =>
-                            updateProjectDraft(project._id, {
-                              shortDescription: event.target.value,
-                            })
-                          }
-                          rows={3}
-                          className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
+                          onChange={(e) => updateProjectDraft(project._id, { shortDescription: e.target.value })}
+                          rows={2}
+                          className="w-full p-4 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base leading-relaxed focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                         />
-                      </label>
-                      <label className="block md:col-span-2">
-                        <span className="text-sm font-semibold">
-                          Detailed description
-                        </span>
+                      </div>
+
+                      <div className="md:col-span-2">
+                        <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
+                          Detailed Description
+                        </label>
                         <textarea
                           value={project.longDescription || ""}
-                          onChange={(event) =>
-                            updateProjectDraft(project._id, {
-                              longDescription: event.target.value,
-                            })
-                          }
+                          onChange={(e) => updateProjectDraft(project._id, { longDescription: e.target.value })}
                           rows={4}
-                          className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
+                          className="w-full p-4 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base leading-relaxed focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                         />
-                      </label>
-                      <label className="block">
-                        <span className="text-sm font-semibold">Your role</span>
+                      </div>
+
+                      <div>
+                        <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
+                          Role
+                        </label>
                         <input
                           value={project.role || ""}
-                          onChange={(event) =>
-                            updateProjectDraft(project._id, {
-                              role: event.target.value,
-                            })
-                          }
-                          placeholder="Full-stack developer"
-                          className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
+                          onChange={(e) => updateProjectDraft(project._id, { role: e.target.value })}
+                          placeholder="e.g. Lead Architect"
+                          className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-medium"
                         />
-                      </label>
-                      <label className="block">
-                        <span className="text-sm font-semibold">Duration</span>
+                      </div>
+
+                      <div>
+                        <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
+                          Duration
+                        </label>
                         <input
                           value={project.duration || ""}
-                          onChange={(event) =>
-                            updateProjectDraft(project._id, {
-                              duration: event.target.value,
-                            })
-                          }
-                          placeholder="Jan 2026 - Mar 2026"
-                          className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
+                          onChange={(e) => updateProjectDraft(project._id, { duration: e.target.value })}
+                          placeholder="e.g. Jan 2026 - Mar 2026"
+                          className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-medium"
                         />
-                      </label>
-                      <label className="block md:col-span-2">
-                        <span className="text-sm font-semibold">Problem</span>
-                        <textarea
-                          value={project.problem || ""}
-                          onChange={(event) =>
-                            updateProjectDraft(project._id, {
-                              problem: event.target.value,
-                            })
-                          }
-                          rows={3}
-                          className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
-                        />
-                      </label>
-                      <label className="block md:col-span-2">
-                        <span className="text-sm font-semibold">Solution</span>
-                        <textarea
-                          value={project.solution || ""}
-                          onChange={(event) =>
-                            updateProjectDraft(project._id, {
-                              solution: event.target.value,
-                            })
-                          }
-                          rows={3}
-                          className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
-                        />
-                      </label>
-                      <label className="block md:col-span-2">
-                        <span className="text-sm font-semibold">Impact</span>
-                        <textarea
-                          value={project.impact || ""}
-                          onChange={(event) =>
-                            updateProjectDraft(project._id, {
-                              impact: event.target.value,
-                            })
-                          }
-                          rows={3}
-                          className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
-                        />
-                      </label>
-                      <label className="block">
-                        <span className="text-sm font-semibold">
-                          Tech stack
-                        </span>
+                      </div>
+
+                      <div>
+                        <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
+                          Technologies (comma-separated)
+                        </label>
                         <input
                           value={getProjectTechnologiesText(project)}
-                          onChange={(event) =>
-                            updateProjectDraft(project._id, {
-                              technologiesText: event.target.value,
-                            })
-                          }
+                          onChange={(e) => updateProjectDraft(project._id, { technologiesText: e.target.value })}
                           placeholder="React, Node.js, MongoDB"
-                          className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
+                          className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-medium"
                         />
-                      </label>
-                      <label className="block">
-                        <span className="text-sm font-semibold">Live URL</span>
+                      </div>
+
+                      <div>
+                        <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
+                          Live URL
+                        </label>
                         <input
                           value={project.links?.live || ""}
-                          onChange={(event) =>
-                            updateProjectDraft(project._id, (current) => ({
-                              links: {
-                                ...(current.links || {}),
-                                live: event.target.value,
-                              },
+                          onChange={(e) =>
+                            updateProjectDraft(project._id, (cur) => ({
+                              links: { ...(cur.links || {}), live: e.target.value },
                             }))
                           }
-                          className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
+                          className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs sm:text-sm font-mono"
                         />
-                      </label>
-                      <label className="block">
-                        <span className="text-sm font-semibold">
+                      </div>
+
+                      <div>
+                        <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
                           GitHub URL
-                        </span>
+                        </label>
                         <input
                           value={project.links?.github || ""}
-                          onChange={(event) =>
-                            updateProjectDraft(project._id, (current) => ({
-                              links: {
-                                ...(current.links || {}),
-                                github: event.target.value,
-                              },
+                          onChange={(e) =>
+                            updateProjectDraft(project._id, (cur) => ({
+                              links: { ...(cur.links || {}), github: e.target.value },
                             }))
                           }
-                          className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
+                          className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs sm:text-sm font-mono"
                         />
-                      </label>
-                      <label className="block">
-                        <span className="text-sm font-semibold">
-                          Case study URL
-                        </span>
+                      </div>
+
+                      <div>
+                        <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
+                          Case Study URL
+                        </label>
                         <input
                           value={project.links?.caseStudy || ""}
-                          onChange={(event) =>
-                            updateProjectDraft(project._id, (current) => ({
-                              links: {
-                                ...(current.links || {}),
-                                caseStudy: event.target.value,
-                              },
+                          onChange={(e) =>
+                            updateProjectDraft(project._id, (cur) => ({
+                              links: { ...(cur.links || {}), caseStudy: e.target.value },
                             }))
                           }
-                          className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
+                          className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs sm:text-sm font-mono"
                         />
-                      </label>
-                      <label className="block">
-                        <span className="text-sm font-semibold">
-                          Video URL
-                        </span>
-                        <input
-                          value={project.links?.video || ""}
-                          onChange={(event) =>
-                            updateProjectDraft(project._id, (current) => ({
-                              links: {
-                                ...(current.links || {}),
-                                video: event.target.value,
-                              },
-                            }))
-                          }
-                          className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
-                        />
-                      </label>
-                      <label className="block md:col-span-2">
-                        <span className="text-sm font-semibold">
-                          Highlights
-                        </span>
-                        <textarea
-                          value={getProjectHighlightsText(project)}
-                          onChange={(event) =>
-                            updateProjectDraft(project._id, {
-                              highlightsText: event.target.value,
-                            })
-                          }
-                          rows={4}
-                          placeholder="One highlight per line"
-                          className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
-                        />
-                      </label>
-                      <label className="block md:col-span-2">
-                        <span className="text-sm font-semibold">
-                          Project image URLs
-                        </span>
-                        <textarea
-                          value={getProjectImagesText(project)}
-                          onChange={(event) =>
-                            updateProjectDraft(project._id, {
-                              imagesText: event.target.value,
-                            })
-                          }
-                          rows={4}
-                          placeholder="https://example.com/screenshot.png | Dashboard screenshot"
-                          className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
-                        />
-                      </label>
-                      <div className="flex flex-wrap items-center gap-4 pt-7">
-                        <label className="flex items-center gap-2 text-sm font-semibold">
+                      </div>
+
+                      <div className="md:col-span-2 flex items-center gap-6 pt-3">
+                        <label className="flex items-center gap-2.5 text-xs sm:text-sm font-bold cursor-pointer">
                           <input
                             type="checkbox"
                             checked={project.visible !== false}
-                            onChange={(event) =>
-                              updateProjectDraft(project._id, {
-                                visible: event.target.checked,
-                              })
+                            onChange={(e) =>
+                              updateProjectDraft(project._id, { visible: e.target.checked })
                             }
+                            className="w-4 h-4 rounded text-emerald-600"
                           />
-                          Visible
+                          <span>Visible in Portfolio</span>
                         </label>
-                        <label className="flex items-center gap-2 text-sm font-semibold">
+                        <label className="flex items-center gap-2.5 text-xs sm:text-sm font-bold cursor-pointer">
                           <input
                             type="checkbox"
                             checked={Boolean(project.featured)}
-                            onChange={(event) =>
-                              updateProjectDraft(project._id, {
-                                featured: event.target.checked,
-                              })
+                            onChange={(e) =>
+                              updateProjectDraft(project._id, { featured: e.target.checked })
                             }
+                            className="w-4 h-4 rounded text-emerald-600"
                           />
-                          Featured
+                          <span>Featured Hero Project ⭐</span>
                         </label>
                       </div>
                     </div>
@@ -1339,201 +1206,65 @@ const PortfolioEditor = () => {
                 ))}
               </div>
 
-              <div className="rounded-lg bg-gray-50 dark:bg-zinc-900 p-4">
-                <h3 className="font-bold mb-4">Add project</h3>
+              {/* Add New Project Box */}
+              <div className="p-6 rounded-3xl bg-gray-50/90 dark:bg-zinc-900/60 border border-gray-200/90 dark:border-white/[0.1] space-y-4">
+                <h3 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-gray-600 dark:text-zinc-300">
+                  Add New Project
+                </h3>
                 <div className="grid gap-4 md:grid-cols-2">
                   <input
-                    placeholder="Project title"
+                    placeholder="Project title *"
                     value={newProject.title}
-                    onChange={(event) =>
-                      setNewProject((current) => ({
-                        ...current,
-                        title: event.target.value,
-                      }))
-                    }
-                    className="rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
+                    onChange={(e) => setNewProject((cur) => ({ ...cur, title: e.target.value }))}
+                    className="px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-sm sm:text-base font-bold"
                   />
                   <input
-                    placeholder="Tech stack, comma separated"
+                    placeholder="Technologies (e.g. React, Node.js)"
                     value={newProject.technologiesText || ""}
-                    onChange={(event) =>
-                      setNewProject((current) => ({
-                        ...current,
-                        technologiesText: event.target.value,
-                      }))
-                    }
-                    className="rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
+                    onChange={(e) => setNewProject((cur) => ({ ...cur, technologiesText: e.target.value }))}
+                    className="px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-sm font-medium"
                   />
                   <input
                     placeholder="Live URL"
                     value={newProject.links.live}
-                    onChange={(event) =>
-                      setNewProject((current) => ({
-                        ...current,
-                        links: {...current.links, live: event.target.value},
-                      }))
+                    onChange={(e) =>
+                      setNewProject((cur) => ({ ...cur, links: { ...cur.links, live: e.target.value } }))
                     }
-                    className="rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
+                    className="px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs sm:text-sm font-mono"
                   />
                   <input
                     placeholder="GitHub URL"
                     value={newProject.links.github}
-                    onChange={(event) =>
-                      setNewProject((current) => ({
-                        ...current,
-                        links: {...current.links, github: event.target.value},
-                      }))
+                    onChange={(e) =>
+                      setNewProject((cur) => ({ ...cur, links: { ...cur.links, github: e.target.value } }))
                     }
-                    className="rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
-                  />
-                  <input
-                    placeholder="Case study URL"
-                    value={newProject.links.caseStudy}
-                    onChange={(event) =>
-                      setNewProject((current) => ({
-                        ...current,
-                        links: {
-                          ...current.links,
-                          caseStudy: event.target.value,
-                        },
-                      }))
-                    }
-                    className="rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
-                  />
-                  <input
-                    placeholder="Video URL"
-                    value={newProject.links.video}
-                    onChange={(event) =>
-                      setNewProject((current) => ({
-                        ...current,
-                        links: {...current.links, video: event.target.value},
-                      }))
-                    }
-                    className="rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
-                  />
-                  <input
-                    placeholder="Your role"
-                    value={newProject.role}
-                    onChange={(event) =>
-                      setNewProject((current) => ({
-                        ...current,
-                        role: event.target.value,
-                      }))
-                    }
-                    className="rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
-                  />
-                  <input
-                    placeholder="Duration"
-                    value={newProject.duration}
-                    onChange={(event) =>
-                      setNewProject((current) => ({
-                        ...current,
-                        duration: event.target.value,
-                      }))
-                    }
-                    className="rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
+                    className="px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs sm:text-sm font-mono"
                   />
                 </div>
                 <textarea
-                  placeholder="Short project description"
+                  placeholder="Short project overview description..."
                   value={newProject.shortDescription}
-                  onChange={(event) =>
-                    setNewProject((current) => ({
-                      ...current,
-                      shortDescription: event.target.value,
-                    }))
-                  }
-                  rows={3}
-                  className="mt-4 w-full rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
-                />
-                <textarea
-                  placeholder="Detailed project description"
-                  value={newProject.longDescription}
-                  onChange={(event) =>
-                    setNewProject((current) => ({
-                      ...current,
-                      longDescription: event.target.value,
-                    }))
-                  }
-                  rows={4}
-                  className="mt-4 w-full rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
-                />
-                <div className="mt-4 grid gap-4 md:grid-cols-3">
-                  <textarea
-                    placeholder="Problem"
-                    value={newProject.problem}
-                    onChange={(event) =>
-                      setNewProject((current) => ({
-                        ...current,
-                        problem: event.target.value,
-                      }))
-                    }
-                    rows={4}
-                    className="rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
-                  />
-                  <textarea
-                    placeholder="Solution"
-                    value={newProject.solution}
-                    onChange={(event) =>
-                      setNewProject((current) => ({
-                        ...current,
-                        solution: event.target.value,
-                      }))
-                    }
-                    rows={4}
-                    className="rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
-                  />
-                  <textarea
-                    placeholder="Impact"
-                    value={newProject.impact}
-                    onChange={(event) =>
-                      setNewProject((current) => ({
-                        ...current,
-                        impact: event.target.value,
-                      }))
-                    }
-                    rows={4}
-                    className="rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
-                  />
-                </div>
-                <textarea
-                  placeholder="Highlights, one per line"
-                  value={newProject.highlightsText || ""}
-                  onChange={(event) =>
-                    setNewProject((current) => ({
-                      ...current,
-                      highlightsText: event.target.value,
-                    }))
-                  }
-                  rows={4}
-                  className="mt-4 w-full rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
-                />
-                <textarea
-                  placeholder="Image URLs, one per line. Optional format: URL | alt text"
-                  value={newProject.imagesText || ""}
-                  onChange={(event) =>
-                    setNewProject((current) => ({
-                      ...current,
-                      imagesText: event.target.value,
-                    }))
-                  }
-                  rows={4}
-                  className="mt-4 w-full rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
+                  onChange={(e) => setNewProject((cur) => ({ ...cur, shortDescription: e.target.value }))}
+                  rows={2}
+                  className="w-full p-4 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-sm sm:text-base leading-relaxed"
                 />
                 <button
                   type="button"
                   onClick={handleCreateProject}
-                  className="inline-flex items-center gap-2 mt-4 px-4 py-3 rounded-lg bg-gray-900 text-white dark:bg-white dark:text-black font-semibold"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow-md shadow-emerald-500/20 transition-all active:scale-95 cursor-pointer"
                 >
-                  <Plus className="w-5 h-5" />
-                  Add Project
+                  <Plus className="w-4 h-4" />
+                  <span>Create Project</span>
                 </button>
               </div>
-            </CollapsiblePanel>
+            </PortfolioPanel>
 
-            <CollapsiblePanel
+            {/* Experience Panel */}
+            <PortfolioPanel
               title="Experience"
-              description="Portfolio-only copy of your resume experience."
+              description="Portfolio copy of your career work experience."
+              icon={Briefcase}
+              badge={`${(form.experience || []).length} roles`}
               forceState={panelControl.open}
               forceVersion={panelControl.version}
               actions={
@@ -1550,106 +1281,108 @@ const PortfolioEditor = () => {
                       bullets: [],
                     })
                   }
-                  className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm font-semibold dark:border-zinc-700"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 text-white text-xs sm:text-sm font-bold cursor-pointer"
                 >
                   <Plus className="w-4 h-4" />
-                  Add
+                  <span>Add Role</span>
                 </button>
               }
             >
-              <div className="space-y-4">
+              <div className="space-y-5">
                 {(form.experience || []).map((item, index) => (
                   <div
-                    key={`experience-${index}`}
-                    className="rounded-lg border border-gray-200 p-4 dark:border-zinc-800"
+                    key={`exp-${index}`}
+                    className="rounded-3xl border border-gray-200/90 dark:border-white/[0.1] p-6 bg-white dark:bg-zinc-950 space-y-4 shadow-xs"
                   >
                     <div className="grid gap-4 md:grid-cols-2">
-                      <input
-                        value={item.title || ""}
-                        onChange={(event) =>
-                          updatePortfolioArrayItem("experience", index, {
-                            title: event.target.value,
-                          })
-                        }
-                        placeholder="Role title"
-                        className="rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
-                      />
-                      <input
-                        value={item.company || ""}
-                        onChange={(event) =>
-                          updatePortfolioArrayItem("experience", index, {
-                            company: event.target.value,
-                          })
-                        }
-                        placeholder="Company"
-                        className="rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
-                      />
-                      <input
-                        value={item.location || ""}
-                        onChange={(event) =>
-                          updatePortfolioArrayItem("experience", index, {
-                            location: event.target.value,
-                          })
-                        }
-                        placeholder="Location"
-                        className="rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
-                      />
-                      <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
+                          Role Title
+                        </label>
                         <input
-                          value={item.startDate || ""}
-                          onChange={(event) =>
-                            updatePortfolioArrayItem("experience", index, {
-                              startDate: event.target.value,
-                            })
-                          }
-                          placeholder="Start date"
-                          className="rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
-                        />
-                        <input
-                          value={item.endDate || ""}
-                          onChange={(event) =>
-                            updatePortfolioArrayItem("experience", index, {
-                              endDate: event.target.value,
-                            })
-                          }
-                          placeholder="End date"
-                          className="rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
+                          value={item.title || ""}
+                          onChange={(e) => updatePortfolioArrayItem("experience", index, { title: e.target.value })}
+                          placeholder="e.g. Full Stack Intern"
+                          className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-bold text-gray-900 dark:text-white"
                         />
                       </div>
+                      <div>
+                        <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
+                          Company Name
+                        </label>
+                        <input
+                          value={item.company || ""}
+                          onChange={(e) => updatePortfolioArrayItem("experience", index, { company: e.target.value })}
+                          placeholder="e.g. Acme Technologies"
+                          className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-medium text-gray-900 dark:text-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
+                          Location
+                        </label>
+                        <input
+                          value={item.location || ""}
+                          onChange={(e) => updatePortfolioArrayItem("experience", index, { location: e.target.value })}
+                          placeholder="e.g. Remote / San Francisco, CA"
+                          className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-medium"
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
+                            Start Date
+                          </label>
+                          <input
+                            value={item.startDate || ""}
+                            onChange={(e) => updatePortfolioArrayItem("experience", index, { startDate: e.target.value })}
+                            placeholder="e.g. Apr 2025"
+                            className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm font-medium"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
+                            End Date
+                          </label>
+                          <input
+                            value={item.endDate || ""}
+                            onChange={(e) => updatePortfolioArrayItem("experience", index, { endDate: e.target.value })}
+                            placeholder="e.g. Jun 2025"
+                            className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm font-medium"
+                          />
+                        </div>
+                      </div>
                     </div>
-                    <label className="mt-4 block">
-                      <span className="text-sm font-semibold">
-                        Bullet points
-                      </span>
+                    <div>
+                      <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
+                        Bullet Points (1 per line)
+                      </label>
                       <textarea
                         value={(item.bullets || []).join("\n")}
-                        onChange={(event) =>
-                          updatePortfolioArrayItem("experience", index, {
-                            bullets: linesToArray(event.target.value),
-                          })
-                        }
+                        onChange={(e) => updatePortfolioArrayItem("experience", index, { bullets: linesToArray(e.target.value) })}
                         rows={4}
-                        className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
+                        className="w-full p-4 sm:p-5 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base leading-relaxed text-gray-900 dark:text-zinc-100 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                       />
-                    </label>
+                    </div>
                     <button
                       type="button"
-                      onClick={() =>
-                        removePortfolioArrayItem("experience", index)
-                      }
-                      className="mt-3 inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10"
+                      onClick={() => removePortfolioArrayItem("experience", index)}
+                      className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-red-500 hover:text-red-600 transition-colors cursor-pointer"
                     >
                       <Trash2 className="w-4 h-4" />
-                      Remove
+                      <span>Remove Experience</span>
                     </button>
                   </div>
                 ))}
               </div>
-            </CollapsiblePanel>
+            </PortfolioPanel>
 
-            <CollapsiblePanel
+            {/* Education Panel */}
+            <PortfolioPanel
               title="Education"
-              description="Edit the education shown only on this portfolio."
+              description="Degrees, universities, and graduation credentials."
+              icon={GraduationCap}
+              badge={`${(form.education || []).length} items`}
               forceState={panelControl.open}
               forceVersion={panelControl.version}
               actions={
@@ -1667,154 +1400,128 @@ const PortfolioEditor = () => {
                       bullets: [],
                     })
                   }
-                  className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm font-semibold dark:border-zinc-700"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 text-white text-xs sm:text-sm font-bold cursor-pointer"
                 >
                   <Plus className="w-4 h-4" />
-                  Add
+                  <span>Add Education</span>
                 </button>
               }
             >
-              <div className="space-y-4">
+              <div className="space-y-5">
                 {(form.education || []).map((item, index) => (
                   <div
-                    key={`education-${index}`}
-                    className="rounded-lg border border-gray-200 p-4 dark:border-zinc-800"
+                    key={`edu-${index}`}
+                    className="rounded-3xl border border-gray-200/90 dark:border-white/[0.1] p-6 bg-white dark:bg-zinc-950 space-y-4 shadow-xs"
                   >
                     <div className="grid gap-4 md:grid-cols-2">
-                      <input
-                        value={item.institution || ""}
-                        onChange={(event) =>
-                          updatePortfolioArrayItem("education", index, {
-                            institution: event.target.value,
-                          })
-                        }
-                        placeholder="Institution"
-                        className="rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
-                      />
-                      <input
-                        value={item.degree || ""}
-                        onChange={(event) =>
-                          updatePortfolioArrayItem("education", index, {
-                            degree: event.target.value,
-                          })
-                        }
-                        placeholder="Degree"
-                        className="rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
-                      />
-                      <input
-                        value={item.field || ""}
-                        onChange={(event) =>
-                          updatePortfolioArrayItem("education", index, {
-                            field: event.target.value,
-                          })
-                        }
-                        placeholder="Field"
-                        className="rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
-                      />
-                      <input
-                        value={item.location || ""}
-                        onChange={(event) =>
-                          updatePortfolioArrayItem("education", index, {
-                            location: event.target.value,
-                          })
-                        }
-                        placeholder="Location"
-                        className="rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
-                      />
+                      <div>
+                        <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
+                          Institution / University
+                        </label>
+                        <input
+                          value={item.institution || ""}
+                          onChange={(e) => updatePortfolioArrayItem("education", index, { institution: e.target.value })}
+                          placeholder="e.g. Stanford University"
+                          className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-bold"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
+                          Degree / Major
+                        </label>
+                        <input
+                          value={item.degree || ""}
+                          onChange={(e) => updatePortfolioArrayItem("education", index, { degree: e.target.value })}
+                          placeholder="e.g. B.S. in Computer Science"
+                          className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-medium"
+                        />
+                      </div>
                     </div>
                     <button
                       type="button"
-                      onClick={() =>
-                        removePortfolioArrayItem("education", index)
-                      }
-                      className="mt-3 inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10"
+                      onClick={() => removePortfolioArrayItem("education", index)}
+                      className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-red-500 hover:text-red-600 transition-colors cursor-pointer"
                     >
                       <Trash2 className="w-4 h-4" />
-                      Remove
+                      <span>Remove Education</span>
                     </button>
                   </div>
                 ))}
               </div>
-            </CollapsiblePanel>
+            </PortfolioPanel>
 
-            <CollapsiblePanel
+            {/* Skills Panel */}
+            <PortfolioPanel
               title="Skills"
-              description="Edit the skill groups shown in your portfolio."
+              description="Categorized skills groups shown on your portfolio."
+              icon={Sparkles}
+              badge={`${(form.skills || []).length} groups`}
               forceState={panelControl.open}
               forceVersion={panelControl.version}
+              actions={
+                <button
+                  type="button"
+                  onClick={() => addPortfolioArrayItem("skills", { category: "", items: [] })}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 text-white text-xs sm:text-sm font-bold cursor-pointer"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Add Group</span>
+                </button>
+              }
             >
               <div className="space-y-4">
                 {(form.skills || []).map((group, index) => (
                   <div
                     key={`skills-${index}`}
-                    className="rounded-lg border border-gray-200 p-4 dark:border-zinc-800"
+                    className="grid gap-4 rounded-2xl border border-gray-200/90 dark:border-white/[0.1] p-5 bg-white dark:bg-zinc-950 md:grid-cols-[220px_1fr_auto] items-center"
                   >
-                    <div className="grid gap-4 md:grid-cols-[220px_1fr_auto] md:items-start">
-                      <input
-                        value={group.category || ""}
-                        onChange={(event) =>
-                          updatePortfolioArrayItem("skills", index, {
-                            category: event.target.value,
-                          })
-                        }
-                        placeholder="Category"
-                        className="rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
-                      />
-                      <input
-                        value={(group.items || []).join(", ")}
-                        onChange={(event) =>
-                          updatePortfolioArrayItem("skills", index, {
-                            items: commaToArray(event.target.value),
-                          })
-                        }
-                        placeholder="React, Node.js, MongoDB"
-                        className="rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
-                      />
-                      <button
-                        type="button"
-                        onClick={() =>
-                          removePortfolioArrayItem("skills", index)
-                        }
-                        className="rounded-lg px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10"
-                      >
-                        Remove
-                      </button>
-                    </div>
+                    <input
+                      value={group.category || ""}
+                      onChange={(e) => updatePortfolioArrayItem("skills", index, { category: e.target.value })}
+                      placeholder="Category (e.g. Frontend)"
+                      className="px-4 py-3 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-bold"
+                    />
+                    <input
+                      value={(group.items || []).join(", ")}
+                      onChange={(e) => updatePortfolioArrayItem("skills", index, { items: commaToArray(e.target.value) })}
+                      placeholder="React, TypeScript, Next.js, Tailwind CSS"
+                      className="px-4 py-3 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-medium"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removePortfolioArrayItem("skills", index)}
+                      className="p-2.5 rounded-xl text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 cursor-pointer"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
                   </div>
                 ))}
               </div>
-              <button
-                type="button"
-                onClick={() =>
-                  addPortfolioArrayItem("skills", {category: "", items: []})
-                }
-                className="mt-4 inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm font-semibold dark:border-zinc-700"
-              >
-                <Plus className="w-4 h-4" />
-                Add Skill Group
-              </button>
-            </CollapsiblePanel>
+            </PortfolioPanel>
 
-            <CollapsiblePanel
-              title="Achievements"
-              description="One achievement per line."
+            {/* Achievements Panel */}
+            <PortfolioPanel
+              title="Achievements & Honors"
+              description="Competition wins, rankings, and awards (1 per line)."
+              icon={Trophy}
               forceState={panelControl.open}
               forceVersion={panelControl.version}
             >
               <textarea
                 value={(form.achievements || []).join("\n")}
-                onChange={(event) =>
-                  updateField("achievements", linesToArray(event.target.value))
-                }
-                rows={6}
-                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
-                placeholder="One achievement per line"
+                onChange={(e) => updateField("achievements", linesToArray(e.target.value))}
+                rows={5}
+                className="w-full p-4 sm:p-5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm sm:text-base leading-relaxed focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                placeholder="• Winner - Smart India Hackathon 2025&#10;• AWS Certified Solutions Architect"
               />
-            </CollapsiblePanel>
+            </PortfolioPanel>
 
-            <CollapsiblePanel
+            {/* Custom Sections */}
+            <PortfolioPanel
               title="Custom Sections"
-              description="Extra portfolio-only sections imported from the resume or added manually."
+              description="Unique custom sections for open-source, hackathons, publications."
+              icon={Layers}
+              badge={`${(form.customSections || []).length} custom`}
               forceState={panelControl.open}
               forceVersion={panelControl.version}
               actions={
@@ -1827,185 +1534,95 @@ const PortfolioEditor = () => {
                       items: [],
                     })
                   }
-                  className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm font-semibold dark:border-zinc-700"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 text-white text-xs sm:text-sm font-bold cursor-pointer"
                 >
                   <Plus className="w-4 h-4" />
-                  Add
+                  <span>Add Section</span>
                 </button>
               }
             >
-              <div className="space-y-4">
+              <div className="space-y-5">
                 {(form.customSections || []).map((item, index) => (
                   <div
                     key={item.id || `custom-section-${index}`}
-                    className="rounded-lg border border-gray-200 p-4 dark:border-zinc-800"
+                    className="rounded-3xl border border-gray-200/90 dark:border-white/[0.1] p-6 bg-white dark:bg-zinc-950 space-y-4 shadow-xs"
                   >
                     <input
                       value={item.title || ""}
-                      onChange={(event) =>
-                        updatePortfolioArrayItem("customSections", index, {
-                          title: event.target.value,
-                        })
-                      }
-                      placeholder="Section title"
-                      className="w-full rounded-lg border border-gray-300 bg-white px-3 py-3 font-bold dark:border-zinc-700 dark:bg-black"
+                      onChange={(e) => updatePortfolioArrayItem("customSections", index, { title: e.target.value })}
+                      placeholder="Section Title (e.g. Open Source Contributions)"
+                      className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-bold"
                     />
-                    <label className="mt-4 block">
-                      <span className="text-sm font-semibold">
-                        Items, one per line
-                      </span>
+                    <div>
+                      <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
+                        Items (1 per line)
+                      </label>
                       <textarea
                         value={(item.items || []).join("\n")}
-                        onChange={(event) =>
-                          updatePortfolioArrayItem("customSections", index, {
-                            items: linesToArray(event.target.value),
-                          })
-                        }
-                        rows={5}
-                        className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
-                      />
-                    </label>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        removePortfolioArrayItem("customSections", index)
-                      }
-                      className="mt-3 inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                      Remove
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </CollapsiblePanel>
-
-            <CollapsiblePanel
-              title="Certifications"
-              description="Portfolio-only certification list."
-              forceState={panelControl.open}
-              forceVersion={panelControl.version}
-              actions={
-                <button
-                  type="button"
-                  onClick={() =>
-                    addPortfolioArrayItem("certifications", {
-                      name: "",
-                      issuer: "",
-                      date: "",
-                      credentialId: "",
-                      link: "",
-                    })
-                  }
-                  className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm font-semibold dark:border-zinc-700"
-                >
-                  <Plus className="w-4 h-4" />
-                  Add
-                </button>
-              }
-            >
-              <div className="space-y-4">
-                {(form.certifications || []).map((item, index) => (
-                  <div
-                    key={`certification-${index}`}
-                    className="rounded-lg border border-gray-200 p-4 dark:border-zinc-800"
-                  >
-                    <div className="grid gap-4 md:grid-cols-2">
-                      <input
-                        value={item.name || ""}
-                        onChange={(event) =>
-                          updatePortfolioArrayItem("certifications", index, {
-                            name: event.target.value,
-                          })
-                        }
-                        placeholder="Certification name"
-                        className="rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
-                      />
-                      <input
-                        value={item.issuer || ""}
-                        onChange={(event) =>
-                          updatePortfolioArrayItem("certifications", index, {
-                            issuer: event.target.value,
-                          })
-                        }
-                        placeholder="Issuer"
-                        className="rounded-lg border border-gray-300 bg-white px-3 py-3 dark:border-zinc-700 dark:bg-black"
+                        onChange={(e) => updatePortfolioArrayItem("customSections", index, { items: linesToArray(e.target.value) })}
+                        rows={4}
+                        className="w-full p-4 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base leading-relaxed"
                       />
                     </div>
                     <button
                       type="button"
-                      onClick={() =>
-                        removePortfolioArrayItem("certifications", index)
-                      }
-                      className="mt-3 inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10"
+                      onClick={() => removePortfolioArrayItem("customSections", index)}
+                      className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-red-500 hover:text-red-600 cursor-pointer"
                     >
                       <Trash2 className="w-4 h-4" />
-                      Remove
+                      <span>Remove Section</span>
                     </button>
                   </div>
                 ))}
               </div>
-            </CollapsiblePanel>
+            </PortfolioPanel>
           </div>
 
-          <aside className="space-y-6">
-            <CollapsiblePanel
-              title="Theme"
-              description="Choose how this portfolio is presented."
+          {/* Right Column: Settings & Customization Sidebar (4 cols) */}
+          <aside className="lg:col-span-4 space-y-6 sticky top-20">
+            {/* Theme Customizer Panel */}
+            <PortfolioPanel
+              title="Theme Design"
+              description="Choose aesthetic style & accent colors."
+              icon={Palette}
+              defaultOpen={true}
               forceState={panelControl.open}
               forceVersion={panelControl.version}
             >
-              <select
-                value={form.themeId || "minimalDeveloper"}
-                onChange={(event) => updateField("themeId", event.target.value)}
-                className="w-full rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
-              >
-                {portfolioThemeList.map((theme) => (
-                  <option
-                    key={theme.id}
-                    value={theme.id}
-                    disabled={!isThemeAllowed(theme)}
-                  >
-                    {theme.name}
-                    {!isThemeAllowed(theme) ? " (upgrade)" : ""}
-                  </option>
-                ))}
-              </select>
-              <div className="mt-4 space-y-3">
+              <div className="space-y-3.5">
                 {portfolioThemeList.map((theme) => {
                   const allowed = isThemeAllowed(theme);
+                  const isSelected = form.themeId === theme.id;
 
                   return (
                     <button
                       key={theme.id}
                       type="button"
-                      onClick={() =>
-                        allowed && updateField("themeId", theme.id)
-                      }
+                      onClick={() => allowed && updateField("themeId", theme.id)}
                       disabled={!allowed}
-                      className={`w-full rounded-lg border p-3 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-55 ${
-                        form.themeId === theme.id
-                          ? "border-blue-600 bg-blue-50 text-blue-950 dark:bg-blue-500/10 dark:text-blue-100"
-                          : "border-gray-200 hover:bg-gray-50 dark:border-zinc-800 dark:hover:bg-zinc-900"
-                      }`}
+                      className={`w-full rounded-2xl border p-4 text-left transition-all cursor-pointer ${
+                        isSelected
+                          ? "border-emerald-500 bg-emerald-500/10 text-emerald-950 dark:text-emerald-100 ring-2 ring-emerald-500/30"
+                          : "border-gray-200 dark:border-white/[0.08] hover:bg-gray-50 dark:hover:bg-zinc-900"
+                      } ${!allowed ? "opacity-50 cursor-not-allowed" : ""}`}
                     >
-                      <div className="flex items-center justify-between gap-3">
-                        <span className="font-bold">{theme.name}</span>
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-sm sm:text-base">{theme.name}</span>
                         {!allowed && (
-                          <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800 dark:bg-amber-500/15 dark:text-amber-200">
+                          <span className="rounded-full bg-amber-500/15 px-2.5 py-0.5 text-xs font-bold text-amber-600 dark:text-amber-400">
                             Upgrade
                           </span>
                         )}
                       </div>
-                      <div className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                      <p className="mt-1 text-xs sm:text-sm text-gray-500 dark:text-zinc-400 leading-relaxed">
                         {theme.description}
-                      </div>
+                      </p>
                     </button>
                   );
                 })}
               </div>
 
-              {/* ─── Accent colour customizer ─── */}
+              {/* Accent Colour Customizer */}
               {(() => {
                 const activeTheme = portfolioThemeList.find(
                   (t) => t.id === (form.themeId || "minimalDeveloper")
@@ -2014,127 +1631,86 @@ const PortfolioEditor = () => {
                 const currentAccent = form.themeAccent || "";
 
                 return (
-                  <div className="mt-5 border-t border-gray-100 dark:border-zinc-800 pt-4">
-                    <p className="mb-2 text-sm font-semibold">Accent colour</p>
-                    <div className="flex flex-wrap items-center gap-2">
+                  <div className="pt-5 border-t border-gray-100 dark:border-white/[0.08] space-y-2.5">
+                    <p className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200">
+                      Theme Accent Color
+                    </p>
+                    <div className="flex flex-wrap items-center gap-2.5">
                       {presets.map((hex) => (
                         <button
                           key={hex}
                           type="button"
                           title={hex}
                           onClick={() => updateField("themeAccent", hex)}
-                          style={{background: hex}}
-                          className={`h-7 w-7 rounded-full border-2 transition-transform hover:scale-110 ${
+                          style={{ background: hex }}
+                          className={`h-8 w-8 rounded-full border-2 transition-transform hover:scale-110 cursor-pointer ${
                             currentAccent === hex
-                              ? "border-gray-900 dark:border-white scale-110 ring-2 ring-offset-1 ring-gray-400"
+                              ? "border-gray-900 dark:border-white scale-110 ring-2 ring-offset-1 ring-emerald-500"
                               : "border-transparent"
                           }`}
                         />
                       ))}
-                      {/* Custom colour input */}
-                      <label
-                        className="relative h-7 w-7 cursor-pointer overflow-hidden rounded-full border-2 border-dashed border-gray-400 dark:border-zinc-600 hover:border-gray-600 transition-colors"
-                        title="Custom colour"
-                      >
-                        <input
-                          type="color"
-                          value={currentAccent || (presets[0] ?? "#6366f1")}
-                          onChange={(e) =>
-                            updateField("themeAccent", e.target.value)
-                          }
-                          className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                        />
-                        <span
-                          className="flex h-full w-full items-center justify-center text-xs font-bold text-gray-500 dark:text-zinc-400"
-                          aria-hidden="true"
-                        >
-                          +
-                        </span>
-                      </label>
-                      {currentAccent && (
-                        <button
-                          type="button"
-                          onClick={() => updateField("themeAccent", "")}
-                          className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 underline"
-                        >
-                          Reset
-                        </button>
-                      )}
                     </div>
-                    {currentAccent && (
-                      <p className="mt-2 text-xs text-gray-400 dark:text-gray-500 font-mono">
-                        {currentAccent}
-                      </p>
-                    )}
                   </div>
                 );
               })()}
-            </CollapsiblePanel>
+            </PortfolioPanel>
 
-            <CollapsiblePanel
-              title="Sections"
-              description="Control visibility and public ordering."
+            {/* Sections Visibility & Ordering Panel */}
+            <PortfolioPanel
+              title="Sections Ordering"
+              description="Toggle visibility and rearrange sections."
+              icon={Sliders}
               forceState={panelControl.open}
               forceVersion={panelControl.version}
             >
-              <div className="space-y-2">
-                {normalizeSectionOrder(form.sectionOrder).map(
-                  (section, index) => {
-                    const visibilityKey = `show${
-                      section.charAt(0).toUpperCase() + section.slice(1)
-                    }`;
+              <div className="space-y-2.5">
+                {normalizeSectionOrder(form.sectionOrder).map((section, index) => {
+                  const visibilityKey = `show${section.charAt(0).toUpperCase() + section.slice(1)}`;
 
-                    return (
-                      <div
-                        key={section}
-                        className="flex items-center justify-between gap-3 rounded-lg border border-gray-200 p-3 dark:border-zinc-800"
-                      >
-                        <label className="flex min-w-0 items-center gap-2 text-sm font-semibold">
-                          <input
-                            type="checkbox"
-                            checked={form.sections?.[visibilityKey] !== false}
-                            onChange={(event) =>
-                              updateSection(visibilityKey, event.target.checked)
-                            }
-                          />
-                          <span className="break-words">
-                            {sectionLabels[section]}
-                          </span>
-                        </label>
-                        <div className="flex flex-shrink-0 items-center gap-1">
-                          <button
-                            type="button"
-                            onClick={() => moveSection(section, -1)}
-                            disabled={index === 0}
-                            aria-label={`Move ${sectionLabels[section]} up`}
-                            className="rounded-md p-1.5 text-gray-500 hover:bg-gray-100 disabled:opacity-30 dark:hover:bg-zinc-800"
-                          >
-                            <ArrowUp className="h-4 w-4" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => moveSection(section, 1)}
-                            disabled={
-                              index ===
-                              normalizeSectionOrder(form.sectionOrder).length -
-                                1
-                            }
-                            aria-label={`Move ${sectionLabels[section]} down`}
-                            className="rounded-md p-1.5 text-gray-500 hover:bg-gray-100 disabled:opacity-30 dark:hover:bg-zinc-800"
-                          >
-                            <ArrowDown className="h-4 w-4" />
-                          </button>
-                        </div>
+                  return (
+                    <div
+                      key={section}
+                      className="flex items-center justify-between gap-3 rounded-2xl border border-gray-200/90 dark:border-white/[0.1] p-3.5 bg-white dark:bg-zinc-950"
+                    >
+                      <label className="flex items-center gap-3 text-xs sm:text-sm font-bold cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={form.sections?.[visibilityKey] !== false}
+                          onChange={(e) => updateSection(visibilityKey, e.target.checked)}
+                          className="w-4 h-4 rounded text-emerald-600"
+                        />
+                        <span>{sectionLabels[section] || section}</span>
+                      </label>
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => moveSection(section, -1)}
+                          disabled={index === 0}
+                          className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 disabled:opacity-30 cursor-pointer"
+                        >
+                          <ArrowUp className="h-4 w-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => moveSection(section, 1)}
+                          disabled={index === normalizeSectionOrder(form.sectionOrder).length - 1}
+                          className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 disabled:opacity-30 cursor-pointer"
+                        >
+                          <ArrowDown className="h-4 w-4" />
+                        </button>
                       </div>
-                    );
-                  }
-                )}
+                    </div>
+                  );
+                })}
               </div>
-            </CollapsiblePanel>
+            </PortfolioPanel>
 
-            <CollapsiblePanel
-              title="SEO"
-              description="Search and social preview metadata."
+            {/* SEO Panel */}
+            <PortfolioPanel
+              title="SEO Metadata"
+              description="Search engine and social preview tags."
+              icon={Search}
               forceState={panelControl.open}
               forceVersion={panelControl.version}
               actions={
@@ -2142,123 +1718,79 @@ const PortfolioEditor = () => {
                   type="button"
                   onClick={handleGenerateSeo}
                   disabled={Boolean(aiAction)}
-                  className="inline-flex items-center gap-2 rounded-lg border border-blue-200 px-3 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-50 disabled:opacity-60 dark:border-blue-500/30 dark:text-blue-300 dark:hover:bg-blue-500/10"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 text-xs sm:text-sm font-bold hover:bg-purple-100 transition-all cursor-pointer disabled:opacity-50"
                 >
                   <Sparkles className="w-4 h-4" />
-                  {aiAction === "seo" ? "Generating..." : "Generate"}
+                  <span>{aiAction === "seo" ? "Generating..." : "AI SEO"}</span>
                 </button>
               }
             >
-              <label className="block">
-                <span className="text-sm font-semibold">SEO title</span>
-                <input
-                  value={form.seo?.title || ""}
-                  onChange={(event) =>
-                    updateNestedField("seo", "title", event.target.value)
-                  }
-                  className="mt-2 w-full rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
-                />
-              </label>
-              <label className="block mt-4">
-                <span className="text-sm font-semibold">SEO description</span>
-                <textarea
-                  value={form.seo?.description || ""}
-                  onChange={(event) =>
-                    updateNestedField("seo", "description", event.target.value)
-                  }
-                  rows={4}
-                  className="mt-2 w-full rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
-                />
-              </label>
-              <label className="block mt-4">
-                <span className="text-sm font-semibold">SEO keywords</span>
-                <textarea
-                  value={(form.seo?.keywords || []).join(", ")}
-                  onChange={(event) =>
-                    updateNestedField(
-                      "seo",
-                      "keywords",
-                      commaToArray(event.target.value)
-                    )
-                  }
-                  rows={3}
-                  className="mt-2 w-full rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
-                />
-              </label>
-              <label className="block mt-4">
-                <span className="text-sm font-semibold">
-                  Social preview image URL
-                </span>
-                <input
-                  value={form.seo?.ogImage || ""}
-                  onChange={(event) =>
-                    updateNestedField("seo", "ogImage", event.target.value)
-                  }
-                  placeholder="https://example.com/portfolio-preview.jpg"
-                  className="mt-2 w-full rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-black px-3 py-3"
-                />
-              </label>
-            </CollapsiblePanel>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
+                    Meta Title
+                  </label>
+                  <input
+                    value={form.seo?.title || ""}
+                    onChange={(e) => updateNestedField("seo", "title", e.target.value)}
+                    className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-sm sm:text-base"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
+                    Meta Description
+                  </label>
+                  <textarea
+                    value={form.seo?.description || ""}
+                    onChange={(e) => updateNestedField("seo", "description", e.target.value)}
+                    rows={3}
+                    className="w-full p-4 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-sm leading-relaxed"
+                  />
+                </div>
+              </div>
+            </PortfolioPanel>
 
-            <CollapsiblePanel
+            {/* Publish Settings Panel */}
+            <PortfolioPanel
               title="Publish Settings"
-              description="Control public sharing, indexing, and branding."
+              description="Control recruiter downloads and indexing."
+              icon={Globe2}
               forceState={panelControl.open}
               forceVersion={panelControl.version}
             >
-              <div className="space-y-3">
-                <label className="flex items-start gap-3 text-sm font-semibold">
+              <div className="space-y-3.5">
+                <label className="flex items-start gap-3 text-xs sm:text-sm font-bold cursor-pointer">
                   <input
                     type="checkbox"
                     checked={form.settings?.showResumeDownload !== false}
-                    onChange={(event) =>
-                      updateNestedField(
-                        "settings",
-                        "showResumeDownload",
-                        event.target.checked
-                      )
-                    }
-                    className="mt-1"
+                    onChange={(e) => updateNestedField("settings", "showResumeDownload", e.target.checked)}
+                    className="w-4 h-4 rounded text-emerald-600 mt-0.5"
                   />
-                  <span>Show resume download action</span>
+                  <span>Show "Download Resume" button</span>
                 </label>
-                <label className="flex items-start gap-3 text-sm font-semibold">
+                <label className="flex items-start gap-3 text-xs sm:text-sm font-bold cursor-pointer">
                   <input
                     type="checkbox"
                     checked={form.settings?.allowIndexing !== false}
-                    onChange={(event) =>
-                      updateNestedField(
-                        "settings",
-                        "allowIndexing",
-                        event.target.checked
-                      )
-                    }
-                    className="mt-1"
+                    onChange={(e) => updateNestedField("settings", "allowIndexing", e.target.checked)}
+                    className="w-4 h-4 rounded text-emerald-600 mt-0.5"
                   />
-                  <span>Allow search engines to index this portfolio</span>
+                  <span>Allow Google & search engine indexing</span>
                 </label>
-                <label className="flex items-start gap-3 text-sm font-semibold">
+                <label className="flex items-start gap-3 text-xs sm:text-sm font-bold cursor-pointer">
                   <input
                     type="checkbox"
                     checked={form.settings?.showSmartNShineBranding !== false}
-                    onChange={(event) =>
-                      updateNestedField(
-                        "settings",
-                        "showSmartNShineBranding",
-                        event.target.checked
-                      )
-                    }
-                    className="mt-1"
+                    onChange={(e) => updateNestedField("settings", "showSmartNShineBranding", e.target.checked)}
+                    className="w-4 h-4 rounded text-emerald-600 mt-0.5"
                   />
-                  <span>Show SmartNShine branding</span>
+                  <span>Show SmartNShine badge</span>
                 </label>
               </div>
-            </CollapsiblePanel>
+            </PortfolioPanel>
           </aside>
         </div>
-      </div>
+      </main>
     </div>
   );
-};
-
-export default PortfolioEditor;
+}

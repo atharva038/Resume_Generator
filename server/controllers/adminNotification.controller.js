@@ -28,7 +28,7 @@ export const getAdminNotifications = async (req, res) => {
     const [notifications, total] = await Promise.all([
       AdminNotification.find(filter)
         .populate("userId", "name email role status")
-        .sort({createdAt: -1})
+        .sort({status: -1, createdAt: -1})
         .skip(skip)
         .limit(parsedLimit)
         .lean(),

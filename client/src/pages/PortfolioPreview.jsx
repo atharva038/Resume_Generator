@@ -1,12 +1,14 @@
-import {useEffect, useRef, useState} from "react";
-import {createPortal} from "react-dom";
-import {Link, useNavigate, useParams} from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import {ArrowLeft, Edit3, Monitor, Smartphone} from "lucide-react";
-import {portfolioAPI} from "@/api/portfolio.api";
+import SEO from "@/components/common/SEO";
+import { ArrowLeft, Edit3, Monitor, Smartphone, Globe2 } from "lucide-react";
+import { portfolioAPI } from "@/api/portfolio.api";
 import PortfolioThemeRenderer from "@/components/portfolio/PortfolioThemeRenderer";
+import PortfolioHeader from "@/components/portfolio/PortfolioHeader";
 
-const PreviewIframe = ({children}) => {
+const PreviewIframe = ({ children }) => {
   const iframeRef = useRef(null);
   const [mountNode, setMountNode] = useState(null);
 
@@ -47,15 +49,15 @@ const PreviewIframe = ({children}) => {
         title="Mobile portfolio preview"
         onLoad={hydrateFrame}
         srcDoc="<!doctype html><html><head></head><body><div id='preview-root'></div></body></html>"
-        className="h-[780px] w-[390px] max-w-full rounded-[28px] border-8 border-zinc-900 bg-white shadow-2xl"
+        className="h-[780px] w-[390px] max-w-full rounded-[32px] border-[10px] border-zinc-900 bg-white shadow-2xl transition-all"
       />
       {mountNode ? createPortal(children, mountNode) : null}
     </>
   );
 };
 
-const PortfolioPreview = () => {
-  const {id} = useParams();
+export default function PortfolioPreview() {
+  const { id } = useParams();
   const navigate = useNavigate();
   const [portfolio, setPortfolio] = useState(null);
   const [resume, setResume] = useState(null);
@@ -69,6 +71,7 @@ const PortfolioPreview = () => {
 
   const fetchPortfolio = async () => {
     try {
+      setLoading(true);
       const response = await portfolioAPI.getById(id);
       setPortfolio(response.data.portfolio);
       setResume(response.data.resume);
@@ -84,63 +87,73 @@ const PortfolioPreview = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
-        <p className="text-gray-600 dark:text-gray-400">
-          Loading preview...
-        </p>
+      <div className="min-h-screen bg-gray-50/50 dark:bg-[#09090b] flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="relative w-16 h-16 mx-auto">
+            <div className="absolute inset-0 border-3 border-gray-200 dark:border-zinc-800 border-t-emerald-600 dark:border-t-emerald-500 rounded-full animate-spin"></div>
+            <Globe2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+          </div>
+          <p className="text-xs text-gray-500 dark:text-zinc-400 font-semibold tracking-wide uppercase">
+            Loading Live Preview...
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-black">
-      <div className="sticky top-0 z-20 border-b border-gray-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/95 backdrop-blur">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-          <Link
-            to={`/portfolio/${id}/edit`}
-            className="inline-flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-200"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to editor
-          </Link>
+    <div className="min-h-screen bg-gray-50/50 dark:bg-[#09090b] text-gray-900 dark:text-zinc-100 flex flex-col font-sans transition-colors duration-200">
+      <SEO
+        title={`Preview: ${portfolio?.title || "Portfolio"} | SmartNShine`}
+        description="Live preview of your interactive developer portfolio website."
+      />
+
+      {/* Top Header */}
+      <PortfolioHeader
+        onGoBack={() => navigate(`/portfolio/${id}/edit`)}
+        badgeText="Live Preview"
+        actionButton={
           <div className="flex items-center gap-2">
-            <div className="inline-flex rounded-lg border border-gray-200 dark:border-zinc-700 p-1">
+            <div className="inline-flex rounded-xl bg-gray-100 dark:bg-zinc-900 border border-gray-200/80 dark:border-white/[0.08] p-1">
               <button
                 type="button"
                 onClick={() => setViewport("desktop")}
-                className={`inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-semibold ${
+                className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer ${
                   viewport === "desktop"
-                    ? "bg-gray-900 text-white dark:bg-white dark:text-black"
-                    : "text-gray-700 dark:text-gray-200"
+                    ? "bg-white text-gray-900 shadow-sm dark:bg-zinc-800 dark:text-white"
+                    : "text-gray-600 hover:text-gray-900 dark:text-zinc-400 dark:hover:text-white"
                 }`}
               >
-                <Monitor className="w-4 h-4" />
-                Desktop
+                <Monitor className="w-3.5 h-3.5" />
+                <span>Desktop</span>
               </button>
               <button
                 type="button"
                 onClick={() => setViewport("mobile")}
-                className={`inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-semibold ${
+                className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer ${
                   viewport === "mobile"
-                    ? "bg-gray-900 text-white dark:bg-white dark:text-black"
-                    : "text-gray-700 dark:text-gray-200"
+                    ? "bg-white text-gray-900 shadow-sm dark:bg-zinc-800 dark:text-white"
+                    : "text-gray-600 hover:text-gray-900 dark:text-zinc-400 dark:hover:text-white"
                 }`}
               >
-                <Smartphone className="w-4 h-4" />
-                Mobile
+                <Smartphone className="w-3.5 h-3.5" />
+                <span>Mobile</span>
               </button>
             </div>
+
             <Link
               to={`/portfolio/${id}/edit`}
-              className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-900 text-white dark:bg-white dark:text-black text-sm font-semibold"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-500/20 transition-all active:scale-95 cursor-pointer"
             >
-              <Edit3 className="w-4 h-4" />
-              Edit
+              <Edit3 className="w-3.5 h-3.5" />
+              <span>Edit Portfolio</span>
             </Link>
           </div>
-        </div>
-      </div>
-      <div className="overflow-x-auto px-4 py-6">
+        }
+      />
+
+      {/* Main Preview Frame */}
+      <main className="flex-1 overflow-x-auto px-4 py-8">
         <div className="mx-auto flex justify-center">
           {viewport === "mobile" ? (
             <PreviewIframe>
@@ -152,7 +165,7 @@ const PortfolioPreview = () => {
               />
             </PreviewIframe>
           ) : (
-            <div className="w-full max-w-6xl bg-white shadow-sm">
+            <div className="w-full max-w-6xl rounded-3xl overflow-hidden shadow-xl border border-gray-200/80 dark:border-white/[0.08] bg-white">
               <PortfolioThemeRenderer
                 portfolio={portfolio}
                 resume={resume}
@@ -162,9 +175,7 @@ const PortfolioPreview = () => {
             </div>
           )}
         </div>
-      </div>
+      </main>
     </div>
   );
-};
-
-export default PortfolioPreview;
+}
