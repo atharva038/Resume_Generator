@@ -1,10 +1,7 @@
-import {Link} from "react-router-dom";
-import {
-  Mail,
-  Heart,
-} from "lucide-react";
-import {useEffect, useRef} from "react";
-import {useToggle} from "@/hooks";
+import { Link } from "react-router-dom";
+import { Mail, Heart, Sparkles, Shield, Globe2, ArrowUpRight } from "lucide-react";
+import { useEffect, useRef } from "react";
+import { useToggle } from "@/hooks";
 
 const Footer = () => {
   const footerRef = useRef(null);
@@ -33,101 +30,87 @@ const Footer = () => {
   }, [setIsVisibleTrue]);
 
   const productLinks = [
-    { name: "AI Resume Builder", path: "/upload" },
-    { name: "ATS Checker", path: "/upload" },
+    { name: "ATS Resume Analyzer", path: "/ats-analyzer" },
+    { name: "AI Resume Enhancer", path: "/upload" },
     { name: "Resume Templates", path: "/templates" },
-    { name: "AI Enhancer", path: "/upload" },
-    { name: "Pricing", path: "/pricing" },
+    { name: "Career Profile Hub", path: "/career-profile" },
+    { name: "Career Q&A Studio", path: "/career-qa" },
+    { name: "Portfolios Builder", path: "/portfolio" },
+    { name: "Pricing & Plans", path: "/pricing" },
   ];
 
-  // Legal & Policies (REQUIRED FOR RAZORPAY APPROVAL)
-  const resourceLinks = [
+  const policyLinks = [
     { name: "Terms & Conditions", path: "/terms-and-conditions" },
     { name: "Privacy Policy", path: "/privacy-policy" },
     { name: "Refund Policy", path: "/refund-policy" },
     { name: "Shipping Policy", path: "/shipping-policy" },
   ];
 
-  // Hidden until connected to real data
-  const socialLinks = [
-    // {
-    //   name: "LinkedIn",
-    //   icon: Linkedin,
-    //   url: "https://linkedin.com/company/smartnshine",
-    //   color: "hover:text-blue-400",
-    // },
-    // {
-    //   name: "Twitter",
-    //   icon: Twitter,
-    //   url: "https://twitter.com/smartnshine",
-    //   color: "hover:text-sky-400",
-    // },
-    // {
-    //   name: "GitHub",
-    //   icon: Github,
-    //   url: "https://github.com/smartnshine",
-    //   color: "hover:text-purple-400",
-    // },
-  ];
-
   return (
     <footer
       ref={footerRef}
-      className={`bg-white dark:bg-black border-t border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-400 transition-all duration-1000 no-print ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+      className={`bg-white dark:bg-[#09090b] border-t border-gray-200/80 dark:border-white/[0.08] text-gray-600 dark:text-zinc-400 transition-all duration-700 no-print ${
+        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
-          {/* Brand Section */}
-          <div className="space-y-4">
-            <Link to="/" className="flex items-center group">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16 space-y-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10">
+          {/* Brand Column */}
+          <div className="lg:col-span-5 space-y-4">
+            <Link to="/" className="inline-flex items-center gap-2 group">
               <img
                 src="/orb-logo.png"
-                alt=""
-                className="h-14 w-auto object-contain group-hover:scale-105 transition-all duration-300 -mr-1 dark:brightness-100 dark:saturate-100 brightness-50 contrast-125 saturate-200"
+                alt="SmartNShine"
+                className="h-10 w-auto object-contain -mr-1 dark:brightness-100 brightness-75 group-hover:scale-105 transition-transform"
               />
-              <span className="text-lg font-bold bg-gradient-to-r from-[#5d8ff0] via-[#6f7fe4] to-[#8b67df] dark:from-[#6aa0ff] dark:via-[#7f8ce7] dark:to-[#9b78ea] bg-clip-text text-transparent tracking-tight">
+              <span className="text-xl font-black bg-gradient-to-r from-[#5d8ff0] via-[#6f7fe4] to-[#8b67df] dark:from-[#6aa0ff] dark:via-[#7f8ce7] dark:to-[#9b78ea] bg-clip-text text-transparent tracking-tight">
                 SmartNShine
               </span>
             </Link>
-            <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed max-w-xs">
-              Build resumes that shine in every interview. Powered by AI to help
-              you land your dream job.
+
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-zinc-400 leading-relaxed max-w-sm">
+              The AI-powered career workspace designed to help candidates build ATS-optimized resumes, prepare for mock interviews, and launch professional portfolio websites.
             </p>
-            {/* Social Media Icons - Hidden until connected to real data */}
-            {socialLinks.length > 0 && (
-              <div className="flex items-center gap-3 pt-2">
-                {socialLinks.map((social) => {
-                  const Icon = social.icon;
-                  return (
-                    <a
-                      key={social.name}
-                      href={social.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-2 border border-gray-200 dark:border-white/10 rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-300 dark:hover:border-white/20 transition-all duration-200"
-                      aria-label={social.name}
-                    >
-                      <Icon className="w-4 h-4" />
-                    </a>
-                  );
-                })}
-              </div>
-            )}
+
+            <div className="flex items-center gap-2 pt-2">
+              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold border border-emerald-500/20">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                All Systems Operational
+              </span>
+            </div>
           </div>
 
-          {/* Product Column */}
-          <div>
-            <h3 className="text-gray-900 dark:text-white font-semibold text-xs uppercase tracking-[0.16em] mb-4">
-              Product
+          {/* Core Tools Column */}
+          <div className="lg:col-span-3 space-y-3">
+            <h3 className="text-xs font-black uppercase tracking-wider text-gray-900 dark:text-white">
+              Core Platform
             </h3>
-            <ul className="space-y-2.5">
+            <ul className="space-y-2">
               {productLinks.map((link) => (
                 <li key={link.name}>
                   <Link
                     to={link.path}
-                    className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-200"
+                    className="text-xs sm:text-sm text-gray-600 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors inline-flex items-center gap-1 group font-medium"
+                  >
+                    <span>{link.name}</span>
+                    <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Legal & Policies Column */}
+          <div className="lg:col-span-2 space-y-3">
+            <h3 className="text-xs font-black uppercase tracking-wider text-gray-900 dark:text-white">
+              Legal & Compliance
+            </h3>
+            <ul className="space-y-2">
+              {policyLinks.map((link) => (
+                <li key={link.name}>
+                  <Link
+                    to={link.path}
+                    className="text-xs sm:text-sm text-gray-600 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium block"
                   >
                     {link.name}
                   </Link>
@@ -136,96 +119,40 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Legal & Policies Column (REQUIRED FOR RAZORPAY) */}
-          {resourceLinks.length > 0 && (
-            <div>
-              <h3 className="text-gray-900 dark:text-white font-semibold text-xs uppercase tracking-[0.16em] mb-4">
-                Legal & Policies
-              </h3>
-              <ul className="space-y-2.5">
-                {resourceLinks.map((link) => {
-                  const isHash = link.path.startsWith("/#");
-                  return (
-                    <li key={link.name}>
-                      {isHash ? (
-                        <a
-                          href={link.path}
-                          className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-200"
-                        >
-                          {link.name}
-                        </a>
-                      ) : (
-                        <Link
-                          to={link.path}
-                          className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-200"
-                        >
-                          {link.name}
-                        </Link>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          )}
-
-          {/* Contact Column */}
-          <div>
-            <h3 className="text-gray-900 dark:text-white font-semibold text-xs uppercase tracking-[0.16em] mb-4">
-              Contact
+          {/* Support Column */}
+          <div className="lg:col-span-2 space-y-3">
+            <h3 className="text-xs font-black uppercase tracking-wider text-gray-900 dark:text-white">
+              Help Desk
             </h3>
-            <ul className="space-y-2.5">
+            <ul className="space-y-2">
               <li>
                 <Link
                   to="/contact"
-                  className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-200"
+                  className="text-xs sm:text-sm text-gray-600 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium block"
                 >
-                  Contact Us
+                  Contact Support
                 </Link>
               </li>
               <li>
                 <a
                   href="mailto:support@smartnshine.app"
-                  className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-200 inline-flex items-center gap-2 group"
+                  className="text-xs sm:text-sm text-gray-600 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium inline-flex items-center gap-1.5"
                 >
-                  <Mail className="w-4 h-4" />
-                  <span>support@smartnshine.app</span>
+                  <Mail className="w-3.5 h-3.5" />
+                  <span className="truncate">support@smartnshine.app</span>
                 </a>
               </li>
-              {/* Hidden until connected to real data */}
-              {/* <li>
-                <a
-                  href="https://discord.gg/smartnshine"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-white transition-colors duration-200 inline-flex items-center gap-2 group"
-                >
-                  <MessageCircle className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
-                  <span className="relative">
-                    Join Our Community
-                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300"></span>
-                  </span>
-                </a>
-              </li> */}
             </ul>
           </div>
         </div>
 
-        {/* Divider */}
-        <div className="border-t border-gray-200 dark:border-white/10 mt-10 lg:mt-12 pt-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            {/* Copyright */}
-            <p className="text-xs text-gray-500 dark:text-gray-400 text-center md:text-left">
-              © {new Date().getFullYear()} SmartNShine. All rights reserved.
-            </p>
-
-            {/* Built with Love */}
-            <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
-              Built with
-              <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500" />
-              for job seekers worldwide
-            </p>
-          </div>
+        {/* Bottom Bar */}
+        <div className="border-t border-gray-100 dark:border-white/5 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500 dark:text-zinc-500">
+          <p>© {new Date().getFullYear()} SmartNShine. Built with precision for job seekers worldwide.</p>
+          <p className="flex items-center gap-1">
+            <span>Powered by Advanced AI</span>
+            <Sparkles className="w-3 h-3 text-blue-500" />
+          </p>
         </div>
       </div>
     </footer>

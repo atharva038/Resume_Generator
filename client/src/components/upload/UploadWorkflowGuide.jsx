@@ -3,7 +3,7 @@ import { Zap, Sparkles, CheckCircle2, Shield, Brain, Download, Cpu } from "lucid
 export function UploadWorkflowGuide() {
   const steps = [
     {
-      title: "Neural Text Extraction",
+      title: "AI Text Extraction",
       desc: "Our AI model identifies dates, job titles, companies, and contact credentials.",
       icon: Cpu,
     },

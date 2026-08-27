@@ -132,12 +132,12 @@ export default function ATSAnalyzer() {
         url="https://www.smartnshine.app/ats-analyzer"
       />
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 max-w-7xl">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
         {/* Ambient Top Hero Banner */}
         <ATSAnalyzerBanner />
 
         {/* 2-Column Responsive Workspace */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
           {/* Left Column: Inputs (Job description + Resume source) */}
           <div className="lg:col-span-6 space-y-6">
             <ATSJobDescriptionInput

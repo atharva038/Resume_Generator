@@ -51,7 +51,7 @@ export default function UploadDropzone({
           {uploading ? (
             <div className="space-y-2">
               <h3 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">
-                Parsing Resume with Neural AI...
+                Parsing Resume with AI...
               </h3>
               <p className="text-xs sm:text-sm text-gray-500 dark:text-zinc-400">
                 Extracting contact details, career history, and skill taxonomies

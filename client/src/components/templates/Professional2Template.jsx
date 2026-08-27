@@ -556,7 +556,13 @@ const Professional2Template = forwardRef((props, ref) => {
                   }}
                 >
                   {exp.achievements
-                    .filter((achievement) => achievement && achievement.trim())
+                    .filter(
+                      (achievement) =>
+                        achievement &&
+                        (typeof achievement === "string"
+                          ? achievement.trim()
+                          : achievement.title || achievement.description)
+                    )
                     .map((achievement, i) => (
                       <li
                         key={i}
