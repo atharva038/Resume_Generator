@@ -81,6 +81,7 @@ const adminNotificationSchema = new mongoose.Schema(
   }
 );
 
+adminNotificationSchema.index({status: -1, createdAt: -1});
 adminNotificationSchema.index({status: 1, createdAt: -1});
 adminNotificationSchema.index({severity: 1, createdAt: -1});
 adminNotificationSchema.index({type: 1, createdAt: -1});

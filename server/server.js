@@ -230,14 +230,33 @@ app.get("/api/health", (req, res) => {
 
 // Global error handler
 app.use((err, req, res, next) => {
-  console.error("Error:", err);
-  notifySystemError({
-    source: "express",
-    error: err,
-    path: req.originalUrl,
-    method: req.method,
-  });
-  res.status(err.status || 500).json({
+  const status = err.status || err.statusCode || 500;
+  const isCorsError =
+    err.isCors ||
+    err.message === "Not allowed by CORS" ||
+    (typeof err.message === "string" && err.message.includes("CORS"));
+
+  if (isCorsError) {
+    return res.status(403).json({
+      error: "Access denied by CORS policy",
+    });
+  }
+
+  // Only trigger admin notification for actual internal server errors (5xx)
+  // to avoid flooding notification logs with client 4xx / unauthorized / CORS errors
+  if (status >= 500) {
+    console.error("Server Error [500]:", err);
+    notifySystemError({
+      source: "express",
+      error: err,
+      path: req.originalUrl,
+      method: req.method,
+    });
+  } else {
+    console.warn(`Client Error [${status}]:`, err.message);
+  }
+
+  res.status(status).json({
     error: err.message || "Internal server error",
     ...(process.env.NODE_ENV === "development" && {stack: err.stack}),
   });

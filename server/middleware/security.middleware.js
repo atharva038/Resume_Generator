@@ -169,17 +169,29 @@ export const corsOptions = {
   // Allowed origins - Configured via ALLOWED_ORIGINS environment variable
   origin: (origin, callback) => {
     // Get allowed origins from environment variable or fallback to defaults
-    const allowedOrigins = process.env.ALLOWED_ORIGINS
-      ? process.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
-      : [
-          process.env.CLIENT_ORIGIN || "http://localhost:5173",
-          "http://localhost:3000",
-          "http://localhost:5173",
-          "http://client:5173",
-          "http://smartnshine-client:5173",
-        ];
+    const defaultOrigins = [
+      "https://smartnshine.app",
+      "https://www.smartnshine.app",
+      "https://*.smartnshine.app",
+      "https://*.vercel.app",
+      "http://localhost:3000",
+      "http://localhost:5173",
+      "http://localhost:5000",
+      "http://client:5173",
+      "http://smartnshine-client:5173",
+    ];
 
-    // Allow requests with no origin (like mobile apps, Postman, curl)
+    const envOrigins = process.env.ALLOWED_ORIGINS
+      ? process.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
+      : [];
+
+    if (process.env.CLIENT_ORIGIN) {
+      envOrigins.push(process.env.CLIENT_ORIGIN.trim());
+    }
+
+    const allowedOrigins = [...new Set([...defaultOrigins, ...envOrigins])];
+
+    // Allow requests with no origin (like mobile apps, Postman, curl, internal server calls)
     if (!origin) return callback(null, true);
 
     // Check if origin matches any allowed origin (supports wildcards)
@@ -187,9 +199,9 @@ export const corsOptions = {
       // Exact match
       if (allowed === origin) return true;
 
-      // Wildcard support (e.g., https://*.example.com)
+      // Wildcard support (e.g., https://*.example.com or https://*.smartnshine.app)
       if (allowed.includes("*")) {
-        const regex = new RegExp("^" + allowed.replace(/\*/g, ".*") + "$");
+        const regex = new RegExp("^" + allowed.replace(/\./g, "\\.").replace(/\*/g, ".*") + "$");
         return regex.test(origin);
       }
 
@@ -200,7 +212,10 @@ export const corsOptions = {
       callback(null, true);
     } else {
       console.warn(`⚠️  CORS blocked request from origin: ${origin}`);
-      callback(new Error("Not allowed by CORS"));
+      const corsErr = new Error("Not allowed by CORS");
+      corsErr.status = 403;
+      corsErr.isCors = true;
+      callback(corsErr);
     }
   },
 
