@@ -167,6 +167,14 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/editor"
+              element={
+                <ProtectedRoute>
+                  <Editor />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
               {/* Protected Routes - Require Authentication */}
@@ -175,14 +183,6 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <Upload />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="editor"
-                element={
-                  <ProtectedRoute>
-                    <Editor />
                   </ProtectedRoute>
                 }
               />
