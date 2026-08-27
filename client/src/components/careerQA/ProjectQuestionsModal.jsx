@@ -1,4 +1,5 @@
 import { Briefcase, X, Check, RefreshCw, Sparkles } from "lucide-react";
+import { useBodyScrollLock } from "@/hooks";
 
 export default function ProjectQuestionsModal({
   isOpen,
@@ -11,6 +12,7 @@ export default function ProjectQuestionsModal({
   projectQuestionsResult,
   onAddProjectQuestionToBank,
 }) {
+  useBodyScrollLock(isOpen);
   if (!isOpen) return null;
 
   return (

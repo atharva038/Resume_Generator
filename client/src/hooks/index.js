@@ -20,3 +20,4 @@ export {useSectionCompletion, isSectionCompleteForResume} from "./useSectionComp
 export {useFloatingSectionNav} from "./useFloatingSectionNav";
 export {useEditorPersistence} from "./useEditorPersistence";
 export {useResumeSaveActions} from "./useResumeSaveActions";
+export {default as useBodyScrollLock} from "./useBodyScrollLock";

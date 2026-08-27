@@ -1,4 +1,5 @@
 import { Flame, X, Plus, RefreshCw } from "lucide-react";
+import { useBodyScrollLock } from "@/hooks";
 
 export default function JobPrepModal({
   isOpen,
@@ -10,6 +11,7 @@ export default function JobPrepModal({
   jobAnalysisResult,
   onAddJobQuestionToBank,
 }) {
+  useBodyScrollLock(isOpen);
   if (!isOpen) return null;
 
   return (

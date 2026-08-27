@@ -1,4 +1,5 @@
 import { Sparkles, X, RefreshCw, CheckCircle2 } from "lucide-react";
+import { useBodyScrollLock } from "@/hooks";
 
 export default function AIFastImportModal({
   isOpen,
@@ -13,6 +14,7 @@ export default function AIFastImportModal({
   aiResultPreview,
   onApplyAIResult,
 }) {
+  useBodyScrollLock(isOpen);
   if (!isOpen) return null;
 
   return (
