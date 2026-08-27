@@ -31,7 +31,7 @@ const Layout = () => {
   }, [setIsSidebarOpenTrue, setIsSidebarOpenFalse]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-950">
+    <div className="min-h-screen flex flex-col bg-white dark:bg-[#09090b]">
       {/* Sidebar */}
       <Sidebar isOpen={isSidebarOpen} setIsOpen={toggleSidebar} />
 
@@ -45,7 +45,7 @@ const Layout = () => {
         <Navbar toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
 
         {/* Page Content with Transition */}
-        <main className="flex-1 pt-16 md:pt-20 w-full">
+        <main className="flex-1 pt-16 w-full bg-white dark:bg-[#09090b]">
           <PageTransition key={location.pathname}>
             <Outlet />
           </PageTransition>
