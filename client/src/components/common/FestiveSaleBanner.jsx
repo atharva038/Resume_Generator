@@ -134,8 +134,44 @@ export default function FestiveSaleBanner({ promotion, onDismiss }) {
         {/* Subtle decorative background pattern */}
         <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
 
-        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3">
-          <div className="flex flex-wrap items-center justify-between gap-2.5 sm:gap-4">
+        <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-1.5 sm:py-2.5">
+          {/* MOBILE VIEW: Single Sleek Compact Line */}
+          <div className="flex sm:hidden items-center justify-between gap-2 w-full">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <span className="text-sm shrink-0">🎁</span>
+              <p className={`text-xs font-black truncate ${currentTheme.titleText}`}>
+                {promo.badgeText || "Rakhi Deal"}:{" "}
+                <span className={`px-1.5 py-0.2 rounded font-black ${currentTheme.priceTag}`}>
+                  ₹{promo.oneTimePrice ?? 9}
+                </span>{" "}
+                <span className="opacity-75 font-semibold text-[10px]">({discountPercent}% OFF)</span>
+              </p>
+            </div>
+            <div className="flex items-center gap-1 shrink-0">
+              <Link
+                to="/pricing"
+                className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-black shadow-xs ${currentTheme.button}`}
+              >
+                <span>Claim</span>
+                <ArrowRight className="w-3 h-3 stroke-[3]" />
+              </Link>
+              {onDismiss && (
+                <button
+                  onClick={() => {
+                    setDismissed(true);
+                    onDismiss();
+                  }}
+                  className="p-1 rounded-full opacity-60 hover:opacity-100"
+                  aria-label="Dismiss banner"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* DESKTOP & TABLET VIEW */}
+          <div className="hidden sm:flex flex-wrap items-center justify-between gap-2.5 sm:gap-4">
             {/* Left: Festive Badge + Promotion Title & Clear Details */}
             <div className="flex items-center gap-2.5 sm:gap-3.5 flex-1 min-w-[300px]">
               <span
