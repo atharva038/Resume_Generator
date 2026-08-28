@@ -47,6 +47,8 @@ import {
   updateRateLimits,
   getAIExtractionUsage,
   resetUserExtractionCounter,
+  updatePromotionSettings,
+  togglePromotion,
 } from "../controllers/admin.controller.js";
 import {
   archiveNotification,
@@ -179,5 +181,7 @@ router.post("/settings/reset", resetSettings);
 router.patch("/settings/ai-quota", updateAIQuotaLimits);
 router.patch("/settings/features/:feature", toggleFeature);
 router.patch("/settings/rate-limits", updateRateLimits);
+router.patch("/settings/promotion", updatePromotionSettings);
+router.patch("/settings/promotion/toggle", togglePromotion);
 
 export default router;

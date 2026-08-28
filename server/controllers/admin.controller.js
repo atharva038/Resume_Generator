@@ -3005,3 +3005,73 @@ export const resetUserExtractionCounter = async (req, res) => {
     });
   }
 };
+
+/**
+ * Update promotion / festive sale settings
+ * PATCH /api/admin/settings/promotion
+ */
+export const updatePromotionSettings = async (req, res) => {
+  try {
+    const promotionUpdates = req.body;
+    const adminId = req.user.id;
+
+    const settings = await Settings.getSettings();
+    if (!settings.promotion) {
+      settings.promotion = {};
+    }
+
+    // Merge updates into settings.promotion
+    Object.assign(settings.promotion, promotionUpdates);
+    settings.lastUpdatedBy = adminId;
+    await settings.save();
+
+    res.json({
+      success: true,
+      message: "Promotion settings updated successfully",
+      promotion: settings.promotion,
+    });
+  } catch (error) {
+    console.error("Update promotion settings error:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to update promotion settings",
+      details: error.message,
+    });
+  }
+};
+
+/**
+ * Quick toggle promotion on/off
+ * PATCH /api/admin/settings/promotion/toggle
+ */
+export const togglePromotion = async (req, res) => {
+  try {
+    const {enabled} = req.body;
+    const adminId = req.user.id;
+
+    const settings = await Settings.getSettings();
+    if (!settings.promotion) {
+      settings.promotion = {};
+    }
+
+    settings.promotion.enabled =
+      typeof enabled === "boolean" ? enabled : !settings.promotion.enabled;
+    settings.lastUpdatedBy = adminId;
+    await settings.save();
+
+    res.json({
+      success: true,
+      message: `Promotion ${settings.promotion.enabled ? "enabled" : "disabled"} successfully`,
+      enabled: settings.promotion.enabled,
+      promotion: settings.promotion,
+    });
+  } catch (error) {
+    console.error("Toggle promotion error:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to toggle promotion",
+      details: error.message,
+    });
+  }
+};
+

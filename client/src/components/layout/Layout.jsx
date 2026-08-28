@@ -4,7 +4,8 @@ import {useToggle} from "@/hooks";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
-import {PageTransition} from "@/components/common";
+import {PageTransition, FestiveSaleBanner} from "@/components/common";
+import {getPricing} from "@/api/subscription.api";
 
 const Layout = () => {
   const [
@@ -14,6 +15,21 @@ const Layout = () => {
     setIsSidebarOpenFalse,
   ] = useToggle(false);
   const location = useLocation();
+  const [promotion, setPromotion] = useState(null);
+
+  useEffect(() => {
+    const fetchPromo = async () => {
+      try {
+        const data = await getPricing();
+        if (data.promotion) {
+          setPromotion(data.promotion);
+        }
+      } catch (err) {
+        console.error("Failed to load promotion in Layout:", err);
+      }
+    };
+    fetchPromo();
+  }, [location.pathname]);
 
   // Auto-open sidebar on desktop
   useEffect(() => {
@@ -41,11 +57,18 @@ const Layout = () => {
           isSidebarOpen ? "lg:ml-64" : "lg:ml-20"
         }`}
       >
-        {/* Top Navbar */}
-        <Navbar toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
+        {/* Fixed Top Navbar */}
+        <Navbar
+          toggleSidebar={toggleSidebar}
+          isSidebarOpen={isSidebarOpen}
+        />
 
-        {/* Page Content with Transition */}
+        {/* Page Content: Starts below Navbar (pt-16), Festive Banner scrolls with content under Navbar */}
         <main className="flex-1 pt-16 w-full bg-white dark:bg-[#09090b]">
+          {promotion && promotion.enabled && (
+            <FestiveSaleBanner promotion={promotion} />
+          )}
+
           <PageTransition key={location.pathname}>
             <Outlet />
           </PageTransition>
