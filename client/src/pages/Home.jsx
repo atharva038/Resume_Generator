@@ -7,6 +7,7 @@ import { FestiveSaleBanner } from "../components/common";
 import { getPricing } from "../api/subscription.api";
 import SkewCards from "../components/ui/gradient-card-showcase";
 import { TiltCard } from "../components/ui/be-ui-tilt-card";
+import TestimonialsSection from "../components/ui/testimonials-3";
 import {
   Sparkles,
   Upload,
@@ -26,20 +27,16 @@ import {
   Zap,
   Gift,
   Clock,
-  Flame,
-  Github,
   Copy,
   CheckCircle2,
   Lock,
-  ExternalLink,
   RefreshCw,
-  Sliders,
   AlertTriangle,
-  Layers,
   Activity,
   Play,
   Pause,
   Video,
+  Star,
 } from "lucide-react";
 
 // High-res template IDs for hero fan
@@ -96,24 +93,42 @@ const trustHighlights = [
   "Export-Ready Vector PDFs",
 ];
 
-const testimonials = [
+const corePillars = [
   {
-    name: "Anshu Nagnurwar",
-    role: "Software Engineer",
-    company: "Tech Lead",
-    text: "The ATS diagnostic engine caught 4 crucial missing keywords before my recruiter screen. Landed the offer in 2 weeks.",
+    icon: Upload,
+    colorClass: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
+    title: "1. AI Resume Extraction",
+    desc: "Drop any existing PDF or DOCX file. Our AI instantly parses work history, skills, and education into an editable format.",
   },
   {
-    name: "Anuj Nandgaonkar",
-    role: "Product Manager",
-    company: "FinTech",
-    text: "The AI bullet enhancement preserved my authentic voice while making every single impact quantifiable.",
+    icon: Brain,
+    colorClass: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400",
+    title: "2. Bullet Point Rewriter",
+    desc: "Generate high-impact action verbs, quantifiable metrics, and role-targeted achievements tailored for ATS scoring systems.",
   },
   {
-    name: "Vibhanshu Titirmare",
-    role: "Frontend Developer",
-    company: "Design Systems",
-    text: "Being able to generate both an ATS resume and a live portfolio website from one master profile is game-changing.",
+    icon: Target,
+    colorClass: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
+    title: "3. ATS Diagnostic Scanner",
+    desc: "Receive instant compatibility percentages, semantic gap analysis, and missing keyword alerts before applying.",
+  },
+  {
+    icon: Globe2,
+    colorClass: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+    title: "4. Live Web Portfolios",
+    desc: "Turn your career milestones into a responsive, public personal website with customizable themes and shareable links.",
+  },
+  {
+    icon: Mic,
+    colorClass: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
+    title: "5. Career Q&A Studio",
+    desc: "Generate project-specific behavioral and technical mock interview questions with verified model answers.",
+  },
+  {
+    icon: UserCheck,
+    colorClass: "bg-rose-500/10 text-rose-600 dark:text-rose-400",
+    title: "6. Master Profile Sync",
+    desc: "Store all your verified projects and experience in one central database. Sync changes to multiple resumes with 1 click.",
   },
 ];
 
@@ -2044,119 +2059,31 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6" style={{ perspective: 1200 }}>
-            {/* Card 1 */}
-            <TiltCard
-              max={18}
-              glare={true}
-              className="p-8 rounded-3xl bg-white dark:bg-zinc-900/90 border border-gray-200/90 dark:border-white/[0.08] shadow-sm hover:shadow-2xl transition-all h-full"
-            >
-              <div className="space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center">
-                  <Upload className="w-6 h-6" />
-                </div>
-                <h3 className="text-xl font-black text-gray-900 dark:text-white">
-                  1. AI Resume Extraction
-                </h3>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-zinc-400 leading-relaxed">
-                  Drop any existing PDF or DOCX file. Our AI instantly parses work history, skills, and education into an editable format.
-                </p>
-              </div>
-            </TiltCard>
-
-            {/* Card 2 */}
-            <TiltCard
-              max={18}
-              glare={true}
-              className="p-8 rounded-3xl bg-white dark:bg-zinc-900/90 border border-gray-200/90 dark:border-white/[0.08] shadow-sm hover:shadow-2xl transition-all h-full"
-            >
-              <div className="space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
-                  <Brain className="w-6 h-6" />
-                </div>
-                <h3 className="text-xl font-black text-gray-900 dark:text-white">
-                  2. Bullet Point Rewriter
-                </h3>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-zinc-400 leading-relaxed">
-                  Generate high-impact action verbs, quantifiable metrics, and role-targeted achievements tailored for ATS scoring systems.
-                </p>
-              </div>
-            </TiltCard>
-
-            {/* Card 3 */}
-            <TiltCard
-              max={18}
-              glare={true}
-              className="p-8 rounded-3xl bg-white dark:bg-zinc-900/90 border border-gray-200/90 dark:border-white/[0.08] shadow-sm hover:shadow-2xl transition-all h-full"
-            >
-              <div className="space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center">
-                  <Target className="w-6 h-6" />
-                </div>
-                <h3 className="text-xl font-black text-gray-900 dark:text-white">
-                  3. ATS Diagnostic Scanner
-                </h3>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-zinc-400 leading-relaxed">
-                  Receive instant compatibility percentages, semantic gap analysis, and missing keyword alerts before applying.
-                </p>
-              </div>
-            </TiltCard>
-
-            {/* Card 4 */}
-            <TiltCard
-              max={18}
-              glare={true}
-              className="p-8 rounded-3xl bg-white dark:bg-zinc-900/90 border border-gray-200/90 dark:border-white/[0.08] shadow-sm hover:shadow-2xl transition-all h-full"
-            >
-              <div className="space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-                  <Globe2 className="w-6 h-6" />
-                </div>
-                <h3 className="text-xl font-black text-gray-900 dark:text-white">
-                  4. Live Web Portfolios
-                </h3>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-zinc-400 leading-relaxed">
-                  Turn your career milestones into a responsive, public personal website with customizable themes and shareable links.
-                </p>
-              </div>
-            </TiltCard>
-
-            {/* Card 5 */}
-            <TiltCard
-              max={18}
-              glare={true}
-              className="p-8 rounded-3xl bg-white dark:bg-zinc-900/90 border border-gray-200/90 dark:border-white/[0.08] shadow-sm hover:shadow-2xl transition-all h-full"
-            >
-              <div className="space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-                  <Mic className="w-6 h-6" />
-                </div>
-                <h3 className="text-xl font-black text-gray-900 dark:text-white">
-                  5. Career Q&A Studio
-                </h3>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-zinc-400 leading-relaxed">
-                  Generate project-specific behavioral and technical mock interview questions with verified model answers.
-                </p>
-              </div>
-            </TiltCard>
-
-            {/* Card 6 */}
-            <TiltCard
-              max={18}
-              glare={true}
-              className="p-8 rounded-3xl bg-white dark:bg-zinc-900/90 border border-gray-200/90 dark:border-white/[0.08] shadow-sm hover:shadow-2xl transition-all h-full"
-            >
-              <div className="space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center">
-                  <UserCheck className="w-6 h-6" />
-                </div>
-                <h3 className="text-xl font-black text-gray-900 dark:text-white">
-                  6. Master Profile Sync
-                </h3>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-zinc-400 leading-relaxed">
-                  Store all your verified projects and experience in one central database. Sync changes to multiple resumes with 1 click.
-                </p>
-              </div>
-            </TiltCard>
+            {corePillars.map((pillar, idx) => {
+              const IconComponent = pillar.icon;
+              return (
+                <TiltCard
+                  key={idx}
+                  max={18}
+                  glare={true}
+                  className="p-8 rounded-3xl bg-white dark:bg-zinc-900/90 border border-gray-200/90 dark:border-white/[0.08] shadow-sm hover:shadow-2xl transition-all h-full"
+                >
+                  <div className="space-y-4">
+                    <div
+                      className={`w-12 h-12 rounded-2xl ${pillar.colorClass} flex items-center justify-center`}
+                    >
+                      <IconComponent className="w-6 h-6" />
+                    </div>
+                    <h3 className="text-xl font-black text-gray-900 dark:text-white">
+                      {pillar.title}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-gray-600 dark:text-zinc-400 leading-relaxed">
+                      {pillar.desc}
+                    </p>
+                  </div>
+                </TiltCard>
+              );
+            })}
           </div>
         </section>
 
@@ -2229,36 +2156,21 @@ export default function Home() {
         <SectionDivider />
 
         {/* TESTIMONIALS */}
-        <section className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-12">
-          <div className="text-center space-y-2">
-            <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white tracking-tight">
-              Trusted by Job Seekers
+        <section className="py-24 sm:py-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-12">
+          <div className="mx-auto max-w-xl text-center space-y-3">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-widest">
+              <Star className="w-3.5 h-3.5 fill-current" />
+              <span>Proven Career Outcomes</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white tracking-tight">
+              Loved by Engineers & Leaders Worldwide
             </h2>
-            <p className="text-xs sm:text-sm text-gray-500 dark:text-zinc-400">
-              Hear how candidates landed their target roles with SmartNShine.
+            <p className="text-sm sm:text-base text-gray-500 dark:text-zinc-400 leading-relaxed font-medium">
+              Don't take our word for it — here's how candidates unlocked dream interviews and accelerated offers with SmartNShine.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {testimonials.map((t, idx) => (
-              <div
-                key={idx}
-                className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-zinc-900/90 border border-gray-200/90 dark:border-white/[0.08] shadow-sm flex flex-col justify-between space-y-6"
-              >
-                <p className="text-sm sm:text-base text-gray-700 dark:text-zinc-300 leading-relaxed font-normal">
-                  "{t.text}"
-                </p>
-                <div>
-                  <h4 className="text-sm font-bold text-gray-900 dark:text-white">
-                    {t.name}
-                  </h4>
-                  <p className="text-xs text-gray-500 dark:text-zinc-400 mt-0.5">
-                    {t.role} {t.company ? `• ${t.company}` : ""}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+          <TestimonialsSection />
         </section>
 
         <SectionDivider />
