@@ -12,3 +12,5 @@ export { default as LeadershipSection } from "./LeadershipSection";
 export { default as AdditionalInfoSection } from "./AdditionalInfoSection";
 export { default as AIFastImportModal } from "./AIFastImportModal";
 export { default as ResumeImportModal } from "./ResumeImportModal";
+export { default as CareerProfileExplainer } from "./CareerProfileExplainer";
+export { default as ApplicationCopilotDrawer } from "./ApplicationCopilotDrawer";

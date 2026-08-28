@@ -1,4 +1,13 @@
-import { Search, Layers, RefreshCw, Star, Check } from "lucide-react";
+import { useState } from "react";
+import {
+  Search,
+  Star,
+  Check,
+  Layers,
+  Sparkles,
+  Copy,
+} from "lucide-react";
+import toast from "react-hot-toast";
 
 export default function QASidebar({
   categories,
@@ -13,25 +22,42 @@ export default function QASidebar({
   onToggleStar,
   categoryBadgeStyles,
 }) {
+  const [copiedId, setCopiedId] = useState(null);
+
+  const copyCardAnswer = (item, e) => {
+    e.stopPropagation();
+    const ans = item.savedAnswer || item.aiDraft;
+    if (!ans) {
+      toast.error("Generate or save an answer first!");
+      return;
+    }
+    navigator.clipboard.writeText(ans);
+    setCopiedId(item._id || item.question);
+    toast.success(`Copied answer for "${item.question.slice(0, 30)}..."!`, {
+      icon: "📋",
+      duration: 1500,
+    });
+    setTimeout(() => setCopiedId(null), 1500);
+  };
+
   return (
-    <div className="space-y-4">
-      {/* Category Filter Pills (Wrapped neatly into rows) */}
-      <div className="flex flex-wrap items-center gap-2">
+    <div className="bg-white dark:bg-zinc-950/90 rounded-3xl p-5 sm:p-6 border border-gray-200/80 dark:border-white/[0.08] shadow-sm dark:shadow-2xl space-y-5">
+      {/* Category Pills Scroller */}
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-2 scrollbar-none">
         {categories.map((cat) => {
           const Icon = cat.icon;
           const isActive = activeCategory === cat.id;
-
           return (
             <button
               key={cat.id}
               onClick={() => onSelectCategory(cat.id)}
-              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-[13px] font-semibold transition-all active:scale-95 cursor-pointer ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
                 isActive
-                  ? "bg-purple-600 text-white shadow-md shadow-purple-500/25 dark:bg-purple-600"
-                  : "bg-white dark:bg-zinc-900/90 text-gray-700 dark:text-zinc-300 border border-gray-200/80 dark:border-white/[0.08] hover:bg-gray-50 dark:hover:bg-zinc-800"
+                  ? "bg-purple-600 text-white shadow-sm shadow-purple-500/20"
+                  : "bg-gray-100 dark:bg-zinc-900 text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white"
               }`}
             >
-              <Icon className={`w-3.5 h-3.5 ${isActive ? "text-white" : "text-gray-400 dark:text-zinc-400"}`} />
+              <Icon className="w-3.5 h-3.5" />
               <span>{cat.label}</span>
             </button>
           );
@@ -40,22 +66,21 @@ export default function QASidebar({
 
       {/* Search Input Bar */}
       <div className="relative">
-        <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-zinc-500" />
+        <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
         <input
           type="text"
           placeholder="Search questions or keywords..."
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="w-full pl-11 pr-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm transition-all shadow-xs"
+          className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50/70 dark:bg-zinc-900/60 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-zinc-500"
         />
       </div>
 
-      {/* Questions List Card Container */}
-      <div className="bg-white dark:bg-zinc-950/90 rounded-3xl p-3 sm:p-4 border border-gray-200/80 dark:border-white/[0.08] shadow-sm max-h-[680px] overflow-y-auto space-y-3 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-800 [&::-webkit-scrollbar-thumb]:rounded-full">
+      {/* Questions Scrollable List */}
+      <div className="space-y-3 max-h-[620px] overflow-y-auto pr-1">
         {loading ? (
-          <div className="py-20 flex flex-col items-center justify-center gap-3 text-gray-400">
-            <RefreshCw className="w-6 h-6 animate-spin text-purple-500" />
-            <span className="text-sm font-medium">Loading questions...</span>
+          <div className="text-center py-16 text-xs text-gray-400 font-semibold uppercase tracking-wider animate-pulse">
+            Loading Questions...
           </div>
         ) : items.length === 0 ? (
           <div className="text-center py-20 text-gray-400 dark:text-zinc-500 space-y-2">
@@ -68,9 +93,11 @@ export default function QASidebar({
             const isSelected = selectedItem?.question === item.question;
             const hasSaved = Boolean(item.savedAnswer?.trim());
             const hasDraft = Boolean(item.aiDraft?.trim());
+            const hasAnyAnswer = hasSaved || hasDraft;
             const categoryStyle =
               categoryBadgeStyles[item.category] ||
               "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20";
+            const itemKey = item._id || item.question;
 
             return (
               <div
@@ -108,15 +135,36 @@ export default function QASidebar({
                   </p>
                 </div>
 
-                <button
-                  onClick={(e) => onToggleStar(item, e)}
-                  className={`p-2 rounded-xl hover:bg-gray-200 dark:hover:bg-zinc-800 transition-colors shrink-0 mt-0.5 cursor-pointer ${
-                    item.isStarred ? "text-amber-400" : "text-gray-300 dark:text-zinc-700 hover:text-amber-400"
-                  }`}
-                  title="Star favorite"
-                >
-                  <Star className={`w-4 h-4 ${item.isStarred ? "fill-amber-400 text-amber-400" : ""}`} />
-                </button>
+                <div className="flex items-center gap-1 shrink-0 mt-0.5">
+                  {hasAnyAnswer && (
+                    <button
+                      type="button"
+                      onClick={(e) => copyCardAnswer(item, e)}
+                      className={`p-2 rounded-xl transition-all cursor-pointer ${
+                        copiedId === itemKey
+                          ? "bg-emerald-500 text-white"
+                          : "hover:bg-gray-200 dark:hover:bg-zinc-800 text-gray-400 hover:text-purple-600 dark:hover:text-purple-400"
+                      }`}
+                      title="1-Click Copy Answer"
+                    >
+                      {copiedId === itemKey ? (
+                        <Check className="w-3.5 h-3.5 stroke-[3]" />
+                      ) : (
+                        <Copy className="w-3.5 h-3.5" />
+                      )}
+                    </button>
+                  )}
+
+                  <button
+                    onClick={(e) => onToggleStar(item, e)}
+                    className={`p-2 rounded-xl hover:bg-gray-200 dark:hover:bg-zinc-800 transition-colors cursor-pointer ${
+                      item.isStarred ? "text-amber-400" : "text-gray-300 dark:text-zinc-700 hover:text-amber-400"
+                    }`}
+                    title="Star favorite"
+                  >
+                    <Star className={`w-4 h-4 ${item.isStarred ? "fill-amber-400 text-amber-400" : ""}`} />
+                  </button>
+                </div>
               </div>
             );
           })

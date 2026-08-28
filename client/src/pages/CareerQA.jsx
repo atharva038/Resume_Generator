@@ -23,6 +23,7 @@ import {
   ProjectQuestionsModal,
   AddCustomQuestionModal,
 } from "@/components/careerQA";
+import { ApplicationCopilotDrawer } from "@/components/careerProfile";
 
 const CATEGORIES = [
   { id: "all", label: "All Questions", icon: Layers },
@@ -460,6 +461,9 @@ export default function CareerQA() {
         setCustomQuestionText={setCustomQuestionText}
         onAddCustomQuestion={handleAddCustomQuestion}
       />
+
+      {/* Floating Job Application Copilot Quick-Dock */}
+      <ApplicationCopilotDrawer profile={userProfile || {}} qaItems={items} />
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   MessageSquare,
   Sparkles,
@@ -12,7 +13,9 @@ import {
   Edit3,
   Bookmark,
   Lightbulb,
+  Zap,
 } from "lucide-react";
+import toast from "react-hot-toast";
 
 export default function QAStudio({
   selectedItem,
@@ -35,6 +38,8 @@ export default function QAStudio({
   talkingPoints,
   categoryBadgeStyles,
 }) {
+  const [copiedType, setCopiedType] = useState(null);
+
   if (!selectedItem) {
     return (
       <div className="bg-white dark:bg-zinc-950/90 rounded-3xl p-16 border border-gray-200/80 dark:border-white/[0.08] shadow-sm text-center text-gray-400 space-y-3">
@@ -53,6 +58,37 @@ export default function QAStudio({
     categoryBadgeStyles[selectedItem.category] ||
     "bg-purple-500/10 text-purple-600 border-purple-500/20";
 
+  // Helper for quick-copying variations
+  const copyVariation = (type) => {
+    if (!editedAnswer?.trim()) {
+      toast.error("No answer content to copy");
+      return;
+    }
+
+    let textToCopy = editedAnswer;
+    if (type === "elevator") {
+      // First 2 sentences
+      const sentences = editedAnswer.match(/[^.!?]+[.!?]+/g) || [editedAnswer];
+      textToCopy = sentences.slice(0, 2).join(" ").trim();
+    } else if (type === "bullets") {
+      // Split into sentences and bullet format
+      const sentences = editedAnswer.match(/[^.!?]+[.!?]+/g) || [editedAnswer];
+      textToCopy = sentences.map((s) => `• ${s.trim()}`).join("\n");
+    }
+
+    navigator.clipboard.writeText(textToCopy);
+    setCopiedType(type);
+    toast.success(
+      type === "elevator"
+        ? "Copied Elevator Pitch (Short Form)!"
+        : type === "bullets"
+        ? "Copied as Bullet Points!"
+        : "Copied Full Answer to Clipboard!",
+      { icon: "📋", duration: 1500 }
+    );
+    setTimeout(() => setCopiedType(null), 1500);
+  };
+
   return (
     <div className="bg-white dark:bg-zinc-950/90 rounded-3xl p-6 sm:p-8 border border-gray-200/80 dark:border-white/[0.08] shadow-sm dark:shadow-2xl space-y-6">
       {/* Active Question Header Card */}
@@ -64,12 +100,16 @@ export default function QAStudio({
 
           <div className="flex items-center gap-2">
             <button
-              onClick={onCopy}
+              onClick={() => copyVariation("full")}
               disabled={!editedAnswer}
-              className="flex items-center gap-2 text-xs font-semibold text-gray-700 dark:text-zinc-200 hover:text-gray-900 dark:hover:text-white px-4 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-all disabled:opacity-40 cursor-pointer"
+              className="flex items-center gap-2 text-xs font-bold text-gray-700 dark:text-zinc-200 hover:text-gray-900 dark:hover:text-white px-4 py-2 rounded-xl border border-purple-500/30 bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-300 hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-all disabled:opacity-40 cursor-pointer shadow-xs"
             >
-              {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
-              <span>{copied ? "Copied!" : "Copy Answer"}</span>
+              {copiedType === "full" || copied ? (
+                <Check className="w-4 h-4 text-emerald-500 stroke-[3]" />
+              ) : (
+                <Copy className="w-4 h-4" />
+              )}
+              <span>{copiedType === "full" || copied ? "Copied!" : "1-Click Copy Answer"}</span>
             </button>
 
             <button
@@ -118,22 +158,22 @@ export default function QAStudio({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Duration Option */}
           <div className="space-y-1.5">
-            <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-700 dark:text-zinc-300">
+            <label className="text-xs font-bold text-gray-700 dark:text-zinc-300 flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5 text-purple-500" />
               <span>Response Duration</span>
-            </div>
-            <div className="grid grid-cols-3 gap-1 bg-white dark:bg-zinc-950 p-1 rounded-xl border border-gray-200 dark:border-white/10">
-              {durationOptions.map((len) => (
+            </label>
+            <div className="grid grid-cols-3 gap-1.5 p-1 bg-white dark:bg-zinc-950 rounded-xl border border-gray-200/60 dark:border-white/[0.06]">
+              {durationOptions.map((opt) => (
                 <button
-                  key={len.id}
-                  onClick={() => setAnswerLength(len.id)}
-                  className={`py-1.5 px-2 rounded-lg text-[11px] font-semibold transition-all cursor-pointer ${
-                    answerLength === len.id
+                  key={opt.id}
+                  onClick={() => setAnswerLength(opt.id)}
+                  className={`py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                    answerLength === opt.id
                       ? "bg-purple-600 text-white shadow-xs"
                       : "text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white"
                   }`}
                 >
-                  {len.label.split(" ")[0]}
+                  {opt.id === "short" ? "Short" : opt.id === "standard" ? "Standard" : "Detailed"}
                 </button>
               ))}
             </div>
@@ -141,40 +181,42 @@ export default function QAStudio({
 
           {/* Tone Option */}
           <div className="space-y-1.5">
-            <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-700 dark:text-zinc-300">
+            <label className="text-xs font-bold text-gray-700 dark:text-zinc-300 flex items-center gap-1.5">
               <Volume2 className="w-3.5 h-3.5 text-purple-500" />
               <span>Speaking Tone</span>
-            </div>
-            <div className="grid grid-cols-3 gap-1 bg-white dark:bg-zinc-950 p-1 rounded-xl border border-gray-200 dark:border-white/10">
-              {toneOptions.map((t) => (
+            </label>
+            <div className="grid grid-cols-3 gap-1.5 p-1 bg-white dark:bg-zinc-950 rounded-xl border border-gray-200/60 dark:border-white/[0.06]">
+              {toneOptions.map((opt) => (
                 <button
-                  key={t.id}
-                  onClick={() => setAnswerTone(t.id)}
-                  className={`py-1.5 px-2 rounded-lg text-[11px] font-semibold transition-all cursor-pointer ${
-                    answerTone === t.id
+                  key={opt.id}
+                  onClick={() => setAnswerTone(opt.id)}
+                  className={`py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                    answerTone === opt.id
                       ? "bg-purple-600 text-white shadow-xs"
                       : "text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white"
                   }`}
                 >
-                  {t.label}
+                  {opt.id === "conversational"
+                    ? "Conversational"
+                    : opt.id === "professional"
+                    ? "Professional"
+                    : "Concise"}
                 </button>
               ))}
             </div>
           </div>
         </div>
-      </div>
 
-      {/* AI Generation Trigger Button */}
-      <div>
+        {/* Generate / Regenerate Action Trigger */}
         <button
           onClick={onGenerateAnswer}
           disabled={generating}
-          className="w-full flex items-center justify-center gap-2.5 py-3.5 px-6 bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-700 hover:via-indigo-700 hover:to-blue-700 text-white rounded-2xl text-xs font-bold shadow-lg shadow-purple-500/20 active:scale-[0.99] disabled:opacity-50 transition-all cursor-pointer"
+          className="w-full py-3.5 px-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-purple-500/25 transition-all active:scale-98 disabled:opacity-50 cursor-pointer"
         >
           {generating ? (
             <RefreshCw className="w-4 h-4 animate-spin" />
           ) : (
-            <Sparkles className="w-4 h-4" />
+            <Sparkles className="w-4 h-4 text-yellow-300" />
           )}
           <span>
             {generating
@@ -211,16 +253,49 @@ export default function QAStudio({
         </div>
       )}
 
-      {/* Final Editable Answer Studio Box */}
-      <div className="space-y-2.5">
-        <div className="flex items-center justify-between text-xs">
+      {/* Final Editable Answer Studio Box with Quick-Copy AI Formats */}
+      <div className="space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
           <label className="font-bold text-gray-800 dark:text-zinc-200 flex items-center gap-2">
             <Edit3 className="w-3.5 h-3.5 text-purple-500" />
             <span>Your Custom / Final Saved Answer</span>
+            <span className="px-2 py-0.5 rounded-full bg-gray-100 dark:bg-zinc-900 text-[10px] text-gray-500 font-normal">
+              {editedAnswer.split(/\s+/).filter(Boolean).length} words
+            </span>
           </label>
-          <span className="px-2.5 py-0.5 rounded-full bg-gray-100 dark:bg-zinc-900 border border-gray-200/60 dark:border-white/[0.06] text-[11px] font-semibold text-gray-500 dark:text-zinc-400">
-            {editedAnswer.split(/\s+/).filter(Boolean).length} words
-          </span>
+
+          {/* Quick-Copy AI Formats Toolbar */}
+          {editedAnswer.trim() && (
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => copyVariation("elevator")}
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-cyan-300 border border-blue-200 dark:border-blue-500/20 text-[10px] font-bold hover:bg-blue-100 transition-all cursor-pointer"
+                title="Copy first 2 sentences for short application boxes"
+              >
+                {copiedType === "elevator" ? (
+                  <Check className="w-3 h-3 text-emerald-500 stroke-[3]" />
+                ) : (
+                  <Zap className="w-3 h-3 text-amber-500" />
+                )}
+                <span>Copy Short Form (2 sentences)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => copyVariation("bullets")}
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 border border-gray-200 dark:border-white/5 text-[10px] font-bold hover:bg-gray-200 transition-all cursor-pointer"
+                title="Copy as bullet points"
+              >
+                {copiedType === "bullets" ? (
+                  <Check className="w-3 h-3 text-emerald-500 stroke-[3]" />
+                ) : (
+                  <Copy className="w-3 h-3" />
+                )}
+                <span>Copy Bullets</span>
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="relative rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/60 overflow-hidden focus-within:ring-2 focus-within:ring-purple-500 transition-all shadow-xs">
