@@ -1,4 +1,4 @@
-import { Check, Star, Rocket, Crown, ArrowRight, Sparkles } from "lucide-react";
+import { Check, Star, Rocket, Crown, ArrowRight, Sparkles, Zap } from "lucide-react";
 
 export default function PricingTierCard({
   tierKey,
@@ -35,41 +35,53 @@ export default function PricingTierCard({
     return "Unlimited AI generation & ATS diagnostic engine";
   };
 
+  const proAmount = tierData?.monthly?.amount || 199;
+  const proOriginalAmount = tierData?.monthly?.originalAmount || 199;
+  const isProDiscounted =
+    tierData?.monthly?.isPromo || proAmount < proOriginalAmount;
+
   return (
     <div
       className={`relative flex flex-col justify-between rounded-3xl transition-all duration-300 p-6 sm:p-8 overflow-hidden backdrop-blur-xl ${
-        isPopular
-          ? "bg-white dark:bg-gradient-to-b dark:from-zinc-900 dark:to-zinc-950 border-2 border-purple-500/80 shadow-xl shadow-purple-500/10 scale-[1.02]"
+        tierKey === "pro"
+          ? "bg-gradient-to-b from-purple-500/[0.07] via-indigo-500/[0.03] to-pink-500/[0.05] dark:from-purple-950/40 dark:via-zinc-900/90 dark:to-indigo-950/40 border-2 border-purple-500/70 shadow-2xl shadow-purple-500/20 ring-1 ring-purple-400/40 scale-[1.02]"
+          : tierKey === "one-time"
+          ? "bg-gradient-to-b from-orange-500/[0.06] via-transparent to-amber-500/[0.04] dark:from-orange-950/30 dark:via-zinc-900/90 dark:to-zinc-950 border-2 border-orange-500/50 shadow-xl shadow-orange-500/10"
           : "bg-white dark:bg-zinc-900/90 border border-gray-200/90 dark:border-white/[0.08] shadow-sm hover:shadow-md"
       }`}
     >
+      {/* Decorative ambient glowing orb in background for Pro */}
+      {tierKey === "pro" && (
+        <div className="pointer-events-none absolute -top-10 -right-10 w-44 h-44 bg-gradient-to-br from-purple-500/30 via-pink-500/20 to-indigo-500/30 rounded-full blur-3xl" />
+      )}
+
       {/* Popular Pill */}
       {isPopular && (
-        <div className="absolute top-0 right-0">
-          <span className="inline-flex items-center gap-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white text-[11px] font-black uppercase tracking-wider px-3.5 py-1 rounded-bl-2xl shadow-md">
-            <Sparkles className="w-3 h-3" /> Most Popular
+        <div className="absolute top-0 right-0 z-10">
+          <span className="inline-flex items-center gap-1.5 bg-gradient-to-r from-purple-600 via-indigo-600 to-pink-600 text-white text-[11px] font-black uppercase tracking-wider px-4 py-1.5 rounded-bl-2xl shadow-lg shadow-purple-500/30">
+            <Sparkles className="w-3.5 h-3.5 fill-current" /> Most Popular
           </span>
         </div>
       )}
 
       {/* Active Plan Pill */}
       {isActivePlan && (
-        <div className="absolute top-0 left-0">
-          <span className="inline-flex items-center gap-1 bg-emerald-600 text-white text-[11px] font-black uppercase tracking-wider px-3.5 py-1 rounded-br-2xl shadow-md">
-            <Check className="w-3 h-3" /> Active Plan
+        <div className="absolute top-0 left-0 z-10">
+          <span className="inline-flex items-center gap-1.5 bg-emerald-600 text-white text-[11px] font-black uppercase tracking-wider px-4 py-1.5 rounded-br-2xl shadow-md">
+            <Check className="w-3.5 h-3.5 stroke-[3]" /> Active Plan
           </span>
         </div>
       )}
 
-      <div className="space-y-6">
+      <div className="space-y-6 relative z-10">
         {/* Tier Header */}
         <div className="space-y-3 pt-2">
           <div
-            className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
+            className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${
               tierKey === "pro"
-                ? "bg-purple-500/20 text-purple-600 dark:text-purple-400 border border-purple-500/30 shadow-md shadow-purple-500/15"
+                ? "bg-gradient-to-tr from-purple-600 via-indigo-600 to-pink-500 text-white shadow-lg shadow-purple-500/30 border border-purple-400/40"
                 : tierKey === "one-time"
-                ? "bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/30"
+                ? "bg-gradient-to-tr from-orange-500 to-amber-500 text-white shadow-md shadow-orange-500/25 border border-orange-400/30"
                 : "bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300"
             }`}
           >
@@ -77,10 +89,18 @@ export default function PricingTierCard({
           </div>
 
           <div>
-            <h3 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white tracking-tight">
+            <h3
+              className={`text-xl sm:text-2xl font-black tracking-tight ${
+                tierKey === "pro"
+                  ? "text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-indigo-500 to-pink-500 dark:from-purple-300 dark:via-indigo-200 dark:to-pink-300"
+                  : tierKey === "one-time"
+                  ? "text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-amber-500 dark:from-orange-300 dark:to-amber-200"
+                  : "text-gray-900 dark:text-white"
+              }`}
+            >
               {getTitle()}
             </h3>
-            <p className="text-xs text-gray-500 dark:text-zinc-400 mt-1 leading-relaxed">
+            <p className="text-xs text-gray-500 dark:text-zinc-400 mt-1 leading-relaxed font-medium">
               {getSubtitle()}
             </p>
           </div>
@@ -98,27 +118,58 @@ export default function PricingTierCard({
               </span>
             </div>
           ) : tierKey === "one-time" ? (
-            <div className="flex items-baseline gap-1">
-              <span className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white">
-                {formatPrice(tierData.amount || 49)}
-              </span>
-              <span className="text-xs font-semibold text-gray-400 dark:text-zinc-500">
-                / one-time (21 days)
-              </span>
+            <div className="space-y-1.5">
+              <div className="flex items-baseline gap-2">
+                <span className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-600 via-amber-500 to-orange-500 dark:from-orange-400 dark:via-amber-300 dark:to-orange-400">
+                  {formatPrice(tierData.amount ?? 9)}
+                </span>
+                {(tierData.isPromo || (tierData.amount && tierData.amount < 49)) && (
+                  <span className="text-sm font-bold text-gray-400 dark:text-zinc-500 line-through">
+                    {formatPrice(tierData.originalAmount || 49)}
+                  </span>
+                )}
+                <span className="text-xs font-semibold text-gray-400 dark:text-zinc-500">
+                  / 21 days pass
+                </span>
+              </div>
+              {(tierData.isPromo || (tierData.amount && tierData.amount < 49)) && (
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-orange-500/10 dark:bg-orange-500/20 text-orange-600 dark:text-orange-400 text-[10px] font-black uppercase tracking-wider border border-orange-500/30 shadow-xs">
+                  <Sparkles className="w-3 h-3 text-orange-500" />
+                  <span>
+                    {tierData.promoBadge || "RAKHI DEAL"} • Flat{" "}
+                    {Math.round(
+                      (1 - (tierData.amount || 9) / (tierData.originalAmount || 49)) *
+                        100
+                    )}
+                    % OFF
+                  </span>
+                </div>
+              )}
             </div>
           ) : (
-            <div className="space-y-1">
-              <div className="flex items-baseline gap-1">
-                <span className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white">
-                  {formatPrice(tierData?.monthly?.amount || 199)}
+            <div className="space-y-1.5">
+              <div className="flex items-baseline gap-2">
+                <span className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-indigo-500 to-pink-500 dark:from-purple-400 dark:via-indigo-300 dark:to-pink-400">
+                  {formatPrice(proAmount)}
                 </span>
+                {isProDiscounted && (
+                  <span className="text-sm font-bold text-gray-400 dark:text-zinc-500 line-through">
+                    {formatPrice(proOriginalAmount)}
+                  </span>
+                )}
                 <span className="text-xs font-semibold text-gray-400 dark:text-zinc-500">
                   / month
                 </span>
               </div>
-              <p className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
-                Or {formatPrice(tierData?.yearly?.amount || 1499)}/year (Save 37%)
-              </p>
+              {isProDiscounted && (
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/15 via-pink-500/15 to-indigo-500/15 text-purple-700 dark:text-pink-300 text-[10px] font-black uppercase tracking-wider border border-purple-500/30 shadow-xs">
+                  <Zap className="w-3 h-3 text-pink-400 fill-current" />
+                  <span>
+                    PRO SPECIAL • Flat{" "}
+                    {Math.round((1 - proAmount / proOriginalAmount) * 100)}% OFF
+                  </span>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -128,13 +179,19 @@ export default function PricingTierCard({
           <p className="text-xs font-bold text-gray-800 dark:text-zinc-200 uppercase tracking-wider">
             Included Capabilities:
           </p>
-          <ul className="space-y-2">
+          <ul className="space-y-2.5">
             {tierData.features?.map((feat, idx) => (
               <li
                 key={idx}
-                className="flex items-start gap-2.5 text-xs sm:text-sm text-gray-700 dark:text-zinc-300"
+                className="flex items-start gap-2.5 text-xs sm:text-sm text-gray-700 dark:text-zinc-300 font-medium"
               >
-                <div className="w-4 h-4 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                <div
+                  className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${
+                    tierKey === "pro"
+                      ? "bg-purple-500/20 text-purple-600 dark:text-purple-400 border border-purple-500/30"
+                      : "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
+                  }`}
+                >
                   <Check className="w-3 h-3 stroke-[3]" />
                 </div>
                 <span>{feat}</span>
@@ -145,35 +202,24 @@ export default function PricingTierCard({
       </div>
 
       {/* CTA Buttons Footer */}
-      <div className="pt-6 mt-6 border-t border-gray-100 dark:border-white/5">
+      <div className="pt-6 mt-6 border-t border-gray-100 dark:border-white/5 relative z-10">
         {tierKey === "pro" ? (
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              onClick={() => onSelectPlan("pro", "monthly")}
-              disabled={isActivePlan}
-              className={`py-3 px-3 rounded-2xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1 active:scale-95 cursor-pointer ${
-                isActivePlan
-                  ? "bg-gray-200 dark:bg-zinc-800 text-gray-500 cursor-not-allowed"
-                  : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md shadow-indigo-500/20"
-              }`}
-            >
-              <span>Monthly</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-
-            <button
-              onClick={() => onSelectPlan("pro", "yearly")}
-              disabled={isActivePlan}
-              className={`py-3 px-3 rounded-2xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1 active:scale-95 cursor-pointer ${
-                isActivePlan
-                  ? "bg-gray-200 dark:bg-zinc-800 text-gray-500 cursor-not-allowed"
-                  : "bg-purple-600 hover:bg-purple-700 text-white shadow-md shadow-purple-500/20"
-              }`}
-            >
-              <span>Yearly</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
+          <button
+            onClick={() => onSelectPlan("pro", "monthly")}
+            disabled={isActivePlan}
+            className={`w-full py-4 px-5 rounded-2xl text-xs sm:text-sm font-black transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer ${
+              isActivePlan
+                ? "bg-gray-200 dark:bg-zinc-800 text-gray-500 cursor-not-allowed"
+                : "bg-gradient-to-r from-purple-600 via-indigo-600 to-pink-600 hover:from-purple-500 hover:via-indigo-500 hover:to-pink-500 text-white shadow-xl shadow-purple-500/30 hover:shadow-2xl hover:shadow-purple-500/40 transform hover:scale-[1.02]"
+            }`}
+          >
+            <span>
+              {isActivePlan
+                ? "Current Active Plan ✓"
+                : `Upgrade to Pro (${formatPrice(proAmount)}/mo)`}
+            </span>
+            {!isActivePlan && <ArrowRight className="w-4 h-4 stroke-[3]" />}
+          </button>
         ) : (
           <button
             onClick={() => onSelectPlan(tierKey, tierData.plan || "one-time")}
@@ -182,7 +228,7 @@ export default function PricingTierCard({
               isActivePlan
                 ? "bg-gray-200 dark:bg-zinc-800 text-gray-500 cursor-not-allowed"
                 : tierKey === "one-time"
-                ? "bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-500/20"
+                ? "bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white shadow-lg shadow-orange-500/25 transform hover:scale-[1.02]"
                 : "bg-gray-900 hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-gray-900 shadow-sm"
             }`}
           >
@@ -191,7 +237,7 @@ export default function PricingTierCard({
                 ? "Current Active Plan ✓"
                 : tierKey === "free"
                 ? "Get Started Free"
-                : "Choose One-Time Plan"}
+                : `Claim ${formatPrice(tierData.amount ?? 9)} Pass`}
             </span>
             <ArrowRight className="w-4 h-4" />
           </button>

@@ -1,7 +1,7 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { BlockableLink } from "@/components/auth";
-import { DarkModeToggle } from "@/components/common";
+import { DarkModeToggle, FestiveSaleBanner } from "@/components/common";
 import { useEffect, useMemo } from "react";
 import { useToggle } from "@/hooks";
 import {
@@ -22,7 +22,7 @@ import {
   Home,
 } from "lucide-react";
 
-const Navbar = ({ toggleSidebar, isSidebarOpen }) => {
+const Navbar = ({ toggleSidebar, isSidebarOpen, promotion }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();

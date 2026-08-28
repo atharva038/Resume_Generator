@@ -351,14 +351,35 @@ const PaymentModal = ({
               )}
               {pricing && (
                 <>
+                  {tier === "one-time" && (pricing.isPromo || pricing.amount < 49) && (
+                    <div className="space-y-1.5 pt-2 border-t border-gray-200 dark:border-white/10">
+                      <div className="flex justify-between items-center text-xs text-gray-500 dark:text-zinc-400">
+                        <span>Standard Price:</span>
+                        <span className="line-through">{formatPrice(pricing.originalAmount || 49)}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                        <span>Festive Special Discount:</span>
+                        <span>-{formatPrice((pricing.originalAmount || 49) - (pricing.amount || 9))}</span>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="flex justify-between items-baseline pt-2 border-t border-gray-200 dark:border-white/10">
                     <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
                       Total Amount:
                     </span>
-                    <span className="font-bold text-2xl bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
+                    <span className="font-bold text-2xl bg-gradient-to-r from-orange-600 via-amber-600 to-rose-600 dark:from-orange-400 dark:via-amber-400 dark:to-rose-400 bg-clip-text text-transparent">
                       {formatPrice(getAmount())}
                     </span>
                   </div>
+
+                  {tier === "one-time" && (pricing.isPromo || pricing.amount < 49) && (
+                    <div className="text-xs text-orange-600 dark:text-orange-400 font-semibold bg-orange-50 dark:bg-orange-950/30 px-3 py-1.5 rounded-lg flex items-center gap-2 border border-orange-200 dark:border-orange-800">
+                      <Sparkles size={14} className="animate-spin-slow text-orange-500" />
+                      Raksha Bandhan Special Deal Applied (₹9 Only)!
+                    </div>
+                  )}
+
                   {plan === "yearly" && (
                     <div className="text-xs text-green-600 dark:text-green-400 font-semibold bg-green-50 dark:bg-green-900/20 px-3 py-1.5 rounded-lg flex items-center gap-2 border border-green-200 dark:border-green-700">
                       <Sparkles size={14} />

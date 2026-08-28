@@ -13,9 +13,11 @@ import User from "../models/User.model.js";
  */
 export async function getPricing(req, res) {
   try {
+    const {pricing, promotion} = await paymentService.getDynamicPricing();
     res.json({
       success: true,
-      pricing: paymentService.PRICING,
+      pricing,
+      promotion,
     });
   } catch (error) {
     console.error("❌ Get pricing error:", error.message);
@@ -71,7 +73,7 @@ export async function verifyPayment(req, res) {
   try {
     const {orderId, paymentId, signature, tier, plan, resumeId} = req.body;
     const userId = req.user._id;
-    const expectedAmount = paymentService.getPlanAmount(tier, plan);
+    const expectedAmount = await paymentService.getPlanAmountAsync(tier, plan);
 
     console.log("💳 Payment verification request:", {
       orderId,

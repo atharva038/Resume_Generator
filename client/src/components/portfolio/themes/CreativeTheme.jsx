@@ -247,7 +247,7 @@ const CreativeTheme = ({data}) => {
   const sectionBlocks = {
     about:
       sections.showAbout && profile.about ? (
-        <section key="about" className="pt-section">
+        <section key="about" id="about" className="pt-section" style={{ scrollMarginTop: "6rem" }}>
           <div
             style={{
               display: "grid",
@@ -302,8 +302,9 @@ const CreativeTheme = ({data}) => {
             return (
               <section
                 key="skills"
+                id="skills"
                 className="pt-section"
-                style={{overflow: "hidden", padding: "2rem 0"}}
+                style={{overflow: "hidden", padding: "2rem 0", scrollMarginTop: "6rem"}}
               >
                 <SectionHeading
                   eyebrow="Toolkit"
@@ -385,7 +386,7 @@ const CreativeTheme = ({data}) => {
 
     projects:
       sections.showProjects && hasItems(projects) ? (
-        <section key="projects" className="pt-section">
+        <section key="projects" id="projects" className="pt-section" style={{ scrollMarginTop: "6rem" }}>
           <SectionHeading
             eyebrow="Selected Work"
             title="Projects"
@@ -416,7 +417,7 @@ const CreativeTheme = ({data}) => {
 
     experience:
       sections.showExperience && hasItems(experience) ? (
-        <section key="experience" className="pt-section">
+        <section key="experience" id="experience" className="pt-section" style={{ scrollMarginTop: "6rem" }}>
           <SectionHeading eyebrow="Journey" title="Experience" />
           <div
             style={{display: "flex", flexDirection: "column", gap: "1.5rem"}}
@@ -512,7 +513,7 @@ const CreativeTheme = ({data}) => {
 
     education:
       sections.showEducation && hasItems(education) ? (
-        <section key="education" className="pt-section">
+        <section key="education" id="education" className="pt-section" style={{ scrollMarginTop: "6rem" }}>
           <SectionHeading eyebrow="Foundation" title="Education" />
           <div
             style={{
@@ -631,6 +632,7 @@ const CreativeTheme = ({data}) => {
     >
       {/* ─── Bento Hero ─── */}
       <header
+        id="hero"
         style={{
           position: "relative",
           padding: "4rem 1.5rem 2rem",

@@ -1,4 +1,5 @@
-import {Code2, MapPin, Terminal} from "lucide-react";
+import { Code2, MapPin, Terminal, Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
 import {
   ContactActions,
   CustomSections,
@@ -9,7 +10,7 @@ import {
   hasItems,
 } from "./themeElements";
 
-const MinimalDeveloperTheme = ({data}) => {
+const MinimalDeveloperTheme = ({ data }) => {
   const {
     profile,
     settings,
@@ -30,156 +31,184 @@ const MinimalDeveloperTheme = ({data}) => {
   const sectionBlocks = {
     projects:
       sections.showProjects && hasItems(projects) ? (
-        <section key="projects">
+        <section key="projects" id="projects" className="scroll-mt-24 space-y-6">
           <SectionHeading
             eyebrow="Selected Builds"
             title="Projects"
             description="Featured work with practical links, stacks, and outcomes."
           />
-          <div className="grid gap-5 lg:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {featuredProjects.map((project) => (
-              <article
+              <motion.article
                 key={project.id}
-                className="min-w-0 rounded-lg border border-gray-200 bg-white p-5"
+                whileHover={{ y: -4 }}
+                transition={{ duration: 0.2 }}
+                className="min-w-0 rounded-2xl border border-gray-200/90 dark:border-white/10 bg-white dark:bg-zinc-900/90 p-6 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
               >
-                <h3 className="break-words text-xl font-black">{project.title}</h3>
-                {project.description && (
-                  <p className="mt-3 break-words leading-7 text-gray-700">
-                    {project.description}
-                  </p>
-                )}
-                {hasItems(project.technologies) && (
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {project.technologies.map((tech) => (
-                      <span
-                        key={tech}
-                        className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-800"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                )}
-                <ProjectLinks
-                  project={project}
-                  onClick={actions.onProjectClick}
-                  className="mt-5 text-gray-950"
-                />
-              </article>
+                <div className="space-y-3">
+                  <h3 className="break-words text-xl font-black text-gray-900 dark:text-white">
+                    {project.title}
+                  </h3>
+                  {project.description && (
+                    <p className="break-words text-sm leading-relaxed text-gray-600 dark:text-zinc-300">
+                      {project.description}
+                    </p>
+                  )}
+                </div>
+
+                <div className="pt-4 space-y-4">
+                  {hasItems(project.technologies) && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {project.technologies.map((tech) => (
+                        <span
+                          key={tech}
+                          className="rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 px-2.5 py-1 text-xs font-bold text-emerald-700 dark:text-emerald-300 border border-emerald-500/20"
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  <ProjectLinks
+                    project={project}
+                    onClick={actions.onProjectClick}
+                    className="text-gray-950 dark:text-white pt-2 border-t border-gray-100 dark:border-white/5"
+                  />
+                </div>
+              </motion.article>
             ))}
           </div>
         </section>
       ) : null,
     skills:
       sections.showSkills && hasItems(skills) ? (
-        <section key="skills">
-          <SectionHeading title="Skills" />
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <section key="skills" id="skills" className="scroll-mt-24 space-y-6">
+          <SectionHeading title="Skills & Capabilities" />
+          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {skills.map((group, index) => (
-              <article
+              <motion.article
                 key={`${group.category}-${index}`}
-                className="min-w-0 rounded-lg border border-gray-200 bg-white p-5"
+                whileHover={{ y: -2 }}
+                className="min-w-0 rounded-2xl border border-gray-200/90 dark:border-white/10 bg-white dark:bg-zinc-900/90 p-6 shadow-sm"
               >
-                <h3 className="break-words font-black">
+                <h3 className="break-words font-black text-base text-gray-900 dark:text-white">
                   {group.category || "Skills"}
                 </h3>
                 <SkillPills
                   skills={[group]}
                   className="mt-4"
-                  pillClassName="rounded-full bg-gray-100 px-3 py-1 text-sm font-semibold text-gray-800"
+                  pillClassName="rounded-full bg-gray-100 dark:bg-zinc-800 px-3 py-1 text-xs font-bold text-gray-800 dark:text-zinc-200 border border-gray-200/50 dark:border-white/5"
                 />
-              </article>
+              </motion.article>
             ))}
           </div>
         </section>
       ) : null,
     about:
       sections.showAbout && profile.about ? (
-        <section key="about" className="grid gap-6 lg:grid-cols-[260px_1fr]">
+        <section key="about" id="about" className="scroll-mt-24 grid gap-6 lg:grid-cols-[240px_1fr] p-8 rounded-3xl bg-white dark:bg-zinc-900/90 border border-gray-200/90 dark:border-white/10 shadow-sm">
           <SectionHeading title="About" />
-          <p className="max-w-3xl break-words text-base leading-8 text-gray-700 sm:text-lg">
+          <p className="max-w-3xl break-words text-base leading-relaxed text-gray-700 dark:text-zinc-300 font-normal">
             {profile.about}
           </p>
         </section>
       ) : null,
     experience:
       sections.showExperience && hasItems(experience) ? (
-        <section key="experience">
+        <section key="experience" id="experience" className="scroll-mt-24 space-y-6">
           <SectionHeading title="Experience" />
-          <div className="space-y-5">
+          <div className="space-y-4">
             {experience.map((item, index) => (
-              <article
+              <motion.article
                 key={`${item.company}-${index}`}
-                className="min-w-0 rounded-lg border border-gray-200 bg-white p-5"
+                whileHover={{ y: -2 }}
+                className="min-w-0 rounded-2xl border border-gray-200/90 dark:border-white/10 bg-white dark:bg-zinc-900/90 p-6 sm:p-7 shadow-sm space-y-3"
               >
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                   <div>
-                    <h3 className="break-words text-lg font-black">{item.title}</h3>
-                    <p className="break-words text-gray-600">{item.company}</p>
+                    <h3 className="break-words text-lg font-black text-gray-900 dark:text-white">
+                      {item.title}
+                    </h3>
+                    <p className="break-words text-sm font-semibold text-blue-600 dark:text-blue-400">
+                      {item.company}
+                    </p>
                   </div>
                   {item.dateRange && (
-                    <span className="text-sm font-semibold text-gray-500">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full bg-gray-100 dark:bg-zinc-800 text-xs font-bold text-gray-600 dark:text-zinc-400 w-fit">
                       {item.dateRange}
                     </span>
                   )}
                 </div>
                 {hasItems(item.bullets) && (
-                  <ul className="mt-4 list-disc space-y-2 pl-5 text-gray-700">
+                  <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-gray-600 dark:text-zinc-300">
                     {item.bullets.map((bullet) => (
                       <li key={bullet}>{bullet}</li>
                     ))}
                   </ul>
                 )}
-              </article>
+              </motion.article>
             ))}
           </div>
         </section>
       ) : null,
     education:
       sections.showEducation && hasItems(education) ? (
-        <section key="education">
+        <section key="education" id="education" className="scroll-mt-24 space-y-6">
           <SectionHeading title="Education" />
           <div className="grid gap-4 md:grid-cols-2">
             {education.map((item, index) => (
-              <article
+              <motion.article
                 key={`${item.institution}-${index}`}
-                className="min-w-0 rounded-lg border border-gray-200 bg-white p-5"
+                whileHover={{ y: -2 }}
+                className="min-w-0 rounded-2xl border border-gray-200/90 dark:border-white/10 bg-white dark:bg-zinc-900/90 p-6 shadow-sm"
               >
-                <h3 className="break-words font-black">{item.institution}</h3>
-                <p className="mt-1 text-gray-700">
+                <h3 className="break-words font-black text-base text-gray-900 dark:text-white">
+                  {item.institution}
+                </h3>
+                <p className="mt-1 text-sm text-gray-600 dark:text-zinc-300 font-medium">
                   {[item.degree, item.field].filter(Boolean).join(", ")}
                 </p>
-              </article>
+                {item.dateRange && (
+                  <p className="mt-3 text-xs font-bold text-gray-400 dark:text-zinc-500">
+                    {item.dateRange}
+                  </p>
+                )}
+              </motion.article>
             ))}
           </div>
         </section>
       ) : null,
     certifications:
       sections.showCertifications && hasItems(certifications) ? (
-        <section key="certifications">
+        <section key="certifications" id="certifications" className="scroll-mt-24 space-y-6">
           <SectionHeading title="Certifications" />
           <div className="grid gap-4 md:grid-cols-2">
             {certifications.map((item, index) => (
-              <article
+              <motion.article
                 key={`${item.name}-${index}`}
-                className="min-w-0 rounded-lg border border-gray-200 bg-white p-5"
+                whileHover={{ y: -2 }}
+                className="min-w-0 rounded-2xl border border-gray-200/90 dark:border-white/10 bg-white dark:bg-zinc-900/90 p-6 shadow-sm"
               >
-                <h3 className="break-words font-black">{item.name}</h3>
-                <p className="mt-1 break-words text-gray-700">{item.issuer}</p>
-              </article>
+                <h3 className="break-words font-black text-base text-gray-900 dark:text-white">
+                  {item.name}
+                </h3>
+                <p className="mt-1 break-words text-sm text-gray-600 dark:text-zinc-400">
+                  {item.issuer}
+                </p>
+              </motion.article>
             ))}
           </div>
         </section>
       ) : null,
     achievements:
       sections.showAchievements && hasItems(achievements) ? (
-        <section key="achievements">
-          <SectionHeading title="Achievements" />
+        <section key="achievements" id="achievements" className="scroll-mt-24 space-y-6">
+          <SectionHeading title="Achievements & Honors" />
           <div className="grid gap-3 md:grid-cols-2">
             {achievements.map((achievement) => (
               <div
                 key={achievement}
-                className="min-w-0 rounded-lg border border-gray-200 bg-white p-4 break-words text-gray-700"
+                className="min-w-0 rounded-2xl border border-gray-200/90 dark:border-white/10 bg-white dark:bg-zinc-900/90 p-5 break-words text-sm text-gray-700 dark:text-zinc-300 shadow-xs"
               >
                 {achievement}
               </div>
@@ -192,54 +221,56 @@ const MinimalDeveloperTheme = ({data}) => {
         <CustomSections key="customSections" sections={customSections} />
       ) : null,
     contact: sections.showContact ? (
-      <section key="contact" id="contact" className="border-t border-gray-200 pt-10">
-        <SectionHeading title="Connect" />
+      <section key="contact" id="contact" className="scroll-mt-24 border-t border-gray-200/80 dark:border-white/10 pt-12 space-y-6">
+        <SectionHeading title="Connect & Collaborate" description="Let's discuss opportunities, projects, or questions." />
         <SocialLinks links={links} onClick={actions.onContactClick} />
       </section>
     ) : null,
   };
 
   return (
-    <main className="min-h-screen bg-[#fafafa] text-gray-950">
-      <section className="border-b border-gray-200 bg-white">
-        <div className="mx-auto grid max-w-6xl gap-10 px-5 py-16 sm:px-8 sm:py-20 lg:grid-cols-[1fr_320px] lg:items-end">
-          <div>
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-gray-200 px-3 py-1.5 text-sm font-semibold text-gray-700">
-              <Terminal className="h-4 w-4" />
-              {profile.title || "Portfolio"}
+    <main className="min-h-screen bg-gray-50/50 dark:bg-zinc-950 text-gray-950 dark:text-zinc-100 transition-colors duration-200">
+      {/* Hero Section */}
+      <section id="hero" className="border-b border-gray-200/80 dark:border-white/10 bg-white dark:bg-zinc-900/70 py-12 sm:py-16">
+        <div className="mx-auto grid max-w-6xl gap-8 px-5 sm:px-8 lg:grid-cols-[1fr_320px] lg:items-center">
+          <div className="space-y-6">
+            <div className="inline-flex items-center gap-2 rounded-full bg-blue-500/10 border border-blue-500/20 px-3.5 py-1.5 text-xs font-bold text-blue-600 dark:text-blue-400 shadow-xs">
+              <Terminal className="h-3.5 w-3.5" />
+              <span>{profile.title || "Software Engineer"}</span>
             </div>
-            <h1 className="max-w-3xl break-words text-3xl font-black sm:text-5xl lg:text-6xl">
+            <h1 className="max-w-3xl break-words text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-gray-900 dark:text-white">
               {profile.name}
             </h1>
             {profile.tagline && (
-              <p className="mt-6 max-w-2xl text-lg leading-8 text-gray-700">
+              <p className="max-w-2xl text-base sm:text-lg leading-relaxed text-gray-600 dark:text-zinc-300">
                 {profile.tagline}
               </p>
             )}
-            <div className="mt-8">
+            <div className="pt-2">
               <ContactActions profile={profile} settings={settings} actions={actions} />
             </div>
           </div>
 
-          <aside className="rounded-lg border border-gray-200 bg-gray-950 p-5 text-white">
-            <div className="mb-4 flex items-center gap-2 text-sm font-bold text-emerald-300">
+          <aside className="rounded-3xl border border-gray-200/90 dark:border-white/10 bg-gray-900 dark:bg-black p-6 text-white shadow-xl space-y-4">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-emerald-400">
               <Code2 className="h-4 w-4" />
-              Stack Snapshot
+              <span>Stack Snapshot</span>
             </div>
             <SkillPills
               skills={skills.slice(0, 3)}
-              pillClassName="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white"
+              pillClassName="rounded-full bg-white/10 px-3 py-1 text-xs font-bold text-white border border-white/10"
             />
             {profile.location && (
-              <p className="mt-5 inline-flex items-center gap-2 text-sm text-gray-300">
-                <MapPin className="h-4 w-4" />
-                {profile.location}
+              <p className="pt-2 border-t border-white/10 inline-flex items-center gap-2 text-xs font-medium text-gray-400">
+                <MapPin className="h-3.5 w-3.5 text-rose-400" />
+                <span>{profile.location}</span>
               </p>
             )}
           </aside>
         </div>
       </section>
 
+      {/* Main Content Sections */}
       <div className="mx-auto max-w-6xl space-y-16 px-5 py-14 sm:px-8">
         {sectionOrder.map((section) => sectionBlocks[section])}
       </div>
