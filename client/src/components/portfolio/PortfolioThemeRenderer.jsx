@@ -83,8 +83,12 @@ const PortfolioThemeRenderer = ({
       <div
         data-portfolio-theme={portfolio?.themeId || "minimalDeveloper"}
         data-color-mode={isDarkMode ? "dark" : "light"}
-        style={accentStyle}
-        className={`relative min-h-screen bg-white text-gray-900 transition-colors duration-300 dark:bg-zinc-950 dark:text-zinc-50 ${
+        style={{
+          ...accentStyle,
+          backgroundColor: "var(--pt-bg)",
+          color: "var(--pt-text)",
+        }}
+        className={`relative min-h-screen transition-colors duration-300 ${
           isDarkMode ? "dark portfolio-dark" : "portfolio-light"
         }`}
       >
@@ -92,27 +96,26 @@ const PortfolioThemeRenderer = ({
           html {
             scroll-behavior: smooth;
           }
+          [data-portfolio-theme].portfolio-dark,
           [data-portfolio-theme].portfolio-dark main,
-          [data-portfolio-theme].portfolio-dark section,
-          [data-portfolio-theme].portfolio-dark article,
-          [data-portfolio-theme].portfolio-dark aside {
+          [data-portfolio-theme].portfolio-dark main * {
             background-color: #09090b !important;
             border-color: #27272a !important;
             color: #f4f4f5 !important;
           }
 
-          [data-portfolio-theme].portfolio-dark h1,
-          [data-portfolio-theme].portfolio-dark h2,
-          [data-portfolio-theme].portfolio-dark h3,
-          [data-portfolio-theme].portfolio-dark p,
-          [data-portfolio-theme].portfolio-dark li,
-          [data-portfolio-theme].portfolio-dark span {
-            color: inherit;
+          [data-portfolio-theme] .pt-accent-surface {
+            background-color: var(--pt-accent-dim) !important;
+            border-color: var(--pt-accent) !important;
           }
 
-          [data-portfolio-theme].portfolio-dark a,
-          [data-portfolio-theme].portfolio-dark button {
-            border-color: #3f3f46 !important;
+          [data-portfolio-theme] .pt-accent-text {
+            color: var(--pt-accent) !important;
+          }
+
+          [data-portfolio-theme] .pt-accent-fill {
+            background-color: var(--pt-accent) !important;
+            color: var(--pt-accent-text) !important;
           }
         `}</style>
 
