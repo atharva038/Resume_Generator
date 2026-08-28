@@ -31,6 +31,8 @@ import {
   AdditionalInfoSection,
   AIFastImportModal,
   ResumeImportModal,
+  CareerProfileExplainer,
+  ApplicationCopilotDrawer,
 } from "@/components/careerProfile";
 
 const SKILL_CATEGORIES = [
@@ -341,6 +343,9 @@ export default function CareerProfile() {
           onExportToResumeBuilder={handleExportToResumeBuilder}
         />
 
+        {/* Why Master Career Profile & How to Use It Interactive Hub */}
+        <CareerProfileExplainer onExportToResumeBuilder={handleExportToResumeBuilder} />
+
         {/* Section Navigation Tabs & Form Area */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Section List (4 cols) */}
@@ -464,6 +469,9 @@ export default function CareerProfile() {
         importing={importing}
         onExecuteImport={handleExecuteImport}
       />
+
+      {/* Floating Job Application Copilot Quick-Dock */}
+      <ApplicationCopilotDrawer profile={profile} />
     </div>
   );
 }

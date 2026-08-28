@@ -62,6 +62,13 @@ export default function ProfileBanner({
               <FileText className="w-4 h-4 text-emerald-500" />
               <span>Use in Resume Builder</span>
             </button>
+
+            <a
+              href="/career-qa"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-purple-500/30 bg-purple-500/10 text-purple-700 dark:text-purple-300 hover:bg-purple-500/20 text-xs font-semibold transition-all shadow-xs hover:shadow-sm active:scale-95 cursor-pointer"
+            >
+              <span>💬 Application Q&A</span>
+            </a>
           </div>
         </div>
       </div>
