@@ -16,6 +16,7 @@ import {
   Zap,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import QAVoicePractice from "./QAVoicePractice";
 
 export default function QAStudio({
   selectedItem,
@@ -67,11 +68,9 @@ export default function QAStudio({
 
     let textToCopy = editedAnswer;
     if (type === "elevator") {
-      // First 2 sentences
       const sentences = editedAnswer.match(/[^.!?]+[.!?]+/g) || [editedAnswer];
       textToCopy = sentences.slice(0, 2).join(" ").trim();
     } else if (type === "bullets") {
-      // Split into sentences and bullet format
       const sentences = editedAnswer.match(/[^.!?]+[.!?]+/g) || [editedAnswer];
       textToCopy = sentences.map((s) => `• ${s.trim()}`).join("\n");
     }
@@ -227,6 +226,14 @@ export default function QAStudio({
           </span>
         </button>
       </div>
+
+      {/* 🎙️ Voice Practice & Audio Playback Studio */}
+      {editedAnswer.trim() && (
+        <QAVoicePractice
+          answerText={editedAnswer}
+          questionText={selectedItem.question}
+        />
+      )}
 
       {/* Missing Info Feedback / Coach Tip */}
       {missingInfoTip && (
