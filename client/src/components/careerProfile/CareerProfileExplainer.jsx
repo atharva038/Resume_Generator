@@ -9,6 +9,7 @@ import {
   ChevronUp,
   ClipboardCheck,
   CheckCircle2,
+  Lightbulb,
 } from "lucide-react";
 
 const WORKFLOW_STEPS = [
@@ -201,8 +202,9 @@ export default function CareerProfileExplainer() {
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 ) : (
-                  <div className="p-3.5 rounded-xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-500/20 text-xs font-bold text-blue-700 dark:text-blue-300">
-                    💡 Fill your profile below & copy directly into job portals anytime!
+                  <div className="p-3.5 rounded-xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-500/20 text-xs font-bold text-blue-700 dark:text-blue-300 flex items-center gap-2">
+                    <Lightbulb className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
+                    <span>Fill your profile below and copy directly into job portals anytime!</span>
                   </div>
                 )}
 

@@ -14,6 +14,7 @@ import {
   Activity,
   Sliders,
   Sparkles,
+  User,
 } from "lucide-react";
 
 const FILLER_WORDS = [
@@ -62,19 +63,19 @@ const ROBOTIC_VOICE_BLACKLIST = [
   "wobble",
   "eddy",
   "flo",
-  "daniel", // Exclude basic offline Daniel
+  "daniel",
 ];
 
 // Clean text for speech synthesis (remove markdown formatting & symbols)
 function cleanSpeechText(text) {
   if (!text) return "";
   return text
-    .replace(/\*\*(.*?)\*\*/g, "$1") // Remove bold
-    .replace(/\*(.*?)\*/g, "$1") // Remove italics
-    .replace(/#+\s/g, "") // Remove markdown headers
-    .replace(/•/g, "") // Remove bullet points
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") // Remove links, keep text
-    .replace(/[`_~]/g, "") // Remove backticks/underscores
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .replace(/\*(.*?)\*/g, "$1")
+    .replace(/#+\s/g, "")
+    .replace(/•/g, "")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/[`_~]/g, "")
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -86,30 +87,30 @@ function splitIntoSentences(text) {
   return (matched || [text]).map((s) => s.trim()).filter(Boolean);
 }
 
-// Format friendly display name for top 4 voices
+// Format clean display name for top 4 voices without emojis
 function formatTopVoiceLabel(voice) {
   const name = voice.name.toLowerCase();
   if (name.includes("samantha") || name.includes("google us") || name.includes("jenny")) {
-    return "👩 Samantha (Warm & Natural)";
+    return "Samantha — Warm & Natural";
   }
   if (name.includes("karen") || name.includes("ava") || name.includes("moira") || name.includes("tessa")) {
-    return "👩 Karen (Articulate Recruiter)";
+    return "Karen — Articulate Recruiter";
   }
   if (name.includes("alex") || name.includes("oliver")) {
-    return "👨 Alex (Executive Male)";
+    return "Alex — Executive Male";
   }
   if (name.includes("rishi") || name.includes("guy") || name.includes("tom")) {
-    return "👨 Rishi (Conversational Male)";
+    return "Rishi — Conversational Male";
   }
   const clean = voice.name.replace(/(Google|Microsoft|Apple|Desktop|English|\(United States\)|\(United Kingdom\))/gi, "").trim() || voice.name;
-  return `🎙️ ${clean}`;
+  return clean;
 }
 
 export default function QAVoicePractice({ answerText = "", questionText = "" }) {
   // TTS States
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
-  const [speechRate, setSpeechRate] = useState(0.96); // 0.96 is optimal conversational recruiter pace
+  const [speechRate, setSpeechRate] = useState(0.96);
   const [naturalVoices, setNaturalVoices] = useState([]);
   const [selectedVoiceURI, setSelectedVoiceURI] = useState("");
   const synthRef = useRef(null);
@@ -168,7 +169,7 @@ export default function QAVoicePractice({ answerText = "", questionText = "" }) 
         const top4Voices = (ranked.length > 0 ? ranked : allVoices).slice(0, 4);
         setNaturalVoices(top4Voices);
 
-        // Auto-select the #1 voice (Samantha or best natural voice)
+        // Auto-select the #1 voice
         if (top4Voices.length > 0 && !selectedVoiceURI) {
           setSelectedVoiceURI(top4Voices[0].voiceURI);
         }
@@ -195,7 +196,7 @@ export default function QAVoicePractice({ answerText = "", questionText = "" }) 
   }, [answerText]);
 
   // -------------------------------------------------------------
-  // FREE NATURAL TEXT-TO-SPEECH (Sentence-by-Sentence Cadence)
+  // FREE NATURAL TEXT-TO-SPEECH
   // -------------------------------------------------------------
   const playNextSentence = () => {
     if (!synthRef.current || isCancelledRef.current) return;
@@ -209,7 +210,7 @@ export default function QAVoicePractice({ answerText = "", questionText = "" }) 
     const sentence = sentencesQueueRef.current[currentSentenceIdxRef.current];
     const utterance = new SpeechSynthesisUtterance(sentence);
     utterance.rate = speechRate;
-    utterance.pitch = 1.02; // Warm, natural vocal pitch
+    utterance.pitch = 1.02;
 
     if (selectedVoiceURI && naturalVoices.length > 0) {
       const v = naturalVoices.find((voice) => voice.voiceURI === selectedVoiceURI);
@@ -219,7 +220,6 @@ export default function QAVoicePractice({ answerText = "", questionText = "" }) 
     utterance.onend = () => {
       if (isCancelledRef.current) return;
       currentSentenceIdxRef.current += 1;
-      // Natural 100ms conversational breath pause between sentences
       setTimeout(() => {
         playNextSentence();
       }, 100);
@@ -339,7 +339,7 @@ export default function QAVoicePractice({ answerText = "", questionText = "" }) 
         setRecordingSeconds((prev) => prev + 1);
       }, 1000);
 
-      toast.success("Recording started. Speak your answer clearly!", { icon: "🎙️" });
+      toast.success("Recording started. Speak your answer clearly.");
     } catch (err) {
       toast.error("Failed to start microphone recording");
     }
@@ -359,9 +359,7 @@ export default function QAVoicePractice({ answerText = "", questionText = "" }) 
 
   const analyzeSpeech = (spokenText, durationSec) => {
     if (!spokenText.trim() || durationSec < 3) {
-      toast("Answer too short for detailed voice analysis. Try speaking for at least 10 seconds.", {
-        icon: "💡",
-      });
+      toast("Answer too short for detailed voice analysis. Try speaking for at least 10 seconds.");
       return;
     }
 
@@ -422,7 +420,7 @@ export default function QAVoicePractice({ answerText = "", questionText = "" }) 
       overallScore,
     });
 
-    toast.success(`Voice Practice Analyzed! Delivery Score: ${overallScore}%`, { icon: "🎯" });
+    toast.success(`Voice Practice Analyzed: ${overallScore}% Delivery Score`);
   };
 
   const formatTime = (secs) => {
@@ -432,22 +430,22 @@ export default function QAVoicePractice({ answerText = "", questionText = "" }) 
   };
 
   return (
-    <div className="rounded-2xl border border-purple-500/20 bg-gradient-to-br from-purple-500/5 via-blue-500/5 to-cyan-500/5 dark:from-zinc-900/90 dark:to-zinc-950/90 p-4 sm:p-5 space-y-4">
+    <div className="rounded-2xl border border-gray-200 dark:border-zinc-800 bg-gray-50/70 dark:bg-zinc-900/40 p-4 sm:p-5 space-y-4">
       {/* Header Bar with Top 4 Natural Voice Selector & Speed */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-3 border-b border-gray-200/60 dark:border-white/5">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center">
-            <Mic className="w-4 h-4" />
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-3 border-b border-gray-200/80 dark:border-zinc-800">
+        <div className="flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-lg bg-gray-200 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 flex items-center justify-center">
+            <Mic className="w-3.5 h-3.5" />
           </div>
           <div>
-            <h4 className="text-xs sm:text-sm font-black text-gray-900 dark:text-white flex items-center gap-1.5">
+            <h4 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white flex items-center gap-2">
               <span>Voice Studio & Audio Coach</span>
-              <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                100% Free & Unlimited
+              <span className="text-[9px] font-bold uppercase px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                100% Free
               </span>
             </h4>
             <p className="text-[11px] text-gray-500 dark:text-zinc-400">
-              Listen to natural conversational delivery or practice your spoken answers with feedback.
+              Listen to model answer delivery or record your spoken answer for pacing feedback.
             </p>
           </div>
         </div>
@@ -456,7 +454,7 @@ export default function QAVoicePractice({ answerText = "", questionText = "" }) 
         <div className="flex flex-wrap items-center gap-2">
           {/* Top 4 Voice Dropdown */}
           {naturalVoices.length > 0 && (
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1.5">
               <span className="text-[10px] font-bold text-gray-500 dark:text-zinc-400 uppercase hidden sm:inline">
                 Voice:
               </span>
@@ -466,7 +464,7 @@ export default function QAVoicePractice({ answerText = "", questionText = "" }) 
                   setSelectedVoiceURI(e.target.value);
                   if (isPlaying) stopTTS();
                 }}
-                className="py-1.5 px-3 rounded-xl bg-white dark:bg-zinc-800 text-gray-800 dark:text-zinc-200 border border-gray-200 dark:border-white/10 text-[11px] font-bold focus:outline-none max-w-[240px] shadow-2xs cursor-pointer"
+                className="py-1 px-2.5 rounded-lg bg-white dark:bg-zinc-900 text-gray-800 dark:text-zinc-200 border border-gray-200 dark:border-zinc-800 text-[11px] font-medium focus:outline-none max-w-[230px] shadow-2xs cursor-pointer"
               >
                 {naturalVoices.map((v) => (
                   <option key={v.voiceURI} value={v.voiceURI}>
@@ -478,7 +476,7 @@ export default function QAVoicePractice({ answerText = "", questionText = "" }) 
           )}
 
           {/* Speed Buttons */}
-          <div className="flex items-center gap-1 bg-white dark:bg-zinc-800 p-0.5 rounded-lg border border-gray-200 dark:border-white/10 shadow-2xs">
+          <div className="flex items-center gap-0.5 bg-white dark:bg-zinc-900 p-0.5 rounded-lg border border-gray-200 dark:border-zinc-800 shadow-2xs">
             {[0.85, 0.96, 1.15].map((rate) => (
               <button
                 key={rate}
@@ -488,7 +486,7 @@ export default function QAVoicePractice({ answerText = "", questionText = "" }) 
                 }}
                 className={`px-2 py-0.5 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
                   speechRate === rate
-                    ? "bg-purple-600 text-white shadow-2xs"
+                    ? "bg-gray-900 text-white dark:bg-zinc-100 dark:text-zinc-900 shadow-2xs"
                     : "text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white"
                 }`}
               >
@@ -499,19 +497,19 @@ export default function QAVoicePractice({ answerText = "", questionText = "" }) 
         </div>
       </div>
 
-      {/* Main Dual Action Controllers - STRICT FIXED HEIGHT (No Layout Bouncing) */}
+      {/* Main Dual Action Controllers */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-stretch">
         {/* ACTION 1: LISTEN TO MODEL ANSWER */}
-        <div className="p-3.5 rounded-xl bg-white dark:bg-zinc-900/70 border border-gray-200/80 dark:border-white/5 flex flex-col justify-between min-h-[105px]">
+        <div className="p-3.5 rounded-xl bg-white dark:bg-zinc-900/60 border border-gray-200 dark:border-zinc-800 flex flex-col justify-between min-h-[100px]">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-black uppercase text-purple-600 dark:text-purple-400 flex items-center gap-1">
-              <Volume2 className="w-3.5 h-3.5" />
+            <span className="text-[11px] font-bold uppercase text-gray-700 dark:text-zinc-300 flex items-center gap-1.5">
+              <Volume2 className="w-3.5 h-3.5 text-gray-500" />
               Listen to Model Answer
             </span>
             {isPlaying && (
               <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-500">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
-                Playing Natural Voice
+                Playing
               </span>
             )}
           </div>
@@ -521,15 +519,15 @@ export default function QAVoicePractice({ answerText = "", questionText = "" }) 
               <button
                 onClick={handlePlayTTS}
                 disabled={!answerText.trim()}
-                className="flex-1 py-2 px-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-xs transition-all disabled:opacity-40 cursor-pointer"
+                className="flex-1 py-2 px-3 rounded-xl bg-gray-900 hover:bg-gray-800 text-white dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:border dark:border-zinc-700 font-semibold text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-all disabled:opacity-40 cursor-pointer"
               >
-                <Play className="w-3.5 h-3.5 fill-current" />
+                <Play className="w-3.5 h-3.5 fill-current text-emerald-400" />
                 <span>{isPaused ? "Resume Audio" : "Play Natural Delivery"}</span>
               </button>
             ) : (
               <button
                 onClick={handlePauseTTS}
-                className="flex-1 py-2 px-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-xs transition-all cursor-pointer"
+                className="flex-1 py-2 px-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-all cursor-pointer"
               >
                 <Pause className="w-3.5 h-3.5 fill-current" />
                 <span>Pause Audio</span>
@@ -539,7 +537,7 @@ export default function QAVoicePractice({ answerText = "", questionText = "" }) 
             {(isPlaying || isPaused) && (
               <button
                 onClick={stopTTS}
-                className="py-2 px-3 rounded-xl bg-gray-100 dark:bg-zinc-800 hover:bg-gray-200 text-gray-700 dark:text-zinc-300 font-bold text-xs flex items-center justify-center cursor-pointer"
+                className="py-2 px-3 rounded-xl bg-gray-100 dark:bg-zinc-800 hover:bg-gray-200 dark:hover:bg-zinc-700 text-gray-700 dark:text-zinc-300 font-bold text-xs flex items-center justify-center cursor-pointer"
                 title="Stop audio"
               >
                 <Square className="w-3.5 h-3.5 fill-current" />
@@ -547,7 +545,7 @@ export default function QAVoicePractice({ answerText = "", questionText = "" }) 
             )}
           </div>
 
-          {/* Stable Fixed-Height Audio Indicator (Never causes layout shift) */}
+          {/* Stable Fixed-Height Audio Indicator */}
           <div className="h-3 flex items-center justify-center gap-1">
             {isPlaying ? (
               [0.3, 0.9, 0.5, 1.0, 0.7, 0.85, 0.4, 0.75].map((scale, i) => (
@@ -555,20 +553,20 @@ export default function QAVoicePractice({ answerText = "", questionText = "" }) 
                   key={i}
                   animate={{ transform: [`scaleY(0.2)`, `scaleY(${scale})`, `scaleY(0.2)`] }}
                   transition={{ repeat: Infinity, duration: 0.5, delay: i * 0.07, ease: "easeInOut" }}
-                  className="w-1 h-3 bg-purple-500 rounded-full inline-block origin-center"
+                  className="w-1 h-3 bg-emerald-500 rounded-full inline-block origin-center"
                 />
               ))
             ) : (
-              <span className="text-[10px] text-gray-400 font-medium">Click to hear natural delivery</span>
+              <span className="text-[10px] text-gray-400 font-medium">Click to hear delivery</span>
             )}
           </div>
         </div>
 
         {/* ACTION 2: RECORD & PRACTICE (SPEECH TO TEXT) */}
-        <div className="p-3.5 rounded-xl bg-white dark:bg-zinc-900/70 border border-gray-200/80 dark:border-white/5 flex flex-col justify-between min-h-[105px]">
+        <div className="p-3.5 rounded-xl bg-white dark:bg-zinc-900/60 border border-gray-200 dark:border-zinc-800 flex flex-col justify-between min-h-[100px]">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-black uppercase text-blue-600 dark:text-cyan-400 flex items-center gap-1">
-              <Mic className="w-3.5 h-3.5" />
+            <span className="text-[11px] font-bold uppercase text-gray-700 dark:text-zinc-300 flex items-center gap-1.5">
+              <Mic className="w-3.5 h-3.5 text-gray-500" />
               Practice Spoken Delivery
             </span>
             {isRecording && (
@@ -583,15 +581,15 @@ export default function QAVoicePractice({ answerText = "", questionText = "" }) 
             {!isRecording ? (
               <button
                 onClick={startRecording}
-                className="w-full py-2 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-98 cursor-pointer"
+                className="w-full py-2 px-3 rounded-xl bg-gray-900 hover:bg-gray-800 text-white dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:border dark:border-zinc-700 font-semibold text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-all active:scale-98 cursor-pointer"
               >
-                <Mic className="w-3.5 h-3.5" />
+                <span className="w-2 h-2 rounded-full bg-rose-500" />
                 <span>Record Yourself Speaking</span>
               </button>
             ) : (
               <button
                 onClick={stopRecording}
-                className="w-full py-2 px-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-rose-500/20 transition-all active:scale-98 cursor-pointer animate-pulse"
+                className="w-full py-2 px-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-all active:scale-98 cursor-pointer animate-pulse"
               >
                 <Square className="w-3.5 h-3.5 fill-current" />
                 <span>Finish & Analyze Delivery</span>
@@ -615,8 +613,8 @@ export default function QAVoicePractice({ answerText = "", questionText = "" }) 
 
       {/* Live Transcript Preview while recording */}
       {isRecording && transcript && (
-        <div className="p-3 rounded-xl bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200/60 dark:border-blue-500/20 space-y-1">
-          <span className="text-[10px] font-bold text-blue-600 dark:text-cyan-400 uppercase tracking-wider">
+        <div className="p-3 rounded-xl bg-gray-100 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 space-y-1">
+          <span className="text-[10px] font-bold text-gray-700 dark:text-zinc-300 uppercase tracking-wider">
             Live Speech Transcript:
           </span>
           <p className="text-xs text-gray-800 dark:text-zinc-200 leading-relaxed font-sans italic">
@@ -632,20 +630,20 @@ export default function QAVoicePractice({ answerText = "", questionText = "" }) 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
-            className="p-4 rounded-xl bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-white/10 space-y-3.5"
+            className="p-4 rounded-xl bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 space-y-3.5"
           >
-            <div className="flex items-center justify-between pb-2 border-b border-gray-200/60 dark:border-white/5">
+            <div className="flex items-center justify-between pb-2 border-b border-gray-200/80 dark:border-zinc-800">
               <div className="flex items-center gap-2">
                 <div className="w-6 h-6 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
                   <Award className="w-3.5 h-3.5" />
                 </div>
-                <span className="text-xs font-black text-gray-900 dark:text-white">
+                <span className="text-xs font-bold text-gray-900 dark:text-white">
                   Voice Delivery Diagnostic
                 </span>
               </div>
-              <div className="flex items-center gap-1 text-sm font-black text-purple-600 dark:text-purple-400">
-                <span>Score:</span>
-                <span className="px-2 py-0.5 rounded-md bg-purple-500/10 border border-purple-500/20">
+              <div className="flex items-center gap-1 text-sm font-bold text-gray-900 dark:text-white">
+                <span className="text-xs text-gray-500">Score:</span>
+                <span className="px-2 py-0.5 rounded-md bg-gray-100 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700">
                   {analysisResult.overallScore}%
                 </span>
               </div>
@@ -654,10 +652,10 @@ export default function QAVoicePractice({ answerText = "", questionText = "" }) 
             {/* 3 Metrics Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
               {/* Metric 1: Pacing & WPM */}
-              <div className="p-2.5 rounded-xl bg-white dark:bg-zinc-950 border border-gray-200/60 dark:border-white/5 space-y-1">
+              <div className="p-2.5 rounded-xl bg-gray-50 dark:bg-zinc-950 border border-gray-200 dark:border-zinc-800 space-y-1">
                 <div className="flex items-center justify-between text-[10px] font-bold text-gray-500">
                   <span>Pacing & Speed</span>
-                  <Activity className="w-3 h-3 text-blue-500" />
+                  <Activity className="w-3 h-3 text-zinc-400" />
                 </div>
                 <div className="text-sm font-extrabold text-gray-900 dark:text-white font-mono">
                   {analysisResult.wpm} WPM
@@ -668,7 +666,7 @@ export default function QAVoicePractice({ answerText = "", questionText = "" }) 
               </div>
 
               {/* Metric 2: Filler Words */}
-              <div className="p-2.5 rounded-xl bg-white dark:bg-zinc-950 border border-gray-200/60 dark:border-white/5 space-y-1">
+              <div className="p-2.5 rounded-xl bg-gray-50 dark:bg-zinc-950 border border-gray-200 dark:border-zinc-800 space-y-1">
                 <div className="flex items-center justify-between text-[10px] font-bold text-gray-500">
                   <span>Filler Words</span>
                   <AlertCircle className="w-3 h-3 text-amber-500" />
@@ -690,7 +688,7 @@ export default function QAVoicePractice({ answerText = "", questionText = "" }) 
               </div>
 
               {/* Metric 3: Content Match */}
-              <div className="p-2.5 rounded-xl bg-white dark:bg-zinc-950 border border-gray-200/60 dark:border-white/5 space-y-1">
+              <div className="p-2.5 rounded-xl bg-gray-50 dark:bg-zinc-950 border border-gray-200 dark:border-zinc-800 space-y-1">
                 <div className="flex items-center justify-between text-[10px] font-bold text-gray-500">
                   <span>Key Points Match</span>
                   <CheckCircle2 className="w-3 h-3 text-emerald-500" />
@@ -706,7 +704,7 @@ export default function QAVoicePractice({ answerText = "", questionText = "" }) 
 
             {/* Transcript Quote */}
             {transcript && (
-              <div className="p-2.5 rounded-lg bg-white/60 dark:bg-zinc-950/60 text-[11px] text-gray-600 dark:text-zinc-400 leading-relaxed italic border border-gray-100 dark:border-white/5">
+              <div className="p-2.5 rounded-lg bg-gray-50 dark:bg-zinc-950 text-[11px] text-gray-600 dark:text-zinc-400 leading-relaxed italic border border-gray-100 dark:border-zinc-800">
                 <span className="font-bold not-italic text-gray-700 dark:text-zinc-300">
                   Your spoken transcript:
                 </span>{" "}

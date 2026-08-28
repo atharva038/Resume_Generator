@@ -87,46 +87,36 @@ function App() {
     <DarkModeProvider>
       <NavigationBlockerProvider>
         <ScrollToTop />
-        {/* Global Toast Notifications */}
+        {/* Global Premium Theme-Aware Toast Notifications */}
         <Toaster
           position="top-right"
+          gutter={10}
+          containerStyle={{
+            top: 24,
+            right: 24,
+          }}
           toastOptions={{
-            // Default options
-            duration: 3000,
-            style: {
-              background: "var(--toast-bg, #fff)",
-              color: "var(--toast-text, #333)",
-              padding: "16px",
-              borderRadius: "8px",
-              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-            },
-            // Success
+            duration: 3200,
+            className: "custom-theme-toast",
             success: {
-              style: {
-                background: "#10b981",
-                color: "#fff",
-              },
+              className: "custom-theme-toast custom-theme-toast-success",
               iconTheme: {
-                primary: "#fff",
-                secondary: "#10b981",
+                primary: "#10b981",
+                secondary: "#ffffff",
               },
             },
-            // Error
             error: {
-              style: {
-                background: "#ef4444",
-                color: "#fff",
-              },
+              className: "custom-theme-toast custom-theme-toast-error",
               iconTheme: {
-                primary: "#fff",
-                secondary: "#ef4444",
+                primary: "#f43f5e",
+                secondary: "#ffffff",
               },
             },
-            // Loading
             loading: {
-              style: {
-                background: "#3b82f6",
-                color: "#fff",
+              className: "custom-theme-toast",
+              iconTheme: {
+                primary: "#6366f1",
+                secondary: "#ffffff",
               },
             },
           }}

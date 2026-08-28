@@ -1,4 +1,4 @@
-import { Sparkles, Upload, FileText, TrendingUp } from "lucide-react";
+import { Sparkles, Upload, FileText, TrendingUp, MessageSquare } from "lucide-react";
 
 export default function ProfileBanner({
   completeness,
@@ -44,7 +44,7 @@ export default function ProfileBanner({
               title="Paste raw notes and let AI structure it"
             >
               <Sparkles className="w-4 h-4 text-purple-500" />
-              <span>✨ AI Fast Import</span>
+              <span>AI Fast Import</span>
             </button>
 
             <button
@@ -67,7 +67,8 @@ export default function ProfileBanner({
               href="/career-qa"
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-purple-500/30 bg-purple-500/10 text-purple-700 dark:text-purple-300 hover:bg-purple-500/20 text-xs font-semibold transition-all shadow-xs hover:shadow-sm active:scale-95 cursor-pointer"
             >
-              <span>💬 Application Q&A</span>
+              <MessageSquare className="w-4 h-4 text-purple-500" />
+              <span>Application Q&A</span>
             </a>
           </div>
         </div>

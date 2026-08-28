@@ -32,7 +32,7 @@ const CATEGORIES = [
   { id: "project", label: "Project & Tech", icon: Briefcase },
   { id: "application", label: "Application & Fit", icon: HelpCircle },
   { id: "job-specific", label: "Job-Specific", icon: Flame },
-  { id: "saved", label: "Saved ⭐", icon: Star },
+  { id: "saved", label: "Saved", icon: Star },
 ];
 
 const DURATION_OPTIONS = [
@@ -228,7 +228,7 @@ export default function CareerQA() {
         setSelectedItem(res.data.item);
         loadQuestions();
       }
-      toast.success("Answer saved to your Career Q&A Bank ⭐");
+      toast.success("Answer saved to your Career Q&A Bank");
     } catch (err) {
       handleApiError(err, "Failed to save answer", toast);
     } finally {

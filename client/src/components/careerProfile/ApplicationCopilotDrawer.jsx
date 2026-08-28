@@ -41,8 +41,7 @@ export default function ApplicationCopilotDrawer({ profile = {}, qaItems = [] })
     }
     navigator.clipboard.writeText(text);
     setCopiedKey(key);
-    toast.success(`Copied ${label} to clipboard!`, {
-      icon: "📋",
+    toast.success(`Copied ${label} to clipboard`, {
       duration: 2000,
     });
     setTimeout(() => setCopiedKey(null), 2000);

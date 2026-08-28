@@ -33,7 +33,7 @@ export default function AIFastImportModal({
             </div>
             <div>
               <h3 className="text-base font-bold text-gray-900 dark:text-white">
-                ✨ Fast AI Paste & Structure
+                Fast AI Paste & Structure
               </h3>
               <p className="text-xs text-gray-500 dark:text-gray-400">
                 Paste raw notes and SmartNShine AI will parse them into structured fields.

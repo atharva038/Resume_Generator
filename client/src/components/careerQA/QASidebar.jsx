@@ -33,8 +33,7 @@ export default function QASidebar({
     }
     navigator.clipboard.writeText(ans);
     setCopiedId(item._id || item.question);
-    toast.success(`Copied answer for "${item.question.slice(0, 30)}..."!`, {
-      icon: "📋",
+    toast.success(`Copied answer for "${item.question.slice(0, 30)}..."`, {
       duration: 1500,
     });
     setTimeout(() => setCopiedId(null), 1500);
@@ -42,8 +41,8 @@ export default function QASidebar({
 
   return (
     <div className="bg-white dark:bg-zinc-950/90 rounded-3xl p-5 sm:p-6 border border-gray-200/80 dark:border-white/[0.08] shadow-sm dark:shadow-2xl space-y-5">
-      {/* Category Pills Scroller */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-2 scrollbar-none">
+      {/* Category Pills Grid / Wrap (No horizontal scroll) */}
+      <div className="flex flex-wrap items-center gap-1.5 pb-1">
         {categories.map((cat) => {
           const Icon = cat.icon;
           const isActive = activeCategory === cat.id;
@@ -51,10 +50,10 @@ export default function QASidebar({
             <button
               key={cat.id}
               onClick={() => onSelectCategory(cat.id)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                 isActive
-                  ? "bg-purple-600 text-white shadow-sm shadow-purple-500/20"
-                  : "bg-gray-100 dark:bg-zinc-900 text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white"
+                  ? "bg-gray-900 text-white dark:bg-zinc-100 dark:text-zinc-900 font-bold shadow-xs"
+                  : "bg-gray-100 dark:bg-zinc-900/90 text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white border border-gray-200/60 dark:border-zinc-800/80"
               }`}
             >
               <Icon className="w-3.5 h-3.5" />

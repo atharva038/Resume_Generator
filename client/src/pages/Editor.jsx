@@ -2372,9 +2372,6 @@ const Editor = () => {
           </div>
         )}
 
-        {/* Toast Notifications */}
-        <Toaster position="bottom-right" />
-
         {/* Upgrade Modal */}
         {showUpgradeModal && (
           <UpgradeRequiredModal
