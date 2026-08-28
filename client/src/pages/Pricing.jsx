@@ -13,11 +13,13 @@ import {
   PricingFAQ,
   PricingResumeChooserModal,
 } from "@/components/pricing";
+import { FestiveSaleBanner } from "@/components/common";
 import { RefreshCw } from "lucide-react";
 
 export default function Pricing() {
   const navigate = useNavigate();
   const [pricing, setPricing] = useState(null);
+  const [promotion, setPromotion] = useState(null);
   const [loading, setLoading] = useState(true);
   const [
     showPaymentModal,
@@ -53,6 +55,9 @@ export default function Pricing() {
     try {
       const data = await getPricing();
       setPricing(data.pricing || data);
+      if (data.promotion) {
+        setPromotion(data.promotion);
+      }
     } catch (error) {
       toast.error("Failed to load pricing information");
       console.error("Pricing fetch error:", error);

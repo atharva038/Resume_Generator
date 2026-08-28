@@ -163,6 +163,10 @@ export const toggleFeature = (feature, enabled) =>
   adminAPI.patch(`/settings/features/${feature}`, {enabled});
 export const updateRateLimits = (data) =>
   adminAPI.patch("/settings/rate-limits", data);
+export const updatePromotionSettings = (data) =>
+  adminAPI.patch("/settings/promotion", data);
+export const togglePromotion = (enabled) =>
+  adminAPI.patch("/settings/promotion/toggle", {enabled});
 
 // Question Bank Management
 export const getAllAdminQuestions = (params) =>

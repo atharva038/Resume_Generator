@@ -20,6 +20,68 @@ const settingsSchema = new mongoose.Schema(
       default: false,
     },
 
+    // Festive & Promotional Sale Settings
+    promotion: {
+      enabled: {
+        type: Boolean,
+        default: true,
+      },
+      title: {
+        type: String,
+        default: "Raksha Bandhan Special Sale 🎁✨",
+      },
+      tagline: {
+        type: String,
+        default: "Celebrate Raksha Bandhan with an ATS-crushing resume at flat 82% OFF!",
+      },
+      badgeText: {
+        type: String,
+        default: "RAKHI FESTIVE SPECIAL",
+      },
+      theme: {
+        type: String,
+        default: "rakhi-festive", // "rakhi-festive", "gold-luxury", "crimson-festive", "vibrant-indigo"
+      },
+      oneTimePrice: {
+        type: Number,
+        default: 9,
+      },
+      originalOneTimePrice: {
+        type: Number,
+        default: 49,
+      },
+      proMonthlyPrice: {
+        type: Number,
+        default: 199,
+      },
+      originalProMonthlyPrice: {
+        type: Number,
+        default: 199,
+      },
+      proYearlyPrice: {
+        type: Number,
+        default: 1990,
+      },
+      endDate: {
+        type: Date,
+        default: () => new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days default countdown
+      },
+      ctaText: {
+        type: String,
+        default: "Claim ₹9 Resume Deal",
+      },
+      highlights: {
+        type: [String],
+        default: [
+          "1 Dedicated 21-day single resume boost",
+          "GPT-4o Enhanced AI bullet rewriting",
+          "All 11 ATS-Certified templates",
+          "Deep ATS compatibility scan",
+          "1-Click live public portfolio website",
+        ],
+      },
+    },
+
     // AI Quota Settings
     aiQuota: {
       free: {

@@ -198,7 +198,7 @@ const CyberDevTheme = ({data}) => {
   const sectionBlocks = {
     projects:
       sections.showProjects && hasItems(projects) ? (
-        <section key="projects">
+        <section key="projects" id="projects" style={{ scrollMarginTop: "6rem" }}>
           <CyberSectionHeading
             eyebrow="builds"
             title="Projects"
@@ -224,7 +224,7 @@ const CyberDevTheme = ({data}) => {
 
     skills:
       sections.showSkills && hasItems(skills) ? (
-        <section key="skills">
+        <section key="skills" id="skills" style={{ scrollMarginTop: "6rem" }}>
           <CyberSectionHeading eyebrow="stack" title="Skills" />
           <div
             style={{
@@ -268,7 +268,7 @@ const CyberDevTheme = ({data}) => {
 
     about:
       sections.showAbout && profile.about ? (
-        <section key="about">
+        <section key="about" id="about" style={{ scrollMarginTop: "6rem" }}>
           <CyberSectionHeading eyebrow="whoami" title="About" />
           <div
             style={{
@@ -295,7 +295,7 @@ const CyberDevTheme = ({data}) => {
 
     experience:
       sections.showExperience && hasItems(experience) ? (
-        <section key="experience">
+        <section key="experience" id="experience" style={{ scrollMarginTop: "6rem" }}>
           <CyberSectionHeading eyebrow="history" title="Experience" />
           <div style={{display: "flex", flexDirection: "column", gap: "1rem"}}>
             {experience.map((item, i) => (
@@ -386,7 +386,7 @@ const CyberDevTheme = ({data}) => {
 
     education:
       sections.showEducation && hasItems(education) ? (
-        <section key="education">
+        <section key="education" id="education" style={{ scrollMarginTop: "6rem" }}>
           <CyberSectionHeading eyebrow="init" title="Education" />
           <div
             style={{
@@ -427,7 +427,7 @@ const CyberDevTheme = ({data}) => {
 
     certifications:
       sections.showCertifications && hasItems(certifications) ? (
-        <section key="certifications">
+        <section key="certifications" id="certifications" style={{ scrollMarginTop: "6rem" }}>
           <CyberSectionHeading eyebrow="verified" title="Certifications" />
           <div
             style={{
@@ -475,7 +475,7 @@ const CyberDevTheme = ({data}) => {
 
     achievements:
       sections.showAchievements && hasItems(achievements) ? (
-        <section key="achievements">
+        <section key="achievements" id="achievements" style={{ scrollMarginTop: "6rem" }}>
           <CyberSectionHeading eyebrow="log" title="Achievements" />
           <div style={{display: "flex", flexDirection: "column", gap: "0.5rem"}}>
             {achievements.map((achievement) => (
@@ -538,6 +538,7 @@ const CyberDevTheme = ({data}) => {
     >
       {/* ─── Hero ─── */}
       <header
+        id="hero"
         style={{
           borderBottom: "1px solid var(--pt-border)",
           background: "var(--pt-surface)",

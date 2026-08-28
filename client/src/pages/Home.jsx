@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import SEO from "../components/common/SEO";
 import FAQSchema from "../components/common/FAQSchema";
+import { FestiveSaleBanner } from "../components/common";
+import { getPricing } from "../api/subscription.api";
 import {
   Sparkles,
   Upload,
@@ -20,6 +22,9 @@ import {
   Palette,
   ShieldCheck,
   Zap,
+  Gift,
+  Clock,
+  Flame,
 } from "lucide-react";
 
 // High-res template IDs for hero fan
@@ -108,8 +113,23 @@ const SectionDivider = () => (
 
 export default function Home() {
   const [openFAQ, setOpenFAQ] = useState(null);
+  const [promotion, setPromotion] = useState(null);
   const scrollContainerRef = useRef(null);
   const reduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    const fetchPromo = async () => {
+      try {
+        const data = await getPricing();
+        if (data.promotion) {
+          setPromotion(data.promotion);
+        }
+      } catch (err) {
+        console.error("Failed to load promotion for home page:", err);
+      }
+    };
+    fetchPromo();
+  }, []);
 
   const scroll = (direction) => {
     if (scrollContainerRef.current) {
@@ -132,25 +152,27 @@ export default function Home() {
       <FAQSchema faqs={faqs} />
 
       <div className="min-h-screen bg-white dark:bg-[#09090b] text-gray-900 dark:text-zinc-100 font-sans overflow-x-hidden transition-colors duration-200">
-        {/* HERO SECTION - Fixed top spacing to remove blank gap */}
-        <section className="relative pt-4 sm:pt-8 lg:pt-10 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        {/* HERO SECTION */}
+        <section className="relative pt-4 sm:pt-6 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
           {/* Ambient Glows */}
-          <div className="pointer-events-none absolute -left-20 top-0 h-96 w-96 rounded-full bg-blue-500/10 blur-3xl" />
+          <div className="pointer-events-none absolute -left-20 top-0 h-96 w-96 rounded-full bg-orange-500/10 blur-3xl" />
           <div className="pointer-events-none absolute -right-20 top-20 h-96 w-96 rounded-full bg-purple-500/10 blur-3xl" />
 
           <div className="grid lg:grid-cols-12 gap-12 lg:gap-8 items-center relative z-10">
             {/* Hero Left Content */}
             <div className="lg:col-span-7 space-y-6">
-              {/* Product Badge */}
-              <motion.div
-                initial={reduceMotion ? false : { opacity: 0, y: 15 }}
-                animate={reduceMotion ? false : { opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-xs sm:text-sm font-bold shadow-xs"
-              >
-                <Sparkles className="w-4 h-4 text-blue-500 shrink-0" />
-                <span>Next-Gen Career Optimization Platform</span>
-              </motion.div>
+              {/* Product Badge / Sale Callout */}
+              <div className="flex flex-wrap items-center gap-2">
+                <motion.div
+                  initial={reduceMotion ? false : { opacity: 0, y: 15 }}
+                  animate={reduceMotion ? false : { opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-xs sm:text-sm font-bold shadow-xs"
+                >
+                  <Sparkles className="w-4 h-4 text-blue-500 shrink-0" />
+                  <span>Next-Gen Career Optimization Platform</span>
+                </motion.div>
+              </div>
 
               {/* Main Headline */}
               <motion.h1
@@ -174,6 +196,85 @@ export default function Home() {
               >
                 Build ATS-passing resumes, extract data from existing PDFs, practice AI mock interview questions, and launch a live portfolio website in minutes.
               </motion.p>
+
+              {/* Festive Raksha Bandhan Sales Ad Card with Dynamic Theme Support & Larger Text */}
+              {promotion && promotion.enabled && (
+                <motion.div
+                  initial={reduceMotion ? false : { opacity: 0, y: 15 }}
+                  animate={reduceMotion ? false : { opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.22 }}
+                  className={`relative overflow-hidden rounded-3xl border-2 p-5 sm:p-7 shadow-xl backdrop-blur-xl transition-all duration-300 ${
+                    promotion.theme === "gold-luxury"
+                      ? "bg-gradient-to-br from-amber-500/20 via-yellow-500/10 to-amber-600/20 dark:from-amber-950/50 dark:to-zinc-900 border-amber-500/40 shadow-amber-500/10"
+                      : promotion.theme === "crimson-festive"
+                      ? "bg-gradient-to-br from-rose-500/20 via-red-500/10 to-pink-600/20 dark:from-rose-950/50 dark:to-zinc-900 border-rose-500/40 shadow-rose-500/10"
+                      : promotion.theme === "vibrant-indigo"
+                      ? "bg-gradient-to-br from-indigo-500/20 via-purple-500/10 to-pink-600/20 dark:from-indigo-950/50 dark:to-zinc-900 border-indigo-500/40 shadow-indigo-500/10"
+                      : "bg-gradient-to-br from-orange-500/20 via-amber-500/10 to-rose-500/20 dark:from-orange-950/50 dark:to-zinc-900 border-orange-500/40 shadow-orange-500/10"
+                  }`}
+                >
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 relative z-10">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-2xl">🎁 🪢</span>
+                        <span
+                          className={`text-xs sm:text-sm font-black uppercase tracking-wider px-3 py-1 rounded-full border shadow-xs ${
+                            promotion.theme === "gold-luxury"
+                              ? "bg-amber-500/20 text-amber-700 dark:text-yellow-300 border-amber-500/30"
+                              : promotion.theme === "crimson-festive"
+                              ? "bg-rose-500/20 text-rose-700 dark:text-rose-300 border-rose-500/30"
+                              : promotion.theme === "vibrant-indigo"
+                              ? "bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border-indigo-500/30"
+                              : "bg-orange-500/20 text-orange-700 dark:text-orange-300 border-orange-500/30"
+                          }`}
+                        >
+                          {promotion.badgeText || "FESTIVE MEGA DEAL"}
+                        </span>
+                      </div>
+                      <h2 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white tracking-tight">
+                        {promotion.title || "Raksha Bandhan Special Sale"}
+                      </h2>
+                      <p className="text-sm sm:text-base text-gray-700 dark:text-zinc-200 font-medium leading-relaxed">
+                        {promotion.tagline ||
+                          "Get 21-day full access pass with all 11 ATS templates & AI rewriting for"}{" "}
+                        <span className="font-black text-orange-600 dark:text-orange-400 text-lg sm:text-xl underline decoration-2 underline-offset-4">
+                          ₹{promotion.oneTimePrice ?? 9}
+                        </span>{" "}
+                        <span className="line-through text-gray-400 text-sm">
+                          ₹{promotion.originalOneTimePrice ?? 49}
+                        </span>{" "}
+                        <span className="text-emerald-600 dark:text-emerald-400 font-black text-sm">
+                          (Flat{" "}
+                          {Math.round(
+                            (1 -
+                              (promotion.oneTimePrice ?? 9) /
+                                (promotion.originalOneTimePrice ?? 49)) *
+                              100
+                          )}
+                          % OFF)
+                        </span>
+                      </p>
+                    </div>
+
+                    <Link
+                      to="/pricing"
+                      className={`w-full sm:w-auto shrink-0 inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-2xl text-white font-black text-sm sm:text-base shadow-xl transition-all hover:scale-105 active:scale-95 cursor-pointer ${
+                        promotion.theme === "gold-luxury"
+                          ? "bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-amber-950 font-black shadow-amber-500/30"
+                          : promotion.theme === "crimson-festive"
+                          ? "bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700 shadow-rose-500/30"
+                          : promotion.theme === "vibrant-indigo"
+                          ? "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-indigo-500/30"
+                          : "bg-gradient-to-r from-orange-600 via-amber-600 to-rose-600 hover:from-orange-700 hover:to-rose-700 shadow-orange-500/30"
+                      }`}
+                    >
+                      <Zap className="w-5 h-5 fill-current" />
+                      <span>{promotion.ctaText || "Claim ₹9 Deal"}</span>
+                      <ArrowRight className="w-5 h-5 stroke-[3]" />
+                    </Link>
+                  </div>
+                </motion.div>
+              )}
 
               {/* Quick Feature Pills */}
               <motion.div

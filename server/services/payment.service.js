@@ -3,6 +3,7 @@ import crypto from "crypto";
 import Subscription from "../models/Subscription.model.js";
 import User from "../models/User.model.js";
 import Resume from "../models/Resume.model.js";
+import Settings from "../models/Settings.model.js";
 import {sendPaymentConfirmationEmail} from "./email.service.js";
 import {notifyPaymentFailure} from "./adminNotification.service.js";
 
@@ -94,6 +95,41 @@ export function normalizeTier(tier) {
   return ACTIVE_TIERS.includes(tier) ? tier : "free";
 }
 
+/**
+ * Fetch dynamic pricing merged with active festive/promotional settings
+ */
+export async function getDynamicPricing() {
+  try {
+    const settings = await Settings.getSettings();
+    const promo = settings?.promotion;
+
+    // Deep clone base pricing
+    const pricing = JSON.parse(JSON.stringify(PRICING));
+
+    if (promo && promo.enabled) {
+      if (typeof promo.oneTimePrice === "number" && promo.oneTimePrice >= 0) {
+        pricing["one-time"].amount = promo.oneTimePrice;
+        pricing["one-time"].originalAmount = promo.originalOneTimePrice || 49;
+        pricing["one-time"].isPromo = true;
+        pricing["one-time"].promoBadge = promo.badgeText || "SALE";
+      }
+      if (typeof promo.proMonthlyPrice === "number" && promo.proMonthlyPrice > 0) {
+        pricing.pro.monthly.amount = promo.proMonthlyPrice;
+        pricing.pro.monthly.originalAmount = promo.originalProMonthlyPrice || 199;
+        pricing.pro.monthly.isPromo = promo.proMonthlyPrice < (promo.originalProMonthlyPrice || 199);
+      }
+      if (typeof promo.proYearlyPrice === "number" && promo.proYearlyPrice > 0) {
+        pricing.pro.yearly.amount = promo.proYearlyPrice;
+      }
+    }
+
+    return {pricing, promotion: promo};
+  } catch (err) {
+    console.error("Error getting dynamic pricing from settings:", err.message);
+    return {pricing: PRICING, promotion: null};
+  }
+}
+
 export function getPlanAmount(tier, plan) {
   const pricing = PRICING[tier];
 
@@ -108,12 +144,39 @@ export function getPlanAmount(tier, plan) {
   return pricing.amount;
 }
 
+export async function getPlanAmountAsync(tier, plan) {
+  const {pricing} = await getDynamicPricing();
+
+  if (!pricing || !pricing[tier] || !PLAN_DURATIONS[tier]?.includes(plan)) {
+    throw new Error(`Invalid subscription selection: ${tier}/${plan}`);
+  }
+
+  if (tier === "pro") {
+    return pricing[tier][plan]?.amount || pricing[tier]?.monthly?.amount;
+  }
+
+  return pricing[tier].amount;
+}
+
 export function assertPaidPlan(tier, plan) {
   if (!PAID_TIERS.includes(tier)) {
     throw new Error("Cannot create an order for a free or legacy tier");
   }
 
   const amount = getPlanAmount(tier, plan);
+  if (!amount || amount <= 0) {
+    throw new Error("Cannot create an order for an invalid amount");
+  }
+
+  return amount;
+}
+
+export async function assertPaidPlanAsync(tier, plan) {
+  if (!PAID_TIERS.includes(tier)) {
+    throw new Error("Cannot create an order for a free or legacy tier");
+  }
+
+  const amount = await getPlanAmountAsync(tier, plan);
   if (!amount || amount <= 0) {
     throw new Error("Cannot create an order for an invalid amount");
   }
@@ -205,7 +268,7 @@ export async function createOrder(tier, plan, userId, resumeId = null) {
       );
     }
 
-    const amount = assertPaidPlan(tier, plan);
+    const amount = await assertPaidPlanAsync(tier, plan);
     const normalizedResumeId = resumeId || null;
 
     if (tier === "one-time") {
@@ -356,7 +419,7 @@ export async function verifyOrderForPlan(
       throw new Error("Razorpay not configured");
     }
 
-    const expectedAmount = assertPaidPlan(tier, plan);
+    const expectedAmount = await assertPaidPlanAsync(tier, plan);
     const order = await razorpay.orders.fetch(orderId);
 
     const orderUserId = order.notes?.userId?.toString();
@@ -424,7 +487,7 @@ export async function createSubscription(
     console.log(`📧 Generated Receipt ID: ${receiptId}`);
 
     const startDate = new Date();
-    const expectedAmount = assertPaidPlan(tier, plan);
+    const expectedAmount = await assertPaidPlanAsync(tier, plan);
 
     if (Number(amount) !== expectedAmount) {
       throw new Error("Payment amount does not match selected plan");
@@ -778,5 +841,10 @@ export default {
   handleWebhook,
   getPaymentDetails,
   refundPayment,
+  getDynamicPricing,
+  getPlanAmount,
+  getPlanAmountAsync,
+  assertPaidPlan,
+  assertPaidPlanAsync,
   PRICING,
 };
