@@ -97,17 +97,6 @@ export default function EditorHeader({
           </button>
         )}
 
-        {/* Import from Career Profile Button */}
-        <button
-          onClick={onImportCareerProfile}
-          className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 border border-purple-200 dark:border-purple-800/80 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 text-xs font-bold hover:bg-purple-100 dark:hover:bg-purple-900/60 transition-all cursor-pointer shadow-2xs"
-          title="Import data from your master Career Profile"
-        >
-          <Sparkles className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400 shrink-0" />
-          <span className="hidden sm:inline">Career Profile</span>
-          <span className="sm:hidden text-[11px]">Profile</span>
-        </button>
-
         {/* Reset Order Button (Desktop only) */}
         {!isWizardMode && (
           <button
