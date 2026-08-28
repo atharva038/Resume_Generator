@@ -43,7 +43,7 @@ const ModernFresherTheme = ({ data }) => {
                 whileHover={{ y: -2 }}
                 className="min-w-0 rounded-2xl border border-gray-200/90 dark:border-white/10 bg-white dark:bg-zinc-900/90 p-6 shadow-sm"
               >
-                <BookOpen className="mb-4 h-6 w-6 text-blue-600 dark:text-blue-400" />
+                <BookOpen className="pt-accent-text mb-4 h-6 w-6 text-[var(--pt-accent)]" />
                 <h3 className="break-words text-lg font-black text-gray-900 dark:text-white">
                   {item.institution}
                 </h3>
@@ -70,7 +70,7 @@ const ModernFresherTheme = ({ data }) => {
           />
           <SkillPills
             skills={skills}
-            pillClassName="rounded-full bg-amber-500/10 dark:bg-amber-500/20 px-3.5 py-1.5 text-xs font-black text-amber-800 dark:text-amber-300 border border-amber-500/20"
+            pillClassName="pt-accent-surface pt-accent-text rounded-full bg-[var(--pt-accent-dim)] px-3.5 py-1.5 text-xs font-black text-[var(--pt-accent)] border border-[var(--pt-accent)]"
           />
         </section>
       ) : null,
@@ -90,7 +90,7 @@ const ModernFresherTheme = ({ data }) => {
                 className="min-w-0 rounded-2xl border border-gray-200/90 dark:border-white/10 bg-white dark:bg-zinc-900/90 p-6 sm:p-7 shadow-sm flex flex-col justify-between"
               >
                 <div className="space-y-3">
-                  <div className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-blue-500/10 text-xs font-black text-blue-600 dark:text-blue-400">
+                  <div className="pt-accent-surface pt-accent-text inline-flex h-8 w-8 items-center justify-center rounded-xl bg-[var(--pt-accent-dim)] text-xs font-black text-[var(--pt-accent)]">
                     {index + 1}
                   </div>
                   <h3 className="break-words text-xl font-black text-gray-900 dark:text-white">
@@ -146,7 +146,7 @@ const ModernFresherTheme = ({ data }) => {
                     <h3 className="break-words text-lg font-black text-gray-900 dark:text-white">
                       {item.title}
                     </h3>
-                    <p className="break-words text-sm font-semibold text-blue-600 dark:text-blue-400">
+                    <p className="pt-accent-text break-words text-sm font-semibold text-[var(--pt-accent)]">
                       {item.company}
                     </p>
                   </div>
@@ -183,7 +183,7 @@ const ModernFresherTheme = ({ data }) => {
                 whileHover={{ y: -2 }}
                 className="min-w-0 rounded-2xl border border-gray-200/90 dark:border-white/10 bg-white dark:bg-zinc-900/90 p-6 shadow-sm"
               >
-                <Award className="mb-4 h-6 w-6 text-amber-500" />
+                <Award className="pt-accent-text mb-4 h-6 w-6 text-[var(--pt-accent)]" />
                 <h3 className="break-words text-base font-black text-gray-900 dark:text-white">
                   {item.name}
                 </h3>
@@ -239,14 +239,14 @@ const ModernFresherTheme = ({ data }) => {
         <div className="mx-auto max-w-6xl px-5 sm:px-8">
           <div className="grid gap-10 lg:grid-cols-[1fr_360px] lg:items-center">
             <div className="space-y-5">
-              <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/10 border border-amber-500/20 px-3.5 py-1.5 text-xs font-bold text-amber-700 dark:text-amber-300 shadow-xs">
-                <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+              <div className="pt-accent-surface pt-accent-text inline-flex items-center gap-2 rounded-full bg-[var(--pt-accent-dim)] border border-[var(--pt-accent)] px-3.5 py-1.5 text-xs font-bold text-[var(--pt-accent)] shadow-xs">
+                <Sparkles className="h-3.5 w-3.5 text-[var(--pt-accent)]" />
                 <span>Open to opportunities</span>
               </div>
               <h1 className="break-words text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-gray-900 dark:text-white">
                 {profile.name}
               </h1>
-              <p className="text-lg sm:text-xl font-bold text-blue-600 dark:text-blue-400">
+              <p className="pt-accent-text text-lg sm:text-xl font-bold text-[var(--pt-accent)]">
                 {profile.title || "Early Career Professional"}
               </p>
               {profile.tagline && (
@@ -259,14 +259,14 @@ const ModernFresherTheme = ({ data }) => {
                   profile={profile}
                   settings={settings}
                   actions={actions}
-                  primaryClassName="bg-blue-600 text-white hover:bg-blue-700"
+                  primaryClassName="pt-accent-fill bg-[var(--pt-accent)] text-[var(--pt-accent-text)] hover:opacity-90"
                   secondaryClassName="border-gray-300 dark:border-white/10 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-800"
                 />
               </div>
             </div>
 
-            <aside className="rounded-3xl border border-blue-500/20 bg-blue-50/50 dark:bg-blue-950/20 p-6 sm:p-7 shadow-sm space-y-4">
-              <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-blue-700 dark:text-blue-300">
+            <aside className="pt-accent-surface rounded-3xl border border-[var(--pt-accent)] bg-[var(--pt-accent-dim)] p-6 sm:p-7 shadow-sm space-y-4">
+              <div className="pt-accent-text flex items-center gap-2 text-xs font-black uppercase tracking-wider text-[var(--pt-accent)]">
                 <GraduationCap className="h-4 w-4" />
                 <span>Learning & Profile Snapshot</span>
               </div>

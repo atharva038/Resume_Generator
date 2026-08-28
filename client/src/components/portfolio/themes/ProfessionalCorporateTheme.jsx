@@ -63,7 +63,7 @@ const ProfessionalCorporateTheme = ({ data }) => {
                   <ul className="mt-4 grid gap-2.5 md:grid-cols-2">
                     {item.bullets.map((bullet) => (
                       <li key={bullet} className="flex min-w-0 gap-2.5 text-sm text-gray-700 dark:text-zinc-300">
-                        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                        <CheckCircle2 className="pt-accent-text mt-0.5 h-4 w-4 shrink-0 text-[var(--pt-accent)]" />
                         <span className="break-words leading-relaxed">{bullet}</span>
                       </li>
                     ))}
@@ -247,7 +247,7 @@ const ProfessionalCorporateTheme = ({ data }) => {
         <div className="mx-auto grid max-w-6xl gap-10 px-5 sm:px-8 lg:grid-cols-[1fr_300px] lg:items-center">
           <div className="space-y-5">
             <div className="inline-flex items-center gap-2 rounded-full bg-stone-100 dark:bg-zinc-800 border border-stone-200 dark:border-white/5 px-3.5 py-1.5 text-xs font-bold text-stone-700 dark:text-zinc-300 shadow-xs">
-              <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+              <Sparkles className="pt-accent-text h-3.5 w-3.5 text-[var(--pt-accent)]" />
               <span>Professional Portfolio</span>
             </div>
             <h1 className="break-words text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-gray-900 dark:text-white">

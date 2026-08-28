@@ -62,7 +62,7 @@ const MinimalDeveloperTheme = ({ data }) => {
                       {project.technologies.map((tech) => (
                         <span
                           key={tech}
-                          className="rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 px-2.5 py-1 text-xs font-bold text-emerald-700 dark:text-emerald-300 border border-emerald-500/20"
+                          className="pt-accent-surface pt-accent-text rounded-full bg-[var(--pt-accent-dim)] px-2.5 py-1 text-xs font-bold text-[var(--pt-accent)] border border-[var(--pt-accent)]"
                         >
                           {tech}
                         </span>
@@ -129,7 +129,7 @@ const MinimalDeveloperTheme = ({ data }) => {
                     <h3 className="break-words text-lg font-black text-gray-900 dark:text-white">
                       {item.title}
                     </h3>
-                    <p className="break-words text-sm font-semibold text-blue-600 dark:text-blue-400">
+                    <p className="pt-accent-text break-words text-sm font-semibold text-[var(--pt-accent)]">
                       {item.company}
                     </p>
                   </div>
@@ -234,7 +234,7 @@ const MinimalDeveloperTheme = ({ data }) => {
       <section id="hero" className="border-b border-gray-200/80 dark:border-white/10 bg-white dark:bg-zinc-900/70 py-12 sm:py-16">
         <div className="mx-auto grid max-w-6xl gap-8 px-5 sm:px-8 lg:grid-cols-[1fr_320px] lg:items-center">
           <div className="space-y-6">
-            <div className="inline-flex items-center gap-2 rounded-full bg-blue-500/10 border border-blue-500/20 px-3.5 py-1.5 text-xs font-bold text-blue-600 dark:text-blue-400 shadow-xs">
+            <div className="pt-accent-surface pt-accent-text inline-flex items-center gap-2 rounded-full bg-[var(--pt-accent-dim)] border border-[var(--pt-accent)] px-3.5 py-1.5 text-xs font-bold text-[var(--pt-accent)] shadow-xs">
               <Terminal className="h-3.5 w-3.5" />
               <span>{profile.title || "Software Engineer"}</span>
             </div>
@@ -252,7 +252,7 @@ const MinimalDeveloperTheme = ({ data }) => {
           </div>
 
           <aside className="rounded-3xl border border-gray-200/90 dark:border-white/10 bg-gray-900 dark:bg-black p-6 text-white shadow-xl space-y-4">
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-emerald-400">
+            <div className="pt-accent-text flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[var(--pt-accent)]">
               <Code2 className="h-4 w-4" />
               <span>Stack Snapshot</span>
             </div>

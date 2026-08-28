@@ -206,6 +206,7 @@ const buildPublicPayload = (portfolio, resume, projects) => {
       profileImage: portfolioObject.profileImage,
       heroImage: portfolioObject.heroImage,
       themeId: portfolioObject.themeId,
+      themeAccent: portfolioObject.themeAccent,
       colorPreset: portfolioObject.colorPreset,
       fontPreset: portfolioObject.fontPreset,
       socialLinks: portfolioObject.socialLinks,
