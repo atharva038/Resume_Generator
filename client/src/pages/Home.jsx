@@ -8,6 +8,7 @@ import { getPricing } from "../api/subscription.api";
 import SkewCards from "../components/ui/gradient-card-showcase";
 import { TiltCard } from "../components/ui/be-ui-tilt-card";
 import TestimonialsSection from "../components/ui/testimonials-3";
+import CareerOSControlCenter from "../components/ui/career-os-control-center";
 import {
   Sparkles,
   Upload,
@@ -21,6 +22,7 @@ import {
   Target,
   UserCheck,
   Globe2,
+  Globe,
   Mic,
   Palette,
   ShieldCheck,
@@ -37,6 +39,10 @@ import {
   Pause,
   Video,
   Star,
+  FileText,
+  Database,
+  Radio,
+  Terminal,
 } from "lucide-react";
 
 // High-res template IDs for hero fan
@@ -455,233 +461,88 @@ export default function Home() {
       <FAQSchema faqs={faqs} />
 
       <div className="min-h-screen bg-white dark:bg-[#09090b] text-gray-900 dark:text-zinc-100 font-sans overflow-x-hidden transition-colors duration-200">
-        {/* HERO SECTION */}
-        <section className="relative pt-4 sm:pt-6 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-          {/* Ambient Glows */}
-          <div className="pointer-events-none absolute -left-20 top-0 h-96 w-96 rounded-full bg-orange-500/10 blur-3xl" />
-          <div className="pointer-events-none absolute -right-20 top-20 h-96 w-96 rounded-full bg-purple-500/10 blur-3xl" />
+        {/* HERO SECTION: UNIFIED CAREER CONTROL CENTER (CONCEPT 1) */}
+        <section className="relative pt-6 sm:pt-10 pb-16 sm:pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto overflow-hidden">
+          {/* Fluid Wavy Cosmic Shader Background */}
+          <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+            {/* Ambient Multi-Layer Radial Glows */}
+            <div className="absolute -top-20 left-1/4 w-[600px] h-[500px] rounded-full bg-gradient-to-b from-blue-600/15 via-cyan-500/10 to-transparent blur-3xl dark:from-blue-600/25 dark:via-cyan-500/15" />
+            <div className="absolute top-1/3 right-10 w-[500px] h-[450px] rounded-full bg-indigo-500/10 blur-3xl dark:bg-indigo-600/20" />
+            <div className="absolute -bottom-10 left-1/3 w-[450px] h-[350px] rounded-full bg-cyan-500/10 blur-3xl dark:bg-cyan-500/15" />
 
-          <div className="grid lg:grid-cols-12 gap-12 lg:gap-8 items-center relative z-10">
-            {/* Hero Left Content */}
-            <div className="lg:col-span-7 space-y-6">
-              {/* Product Badge / Sale Callout */}
-              <div className="flex flex-wrap items-center gap-2">
-                <motion.div
-                  initial={reduceMotion ? false : { opacity: 0, y: 15 }}
-                  animate={reduceMotion ? false : { opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
-                  className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-xs sm:text-sm font-bold shadow-xs"
-                >
-                  <Sparkles className="w-4 h-4 text-blue-500 shrink-0" />
-                  <span>Next-Gen Career Optimization Platform</span>
-                </motion.div>
-              </div>
+            {/* High-Tech Grid Matrix Overlay with Soft Mask */}
+            <svg className="absolute inset-0 w-full h-full opacity-25 dark:opacity-20 text-blue-500/30 dark:text-cyan-500/30">
+              <defs>
+                <pattern id="hero-shader-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                  <path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" strokeWidth="0.5" />
+                </pattern>
+              </defs>
+              <rect width="100%" height="100%" fill="url(#hero-shader-grid)" />
+            </svg>
+          </div>
 
-              {/* Main Headline */}
+          <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center relative z-10">
+            {/* Left Column: Value Proposition */}
+            <div className="lg:col-span-6 space-y-6 text-left">
+              {/* Product Badge */}
+              <motion.div
+                initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+                animate={reduceMotion ? false : { opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-cyan-400 text-xs font-bold tracking-wide shadow-xs"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                <span>All-in-One AI Career Platform</span>
+              </motion.div>
+
+              {/* Main Headline with Refined Editorial Typography */}
               <motion.h1
                 initial={reduceMotion ? false : { opacity: 0, y: 15 }}
                 animate={reduceMotion ? false : { opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-                className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.08] text-gray-900 dark:text-white"
+                transition={{ duration: 0.5, delay: 0.08 }}
+                className="text-3xl sm:text-5xl lg:text-[56px] font-extrabold font-outfit tracking-tight leading-[1.15] sm:leading-[1.12] text-gray-900 dark:text-white"
               >
-                Your resume, <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400">
-                  precision engineered.
+                From Raw Experience <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400 dark:from-[#60a5fa] dark:via-[#818cf8] dark:to-[#22d3ee]">
+                  to Offer Letter.
+                </span>
+                <span className="block text-xl sm:text-3xl lg:text-4xl font-semibold text-gray-500 dark:text-zinc-400 font-sans mt-1.5 sm:mt-2">
+                  Orchestrated seamlessly by AI.
                 </span>
               </motion.h1>
 
-              {/* Subtext */}
+              {/* Subtitle */}
               <motion.p
                 initial={reduceMotion ? false : { opacity: 0, y: 15 }}
                 animate={reduceMotion ? false : { opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className="text-base sm:text-lg lg:text-xl text-gray-600 dark:text-zinc-300 max-w-xl font-normal leading-relaxed"
+                transition={{ duration: 0.5, delay: 0.15 }}
+                className="text-sm sm:text-lg text-gray-600 dark:text-zinc-300 max-w-lg font-normal leading-relaxed"
               >
-                Build ATS-passing resumes, extract data from existing PDFs, practice AI mock interview questions, and launch a live portfolio website in minutes.
+                Build ATS-passing resumes, deploy hosted portfolio websites, and sync your master career profile — in one unified workspace.
               </motion.p>
 
-              {/* Festive Raksha Bandhan Sales Ad Card with Dynamic Theme Support & Larger Text */}
-              {promotion && promotion.enabled && (
-                <motion.div
-                  initial={reduceMotion ? false : { opacity: 0, y: 15 }}
-                  animate={reduceMotion ? false : { opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.22 }}
-                  className={`relative overflow-hidden rounded-3xl border-2 p-5 sm:p-7 shadow-xl backdrop-blur-xl transition-all duration-300 ${
-                    promotion.theme === "gold-luxury"
-                      ? "bg-gradient-to-br from-amber-500/20 via-yellow-500/10 to-amber-600/20 dark:from-amber-950/50 dark:to-zinc-900 border-amber-500/40 shadow-amber-500/10"
-                      : promotion.theme === "crimson-festive"
-                      ? "bg-gradient-to-br from-rose-500/20 via-red-500/10 to-pink-600/20 dark:from-rose-950/50 dark:to-zinc-900 border-rose-500/40 shadow-rose-500/10"
-                      : promotion.theme === "vibrant-indigo"
-                      ? "bg-gradient-to-br from-indigo-500/20 via-purple-500/10 to-pink-600/20 dark:from-indigo-950/50 dark:to-zinc-900 border-indigo-500/40 shadow-indigo-500/10"
-                      : "bg-gradient-to-br from-orange-500/20 via-amber-500/10 to-rose-500/20 dark:from-orange-950/50 dark:to-zinc-900 border-orange-500/40 shadow-orange-500/10"
-                  }`}
-                >
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 relative z-10">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-2xl">🎁 🪢</span>
-                        <span
-                          className={`text-xs sm:text-sm font-black uppercase tracking-wider px-3 py-1 rounded-full border shadow-xs ${
-                            promotion.theme === "gold-luxury"
-                              ? "bg-amber-500/20 text-amber-700 dark:text-yellow-300 border-amber-500/30"
-                              : promotion.theme === "crimson-festive"
-                              ? "bg-rose-500/20 text-rose-700 dark:text-rose-300 border-rose-500/30"
-                              : promotion.theme === "vibrant-indigo"
-                              ? "bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border-indigo-500/30"
-                              : "bg-orange-500/20 text-orange-700 dark:text-orange-300 border-orange-500/30"
-                          }`}
-                        >
-                          {promotion.badgeText || "FESTIVE MEGA DEAL"}
-                        </span>
-                      </div>
-                      <h2 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white tracking-tight">
-                        {promotion.title || "Raksha Bandhan Special Sale"}
-                      </h2>
-                      <p className="text-sm sm:text-base text-gray-700 dark:text-zinc-200 font-medium leading-relaxed">
-                        {promotion.tagline ||
-                          "Get 21-day full access pass with all 11 ATS templates & AI rewriting for"}{" "}
-                        <span className="font-black text-orange-600 dark:text-orange-400 text-lg sm:text-xl underline decoration-2 underline-offset-4">
-                          ₹{promotion.oneTimePrice ?? 9}
-                        </span>{" "}
-                        <span className="line-through text-gray-400 text-sm">
-                          ₹{promotion.originalOneTimePrice ?? 49}
-                        </span>{" "}
-                        <span className="text-emerald-600 dark:text-emerald-400 font-black text-sm">
-                          (Flat{" "}
-                          {Math.round(
-                            (1 -
-                              (promotion.oneTimePrice ?? 9) /
-                                (promotion.originalOneTimePrice ?? 49)) *
-                              100
-                          )}
-                          % OFF)
-                        </span>
-                      </p>
-                    </div>
-
-                    <Link
-                      to="/pricing"
-                      className={`w-full sm:w-auto shrink-0 inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-2xl text-white font-black text-sm sm:text-base shadow-xl transition-all hover:scale-105 active:scale-95 cursor-pointer ${
-                        promotion.theme === "gold-luxury"
-                          ? "bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-amber-950 font-black shadow-amber-500/30"
-                          : promotion.theme === "crimson-festive"
-                          ? "bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700 shadow-rose-500/30"
-                          : promotion.theme === "vibrant-indigo"
-                          ? "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-indigo-500/30"
-                          : "bg-gradient-to-r from-orange-600 via-amber-600 to-rose-600 hover:from-orange-700 hover:to-rose-700 shadow-orange-500/30"
-                      }`}
-                    >
-                      <Zap className="w-5 h-5 fill-current" />
-                      <span>{promotion.ctaText || "Claim ₹9 Deal"}</span>
-                      <ArrowRight className="w-5 h-5 stroke-[3]" />
-                    </Link>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* Quick Feature Pills */}
+              {/* Single High-Impact CTA */}
               <motion.div
                 initial={reduceMotion ? false : { opacity: 0, y: 15 }}
                 animate={reduceMotion ? false : { opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.25 }}
-                className="flex flex-wrap gap-2 pt-1"
-              >
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 text-xs font-semibold border border-gray-200 dark:border-white/5">
-                  <Target className="w-3.5 h-3.5 text-blue-500" />
-                  ATS Diagnostic Engine
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 text-xs font-semibold border border-gray-200 dark:border-white/5">
-                  <Mic className="w-3.5 h-3.5 text-purple-500" />
-                  Career Q&A Studio
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 text-xs font-semibold border border-gray-200 dark:border-white/5">
-                  <Globe2 className="w-3.5 h-3.5 text-emerald-500" />
-                  Live Portfolio Builder
-                </span>
-              </motion.div>
-
-              {/* CTAs */}
-              <motion.div
-                initial={reduceMotion ? false : { opacity: 0, y: 15 }}
-                animate={reduceMotion ? false : { opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-                className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2"
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="pt-1 sm:pt-2"
               >
                 <Link
                   to="/upload"
-                  className="inline-flex justify-center items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-2xl font-black text-sm sm:text-base shadow-lg shadow-blue-500/25 transition-all hover:scale-[1.02] active:scale-98 cursor-pointer"
+                  className="w-full sm:w-auto inline-flex justify-center items-center gap-2.5 px-6 sm:px-8 py-3.5 sm:py-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white rounded-xl sm:rounded-2xl font-bold text-sm sm:text-base shadow-lg shadow-blue-500/25 transition-all hover:scale-[1.02] active:scale-98 cursor-pointer"
                 >
-                  <span>Start Building Free</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-
-                <Link
-                  to="/templates"
-                  className="inline-flex justify-center items-center gap-2 px-8 py-4 bg-gray-100 dark:bg-zinc-800 text-gray-800 dark:text-zinc-200 hover:bg-gray-200 dark:hover:bg-zinc-700 rounded-2xl font-bold text-sm sm:text-base transition-all active:scale-98 border border-gray-200 dark:border-white/5"
-                >
-                  <Palette className="w-4 h-4 text-gray-500" />
-                  <span>Browse 11 Templates</span>
+                  <span>Get Started For Free</span>
+                  <ArrowRight className="w-4 h-4 stroke-[2.5]" />
                 </Link>
               </motion.div>
             </div>
 
-            {/* Hero Right: 3D Floating Template Fan */}
-            <div className="lg:col-span-5 relative h-[360px] sm:h-[460px] flex items-center justify-center">
-              <div className="relative w-full h-full flex items-center justify-center">
-                {heroTemplates.map((t, idx) => (
-                  <motion.div
-                    key={t.id}
-                    className="absolute w-[220px] sm:w-[260px] rounded-2xl overflow-hidden border border-gray-200 dark:border-white/10 bg-white shadow-xl dark:shadow-2xl transition-all duration-500"
-                    initial={{
-                      rotateZ: t.rotate,
-                      x: t.x,
-                      y: t.y,
-                    }}
-                    animate={{
-                      rotateZ: t.rotate,
-                      x: t.x,
-                      y: t.y,
-                      zIndex: t.zIndex,
-                    }}
-                    whileHover={{
-                      scale: 1.06,
-                      y: t.y - 25,
-                      zIndex: 50,
-                      rotateZ: 0,
-                    }}
-                  >
-                    <img
-                      src={`/templates/${t.id}.png`}
-                      alt={`Template ${t.id}`}
-                      className="w-full h-auto block object-cover"
-                      loading={idx === 0 ? "eager" : "lazy"}
-                    />
-                  </motion.div>
-                ))}
-              </div>
+            {/* Right Column: Glassmorphic OS Control Center Window */}
+            <div className="lg:col-span-6">
+              <CareerOSControlCenter />
             </div>
           </div>
-        </section>
-
-        <SectionDivider />
-
-        {/* HOW IT WORKS 3-STEP PIPELINE USING SKEWCARDS */}
-        <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8">
-          <div className="text-center space-y-3 max-w-3xl mx-auto">
-            <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-xs font-black uppercase tracking-wider">
-              <Zap className="w-3.5 h-3.5" />
-              <span>Streamlined 3-Step Pipeline</span>
-            </div>
-            <h2 className="text-3xl sm:text-5xl font-black text-gray-900 dark:text-white tracking-tight">
-              From Raw Resume to Top 1% Candidate in 3 Steps
-            </h2>
-            <p className="text-sm sm:text-base text-gray-600 dark:text-zinc-400 max-w-2xl mx-auto font-medium">
-              Eliminate hours of manual formatting and keyword guessing with our automated career acceleration pipeline.
-            </p>
-          </div>
-
-          {/* 3D Skewed Glassmorphism Showcase Cards */}
-          <SkewCards />
         </section>
 
         <SectionDivider />
@@ -2089,13 +1950,76 @@ export default function Home() {
 
         <SectionDivider />
 
-        {/* TEMPLATES CAROUSEL */}
-        <section id="templates" className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8">
+        {/* 3D INTERACTIVE TEMPLATES SHOWCASE & CAROUSEL */}
+        <section id="templates" className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-12">
+          {/* 3D Fanning Stack Banner */}
+          <div className="rounded-3xl bg-gradient-to-br from-blue-500/5 via-indigo-500/5 to-cyan-500/5 dark:from-zinc-900/60 dark:to-zinc-950/80 border border-gray-200 dark:border-white/10 p-8 sm:p-12 overflow-hidden relative">
+            <div className="grid lg:grid-cols-12 gap-8 items-center">
+              <div className="lg:col-span-6 space-y-4 text-left">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-black uppercase tracking-wider">
+                  <Palette className="w-3.5 h-3.5" />
+                  Precision Document Architecture
+                </span>
+                <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white tracking-tight">
+                  11 Enterprise ATS-Certified Resume Formats
+                </h2>
+                <p className="text-sm sm:text-base text-gray-600 dark:text-zinc-300 leading-relaxed">
+                  Engineered with zero tables, single-column fallback hierarchies, and recruiter-tested typography to guarantee 100% parseability across Greenhouse, Workday, Taleo, and Lever.
+                </p>
+                <div className="flex items-center gap-3 pt-2">
+                  <Link
+                    to="/templates"
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm shadow-md transition-transform"
+                  >
+                    <span>Browse All 11 Templates</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
+              </div>
+
+              {/* 3D Interactive Floating Template Stack */}
+              <div className="lg:col-span-6 relative h-[280px] sm:h-[340px] flex items-center justify-center">
+                <div className="relative w-full h-full flex items-center justify-center">
+                  {heroTemplates.map((t, idx) => (
+                    <motion.div
+                      key={t.id}
+                      className="absolute w-[180px] sm:w-[220px] rounded-xl overflow-hidden border border-gray-200 dark:border-white/10 bg-white shadow-xl dark:shadow-2xl transition-all duration-500 cursor-pointer"
+                      initial={{
+                        rotateZ: t.rotate,
+                        x: t.x,
+                        y: t.y,
+                      }}
+                      animate={{
+                        rotateZ: t.rotate,
+                        x: t.x,
+                        y: t.y,
+                        zIndex: t.zIndex,
+                      }}
+                      whileHover={{
+                        scale: 1.08,
+                        y: t.y - 20,
+                        zIndex: 50,
+                        rotateZ: 0,
+                      }}
+                    >
+                      <img
+                        src={`/templates/${t.id}.png`}
+                        alt={`Template ${t.id}`}
+                        className="w-full h-auto block object-cover"
+                        loading={idx === 0 ? "eager" : "lazy"}
+                      />
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="space-y-1 text-center sm:text-left">
-              <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white tracking-tight">
-                11 ATS-Certified Templates
-              </h2>
+              <h3 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white tracking-tight">
+                Live Template Gallery
+              </h3>
               <p className="text-xs sm:text-sm text-gray-500 dark:text-zinc-400">
                 Crafted for readability by both applicant tracking algorithms and senior recruiters.
               </p>

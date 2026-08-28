@@ -85,18 +85,6 @@ export function SecuritySettingsTab() {
       </div>
 
       <div className="space-y-4">
-        <div className="p-4 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-500/20 flex items-center gap-3.5">
-          <ShieldCheck className="w-6 h-6 text-emerald-600 dark:text-emerald-400 shrink-0" />
-          <div>
-            <h4 className="text-xs sm:text-sm font-bold text-emerald-950 dark:text-emerald-200">
-              Encrypted Session Active
-            </h4>
-            <p className="text-xs text-emerald-700 dark:text-emerald-400 mt-0.5">
-              Your connection is protected with 256-bit TLS encryption.
-            </p>
-          </div>
-        </div>
-
         <div className="p-4 rounded-2xl bg-gray-50/70 dark:bg-zinc-950/70 border border-gray-200/80 dark:border-white/5 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Key className="w-5 h-5 text-blue-500 shrink-0" />

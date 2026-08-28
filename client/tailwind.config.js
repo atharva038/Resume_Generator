@@ -39,13 +39,16 @@ export default {
       },
       fontFamily: {
         sans: [
+          "Plus Jakarta Sans",
           "Inter var",
           "Inter",
           "system-ui",
           "-apple-system",
           "sans-serif",
         ],
-        display: ["Inter var", "Inter", "sans-serif"],
+        outfit: ["Outfit", "sans-serif"],
+        display: ["Outfit", "Plus Jakarta Sans", "Inter var", "Inter", "sans-serif"],
+        space: ["Space Grotesk", "sans-serif"],
         resume: ["Arial", "Helvetica", "sans-serif"],
       },
       fontSize: {
