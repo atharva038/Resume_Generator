@@ -548,26 +548,26 @@ export default function Home() {
         <SectionDivider />
 
         {/* NEXT-LEVEL INTERACTIVE CAREER STUDIO WORKBENCH */}
-        <section className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-12">
-          <div className="text-center space-y-3 max-w-3xl mx-auto">
-            <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-xs font-black uppercase tracking-wider">
+        <section id="interactive-studio" className="py-10 sm:py-24 px-3 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-6 sm:space-y-10">
+          <div className="text-center space-y-2 sm:space-y-3 max-w-3xl mx-auto">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-[11px] sm:text-xs font-black uppercase tracking-wider">
               <Activity className="w-3.5 h-3.5" />
               <span>Interactive Career OS Workbench</span>
             </div>
-            <h2 className="text-3xl sm:text-5xl font-black text-gray-900 dark:text-white tracking-tight">
+            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white tracking-tight">
               Test Drive the ATS Diagnostic Engine
             </h2>
-            <p className="text-sm sm:text-base text-gray-600 dark:text-zinc-400 font-medium max-w-2xl mx-auto">
+            <p className="text-xs sm:text-base text-gray-600 dark:text-zinc-400 font-medium max-w-2xl mx-auto">
               Experience real-time AI bullet transformation, ATS parser matrix diagnostics, dynamic template styling, and live portfolio sandboxing.
             </p>
           </div>
 
           {/* MacOS-Style Studio Device Container */}
-          <div className="rounded-3xl border border-gray-200/90 dark:border-white/10 bg-white/90 dark:bg-zinc-950/95 backdrop-blur-2xl shadow-2xl overflow-hidden">
+          <div className="rounded-2xl sm:rounded-3xl border border-gray-200/90 dark:border-white/10 bg-white/90 dark:bg-zinc-950/95 backdrop-blur-2xl shadow-xl sm:shadow-2xl overflow-hidden">
             {/* Top Studio macOS Title Bar */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 bg-gray-100/80 dark:bg-zinc-900/90 border-b border-gray-200/80 dark:border-white/10">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-2.5 sm:gap-4 px-3 sm:px-6 py-2.5 sm:py-4 bg-gray-100/80 dark:bg-zinc-900/90 border-b border-gray-200/80 dark:border-white/10">
               {/* Traffic light window controls */}
-              <div className="flex items-center gap-2 self-start sm:self-auto">
+              <div className="hidden sm:flex items-center gap-2 self-start sm:self-auto">
                 <span className="w-3 h-3 rounded-full bg-rose-500/90 inline-block shadow-2xs" />
                 <span className="w-3 h-3 rounded-full bg-amber-500/90 inline-block shadow-2xs" />
                 <span className="w-3 h-3 rounded-full bg-emerald-500/90 inline-block shadow-2xs" />
@@ -577,19 +577,19 @@ export default function Home() {
               </div>
 
               {/* Center Segmented Tool Tabs */}
-              <div className="flex items-center p-1 rounded-2xl bg-white/80 dark:bg-zinc-800/90 border border-gray-200/80 dark:border-white/10 shadow-xs">
+              <div className="flex items-center p-0.5 sm:p-1 rounded-xl sm:rounded-2xl bg-white/80 dark:bg-zinc-800/90 border border-gray-200/80 dark:border-white/10 shadow-xs w-full sm:w-auto justify-between sm:justify-start">
                 <button
                   onClick={() => {
                     setDemoTab("ats");
                   }}
-                  className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                  className={`flex items-center justify-center gap-1 sm:gap-1.5 flex-1 sm:flex-initial px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-black transition-all cursor-pointer ${
                     demoTab === "ats"
                       ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
                       : "text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white"
                   }`}
                 >
-                  <Target className="w-3.5 h-3.5" />
-                  <span>ATS Diagnostic HUD</span>
+                  <Target className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                  <span>ATS HUD</span>
                 </button>
 
                 <button
@@ -597,14 +597,14 @@ export default function Home() {
                     setDemoTab("templates");
                     setIsAutoTour(false);
                   }}
-                  className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                  className={`flex items-center justify-center gap-1 sm:gap-1.5 flex-1 sm:flex-initial px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-black transition-all cursor-pointer ${
                     demoTab === "templates"
                       ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
                       : "text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white"
                   }`}
                 >
-                  <Palette className="w-3.5 h-3.5" />
-                  <span>Template Studio</span>
+                  <Palette className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                  <span>Templates</span>
                 </button>
 
                 <button
@@ -612,22 +612,22 @@ export default function Home() {
                     setDemoTab("portfolio");
                     setIsAutoTour(false);
                   }}
-                  className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                  className={`flex items-center justify-center gap-1 sm:gap-1.5 flex-1 sm:flex-initial px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-black transition-all cursor-pointer ${
                     demoTab === "portfolio"
                       ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
                       : "text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white"
                   }`}
                 >
-                  <Globe2 className="w-3.5 h-3.5" />
-                  <span>Portfolio Sandbox</span>
+                  <Globe2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                  <span>Portfolio</span>
                 </button>
               </div>
 
               {/* Auto-Play Tour Video Player Controls */}
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center justify-between sm:justify-start gap-2 w-full sm:w-auto">
                 <button
                   onClick={() => setIsAutoTour(!isAutoTour)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-black transition-all cursor-pointer border ${
+                  className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-black transition-all cursor-pointer border ${
                     isAutoTour
                       ? "bg-rose-500/10 border-rose-500/30 text-rose-600 dark:text-rose-400 shadow-xs"
                       : "bg-gray-200/80 dark:bg-zinc-800 border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-zinc-300"
@@ -635,42 +635,42 @@ export default function Home() {
                 >
                   {isAutoTour ? (
                     <>
-                      <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping" />
-                      <Pause className="w-3 h-3" />
-                      <span>Live Tour Active</span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping" />
+                      <Pause className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                      <span>Tour Active</span>
                     </>
                   ) : (
                     <>
-                      <Play className="w-3 h-3 fill-current" />
-                      <span>Auto-Play Tour</span>
+                      <Play className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-current" />
+                      <span>Auto-Tour</span>
                     </>
                   )}
                 </button>
 
-                <div className="hidden lg:flex items-center gap-2 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span>Engine Online</span>
+                <div className="flex items-center gap-1.5 text-[10px] sm:text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <span>Online</span>
                 </div>
               </div>
             </div>
 
             {/* TAB 1: NEXT-GEN ATS BEFORE & AFTER TRANSFORMATION HUD */}
             {demoTab === "ats" && (
-              <div className="p-6 sm:p-10 space-y-8 animate-fadeIn">
+              <div className="p-3.5 sm:p-6 lg:p-10 space-y-4 sm:space-y-8 animate-fadeIn">
                 {/* Auto-Play Studio Module Progress Bar */}
                 {isAutoTour && (
-                  <div className="space-y-2 p-3.5 rounded-2xl bg-blue-500/5 dark:bg-blue-950/20 border border-blue-500/15">
-                    <div className="flex items-center justify-between text-[11px] font-bold text-gray-600 dark:text-zinc-400">
-                      <div className="flex items-center gap-2">
-                        <Video className="w-3.5 h-3.5 text-blue-500 animate-pulse" />
-                        <span>Interactive Studio Auto-Tour:</span>
-                        <strong className="text-gray-900 dark:text-white">
-                          Module 1: ATS Diagnostic HUD ({demoPresets[selectedPreset].role})
+                  <div className="space-y-1.5 sm:space-y-2 p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl bg-blue-500/5 dark:bg-blue-950/20 border border-blue-500/15">
+                    <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-bold text-gray-600 dark:text-zinc-400">
+                      <div className="flex items-center gap-1.5 sm:gap-2 truncate">
+                        <Video className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-500 animate-pulse shrink-0" />
+                        <span className="hidden sm:inline">Interactive Studio Auto-Tour:</span>
+                        <strong className="text-gray-900 dark:text-white truncate">
+                          Module 1: ATS HUD ({demoPresets[selectedPreset].role})
                         </strong>
                       </div>
-                      <div className="flex items-center gap-1.5 font-mono text-xs">
+                      <div className="flex items-center gap-1 font-mono text-[10px] shrink-0">
                         <span
-                          className={`px-2.5 py-0.5 rounded-md font-black uppercase text-[10px] ${
+                          className={`px-2 py-0.5 rounded-md font-black uppercase text-[9px] sm:text-[10px] ${
                             tourPhase === "draft"
                               ? "bg-rose-100 text-rose-800 dark:bg-rose-500/20 dark:text-rose-300 border border-rose-200 dark:border-rose-500/30"
                               : tourPhase === "scanning"
@@ -679,22 +679,22 @@ export default function Home() {
                           }`}
                         >
                           {tourPhase === "draft"
-                            ? "Phase 1: Raw Draft"
+                            ? "Raw Draft"
                             : tourPhase === "scanning"
-                            ? "Phase 2: Deep AI Neural Scanning..."
-                            : "Phase 3: ATS Optimized (Next: Template Studio)"}
+                            ? "AI Scanning..."
+                            : "ATS Optimized"}
                         </span>
                       </div>
                     </div>
                     {/* 3 Studio Modules Timeline */}
-                    <div className="grid grid-cols-3 gap-2 pt-1">
-                      <div className="h-1.5 rounded-full bg-gray-200 dark:bg-zinc-800 overflow-hidden">
+                    <div className="grid grid-cols-3 gap-1.5 sm:gap-2 pt-0.5">
+                      <div className="h-1 sm:h-1.5 rounded-full bg-gray-200 dark:bg-zinc-800 overflow-hidden">
                         <div className="h-full bg-blue-600 w-full animate-pulse" />
                       </div>
-                      <div className="h-1.5 rounded-full bg-gray-200 dark:bg-zinc-800 overflow-hidden">
+                      <div className="h-1 sm:h-1.5 rounded-full bg-gray-200 dark:bg-zinc-800 overflow-hidden">
                         <div className="h-full bg-gray-300 dark:bg-zinc-700 w-0" />
                       </div>
-                      <div className="h-1.5 rounded-full bg-gray-200 dark:bg-zinc-800 overflow-hidden">
+                      <div className="h-1 sm:h-1.5 rounded-full bg-gray-200 dark:bg-zinc-800 overflow-hidden">
                         <div className="h-full bg-gray-300 dark:bg-zinc-700 w-0" />
                       </div>
                     </div>
@@ -702,12 +702,12 @@ export default function Home() {
                 )}
 
                 {/* Track Selector Bar */}
-                <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-gray-100 dark:border-white/5">
+                <div className="flex flex-wrap items-center justify-between gap-2.5 sm:gap-4 pb-3 sm:pb-6 border-b border-gray-100 dark:border-white/5">
                   <div className="space-y-1">
-                    <span className="text-xs font-black uppercase text-blue-600 dark:text-blue-400 tracking-wider">
-                      Select Career Track
+                    <span className="text-[10px] sm:text-xs font-black uppercase text-blue-600 dark:text-blue-400 tracking-wider">
+                      Career Track
                     </span>
-                    <div className="flex flex-wrap gap-2 pt-1">
+                    <div className="flex flex-wrap gap-1.5 sm:gap-2 pt-0.5">
                       {demoPresets.map((preset, idx) => (
                         <button
                           key={idx}
@@ -716,9 +716,9 @@ export default function Home() {
                             setIsAutoTour(false);
                             setIsOptimized(true);
                           }}
-                          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                          className={`px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-bold transition-all cursor-pointer ${
                             selectedPreset === idx
-                              ? "bg-blue-600 text-white shadow-md shadow-blue-500/25 scale-105"
+                              ? "bg-blue-600 text-white shadow-xs scale-105"
                               : "bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 hover:bg-gray-200 dark:hover:bg-zinc-700"
                           }`}
                         >
@@ -729,285 +729,152 @@ export default function Home() {
                   </div>
 
                   {/* Before / After Interactive Switcher */}
-                  <div className="flex items-center gap-2 bg-gray-100 dark:bg-zinc-800/90 p-1.5 rounded-2xl border border-gray-200 dark:border-white/10 self-start sm:self-auto">
+                  <div className="flex items-center gap-1.5 bg-gray-100 dark:bg-zinc-800/90 p-1 rounded-xl border border-gray-200 dark:border-white/10 self-start sm:self-auto">
                     <button
                       onClick={() => {
                         setIsOptimized(false);
                         setIsAutoTour(false);
                       }}
-                      className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                      className={`px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-bold transition-all cursor-pointer ${
                         !isOptimized
-                          ? "bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30"
+                          ? "bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30 font-black"
                           : "text-gray-500 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white"
                       }`}
                     >
-                      Original Draft (44)
+                      Draft (44)
                     </button>
                     <button
                       onClick={() => {
                         setIsOptimized(true);
                         setIsAutoTour(false);
                       }}
-                      className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                      className={`px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-bold transition-all cursor-pointer ${
                         isOptimized
                           ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 font-black"
                           : "text-gray-500 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white"
                       }`}
                     >
-                      AI Engineered (97)
+                      Optimized (97)
                     </button>
                   </div>
                 </div>
 
-                {/* Main Split Workbench: Editor on Left, Diagnostic HUD on Right */}
-                <div className="grid lg:grid-cols-12 gap-8 items-start">
-                  {/* Left: Workbench Code & Bullet Viewport */}
-                  <div className="lg:col-span-7 space-y-6">
-                    <div className="relative rounded-3xl bg-gray-50 dark:bg-zinc-900/80 border border-gray-200/90 dark:border-white/10 p-6 sm:p-7 space-y-4 overflow-hidden shadow-inner">
-                      {/* High-Contrast SVG Laser Scanner Animation & HUD Radar Matrix */}
-                      {isScanning && (
-                        <div className="absolute inset-0 z-30 pointer-events-none overflow-hidden bg-white/80 dark:bg-zinc-950/80 backdrop-blur-[1.5px] flex flex-col justify-between p-6 transition-colors">
-                          {/* Animated SVG Grid Background */}
-                          <svg className="absolute inset-0 w-full h-full opacity-25 text-blue-600 dark:text-cyan-400">
-                            <defs>
-                              <pattern id="hud-grid" width="24" height="24" patternUnits="userSpaceOnUse">
-                                <path d="M 24 0 L 0 0 0 24" fill="none" stroke="currentColor" strokeWidth="0.5" />
-                              </pattern>
-                            </defs>
-                            <rect width="100%" height="100%" fill="url(#hud-grid)" />
-                          </svg>
-
-                          {/* Sweeping Laser Beam */}
-                          <motion.div
-                            initial={{ y: "-100%" }}
-                            animate={{ y: "220%" }}
-                            transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-                            className="absolute inset-x-0 h-24 bg-gradient-to-b from-transparent via-blue-500/25 to-blue-600/35 dark:via-cyan-400/35 dark:to-blue-500/15 border-b-2 border-blue-600 dark:border-cyan-400 shadow-[0_0_25px_rgba(37,99,235,0.7)] dark:shadow-[0_0_30px_rgba(34,211,238,0.9)]"
-                          />
-
-                          {/* Top Scanning Status Bar */}
-                          <div className="relative z-10 flex flex-wrap items-center justify-between gap-2">
-                            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/90 dark:bg-cyan-950/90 border border-blue-200 dark:border-cyan-400/40 text-[11px] font-mono font-bold text-blue-700 dark:text-cyan-300 shadow-md">
-                              <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-cyan-400 animate-ping" />
-                              <span>AI_NEURAL_REWRITE // RE-INDEXING TOKENS</span>
-                            </div>
-                            <span className="text-[11px] font-mono font-black text-blue-700 dark:text-cyan-300 px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-cyan-950/70 border border-blue-200/80 dark:border-cyan-500/30 animate-pulse">
-                              PASS 2/3: INJECTING QUANTIFIED METRICS
-                            </span>
-                          </div>
-
-                          {/* Bottom Radar Pulse Info */}
-                          <div className="relative z-10 flex items-center justify-between text-[10px] font-mono font-bold text-blue-700 dark:text-cyan-400 bg-white/90 dark:bg-zinc-900/90 px-3 py-1.5 rounded-xl border border-blue-200/80 dark:border-white/10 shadow-xs">
-                            <span>TOKEN_DENSITY: OPTIMAL (100%)</span>
-                            <span>SEMANTIC_ALIGNMENT: 99.8%</span>
-                          </div>
-                        </div>
-                      )}
-
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={`w-2.5 h-2.5 rounded-full ${
-                              isOptimized
-                                ? "bg-emerald-500 shadow-lg shadow-emerald-500/50"
-                                : "bg-rose-500"
-                            }`}
-                          />
-                          <span className="text-xs font-mono font-bold text-gray-700 dark:text-zinc-300">
-                            {isOptimized ? "optimized_achievement_v2.json" : "raw_draft_bullet.txt"}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          {/* Continuous Multi-Frequency Neural Equalizer */}
-                          <div className="flex items-center gap-0.5 h-4">
-                            <motion.span
-                              animate={{ height: ["4px", "14px", "6px", "16px", "4px"] }}
-                              transition={{ repeat: Infinity, duration: 0.8, ease: "easeInOut" }}
-                              className="w-1 bg-blue-500 rounded-full"
-                            />
-                            <motion.span
-                              animate={{ height: ["8px", "18px", "10px", "4px", "8px"] }}
-                              transition={{ repeat: Infinity, duration: 0.65, ease: "easeInOut", delay: 0.1 }}
-                              className="w-1 bg-cyan-400 rounded-full"
-                            />
-                            <motion.span
-                              animate={{ height: ["12px", "4px", "16px", "8px", "12px"] }}
-                              transition={{ repeat: Infinity, duration: 0.9, ease: "easeInOut", delay: 0.2 }}
-                              className="w-1 bg-indigo-500 rounded-full"
-                            />
-                            <motion.span
-                              animate={{ height: ["6px", "16px", "8px", "18px", "6px"] }}
-                              transition={{ repeat: Infinity, duration: 0.75, ease: "easeInOut", delay: 0.15 }}
-                              className="w-1 bg-emerald-500 rounded-full"
-                            />
-                            <motion.span
-                              animate={{ height: ["10px", "4px", "14px", "6px", "10px"] }}
-                              transition={{ repeat: Infinity, duration: 1.0, ease: "easeInOut", delay: 0.05 }}
-                              className="w-1 bg-purple-500 rounded-full"
-                            />
-                          </div>
-
-                          <span
-                            className={`text-[11px] font-black uppercase px-2.5 py-0.5 rounded-lg ${
-                              isOptimized
-                                ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
-                                : "bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/20"
-                            }`}
-                          >
-                            {isOptimized ? "ATS Optimized" : "Needs Rewrite"}
-                          </span>
-                        </div>
+                {/* Main Interactive Workbench Split: Left Sandbox, Right Score HUD */}
+                <div className="grid lg:grid-cols-12 gap-4 sm:gap-8 items-stretch">
+                  {/* Left: Interactive Bullet Sandbox */}
+                  <div className="lg:col-span-7 p-3.5 sm:p-7 rounded-2xl sm:rounded-3xl bg-gray-50/80 dark:bg-zinc-900/80 border border-gray-200/90 dark:border-white/10 space-y-3 sm:space-y-5">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] sm:text-xs font-black uppercase text-blue-600 dark:text-blue-400">
+                          Live AI Bullet Transformation
+                        </span>
                       </div>
+                      <span
+                        className={`text-[9px] sm:text-[11px] font-black uppercase px-2 py-0.5 rounded-md sm:rounded-lg ${
+                          isOptimized
+                            ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                            : "bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/20"
+                        }`}
+                      >
+                        {isOptimized ? "ATS Optimized" : "Needs Rewrite"}
+                      </span>
+                    </div>
 
-                      {/* Live Streaming Typewriter Bullet Display */}
-                      <div className="p-4 rounded-2xl bg-white dark:bg-zinc-950 border border-gray-200/80 dark:border-white/5 font-mono text-xs sm:text-sm leading-relaxed text-gray-800 dark:text-zinc-200 min-h-[115px] flex items-center relative">
-                        <p className="font-sans font-medium">
-                          {isOptimized ? (
-                            <>
-                              {streamText.split(" ").length > 0 && (
-                                <span className="font-black text-blue-600 dark:text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded-md mr-1">
-                                  {streamText.split(" ")[0]}
-                                </span>
-                              )}
-                              {streamText.split(" ").slice(1).join(" ")}
-                            </>
-                          ) : (
-                            <span className="text-gray-500 dark:text-zinc-400 italic">
-                              "{streamText}"
-                            </span>
-                          )}
-                          {/* Streaming Blinking Cursor */}
-                          <motion.span
-                            animate={{ opacity: [1, 0, 1] }}
-                            transition={{ repeat: Infinity, duration: 0.6 }}
-                            className="inline-block w-2 h-4 ml-1 bg-blue-500 align-middle rounded-xs"
-                          />
-                        </p>
-                      </div>
+                    {/* Live Streaming Typewriter Bullet Display */}
+                    <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white dark:bg-zinc-950 border border-gray-200/80 dark:border-white/5 font-mono text-xs sm:text-sm leading-relaxed text-gray-800 dark:text-zinc-200 min-h-[85px] sm:min-h-[115px] flex items-center relative">
+                      <p className="font-sans font-medium">
+                        {isOptimized ? (
+                          <>
+                            {streamText.split(" ").length > 0 && (
+                              <span className="font-black text-blue-600 dark:text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded-md mr-1">
+                                {streamText.split(" ")[0]}
+                              </span>
+                            )}
+                            {streamText.split(" ").slice(1).join(" ")}
+                          </>
+                        ) : (
+                          <span className="text-gray-500 dark:text-zinc-400 italic">
+                            "{streamText}"
+                          </span>
+                        )}
+                        <motion.span
+                          animate={{ opacity: [1, 0, 1] }}
+                          transition={{ repeat: Infinity, duration: 0.6 }}
+                          className="inline-block w-1.5 h-3.5 sm:w-2 sm:h-4 ml-1 bg-blue-500 align-middle rounded-xs"
+                        />
+                      </p>
+                    </div>
 
-                      {/* Flagged issues / Keyword tags */}
+                    {/* Action Bar */}
+                    <div className="pt-2 sm:pt-4 flex flex-wrap items-center justify-between gap-2.5 border-t border-gray-200/80 dark:border-white/5">
                       {!isOptimized ? (
-                        <div className="space-y-2 pt-2">
-                          <span className="text-[11px] font-black uppercase text-rose-500 flex items-center gap-1">
-                            <AlertTriangle className="w-3.5 h-3.5" />
-                            Detected ATS Deficiencies:
-                          </span>
-                          <div className="space-y-1.5">
-                            {demoPresets[selectedPreset].beforeIssues.map((issue, idx) => (
-                              <motion.div
-                                key={idx}
-                                initial={{ opacity: 0, x: -6 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ duration: 0.25, delay: idx * 0.08 }}
-                                className="flex items-center gap-2 text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-500/10 px-3 py-1.5 rounded-xl border border-rose-500/20"
-                              >
-                                <span>✕</span>
-                                <span>{issue}</span>
-                              </motion.div>
-                            ))}
-                          </div>
-                        </div>
+                        <button
+                          onClick={handleTriggerAIOptimize}
+                          disabled={isScanning}
+                          className="inline-flex items-center gap-1.5 px-4 sm:px-6 py-2 sm:py-3 rounded-xl sm:rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black text-xs sm:text-sm shadow-md cursor-pointer"
+                        >
+                          <Zap className="w-3.5 h-3.5 fill-current" />
+                          <span>{isScanning ? "Scanning..." : "⚡ Run AI Optimize"}</span>
+                        </button>
                       ) : (
-                        <div className="space-y-2 pt-2">
-                          <span className="text-[11px] font-black uppercase text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                            <CheckCircle2 className="w-3.5 h-3.5" />
-                            Verified ATS Keywords Extracted:
-                          </span>
-                          <div className="flex flex-wrap gap-1.5">
-                            {demoPresets[selectedPreset].extractedKeywords.map((kw, idx) => (
-                              <motion.span
-                                key={idx}
-                                initial={{ opacity: 0, scale: 0.8, y: 4 }}
-                                animate={{ opacity: 1, scale: 1, y: 0 }}
-                                transition={{ duration: 0.25, delay: idx * 0.06 }}
-                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20 shadow-2xs"
-                              >
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() =>
+                              handleCopyOptimizedText(
+                                demoPresets[selectedPreset].optimizedBullet
+                              )
+                            }
+                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg sm:rounded-xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold text-xs shadow-xs cursor-pointer"
+                          >
+                            {copiedBullet ? (
+                              <>
                                 <Check className="w-3 h-3 text-emerald-500" />
-                                {kw}
-                              </motion.span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
+                                <span>Copied!</span>
+                              </>
+                            ) : (
+                              <>
+                                <Copy className="w-3 h-3" />
+                                <span>Copy</span>
+                              </>
+                            )}
+                          </button>
 
-                      {/* Action Bar */}
-                      <div className="pt-4 flex flex-wrap items-center justify-between gap-3 border-t border-gray-200/80 dark:border-white/5">
-                        {!isOptimized ? (
                           <button
                             onClick={handleTriggerAIOptimize}
-                            disabled={isScanning}
-                            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black text-xs sm:text-sm shadow-lg shadow-blue-500/25 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                            className="inline-flex items-center gap-1 px-3 py-2 rounded-lg sm:rounded-xl bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 font-bold text-xs cursor-pointer"
                           >
-                            <Zap className="w-4 h-4 fill-current" />
-                            <span>{isScanning ? "Scanning & Rewriting..." : "⚡ Run AI Bullet Optimization"}</span>
+                            <RefreshCw className={`w-3 h-3 ${isScanning ? "animate-spin" : ""}`} />
+                            <span>Re-Scan</span>
                           </button>
-                        ) : (
-                          <>
-                            <button
-                              onClick={() =>
-                                handleCopyOptimizedText(
-                                  demoPresets[selectedPreset].optimizedBullet
-                                )
-                              }
-                              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold text-xs shadow-md transition-all hover:scale-105 active:scale-95 cursor-pointer"
-                            >
-                              {copiedBullet ? (
-                                <>
-                                  <Check className="w-3.5 h-3.5 text-emerald-500" />
-                                  <span>Copied to Clipboard!</span>
-                                </>
-                              ) : (
-                                <>
-                                  <Copy className="w-3.5 h-3.5" />
-                                  <span>Copy Bullet</span>
-                                </>
-                              )}
-                            </button>
+                        </div>
+                      )}
 
-                            <button
-                              onClick={handleTriggerAIOptimize}
-                              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 font-bold text-xs hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
-                            >
-                              <RefreshCw className={`w-3.5 h-3.5 ${isScanning ? "animate-spin" : ""}`} />
-                              <span>Re-Analyze</span>
-                            </button>
-                          </>
-                        )}
-
-                        <Link
-                          to="/ats-analyzer"
-                          className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline"
-                        >
-                          <span>Full Resume Diagnostic Scan</span>
-                          <ArrowRight className="w-3.5 h-3.5" />
-                        </Link>
-                      </div>
+                      <Link
+                        to="/ats-analyzer"
+                        className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline"
+                      >
+                        <span>Full Scanner</span>
+                        <ArrowRight className="w-3 h-3" />
+                      </Link>
                     </div>
                   </div>
 
                   {/* Right: Diagnostic HUD Terminal & Score Gauge */}
-                  <div className="lg:col-span-5 p-6 sm:p-7 rounded-3xl bg-gradient-to-br from-blue-500/5 via-indigo-500/5 to-purple-500/5 dark:from-zinc-900/90 dark:to-zinc-900/50 border border-gray-200/90 dark:border-white/10 space-y-6">
+                  <div className="lg:col-span-5 p-3.5 sm:p-7 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-blue-500/5 via-indigo-500/5 to-purple-500/5 dark:from-zinc-900/90 dark:to-zinc-900/50 border border-gray-200/90 dark:border-white/10 space-y-3 sm:space-y-6">
                     {/* Circular Score Gauge & Top Badge */}
                     <div className="flex items-center justify-between">
-                      <div className="space-y-1">
-                        <span className="text-xs font-black uppercase tracking-wider text-blue-600 dark:text-blue-400">
-                          ATS Diagnostic Rating
+                      <div className="space-y-0.5 sm:space-y-1">
+                        <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-blue-600 dark:text-blue-400">
+                          Diagnostic Rating
                         </span>
-                        <h4 className="text-lg sm:text-xl font-black text-gray-900 dark:text-white">
+                        <h4 className="text-sm sm:text-xl font-black text-gray-900 dark:text-white">
                           {displayScore >= 90 ? "Guaranteed Top 1% Match" : "High Risk of Rejection"}
                         </h4>
                       </div>
 
-                      {/* Glowing Circular Gauge with Smooth Interpolated Score */}
-                      <div className="relative w-20 h-20 flex items-center justify-center">
+                      {/* Score Gauge */}
+                      <div className="relative w-14 h-14 sm:w-20 sm:h-20 flex items-center justify-center shrink-0">
                         <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
-                          <defs>
-                            <filter id="gauge-glow" x="-20%" y="-20%" width="140%" height="140%">
-                              <feGaussianBlur stdDeviation="1.5" result="blur" />
-                              <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                            </filter>
-                          </defs>
                           <path
                             className="text-gray-200 dark:text-zinc-700"
                             strokeWidth="3.5"
@@ -1016,7 +883,6 @@ export default function Home() {
                             d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                           />
                           <path
-                            filter="url(#gauge-glow)"
                             className={`transition-all duration-300 ${
                               displayScore >= 85 ? "text-emerald-500" : "text-rose-500"
                             }`}
@@ -1029,98 +895,14 @@ export default function Home() {
                           />
                         </svg>
                         <div className="absolute flex flex-col items-center justify-center">
-                          <span className="text-lg font-black text-gray-900 dark:text-white leading-none">
+                          <span className="text-sm sm:text-lg font-black text-gray-900 dark:text-white leading-none">
                             {displayScore}
                           </span>
-                          <span className="text-[9px] uppercase font-bold text-gray-500 dark:text-zinc-400">
+                          <span className="text-[8px] sm:text-[9px] uppercase font-bold text-gray-500 dark:text-zinc-400">
                             / 100
                           </span>
                         </div>
                       </div>
-                    </div>
-
-                    {/* Parser Compliance Matrix */}
-                    <div className="p-4 rounded-2xl bg-white dark:bg-zinc-800/80 border border-gray-200/80 dark:border-white/5 space-y-2.5">
-                      <span className="text-[11px] font-black uppercase text-gray-500 dark:text-zinc-400 tracking-wider">
-                        Enterprise ATS Compatibility Matrix
-                      </span>
-                      <div className="grid grid-cols-3 gap-2 text-center">
-                        {demoPresets[selectedPreset].compliance.map((c, i) => (
-                          <div
-                            key={i}
-                            className="p-2 rounded-xl bg-gray-50 dark:bg-zinc-900 border border-gray-100 dark:border-white/5"
-                          >
-                            <span className="block text-[11px] font-bold text-gray-600 dark:text-zinc-400">
-                              {c.name}
-                            </span>
-                            <span
-                              className={`text-xs font-black ${
-                                isOptimized
-                                  ? "text-emerald-600 dark:text-emerald-400"
-                                  : "text-rose-500"
-                              }`}
-                            >
-                              {isOptimized ? `${c.score}%` : "42%"}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Metric Breakdown Bars */}
-                    <div className="space-y-3">
-                      <div>
-                        <div className="flex justify-between text-xs font-bold text-gray-700 dark:text-zinc-300 mb-1">
-                          <span>Action Verb Impact</span>
-                          <span className={isOptimized ? "text-emerald-500" : "text-rose-500"}>
-                            {isOptimized ? `${demoPresets[selectedPreset].actionVerbs}%` : "40%"}
-                          </span>
-                        </div>
-                        <div className="w-full h-2 rounded-full bg-gray-200 dark:bg-zinc-700 overflow-hidden">
-                          <div
-                            className={`h-full transition-all duration-500 ${
-                              isOptimized
-                                ? "bg-gradient-to-r from-emerald-500 to-teal-500"
-                                : "bg-rose-500"
-                            }`}
-                            style={{
-                              width: `${isOptimized ? demoPresets[selectedPreset].actionVerbs : 40}%`,
-                            }}
-                          />
-                        </div>
-                      </div>
-
-                      <div>
-                        <div className="flex justify-between text-xs font-bold text-gray-700 dark:text-zinc-300 mb-1">
-                          <span>Quantified Business Metrics</span>
-                          <span className={isOptimized ? "text-blue-500" : "text-rose-500"}>
-                            {isOptimized ? `${demoPresets[selectedPreset].metrics}%` : "25%"}
-                          </span>
-                        </div>
-                        <div className="w-full h-2 rounded-full bg-gray-200 dark:bg-zinc-700 overflow-hidden">
-                          <div
-                            className={`h-full transition-all duration-500 ${
-                              isOptimized
-                                ? "bg-gradient-to-r from-blue-500 to-indigo-500"
-                                : "bg-rose-500"
-                            }`}
-                            style={{
-                              width: `${isOptimized ? demoPresets[selectedPreset].metrics : 25}%`,
-                            }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* AI Coach Tip Banner */}
-                    <div className="p-3.5 rounded-2xl bg-white dark:bg-zinc-800/80 border border-blue-500/20 text-xs font-medium text-gray-700 dark:text-zinc-300 flex items-start gap-2.5">
-                      <Sparkles className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-                      <p>
-                        <strong className="text-gray-900 dark:text-white">AI Diagnostic Tip:</strong>{" "}
-                        {isOptimized
-                          ? demoPresets[selectedPreset].tip
-                          : "Rewrite passive phrasing with strong action verbs and exact quantifiable impact metrics."}
-                      </p>
                     </div>
                   </div>
                 </div>
@@ -1129,28 +911,25 @@ export default function Home() {
 
             {/* TAB 2: INTERACTIVE 11-TEMPLATE LIVE STUDIO CANVAS */}
             {demoTab === "templates" && (
-              <div className="p-6 sm:p-10 space-y-8 animate-fadeIn">
+              <div className="p-3.5 sm:p-6 lg:p-10 space-y-4 sm:space-y-8 animate-fadeIn">
                 {/* Auto-Play Studio Module Progress Bar */}
                 {isAutoTour && (
-                  <div className="space-y-2 p-3.5 rounded-2xl bg-blue-500/5 dark:bg-blue-950/20 border border-blue-500/15">
-                    <div className="flex items-center justify-between text-[11px] font-bold text-gray-600 dark:text-zinc-400">
-                      <div className="flex items-center gap-2">
-                        <Video className="w-3.5 h-3.5 text-blue-500 animate-pulse" />
-                        <span>Interactive Studio Auto-Tour:</span>
-                        <strong className="text-gray-900 dark:text-white capitalize">
-                          Module 2: 11-Template Live Studio ({selectedDemoTemplate.replace("-", " ")})
+                  <div className="space-y-1.5 sm:space-y-2 p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl bg-blue-500/5 dark:bg-blue-950/20 border border-blue-500/15">
+                    <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-bold text-gray-600 dark:text-zinc-400">
+                      <div className="flex items-center gap-1.5 sm:gap-2 truncate">
+                        <Video className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-500 animate-pulse shrink-0" />
+                        <span className="hidden sm:inline">Interactive Studio:</span>
+                        <strong className="text-gray-900 dark:text-white capitalize truncate">
+                          Module 2: 11-Templates ({selectedDemoTemplate.replace("-", " ")})
                         </strong>
                       </div>
-                      <span className="px-2.5 py-0.5 rounded-md font-bold uppercase text-[10px] bg-blue-500/15 text-blue-500">
-                        Live Color & Layout Customizer (Next: Portfolio Sandbox)
-                      </span>
                     </div>
-                    <div className="grid grid-cols-3 gap-2 pt-1">
-                      <div className="h-1.5 rounded-full bg-blue-600" />
-                      <div className="h-1.5 rounded-full bg-gray-200 dark:bg-zinc-800 overflow-hidden">
+                    <div className="grid grid-cols-3 gap-1.5 pt-0.5">
+                      <div className="h-1 sm:h-1.5 rounded-full bg-blue-600" />
+                      <div className="h-1 sm:h-1.5 rounded-full bg-gray-200 dark:bg-zinc-800 overflow-hidden">
                         <div className="h-full bg-blue-500 w-full animate-pulse" />
                       </div>
-                      <div className="h-1.5 rounded-full bg-gray-200 dark:bg-zinc-800 overflow-hidden">
+                      <div className="h-1 sm:h-1.5 rounded-full bg-gray-200 dark:bg-zinc-800 overflow-hidden">
                         <div className="h-full bg-gray-300 dark:bg-zinc-700 w-0" />
                       </div>
                     </div>
@@ -1158,12 +937,12 @@ export default function Home() {
                 )}
 
                 {/* Template Studio Controls Toolbar */}
-                <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-zinc-900/90 border border-gray-200/90 dark:border-white/10">
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs font-black uppercase text-gray-500 dark:text-zinc-400">
-                      Accent Color:
+                <div className="flex flex-wrap items-center justify-between gap-2.5 sm:gap-4 p-2.5 sm:p-4 rounded-xl sm:rounded-2xl bg-gray-50 dark:bg-zinc-900/90 border border-gray-200/90 dark:border-white/10">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <span className="text-[10px] sm:text-xs font-black uppercase text-gray-500 dark:text-zinc-400">
+                      Color:
                     </span>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 sm:gap-2">
                       {[
                         { id: "indigo", hex: "#4f46e5", bgClass: "bg-indigo-600", label: "Indigo" },
                         { id: "emerald", hex: "#059669", bgClass: "bg-emerald-600", label: "Emerald" },
@@ -1178,9 +957,9 @@ export default function Home() {
                             setSelectedTemplateAccent(c.id);
                             setIsAutoTour(false);
                           }}
-                          className={`w-7 h-7 rounded-full ${c.bgClass} transition-all cursor-pointer shadow-sm ${
+                          className={`w-5 h-5 sm:w-7 sm:h-7 rounded-full ${c.bgClass} transition-all cursor-pointer shadow-xs ${
                             selectedTemplateAccent === c.id
-                              ? "ring-3 ring-offset-2 ring-blue-500 scale-115"
+                              ? "ring-2 ring-offset-1 ring-blue-500 scale-110"
                               : "opacity-75 hover:opacity-100 hover:scale-105"
                           }`}
                         />
@@ -1188,67 +967,67 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-black uppercase text-gray-500 dark:text-zinc-400">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <span className="text-[10px] sm:text-xs font-black uppercase text-gray-500 dark:text-zinc-400">
                       Layout:
                     </span>
-                    <div className="flex p-1 rounded-xl bg-gray-200 dark:bg-zinc-800">
+                    <div className="flex p-0.5 rounded-lg sm:rounded-xl bg-gray-200 dark:bg-zinc-800">
                       <button
                         onClick={() => {
                           setSelectedTemplateLayout("single");
                           setIsAutoTour(false);
                         }}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg text-[10px] sm:text-xs font-bold transition-all cursor-pointer ${
                           selectedTemplateLayout === "single"
                             ? "bg-white dark:bg-zinc-900 text-gray-900 dark:text-white shadow-xs font-black"
                             : "text-gray-600 dark:text-zinc-400 hover:text-gray-900"
                         }`}
                       >
-                        Single-Column (Max ATS)
+                        Single (Max ATS)
                       </button>
                       <button
                         onClick={() => {
                           setSelectedTemplateLayout("dual");
                           setIsAutoTour(false);
                         }}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg text-[10px] sm:text-xs font-bold transition-all cursor-pointer ${
                           selectedTemplateLayout === "dual"
                             ? "bg-white dark:bg-zinc-900 text-gray-900 dark:text-white shadow-xs font-black"
                             : "text-gray-600 dark:text-zinc-400 hover:text-gray-900"
                         }`}
                       >
-                        Dual-Column (Executive)
+                        Dual (Executive)
                       </button>
                     </div>
                   </div>
                 </div>
 
                 {/* Main Studio Workspace: Details on Left, Live Canvas on Right */}
-                <div className="grid lg:grid-cols-12 gap-8 items-center">
-                  <div className="lg:col-span-5 space-y-4">
-                    <div className="space-y-2">
-                      <span className="text-xs font-black uppercase text-blue-600 dark:text-blue-400">
+                <div className="grid lg:grid-cols-12 gap-4 sm:gap-8 items-center">
+                  <div className="lg:col-span-5 space-y-2.5 sm:space-y-4">
+                    <div className="space-y-1 sm:space-y-2">
+                      <span className="text-[10px] sm:text-xs font-black uppercase text-blue-600 dark:text-blue-400">
                         Template Profile
                       </span>
-                      <h3 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white capitalize">
+                      <h3 className="text-xl sm:text-3xl font-black text-gray-900 dark:text-white capitalize">
                         {selectedDemoTemplate.replace("-", " ")} Template
                       </h3>
                       <p className="text-xs sm:text-sm text-gray-600 dark:text-zinc-400 leading-relaxed font-medium">
-                        Engineered specifically for engineering, product, and leadership roles. Fully compliant with 2026 ATS parsing standards across Greenhouse, Workday, and Lever.
+                        Engineered specifically for engineering, product, and leadership roles. Fully compliant with 2026 ATS standards.
                       </p>
                     </div>
 
-                    <div className="space-y-2 pt-2">
-                      <div className="flex items-center gap-2 text-xs font-bold text-gray-700 dark:text-zinc-300">
-                        <Check className="w-4 h-4 text-emerald-500" />
+                    <div className="space-y-1 sm:space-y-2 pt-1">
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-gray-700 dark:text-zinc-300">
+                        <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
                         <span>100% Machine-Readable Vector Flow</span>
                       </div>
-                      <div className="flex items-center gap-2 text-xs font-bold text-gray-700 dark:text-zinc-300">
-                        <Check className="w-4 h-4 text-emerald-500" />
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-gray-700 dark:text-zinc-300">
+                        <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
                         <span>Dynamic Page-Break & Font Scaler</span>
                       </div>
-                      <div className="flex items-center gap-2 text-xs font-bold text-gray-700 dark:text-zinc-300">
-                        <Check className="w-4 h-4 text-emerald-500" />
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-gray-700 dark:text-zinc-300">
+                        <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
                         <span>Auto-Formatted Section Hierarchy</span>
                       </div>
                     </div>
