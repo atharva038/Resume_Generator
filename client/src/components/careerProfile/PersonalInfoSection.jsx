@@ -20,7 +20,7 @@ export default function PersonalInfoSection({ profile, setProfile, onOpenAIModal
     }
     navigator.clipboard.writeText(val);
     setCopiedField(key);
-    toast.success(`Copied ${label}!`, { icon: "📋", duration: 1500 });
+    toast.success(`Copied ${label} to clipboard`);
     setTimeout(() => setCopiedField(null), 1500);
   };
 

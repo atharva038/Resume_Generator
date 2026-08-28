@@ -519,3 +519,43 @@
   --pt-text: #f5f3ff;
   --pt-text-muted: #c4b5fd;
 }
+
+/* ==========================================================================
+   PREMIUM THEME-AWARE TOAST NOTIFICATIONS
+   ========================================================================== */
+.custom-theme-toast {
+  background: rgba(255, 255, 255, 0.95) !important;
+  color: #09090b !important;
+  border: 1px solid rgba(228, 228, 231, 0.9) !important;
+  border-radius: 16px !important;
+  padding: 12px 18px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.06) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.dark .custom-theme-toast {
+  background: rgba(9, 9, 11, 0.95) !important;
+  color: #fafafa !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.7), 0 0 15px 1px rgba(255, 255, 255, 0.03) !important;
+}
+
+.custom-theme-toast-success {
+  border-color: rgba(16, 185, 129, 0.35) !important;
+}
+.dark .custom-theme-toast-success {
+  border-color: rgba(16, 185, 129, 0.35) !important;
+  box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.7), 0 0 20px -2px rgba(16, 185, 129, 0.15) !important;
+}
+
+.custom-theme-toast-error {
+  border-color: rgba(244, 63, 94, 0.35) !important;
+}
+.dark .custom-theme-toast-error {
+  border-color: rgba(244, 63, 94, 0.35) !important;
+  box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.7), 0 0 20px -2px rgba(244, 63, 94, 0.15) !important;
+}

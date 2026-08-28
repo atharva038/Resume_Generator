@@ -24,7 +24,7 @@ export default function SkillsSection({
     }
     navigator.clipboard.writeText(text);
     setCopiedKey(key);
-    toast.success(`Copied ${label} to clipboard!`, { icon: "📋", duration: 1500 });
+    toast.success(`Copied ${label} to clipboard`);
     setTimeout(() => setCopiedKey(null), 1500);
   };
 
