@@ -41,7 +41,7 @@ const ModernFresherTheme = ({data}) => {
                 key={`${item.institution}-${index}`}
                 className="min-w-0 rounded-lg border border-gray-200 bg-white p-5"
               >
-                <BookOpen className="mb-4 h-6 w-6 text-sky-700" />
+                <BookOpen className="pt-accent-text mb-4 h-6 w-6 text-[var(--pt-accent)]" />
                 <h3 className="break-words text-lg font-black">
                   {item.institution}
                 </h3>
@@ -86,7 +86,7 @@ const ModernFresherTheme = ({data}) => {
                 key={project.id}
                 className="min-w-0 rounded-lg border border-gray-200 bg-white p-5"
               >
-                <div className="mb-4 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-sky-100 text-sm font-black text-sky-900">
+                <div className="pt-accent-surface pt-accent-text mb-4 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--pt-accent-dim)] text-sm font-black text-[var(--pt-accent)]">
                   {index + 1}
                 </div>
                 <h3 className="break-words text-xl font-black">{project.title}</h3>
@@ -166,7 +166,7 @@ const ModernFresherTheme = ({data}) => {
                 key={`${item.name}-${index}`}
                 className="min-w-0 rounded-lg border border-gray-200 bg-white p-5"
               >
-                <Award className="mb-3 h-5 w-5 text-amber-700" />
+                <Award className="pt-accent-text mb-3 h-5 w-5 text-[var(--pt-accent)]" />
                 <h3 className="break-words font-black">{item.name}</h3>
                 <p className="mt-1 break-words text-gray-600">{item.issuer}</p>
               </article>
@@ -218,14 +218,14 @@ const ModernFresherTheme = ({data}) => {
         <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
           <div className="grid gap-10 lg:grid-cols-[1fr_360px] lg:items-center">
             <div>
-              <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-amber-100 px-3 py-1.5 text-sm font-bold text-amber-900">
+              <div className="pt-accent-surface pt-accent-text mb-5 inline-flex items-center gap-2 rounded-full bg-[var(--pt-accent-dim)] px-3 py-1.5 text-sm font-bold text-[var(--pt-accent)]">
                 <Sparkles className="h-4 w-4" />
                 Open to opportunities
               </div>
               <h1 className="break-words text-3xl font-black sm:text-5xl lg:text-6xl">
                 {profile.name}
               </h1>
-              <p className="mt-4 text-xl font-bold text-sky-800">
+              <p className="pt-accent-text mt-4 text-xl font-bold text-[var(--pt-accent)]">
                 {profile.title || "Early Career Professional"}
               </p>
               {profile.tagline && (
@@ -238,14 +238,14 @@ const ModernFresherTheme = ({data}) => {
                   profile={profile}
                   settings={settings}
                   actions={actions}
-                  primaryClassName="bg-sky-700 text-white hover:bg-sky-800"
-                  secondaryClassName="border-gray-300 text-gray-950 hover:bg-gray-50"
+                  primaryClassName="pt-accent-fill bg-[var(--pt-accent)] text-[var(--pt-accent-text)] hover:opacity-90"
+                  secondaryClassName="border-gray-300 text-gray-950 hover:bg-gray-50 dark:border-zinc-600 dark:text-zinc-100 dark:hover:bg-zinc-800"
                 />
               </div>
             </div>
 
-            <aside className="rounded-lg border border-sky-100 bg-sky-50 p-5">
-              <div className="mb-4 flex items-center gap-2 text-sm font-black text-sky-900">
+            <aside className="pt-accent-surface rounded-lg border border-[var(--pt-accent-dim)] bg-[var(--pt-accent-dim)] p-5">
+              <div className="pt-accent-text mb-4 flex items-center gap-2 text-sm font-black text-[var(--pt-accent)]">
                 <GraduationCap className="h-5 w-5" />
                 Learning Profile
               </div>

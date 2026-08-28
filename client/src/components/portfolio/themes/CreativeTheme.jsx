@@ -58,8 +58,8 @@ const MagneticButton = ({children, onClick, href, className, target, rel}) => {
     <Component
       ref={ref}
       href={href}
-      target={target}
-      rel={rel}
+      target={href ? target || "_blank" : undefined}
+      rel={href ? rel || "noreferrer" : undefined}
       onClick={onClick}
       onMouseMove={handleMouse}
       onMouseLeave={reset}

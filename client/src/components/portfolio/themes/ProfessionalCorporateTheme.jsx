@@ -58,7 +58,7 @@ const ProfessionalCorporateTheme = ({data}) => {
                   <ul className="mt-5 grid gap-3 md:grid-cols-2">
                     {item.bullets.map((bullet) => (
                       <li key={bullet} className="flex min-w-0 gap-3 text-gray-700 dark:text-gray-300">
-                        <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-emerald-700" />
+                        <CheckCircle2 className="pt-accent-text mt-0.5 h-4 w-4 flex-shrink-0 text-[var(--pt-accent)]" />
                         <span className="break-words">{bullet}</span>
                       </li>
                     ))}
@@ -130,7 +130,7 @@ const ProfessionalCorporateTheme = ({data}) => {
                   </p>
                 )}
                 {project.impact && (
-                  <p className="mt-4 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 p-3 text-sm font-semibold text-emerald-900 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/50 break-words">
+                  <p className="pt-accent-surface pt-accent-text mt-4 rounded-lg bg-[var(--pt-accent-dim)] p-3 text-sm font-semibold text-[var(--pt-accent)] border border-[var(--pt-accent)] break-words">
                     {project.impact}
                   </p>
                 )}

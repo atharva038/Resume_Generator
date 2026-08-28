@@ -53,7 +53,7 @@ const MinimalDeveloperTheme = ({data}) => {
                     {project.technologies.map((tech) => (
                       <span
                         key={tech}
-                        className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-800"
+                        className="pt-accent-surface pt-accent-text rounded-full bg-[var(--pt-accent-dim)] px-2.5 py-1 text-xs font-bold text-[var(--pt-accent)]"
                       >
                         {tech}
                       </span>
@@ -222,7 +222,7 @@ const MinimalDeveloperTheme = ({data}) => {
           </div>
 
           <aside className="rounded-lg border border-gray-200 bg-gray-950 p-5 text-white">
-            <div className="mb-4 flex items-center gap-2 text-sm font-bold text-emerald-300">
+            <div className="pt-accent-text mb-4 flex items-center gap-2 text-sm font-bold text-[var(--pt-accent)]">
               <Code2 className="h-4 w-4" />
               Stack Snapshot
             </div>

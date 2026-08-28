@@ -27,7 +27,7 @@ export const ContactActions = ({
     primaryClassName ||
     (dark
       ? "bg-white text-gray-950 hover:bg-gray-100"
-      : "bg-gray-950 text-white hover:bg-gray-800");
+      : "pt-accent-fill bg-[var(--pt-accent)] text-[var(--pt-accent-text)] hover:opacity-90");
   const secondary =
     secondaryClassName ||
     (dark
@@ -39,6 +39,8 @@ export const ContactActions = ({
       {profile.email && profile.showEmail && (
         <a
           href={`mailto:${profile.email}`}
+          target="_blank"
+          rel="noreferrer"
           onClick={actions.onContactClick}
           className={`inline-flex min-w-0 items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-semibold transition-colors sm:justify-start ${primary}`}
         >
@@ -49,6 +51,8 @@ export const ContactActions = ({
       {profile.phone && profile.showPhone && (
         <a
           href={`tel:${profile.phone}`}
+          target="_blank"
+          rel="noreferrer"
           onClick={actions.onContactClick}
           className={`inline-flex min-w-0 items-center justify-center gap-2 rounded-lg border px-4 py-3 text-sm font-semibold transition-colors sm:justify-start ${secondary}`}
         >
@@ -61,6 +65,8 @@ export const ContactActions = ({
           <a
             href={actions.resumeDownloadUrl}
             download
+            target="_blank"
+            rel="noreferrer"
             onClick={actions.onResumeClick}
             className={`inline-flex min-w-0 items-center justify-center gap-2 rounded-lg border px-4 py-3 text-sm font-semibold transition-colors sm:justify-start ${secondary}`}
           >
@@ -105,7 +111,7 @@ export const SocialLinks = ({
             onClick={onClick}
             className={
               itemClassName ||
-              "inline-flex min-w-0 items-center justify-center gap-2 rounded-lg border border-gray-300 px-4 py-3 text-sm font-semibold text-gray-950 hover:bg-gray-50 sm:justify-start"
+              "pt-accent-surface pt-accent-text inline-flex min-w-0 items-center justify-center gap-2 rounded-lg border border-[var(--pt-accent)] px-4 py-3 text-sm font-semibold text-[var(--pt-accent)] hover:bg-[var(--pt-accent-dim)] sm:justify-start"
             }
           >
             <Icon className="h-4 w-4" />

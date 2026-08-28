@@ -37,7 +37,6 @@
         "@types/react-dom": "^18.3.5",
         "@vitejs/plugin-react": "^4.3.4",
         "autoprefixer": "^10.4.20",
-        "baseline-browser-mapping": "^2.9.7",
         "eslint": "^9.39.1",
         "eslint-plugin-react": "^7.37.5",
         "eslint-plugin-react-hooks": "^7.0.1",
