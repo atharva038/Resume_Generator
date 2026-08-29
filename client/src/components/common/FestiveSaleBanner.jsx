@@ -11,19 +11,11 @@ export default function FestiveSaleBanner({ promotion, onDismiss }) {
   });
   const [dismissed, setDismissed] = useState(false);
 
-  const promo = promotion || {
-    enabled: true,
-    title: "Raksha Bandhan Special Sale 🎁✨",
-    tagline: "Celebrate Raksha Bandhan with an ATS-crushing resume at flat 82% OFF!",
-    badgeText: "RAKHI FESTIVE SPECIAL",
-    theme: "rakhi-festive",
-    oneTimePrice: 9,
-    originalOneTimePrice: 49,
-    endDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-    ctaText: "Claim ₹9 Resume Deal",
-  };
+  const promo = promotion;
 
   useEffect(() => {
+    if (!promo || !promo.enabled) return;
+
     const calculateTimeLeft = () => {
       const targetDate = promo.endDate
         ? new Date(promo.endDate).getTime()
@@ -46,9 +38,9 @@ export default function FestiveSaleBanner({ promotion, onDismiss }) {
     calculateTimeLeft();
     const timer = setInterval(calculateTimeLeft, 1000);
     return () => clearInterval(timer);
-  }, [promo.endDate]);
+  }, [promo?.endDate, promo?.enabled]);
 
-  if (!promo.enabled || dismissed) {
+  if (!promo || !promo.enabled || dismissed) {
     return null;
   }
 

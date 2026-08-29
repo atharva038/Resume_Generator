@@ -2579,7 +2579,7 @@ export const getSettings = async (req, res) => {
 export const updateSettings = async (req, res) => {
   try {
     const updates = req.body;
-    const adminId = req.user.id;
+    const adminId = req.user?.userId || req.user?._id || req.user?.id;
 
     let settings = await Settings.getSettings();
 
@@ -2595,7 +2595,13 @@ export const updateSettings = async (req, res) => {
       }
     });
 
-    settings.lastUpdatedBy = adminId;
+    if (adminId) {
+      settings.lastUpdatedBy = adminId;
+    }
+    settings.markModified("promotion");
+    settings.markModified("features");
+    settings.markModified("aiQuota");
+    settings.markModified("rateLimits");
     await settings.save();
 
     res.json({
@@ -2614,13 +2620,15 @@ export const updateSettings = async (req, res) => {
  */
 export const resetSettings = async (req, res) => {
   try {
-    const adminId = req.user.id;
+    const adminId = req.user?.userId || req.user?._id || req.user?.id;
 
     // Delete existing settings
     await Settings.deleteMany({});
 
     // Create new default settings
-    const settings = await Settings.create({lastUpdatedBy: adminId});
+    const settings = await Settings.create({
+      ...(adminId && {lastUpdatedBy: adminId}),
+    });
 
     res.json({
       message: "Settings reset to defaults successfully",
@@ -2735,7 +2743,11 @@ export const updateAIQuotaLimits = async (req, res) => {
     }
     settings.aiQuota[tier].daily = daily;
     settings.aiQuota[tier].monthly = monthly;
-    settings.lastUpdatedBy = req.user.id;
+    const adminId = req.user?.userId || req.user?._id || req.user?.id;
+    if (adminId) {
+      settings.lastUpdatedBy = adminId;
+    }
+    settings.markModified("aiQuota");
     await settings.save();
 
     res.json({
@@ -2764,7 +2776,11 @@ export const toggleFeature = async (req, res) => {
     }
 
     settings.features[feature] = enabled;
-    settings.lastUpdatedBy = req.user.id;
+    const adminId = req.user?.userId || req.user?._id || req.user?.id;
+    if (adminId) {
+      settings.lastUpdatedBy = adminId;
+    }
+    settings.markModified("features");
     await settings.save();
 
     res.json({
@@ -2798,7 +2814,11 @@ export const updateRateLimits = async (req, res) => {
     const settings = await Settings.getSettings();
     settings.rateLimits[category].windowMs = windowMs;
     settings.rateLimits[category].max = max;
-    settings.lastUpdatedBy = req.user.id;
+    const adminId = req.user?.userId || req.user?._id || req.user?.id;
+    if (adminId) {
+      settings.lastUpdatedBy = adminId;
+    }
+    settings.markModified("rateLimits");
     await settings.save();
 
     res.json({
@@ -2820,103 +2840,85 @@ export const getAIExtractionUsage = async (req, res) => {
     const {
       page = 1,
       limit = 20,
-      tier = "",
-      sortBy = "aiResumeExtractionsToday",
-      order = "desc",
+      tier = "all",
+      search = "",
+      sortBy = "usage",
     } = req.query;
 
-    // Build filter
-    const filter = {};
-    if (tier) {
-      filter["subscription.tier"] = tier;
+    const query = {isActive: true};
+    if (tier !== "all") {
+      query.tier = tier;
+    }
+    if (search) {
+      query.$or = [
+        {email: {$regex: search, $options: "i"}},
+        {name: {$regex: search, $options: "i"}},
+      ];
     }
 
-    // Build sort
-    const sort = {};
-    const sortField =
-      sortBy === "aiResumeExtractionsToday"
-        ? "usage.aiResumeExtractionsToday"
-        : sortBy;
-    sort[sortField] = order === "asc" ? 1 : -1;
+    const total = await User.countDocuments(query);
+    const users = await User.find(query)
+      .select("name email tier usage createdAt lastLoginAt")
+      .sort(
+        sortBy === "usage"
+          ? {"usage.aiResumeExtractionsToday": -1}
+          : sortBy === "total"
+          ? {"usage.aiResumeExtractions": -1}
+          : {createdAt: -1}
+      )
+      .skip((page - 1) * limit)
+      .limit(parseInt(limit));
 
-    const skip = (parseInt(page) - 1) * parseInt(limit);
+    // Get quota limits from system settings
+    const settings = await Settings.getSettings();
+    const quotaLimits = {
+      free: settings?.aiQuota?.free?.daily || 10,
+      "one-time": settings?.aiQuota?.["one-time"]?.daily || 150,
+      pro: settings?.aiQuota?.pro?.daily || 1000,
+    };
 
-    // Get users with extraction usage
-    const [users, total] = await Promise.all([
-      User.find(filter)
-        .select(
-          "name email subscription.tier usage.aiResumeExtractionsToday usage.lastDailyReset status"
-        )
-        .sort(sort)
-        .skip(skip)
-        .limit(parseInt(limit)),
-      User.countDocuments(filter),
-    ]);
-
-    // Add limit information to each user
     const usersWithLimits = users.map((user) => {
-      const limit = user.getUsageLimit("aiResumeExtractionsPerDay");
-      const used = user.usage?.aiResumeExtractionsToday || 0;
-      const percentage =
-        limit === Infinity || limit === 0
-          ? 0
-          : Math.round((used / limit) * 100);
-      const isAtLimit = limit !== Infinity && limit > 0 && used >= limit;
-      const rawTier = user.subscription?.tier || "free";
-      const tier = ACTIVE_SUBSCRIPTION_TIERS.includes(rawTier)
-        ? rawTier
-        : "free";
+      const userTier = user.tier || "free";
+      const dailyLimit = quotaLimits[userTier] || 10;
+      const extractionsToday = user.usage?.aiResumeExtractionsToday || 0;
+      const remainingToday = Math.max(0, dailyLimit - extractionsToday);
+      const isAtLimit = extractionsToday >= dailyLimit;
 
       return {
         _id: user._id,
         name: user.name,
         email: user.email,
-        tier,
-        status: user.status,
-        extractionsToday: used,
-        dailyLimit: limit,
-        limitPercentage: percentage,
+        tier: userTier,
+        extractionsToday,
+        totalExtractions: user.usage?.aiResumeExtractions || 0,
+        dailyLimit,
+        remainingToday,
         isAtLimit,
-        lastReset: user.usage?.lastDailyReset,
+        lastDailyReset: user.usage?.lastDailyReset || user.createdAt,
+        lastLoginAt: user.lastLoginAt,
       };
     });
 
-    // Get overview statistics
-    const allUsers = await User.find(filter).select(
-      "subscription.tier usage.aiResumeExtractionsToday"
+    // Aggregate statistics
+    const allActiveUsers = await User.find({isActive: true}).select(
+      "tier usage"
     );
-
     const overview = {
-      total: allUsers.length,
-      byTier: {
-        free: {
-          count: 0,
-          totalExtractions: 0,
-          atLimit: 0,
-        },
-        "one-time": {
-          count: 0,
-          totalExtractions: 0,
-          atLimit: 0,
-        },
-        pro: {
-          count: 0,
-          totalExtractions: 0,
-          atLimit: 0,
-        },
-      },
+      totalUsers: allActiveUsers.length,
       totalExtractionsToday: 0,
       totalUsersAtLimit: 0,
+      byTier: {
+        free: {count: 0, totalExtractions: 0, atLimit: 0},
+        "one-time": {count: 0, totalExtractions: 0, atLimit: 0},
+        pro: {count: 0, totalExtractions: 0, atLimit: 0},
+      },
     };
 
-    allUsers.forEach((user) => {
-      const rawTier = user.subscription?.tier || "free";
-      const tier = ACTIVE_SUBSCRIPTION_TIERS.includes(rawTier)
-        ? rawTier
-        : "free";
-      const used = user.usage?.aiResumeExtractionsToday || 0;
-      const limit = user.getUsageLimit("aiResumeExtractionsPerDay");
-      const isAtLimit = limit !== Infinity && limit > 0 && used >= limit;
+    allActiveUsers.forEach((u) => {
+      const tier = u.tier || "free";
+      const used = u.usage?.aiResumeExtractionsToday || 0;
+      const limit = quotaLimits[tier] || 10;
+      const isAtLimit = used >= limit;
 
       if (overview.byTier[tier]) {
         overview.byTier[tier].count++;
@@ -3013,7 +3015,7 @@ export const resetUserExtractionCounter = async (req, res) => {
 export const updatePromotionSettings = async (req, res) => {
   try {
     const promotionUpdates = req.body;
-    const adminId = req.user.id;
+    const adminId = req.user?.userId || req.user?._id || req.user?.id;
 
     const settings = await Settings.getSettings();
     if (!settings.promotion) {
@@ -3022,7 +3024,10 @@ export const updatePromotionSettings = async (req, res) => {
 
     // Merge updates into settings.promotion
     Object.assign(settings.promotion, promotionUpdates);
-    settings.lastUpdatedBy = adminId;
+    if (adminId) {
+      settings.lastUpdatedBy = adminId;
+    }
+    settings.markModified("promotion");
     await settings.save();
 
     res.json({
@@ -3047,7 +3052,7 @@ export const updatePromotionSettings = async (req, res) => {
 export const togglePromotion = async (req, res) => {
   try {
     const {enabled} = req.body;
-    const adminId = req.user.id;
+    const adminId = req.user?.userId || req.user?._id || req.user?.id;
 
     const settings = await Settings.getSettings();
     if (!settings.promotion) {
@@ -3056,7 +3061,10 @@ export const togglePromotion = async (req, res) => {
 
     settings.promotion.enabled =
       typeof enabled === "boolean" ? enabled : !settings.promotion.enabled;
-    settings.lastUpdatedBy = adminId;
+    if (adminId) {
+      settings.lastUpdatedBy = adminId;
+    }
+    settings.markModified("promotion");
     await settings.save();
 
     res.json({
@@ -3074,4 +3082,3 @@ export const togglePromotion = async (req, res) => {
     });
   }
 };
-
