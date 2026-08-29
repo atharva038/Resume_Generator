@@ -1,0 +1,17 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "SmartNShine ATS Resume",
+  "name_for_model": "smartnshine_ats",
+  "description_for_human": "Build ATS-optimized resumes and check ATS compatibility scores with AI.",
+  "description_for_model": "SmartNShine helps users generate, score, and optimize ATS resumes for software engineering, executive, and professional roles.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://www.smartnshine.app/openapi.json"
+  },
+  "logo_url": "https://www.smartnshine.app/favicon-orb.png",
+  "contact_email": "support@smartnshine.app",
+  "legal_info_url": "https://www.smartnshine.app/terms"
+}

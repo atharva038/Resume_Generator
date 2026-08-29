@@ -1,0 +1,19 @@
+{
+  "acpVersion": "1.0.0",
+  "agentId": "smartnshine-ats-builder",
+  "name": "SmartNShine",
+  "description": "AI-Powered ATS Resume Builder & Career Coach",
+  "url": "https://www.smartnshine.app",
+  "capabilities": [
+    "resume:generate",
+    "resume:analyze-ats-score",
+    "templates:list",
+    "interview:mock-practice"
+  ],
+  "endpoints": {
+    "manifest": "https://www.smartnshine.app/agents.json",
+    "openapi": "https://www.smartnshine.app/openapi.json",
+    "llms": "https://www.smartnshine.app/llms.txt",
+    "guide": "https://www.smartnshine.app/AGENTS.md"
+  }
+}
