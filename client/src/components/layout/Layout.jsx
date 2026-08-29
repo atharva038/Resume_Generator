@@ -21,9 +21,7 @@ const Layout = () => {
     const fetchPromo = async () => {
       try {
         const data = await getPricing();
-        if (data.promotion) {
-          setPromotion(data.promotion);
-        }
+        setPromotion(data?.promotion || null);
       } catch (err) {
         console.error("Failed to load promotion in Layout:", err);
       }

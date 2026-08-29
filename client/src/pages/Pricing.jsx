@@ -55,9 +55,7 @@ export default function Pricing() {
     try {
       const data = await getPricing();
       setPricing(data.pricing || data);
-      if (data.promotion) {
-        setPromotion(data.promotion);
-      }
+      setPromotion(data?.promotion || null);
     } catch (error) {
       toast.error("Failed to load pricing information");
       console.error("Pricing fetch error:", error);

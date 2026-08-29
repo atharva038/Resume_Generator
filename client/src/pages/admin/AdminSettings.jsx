@@ -23,7 +23,9 @@ import {
   ArrowRight,
   Eye,
   Calendar,
+  Loader2,
 } from "lucide-react";
+import toast from "react-hot-toast";
 import {
   getSettings,
   updateSettings,
@@ -39,6 +41,7 @@ export default function AdminSettings() {
   const [systemStats, setSystemStats] = useState(null);
   const [loading, , setLoadingTrue, setLoadingFalse] = useToggle(true);
   const [saving, , setSavingTrue, setSavingFalse] = useToggle(false);
+  const [togglingPromo, setTogglingPromo] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [activeTab, setActiveTab] = useState("promotions");
@@ -98,6 +101,50 @@ export default function AdminSettings() {
       setError(err.response?.data?.error || "Failed to reset settings");
     } finally {
       setSavingFalse();
+    }
+  };
+
+  const handleTogglePromotion = async () => {
+    const newStatus = !settings?.promotion?.enabled;
+    // Optimistically update local UI state
+    setSettings((prev) => ({
+      ...prev,
+      promotion: {
+        ...(prev?.promotion || {}),
+        enabled: newStatus,
+      },
+    }));
+
+    try {
+      setTogglingPromo(true);
+      await togglePromotion(newStatus);
+      toast.success(
+        newStatus
+          ? "🎉 Festive Sale Campaign enabled! Home banner & ₹9 pricing active."
+          : "⏸️ Festive Sale Campaign disabled! Standard pricing restored."
+      );
+      setSuccess(
+        newStatus
+          ? "Festive Sale Campaign is now ACTIVE on Home & Pricing pages."
+          : "Festive Sale Campaign is now OFF. Standard ₹49 pricing restored."
+      );
+      setTimeout(() => setSuccess(null), 4000);
+    } catch (err) {
+      console.error("Failed to toggle promotion:", err);
+      // Revert optimistic update on failure
+      setSettings((prev) => ({
+        ...prev,
+        promotion: {
+          ...(prev?.promotion || {}),
+          enabled: !newStatus,
+        },
+      }));
+      toast.error(
+        err.response?.data?.error || "Failed to update campaign status"
+      );
+      setError("Failed to toggle promotional status. Please try again.");
+    } finally {
+      setTogglingPromo(false);
     }
   };
 
@@ -357,25 +404,27 @@ export default function AdminSettings() {
                   </div>
 
                   <button
-                    onClick={() =>
-                      updateSettingValue(
-                        "promotion.enabled",
-                        !settings.promotion?.enabled
-                      )
-                    }
-                    className={`relative inline-flex h-8 w-16 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden ${
+                    type="button"
+                    onClick={handleTogglePromotion}
+                    disabled={togglingPromo}
+                    aria-label="Toggle Festive Sale Campaign"
+                    className={`relative inline-flex h-8 w-16 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden disabled:opacity-50 ${
                       settings.promotion?.enabled
                         ? "bg-gradient-to-r from-orange-500 to-amber-500"
                         : "bg-gray-300 dark:bg-zinc-700"
                     }`}
                   >
                     <span
-                      className={`pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                      className={`pointer-events-none inline-flex items-center justify-center h-7 w-7 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
                         settings.promotion?.enabled
                           ? "translate-x-8"
                           : "translate-x-0"
                       }`}
-                    />
+                    >
+                      {togglingPromo && (
+                        <Loader2 className="w-3.5 h-3.5 text-orange-500 animate-spin" />
+                      )}
+                    </span>
                   </button>
                 </div>
               </div>
