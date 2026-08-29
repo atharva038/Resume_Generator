@@ -25,12 +25,24 @@
     <meta name="language" content="English" />
     <meta name="revisit-after" content="1 days" />
 
+    <!-- Security & Trust Directives -->
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+
+    <!-- AI Agent & LLM Discovery Standards (GEO / Agent Protocols) -->
+    <link rel="alternate" type="text/plain" href="/llms.txt" title="LLMs.txt Manifest" />
+    <link rel="alternate" type="text/plain" href="/llms-full.txt" title="Full LLM Knowledge Base" />
+    <link rel="alternate" type="application/json" href="/agents.json" title="Agents.json Protocol" />
+    <link rel="help" href="/AGENTS.md" title="AI Agent Integration Guide" />
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml" title="Sitemap" />
+    <link rel="canonical" href="https://www.smartnshine.app/" />
+
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://www.smartnshine.app/" />
     <meta
       property="og:title"
-      content="SmartNShine - AI-Powered ATS Resume Builder"
+      content="SmartNShine - #1 ATS Resume Builder | Free Professional Resume Templates"
     />
     <meta
       property="og:description"
@@ -54,12 +66,12 @@
     <meta property="og:site_name" content="SmartNShine" />
     <meta property="og:locale" content="en_US" />
 
-    <!-- Twitter -->
+    <!-- Twitter Cards -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content="https://www.smartnshine.app/" />
     <meta
       name="twitter:title"
-      content="SmartNShine - AI-Powered ATS Resume Builder"
+      content="SmartNShine - #1 ATS Resume Builder | Free Professional Resume Templates"
     />
     <meta
       name="twitter:description"
@@ -85,9 +97,6 @@
     />
     <meta name="format-detection" content="telephone=no" />
 
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://www.smartnshine.app/" />
-
     <!-- Favicons -->
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-orb.png" />
     <link rel="icon" type="image/png" sizes="64x64" href="/favicon-orb.png" />
@@ -109,83 +118,176 @@
     <!-- Razorpay Checkout Script -->
     <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
 
-    <!-- Structured Data (JSON-LD) for SEO -->
+    <!-- Unified Entity Linked Schema.org JSON-LD (WebSite, Organization, WebApplication, BreadcrumbList, FAQPage) -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "WebApplication",
-        "name": "SmartNShine",
-        "description": "AI-powered ATS optimized resume builder with professional templates, job matching, and interview preparation",
-        "url": "https://www.smartnshine.app",
-        "applicationCategory": "BusinessApplication",
-        "offers": {
-          "@type": "Offer",
-          "price": "0",
-          "priceCurrency": "INR",
-          "availability": "https://schema.org/InStock"
-        },
-        "operatingSystem": "Web Browser",
-        "featureList": [
-          "ATS Resume Optimization",
-          "AI-Powered Resume Analysis",
-          "Professional Resume Templates",
-          "Smart Job Matching",
-          "AI Interview Preparation",
-          "Resume Score Analysis",
-          "GitHub Profile Import"
-        ],
-        "provider": {
-          "@type": "Organization",
-          "name": "SmartNShine",
-          "url": "https://www.smartnshine.app",
-          "logo": "https://www.smartnshine.app/orb-logo.png"
-        },
-        "aggregateRating": {
-          "@type": "AggregateRating",
-          "ratingValue": "4.8",
-          "ratingCount": "500",
-          "bestRating": "5",
-          "worstRating": "1"
-        }
-      }
-    </script>
-
-    <!-- Organization Structured Data -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "SmartNShine",
-        "url": "https://www.smartnshine.app",
-        "logo": "https://www.smartnshine.app/orb-logo.png",
-        "description": "AI-powered resume builder helping job seekers create ATS-optimized professional resumes",
-        "foundingDate": "2024",
-        "contactPoint": {
-          "@type": "ContactPoint",
-          "contactType": "customer service",
-          "availableLanguage": ["English", "Hindi"]
-        }
-      }
-    </script>
-
-    <!-- Google Sitelinks Searchbox & Site Info -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "SmartNShine",
-        "alternateName": "SmartNShine Resume Builder",
-        "url": "https://www.smartnshine.app",
-        "potentialAction": {
-          "@type": "SearchAction",
-          "target": "https://www.smartnshine.app/templates?search={search_term_string}",
-          "query-input": "required name=search_term_string"
-        }
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://www.smartnshine.app/#organization",
+            "name": "SmartNShine",
+            "url": "https://www.smartnshine.app",
+            "logo": "https://www.smartnshine.app/favicon-orb.png",
+            "description": "AI-powered resume builder helping job seekers create ATS-optimized professional resumes",
+            "foundingDate": "2024",
+            "sameAs": [
+              "https://twitter.com/smartnshine",
+              "https://linkedin.com/company/smartnshine",
+              "https://github.com/smartnshine"
+            ],
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "contactType": "customer support",
+              "email": "support@smartnshine.app",
+              "availableLanguage": ["English", "Hindi"]
+            }
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://www.smartnshine.app/#website",
+            "url": "https://www.smartnshine.app",
+            "name": "SmartNShine",
+            "alternateName": ["SmartNShine Resume Builder", "SmartNShine ATS"],
+            "publisher": {
+              "@id": "https://www.smartnshine.app/#organization"
+            },
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": "https://www.smartnshine.app/templates?search={search_term_string}",
+              "query-input": "required name=search_term_string"
+            }
+          },
+          {
+            "@type": "WebApplication",
+            "@id": "https://www.smartnshine.app/#webapplication",
+            "name": "SmartNShine Resume Generator",
+            "url": "https://www.smartnshine.app",
+            "applicationCategory": "BusinessApplication",
+            "operatingSystem": "All Web Browsers",
+            "browserRequirements": "Requires JavaScript. Requires HTML5.",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "INR",
+              "availability": "https://schema.org/InStock"
+            },
+            "featureList": [
+              "100% ATS Resume Optimization",
+              "12+ Professional Resume Templates",
+              "AI Bullet Point Optimizer (GPT-4o)",
+              "Real-time ATS Compatibility Scoring",
+              "AI Voice Mock Interview Simulator",
+              "GitHub Project & Profile Importer"
+            ],
+            "provider": {
+              "@id": "https://www.smartnshine.app/#organization"
+            },
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": "4.8",
+              "ratingCount": "500",
+              "bestRating": "5",
+              "worstRating": "1"
+            }
+          },
+          {
+            "@type": "BreadcrumbList",
+            "@id": "https://www.smartnshine.app/#breadcrumbs",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://www.smartnshine.app"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "ATS Resume Templates",
+                "item": "https://www.smartnshine.app/templates"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "ATS Analyzer",
+                "item": "https://www.smartnshine.app/ats-analyzer"
+              },
+              {
+                "@type": "ListItem",
+                "position": 4,
+                "name": "Pricing",
+                "item": "https://www.smartnshine.app/pricing"
+              }
+            ]
+          },
+          {
+            "@type": "FAQPage",
+            "@id": "https://www.smartnshine.app/#faq",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Why are SmartNShine resume templates 100% ATS-friendly?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "SmartNShine resume templates use clean HTML5/CSS structured hierarchy, standard system typography, and zero unreadable nested tables, ensuring 98%+ pass rates across Taleo, Workday, Greenhouse, and Lever ATS scanners."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How does the AI Resume Builder optimize my resume?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Powered by OpenAI GPT-4o, SmartNShine analyzes your target job description, injects critical missing keywords, enhances bullet points with strong action verbs, and generates executive summaries tailored to your target position."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Is there a free ATS resume template available?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes, our Classic and Minimal Starter templates are 100% free with unlimited edits, color personalization, and instant high-resolution PDF downloads."
+                }
+              }
+            ]
+          }
+        ]
       }
     </script>
   </head>
   <body>
+    <!-- Accessibility Landmark Header for Web Crawlers & Screen Readers -->
+    <header class="sr-only" role="banner" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;">
+      <h1>SmartNShine - AI-Powered ATS Resume Builder & Career Platform</h1>
+      <nav role="navigation" aria-label="Main Navigation">
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/templates">ATS Resume Templates</a></li>
+          <li><a href="/ats-analyzer">ATS Score Analyzer</a></li>
+          <li><a href="/pricing">Pricing</a></li>
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+      </nav>
+    </header>
+
     <div id="root"></div>
+
+    <!-- Semantic Content Fallback for Non-JS AI Crawlers & Agents -->
+    <noscript>
+      <main role="main" style="padding: 2rem; font-family: sans-serif; max-width: 800px; margin: 0 auto;">
+        <h1>SmartNShine — AI-Powered ATS Resume Builder</h1>
+        <p>Build interview-ready ATS resumes in minutes with 12+ professional resume templates, real-time ATS scoring (98% pass rate), and instant PDF export.</p>
+        <h2>Explore Resume Templates</h2>
+        <ul>
+          <li><a href="/templates?template=classic">Classic ATS Template (98% Compatibility)</a></li>
+          <li><a href="/templates?template=modern">Modern Two-Column Template</a></li>
+          <li><a href="/templates?template=minimal">Minimal Single-Column Template (99% Score)</a></li>
+          <li><a href="/templates?template=tech">Tech Stack Developer Resume</a></li>
+          <li><a href="/templates?template=strategic-leader">Strategic Executive Resume</a></li>
+        </ul>
+      </main>
+    </noscript>
+
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

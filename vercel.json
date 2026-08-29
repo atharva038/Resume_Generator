@@ -5,7 +5,7 @@
   "framework": "vite",
   "rewrites": [
     {
-      "source": "/((?!sitemap\\.xml|robots\\.txt|llms\\.txt|llms-full\\.txt|favicon.*|social-preview.*|.*\\..*).*)",
+      "source": "/((?!sitemap\\.xml|robots\\.txt|llms\\.txt|llms-full\\.txt|agents\\.json|AGENTS\\.md|openapi\\.json|\\.well-known/.*|favicon.*|social-preview.*|.*\\..*).*)",
       "destination": "/index.html"
     }
   ],
@@ -38,6 +38,10 @@
         {
           "key": "Content-Type",
           "value": "text/plain; charset=utf-8"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, s-maxage=86400"
         }
       ]
     },
@@ -47,6 +51,66 @@
         {
           "key": "Content-Type",
           "value": "text/plain; charset=utf-8"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, s-maxage=86400"
+        }
+      ]
+    },
+    {
+      "source": "/agents.json",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json; charset=utf-8"
+        }
+      ]
+    },
+    {
+      "source": "/AGENTS.md",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/markdown; charset=utf-8"
+        }
+      ]
+    },
+    {
+      "source": "/openapi.json",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json; charset=utf-8"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Link",
+          "value": "</sitemap.xml>; rel=\"sitemap\", </llms.txt>; rel=\"alternate\"; type=\"text/plain\", </agents.json>; rel=\"alternate\"; type=\"application/json\""
+        },
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=63072000; includeSubDomains; preload"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
         }
       ]
     }

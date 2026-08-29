@@ -1,0 +1,60 @@
+{
+  "$schema": "https://agents.json.org/schema.json",
+  "name": "SmartNShine",
+  "description": "AI-Powered ATS Resume Builder & Career Acceleration Platform",
+  "url": "https://www.smartnshine.app",
+  "version": "2.0.0",
+  "provider": {
+    "name": "SmartNShine",
+    "url": "https://www.smartnshine.app",
+    "contact": "support@smartnshine.app"
+  },
+  "capabilities": [
+    "resume_generation",
+    "ats_optimization",
+    "template_selection",
+    "score_analysis",
+    "mock_interview"
+  ],
+  "endpoints": {
+    "sitemap": "https://www.smartnshine.app/sitemap.xml",
+    "llms": "https://www.smartnshine.app/llms.txt",
+    "llms_full": "https://www.smartnshine.app/llms-full.txt",
+    "agent_guide": "https://www.smartnshine.app/AGENTS.md",
+    "openapi": "https://www.smartnshine.app/openapi.json",
+    "templates": "https://www.smartnshine.app/templates",
+    "ats_analyzer": "https://www.smartnshine.app/ats-analyzer"
+  },
+  "templates_catalog": [
+    {
+      "id": "classic",
+      "name": "Classic",
+      "ats_score": 98,
+      "best_for": ["Finance", "Law", "Corporate", "Academic"]
+    },
+    {
+      "id": "modern",
+      "name": "Modern",
+      "ats_score": 95,
+      "best_for": ["Product Managers", "Marketing", "Consulting"]
+    },
+    {
+      "id": "minimal",
+      "name": "Minimal",
+      "ats_score": 99,
+      "best_for": ["Freshers", "All Industries", "Entry Level"]
+    },
+    {
+      "id": "tech",
+      "name": "Tech Stack Developer",
+      "ats_score": 98,
+      "best_for": ["Software Engineers", "DevOps", "Data Scientists"]
+    },
+    {
+      "id": "strategic-leader",
+      "name": "Strategic Leader",
+      "ats_score": 97,
+      "best_for": ["Directors", "VPs", "Executives", "Operations"]
+    }
+  ]
+}
