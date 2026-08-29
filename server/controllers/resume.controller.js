@@ -1,6 +1,7 @@
 import Resume from "../models/Resume.model.js";
 import User from "../models/User.model.js";
 import Subscription from "../models/Subscription.model.js";
+import Template from "../models/Template.model.js";
 import {extractTextFromFile, deleteFile} from "../utils/fileExtractor.js";
 import {
   createPdfExportSession,
@@ -858,5 +859,29 @@ export const exportResumePdf = async (req, res) => {
     if (token) {
       deletePdfExportSession(token);
     }
+  }
+};
+
+/**
+ * Fetch all active templates for public gallery & SEO metadata
+ * GET /api/resume/templates/public
+ */
+export const getPublicTemplates = async (req, res) => {
+  try {
+    const templates = await Template.find({ isActive: true })
+      .sort({ isFeatured: -1, order: 1, createdAt: -1 })
+      .lean();
+
+    res.json({
+      success: true,
+      data: templates,
+    });
+  } catch (error) {
+    console.error("Get public templates error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch public templates",
+      error: error.message,
+    });
   }
 };

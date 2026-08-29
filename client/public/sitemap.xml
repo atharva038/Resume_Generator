@@ -1,93 +1,293 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd
+                            http://www.google.com/schemas/sitemap-image/1.1 http://www.google.com/schemas/sitemap-image/1.1/sitemap-image.xsd">
 
-  <!-- Homepage -->
+  <!-- ====================================================================== -->
+  <!-- 1. CORE LANDING & CONVERSION HUBS (Priority 1.0)                       -->
+  <!-- ====================================================================== -->
   <url>
     <loc>https://www.smartnshine.app/</loc>
-    <lastmod>2025-12-29</lastmod>
+    <lastmod>2026-08-29</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://www.smartnshine.app/social-preview.png</image:loc>
+      <image:title>SmartNShine AI ATS Resume Builder - Create Interview-Ready Resumes</image:title>
+      <image:caption>AI-powered resume builder with 98% ATS pass score, instant export, and smart job matching.</image:caption>
+    </image:image>
   </url>
 
-  <!-- Main Features -->
   <url>
     <loc>https://www.smartnshine.app/templates</loc>
-    <lastmod>2025-12-29</lastmod>
+    <lastmod>2026-08-29</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://www.smartnshine.app/social-preview.png</image:loc>
+      <image:title>Professional ATS Resume Templates - 98% Recruiter Pass Rate</image:title>
+      <image:caption>Browse top-rated professional ATS resume templates for software engineers, executives, and freshers.</image:caption>
+    </image:image>
+  </url>
+
+  <!-- ====================================================================== -->
+  <!-- 2. HIGH-INTENT TEMPLATE CATEGORY HUBS (Priority 0.95)                  -->
+  <!-- ====================================================================== -->
+  <url>
+    <loc>https://www.smartnshine.app/templates?category=professional</loc>
+    <lastmod>2026-08-29</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.95</priority>
+    <image:image>
+      <image:loc>https://www.smartnshine.app/social-preview.png</image:loc>
+      <image:title>Professional ATS Resume Format - Corporate &amp; Enterprise Standard</image:title>
+    </image:image>
   </url>
 
   <url>
-    <loc>https://www.smartnshine.app/ats-analyzer</loc>
-    <lastmod>2025-12-29</lastmod>
+    <loc>https://www.smartnshine.app/templates?category=tech</loc>
+    <lastmod>2026-08-29</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.95</priority>
+    <image:image>
+      <image:loc>https://www.smartnshine.app/social-preview.png</image:loc>
+      <image:title>Developer Tech Resume Templates - GitHub &amp; Stack Focus</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://www.smartnshine.app/templates?category=leadership</loc>
+    <lastmod>2026-08-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+    <image:image>
+      <image:loc>https://www.smartnshine.app/social-preview.png</image:loc>
+      <image:title>Executive Leadership Resume Templates - Strategic Results</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://www.smartnshine.app/templates?category=creative</loc>
+    <lastmod>2026-08-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+  </url>
+
+  <url>
+    <loc>https://www.smartnshine.app/templates?category=modern</loc>
+    <lastmod>2026-08-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+  </url>
+
+  <url>
+    <loc>https://www.smartnshine.app/templates?category=minimal</loc>
+    <lastmod>2026-08-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+  </url>
+
+  <!-- ====================================================================== -->
+  <!-- 3. INDIVIDUAL ATS RESUME TEMPLATES (Google Search Query Targets)       -->
+  <!-- ====================================================================== -->
+  <url>
+    <loc>https://www.smartnshine.app/templates?template=classic</loc>
+    <lastmod>2026-08-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://www.smartnshine.app/social-preview.png</image:loc>
+      <image:title>Classic ATS Resume Template - Traditional Serif Format</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://www.smartnshine.app/templates?template=modern</loc>
+    <lastmod>2026-08-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://www.smartnshine.app/social-preview.png</image:loc>
+      <image:title>Modern Two-Column Resume Template - ATS Optimized</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://www.smartnshine.app/templates?template=minimal</loc>
+    <lastmod>2026-08-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://www.smartnshine.app/social-preview.png</image:loc>
+      <image:title>Minimal Black and White ATS Resume Template</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://www.smartnshine.app/templates?template=professional</loc>
+    <lastmod>2026-08-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://www.smartnshine.app/social-preview.png</image:loc>
+      <image:title>Professional Elite Resume Template - High Recruiter Response</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://www.smartnshine.app/templates?template=professional-2</loc>
+    <lastmod>2026-08-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://www.smartnshine.app/social-preview.png</image:loc>
+      <image:title>Executive Minimalist Single-Column Resume Template</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://www.smartnshine.app/templates?template=tech</loc>
+    <lastmod>2026-08-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://www.smartnshine.app/social-preview.png</image:loc>
+      <image:title>Developer Tech Stack Resume Template - Terminal Style</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://www.smartnshine.app/templates?template=creative-2</loc>
+    <lastmod>2026-08-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://www.smartnshine.app/templates?template=strategic-leader</loc>
+    <lastmod>2026-08-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://www.smartnshine.app/social-preview.png</image:loc>
+      <image:title>Strategic Leadership Executive ATS Resume Template</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://www.smartnshine.app/templates?template=impact-pro</loc>
+    <lastmod>2026-08-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://www.smartnshine.app/social-preview.png</image:loc>
+      <image:title>Impact Pro Metrics-Driven Resume Template</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://www.smartnshine.app/templates?template=github-style</loc>
+    <lastmod>2026-08-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://www.smartnshine.app/social-preview.png</image:loc>
+      <image:title>GitHub Style Software Engineer ATS Resume Template</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://www.smartnshine.app/templates?template=structured-photo</loc>
+    <lastmod>2026-08-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- ====================================================================== -->
+  <!-- 4. CORE REVENUE & AI PRODUCT TOOLS                                     -->
+  <!-- ====================================================================== -->
+  <url>
+    <loc>https://www.smartnshine.app/ats-analyzer</loc>
+    <lastmod>2026-08-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://www.smartnshine.app/social-preview.png</image:loc>
+      <image:title>Free ATS Resume Checker &amp; Compatibility Analyzer</image:title>
+    </image:image>
   </url>
 
   <url>
     <loc>https://www.smartnshine.app/job-search</loc>
-    <lastmod>2025-12-29</lastmod>
+    <lastmod>2026-08-29</lastmod>
     <changefreq>daily</changefreq>
-    <priority>0.8</priority>
+    <priority>0.85</priority>
   </url>
 
   <url>
     <loc>https://www.smartnshine.app/smart-job-match</loc>
-    <lastmod>2025-12-29</lastmod>
+    <lastmod>2026-08-29</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.85</priority>
   </url>
 
   <url>
     <loc>https://www.smartnshine.app/ai-interview</loc>
-    <lastmod>2025-12-29</lastmod>
+    <lastmod>2026-08-29</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://www.smartnshine.app/social-preview.png</image:loc>
+      <image:title>AI Mock Interview Preparation &amp; Voice Coaching</image:title>
+    </image:image>
   </url>
 
-  <!-- Pricing & Contact -->
   <url>
     <loc>https://www.smartnshine.app/pricing</loc>
-    <lastmod>2025-12-29</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <lastmod>2026-08-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
   </url>
 
   <url>
     <loc>https://www.smartnshine.app/contact</loc>
-    <lastmod>2025-12-29</lastmod>
+    <lastmod>2026-08-29</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.60</priority>
   </url>
 
-  <!-- Legal Pages -->
+  <!-- ====================================================================== -->
+  <!-- 5. LEGAL, TRUST & COMPLIANCE                                           -->
+  <!-- ====================================================================== -->
   <url>
     <loc>https://www.smartnshine.app/privacy-policy</loc>
-    <lastmod>2025-12-29</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
+    <lastmod>2026-08-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.40</priority>
   </url>
 
   <url>
     <loc>https://www.smartnshine.app/terms</loc>
-    <lastmod>2025-12-29</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
+    <lastmod>2026-08-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.40</priority>
   </url>
 
   <url>
     <loc>https://www.smartnshine.app/refund-policy</loc>
-    <lastmod>2025-12-29</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
+    <lastmod>2026-08-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.40</priority>
   </url>
 
   <url>
     <loc>https://www.smartnshine.app/shipping-policy</loc>
-    <lastmod>2025-12-29</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
+    <lastmod>2026-08-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.40</priority>
   </url>
 
 </urlset>

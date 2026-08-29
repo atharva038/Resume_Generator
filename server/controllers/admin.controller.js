@@ -9,6 +9,7 @@ import Settings from "../models/Settings.model.js";
 import Subscription from "../models/Subscription.model.js";
 import InterviewSession from "../models/InterviewSession.model.js";
 import {getPlanAmount, PLAN_DURATIONS} from "../services/payment.service.js";
+import * as openaiService from "../services/openai.service.js";
 
 const ACTIVE_SUBSCRIPTION_TIERS = ["free", "one-time", "pro"];
 const MANAGEABLE_SUBSCRIPTION_TIERS = ["one-time", "pro"];
@@ -1790,21 +1791,58 @@ export const getAdminLogs = async (req, res) => {
   }
 };
 
-// Get All Templates
+// Get All Templates with Search, Filters, and Stats
 export const getAllTemplates = async (req, res) => {
   try {
-    const {page = 1, limit = 10, category = "", isActive = ""} = req.query;
+    const {
+      page = 1,
+      limit = 50,
+      category = "",
+      tier = "",
+      isActive = "",
+      search = "",
+      sortBy = "atsScore",
+      order = "desc",
+    } = req.query;
 
     const filter = {};
-    if (category) filter.category = category;
-    if (isActive !== "") filter.isActive = isActive === "true";
+    if (category && category !== "all") {
+      filter.category = new RegExp(`^${category}$`, "i");
+    }
+    if (tier && tier !== "all") {
+      filter.tier = tier;
+    }
+    if (isActive !== "" && isActive !== "all") {
+      filter.isActive = isActive === "true";
+    }
+    if (search) {
+      filter.$or = [
+        {name: {$regex: search, $options: "i"}},
+        {templateId: {$regex: search, $options: "i"}},
+        {description: {$regex: search, $options: "i"}},
+        {tags: {$in: [new RegExp(search, "i")]}},
+      ];
+    }
+
+    const sortOrder = order === "asc" ? 1 : -1;
+    const sort = {};
+    if (sortBy === "atsScore") sort.atsScore = sortOrder;
+    else if (sortBy === "usageCount") sort.usageCount = sortOrder;
+    else if (sortBy === "name") sort.name = sortOrder;
+    else sort.createdAt = sortOrder;
 
     const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    // If database is empty, auto-seed with defaults
+    const count = await Template.countDocuments();
+    if (count === 0) {
+      await autoSeedTemplates();
+    }
 
     const [templates, total] = await Promise.all([
       Template.find(filter)
         .populate("createdBy", "name email")
-        .sort({createdAt: -1})
+        .sort(sort)
         .skip(skip)
         .limit(parseInt(limit)),
       Template.countDocuments(filter),
@@ -1832,11 +1870,552 @@ export const getAllTemplates = async (req, res) => {
   }
 };
 
-// Update Template Status
+// Get Template Statistics Overview
+export const getTemplateStats = async (req, res) => {
+  try {
+    let allTemplates = await Template.find();
+    if (allTemplates.length === 0) {
+      await autoSeedTemplates();
+      allTemplates = await Template.find();
+    }
+
+    const stats = {
+      total: allTemplates.length,
+      active: allTemplates.filter((t) => t.isActive).length,
+      inactive: allTemplates.filter((t) => !t.isActive).length,
+      freeTier: allTemplates.filter((t) => t.tier === "free").length,
+      oneTimeTier: allTemplates.filter((t) => t.tier === "one-time").length,
+      proTier: allTemplates.filter((t) => t.tier === "pro").length,
+      averageAtsScore: Math.round(
+        allTemplates.reduce((acc, t) => acc + (t.atsScore || 95), 0) /
+          (allTemplates.length || 1)
+      ),
+      byCategory: {},
+      featuredCount: allTemplates.filter((t) => t.isFeatured).length,
+    };
+
+    allTemplates.forEach((t) => {
+      const cat = t.category || "Professional";
+      stats.byCategory[cat] = (stats.byCategory[cat] || 0) + 1;
+    });
+
+    res.json({
+      success: true,
+      data: stats,
+    });
+  } catch (error) {
+    console.error("Get template statistics error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch template statistics",
+      error: error.message,
+    });
+  }
+};
+
+// Helper: Seed Default Standard Templates
+const DEFAULT_STANDARD_TEMPLATES = [
+  {
+    templateId: "classic",
+    name: "Classic",
+    category: "Professional",
+    emoji: "📋",
+    atsScore: 95,
+    tier: "free",
+    badge: "Most Popular",
+    description: "Traditional single-column layout with maximum ATS parser clarity, tailored for corporate and enterprise roles.",
+    tags: ["ATS-Optimized", "Clean", "Corporate", "Traditional"],
+    isFeatured: true,
+    isActive: true,
+  },
+  {
+    templateId: "modern",
+    name: "Modern",
+    category: "Modern",
+    emoji: "🎨",
+    atsScore: 92,
+    tier: "free",
+    badge: "ATS Pick",
+    description: "Sleek layout with modern header accent, structured sections, and high readability for fast-growing industries.",
+    tags: ["Modern", "Accented", "Readable", "Balanced"],
+    isFeatured: true,
+    isActive: true,
+  },
+  {
+    templateId: "minimal",
+    name: "Minimal",
+    category: "Minimal",
+    emoji: "✨",
+    atsScore: 98,
+    tier: "free",
+    badge: "98% ATS Score",
+    description: "Ultra-clean whitespace-driven design optimized to pass even the strictest legacy ATS scanners.",
+    tags: ["Minimalist", "High-Scoring", "Clean", "Simple"],
+    isFeatured: true,
+    isActive: true,
+  },
+  {
+    templateId: "professional",
+    name: "Professional",
+    category: "Professional",
+    emoji: "💼",
+    atsScore: 94,
+    tier: "one-time",
+    badge: "Executive Pick",
+    description: "Polished two-tone header format with distinct skill matrices and comprehensive career timelines.",
+    tags: ["Corporate", "Experienced", "Timeline", "Skills"],
+    isFeatured: false,
+    isActive: true,
+  },
+  {
+    templateId: "professional-v2",
+    name: "Professional V2",
+    category: "Professional",
+    emoji: "📄",
+    atsScore: 96,
+    tier: "one-time",
+    badge: "Trending",
+    description: "Refined professional aesthetic with structured metric callouts and project highlights.",
+    tags: ["Metrics", "Projects", "High-Impact"],
+    isFeatured: false,
+    isActive: true,
+  },
+  {
+    templateId: "professional2",
+    name: "Professional Elite",
+    category: "Professional",
+    emoji: "🏆",
+    atsScore: 98,
+    tier: "pro",
+    badge: "Elite Pro",
+    description: "Gold-standard executive format engineered for Director, VP, and Senior Leadership roles.",
+    tags: ["Leadership", "Executive", "Elite", "High-ATS"],
+    isFeatured: true,
+    isActive: true,
+  },
+  {
+    templateId: "tech",
+    name: "Tech Developer",
+    category: "Tech",
+    emoji: "💻",
+    atsScore: 93,
+    tier: "one-time",
+    badge: "Engineers Pick",
+    description: "Developer-focused design featuring GitHub integration points, tech stacks, and live project links.",
+    tags: ["Tech", "Software Engineer", "GitHub", "Code"],
+    isFeatured: false,
+    isActive: true,
+  },
+  {
+    templateId: "githubstyle",
+    name: "Metro Grid Narrative",
+    category: "Tech",
+    emoji: "🏙️",
+    atsScore: 96,
+    tier: "pro",
+    badge: "DevOps & Cloud",
+    description: "Modern grid system emphasizing technical skills, architecture repositories, and open source contributions.",
+    tags: ["Developer", "OpenSource", "Grid", "Architecture"],
+    isFeatured: false,
+    isActive: true,
+  },
+  {
+    templateId: "creative2",
+    name: "Creative Designer Pro",
+    category: "Creative",
+    emoji: "🎨",
+    atsScore: 94,
+    tier: "one-time",
+    badge: "Design Pick",
+    description: "Sophisticated typography and visual hierarchy for UX/UI designers, Product Managers, and Content Creators.",
+    tags: ["Design", "Portfolio", "UI/UX", "Creative"],
+    isFeatured: false,
+    isActive: true,
+  },
+  {
+    templateId: "strategic-leader",
+    name: "Strategic Leadership",
+    category: "Leadership",
+    emoji: "🎯",
+    atsScore: 97,
+    tier: "pro",
+    badge: "C-Level & VP",
+    description: "Strategic executive framing emphasizing business impact, revenue growth, and team scaling achievements.",
+    tags: ["Strategy", "C-Suite", "Executive", "Management"],
+    isFeatured: true,
+    isActive: true,
+  },
+  {
+    templateId: "impact-pro",
+    name: "Impact Pro",
+    category: "Professional",
+    emoji: "⚡",
+    atsScore: 98,
+    tier: "pro",
+    badge: "Top Rated",
+    description: "High-impact narrative design focused on quantifiable KPIs, revenue attribution, and career acceleration.",
+    tags: ["KPIs", "Impact", "Quantifiable", "High-ATS"],
+    isFeatured: true,
+    isActive: true,
+  },
+  {
+    templateId: "structured-photo",
+    name: "Structured Photo Pro",
+    category: "Creative",
+    emoji: "📸",
+    atsScore: 95,
+    tier: "pro",
+    badge: "International",
+    description: "Structured format with professional portrait header suited for European and International market standards.",
+    tags: ["Photo", "International", "Structured", "Modern"],
+    isFeatured: false,
+    isActive: true,
+  },
+];
+
+async function autoSeedTemplates() {
+  for (const tpl of DEFAULT_STANDARD_TEMPLATES) {
+    await Template.findOneAndUpdate(
+      {templateId: tpl.templateId},
+      {$setOnInsert: tpl},
+      {upsert: true, new: true}
+    );
+  }
+}
+
+// Sync / Reset Standard Templates
+export const syncDefaultTemplates = async (req, res) => {
+  try {
+    const adminId = req.user?.userId || req.user?._id;
+    const results = [];
+
+    for (const tpl of DEFAULT_STANDARD_TEMPLATES) {
+      const updated = await Template.findOneAndUpdate(
+        {templateId: tpl.templateId},
+        {
+          $set: {
+            name: tpl.name,
+            category: tpl.category,
+            emoji: tpl.emoji,
+            atsScore: tpl.atsScore,
+            tier: tpl.tier,
+            badge: tpl.badge,
+            description: tpl.description,
+            tags: tpl.tags,
+            isFeatured: tpl.isFeatured,
+            ...(adminId && {createdBy: adminId}),
+          },
+          $setOnInsert: {isActive: true},
+        },
+        {upsert: true, new: true}
+      );
+      results.push(updated);
+    }
+
+    if (adminId) {
+      await AdminLog.create({
+        adminId,
+        action: "template_synced",
+        targetType: "template",
+        description: `Synchronized ${results.length} standard ATS templates`,
+        ipAddress: req.ip,
+      });
+    }
+
+    res.json({
+      success: true,
+      message: `Successfully synchronized ${results.length} standard templates!`,
+      data: results,
+    });
+  } catch (error) {
+    console.error("Sync default templates error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to sync standard templates",
+      error: error.message,
+    });
+  }
+};
+
+// Create Template
+export const createTemplate = async (req, res) => {
+  try {
+    const adminId = req.user?.userId || req.user?._id;
+    const {
+      templateId,
+      name,
+      category = "Professional",
+      description = "",
+      emoji = "📄",
+      atsScore = 95,
+      tier = "free",
+      badge = "",
+      tags = [],
+      isActive = true,
+      isFeatured = false,
+    } = req.body;
+
+    if (!name) {
+      return res.status(400).json({
+        success: false,
+        message: "Template name is required",
+      });
+    }
+
+    const normalizedId = (
+      templateId || name.toLowerCase().replace(/[^a-z0-9]+/g, "-")
+    ).toLowerCase();
+
+    const existing = await Template.findOne({templateId: normalizedId});
+    if (existing) {
+      return res.status(400).json({
+        success: false,
+        message: `Template ID '${normalizedId}' already exists`,
+      });
+    }
+
+    const template = await Template.create({
+      templateId: normalizedId,
+      name,
+      category,
+      description,
+      emoji,
+      atsScore: Number(atsScore) || 95,
+      tier,
+      badge,
+      tags: Array.isArray(tags) ? tags : [],
+      isActive,
+      isFeatured,
+      seo: req.body.seo || {},
+      createdBy: adminId,
+    });
+
+    if (adminId) {
+      await AdminLog.create({
+        adminId,
+        action: "template_created",
+        targetType: "template",
+        targetId: template._id,
+        description: `Created template '${name}' (${normalizedId})`,
+        ipAddress: req.ip,
+      });
+    }
+
+    res.status(201).json({
+      success: true,
+      message: "Template created successfully",
+      data: template,
+    });
+  } catch (error) {
+    console.error("Create template error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to create template",
+      error: error.message,
+    });
+  }
+};
+
+// Update Template Details
+export const updateTemplate = async (req, res) => {
+  try {
+    const {templateId} = req.params;
+    const adminId = req.user?.userId || req.user?._id;
+    const updates = req.body;
+
+    const template = await Template.findByIdAndUpdate(
+      templateId,
+      {$set: updates},
+      {new: true, runValidators: true}
+    );
+
+    if (!template) {
+      return res.status(404).json({
+        success: false,
+        message: "Template not found",
+      });
+    }
+
+    if (adminId) {
+      await AdminLog.create({
+        adminId,
+        action: "template_updated",
+        targetType: "template",
+        targetId: templateId,
+        description: `Updated template '${template.name}'`,
+        ipAddress: req.ip,
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Template updated successfully",
+      data: template,
+    });
+  } catch (error) {
+    console.error("Update template error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update template",
+      error: error.message,
+    });
+  }
+};
+
+// Generate Template SEO with AI (Google #1 Ranking Copywriter)
+export const generateTemplateSeoWithAI = async (req, res) => {
+  try {
+    const {
+      name,
+      category = "Professional",
+      description = "",
+      atsScore = 95,
+      tier = "free",
+      tags = [],
+      targetAudience = "",
+    } = req.body;
+
+    const systemPrompt = `You are an Elite SEO Strategist and Google Search Ranking Master specializing in career platforms, resume builders, and ATS templates.
+Your mission is to generate high-CTR, search-optimized SEO metadata that will rank #1 on Google and Bing for high-intent search terms like "resume", "professional resume", "ATS resume templates", and "${(category || "professional").toLowerCase()} resume format".
+
+Requirements:
+- metaTitle: 50-60 characters, highly clickable, includes primary keyword and brand "| SmartNShine"
+- metaDescription: 145-160 characters, high conversion action copy highlighting ATS score, free/pro access, and instant export
+- keywords: 12-15 specific high-volume keywords including "resume", "professional resume", "ATS resume templates"
+- targetSearchQueries: 5 exact Google search query strings this template dominates
+- faqItems: Array of 3 high-value Q&As designed for Google FAQPage Rich Snippets (Question + 40-50 word authoritative answer)
+- ogTitle: Catchy social share title
+- ogDescription: Persuasive social description
+
+Return ONLY valid JSON matching this schema with NO markdown codeblocks or surrounding text:
+{
+  "metaTitle": "string",
+  "metaDescription": "string",
+  "keywords": ["string"],
+  "targetSearchQueries": ["string"],
+  "faqItems": [
+    {"question": "string", "answer": "string"}
+  ],
+  "ogTitle": "string",
+  "ogDescription": "string"
+}`;
+
+    const userPrompt = `Generate optimized SEO copy for this Resume Template:
+Template Name: ${name || "Professional Elite"}
+Category: ${category}
+Description: ${description || "ATS-optimized single column layout with structured hierarchy"}
+ATS Compatibility Rating: ${atsScore}%
+Access Tier: ${tier}
+Tags: ${Array.isArray(tags) ? tags.join(", ") : tags}
+Target Audience / Roles: ${targetAudience || "Job Seekers, Software Engineers, Managers, Executives"}`;
+
+    let textContent = "";
+    try {
+      const aiResult = await openaiService.chatCompletion(systemPrompt, userPrompt, {
+        temperature: 0.7,
+      });
+      textContent =
+        typeof aiResult === "string"
+          ? aiResult
+          : aiResult?.text || JSON.stringify(aiResult || {});
+    } catch (aiErr) {
+      console.error("OpenAI SEO generation error:", aiErr.message);
+      // High-quality fallback if API key offline
+      return res.json({
+        success: true,
+        data: {
+          metaTitle: `${name || "Professional"} Resume Template - 98% ATS Score | SmartNShine`,
+          metaDescription: `Create an interview-winning ${category || "professional"} resume with our top-rated ATS-optimized template. Designed to pass recruiter scanners with high scoring.`,
+          keywords: [
+            "resume",
+            "professional resume",
+            "ATS resume templates",
+            `${(category || "professional").toLowerCase()} resume template`,
+            "best resume format 2026",
+            "free ATS resume builder",
+            "clean modern CV format",
+          ],
+          targetSearchQueries: [
+            `best ${category || "professional"} resume template`,
+            "ATS friendly resume format",
+            "professional CV templates free",
+            "resume format download",
+          ],
+          faqItems: [
+            {
+              question: `Why is the ${name || "this"} template 100% ATS compliant?`,
+              answer: `This template uses standard section hierarchy, clean typography, and zero unreadable nested tables, ensuring 100% readability across Taleo, Workday, and Greenhouse ATS scanners.`,
+            },
+            {
+              question: `Can I customize the color themes and sections in ${name || "this template"}?`,
+              answer: `Yes, you can customize color themes, rearrange section order, and export directly in ATS-compatible PDF format with zero formatting issues.`,
+            },
+            {
+              question: `Is this ${name || "template"} suitable for both freshers and experienced candidates?`,
+              answer: `Yes, the flexible layout highlights projects, work experience, and core competencies, making it ideal for all career stages.`,
+            },
+          ],
+          ogTitle: `${name || "Professional"} Resume Template | SmartNShine`,
+          ogDescription: `Build an ATS-optimized professional resume with ${name || "this"} template. High recruiter pass rate.`,
+        },
+      });
+    }
+
+    let parsedData;
+    try {
+      const cleanJson = textContent
+        .replace(/```json/gi, "")
+        .replace(/```/g, "")
+        .trim();
+      parsedData = JSON.parse(cleanJson);
+    } catch (parseErr) {
+      console.error("Failed to parse AI JSON response:", parseErr, textContent);
+      parsedData = {
+        metaTitle: `${name || "Professional"} Resume Template - ATS Optimized | SmartNShine`,
+        metaDescription: `Create a professional ATS-friendly resume using the ${name} template. Optimized layout with ${atsScore || 95}% compatibility rating.`,
+        keywords: [
+          "resume",
+          "professional resume",
+          "ATS resume templates",
+          `${(name || "resume").toLowerCase()} template`,
+          "best resume format",
+        ],
+        targetSearchQueries: [
+          `${(name || "resume").toLowerCase()} resume template`,
+          "professional resume templates",
+          "ATS resume builder",
+        ],
+        faqItems: [
+          {
+            question: `How does the ${name} template help me pass ATS scans?`,
+            answer: `It utilizes standardized typography and semantic section markers that applicant tracking software parses with high accuracy.`,
+          },
+        ],
+        ogTitle: `${name} Resume Template`,
+        ogDescription: `Download and build your ATS-ready resume with the ${name} template on SmartNShine.`,
+      };
+    }
+
+    res.json({
+      success: true,
+      data: parsedData,
+    });
+  } catch (error) {
+    console.error("Generate template SEO error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to generate SEO metadata with AI",
+      error: error.message,
+    });
+  }
+};
+
+// Update Template Status (Instant Toggle)
 export const updateTemplateStatus = async (req, res) => {
   try {
     const {templateId} = req.params;
     const {isActive} = req.body;
+    const adminId = req.user?.userId || req.user?._id;
 
     const template = await Template.findByIdAndUpdate(
       templateId,
@@ -1852,20 +2431,22 @@ export const updateTemplateStatus = async (req, res) => {
     }
 
     // Log admin action
-    await AdminLog.create({
-      adminId: req.user.userId,
-      action: isActive ? "template_enabled" : "template_disabled",
-      targetType: "template",
-      targetId: templateId,
-      description: `Template ${template.name} ${
-        isActive ? "enabled" : "disabled"
-      }`,
-      ipAddress: req.ip,
-    });
+    if (adminId) {
+      await AdminLog.create({
+        adminId,
+        action: isActive ? "template_enabled" : "template_disabled",
+        targetType: "template",
+        targetId: templateId,
+        description: `Template ${template.name} ${
+          isActive ? "enabled" : "disabled"
+        }`,
+        ipAddress: req.ip,
+      });
+    }
 
     res.json({
       success: true,
-      message: `Template ${isActive ? "enabled" : "disabled"} successfully`,
+      message: `Template '${template.name}' ${isActive ? "enabled" : "disabled"} successfully`,
       data: template,
     });
   } catch (error) {
@@ -1882,6 +2463,7 @@ export const updateTemplateStatus = async (req, res) => {
 export const deleteTemplate = async (req, res) => {
   try {
     const {templateId} = req.params;
+    const adminId = req.user?.userId || req.user?._id;
 
     const template = await Template.findByIdAndDelete(templateId);
 
@@ -1893,18 +2475,20 @@ export const deleteTemplate = async (req, res) => {
     }
 
     // Log admin action
-    await AdminLog.create({
-      adminId: req.user.userId,
-      action: "template_deleted",
-      targetType: "template",
-      targetId: templateId,
-      description: `Template ${template.name} deleted`,
-      ipAddress: req.ip,
-    });
+    if (adminId) {
+      await AdminLog.create({
+        adminId,
+        action: "template_deleted",
+        targetType: "template",
+        targetId: templateId,
+        description: `Template '${template.name}' deleted`,
+        ipAddress: req.ip,
+      });
+    }
 
     res.json({
       success: true,
-      message: "Template deleted successfully",
+      message: `Template '${template.name}' deleted successfully`,
     });
   } catch (error) {
     console.error("Delete template error:", error);

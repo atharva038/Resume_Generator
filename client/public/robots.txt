@@ -1,23 +1,44 @@
-# Allow all crawlers
-User-agent: *
-Allow: /
+# ==============================================================================
+# SmartNShine - Elite Search Engine Robots Configuration
+# Website: https://www.smartnshine.app
+# Updated: 2026-08-29
+# ==============================================================================
 
-# Disallow admin routes
+# ------------------------------------------------------------------------------
+# 1. MAJOR SEARCH ENGINE INDEXERS (Full Crawl Permission with Fast Indexing)
+# ------------------------------------------------------------------------------
+User-agent: Googlebot
+User-agent: Googlebot-Image
+User-agent: Google-InspectionTool
+User-agent: Bingbot
+User-agent: Applebot
+User-agent: DuckDuckBot
+User-agent: YandexBot
+User-agent: Baiduspider
+User-agent: Slurp
+User-agent: Twitterbot
+User-agent: facebookexternalhit
+User-agent: LinkedInBot
+User-agent: WhatsApp
+Allow: /
+Allow: /templates
+Allow: /templates?*
+Allow: /ats-analyzer
+Allow: /job-search
+Allow: /smart-job-match
+Allow: /ai-interview
+Allow: /pricing
+Allow: /contact
+Allow: /privacy-policy
+Allow: /terms
+Allow: /refund-policy
+Allow: /shipping-policy
+
+# Disallow Private & Admin Areas
 Disallow: /admin
 Disallow: /admin/*
-
-# Disallow API routes (backend endpoints)
 Disallow: /api/
 Disallow: /api/*
-
-# Disallow authentication pages (private pages)
-Disallow: /login
-Disallow: /register
-Disallow: /forgot-password
-Disallow: /reset-password
-Disallow: /auth/callback
-
-# Disallow user dashboard (private content)
 Disallow: /dashboard
 Disallow: /profile
 Disallow: /editor
@@ -25,40 +46,72 @@ Disallow: /editor/*
 Disallow: /subscription
 Disallow: /interview-history
 Disallow: /interview-result/*
-
-# Disallow upload pages (private workflow)
 Disallow: /upload
 Disallow: /github-import
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /auth/callback
 
-# Allow important public pages
+# ------------------------------------------------------------------------------
+# 2. DEFAULT FALLBACK FOR ALL OTHER CRAWLERS
+# ------------------------------------------------------------------------------
+User-agent: *
 Allow: /
 Allow: /templates
-Allow: /pricing
-Allow: /contact
+Allow: /templates?*
 Allow: /ats-analyzer
 Allow: /job-search
 Allow: /smart-job-match
 Allow: /ai-interview
+Allow: /pricing
+Allow: /contact
 Allow: /privacy-policy
 Allow: /terms
 Allow: /refund-policy
 Allow: /shipping-policy
 
-# Sitemap location
+# Protected private areas
+Disallow: /admin
+Disallow: /admin/*
+Disallow: /api/
+Disallow: /api/*
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /editor
+Disallow: /editor/*
+Disallow: /subscription
+Disallow: /interview-history
+Disallow: /interview-result/*
+Disallow: /upload
+Disallow: /github-import
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /auth/callback
+
+Crawl-delay: 1
+
+# ------------------------------------------------------------------------------
+# 3. BLOCK UNWANTED CONTENT SCRAPERS & AI HARVESTERS
+# ------------------------------------------------------------------------------
+User-agent: GPTBot
+User-agent: CCBot
+User-agent: Claude-Web
+User-agent: Anthropic-AI
+User-agent: Bytespider
+User-agent: PerplexityBot
+User-agent: Scrapy
+User-agent: MJ12bot
+User-agent: AhrefsBot
+User-agent: SemrushBot
+User-agent: DotBot
+Disallow: /
+
+# ------------------------------------------------------------------------------
+# 4. SITEMAP DECLARATIONS
+# ------------------------------------------------------------------------------
 Sitemap: https://www.smartnshine.app/sitemap.xml
-
-# Crawl delay to be nice to servers
-Crawl-delay: 1
-
-# Specific bot instructions
-User-agent: Googlebot
-Allow: /
-Crawl-delay: 0
-
-User-agent: Bingbot
-Allow: /
-Crawl-delay: 1
-
-User-agent: Slurp
-Allow: /
-Crawl-delay: 1
+Host: https://www.smartnshine.app
