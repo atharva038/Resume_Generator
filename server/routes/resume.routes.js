@@ -37,9 +37,13 @@ import {
   trackDownload,
   exportResumePdf,
   getPdfSession,
+  getPublicTemplates,
 } from "../controllers/resume.controller.js";
 
 const router = express.Router();
+
+// Public route - Fetch active templates with dynamic SEO & ratings
+router.get("/templates/public", getPublicTemplates);
 
 // Protected routes - require authentication for resume upload and processing
 router.post(

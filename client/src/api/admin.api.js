@@ -123,8 +123,15 @@ export const deleteNotification = (id) =>
 
 // Template Management
 export const getAllTemplates = (params) => adminAPI.get("/templates", {params});
+export const getTemplateStats = () => adminAPI.get("/templates/stats");
+export const syncDefaultTemplates = () => adminAPI.post("/templates/sync-defaults");
+export const createTemplate = (data) => adminAPI.post("/templates", data);
+export const updateTemplate = (templateId, data) =>
+  adminAPI.put(`/templates/${templateId}`, data);
 export const updateTemplateStatus = (templateId, isActive) =>
   adminAPI.patch(`/templates/${templateId}/status`, {isActive});
+export const generateTemplateSeoWithAI = (data) =>
+  adminAPI.post("/templates/generate-seo", data);
 export const deleteTemplate = (templateId) =>
   adminAPI.delete(`/templates/${templateId}`);
 

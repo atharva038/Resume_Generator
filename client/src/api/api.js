@@ -273,6 +273,12 @@ export const resumeAPI = {
   },
 
   /**
+   * Fetch active templates catalog with dynamic SEO and scores
+   * @returns {Promise} Axios response with active templates array
+   */
+  getPublicTemplates: () => api.get("/resume/templates/public"),
+
+  /**
    * Save new resume to database
    * @param {Object} resumeData - Complete resume data object
    * @returns {Promise} Axios response with saved resume (includes _id)

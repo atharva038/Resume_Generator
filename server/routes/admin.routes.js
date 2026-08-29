@@ -28,6 +28,11 @@ import {
   getContactStatistics,
   getAdminLogs,
   getAllTemplates,
+  getTemplateStats,
+  syncDefaultTemplates,
+  createTemplate,
+  updateTemplate,
+  generateTemplateSeoWithAI,
   updateTemplateStatus,
   deleteTemplate,
   getAllFeedback,
@@ -122,7 +127,12 @@ router.delete("/contacts/:id", validateMongoId, deleteContactMessage);
 router.get("/logs", getAdminLogs);
 
 // Template Management
+router.get("/templates/stats", getTemplateStats);
+router.post("/templates/sync-defaults", syncDefaultTemplates);
+router.post("/templates/generate-seo", generateTemplateSeoWithAI);
 router.get("/templates", getAllTemplates);
+router.post("/templates", createTemplate);
+router.put("/templates/:templateId", validateTemplateId, updateTemplate);
 router.patch(
   "/templates/:templateId/status",
   validateTemplateId,

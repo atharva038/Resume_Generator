@@ -2,31 +2,61 @@ import mongoose from "mongoose";
 
 const templateSchema = new mongoose.Schema(
   {
-    name: {
+    templateId: {
       type: String,
       required: true,
       unique: true,
       trim: true,
+      lowercase: true,
+    },
+    name: {
+      type: String,
+      required: true,
+      trim: true,
     },
     category: {
       type: String,
-      enum: ["professional", "creative", "modern", "minimal", "executive"],
-      default: "professional",
+      default: "Professional",
+      trim: true,
     },
     description: {
       type: String,
-      required: true,
+      default: "",
+    },
+    emoji: {
+      type: String,
+      default: "📄",
+    },
+    atsScore: {
+      type: Number,
+      default: 95,
+      min: 0,
+      max: 100,
+    },
+    tier: {
+      type: String,
+      enum: ["free", "one-time", "pro"],
+      default: "free",
+    },
+    badge: {
+      type: String,
+      default: "",
     },
     thumbnail: {
-      type: String, // URL to thumbnail image
+      type: String, // URL to thumbnail image or svg preview
+      default: "",
     },
     componentPath: {
       type: String,
-      required: true,
+      default: "",
     },
     isActive: {
       type: Boolean,
       default: true,
+    },
+    isFeatured: {
+      type: Boolean,
+      default: false,
     },
     isPremium: {
       type: Boolean,
@@ -38,15 +68,54 @@ const templateSchema = new mongoose.Schema(
     },
     rating: {
       type: Number,
-      default: 0,
+      default: 4.8,
       min: 0,
       max: 5,
     },
     tags: [
       {
         type: String,
+        trim: true,
       },
     ],
+    seo: {
+      metaTitle: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+      metaDescription: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+      keywords: [
+        {
+          type: String,
+          trim: true,
+        },
+      ],
+      targetSearchQueries: [
+        {
+          type: String,
+          trim: true,
+        },
+      ],
+      ogImage: {
+        type: String,
+        default: "",
+      },
+      canonicalUrl: {
+        type: String,
+        default: "",
+      },
+      faqItems: [
+        {
+          question: { type: String, trim: true },
+          answer: { type: String, trim: true },
+        },
+      ],
+    },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -58,8 +127,10 @@ const templateSchema = new mongoose.Schema(
 );
 
 // Index for faster queries
+templateSchema.index({templateId: 1});
 templateSchema.index({name: 1, isActive: 1});
 templateSchema.index({category: 1, isActive: 1});
+templateSchema.index({tier: 1, isActive: 1});
 
 const Template = mongoose.model("Template", templateSchema);
 

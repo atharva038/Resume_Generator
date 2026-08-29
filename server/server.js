@@ -21,6 +21,7 @@ import {handleWebhook as handleSubscriptionWebhook} from "./controllers/subscrip
 import interviewRoutes from "./routes/interview.routes.js";
 import portfolioRoutes from "./routes/portfolio.routes.js";
 import careerRoutes from "./routes/career.routes.js";
+import Template from "./models/Template.model.js";
 import {apiLimiter} from "./middleware/rateLimiter.middleware.js";
 import {
   securityHeaders,
@@ -218,6 +219,83 @@ app.use("/api/subscription", subscriptionRoutes); // Subscription & payment rout
 app.use("/api/interview", interviewRoutes); // AI Interview routes
 app.use("/api/portfolio", portfolioRoutes); // Portfolio builder routes
 app.use("/api/career", careerRoutes); // Career profile & personalized Q&A routes
+
+// Dynamic Real-time XML Sitemap for Search Crawlers
+app.get(["/sitemap.xml", "/api/sitemap.xml"], async (req, res) => {
+  try {
+    const baseUrl = "https://www.smartnshine.app";
+    const today = new Date().toISOString().split("T")[0];
+
+    // Query active templates from MongoDB
+    const activeTemplates = await Template.find({ isActive: true })
+      .select("templateId category updatedAt createdAt")
+      .lean();
+
+    const staticRoutes = [
+      { url: "/", changefreq: "daily", priority: "1.0" },
+      { url: "/templates", changefreq: "daily", priority: "1.0" },
+      { url: "/templates?category=professional", changefreq: "weekly", priority: "0.95" },
+      { url: "/templates?category=tech", changefreq: "weekly", priority: "0.95" },
+      { url: "/templates?category=leadership", changefreq: "weekly", priority: "0.95" },
+      { url: "/templates?category=creative", changefreq: "weekly", priority: "0.90" },
+      { url: "/templates?category=modern", changefreq: "weekly", priority: "0.90" },
+      { url: "/templates?category=minimal", changefreq: "weekly", priority: "0.90" },
+      { url: "/ats-analyzer", changefreq: "weekly", priority: "0.90" },
+      { url: "/job-search", changefreq: "daily", priority: "0.85" },
+      { url: "/smart-job-match", changefreq: "weekly", priority: "0.85" },
+      { url: "/ai-interview", changefreq: "weekly", priority: "0.85" },
+      { url: "/pricing", changefreq: "weekly", priority: "0.80" },
+      { url: "/contact", changefreq: "monthly", priority: "0.60" },
+      { url: "/privacy-policy", changefreq: "monthly", priority: "0.40" },
+      { url: "/terms", changefreq: "monthly", priority: "0.40" },
+      { url: "/refund-policy", changefreq: "monthly", priority: "0.40" },
+      { url: "/shipping-policy", changefreq: "monthly", priority: "0.40" },
+    ];
+
+    let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+    xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd http://www.google.com/schemas/sitemap-image/1.1 http://www.google.com/schemas/sitemap-image/1.1/sitemap-image.xsd">\n`;
+
+    // Static Routes
+    staticRoutes.forEach((route) => {
+      xml += `  <url>\n`;
+      xml += `    <loc>${baseUrl}${route.url}</loc>\n`;
+      xml += `    <lastmod>${today}</lastmod>\n`;
+      xml += `    <changefreq>${route.changefreq}</changefreq>\n`;
+      xml += `    <priority>${route.priority}</priority>\n`;
+      xml += `    <image:image>\n`;
+      xml += `      <image:loc>${baseUrl}/social-preview.png</image:loc>\n`;
+      xml += `      <image:title>SmartNShine ATS Resume Builder</image:title>\n`;
+      xml += `    </image:image>\n`;
+      xml += `  </url>\n`;
+    });
+
+    // Dynamic Templates from Database
+    activeTemplates.forEach((tpl) => {
+      const lastMod = tpl.updatedAt
+        ? new Date(tpl.updatedAt).toISOString().split("T")[0]
+        : today;
+      xml += `  <url>\n`;
+      xml += `    <loc>${baseUrl}/templates?template=${encodeURIComponent(tpl.templateId)}</loc>\n`;
+      xml += `    <lastmod>${lastMod}</lastmod>\n`;
+      xml += `    <changefreq>weekly</changefreq>\n`;
+      xml += `    <priority>0.90</priority>\n`;
+      xml += `    <image:image>\n`;
+      xml += `      <image:loc>${baseUrl}/social-preview.png</image:loc>\n`;
+      xml += `      <image:title>${tpl.name || "Professional"} ATS Resume Template</image:title>\n`;
+      xml += `    </image:image>\n`;
+      xml += `  </url>\n`;
+    });
+
+    xml += `</urlset>`;
+
+    res.setHeader("Content-Type", "application/xml; charset=utf-8");
+    res.setHeader("Cache-Control", "public, max-age=3600, s-maxage=3600");
+    res.send(xml);
+  } catch (error) {
+    console.error("Dynamic sitemap generation error:", error);
+    res.status(500).send("Error generating dynamic sitemap");
+  }
+});
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {
