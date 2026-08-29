@@ -68,6 +68,7 @@ const AIInterview = lazy(() => import("./pages/AIInterview"));
 const InterviewHistory = lazy(() => import("./pages/InterviewHistory"));
 const InterviewResult = lazy(() => import("./pages/InterviewResult"));
 const PdfRender = lazy(() => import("./pages/PdfRender"));
+const TechPortfolioTemplate = lazy(() => import("./pages/TechPortfolioTemplate"));
 
 import {DarkModeProvider} from "./context/DarkModeContext";
 import {NavigationBlockerProvider} from "./context/NavigationBlockerContext";
@@ -124,6 +125,7 @@ function App() {
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
             <Route path="/pdf-render/:token" element={<PdfRender />} />
+            <Route path="/tech-portfolio" element={<TechPortfolioTemplate />} />
             <Route path="/u/:slug" element={<PublicPortfolio />} />
             <Route
               path="/portfolio/:id/edit"

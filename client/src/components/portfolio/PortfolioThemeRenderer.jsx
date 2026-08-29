@@ -96,11 +96,8 @@ const PortfolioThemeRenderer = ({
           html {
             scroll-behavior: smooth;
           }
-          [data-portfolio-theme].portfolio-dark,
-          [data-portfolio-theme].portfolio-dark main,
-          [data-portfolio-theme].portfolio-dark main * {
+          [data-portfolio-theme].portfolio-dark {
             background-color: #09090b !important;
-            border-color: #27272a !important;
             color: #f4f4f5 !important;
           }
 
@@ -119,16 +116,23 @@ const PortfolioThemeRenderer = ({
           }
         `}</style>
 
-        {/* Interactive Portfolio Navbar with ScrollSpy and Animations */}
-        <PortfolioNavbar
+        {/* The Tech Portfolio supplies its own premium navigation. */}
+        {theme.id !== "techPortfolio" && (
+          <PortfolioNavbar
+            data={data}
+            isDarkMode={isDarkMode}
+            toggleDarkMode={toggleDarkMode}
+            accentColor={portfolio?.themeAccent}
+          />
+        )}
+
+        {/* Theme Content */}
+        <ThemeComponent
           data={data}
           isDarkMode={isDarkMode}
           toggleDarkMode={toggleDarkMode}
           accentColor={portfolio?.themeAccent}
         />
-
-        {/* Theme Content */}
-        <ThemeComponent data={data} />
 
         {mode === "public" &&
           portfolio?.settings?.showSmartNShineBranding !== false && (
