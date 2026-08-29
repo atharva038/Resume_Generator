@@ -167,20 +167,16 @@ function App() {
             />
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
+              {/* Public High-SEO Routes */}
+              <Route path="templates" element={<Templates />} />
+              <Route path="contact" element={<Contact />} />
+
               {/* Protected Routes - Require Authentication */}
               <Route
                 path="upload"
                 element={
                   <ProtectedRoute>
                     <Upload />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="templates"
-                element={
-                  <ProtectedRoute>
-                    <Templates />
                   </ProtectedRoute>
                 }
               />
@@ -200,31 +196,6 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              {/* TEMPORARILY HIDDEN FOR RAZORPAY COMPLIANCE - Job Search Features */}
-              {/* <Route
-              path="job-search"
-              element={
-                <ProtectedRoute>
-                  <JobSearch />
-                </ProtectedRoute>
-              }
-            /> */}
-              {/* <Route
-              path="smart-match"
-              element={
-                <ProtectedRoute>
-                  <SmartJobMatchPage />
-                </ProtectedRoute>
-              }
-            /> */}
-            <Route
-              path="contact"
-              element={
-                <ProtectedRoute>
-                  <Contact />
-                </ProtectedRoute>
-              }
-            />
             <Route
               path="my-resumes"
               element={
