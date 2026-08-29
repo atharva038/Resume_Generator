@@ -113,7 +113,7 @@ export default function TemplateSchema({
         tpl.description ||
         `High-impact ATS compliant ${tpl.category || "professional"} resume template with ${tpl.atsScore || 95}% compatibility.`,
       url: `${baseUrl}/templates?template=${tpl.templateId || tpl.id}`,
-      image: `${baseUrl}/social-preview.png`,
+      image: `${baseUrl}/templates/${(tpl.templateId || tpl.id).replace("-2", "2")}.webp`,
     })),
   };
 

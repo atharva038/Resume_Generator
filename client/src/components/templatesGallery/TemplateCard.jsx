@@ -47,12 +47,31 @@ export function UniformTemplateThumbnail({ TemplateComponent, resumeData }) {
   );
 }
 
+const TEMPLATE_IMAGE_MAP = {
+  classic: "/templates/classic.webp",
+  modern: "/templates/modern.webp",
+  minimal: "/templates/minimal.webp",
+  professional: "/templates/professional.webp",
+  "professional-2": "/templates/professional2.webp",
+  professional2: "/templates/professional2.webp",
+  tech: "/templates/tech.webp",
+  "creative-2": "/templates/creative2.webp",
+  creative2: "/templates/creative2.webp",
+  "strategic-leader": "/templates/strategic-leader.webp",
+  "impact-pro": "/templates/impact-pro.webp",
+  "github-style": "/templates/github-style.webp",
+  "structured-photo": "/templates/structured-photo.webp",
+};
+
 export default function TemplateCard({
   template,
   sampleResumeData,
   onOpenPreview,
   onUseTemplate,
 }) {
+  const [imgError, setImgError] = useState(false);
+  const imageSrc = TEMPLATE_IMAGE_MAP[template.id] || template.thumbnail;
+
   return (
     <div
       onClick={() => onOpenPreview(template)}
@@ -60,10 +79,25 @@ export default function TemplateCard({
     >
       {/* Thumbnail view */}
       <div className="relative h-[380px] bg-slate-50 dark:bg-zinc-950 overflow-hidden">
-        <UniformTemplateThumbnail
-          TemplateComponent={template.component}
-          resumeData={sampleResumeData}
-        />
+        {imageSrc && !imgError ? (
+          <div className="absolute inset-0 p-2.5">
+            <div className="relative h-full w-full overflow-hidden rounded-xl border border-gray-200/80 dark:border-zinc-800 bg-white shadow-sm">
+              <img
+                src={imageSrc}
+                alt={`${template.name} - ${template.category} ATS Resume Template | SmartNShine`}
+                title={`${template.name} ATS Resume Template - SmartNShine`}
+                loading="lazy"
+                onError={() => setImgError(true)}
+                className="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.02]"
+              />
+            </div>
+          </div>
+        ) : (
+          <UniformTemplateThumbnail
+            TemplateComponent={template.component}
+            resumeData={sampleResumeData}
+          />
+        )}
 
         {/* Hover overlay with Preview Button */}
         <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-2">
