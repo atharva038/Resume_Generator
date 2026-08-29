@@ -1,0 +1,357 @@
+/**
+ * Tech Portfolio Template Styles
+ * Additional animations and effects not covered by Tailwind
+ */
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Accent is supplied by the portfolio customization panel. */
+.tech-portfolio-theme .tech-form-control {
+  transition: border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.tech-portfolio-theme .tech-form-control:focus {
+  border-color: var(--tech-accent);
+  background-color: rgb(255 255 255 / 0.1);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--tech-accent) 22%, transparent);
+  transform: translateY(-1px);
+}
+
+.tech-portfolio-theme .tech-accent-surface {
+  background: color-mix(in srgb, var(--tech-accent) 18%, rgb(15 23 42 / 0.92));
+  border-color: color-mix(in srgb, var(--tech-accent) 42%, transparent);
+}
+
+.tech-portfolio-theme .tech-accent-icon {
+  color: var(--tech-accent);
+  background: color-mix(in srgb, var(--tech-accent) 16%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tech-accent) 38%, transparent);
+}
+
+@keyframes tech-marquee-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.tech-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: tech-marquee-scroll 28s linear infinite;
+  will-change: transform;
+}
+
+.tech-marquee-track:hover {
+  animation-play-state: paused;
+}
+
+/* The template has a dark visual default; these rules make the shared theme toggle
+   provide a deliberate light version rather than only changing the page shell. */
+[data-color-mode="light"] .tech-portfolio-theme,
+[data-color-mode="light"] .tech-portfolio-theme main {
+  background: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+[data-color-mode="light"] .tech-portfolio-theme main > section {
+  background: #f8fafc !important;
+}
+
+[data-color-mode="light"] .tech-portfolio-theme #hero {
+  background:
+    radial-gradient(circle at 78% 34%, color-mix(in srgb, var(--tech-accent) 13%, transparent), transparent 30rem),
+    linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important;
+}
+
+[data-color-mode="light"] .tech-portfolio-theme main > section:nth-of-type(even) {
+  background: #f1f5f9 !important;
+}
+
+[data-color-mode="light"] .tech-portfolio-theme .tech-glass-card {
+  background: rgb(255 255 255 / 0.88) !important;
+  border-color: rgb(148 163 184 / 0.35) !important;
+  box-shadow: 0 12px 32px rgb(15 23 42 / 0.08);
+}
+
+[data-color-mode="light"] .tech-portfolio-theme .text-white {
+  color: #0f172a !important;
+}
+
+[data-color-mode="light"] .tech-portfolio-theme .text-gray-300,
+[data-color-mode="light"] .tech-portfolio-theme .text-gray-400 {
+  color: #475569 !important;
+}
+
+[data-color-mode="light"] .tech-portfolio-theme .tech-form-control {
+  background: #fff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+[data-color-mode="light"] .tech-portfolio-theme .tech-accent-surface {
+  background: color-mix(in srgb, var(--tech-accent) 12%, white) !important;
+  border-color: color-mix(in srgb, var(--tech-accent) 45%, white) !important;
+}
+
+[data-color-mode="light"] .tech-portfolio-theme button[style*="background-color"],
+[data-color-mode="light"] .tech-portfolio-theme a[style*="background-color"] {
+  color: #fff !important;
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Floating animation for hero elements */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Gradient text animation */
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease infinite;
+}
+
+/* Glow animation */
+@keyframes glow {
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(59, 130, 246, 0.6);
+  }
+}
+
+.animate-glow {
+  animation: glow 3s ease-in-out infinite;
+}
+
+/* Pulse animation */
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 3s ease-in-out infinite;
+}
+
+/* Line drawing animation */
+@keyframes draw-line {
+  from {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+  }
+  to {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 0;
+  }
+}
+
+.animate-draw {
+  animation: draw-line 2s ease-in-out forwards;
+}
+
+/* Scroll reveal animation */
+@keyframes scroll-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.scroll-reveal {
+  animation: scroll-reveal 0.8s ease-out;
+}
+
+/* Custom scrollbar for dark theme */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(59, 130, 246, 0.3);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(59, 130, 246, 0.6);
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-color: rgba(59, 130, 246, 0.3) rgba(0, 0, 0, 0.1);
+  scrollbar-width: thin;
+}
+
+/* Smooth transitions for interactive elements */
+button,
+a,
+input,
+textarea {
+  transition: all 0.3s ease;
+}
+
+/* Glass morphism effect refinement */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Text selection styling */
+::selection {
+  background: rgba(59, 130, 246, 0.3);
+  color: inherit;
+}
+
+::-moz-selection {
+  background: rgba(59, 130, 246, 0.3);
+  color: inherit;
+}
+
+/* Focus visible for accessibility */
+*:focus-visible {
+  outline: 2px solid rgba(59, 130, 246, 0.5);
+  outline-offset: 2px;
+}
+
+/* Disabled state styling */
+button:disabled,
+a[href="#"]:not([href]) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Link styling */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:hover {
+  color: rgba(59, 130, 246, 1);
+}
+
+/* Image lazy loading placeholder */
+img {
+  transition: all 0.3s ease;
+}
+
+img[loading="lazy"] {
+  opacity: 0;
+}
+
+img[loading="lazy"].loaded {
+  opacity: 1;
+}
+
+/* Reduced motion support for animations */
+@media (prefers-reduced-motion: reduce) {
+  .animate-float,
+  .animate-gradient,
+  .animate-glow,
+  .animate-pulse-soft,
+  .animate-draw,
+  .scroll-reveal {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  * {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Dark mode text colors */
+body {
+  color: rgb(229, 231, 235);
+  background-color: rgb(0, 0, 0);
+}
+
+/* Ensure proper contrast */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: rgb(255, 255, 255);
+}
+
+/* Link focus state */
+a:focus,
+button:focus {
+  outline: 2px solid rgba(59, 130, 246, 0.5);
+  outline-offset: 2px;
+}
+
+/* Prevent layout shift */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+    color: black;
+  }
+}

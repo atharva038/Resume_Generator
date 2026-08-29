@@ -3,6 +3,7 @@ import ModernFresherTheme from "./ModernFresherTheme";
 import ProfessionalCorporateTheme from "./ProfessionalCorporateTheme";
 import CyberDevTheme from "./CyberDevTheme";
 import CreativeTheme from "./CreativeTheme";
+import TechPortfolioTheme from "./TechPortfolioTheme";
 
 export const portfolioThemes = {
   minimalDeveloper: {
@@ -44,6 +45,14 @@ export const portfolioThemes = {
     component: CreativeTheme,
     allowedTiers: ["one-time", "pro"],
     accentPresets: ["#7c3aed", "#db2777", "#ea580c", "#0284c7", "#059669"],
+  },
+  techPortfolio: {
+    id: "techPortfolio",
+    name: "Tech Portfolio",
+    description: "Premium futuristic glassmorphism design for developers.",
+    component: TechPortfolioTheme,
+    allowedTiers: ["free", "one-time", "pro"],
+    accentPresets: ["#3b82f6", "#8b5cf6", "#06b6d4", "#10b981", "#f59e0b"],
   },
 };
 
