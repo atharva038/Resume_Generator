@@ -1,11 +1,40 @@
 # ==============================================================================
-# SmartNShine - Elite Search Engine Robots Configuration
+# SmartNShine - Elite Search Engine & AI Agent (GEO / LLM) Robots Configuration
 # Website: https://www.smartnshine.app
 # Updated: 2026-08-29
 # ==============================================================================
 
 # ------------------------------------------------------------------------------
-# 1. MAJOR SEARCH ENGINE INDEXERS (Full Crawl Permission with Fast Indexing)
+# 1. AI SEARCH ENGINES & LLM CITATION BOTS (Explicitly Allowed for Answers)
+#    Enables ChatGPT, Google Gemini, Claude, and Perplexity to Cite SmartNShine
+# ------------------------------------------------------------------------------
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: Google-Extended
+User-agent: PerplexityBot
+User-agent: ClaudeBot
+User-agent: Claude-Web
+User-agent: Applebot-Extended
+User-agent: Amazonbot
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+Allow: /templates
+Allow: /templates?*
+Allow: /ats-analyzer
+Allow: /pricing
+Allow: /contact
+Allow: /privacy-policy
+Allow: /terms
+Disallow: /admin
+Disallow: /admin/*
+Disallow: /api/
+Disallow: /dashboard
+Disallow: /editor
+Disallow: /profile
+
+# ------------------------------------------------------------------------------
+# 2. MAJOR SEARCH ENGINE INDEXERS (Full Crawl Permission)
 # ------------------------------------------------------------------------------
 User-agent: Googlebot
 User-agent: Googlebot-Image
@@ -55,10 +84,12 @@ Disallow: /reset-password
 Disallow: /auth/callback
 
 # ------------------------------------------------------------------------------
-# 2. DEFAULT FALLBACK FOR ALL OTHER CRAWLERS
+# 3. DEFAULT FALLBACK FOR ALL OTHER CRAWLERS
 # ------------------------------------------------------------------------------
 User-agent: *
 Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
 Allow: /templates
 Allow: /templates?*
 Allow: /ats-analyzer
@@ -95,14 +126,10 @@ Disallow: /auth/callback
 Crawl-delay: 1
 
 # ------------------------------------------------------------------------------
-# 3. BLOCK UNWANTED CONTENT SCRAPERS & AI HARVESTERS
+# 4. BLOCK UNWANTED ROGUE SCRAPERS & COMMERCIAL HARVESTERS
 # ------------------------------------------------------------------------------
-User-agent: GPTBot
 User-agent: CCBot
-User-agent: Claude-Web
-User-agent: Anthropic-AI
 User-agent: Bytespider
-User-agent: PerplexityBot
 User-agent: Scrapy
 User-agent: MJ12bot
 User-agent: AhrefsBot
@@ -111,7 +138,7 @@ User-agent: DotBot
 Disallow: /
 
 # ------------------------------------------------------------------------------
-# 4. SITEMAP DECLARATIONS
+# 5. SITEMAP & LLM DECLARATIONS
 # ------------------------------------------------------------------------------
 Sitemap: https://www.smartnshine.app/sitemap.xml
 Host: https://www.smartnshine.app
