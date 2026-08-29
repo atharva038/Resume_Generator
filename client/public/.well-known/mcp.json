@@ -1,0 +1,27 @@
+{
+  "mcpVersion": "1.0",
+  "serverInfo": {
+    "name": "smartnshine-agent-server",
+    "version": "2.0.0"
+  },
+  "description": "Model Context Protocol (MCP) server for SmartNShine ATS Resume Builder",
+  "tools": [
+    {
+      "name": "get_templates",
+      "description": "Retrieve catalog of 12 ATS-compliant resume templates with target industries and ATS compatibility scores",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": ["all", "professional", "tech", "leadership", "creative", "minimal"]
+          }
+        }
+      }
+    },
+    {
+      "name": "get_ats_guidelines",
+      "description": "Returns standard ATS resume guidelines for Taleo, Workday, and Greenhouse"
+    }
+  ]
+}

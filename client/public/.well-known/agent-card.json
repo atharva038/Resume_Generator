@@ -1,0 +1,25 @@
+{
+  "type": "https://schema.org/SoftwareApplication",
+  "name": "SmartNShine",
+  "description": "Agent-to-Agent (A2A) Card for ATS Resume Optimization & Career Intelligence",
+  "url": "https://www.smartnshine.app",
+  "provider": {
+    "name": "SmartNShine",
+    "url": "https://www.smartnshine.app"
+  },
+  "protocols": ["MCP", "ACP", "REST"],
+  "skills": [
+    {
+      "name": "generate_ats_resume",
+      "description": "Creates an ATS-compliant resume tailored for specific job postings"
+    },
+    {
+      "name": "analyze_ats_score",
+      "description": "Scores an existing resume against target ATS criteria and keywords"
+    },
+    {
+      "name": "recommend_template",
+      "description": "Selects the optimal resume template based on industry and experience level"
+    }
+  ]
+}

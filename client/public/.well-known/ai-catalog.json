@@ -1,0 +1,23 @@
+{
+  "catalog_version": "1.0.0",
+  "name": "SmartNShine AI Catalog",
+  "description": "API Catalog & Agent Skills for SmartNShine ATS Resume Platform",
+  "url": "https://www.smartnshine.app",
+  "apis": [
+    {
+      "name": "SmartNShine OpenAPI",
+      "type": "openapi",
+      "url": "https://www.smartnshine.app/openapi.json"
+    },
+    {
+      "name": "SmartNShine MCP Server",
+      "type": "mcp",
+      "url": "https://www.smartnshine.app/.well-known/mcp.json"
+    },
+    {
+      "name": "SmartNShine Agent Contract",
+      "type": "agents_json",
+      "url": "https://www.smartnshine.app/agents.json"
+    }
+  ]
+}
