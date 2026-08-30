@@ -149,7 +149,7 @@ export const TechBadge = ({ name, delay = 0 }) => {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.4, delay }}
       viewport={{ once: true }}
-      className="px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-400/30 text-blue-300 text-sm font-medium hover:border-blue-400/60 transition-all duration-300"
+      className="tech-badge px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-400/30 text-blue-300 text-sm font-medium hover:border-blue-400/60 transition-all duration-300"
     >
       {name}
     </motion.div>

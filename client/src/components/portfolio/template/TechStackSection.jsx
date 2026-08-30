@@ -12,7 +12,7 @@ const TechStackSection = () => {
         />
 
         {/* Animated marquee-like container */}
-        <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.05] backdrop-blur-md">
+        <div className="tech-stack-marquee relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.05] backdrop-blur-md">
           <div className="tech-marquee-track py-8">
             {[0, 1].map((copy) => (
               <div key={copy} className="flex shrink-0 gap-4 pr-4">
@@ -36,9 +36,9 @@ const TechStackSection = () => {
               whileHover={{ y: -5, scale: 1.03 }}
               transition={{ duration: 0.5, delay: idx * 0.05 }}
               viewport={{ once: true, amount: 0.2 }}
-              className="p-4 rounded-xl border border-white/10 bg-white/[0.08] backdrop-blur-md hover:bg-white/[0.12] hover:border-white/20 transition-all duration-300 text-center"
+              className="tech-stack-grid-card p-4 rounded-xl border border-white/10 bg-white/[0.08] backdrop-blur-md hover:bg-white/[0.12] hover:border-white/20 transition-all duration-300 text-center"
             >
-              <p className="text-gray-300 font-medium text-sm">{tech}</p>
+              <p className="tech-stack-grid-label text-gray-300 font-medium text-sm">{tech}</p>
             </motion.div>
           ))}
         </div>
