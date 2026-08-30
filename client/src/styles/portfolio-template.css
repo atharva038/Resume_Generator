@@ -95,6 +95,71 @@ html {
   border-color: color-mix(in srgb, var(--tech-accent) 45%, white) !important;
 }
 
+/* Light-mode tech stack: use solid, high-contrast surfaces instead of dark glass. */
+[data-color-mode="light"] .tech-portfolio-theme .tech-stack-marquee {
+  background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%) !important;
+  border-color: rgb(148 163 184 / 0.42) !important;
+  box-shadow: 0 12px 30px rgb(15 23 42 / 0.07);
+}
+
+[data-color-mode="light"] .tech-portfolio-theme .tech-badge {
+  background: color-mix(in srgb, var(--tech-accent) 13%, white) !important;
+  border-color: color-mix(in srgb, var(--tech-accent) 42%, white) !important;
+  color: color-mix(in srgb, var(--tech-accent) 78%, #0f172a) !important;
+}
+
+[data-color-mode="light"] .tech-portfolio-theme .tech-badge:hover {
+  background: color-mix(in srgb, var(--tech-accent) 20%, white) !important;
+  border-color: var(--tech-accent) !important;
+}
+
+[data-color-mode="light"] .tech-portfolio-theme .tech-stack-grid-card {
+  background: #ffffff !important;
+  border-color: rgb(203 213 225 / 0.9) !important;
+  box-shadow: 0 6px 18px rgb(15 23 42 / 0.05);
+}
+
+[data-color-mode="light"] .tech-portfolio-theme .tech-stack-grid-card:hover {
+  background: color-mix(in srgb, var(--tech-accent) 7%, white) !important;
+  border-color: color-mix(in srgb, var(--tech-accent) 52%, white) !important;
+  box-shadow: 0 12px 24px rgb(15 23 42 / 0.1);
+}
+
+[data-color-mode="light"] .tech-portfolio-theme .tech-stack-grid-label {
+  color: #334155 !important;
+}
+
+/* Keep the footer part of the light theme, with the same quiet slate contrast
+   and accent treatment used by the navbar and tech-stack cards. */
+[data-color-mode="light"] .tech-portfolio-theme .tech-portfolio-footer {
+  background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%) !important;
+  border-color: #cbd5e1 !important;
+}
+
+[data-color-mode="light"] .tech-portfolio-theme .tech-portfolio-footer .text-white {
+  color: #0f172a !important;
+}
+
+[data-color-mode="light"] .tech-portfolio-theme .tech-portfolio-footer .text-gray-400 {
+  color: #475569 !important;
+}
+
+[data-color-mode="light"] .tech-portfolio-theme .tech-portfolio-footer .border-white\/10,
+[data-color-mode="light"] .tech-portfolio-theme .tech-portfolio-footer .border-white\/20 {
+  border-color: #cbd5e1 !important;
+}
+
+[data-color-mode="light"] .tech-portfolio-theme .tech-portfolio-footer .bg-white\/10 {
+  background-color: #ffffff !important;
+}
+
+[data-color-mode="light"] .tech-portfolio-theme .tech-portfolio-footer a:hover,
+[data-color-mode="light"] .tech-portfolio-theme .tech-portfolio-footer button:hover {
+  color: var(--tech-accent) !important;
+  border-color: color-mix(in srgb, var(--tech-accent) 52%, white) !important;
+  background-color: color-mix(in srgb, var(--tech-accent) 8%, white) !important;
+}
+
 [data-color-mode="light"] .tech-portfolio-theme button[style*="background-color"],
 [data-color-mode="light"] .tech-portfolio-theme a[style*="background-color"] {
   color: #fff !important;
