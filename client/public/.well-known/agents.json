@@ -1,12 +1,32 @@
 {
+  "$schema": "https://agents.json.org/schema.json",
   "name": "SmartNShine",
   "description": "AI-Powered ATS Resume Builder & Career Acceleration Platform",
   "url": "https://www.smartnshine.app",
   "version": "2.0.0",
+  "provider": {
+    "name": "SmartNShine",
+    "url": "https://www.smartnshine.app",
+    "contact": "support@smartnshine.app"
+  },
+  "capabilities": [
+    "resume_generation",
+    "ats_optimization",
+    "template_selection",
+    "score_analysis",
+    "mock_interview"
+  ],
   "endpoints": {
     "sitemap": "https://www.smartnshine.app/sitemap.xml",
     "llms": "https://www.smartnshine.app/llms.txt",
+    "llms_full": "https://www.smartnshine.app/llms-full.txt",
     "agent_guide": "https://www.smartnshine.app/AGENTS.md",
-    "templates": "https://www.smartnshine.app/templates"
+    "openapi": "https://www.smartnshine.app/openapi.json",
+    "api_catalog": "https://www.smartnshine.app/.well-known/api-catalog",
+    "skills": "https://www.smartnshine.app/.well-known/skills.json",
+    "mcp": "https://www.smartnshine.app/.well-known/mcp.json",
+    "webmcp": "https://www.smartnshine.app/.well-known/webmcp.json",
+    "templates": "https://www.smartnshine.app/templates",
+    "ats_analyzer": "https://www.smartnshine.app/ats-analyzer"
   }
 }

@@ -1,22 +1,49 @@
 {
   "catalog_version": "1.0.0",
   "name": "SmartNShine AI Catalog",
-  "description": "API Catalog & Agent Skills for SmartNShine ATS Resume Platform",
+  "description": "Comprehensive API & Protocol Catalog for AI Agents and Autonomous Workflows",
   "url": "https://www.smartnshine.app",
+  "provider": {
+    "name": "SmartNShine",
+    "url": "https://www.smartnshine.app"
+  },
   "apis": [
     {
-      "name": "SmartNShine OpenAPI",
+      "name": "OpenAPI Specification",
       "type": "openapi",
-      "url": "https://www.smartnshine.app/openapi.json"
+      "format": "application/openapi+json",
+      "url": "https://www.smartnshine.app/openapi.json",
+      "documentation": "https://www.smartnshine.app/AGENTS.md"
     },
     {
-      "name": "SmartNShine MCP Server",
+      "name": "Model Context Protocol (MCP)",
       "type": "mcp",
-      "url": "https://www.smartnshine.app/.well-known/mcp.json"
+      "format": "application/json",
+      "url": "https://www.smartnshine.app/.well-known/mcp.json",
+      "documentation": "https://www.smartnshine.app/AGENTS.md"
     },
     {
-      "name": "SmartNShine Agent Contract",
+      "name": "WebMCP Manifest",
+      "type": "webmcp",
+      "format": "application/json",
+      "url": "https://www.smartnshine.app/.well-known/webmcp.json"
+    },
+    {
+      "name": "RFC 9727 API Catalog",
+      "type": "api-catalog",
+      "format": "application/linkset+json",
+      "url": "https://www.smartnshine.app/.well-known/api-catalog"
+    },
+    {
+      "name": "Agent Skills Index",
+      "type": "skills",
+      "format": "application/json",
+      "url": "https://www.smartnshine.app/.well-known/skills.json"
+    },
+    {
+      "name": "Agents.json Specification",
       "type": "agents_json",
+      "format": "application/json",
       "url": "https://www.smartnshine.app/agents.json"
     }
   ]

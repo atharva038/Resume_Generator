@@ -1,9 +1,18 @@
 {
-  "openapi": "3.0.3",
+  "openapi": "3.1.0",
   "info": {
-    "title": "SmartNShine Career & ATS API",
-    "description": "Public API documentation for SmartNShine ATS Resume Builder and Career Engine",
-    "version": "2.0.0"
+    "title": "SmartNShine Career & ATS Resume API",
+    "description": "Public Machine-to-Machine & Agent API for SmartNShine ATS Resume Optimization Engine",
+    "version": "2.0.0",
+    "contact": {
+      "name": "SmartNShine Agent Support",
+      "url": "https://www.smartnshine.app/contact",
+      "email": "support@smartnshine.app"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
   },
   "servers": [
     {
@@ -15,9 +24,22 @@
     "/health": {
       "get": {
         "summary": "Health Check Endpoint",
+        "description": "Verify API server status and database connectivity",
+        "operationId": "getHealthStatus",
         "responses": {
           "200": {
-            "description": "API is healthy"
+            "description": "API is online and operational",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "ok" },
+                    "timestamp": { "type": "string", "format": "date-time" }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -25,9 +47,118 @@
     "/templates": {
       "get": {
         "summary": "Fetch Active ATS Resume Templates",
+        "description": "Retrieve catalog of 12+ enterprise-grade ATS resume templates with design styles, categories, and ATS pass scores",
+        "operationId": "getTemplatesCatalog",
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "description": "Filter templates by category (e.g. professional, tech, leadership, minimal, creative)",
+            "schema": {
+              "type": "string",
+              "enum": ["all", "professional", "tech", "leadership", "minimal", "creative"],
+              "default": "all"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "List of active ATS templates"
+            "description": "List of active ATS resume templates",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "templates": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "string" },
+                          "name": { "type": "string" },
+                          "atsScore": { "type": "integer" },
+                          "category": { "type": "string" },
+                          "previewUrl": { "type": "string" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ats-score": {
+      "post": {
+        "summary": "Calculate ATS Resume Score",
+        "description": "Analyzes raw resume text or structured resume data against job descriptions for keyword density, formatting, and ATS compatibility",
+        "operationId": "calculateAtsScore",
+        "security": [
+          { "bearerAuth": [] },
+          { "oauth2": ["read:score"] }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["resumeText"],
+                "properties": {
+                  "resumeText": { "type": "string", "description": "Full extracted plain text of candidate resume" },
+                  "jobDescription": { "type": "string", "description": "Target job description for semantic keyword matching" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "ATS analysis report",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "score": { "type": "number", "example": 94 },
+                    "matchedKeywords": { "type": "array", "items": { "type": "string" } },
+                    "missingKeywords": { "type": "array", "items": { "type": "string" } },
+                    "recommendations": { "type": "array", "items": { "type": "string" } }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing or invalid Bearer/OAuth token"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Enter your SmartNShine API JWT token"
+      },
+      "oauth2": {
+        "type": "oauth2",
+        "description": "Standard OAuth 2.0 Authorization",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "https://www.smartnshine.app/api/auth/token",
+            "scopes": {
+              "read:templates": "Access active resume templates catalog",
+              "read:score": "Run automated ATS scoring and analysis",
+              "write:resume": "Generate and edit ATS resume instances"
+            }
           }
         }
       }

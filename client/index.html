@@ -27,7 +27,10 @@
 
     <!-- Security & Trust Directives -->
     <meta name="referrer" content="strict-origin-when-cross-origin" />
-    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; connect-src 'self' https: wss:; frame-src 'self' https://api.razorpay.com https://checkout.razorpay.com; object-src 'none'; base-uri 'self';"
+    />
 
     <!-- AI Agent & LLM Discovery Standards (GEO / Agent Protocols) -->
     <link rel="alternate" type="text/plain" href="/llms.txt" title="LLMs.txt Manifest" />
@@ -35,7 +38,17 @@
     <link rel="alternate" type="application/json" href="/agents.json" title="Agents.json Protocol" />
     <link rel="agent" type="application/json" href="/.well-known/agents.json" title="AI Agent Manifest" />
     <link rel="ai-catalog" type="application/json" href="/.well-known/ai-catalog.json" title="AI API Catalog" />
+    <link rel="api-catalog" type="application/linkset+json" href="/.well-known/api-catalog" title="RFC 9727 API Catalog" />
+    <link rel="oauth-authorization-server" href="/.well-known/oauth-authorization-server" />
+    <link rel="model-context-protocol" href="/.well-known/mcp.json" />
+    <link rel="webmcp" href="/.well-known/webmcp.json" />
+    <link rel="ai-plugin" href="/.well-known/ai-plugin.json" />
+    <link rel="skills" type="application/json" href="/.well-known/skills.json" />
+    <link rel="service-desc" type="application/openapi+json" href="/openapi.json" />
+    <link rel="service-doc" type="text/markdown" href="/AGENTS.md" />
     <link rel="help" href="/AGENTS.md" title="AI Agent Integration Guide" />
+    <link rel="auth" type="text/markdown" href="/auth.md" title="Agent Authentication Contract" />
+    <link rel="pricing" type="text/markdown" href="/pricing.md" title="Agent Pricing Contract" />
     <link rel="sitemap" type="application/xml" href="/sitemap.xml" title="Sitemap" />
     <link rel="canonical" href="https://www.smartnshine.app/" />
 
@@ -397,37 +410,100 @@
     </script>
   </head>
   <body>
-    <!-- Accessibility Landmark Header for Web Crawlers & Screen Readers -->
-    <header class="sr-only" role="banner" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;">
-      <h1>SmartNShine - AI-Powered ATS Resume Builder & Career Platform</h1>
-      <nav role="navigation" aria-label="Main Navigation">
-        <ul>
-          <li><a href="/">Home</a></li>
-          <li><a href="/templates">ATS Resume Templates</a></li>
-          <li><a href="/ats-analyzer">ATS Score Analyzer</a></li>
-          <li><a href="/pricing">Pricing</a></li>
-          <li><a href="/contact">Contact</a></li>
-        </ul>
-      </nav>
-    </header>
+    <div id="root">
+      <header role="banner" style="background:#0a0a0a; color:#fff; padding:1.5rem; border-bottom:1px solid #222;">
+        <div style="max-width:1200px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+          <a href="/" style="color:#fff; text-decoration:none; font-size:1.5rem; font-weight:bold; display:flex; align-items:center; gap:0.5rem;">
+            <span>✨ SmartNShine</span>
+          </a>
+          <nav role="navigation" aria-label="Primary Navigation">
+            <ul style="display:flex; list-style:none; gap:1.5rem; margin:0; padding:0; align-items:center;">
+              <li><a href="/" style="color:#e5e7eb; text-decoration:none; font-weight:500;">Home</a></li>
+              <li><a href="/templates" style="color:#e5e7eb; text-decoration:none; font-weight:500;">ATS Resume Templates</a></li>
+              <li><a href="/ats-analyzer" style="color:#e5e7eb; text-decoration:none; font-weight:500;">ATS Score Checker</a></li>
+              <li><a href="/pricing" style="color:#e5e7eb; text-decoration:none; font-weight:500;">Pricing & Plans</a></li>
+              <li><a href="/contact" style="color:#e5e7eb; text-decoration:none; font-weight:500;">Contact Support</a></li>
+              <li><a href="/login" style="background:#4f46e5; color:#fff; padding:0.5rem 1rem; border-radius:0.5rem; text-decoration:none; font-weight:600;">Sign In</a></li>
+            </ul>
+          </nav>
+        </div>
+      </header>
 
-    <div id="root"></div>
+      <main role="main" style="max-width:1200px; margin:0 auto; padding:3rem 1.5rem; font-family:system-ui, -apple-system, sans-serif; color:#111;">
+        <section aria-labelledby="hero-heading" style="text-align:center; margin-bottom:3rem;">
+          <h1 id="hero-heading" style="font-size:2.5rem; font-weight:800; color:#0f172a; margin-bottom:1rem;">
+            #1 AI ATS Resume Builder & Career Acceleration Platform
+          </h1>
+          <p style="font-size:1.25rem; color:#475569; max-width:800px; margin:0 auto 2rem; line-height:1.6;">
+            <strong>Target Audience & Purpose:</strong> SmartNShine empowers job seekers, software engineers, recent graduates, and executives to build ATS-optimized resumes guaranteed to score 98%+ across Taleo, Workday, Greenhouse, and Lever.
+          </p>
+          <div style="display:flex; justify-content:center; gap:1rem; flex-wrap:wrap;">
+            <a href="/templates" style="background:#2563eb; color:#fff; padding:0.85rem 1.75rem; border-radius:0.5rem; text-decoration:none; font-weight:700; font-size:1.1rem;">
+              Browse 12+ ATS Templates →
+            </a>
+            <a href="/ats-analyzer" style="background:#f1f5f9; color:#0f172a; border:1px solid #cbd5e1; padding:0.85rem 1.75rem; border-radius:0.5rem; text-decoration:none; font-weight:600; font-size:1.1rem;">
+              Check Free ATS Score
+            </a>
+          </div>
+        </section>
 
-    <!-- Semantic Content Fallback for Non-JS AI Crawlers & Agents -->
-    <noscript>
-      <main role="main" style="padding: 2rem; font-family: sans-serif; max-width: 800px; margin: 0 auto;">
-        <h1>SmartNShine — AI-Powered ATS Resume Builder</h1>
-        <p>Build interview-ready ATS resumes in minutes with 12+ professional resume templates, real-time ATS scoring (98% pass rate), and instant PDF export.</p>
-        <h2>Explore Resume Templates</h2>
-        <ul>
-          <li><a href="/templates?template=classic">Classic ATS Template (98% Compatibility)</a></li>
-          <li><a href="/templates?template=modern">Modern Two-Column Template</a></li>
-          <li><a href="/templates?template=minimal">Minimal Single-Column Template (99% Score)</a></li>
-          <li><a href="/templates?template=tech">Tech Stack Developer Resume</a></li>
-          <li><a href="/templates?template=strategic-leader">Strategic Executive Resume</a></li>
-        </ul>
+        <section aria-labelledby="templates-heading" style="margin-bottom:3rem;">
+          <h2 id="templates-heading" style="font-size:1.8rem; font-weight:700; color:#0f172a; margin-bottom:1.5rem;">
+            Featured ATS-Compliant Resume Templates
+          </h2>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:1.5rem;">
+            <article style="border:1px solid #e2e8f0; border-radius:0.75rem; padding:1.5rem; background:#fff;">
+              <h3 style="font-size:1.25rem; margin-top:0;"><a href="/templates?template=classic" style="color:#2563eb; text-decoration:none;">Classic ATS Template</a></h3>
+              <p style="color:#64748b; font-size:0.95rem;">98% ATS Pass Score. Traditional single-column serif format optimized for Corporate, Finance, and Legal positions.</p>
+              <a href="/templates?template=classic" style="color:#2563eb; font-weight:600; text-decoration:underline;">Use Classic Template →</a>
+            </article>
+            <article style="border:1px solid #e2e8f0; border-radius:0.75rem; padding:1.5rem; background:#fff;">
+              <h3 style="font-size:1.25rem; margin-top:0;"><a href="/templates?template=modern" style="color:#2563eb; text-decoration:none;">Modern Two-Column Template</a></h3>
+              <p style="color:#64748b; font-size:0.95rem;">95% ATS Pass Score. Contemporary structure with clear sidebar sections for Product, Tech, and Marketing professionals.</p>
+              <a href="/templates?template=modern" style="color:#2563eb; font-weight:600; text-decoration:underline;">Use Modern Template →</a>
+            </article>
+            <article style="border:1px solid #e2e8f0; border-radius:0.75rem; padding:1.5rem; background:#fff;">
+              <h3 style="font-size:1.25rem; margin-top:0;"><a href="/templates?template=minimal" style="color:#2563eb; text-decoration:none;">Minimal Single-Column Template</a></h3>
+              <p style="color:#64748b; font-size:0.95rem;">99% ATS Pass Score. Ultra-clean typography and standard semantic headers suitable for all industries and career levels.</p>
+              <a href="/templates?template=minimal" style="color:#2563eb; font-weight:600; text-decoration:underline;">Use Minimal Template →</a>
+            </article>
+            <article style="border:1px solid #e2e8f0; border-radius:0.75rem; padding:1.5rem; background:#fff;">
+              <h3 style="font-size:1.25rem; margin-top:0;"><a href="/templates?template=tech" style="color:#2563eb; text-decoration:none;">Tech Stack Developer Resume</a></h3>
+              <p style="color:#64748b; font-size:0.95rem;">98% ATS Pass Score. Developer-focused layout highlighting technical skills, GitHub repositories, and system architecture.</p>
+              <a href="/templates?template=tech" style="color:#2563eb; font-weight:600; text-decoration:underline;">Use Tech Template →</a>
+            </article>
+          </div>
+        </section>
+
+        <section aria-labelledby="features-heading" style="background:#f8fafc; border-radius:1rem; padding:2rem; margin-bottom:3rem;">
+          <h2 id="features-heading" style="font-size:1.8rem; font-weight:700; color:#0f172a; margin-bottom:1rem;">
+            Why Choose SmartNShine?
+          </h2>
+          <ul style="color:#334155; line-height:1.8; font-size:1.05rem;">
+            <li><strong>100% ATS Guaranteed:</strong> Formatted specifically to parse flawlessly on Taleo, Workday, Greenhouse, and Lever.</li>
+            <li><strong>AI Bullet Optimization:</strong> Transform rough notes into powerful, quantified metric-driven resume bullets with OpenAI GPT-4o.</li>
+            <li><strong>Instant ATS Gap Analysis:</strong> Compare your resume against target job descriptions to identify missing keywords.</li>
+            <li><strong>Instant PDF Export:</strong> Pixel-perfect vector PDF downloads that preserve layout integrity across all applicant portals.</li>
+          </ul>
+        </section>
       </main>
-    </noscript>
+
+      <footer role="contentinfo" style="background:#0a0a0a; color:#9ca3af; padding:2rem 1.5rem; border-top:1px solid #222; text-align:center;">
+        <nav aria-label="Footer Navigation" style="margin-bottom:1rem;">
+          <ul style="display:flex; justify-content:center; list-style:none; gap:1.5rem; flex-wrap:wrap; padding:0; margin:0;">
+            <li><a href="/" style="color:#e5e7eb; text-decoration:none;">Home</a></li>
+            <li><a href="/templates" style="color:#e5e7eb; text-decoration:none;">Resume Templates</a></li>
+            <li><a href="/ats-analyzer" style="color:#e5e7eb; text-decoration:none;">ATS Checker</a></li>
+            <li><a href="/pricing" style="color:#e5e7eb; text-decoration:none;">Pricing</a></li>
+            <li><a href="/contact" style="color:#e5e7eb; text-decoration:none;">Contact</a></li>
+            <li><a href="/privacy-policy" style="color:#e5e7eb; text-decoration:none;">Privacy Policy</a></li>
+            <li><a href="/terms" style="color:#e5e7eb; text-decoration:none;">Terms of Service</a></li>
+            <li><a href="/llms.txt" style="color:#e5e7eb; text-decoration:none;">LLMs.txt</a></li>
+          </ul>
+        </nav>
+        <p style="margin:0; font-size:0.875rem;">© 2026 SmartNShine. All rights reserved.</p>
+      </footer>
+    </div>
 
     <script type="module" src="/src/main.jsx"></script>
   </body>
