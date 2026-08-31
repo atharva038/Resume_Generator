@@ -1,27 +1,68 @@
 {
+  "$schema": "https://modelcontextprotocol.io/schema.json",
   "mcpVersion": "1.0",
   "serverInfo": {
     "name": "smartnshine-agent-server",
+    "title": "SmartNShine ATS & Career Assistant",
     "version": "2.0.0"
   },
-  "description": "Model Context Protocol (MCP) server for SmartNShine ATS Resume Builder",
+  "description": "Model Context Protocol (MCP) server for SmartNShine AI ATS Resume Builder & Career Suite",
+  "capabilities": {
+    "tools": {
+      "listChanged": true
+    },
+    "resources": {
+      "subscribe": false,
+      "listChanged": false
+    }
+  },
   "tools": [
     {
       "name": "get_templates",
-      "description": "Retrieve catalog of 12 ATS-compliant resume templates with target industries and ATS compatibility scores",
-      "parameters": {
+      "description": "Retrieve the full catalog of 12+ ATS-compliant resume templates with target industries and compatibility scores",
+      "inputSchema": {
         "type": "object",
         "properties": {
           "category": {
             "type": "string",
-            "enum": ["all", "professional", "tech", "leadership", "creative", "minimal"]
+            "enum": ["all", "professional", "tech", "leadership", "creative", "minimal"],
+            "description": "Filter by template industry category"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "get_ats_guidelines",
+      "description": "Returns verified ATS formatting guidelines and parsing rules for Taleo, Workday, Greenhouse, and Lever",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "system": {
+            "type": "string",
+            "enum": ["all", "workday", "taleo", "greenhouse", "lever"],
+            "description": "Applicant Tracking System name"
           }
         }
       }
     },
     {
-      "name": "get_ats_guidelines",
-      "description": "Returns standard ATS resume guidelines for Taleo, Workday, and Greenhouse"
+      "name": "analyze_resume_ats_fit",
+      "description": "Score a candidate resume against target job criteria and generate missing ATS keywords",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "resume_text": {
+            "type": "string",
+            "description": "Candidate resume text"
+          },
+          "job_description": {
+            "type": "string",
+            "description": "Target job description"
+          }
+        },
+        "required": ["resume_text"]
+      }
     }
   ]
 }

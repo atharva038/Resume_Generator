@@ -1,0 +1,39 @@
+{
+  "webmcpVersion": "1.0",
+  "name": "SmartNShine WebMCP",
+  "description": "Declarative Web Model Context Protocol tools for SmartNShine",
+  "tools": [
+    {
+      "name": "search_templates",
+      "description": "Search and filter ATS resume templates by industry or role",
+      "action": "https://www.smartnshine.app/templates",
+      "method": "GET",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": ["all", "professional", "tech", "leadership", "minimal", "creative"]
+          },
+          "search": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "name": "analyze_ats_score",
+      "description": "Analyze ATS compatibility of resume",
+      "action": "https://www.smartnshine.app/ats-analyzer",
+      "method": "POST",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "resume_text": { "type": "string" },
+          "job_description": { "type": "string" }
+        },
+        "required": ["resume_text"]
+      }
+    }
+  ]
+}

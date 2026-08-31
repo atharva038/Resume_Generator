@@ -19,6 +19,13 @@ User-agent: Amazonbot
 Allow: /
 Allow: /llms.txt
 Allow: /llms-full.txt
+Allow: /agents.json
+Allow: /AGENTS.md
+Allow: /auth.md
+Allow: /pricing.md
+Allow: /openapi.json
+Allow: /.well-known/
+Allow: /.well-known/*
 Allow: /templates
 Allow: /templates?*
 Allow: /ats-analyzer
