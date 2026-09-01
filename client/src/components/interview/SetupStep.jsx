@@ -450,13 +450,14 @@ export const SetupStep = ({
             </div>
 
             {/* Live Interviewer Studio Graphic Preview & Voice Tester */}
-            <div className="mt-4 p-4 rounded-xl bg-gradient-to-br from-indigo-50/70 via-white to-purple-50/50 dark:from-indigo-950/20 dark:via-[#121420] dark:to-purple-950/20 border border-indigo-200/80 dark:border-indigo-500/20 flex flex-col sm:flex-row items-center gap-5 shadow-sm">
-              <div className="w-28 h-28 shrink-0">
+            <div className="mt-4 p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-indigo-50/80 via-white to-purple-50/60 dark:from-indigo-950/30 dark:via-[#121420] dark:to-purple-950/25 border border-indigo-200/80 dark:border-indigo-500/25 flex flex-col sm:flex-row items-center gap-5 shadow-sm overflow-hidden">
+              <div className="shrink-0 flex items-center justify-center">
                 <InterviewerGraphic
                   isSpeaking={isTestingVoice || isPlayingAudio}
                   isThinking={false}
                   isDark={isDarkMode}
                   voice={selectedVoice}
+                  size="sm"
                 />
               </div>
 
