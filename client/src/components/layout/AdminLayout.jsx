@@ -583,18 +583,6 @@ const AdminLayout = () => {
         </div>
       </aside>
 
-      {/* Floating Button to Open Sidebar (Desktop only, when sidebar is closed) */}
-      {!isSidebarOpen && (
-        <button
-          onClick={setIsSidebarOpenTrue}
-          className="hidden lg:flex fixed left-4 top-20 z-30 p-3 bg-gray-900 dark:bg-white text-white dark:text-black rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 items-center justify-center group"
-          aria-label="Open sidebar"
-          title="Open Menu"
-        >
-          <Menu className="w-5 h-5" />
-        </button>
-      )}
-
       {/* Main Content */}
       <main
         className={`pt-16 transition-all duration-300 min-h-screen ml-0 ${
