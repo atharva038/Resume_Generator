@@ -73,6 +73,7 @@ const SuperAdminLogin = lazy(() => import("./pages/superAdmin/SuperAdminLogin"))
 const SuperAdminEnvPanel = lazy(
   () => import("./pages/superAdmin/SuperAdminEnvPanel")
 );
+const TechPortfolioTemplate = lazy(() => import("./pages/TechPortfolioTemplate"));
 
 import {DarkModeProvider} from "./context/DarkModeContext";
 import {NavigationBlockerProvider} from "./context/NavigationBlockerContext";
@@ -129,6 +130,7 @@ function App() {
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
             <Route path="/pdf-render/:token" element={<PdfRender />} />
+            <Route path="/tech-portfolio" element={<TechPortfolioTemplate />} />
             <Route path="/u/:slug" element={<PublicPortfolio />} />
             <Route
               path="/portfolio/:id/edit"
