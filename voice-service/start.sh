@@ -9,8 +9,23 @@ echo "================================================"
 # Navigate to voice-service directory
 cd "$(dirname "$0")"
 
-# Check if virtual environment exists
+# Check if python3 is available
+if ! command -v python3 &> /dev/null; then
+    echo "❌ Error: python3 is not installed or not in PATH."
+    exit 1
+fi
+
+# Check if existing virtual environment is broken or missing
+RECREATE_VENV=0
 if [ ! -d "venv" ]; then
+    RECREATE_VENV=1
+elif ! venv/bin/python3 -c "import sys" &> /dev/null; then
+    echo "⚠️  Existing virtual environment is broken or has moved paths."
+    rm -rf venv
+    RECREATE_VENV=1
+fi
+
+if [ $RECREATE_VENV -eq 1 ]; then
     echo "📦 Creating virtual environment..."
     python3 -m venv venv
 fi
@@ -18,9 +33,10 @@ fi
 # Activate virtual environment
 source venv/bin/activate
 
-# Install/upgrade dependencies
+# Upgrade pip and install dependencies
 echo "📥 Installing dependencies..."
-pip install -q -r requirements.txt
+venv/bin/pip install --quiet --upgrade pip setuptools wheel
+venv/bin/pip install -q -r requirements.txt
 
 # Check for FFmpeg
 if ! command -v ffmpeg &> /dev/null; then
@@ -44,4 +60,5 @@ echo "================================================"
 echo ""
 
 # Run the Flask app
-python app.py
+venv/bin/python3 app.py
+

@@ -38,6 +38,8 @@ import {
   exportResumePdf,
   getPdfSession,
   getPublicTemplates,
+  tailorResume,
+  compressResume,
 } from "../controllers/resume.controller.js";
 
 const router = express.Router();
@@ -108,6 +110,28 @@ router.post(
   checkAIQuota,
   validateAchievementsSegregation,
   segregateAchievements
+);
+
+// Protected routes - tailor resume to job description with AI
+router.post(
+  "/tailor",
+  authenticateToken,
+  checkSubscription,
+  checkUsageLimit("aiGenerationsPerMonth"),
+  aiLimiter,
+  checkAIQuota,
+  tailorResume
+);
+
+// Protected routes - compress resume to 1 page with AI
+router.post(
+  "/compress",
+  authenticateToken,
+  checkSubscription,
+  checkUsageLimit("aiGenerationsPerMonth"),
+  aiLimiter,
+  checkAIQuota,
+  compressResume
 );
 
 // Protected routes - process custom section with AI (requires authentication + AI rate limiting + quota check)

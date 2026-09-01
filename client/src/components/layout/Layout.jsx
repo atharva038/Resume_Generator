@@ -18,16 +18,23 @@ const Layout = () => {
   const [promotion, setPromotion] = useState(null);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchPromo = async () => {
       try {
         const data = await getPricing();
-        setPromotion(data?.promotion || null);
+        if (isMounted) {
+          setPromotion(data?.promotion || null);
+        }
       } catch (err) {
         console.error("Failed to load promotion in Layout:", err);
       }
     };
     fetchPromo();
-  }, [location.pathname]);
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
 
   // Auto-open sidebar on desktop
   useEffect(() => {

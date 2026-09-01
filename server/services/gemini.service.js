@@ -810,6 +810,126 @@ export async function chatCompletion(systemPrompt, userPrompt, options = {}) {
   }, "Gemini chat completion");
 }
 
+/**
+ * Tailor full resume content to match a specific job description
+ * @param {Object} resumeData - Original resume data
+ * @param {string} jobDescription - Target job description
+ * @returns {Promise<Object>} - Tailored resume data with suggestions
+ */
+export async function tailorResumeWithAI(resumeData, jobDescription) {
+  return await retryWithBackoff(async () => {
+    ensureGeminiEnabled();
+
+    const prompt = `You are an expert ATS resume strategist and executive career coach.
+Tailor the following resume data to strongly align with the target job description while preserving all factual truth and accuracy.
+
+TARGET JOB DESCRIPTION:
+${jobDescription}
+
+ORIGINAL RESUME DATA:
+${JSON.stringify(resumeData, null, 2)}
+
+INSTRUCTIONS:
+1. Optimize the professional summary to highlight the candidate's strongest qualifications matching the job description.
+2. Refine experience and project bullet points using strong action verbs, quantifiable achievements, and keywords from the job description.
+3. Organize skills so the most relevant matching skills appear first.
+4. Return valid JSON only with NO markdown wrapper.
+
+JSON Schema:
+{
+  "tailoredResume": {
+    "summary": "Tailored summary...",
+    "skills": [ { "category": "...", "items": ["..."] } ],
+    "experience": [ { "title": "...", "company": "...", "bullets": ["..."] } ],
+    "projects": [ { "name": "...", "description": "...", "bullets": ["..."], "technologies": ["..."] } ]
+  },
+  "keywordsAdded": ["keyword1", "keyword2"],
+  "tailoringHighlights": ["highlight 1", "highlight 2"]
+}`;
+
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.5-flash",
+      generationConfig: {
+        temperature: 0.3,
+        maxOutputTokens: 4096,
+        responseMimeType: "application/json",
+      },
+    });
+
+    console.log("🤖 Calling Gemini API for resume tailoring...");
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    let text = response.text().trim();
+    const tokenUsage = extractTokenUsage(response);
+
+    if (text.startsWith("```json")) {
+      text = text.replace(/^```json\n/, "").replace(/\n```$/, "");
+    } else if (text.startsWith("```")) {
+      text = text.replace(/^```\n/, "").replace(/\n```$/, "");
+    }
+
+    const data = JSON.parse(text);
+    return {data, tokenUsage};
+  }, "Tailor resume with AI");
+}
+
+/**
+ * Compress and tighten resume content to fit on a single page
+ * @param {Object} resumeData - Original resume data
+ * @returns {Promise<Object>} - Compressed resume data
+ */
+export async function compressResumeWithAI(resumeData) {
+  return await retryWithBackoff(async () => {
+    ensureGeminiEnabled();
+
+    const prompt = `You are an expert resume editor. Compact and tighten the following resume data to ensure it fits concisely within a 1-page layout without losing crucial metrics or impact.
+
+ORIGINAL RESUME DATA:
+${JSON.stringify(resumeData, null, 2)}
+
+INSTRUCTIONS:
+1. Tighten the summary to 2-3 crisp, punchy sentences.
+2. Shorten experience bullets: merge redundant bullets, prioritize high-impact metrics (%, $, scale). Keep 2-3 high-impact bullets per role.
+3. Trim project descriptions to concise 1-2 line statements with key tech stack.
+4. Keep all factual dates, companies, and degrees intact.
+5. Return valid JSON only with NO markdown code fence.
+
+JSON Schema:
+{
+  "compressedResume": {
+    "summary": "...",
+    "experience": [ { "title": "...", "company": "...", "bullets": ["..."] } ],
+    "projects": [ { "name": "...", "description": "...", "bullets": ["..."], "technologies": ["..."] } ]
+  },
+  "spaceSavedSummary": "Summary of cuts made to fit 1 page"
+}`;
+
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.5-flash",
+      generationConfig: {
+        temperature: 0.2,
+        maxOutputTokens: 4096,
+        responseMimeType: "application/json",
+      },
+    });
+
+    console.log("🤖 Calling Gemini API for resume 1-page compression...");
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    let text = response.text().trim();
+    const tokenUsage = extractTokenUsage(response);
+
+    if (text.startsWith("```json")) {
+      text = text.replace(/^```json\n/, "").replace(/\n```$/, "");
+    } else if (text.startsWith("```")) {
+      text = text.replace(/^```\n/, "").replace(/\n```$/, "");
+    }
+
+    const data = JSON.parse(text);
+    return {data, tokenUsage};
+  }, "Compress resume with AI");
+}
+
 export default {
   parseResumeWithAI,
   enhanceContentWithAI,
@@ -819,4 +939,7 @@ export default {
   processCustomSectionWithAI,
   analyzeResumeJobMatch,
   chatCompletion,
+  tailorResumeWithAI,
+  compressResumeWithAI,
 };
+

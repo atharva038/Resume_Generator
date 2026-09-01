@@ -107,14 +107,21 @@ export const analyzeResume = async (req, res) => {
  * Helper function to convert resume data object to readable text
  */
 function convertResumeDataToText(resumeData) {
+  if (!resumeData) return "";
   let text = "";
 
   // Contact info
   if (resumeData.contact) {
-    text += `${resumeData.contact.name || ""}\n`;
-    text += `${resumeData.contact.email || ""}\n`;
-    text += `${resumeData.contact.phone || ""}\n`;
-    text += `${resumeData.contact.location || ""}\n\n`;
+    const {name, email, phone, location, linkedin, github, portfolio, website} = resumeData.contact;
+    if (name) text += `${name}\n`;
+    if (email) text += `Email: ${email}\n`;
+    if (phone) text += `Phone: ${phone}\n`;
+    if (location) text += `Location: ${location}\n`;
+    if (linkedin) text += `LinkedIn: ${linkedin}\n`;
+    if (github) text += `GitHub: ${github}\n`;
+    if (portfolio) text += `Portfolio: ${portfolio}\n`;
+    if (website) text += `Website: ${website}\n`;
+    text += "\n";
   }
 
   // Summary
@@ -123,23 +130,32 @@ function convertResumeDataToText(resumeData) {
   }
 
   // Skills
-  if (resumeData.skills && resumeData.skills.length > 0) {
+  if (resumeData.skills && Array.isArray(resumeData.skills) && resumeData.skills.length > 0) {
     text += "SKILLS\n";
     resumeData.skills.forEach((skillGroup) => {
-      text += `${skillGroup.category}: ${skillGroup.items.join(", ")}\n`;
+      if (typeof skillGroup === "string") {
+        text += `• ${skillGroup}\n`;
+      } else if (skillGroup && typeof skillGroup === "object") {
+        const category = skillGroup.category || "General";
+        const items = Array.isArray(skillGroup.items) ? skillGroup.items.join(", ") : (skillGroup.name || "");
+        if (items) text += `${category}: ${items}\n`;
+      }
     });
     text += "\n";
   }
 
   // Experience
-  if (resumeData.experience && resumeData.experience.length > 0) {
+  if (resumeData.experience && Array.isArray(resumeData.experience) && resumeData.experience.length > 0) {
     text += "EXPERIENCE\n";
     resumeData.experience.forEach((exp) => {
-      text += `${exp.title} at ${exp.company}\n`;
-      text += `${exp.startDate} - ${exp.current ? "Present" : exp.endDate}\n`;
-      if (exp.bullets && exp.bullets.length > 0) {
+      text += `${exp.title || "Role"} at ${exp.company || "Company"}${exp.location ? ` (${exp.location})` : ""}\n`;
+      text += `${exp.startDate || ""} - ${exp.current ? "Present" : exp.endDate || ""}\n`;
+      if (exp.description) {
+        text += `${exp.description}\n`;
+      }
+      if (exp.bullets && Array.isArray(exp.bullets) && exp.bullets.length > 0) {
         exp.bullets.forEach((bullet) => {
-          text += `• ${bullet}\n`;
+          if (bullet) text += `• ${bullet}\n`;
         });
       }
       text += "\n";
@@ -147,19 +163,19 @@ function convertResumeDataToText(resumeData) {
   }
 
   // Projects
-  if (resumeData.projects && resumeData.projects.length > 0) {
+  if (resumeData.projects && Array.isArray(resumeData.projects) && resumeData.projects.length > 0) {
     text += "PROJECTS\n";
     resumeData.projects.forEach((project) => {
-      text += `${project.name}\n`;
+      text += `${project.name || "Project"}${project.link ? ` [${project.link}]` : ""}\n`;
       if (project.description) {
         text += `${project.description}\n`;
       }
-      if (project.technologies && project.technologies.length > 0) {
+      if (project.technologies && Array.isArray(project.technologies) && project.technologies.length > 0) {
         text += `Technologies: ${project.technologies.join(", ")}\n`;
       }
-      if (project.bullets && project.bullets.length > 0) {
+      if (project.bullets && Array.isArray(project.bullets) && project.bullets.length > 0) {
         project.bullets.forEach((bullet) => {
-          text += `• ${bullet}\n`;
+          if (bullet) text += `• ${bullet}\n`;
         });
       }
       text += "\n";
@@ -167,25 +183,70 @@ function convertResumeDataToText(resumeData) {
   }
 
   // Education
-  if (resumeData.education && resumeData.education.length > 0) {
+  if (resumeData.education && Array.isArray(resumeData.education) && resumeData.education.length > 0) {
     text += "EDUCATION\n";
     resumeData.education.forEach((edu) => {
-      text += `${edu.degree} in ${edu.field}\n`;
-      text += `${edu.institution}\n`;
-      text += `${edu.startDate} - ${edu.endDate}\n\n`;
+      text += `${edu.degree || "Degree"}${edu.field ? ` in ${edu.field}` : ""}\n`;
+      text += `${edu.institution || "Institution"}${edu.location ? ` - ${edu.location}` : ""}\n`;
+      text += `${edu.startDate || ""} - ${edu.endDate || ""}${edu.gpa ? ` | GPA: ${edu.gpa}` : ""}\n\n`;
     });
   }
 
   // Certifications
-  if (resumeData.certifications && resumeData.certifications.length > 0) {
+  if (resumeData.certifications && Array.isArray(resumeData.certifications) && resumeData.certifications.length > 0) {
     text += "CERTIFICATIONS\n";
     resumeData.certifications.forEach((cert) => {
-      text += `${cert.name} - ${cert.issuer} (${cert.date})\n`;
+      text += `${cert.name || "Certificate"}${cert.issuer ? ` - ${cert.issuer}` : ""}${cert.date ? ` (${cert.date})` : ""}${cert.credentialUrl ? ` [${cert.credentialUrl}]` : ""}\n`;
+    });
+    text += "\n";
+  }
+
+  // Languages
+  if (resumeData.languages && Array.isArray(resumeData.languages) && resumeData.languages.length > 0) {
+    text += "LANGUAGES\n";
+    resumeData.languages.forEach((lang) => {
+      if (typeof lang === "string") {
+        text += `• ${lang}\n`;
+      } else if (lang && typeof lang === "object") {
+        text += `• ${lang.language || lang.name || ""}${lang.proficiency ? ` (${lang.proficiency})` : ""}\n`;
+      }
+    });
+    text += "\n";
+  }
+
+  // Awards & Achievements
+  if (resumeData.awards && Array.isArray(resumeData.awards) && resumeData.awards.length > 0) {
+    text += "AWARDS & ACHIEVEMENTS\n";
+    resumeData.awards.forEach((award) => {
+      if (typeof award === "string") {
+        text += `• ${award}\n`;
+      } else if (award && typeof award === "object") {
+        text += `${award.title || "Award"}${award.issuer ? ` - ${award.issuer}` : ""}${award.date ? ` (${award.date})` : ""}\n`;
+        if (award.description) text += `${award.description}\n`;
+      }
+    });
+    text += "\n";
+  }
+
+  // Custom Sections
+  if (resumeData.customSections && Array.isArray(resumeData.customSections) && resumeData.customSections.length > 0) {
+    resumeData.customSections.forEach((section) => {
+      if (section && section.title) {
+        text += `${section.title.toUpperCase()}\n`;
+        if (section.content) text += `${section.content}\n`;
+        if (section.items && Array.isArray(section.items)) {
+          section.items.forEach((item) => {
+            text += `• ${typeof item === "string" ? item : item.name || item.title || JSON.stringify(item)}\n`;
+          });
+        }
+        text += "\n";
+      }
     });
   }
 
   return text;
 }
+
 
 /**
  * Calculate match score between resume data and job description

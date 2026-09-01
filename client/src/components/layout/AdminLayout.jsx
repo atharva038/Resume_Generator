@@ -27,6 +27,7 @@ import {
   XCircle,
   UserPlus,
   Loader2,
+  ShieldCheck,
 } from "lucide-react";
 import {useAuth} from "@/context/AuthContext";
 import {useDarkMode} from "@/context/DarkModeContext";
@@ -190,6 +191,12 @@ const AdminLayout = () => {
       icon: Settings,
       label: "Settings",
       color: "text-gray-500",
+    },
+    {
+      path: "/super-admin",
+      icon: ShieldCheck,
+      label: "Super Admin (.env)",
+      color: "text-emerald-400",
     },
   ];
 

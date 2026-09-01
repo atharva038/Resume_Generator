@@ -29,12 +29,16 @@ export const securityHeaders = helmet({
   // Content Security Policy - Restricts resource loading
   contentSecurityPolicy: {
     directives: {
-      defaultSrc: ["'self'"],
+      defaultSrc: ["'self'", "https:", "http:", "data:", "blob:"],
       scriptSrc: [
         "'self'",
         "'unsafe-inline'", // Allow inline scripts (needed for React)
         "'unsafe-eval'", // Allow eval (needed for some build tools)
         "https://cdnjs.cloudflare.com", // CDN for libraries
+        "https://checkout.razorpay.com",
+        "https://cdn.razorpay.com",
+        "https://*.razorpay.com",
+        "https://cdn.jsdelivr.net",
       ],
       styleSrc: [
         "'self'",
@@ -47,6 +51,7 @@ export const securityHeaders = helmet({
         "data:", // Allow data URIs for images
         "blob:", // Allow blob URLs
         "https:", // Allow HTTPS images
+        "http:",
       ],
       fontSrc: [
         "'self'",
@@ -56,17 +61,34 @@ export const securityHeaders = helmet({
       ],
       connectSrc: [
         "'self'",
-        "https://api.github.com", // GitHub API
-        "https://generativelanguage.googleapis.com", // Google Gemini API
+        "https:",
+        "http:",
+        "wss:",
+        "ws:",
+        "http://localhost:*",
+        "http://127.0.0.1:*",
+        "ws://localhost:*",
+        "ws://127.0.0.1:*",
+        "https://api.github.com",
+        "https://generativelanguage.googleapis.com",
+        "https://api.openai.com",
+        "https://*.razorpay.com",
+        "https://api.razorpay.com",
         process.env.CLIENT_ORIGIN || "http://localhost:5173",
       ],
-      frameSrc: ["'none'"], // Prevent embedding in iframes
+      frameSrc: [
+        "'self'",
+        "https://api.razorpay.com",
+        "https://checkout.razorpay.com",
+        "https://*.razorpay.com",
+      ],
       objectSrc: ["'none'"], // Prevent object/embed/applet
       baseUri: ["'self'"], // Restrict base tag URLs
       formAction: ["'self'"], // Restrict form submissions
-      upgradeInsecureRequests: [], // Upgrade HTTP to HTTPS (production only)
     },
   },
+
+
 
   // Cross-Origin-Embedder-Policy - Prevents loading cross-origin resources
   crossOriginEmbedderPolicy: false, // Set to true if needed
