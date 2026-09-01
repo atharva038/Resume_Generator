@@ -187,6 +187,18 @@ export const toggleAdminQuestionStatus = (id) =>
 export const deleteAdminQuestion = (id) =>
   adminAPI.delete(`/questions/${id}`);
 
+// AI Interview Management & Cost Intelligence
+export const getInterviewAdminStats = () =>
+  adminAPI.get("/interviews/stats");
+export const getAllAdminInterviews = (params) =>
+  adminAPI.get("/interviews", {params});
+export const getAdminInterviewDetail = (sessionId) =>
+  adminAPI.get(`/interviews/${sessionId}`);
+export const getInterviewPricingConfig = () =>
+  adminAPI.get("/interviews/pricing-config");
+export const updateInterviewPricingConfig = (data) =>
+  adminAPI.patch("/interviews/pricing-config", data);
+
 // Global Search
 export const globalSearch = (q) => adminAPI.get("/search", {params: {q}});
 

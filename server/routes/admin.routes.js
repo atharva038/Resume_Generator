@@ -181,6 +181,21 @@ import {
   deleteAdminQuestion,
 } from "../controllers/adminQuestion.controller.js";
 
+import {
+  getInterviewAdminStats,
+  getAllInterviewSessions,
+  getInterviewSessionDetail,
+  getInterviewPricingConfig,
+  updateInterviewPricingConfig,
+} from "../controllers/adminInterview.controller.js";
+
+// AI Interview Management & Cost Intelligence
+router.get("/interviews/stats", getInterviewAdminStats);
+router.get("/interviews", getAllInterviewSessions);
+router.get("/interviews/pricing-config", getInterviewPricingConfig);
+router.patch("/interviews/pricing-config", updateInterviewPricingConfig);
+router.get("/interviews/:sessionId", validateMongoId, getInterviewSessionDetail);
+
 // Question Bank Management
 router.get("/questions", getAllAdminQuestions);
 router.post("/questions", createAdminQuestion);

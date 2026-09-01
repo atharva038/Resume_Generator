@@ -13,6 +13,7 @@ import {
   Trash2,
   Eye,
   MessageCircle,
+  Mail,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import {
@@ -23,8 +24,10 @@ import {
 } from "@/api/admin.api";
 import {parseValidationErrors} from "@/utils/errorHandler";
 import {useToggle} from "@/hooks";
+import ContactMessages from "./ContactMessages";
 
 const AdminFeedback = () => {
+  const [activeTab, setActiveTab] = useState("feedback"); // 'feedback' | 'contacts'
   const [feedbacks, setFeedbacks] = useState([]);
   const [loading, toggleLoading, setLoadingTrue, setLoadingFalse] =
     useToggle(false);
@@ -54,7 +57,10 @@ const AdminFeedback = () => {
       const response = await getAllFeedback(filters);
       setFeedbacks(response.data.feedbacks);
     } catch (error) {
-      console.error("Error fetching feedbacks:", error);
+      console.error("Error fetching feedback:", error);
+      toast.error(
+        "Failed to load feedback: " + parseValidationErrors(error)
+      );
     } finally {
       setLoadingFalse();
     }
@@ -63,56 +69,48 @@ const AdminFeedback = () => {
   const fetchStatistics = async () => {
     try {
       const response = await getFeedbackStatistics();
-      setStats(response.data.stats);
+      setStats(response.data);
     } catch (error) {
       console.error("Error fetching statistics:", error);
     }
   };
 
-  const handleStatusUpdate = async (id, status) => {
+  const handleStatusChange = async (id, newStatus) => {
     try {
-      await updateFeedbackStatus(id, {status});
+      await updateFeedbackStatus(id, {status: newStatus});
+      toast.success("Feedback status updated successfully");
       fetchFeedbacks();
       fetchStatistics();
-      toast.success("Feedback status updated successfully!", {
-        icon: "✅",
-        duration: 2000,
-      });
     } catch (error) {
       console.error("Error updating status:", error);
-      toast.error("Failed to update status: " + parseValidationErrors(error), {
-        icon: "❌",
-        duration: 3000,
-      });
+      toast.error(
+        "Failed to update status: " + parseValidationErrors(error)
+      );
     }
   };
 
-  const handleResponseSubmit = async () => {
-    if (!selectedFeedback || !responseText) return;
+  const handleResponse = async (e) => {
+    e.preventDefault();
+    if (!responseText.trim()) {
+      toast.error("Please enter a response");
+      return;
+    }
 
     try {
       await updateFeedbackStatus(selectedFeedback._id, {
-        adminResponse: responseText,
         status: statusUpdate || selectedFeedback.status,
+        response: responseText,
       });
+      toast.success("Response sent successfully");
       setShowModalFalse();
-      setSelectedFeedback(null);
       setResponseText("");
       setStatusUpdate("");
       fetchFeedbacks();
       fetchStatistics();
-      toast.success("Response submitted successfully!", {
-        icon: "💬",
-        duration: 2000,
-      });
     } catch (error) {
-      console.error("Error submitting response:", error);
+      console.error("Error sending response:", error);
       toast.error(
-        "Failed to submit response: " + parseValidationErrors(error),
-        {
-          icon: "❌",
-          duration: 3000,
-        }
+        "Failed to send response: " + parseValidationErrors(error)
       );
     }
   };
@@ -121,20 +119,13 @@ const AdminFeedback = () => {
     if (window.confirm("Are you sure you want to delete this feedback?")) {
       try {
         await deleteFeedbackAdmin(id);
+        toast.success("Feedback deleted successfully");
         fetchFeedbacks();
         fetchStatistics();
-        toast.success("Feedback deleted successfully!", {
-          icon: "🗑️",
-          duration: 2000,
-        });
       } catch (error) {
         console.error("Error deleting feedback:", error);
         toast.error(
-          "Failed to delete feedback: " + parseValidationErrors(error),
-          {
-            icon: "❌",
-            duration: 3000,
-          }
+          "Failed to delete feedback: " + parseValidationErrors(error)
         );
       }
     }
@@ -193,33 +184,64 @@ const AdminFeedback = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <span className="px-3 py-1 bg-primary-50 dark:bg-primary-500/15 border border-primary-200 dark:border-primary-500/25 rounded-full text-primary-700 dark:text-primary-300 text-xs font-medium inline-block mb-3">
-          Feedback Center
+        <span className="px-3 py-1 bg-pink-50 dark:bg-pink-500/15 border border-pink-200 dark:border-pink-500/25 rounded-full text-pink-700 dark:text-pink-300 text-xs font-medium inline-block mb-3">
+          Communications Hub
         </span>
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          User Feedback Management
+          Messages & User Feedback
         </h1>
         <p className="text-gray-600 dark:text-gray-400 mt-1">
-          View and manage user feedback, suggestions, and bug reports
+          Review candidate feedback, bug reports, feature suggestions, and contact messages.
         </p>
       </div>
 
-      {/* Statistics Cards */}
-      {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          <div className="bg-white dark:bg-black rounded-2xl p-5 border border-gray-200 dark:border-white/10">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-400">Total Feedback</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
-                  {stats.total}
-                </p>
+      {/* Tabs */}
+      <div className="flex border-b border-gray-200 dark:border-white/10 gap-2">
+        <button
+          onClick={() => setActiveTab("feedback")}
+          className={`pb-3 px-4 font-semibold text-sm transition-all border-b-2 flex items-center gap-2 ${
+            activeTab === "feedback"
+              ? "border-pink-500 text-pink-600 dark:text-pink-400"
+              : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          }`}
+        >
+          <MessageSquare className="w-4 h-4" />
+          User Feedback & Bug Reports
+        </button>
+
+        <button
+          onClick={() => setActiveTab("contacts")}
+          className={`pb-3 px-4 font-semibold text-sm transition-all border-b-2 flex items-center gap-2 ${
+            activeTab === "contacts"
+              ? "border-pink-500 text-pink-600 dark:text-pink-400"
+              : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          }`}
+        >
+          <Mail className="w-4 h-4" />
+          Contact Inquiries & Messages
+        </button>
+      </div>
+
+      {activeTab === "contacts" && <ContactMessages />}
+
+      {activeTab === "feedback" && (
+        <>
+          {/* Statistics Cards */}
+          {stats && (
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+              <div className="bg-white dark:bg-black rounded-2xl p-5 border border-gray-200 dark:border-white/10">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-400">Total Feedback</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+                      {stats.total}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-gradient-to-br from-purple-500 to-violet-600 rounded-xl">
+                    <MessageSquare className="w-5 h-5 text-white" />
+                  </div>
+                </div>
               </div>
-              <div className="p-3 bg-gradient-to-br from-purple-500 to-violet-600 rounded-xl">
-                <MessageSquare className="w-5 h-5 text-white" />
-              </div>
-            </div>
-          </div>
           <div className="bg-white dark:bg-black rounded-2xl p-5 border border-gray-200 dark:border-white/10">
             <div className="flex items-center justify-between">
               <div>
@@ -560,7 +582,7 @@ const AdminFeedback = () => {
 
               <div className="flex gap-3 pt-2">
                 <button
-                  onClick={handleResponseSubmit}
+                  onClick={handleResponse}
                   className="flex-1 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 text-white py-2.5 px-4 rounded-xl font-medium transition-all"
                 >
                   Submit Response
@@ -580,6 +602,8 @@ const AdminFeedback = () => {
             </div>
           </div>
         </div>
+      )}
+        </>
       )}
     </div>
   );

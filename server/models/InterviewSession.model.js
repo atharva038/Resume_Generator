@@ -248,7 +248,44 @@ const interviewSessionSchema = new mongoose.Schema(
       enum: ["fixed", "adaptive"], // adaptive increases difficulty based on performance
       default: "adaptive",
     },
-    // Metadata
+    // Metadata & Environment
+    voiceEngineUsed: {
+      type: String,
+      enum: ["sarvam", "local", "browser", "auto"],
+      default: "sarvam",
+    },
+    personaUsed: {
+      type: String,
+      default: "shubh",
+    },
+    creditsUsed: {
+      type: Number,
+      default: 0,
+    },
+    // Comprehensive Cost Tracking (Sarvam STT/TTS & LLM)
+    costBreakdown: {
+      stt: {
+        durationSeconds: { type: Number, default: 0 },
+        characterCount: { type: Number, default: 0 },
+        costInr: { type: Number, default: 0 },
+        costUsd: { type: Number, default: 0 },
+      },
+      tts: {
+        characterCount: { type: Number, default: 0 },
+        audioSeconds: { type: Number, default: 0 },
+        costInr: { type: Number, default: 0 },
+        costUsd: { type: Number, default: 0 },
+      },
+      llm: {
+        promptTokens: { type: Number, default: 0 },
+        completionTokens: { type: Number, default: 0 },
+        totalTokens: { type: Number, default: 0 },
+        costInr: { type: Number, default: 0 },
+        costUsd: { type: Number, default: 0 },
+      },
+      totalCostInr: { type: Number, default: 0 },
+      totalCostUsd: { type: Number, default: 0 },
+    },
     metadata: {
       browserInfo: String,
       ipAddress: String,

@@ -92,6 +92,8 @@ export const createSession = async (req, res) => {
       jobDescription,
       targetSkills = [],
       totalQuestions = 10,
+      voiceEngineUsed = "sarvam",
+      personaUsed = "shubh",
     } = req.body;
 
     // Validate required fields
@@ -161,6 +163,8 @@ export const createSession = async (req, res) => {
       targetSkills,
       totalQuestions: Math.min(Math.max(totalQuestions, 5), 15), // Clamp between 5-15
       status: "created",
+      voiceEngineUsed: mode === "text" ? "none" : voiceEngineUsed,
+      personaUsed: mode === "text" ? "standard" : personaUsed,
       aiModel: selectAIModel(req.user),
       metadata: {
         browserInfo: req.headers["user-agent"],

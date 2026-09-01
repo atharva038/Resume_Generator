@@ -62,6 +62,9 @@ const TemplateManagement = lazy(
 const AdminQuestionManagement = lazy(
   () => import("./pages/admin/AdminQuestionManagement")
 );
+const AIInterviewManagement = lazy(
+  () => import("./pages/admin/AIInterviewManagement")
+);
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
 const Earnings = lazy(() => import("./pages/admin/Earnings"));
 const AIInterview = lazy(() => import("./pages/AIInterview"));
@@ -311,8 +314,6 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              {/* 404 Not Found - Must be last route in this Route group */}
-              <Route path="*" element={<NotFound />} />
             </Route>
 
             {/* Admin Routes - Separate Layout */}
@@ -330,6 +331,7 @@ function App() {
               <Route path="users/:userId" element={<UserDetails />} />
               <Route path="templates" element={<TemplateManagement />} />
               <Route path="questions" element={<AdminQuestionManagement />} />
+              <Route path="interviews" element={<AIInterviewManagement />} />
               <Route path="ai-analytics" element={<AIAnalytics />} />
               <Route path="ai-quota" element={<AIQuotaManagement />} />
               <Route
@@ -361,6 +363,9 @@ function App() {
                 </SuperAdminProtectedRoute>
               }
             />
+
+            {/* 404 Catch-All Route at top level */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
       </NavigationBlockerProvider>

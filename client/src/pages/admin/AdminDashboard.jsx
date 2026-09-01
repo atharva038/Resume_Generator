@@ -137,8 +137,8 @@ const AdminDashboard = () => {
     },
     {
       title: "AI Cost",
-      value: `$${(stats?.stats?.totalAICost || 0).toFixed(2)}`,
-      subtitle: "Total spent",
+      value: `₹${((stats?.stats?.totalAICost || 0) * 86.5).toFixed(2)}`,
+      subtitle: `≈ $${(stats?.stats?.totalAICost || 0).toFixed(2)} USD`,
       icon: DollarSign,
       color: "text-pink-400",
     },

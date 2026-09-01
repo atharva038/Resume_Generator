@@ -28,6 +28,7 @@ import {
   UserPlus,
   Loader2,
   ShieldCheck,
+  Bot,
 } from "lucide-react";
 import {useAuth} from "@/context/AuthContext";
 import {useDarkMode} from "@/context/DarkModeContext";
@@ -133,10 +134,16 @@ const AdminLayout = () => {
       color: "text-cyan-500",
     },
     {
-      path: "/admin/templates",
-      icon: FileBox,
-      label: "Templates",
+      path: "/admin/interviews",
+      icon: Bot,
+      label: "AI Interviews & Costs",
       color: "text-purple-500",
+    },
+    {
+      path: "/admin/ai-analytics",
+      icon: Sparkles,
+      label: "AI Usage & Quotas",
+      color: "text-orange-500",
     },
     {
       path: "/admin/questions",
@@ -145,58 +152,22 @@ const AdminLayout = () => {
       color: "text-indigo-400",
     },
     {
-      path: "/admin/ai-analytics",
-      icon: BarChart3,
-      label: "AI Analytics",
-      color: "text-orange-500",
-    },
-    {
-      path: "/admin/ai-quota",
-      icon: TrendingUp,
-      label: "AI Quota Management",
-      color: "text-yellow-500",
-    },
-    {
-      path: "/admin/ai-extraction",
-      icon: Sparkles,
-      label: "AI Extraction Usage",
-      color: "text-violet-500",
-    },
-    {
-      path: "/admin/contacts",
-      icon: MessageSquare,
-      label: "Contact Messages",
-      color: "text-pink-500",
+      path: "/admin/templates",
+      icon: FileBox,
+      label: "Templates",
+      color: "text-fuchsia-500",
     },
     {
       path: "/admin/feedback",
       icon: MessageSquare,
-      label: "User Feedback",
-      color: "text-indigo-500",
-    },
-    {
-      path: "/admin/logs",
-      icon: Activity,
-      label: "Activity Logs",
-      color: "text-cyan-500",
-    },
-    {
-      path: "/admin/notifications",
-      icon: Bell,
-      label: "Notifications",
-      color: "text-rose-500",
+      label: "Messages & Feedback",
+      color: "text-pink-500",
     },
     {
       path: "/admin/settings",
       icon: Settings,
       label: "Settings",
       color: "text-gray-500",
-    },
-    {
-      path: "/super-admin",
-      icon: ShieldCheck,
-      label: "Super Admin (.env)",
-      color: "text-emerald-400",
     },
   ];
 
