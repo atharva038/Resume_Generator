@@ -281,7 +281,11 @@ const MinimalTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
     }
   };
 
+  const layoutSettings = resumeData?.layoutSettings || {};
   const dynamicStyles = getDynamicStyles();
+  const contactLayout = layoutSettings.contactLayout || "center-inline";
+  const contactJustify = contactLayout === "left-inline" ? "flex-start" : "center";
+  const contactStacked = contactLayout === "center-stacked";
 
   // Helper function to safely format skills (handles both array and string)
   const formatSkills = (items) => {
@@ -853,6 +857,9 @@ const MinimalTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
             display: "flex",
             flexWrap: "wrap",
             gap: dynamicStyles.contactGap,
+            justifyContent: contactJustify,
+            flexDirection: contactStacked ? "column" : "row",
+            alignItems: contactStacked ? (contactJustify === "flex-start" ? "flex-start" : "center") : "center",
           }}
         >
           {resumeData.contact?.email && <span>{resumeData.contact.email}</span>}

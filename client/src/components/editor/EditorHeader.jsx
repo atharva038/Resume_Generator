@@ -38,9 +38,9 @@ export default function EditorHeader({
   onTogglePreview,
 }) {
   return (
-    <header className="sticky top-0 z-40 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-xl border-b border-gray-200/80 dark:border-white/[0.08] px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3 flex items-center justify-between transition-all no-print">
+    <header className="sticky top-0 z-40 w-full max-w-full bg-white/90 dark:bg-zinc-950/90 backdrop-blur-xl border-b border-gray-200/80 dark:border-white/[0.08] px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 transition-all no-print">
       {/* Left branding & back */}
-      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+      <div className="flex min-w-0 items-center gap-2 sm:gap-3 shrink-0">
         <button
           onClick={onGoBack}
           className="inline-flex items-center gap-1.5 p-2 sm:px-3 sm:py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900 text-gray-700 dark:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-800 text-xs sm:text-sm font-semibold transition-all shadow-2xs active:scale-95 cursor-pointer"
@@ -82,7 +82,7 @@ export default function EditorHeader({
       </div>
 
       {/* Right controls toolbar */}
-      <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+      <div className="flex min-w-0 flex-1 flex-wrap items-center justify-end gap-1.5 sm:gap-2 shrink-0">
         <DarkModeToggle />
 
         {/* Wizard Switch Button */}
@@ -101,7 +101,7 @@ export default function EditorHeader({
         {!isWizardMode && (
           <button
             onClick={onResetOrder}
-            className="hidden xl:inline-flex items-center gap-1.5 px-3 py-2 border border-gray-200 dark:border-white/10 rounded-xl bg-white dark:bg-zinc-900 text-gray-700 dark:text-zinc-300 text-xs font-semibold hover:border-orange-500 hover:text-orange-600 transition-all cursor-pointer"
+            className="hidden 2xl:inline-flex items-center gap-1.5 px-2.5 py-2 border border-gray-200 dark:border-white/10 rounded-xl bg-white dark:bg-zinc-900 text-gray-700 dark:text-zinc-300 text-xs font-semibold hover:border-orange-500 hover:text-orange-600 transition-all cursor-pointer"
             title="Reset section order to default"
           >
             <RotateCcw className="w-3.5 h-3.5" />

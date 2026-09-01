@@ -395,7 +395,11 @@ const ClassicTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
     }
   };
 
+  const layoutSettings = resumeData?.layoutSettings || {};
   const dynamicStyles = useMemo(() => getDynamicStyles(), [contentDensity]);
+  const contactLayout = layoutSettings.contactLayout || "center-inline";
+  const contactJustify = contactLayout === "left-inline" ? "flex-start" : "center";
+  const contactStacked = contactLayout === "center-stacked";
 
   // Helper function to safely format skills (handles both array and string)
   const formatSkills = (items) => {
@@ -892,14 +896,20 @@ const ClassicTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
           style={{
             fontSize: dynamicStyles.contactSize,
             color: selectedTheme.textLight,
+            display: "flex",
+            flexDirection: contactStacked ? "column" : "row",
+            flexWrap: "wrap",
+            justifyContent: contactJustify,
+            alignItems: contactStacked ? (contactJustify === "flex-start" ? "flex-start" : "center") : "center",
+            gap: contactStacked ? "0" : "12px",
           }}
         >
           {data.contact?.email && (
-            <div style={{marginBottom: dynamicStyles.contactMarginBottom}}>
+            <div style={{marginBottom: contactStacked ? dynamicStyles.contactMarginBottom : "0"}}>
               {data.contact.email}
             </div>
           )}
-          <div className="flex justify-center gap-3 flex-wrap">
+          <div className={`flex gap-3 flex-wrap ${contactStacked ? "mt-1" : ""}`} style={{justifyContent: contactJustify, display: contactStacked ? "flex" : "inline-flex"}}>
             {data.contact?.phone && (
               <span>{data.contact.phone}</span>
             )}
@@ -907,7 +917,7 @@ const ClassicTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
               <span>{data.contact.location}</span>
             )}
           </div>
-          <div className="flex justify-center gap-3 flex-wrap">
+          <div className="flex gap-3 flex-wrap" style={{justifyContent: contactJustify, marginTop: contactStacked ? "3px" : "0"}}>
             {data.contact?.linkedin && (
               <a
                 href={data.contact.linkedin}

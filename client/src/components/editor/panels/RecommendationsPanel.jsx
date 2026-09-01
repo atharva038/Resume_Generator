@@ -1,5 +1,6 @@
 import {useState} from "react";
 import {calculateResumeScore} from "@/utils/resumeScoring";
+import {resumeAPI} from "@/api/api";
 import {
   BriefcaseBusiness,
   Circle,
@@ -17,16 +18,35 @@ import {
   X,
   ChevronDown,
   CircleCheck,
+  Check,
+  Plus,
+  ScanText,
 } from "lucide-react";
 
-const RecommendationsPanel = ({resumeData, onEnhanceAll, compact = true}) => {
+const RecommendationsPanel = ({
+  resumeData,
+  onApplySuggestion,
+  aiSuggestions,
+  onSuggestionsChange,
+  compact = true,
+}) => {
   const [expanded, setExpanded] = useState(true);
   const [enhancing, setEnhancing] = useState(false);
   const [customPrompt, setCustomPrompt] = useState("");
   const [showAllCategories, setShowAllCategories] = useState(false);
   const [showAdvancedEnhancer, setShowAdvancedEnhancer] = useState(false);
+  const [localSuggestions, setLocalSuggestions] = useState([]);
+  const [suggestionError, setSuggestionError] = useState("");
+  const [addingId, setAddingId] = useState(null);
+  const [addedIds, setAddedIds] = useState([]);
 
   if (!resumeData) return null;
+
+  // Editor-level storage keeps AI responses visible while the user edits the
+  // resume or closes and reopens the analysis sidebar. The local fallback
+  // keeps this panel reusable in isolation.
+  const suggestions = aiSuggestions ?? localSuggestions;
+  const setSuggestions = onSuggestionsChange || setLocalSuggestions;
 
   const {totalScore, breakdown, recommendations} =
     calculateResumeScore(resumeData);
@@ -111,6 +131,288 @@ const RecommendationsPanel = ({resumeData, onEnhanceAll, compact = true}) => {
   const visibleCategories = showAllCategories
     ? prioritizedCategories
     : prioritizedCategories.slice(0, compact ? 3 : 6);
+
+  const getStarterSuggestions = () => {
+    const contact = resumeData.contact || {};
+    const starters = [];
+    const contactFields = [
+      ["email", "Email address", "your.email@example.com"],
+      ["phone", "Phone number", "+00 000 000 0000"],
+      ["location", "Location", "City, Country"],
+      ["linkedin", "LinkedIn profile", "linkedin.com/in/your-name"],
+      ["github", "GitHub profile", "github.com/your-username"],
+    ];
+
+    contactFields.forEach(([field, label, value]) => {
+      if (!contact[field]?.trim()) {
+        starters.push({
+          id: `contact-${field}`,
+          section: "contact",
+          targetSection: "personal",
+          label,
+          value: {[field]: value},
+          isStarter: true,
+        });
+      }
+    });
+
+    if (!resumeData.name?.trim()) {
+      starters.push({
+        id: "name",
+        section: "name",
+        targetSection: "personal",
+        label: "Your full name",
+        value: "Your Full Name",
+        isStarter: true,
+      });
+    }
+    if (!resumeData.summary?.trim()) {
+      starters.push({
+        id: "summary-starter",
+        section: "summary",
+        label: "Professional summary starter",
+        value: "[Target role] with strengths in [key skill 1], [key skill 2], and [key skill 3]. Ready to contribute to [type of team or company] by delivering [measurable outcome].",
+        isStarter: true,
+      });
+    }
+    if (!resumeData.skills?.length) {
+      starters.push({
+        id: "skills-starter",
+        section: "skills",
+        label: "Skills section starter",
+        value: [
+          {category: "Technical Skills", items: ["[Add your core tools]", "[Add your programming languages]", "[Add your platforms]"]},
+          {category: "Professional Skills", items: ["Communication", "Problem solving", "Teamwork"]},
+        ],
+        isStarter: true,
+      });
+    }
+    if (!resumeData.experience?.length) {
+      starters.push({
+        id: "experience-starter",
+        section: "experience",
+        label: "Experience entry starter",
+        value: {
+          company: "Your Company",
+          title: "Your Job Title",
+          location: "City, Country",
+          startDate: "Month YYYY",
+          endDate: "Present",
+          current: true,
+          bullets: ["[Describe a responsibility or achievement with a measurable result]"],
+        },
+        isStarter: true,
+      });
+    } else {
+      resumeData.experience.forEach((experience, index) => {
+        const value = {};
+        if (!experience.company?.trim()) value.company = "Your Company";
+        if (!experience.title?.trim()) value.title = "Your Job Title";
+        if (!experience.location?.trim()) value.location = "City, Country";
+        if (!experience.startDate?.trim()) value.startDate = "Month YYYY";
+        if (!experience.endDate?.trim() && !experience.current) value.endDate = "Month YYYY";
+        if (!experience.bullets?.filter(Boolean).length) {
+          value.bullets = ["[Describe a responsibility or achievement with a measurable result]"];
+        }
+        if (Object.keys(value).length) {
+          starters.push({
+            id: `experience-details-${index}`,
+            section: "experience",
+            index,
+            label: `Complete ${experience.title || `experience ${index + 1}`}`,
+            value,
+            fieldPatch: true,
+            isStarter: true,
+          });
+        }
+      });
+    }
+    if (!resumeData.education?.length) {
+      starters.push({
+        id: "education-starter",
+        section: "education",
+        label: "Education entry starter",
+        value: {
+          institution: "Your University or College",
+          degree: "Your Degree",
+          field: "Your Field of Study",
+          location: "City, Country",
+          startDate: "Month YYYY",
+          endDate: "Month YYYY",
+          gpa: "",
+          bullets: [],
+        },
+        isStarter: true,
+      });
+    } else {
+      resumeData.education.forEach((education, index) => {
+        const value = {};
+        if (!education.institution?.trim()) value.institution = "Your University or College";
+        if (!education.degree?.trim()) value.degree = "Your Degree";
+        if (!education.field?.trim()) value.field = "Your Field of Study";
+        if (!education.location?.trim()) value.location = "City, Country";
+        if (!education.startDate?.trim()) value.startDate = "Month YYYY";
+        if (!education.endDate?.trim()) value.endDate = "Month YYYY";
+        if (Object.keys(value).length) {
+          starters.push({
+            id: `education-details-${index}`,
+            section: "education",
+            index,
+            label: `Complete ${education.degree || `education ${index + 1}`}`,
+            value,
+            fieldPatch: true,
+            isStarter: true,
+          });
+        }
+      });
+    }
+    if (!resumeData.projects?.length) {
+      starters.push({
+        id: "project-starter",
+        section: "projects",
+        label: "Project entry starter",
+        value: {
+          name: "Your Project Name",
+          description: "[Briefly describe the problem your project solved]",
+          technologies: ["[Technology]"],
+          link: "",
+          bullets: ["[Describe what you built and the result it achieved]"],
+        },
+        isStarter: true,
+      });
+    } else {
+      resumeData.projects.forEach((project, index) => {
+        const value = {};
+        if (!project.name?.trim()) value.name = "Your Project Name";
+        if (!project.description?.trim()) value.description = "[Briefly describe the problem your project solved]";
+        if (!project.technologies?.length) value.technologies = ["[Technology]"];
+        if (!project.bullets?.filter(Boolean).length) {
+          value.bullets = ["[Describe what you built and the result it achieved]"];
+        }
+        if (Object.keys(value).length) {
+          starters.push({
+            id: `project-details-${index}`,
+            section: "projects",
+            index,
+            label: `Complete ${project.name || `project ${index + 1}`}`,
+            value,
+            fieldPatch: true,
+            isStarter: true,
+          });
+        }
+      });
+    }
+
+    return starters;
+  };
+
+  const scanForSuggestions = async () => {
+    const requests = [];
+
+    if (resumeData.summary?.trim()) {
+      requests.push({
+        id: "summary",
+        section: "summary",
+        sectionType: "summary",
+        label: "Professional summary",
+        content: resumeData.summary,
+      });
+    }
+
+    (resumeData.experience || []).forEach((experience, index) => {
+      if (experience.bullets?.length) {
+        requests.push({
+          id: `experience-${index}`,
+          section: "experience",
+          index,
+          sectionType: "experience",
+          label: experience.company || experience.title || `Experience ${index + 1}`,
+          content: experience.bullets,
+        });
+      }
+    });
+
+    (resumeData.projects || []).forEach((project, index) => {
+      if (project.bullets?.length) {
+        requests.push({
+          id: `projects-${index}`,
+          section: "projects",
+          index,
+          sectionType: "project",
+          label: project.name || project.title || `Project ${index + 1}`,
+          content: project.bullets,
+        });
+      }
+    });
+
+    const starterSuggestions = getStarterSuggestions();
+
+    setEnhancing(true);
+    setSuggestionError("");
+    setAddedIds([]);
+    try {
+      const results = await Promise.allSettled(
+        requests.map(async (request) => {
+          const response = await resumeAPI.enhance(
+            request.content,
+            request.sectionType,
+            resumeData,
+            customPrompt
+          );
+          const enhanced = response.data.enhanced;
+          return {
+            ...request,
+            value:
+              request.section === "summary"
+                ? String(enhanced || "")
+                : (Array.isArray(enhanced) ? enhanced : [enhanced])
+                    .filter(Boolean)
+                    .map((item) => String(item)),
+          };
+        })
+      );
+      const generated = results
+        .filter((result) => result.status === "fulfilled" && result.value.value.length)
+        .map((result) => result.value);
+
+      setSuggestions([...starterSuggestions, ...generated]);
+      if (!starterSuggestions.length && !generated.length) {
+        setSuggestionError("We couldn't create suggestions right now. Please try again.");
+      }
+    } catch {
+      setSuggestionError("We couldn't scan your resume right now. Please try again.");
+    } finally {
+      setEnhancing(false);
+    }
+  };
+
+  const applySuggestion = async (suggestion) => {
+    if (!onApplySuggestion || addedIds.includes(suggestion.id)) return;
+
+    setAddingId(suggestion.id);
+    const wasApplied = await onApplySuggestion(suggestion);
+    setAddingId(null);
+    if (wasApplied !== false) {
+      setAddedIds((ids) => [...ids, suggestion.id]);
+    }
+  };
+
+  const getSuggestionPreview = (suggestion) => {
+    if (typeof suggestion.value === "string") return suggestion.value;
+    if (Array.isArray(suggestion.value)) {
+      return suggestion.value
+        .map((item) =>
+          typeof item === "string"
+            ? `• ${item}`
+            : `${item.category}: ${item.items.join(", ")}`
+        )
+        .join("\n");
+    }
+    return Object.entries(suggestion.value)
+      .filter(([, value]) => value !== "" && value !== false)
+      .map(([field, value]) => `${field}: ${Array.isArray(value) ? value.join(", ") : value}`)
+      .join("\n");
+  };
 
   if (!expanded) {
     return (
@@ -210,18 +512,28 @@ const RecommendationsPanel = ({resumeData, onEnhanceAll, compact = true}) => {
         </div>
       )}
 
-      {/* Grouped Recommendations */}
+      {/* Score diagnostics: supporting context for the tailored AI cards below. */}
       <div className="space-y-3">
-        <h4 className="font-semibold text-gray-900 dark:text-gray-100 text-sm mb-2">
-          Grouped Recommendations
-        </h4>
+        <div className="flex items-start justify-between gap-3 mb-2">
+          <div>
+            <h4 className="font-semibold text-gray-900 dark:text-gray-100 text-sm">
+              Resume checks
+            </h4>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+              These explain your score. Generate AI suggestions below for addable content.
+            </p>
+          </div>
+          <span className="shrink-0 rounded-full bg-primary-100 dark:bg-primary-900/30 px-2 py-1 text-[11px] font-semibold text-primary-700 dark:text-primary-300">
+            {recommendations.length} checks
+          </span>
+        </div>
         {visibleCategories.map((entry) => (
           <details
             key={entry.category}
             className={`border rounded-lg ${compact ? "p-3" : "p-4"} ${getCategoryColor(entry.category)}`}
             open={!compact}
           >
-            <summary className="list-none cursor-pointer">
+            <summary className="list-none cursor-pointer group">
               <div className="flex justify-between items-center gap-3">
                 <h5 className="font-semibold text-gray-900 dark:text-gray-100 text-sm flex items-center gap-2">
                   {(() => {
@@ -234,6 +546,9 @@ const RecommendationsPanel = ({resumeData, onEnhanceAll, compact = true}) => {
                   {entry.score}/{entry.maxScore} ({entry.percent}%)
                 </span>
               </div>
+              <p className="mt-1 pl-5 text-xs text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-300">
+                View {entry.items.length} check{entry.items.length === 1 ? "" : "s"}
+              </p>
             </summary>
             <ul className="space-y-1.5 mt-3">
               {entry.items.map((item, index) => (
@@ -292,8 +607,8 @@ const RecommendationsPanel = ({resumeData, onEnhanceAll, compact = true}) => {
         </div>
       </div>
 
-      {/* Action Button - AI Enhancement */}
-      {onEnhanceAll && (
+      {/* AI suggestion review flow */}
+      {onApplySuggestion && (
         <div className={`${compact ? "mt-4" : "mt-6"}`}>
           {compact && (
             <button
@@ -329,37 +644,95 @@ const RecommendationsPanel = ({resumeData, onEnhanceAll, compact = true}) => {
             </div>
           )}
 
-          {/* Enhancement Button */}
           <button
+            type="button"
             className="w-full inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3.5 font-semibold text-white bg-primary-600 hover:bg-primary-700 shadow-sm hover:shadow transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
-            onClick={async () => {
-              setEnhancing(true);
-              try {
-                await onEnhanceAll(customPrompt);
-              } finally {
-                setEnhancing(false);
-              }
-            }}
+            onClick={scanForSuggestions}
             disabled={enhancing}
           >
             {enhancing ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Enhancing All Sections...
+                Scanning your resume...
               </>
             ) : (
               <>
-                <Rocket className="w-4 h-4" />
-                {customPrompt
-                  ? "Apply Custom AI Enhancement"
-                  : "Apply AI Enhancement to All Sections"}
+                <ScanText className="w-4 h-4" />
+                Generate AI Suggestions
               </>
             )}
           </button>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
-            AI will analyze your experience level and optimize content with
-            action verbs, metrics, and keywords
+            Review each AI rewrite before it is added to your resume.
           </p>
+
+          {suggestionError && (
+            <p className="mt-3 text-sm text-red-600 dark:text-red-400">{suggestionError}</p>
+          )}
+
+          {suggestions.length > 0 && (
+            <div className="mt-4 space-y-3" aria-live="polite">
+              <div className="flex items-center justify-between gap-3">
+                <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+                  AI suggestions ready
+                </h4>
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  {addedIds.length}/{suggestions.length} added
+                </span>
+              </div>
+              {suggestions.map((suggestion) => {
+                const added = addedIds.includes(suggestion.id);
+                const adding = addingId === suggestion.id;
+                const preview = getSuggestionPreview(suggestion);
+
+                return (
+                  <article
+                    key={suggestion.id}
+                    className={`rounded-xl border p-3 transition-all duration-500 ${
+                      added
+                        ? "border-emerald-400 bg-emerald-50 dark:border-emerald-700 dark:bg-emerald-950/30 animate-scale-in"
+                        : "border-primary-200 bg-primary-50/50 dark:border-primary-800 dark:bg-primary-950/20"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="text-xs font-semibold uppercase tracking-wide text-primary-700 dark:text-primary-300">
+                          {suggestion.section === "summary" ? "Summary" : suggestion.section}
+                        </p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{suggestion.label}</p>
+                        {suggestion.isStarter && (
+                          <p className="mt-0.5 text-xs text-amber-700 dark:text-amber-300">Starter content — edit the bracketed details after adding.</p>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => applySuggestion(suggestion)}
+                        disabled={adding || added}
+                        className={`shrink-0 inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold transition-all disabled:cursor-default ${
+                          added
+                            ? "bg-emerald-600 text-white"
+                            : "bg-primary-600 text-white hover:bg-primary-700 disabled:opacity-60"
+                        }`}
+                      >
+                        {adding ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : added ? <Check className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
+                        {adding ? "Adding..." : added ? "Added to resume" : "Add to resume"}
+                      </button>
+                    </div>
+                    <p className="mt-2 whitespace-pre-line text-sm leading-6 text-gray-700 dark:text-gray-300">
+                      {preview}
+                    </p>
+                    {added && (
+                      <p className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700 dark:text-emerald-300 animate-fade-in">
+                        <Check className="w-3.5 h-3.5" /> This suggestion is now in your resume.
+                      </p>
+                    )}
+                  </article>
+                );
+              })}
+            </div>
+          )}
+
         </div>
       )}
     </div>
