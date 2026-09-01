@@ -373,18 +373,52 @@ export const getAllUsers = async (req, res) => {
       User.countDocuments(filter),
     ]);
 
-    // Get resume count for each user
-    const usersWithStats = await Promise.all(
-      users.map(async (user) => {
-        const resumeCount = await Resume.countDocuments({userId: user._id});
-        const aiUsageCount = await AIUsage.countDocuments({userId: user._id});
-        return {
-          ...user.toObject(),
-          resumeCount,
-          aiUsageCount,
-        };
-      })
-    );
+    const userIds = users.map((u) => u._id);
+    const [resumeCounts, aiUsageStats] = await Promise.all([
+      Resume.aggregate([
+        { $match: { userId: { $in: userIds } } },
+        { $group: { _id: "$userId", count: { $sum: 1 } } },
+      ]),
+      AIUsage.aggregate([
+        { $match: { userId: { $in: userIds } } },
+        {
+          $group: {
+            _id: "$userId",
+            count: { $sum: 1 },
+            totalCostUsd: { $sum: "$cost" },
+            totalTokens: { $sum: "$tokensUsed" },
+          },
+        },
+      ]),
+    ]);
+
+    const resumeCountMap = resumeCounts.reduce((acc, item) => {
+      acc[item._id.toString()] = item.count;
+      return acc;
+    }, {});
+
+    const aiUsageMap = aiUsageStats.reduce((acc, item) => {
+      acc[item._id.toString()] = {
+        count: item.count,
+        costUsd: item.totalCostUsd || 0,
+        costInr: +((item.totalCostUsd || 0) * 86.5).toFixed(2),
+        tokens: item.totalTokens || 0,
+      };
+      return acc;
+    }, {});
+
+    const usersWithStats = users.map((user) => {
+      const uId = user._id.toString();
+      const ai = aiUsageMap[uId] || { count: 0, costUsd: 0, costInr: 0, tokens: 0 };
+      return {
+        ...user.toObject(),
+        resumeCount: resumeCountMap[uId] || 0,
+        aiUsageCount: ai.count,
+        aiCostInr: ai.costInr,
+        aiCostUsd: ai.costUsd,
+        aiTokensUsed: ai.tokens,
+      };
+    });
 
     res.json({
       success: true,

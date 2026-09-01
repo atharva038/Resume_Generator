@@ -210,6 +210,8 @@ export function useInterviewSession({
         jobDescription: selectedType === "job-description" ? jobDescription : undefined,
         totalQuestions: Math.max(5, Math.min(15, estimatedQuestions)),
         interviewDuration: interviewDuration,
+        voiceEngineUsed: voiceEngine,
+        personaUsed: selectedVoice,
       });
 
       if (!createRes.success) throw new Error(createRes.error || "Failed to create session");

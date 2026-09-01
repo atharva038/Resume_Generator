@@ -28,6 +28,7 @@ import {
   UserPlus,
   Loader2,
   ShieldCheck,
+  Bot,
 } from "lucide-react";
 import {useAuth} from "@/context/AuthContext";
 import {useDarkMode} from "@/context/DarkModeContext";
@@ -133,10 +134,16 @@ const AdminLayout = () => {
       color: "text-cyan-500",
     },
     {
-      path: "/admin/templates",
-      icon: FileBox,
-      label: "Templates",
+      path: "/admin/interviews",
+      icon: Bot,
+      label: "AI Interviews & Costs",
       color: "text-purple-500",
+    },
+    {
+      path: "/admin/ai-analytics",
+      icon: Sparkles,
+      label: "AI Usage & Quotas",
+      color: "text-orange-500",
     },
     {
       path: "/admin/questions",
@@ -145,58 +152,22 @@ const AdminLayout = () => {
       color: "text-indigo-400",
     },
     {
-      path: "/admin/ai-analytics",
-      icon: BarChart3,
-      label: "AI Analytics",
-      color: "text-orange-500",
-    },
-    {
-      path: "/admin/ai-quota",
-      icon: TrendingUp,
-      label: "AI Quota Management",
-      color: "text-yellow-500",
-    },
-    {
-      path: "/admin/ai-extraction",
-      icon: Sparkles,
-      label: "AI Extraction Usage",
-      color: "text-violet-500",
-    },
-    {
-      path: "/admin/contacts",
-      icon: MessageSquare,
-      label: "Contact Messages",
-      color: "text-pink-500",
+      path: "/admin/templates",
+      icon: FileBox,
+      label: "Templates",
+      color: "text-fuchsia-500",
     },
     {
       path: "/admin/feedback",
       icon: MessageSquare,
-      label: "User Feedback",
-      color: "text-indigo-500",
-    },
-    {
-      path: "/admin/logs",
-      icon: Activity,
-      label: "Activity Logs",
-      color: "text-cyan-500",
-    },
-    {
-      path: "/admin/notifications",
-      icon: Bell,
-      label: "Notifications",
-      color: "text-rose-500",
+      label: "Messages & Feedback",
+      color: "text-pink-500",
     },
     {
       path: "/admin/settings",
       icon: Settings,
       label: "Settings",
       color: "text-gray-500",
-    },
-    {
-      path: "/super-admin",
-      icon: ShieldCheck,
-      label: "Super Admin (.env)",
-      color: "text-emerald-400",
     },
   ];
 
@@ -331,64 +302,70 @@ const AdminLayout = () => {
   const activeMenuItem =
     menuItems.find((item) => location.pathname.startsWith(item.path)) ||
     menuItems[0];
+  const ActiveIcon = activeMenuItem?.icon || LayoutDashboard;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 overflow-x-hidden">
-
-      {/* Top Navigation Bar */}
-      <nav className="bg-white/90 dark:bg-black/90 backdrop-blur-xl border-b border-gray-200 dark:border-white/10 fixed top-0 left-0 right-0 z-30">
-        <div className="px-2 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between">
-          <div className="flex items-center gap-1.5 sm:gap-4">
-            {/* Single Menu Toggle for All Devices */}
+    <div className="min-h-screen bg-gray-50/70 dark:bg-[#09090b] text-gray-900 dark:text-white overflow-x-hidden">
+      {/* Floating Top Navigation Bar */}
+      <header className="fixed top-3 left-3 right-3 sm:left-4 sm:right-4 z-30">
+        <div className="bg-white/80 dark:bg-[#121214]/85 backdrop-blur-xl border border-gray-200/80 dark:border-white/10 rounded-2xl shadow-lg shadow-black/[0.03] dark:shadow-black/40 px-3 sm:px-5 py-2.5 sm:py-3 flex items-center justify-between transition-all">
+          <div className="flex items-center gap-2 sm:gap-4">
+            {/* Menu Toggle */}
             <button
               onClick={() => {
                 if (window.innerWidth < 1024) {
-                  toggleSidebar();
+                  toggleMobileMenu();
                 } else {
                   toggleSidebarOpen();
                 }
               }}
-              className="p-1.5 sm:p-2 hover:bg-gray-100 dark:hover:bg-zinc-900 rounded-lg transition-all duration-200"
+              className="p-2 hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl border border-transparent hover:border-gray-200 dark:hover:border-white/10 transition-all text-gray-700 dark:text-gray-300"
               aria-label="Toggle menu"
+              title="Toggle sidebar"
             >
-              <Menu className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+              <Menu className="w-5 h-5" />
             </button>
 
-            <div className="flex items-center gap-1.5 sm:gap-3">
-              <div className="w-8 h-8 sm:w-9 sm:h-9 bg-white dark:bg-zinc-900 rounded-xl flex items-center justify-center shadow-sm border border-gray-200 dark:border-white/10 overflow-hidden">
+            {/* Brand / Logo */}
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 bg-purple-500/10 dark:bg-purple-500/20 rounded-xl flex items-center justify-center border border-purple-500/20 overflow-hidden shrink-0">
                 <img
                   src="/orb-logo.png"
                   alt="SmartNShine logo"
-                  className="w-6 h-6 sm:w-7 sm:h-7 object-contain"
+                  className="w-5 h-5 sm:w-6 sm:h-6 object-contain"
                 />
               </div>
-              <div>
-                <h1 className="text-sm sm:text-lg font-bold text-gray-900 dark:text-white">
+              <div className="flex items-center gap-2">
+                <h1 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white tracking-tight">
                   Admin Panel
                 </h1>
-                <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 hidden sm:block">
-                  {activeMenuItem?.label}
-                </p>
+
+                {/* Active Menu Breadcrumb Pill */}
+                <span className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-gray-100 dark:bg-white/5 border border-gray-200/60 dark:border-white/10 text-xs font-semibold text-gray-700 dark:text-gray-300">
+                  <ActiveIcon className={`w-3.5 h-3.5 ${activeMenuItem.color || "text-purple-500"}`} />
+                  {activeMenuItem.label}
+                </span>
               </div>
             </div>
           </div>
 
+          {/* Right Action Items */}
           <div className="flex items-center gap-1.5 sm:gap-3">
             {/* Notifications Popover Dropdown */}
             <div className="relative" ref={notificationDropdownRef}>
               <button
                 type="button"
                 onClick={handleToggleNotifications}
-                className={`relative p-2 sm:p-2.5 rounded-lg transition-all duration-200 border ${
+                className={`relative p-2 sm:p-2.5 rounded-xl transition-all duration-200 border ${
                   isNotificationOpen
                     ? "bg-blue-50 dark:bg-blue-950/40 border-blue-400 dark:border-blue-500/50 text-blue-600 dark:text-blue-400"
-                    : "bg-white dark:bg-black hover:bg-gray-100 dark:hover:bg-zinc-900 border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300"
+                    : "bg-gray-50/80 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300"
                 }`}
                 title="Notifications"
                 aria-label="Notifications"
                 aria-expanded={isNotificationOpen}
               >
-                <Bell className="w-5 h-5" />
+                <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
                 {notificationStats?.unread > 0 && (
                   <span className="absolute -right-1 -top-1 min-w-5 h-5 px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center shadow-sm">
                     {notificationStats.unread > 99
@@ -400,7 +377,7 @@ const AdminLayout = () => {
 
               {/* Mini Notification Popover Card */}
               {isNotificationOpen && (
-                <div className="absolute right-0 mt-2 w-[340px] sm:w-[400px] max-w-[90vw] bg-white dark:bg-zinc-950 border border-gray-200 dark:border-white/10 rounded-2xl shadow-2xl overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-150">
+                <div className="absolute right-0 mt-3 w-[340px] sm:w-[400px] max-w-[90vw] bg-white dark:bg-[#121214] border border-gray-200 dark:border-white/10 rounded-2xl shadow-2xl overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-150">
                   {/* Header Bar */}
                   <div className="px-4 py-3 border-b border-gray-100 dark:border-white/10 flex items-center justify-between bg-gray-50/70 dark:bg-zinc-900/60 backdrop-blur-md">
                     <div className="flex items-center gap-2">
@@ -498,7 +475,7 @@ const AdminLayout = () => {
                     )}
                   </div>
 
-                  {/* Footer Bar: Link to Full Notifications Page */}
+                  {/* Footer Bar */}
                   <div className="p-2 border-t border-gray-100 dark:border-white/10 bg-gray-50/70 dark:bg-zinc-900/60 backdrop-blur-md">
                     <Link
                       to="/admin/notifications"
@@ -514,11 +491,11 @@ const AdminLayout = () => {
             </div>
 
             {/* User Info */}
-            <div className="text-right hidden md:block px-3 py-1.5 bg-white dark:bg-black rounded-lg border border-gray-200 dark:border-white/10">
-              <p className="text-sm font-medium text-gray-900 dark:text-white">
+            <div className="text-right hidden lg:block px-3 py-1.5 bg-gray-50/80 dark:bg-white/5 rounded-xl border border-gray-200 dark:border-white/10">
+              <p className="text-xs font-semibold text-gray-900 dark:text-white truncate max-w-[120px]">
                 {user?.name || "Admin"}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-[10px] text-purple-600 dark:text-purple-400 font-medium">
                 Administrator
               </p>
             </div>
@@ -526,52 +503,60 @@ const AdminLayout = () => {
             {/* Dark Mode Toggle */}
             <button
               onClick={toggleDarkMode}
-              className="p-2 sm:p-2.5 bg-white dark:bg-black hover:bg-gray-100 dark:hover:bg-zinc-900 rounded-lg transition-all duration-200 border border-gray-200 dark:border-white/10"
+              className="p-2 sm:p-2.5 bg-gray-50/80 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 rounded-xl transition-all border border-gray-200 dark:border-white/10"
               title={isDarkMode ? "Light Mode" : "Dark Mode"}
               aria-label={
                 isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"
               }
             >
               {isDarkMode ? (
-                <Sun className="w-5 h-5 text-yellow-400" />
+                <Sun className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400" />
               ) : (
-                <Moon className="w-5 h-5 text-gray-600" />
+                <Moon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
               )}
             </button>
 
             {/* Logout Button */}
             <button
               onClick={handleLogout}
-              className="flex items-center gap-1.5 px-2.5 py-2 sm:px-4 sm:py-2.5 bg-white dark:bg-black hover:bg-red-50 dark:hover:bg-red-950/30 text-red-600 dark:text-red-400 rounded-lg transition-all duration-200 border border-gray-200 dark:border-white/10"
+              className="flex items-center gap-1.5 px-2.5 py-2 sm:px-3.5 sm:py-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 rounded-xl transition-all border border-red-500/20 text-xs sm:text-sm font-semibold"
               aria-label="Logout"
             >
               <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              <span className="hidden sm:inline font-medium">Logout</span>
+              <span className="hidden sm:inline">Logout</span>
             </button>
           </div>
         </div>
-      </nav>
+      </header>
 
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
         <div
-          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300"
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300"
           onClick={closeMobileMenu}
         />
       )}
 
-      {/* Sidebar */}
+      {/* Floating Sidebar (Desktop & Mobile) */}
       <aside
-        className={`fixed top-16 bottom-0 bg-white dark:bg-black border-r border-gray-200 dark:border-white/10 transition-all duration-300 overflow-hidden w-64 z-50
-          ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"} 
-          lg:z-20 lg:translate-x-0
-          ${isSidebarOpen ? "lg:w-64" : "lg:w-0"}
+        className={`fixed z-40 transition-all duration-300 overflow-hidden
+          /* Mobile Drawer */
+          ${
+            isMobileMenuOpen
+              ? "inset-y-3 left-3 w-72 bg-white/95 dark:bg-[#121214]/95 backdrop-blur-2xl rounded-2xl border border-gray-200 dark:border-white/10 shadow-2xl"
+              : "-translate-x-full lg:translate-x-0"
+          }
+          /* Desktop Floating Sidebar */
+          lg:top-20 lg:bottom-4 lg:left-4 lg:rounded-2xl lg:bg-white/90 lg:dark:bg-[#121214]/90 lg:backdrop-blur-xl lg:border lg:border-gray-200/80 lg:dark:border-white/10 lg:shadow-xl lg:shadow-black/[0.03] lg:dark:shadow-black/40
+          ${isSidebarOpen ? "lg:w-64 lg:opacity-100" : "lg:w-0 lg:opacity-0 lg:pointer-events-none"}
         `}
       >
-        {/* Sidebar Content with Scroll */}
-        <div className="h-full overflow-y-auto pb-20">
+        <div className="h-full flex flex-col justify-between overflow-y-auto p-3">
           {/* Navigation Menu */}
-          <nav className="p-4 space-y-1">
+          <nav className="space-y-1">
+            <div className="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-gray-400">
+              Admin Navigation
+            </div>
             {menuItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname.startsWith(item.path);
@@ -581,56 +566,44 @@ const AdminLayout = () => {
                   key={item.path}
                   to={item.path}
                   onClick={closeMobileMenu}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+                  className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 ${
                     isActive
-                      ? "bg-gray-900/10 text-gray-900 dark:bg-white/10 dark:text-white font-medium"
-                      : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-900 hover:text-gray-900 dark:hover:text-white"
+                      ? "bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 font-semibold shadow-sm"
+                      : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white border border-transparent"
                   }`}
                 >
                   <Icon
-                    className={`w-5 h-5 flex-shrink-0 ${
-                      isActive ? item.color : ""
+                    className={`w-4 h-4 flex-shrink-0 ${
+                      isActive ? "text-purple-600 dark:text-purple-400" : item.color
                     }`}
                   />
-                  <span className="font-medium">{item.label}</span>
+                  <span>{item.label}</span>
                 </Link>
               );
             })}
           </nav>
 
-          {/* Back to Main Site */}
-          <div className="px-4 pb-4">
+          {/* Back to Site */}
+          <div className="pt-3 border-t border-gray-100 dark:border-white/10">
             <Link
               to="/"
               onClick={closeMobileMenu}
-              className="flex items-center gap-3 px-4 py-3 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 text-white rounded-xl transition-all duration-200"
+              className="flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white rounded-xl font-semibold text-xs transition-all shadow-md shadow-purple-500/20"
             >
-              <Shield className="w-5 h-5 flex-shrink-0" />
-              <span className="font-medium">Back to Site</span>
+              <Shield className="w-4 h-4" />
+              <span>Back to Candidate Portal</span>
             </Link>
           </div>
         </div>
       </aside>
 
-      {/* Floating Button to Open Sidebar (Desktop only, when sidebar is closed) */}
-      {!isSidebarOpen && (
-        <button
-          onClick={setIsSidebarOpenTrue}
-          className="hidden lg:flex fixed left-4 top-20 z-30 p-3 bg-gray-900 dark:bg-white text-white dark:text-black rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 items-center justify-center group"
-          aria-label="Open sidebar"
-          title="Open Menu"
-        >
-          <Menu className="w-5 h-5" />
-        </button>
-      )}
-
-      {/* Main Content */}
+      {/* Main Content Area */}
       <main
-        className={`pt-16 transition-all duration-300 min-h-screen ml-0 ${
-          isSidebarOpen ? "lg:ml-64" : "lg:ml-0"
+        className={`pt-20 sm:pt-24 transition-all duration-300 min-h-screen ${
+          isSidebarOpen ? "lg:ml-72" : "lg:ml-0"
         }`}
       >
-        <div className="p-3 sm:p-4 md:p-6">
+        <div className="p-3 sm:p-5 md:p-6 max-w-7xl mx-auto">
           <PageTransition key={location.pathname}>
             <Outlet />
           </PageTransition>

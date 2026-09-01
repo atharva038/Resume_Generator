@@ -333,10 +333,10 @@ const UserManagement = () => {
                       Role
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                      Status
+                      Stats
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                      Stats
+                      AI Money Used
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                       Joined
@@ -353,18 +353,11 @@ const UserManagement = () => {
                       className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
                     >
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-gray-900 dark:bg-white flex items-center justify-center text-white dark:text-black font-medium">
-                            {user.name?.charAt(0) || "U"}
-                          </div>
-                          <div>
-                            <div className="text-sm font-medium text-gray-900 dark:text-white">
-                              {user.name}
-                            </div>
-                            <div className="text-sm text-gray-400">
-                              {user.email}
-                            </div>
-                          </div>
+                        <div className="text-sm font-semibold text-gray-900 dark:text-white">
+                          {user.name}
+                        </div>
+                        <div className="text-xs text-gray-400">
+                          {user.email}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -383,31 +376,28 @@ const UserManagement = () => {
                           </option>
                         </select>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`px-2.5 py-1 inline-flex text-xs leading-5 font-medium rounded-full ${
-                            user.status === "active"
-                              ? "bg-green-500/10 text-green-400 border border-green-500/20"
-                              : "bg-red-500/10 text-red-400 border border-red-500/20"
-                          }`}
-                        >
-                          {user.status}
-                        </span>
-                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
-                            <span className="text-primary-700 dark:text-primary-300">
+                            <span className="text-primary-700 dark:text-primary-300 font-semibold">
                               {user.resumeCount || 0}
                             </span>{" "}
                             resumes
                           </div>
                           <div className="flex items-center gap-2">
-                            <span className="text-blue-400">
+                            <span className="text-blue-500 dark:text-blue-400 font-semibold">
                               {user.aiUsageCount || 0}
                             </span>{" "}
                             AI calls
                           </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <div className="font-bold text-emerald-600 dark:text-emerald-400">
+                          ₹{(user.aiCostInr || 0).toFixed(2)}
+                        </div>
+                        <div className="text-[11px] text-gray-400">
+                          {user.aiTokensUsed ? `${(user.aiTokensUsed / 1000).toFixed(1)}k tokens` : "0 tokens"}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">

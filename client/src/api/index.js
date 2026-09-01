@@ -40,6 +40,11 @@ export {
   updateAdminQuestion,
   toggleAdminQuestionStatus,
   deleteAdminQuestion,
+  getInterviewAdminStats,
+  getAllAdminInterviews,
+  getAdminInterviewDetail,
+  getInterviewPricingConfig,
+  updateInterviewPricingConfig,
 } from "./admin.api";
 
 // Subscription API exports

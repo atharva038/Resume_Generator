@@ -164,6 +164,38 @@ const settingsSchema = new mongoose.Schema(
       trackUserActions: {type: Boolean, default: true},
     },
 
+    // AI Interview Unit Cost & Pricing Settings (Aligned with Official API Docs)
+    interviewPricing: {
+      sarvamSttRatePerMinuteInr: {
+        type: Number,
+        default: 0.50, // Official Sarvam Saaras rate: ₹30/hour = ₹0.50/min
+      },
+      sarvamTtsRatePerThousandCharsInr: {
+        type: Number,
+        default: 3.00, // Official Sarvam Bulbul v3 rate: ₹30 per 10,000 chars = ₹3.00/1k chars
+      },
+      llmInputTokenRatePerMillionInr: {
+        type: Number,
+        default: 13.00, // Official GPT-4o-mini: $0.15 / 1M tokens ≈ ₹13.00
+      },
+      llmOutputTokenRatePerMillionInr: {
+        type: Number,
+        default: 52.00, // Official GPT-4o-mini: $0.60 / 1M tokens ≈ ₹52.00
+      },
+      usdToInrExchangeRate: {
+        type: Number,
+        default: 86.50,
+      },
+      creditsPerLiveInterview: {
+        type: Number,
+        default: 5,
+      },
+      creditsPerTextInterview: {
+        type: Number,
+        default: 2,
+      },
+    },
+
     // Last Updated By
     lastUpdatedBy: {
       type: mongoose.Schema.Types.ObjectId,
