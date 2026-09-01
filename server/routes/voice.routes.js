@@ -57,37 +57,66 @@ async function fetchVoiceHealth(path) {
 
 /**
  * @route   GET /api/voice/health
- * @desc    Check if voice transcription service is available
+ * @desc    Check if voice transcription and synthesis services are available
  * @access  Public
  */
 router.get("/health", async (req, res) => {
   const sarvamAvailable = sarvamService.isAvailable();
   const voiceServiceUrl = getVoiceServiceUrl();
+  let whisperAvailable = false;
+  let chatterboxAvailable = false;
 
   try {
     const {data} = await fetchVoiceHealth("/health");
-
-    res.json({
-      success: true,
-      data: {
-        ...data,
-        sarvam_available: sarvamAvailable,
-      },
-    });
+    whisperAvailable = data?.whisper_available || data?.status === "healthy";
   } catch (error) {
     logVoiceServiceUnavailable("Voice service", voiceServiceUrl, error);
-    res.json({
-      success: true,
-      data: {
-        status: sarvamAvailable ? "healthy" : "unavailable",
-        whisper_available: false,
-        sarvam_available: sarvamAvailable,
-        error: sarvamAvailable
-          ? null
-          : "Local voice service not reachable & Sarvam AI not configured",
-      },
-    });
   }
+
+  try {
+    chatterboxAvailable = await chatterboxService.isAvailable();
+  } catch {
+    chatterboxAvailable = false;
+  }
+
+  const isAnyVoiceAvailable = sarvamAvailable || whisperAvailable;
+
+  res.json({
+    success: true,
+    data: {
+      available: isAnyVoiceAvailable,
+      status: isAnyVoiceAvailable ? "healthy" : "unavailable",
+      sarvam_available: sarvamAvailable,
+      whisper_available: whisperAvailable,
+      chatterbox_available: chatterboxAvailable,
+      active_preference: process.env.VOICE_ENGINE_PREFERENCE || "auto",
+      providers: {
+        sarvam: {
+          available: sarvamAvailable,
+          name: "Sarvam AI Cloud",
+          models: { stt: "saaras:v3", tts: "bulbul:v3" },
+          description: "Ultra-fast Indian & Global English voices + transcription (Production)",
+        },
+        whisper: {
+          available: whisperAvailable,
+          name: "Local Whisper STT",
+          url: voiceServiceUrl,
+          description: "Offline local speech recognition microservice",
+        },
+        chatterbox: {
+          available: chatterboxAvailable,
+          name: "Local Chatterbox TTS",
+          url: process.env.CHATTERBOX_SERVICE_URL || "http://localhost:5002",
+          description: "Offline local voice synthesis microservice",
+        },
+        browser: {
+          available: true,
+          name: "Browser Web Speech API",
+          description: "Client-side fallback speech synthesis",
+        },
+      },
+    },
+  });
 });
 
 /**
@@ -112,18 +141,21 @@ router.get("/tts/health", async (req, res) => {
     res.json({
       success: true,
       available: true, // TTS is always available (Browser TTS fallback)
+      activePreference: process.env.VOICE_ENGINE_PREFERENCE || "auto",
       providers: {
         sarvam: {
           available: sarvamAvailable,
           priority: 1,
           cost: "low-cost API",
           model: "bulbul:v3",
+          name: "Sarvam AI Cloud",
           note: "Production cloud voice synthesis",
         },
         chatterbox: {
           available: chatterboxAvailable,
           priority: 2,
           cost: "free",
+          name: "Chatterbox TTS",
           details: chatterboxHealth,
           note: "Local microservice synthesis",
         },
@@ -131,6 +163,7 @@ router.get("/tts/health", async (req, res) => {
           available: true,
           priority: 3,
           cost: "free",
+          name: "Browser Speech Synthesis",
           note: "Frontend fallback (Web Speech API)",
         },
       },
@@ -156,21 +189,26 @@ router.get("/tts/health", async (req, res) => {
  */
 router.get("/transcribe/health", authenticateToken, async (req, res) => {
   const voiceServiceUrl = getVoiceServiceUrl();
+  const sarvamAvailable = sarvamService.isAvailable();
 
   try {
     const {data} = await fetchVoiceHealth("/transcribe/health");
 
     res.json({
       success: true,
-      data,
+      data: {
+        ...data,
+        sarvam_available: sarvamAvailable,
+      },
     });
   } catch (error) {
     logVoiceServiceUnavailable("Transcription service", voiceServiceUrl, error);
     res.json({
       success: true,
       data: {
-        available: false,
-        error: "Voice service not reachable",
+        available: sarvamAvailable,
+        sarvam_available: sarvamAvailable,
+        error: sarvamAvailable ? null : "Voice service not reachable",
       },
     });
   }
@@ -178,28 +216,34 @@ router.get("/transcribe/health", authenticateToken, async (req, res) => {
 
 /**
  * @route   GET /api/voice/tts/voices
- * @desc    Get available TTS voices (ElevenLabs disabled - using Chatterbox)
+ * @desc    Get available TTS voices (ElevenLabs disabled - using Chatterbox + Sarvam)
  * @access  Private
  */
 router.get("/tts/voices", authenticateToken, async (req, res) => {
-  return res.status(503).json({
-    success: false,
-    error: "ElevenLabs TTS is disabled. Using Chatterbox + Browser TTS instead.",
+  return res.json({
+    success: true,
+    voices: [
+      { id: "shubh", name: "Shubh (Male - Indian / Global English)", provider: "sarvam" },
+      { id: "anushka", name: "Anushka (Female - Indian / Global English)", provider: "sarvam" },
+      { id: "amartya", name: "Amartya (Male - Deep Professional)", provider: "sarvam" },
+      { id: "meera", name: "Meera (Female - Clear Warm)", provider: "sarvam" },
+      { id: "arvind", name: "Arvind (Male - Conversational)", provider: "sarvam" },
+      { id: "rachel", name: "Rachel (Female - Chatterbox Local)", provider: "chatterbox" },
+    ],
   });
 });
 
 /**
  * @route   POST /api/voice/tts/synthesize
- * @desc    Convert text to speech - returns binary audio directly (more efficient)
+ * @desc    Convert text to speech - returns binary audio directly
  * @access  Private
- * @body    { text: string, speaker?: string, language?: string, voiceRef?: string }
+ * @body    { text: string, speaker?: string, language?: string, voiceRef?: string, engine?: 'sarvam' | 'chatterbox' | 'browser' | 'auto' }
  * @returns Binary audio/wav stream
- *
- * Priority: Sarvam AI (Cloud/Production) → Chatterbox (Local dev) → Browser TTS (frontend fallback)
  */
 router.post("/tts/synthesize", authenticateToken, async (req, res) => {
   try {
-    const {text, speaker, language, voiceRef} = req.body;
+    const {text, speaker, language, voiceRef, engine, voiceEngine} = req.body;
+    const requestedEngine = engine || voiceEngine || process.env.VOICE_ENGINE_PREFERENCE || "auto";
 
     if (!text || text.trim().length === 0) {
       return res.status(400).json({
@@ -215,55 +259,140 @@ router.post("/tts/synthesize", authenticateToken, async (req, res) => {
       });
     }
 
-    // 1. Try Sarvam AI first (Production Cloud TTS)
-    if (sarvamService.isAvailable()) {
+    // Direct Browser request
+    if (requestedEngine === "browser") {
+      return res.status(503).json({
+        success: false,
+        error: "Browser TTS requested",
+        fallback: "browser",
+      });
+    }
+
+    // 1. Explicit Local / Chatterbox requested (Strict: No silent Sarvam fallback)
+    if (requestedEngine === "chatterbox" || requestedEngine === "local") {
       try {
-        console.log("🎙️ Using Sarvam AI TTS (Bulbul v3)");
-        const audioBuffer = await sarvamService.textToSpeech(text, {
-          speaker: speaker || "shubh",
-          target_language_code: language || "en-IN",
-          model: "bulbul:v3",
-          pace: 1.0,
-        });
+        const chatterboxAvailable = await chatterboxService.isAvailable();
+        if (chatterboxAvailable) {
+          console.log("🎙️ [TTS] Synthesizing via Chatterbox (Explicit Local Selection)");
+          const audioBuffer = await chatterboxService.textToSpeech(text, {
+            voiceRef: voiceRef || process.env.DEFAULT_VOICE_REF,
+            language: language || "en",
+          });
 
-        res.set({
-          "Content-Type": "audio/wav",
-          "Content-Length": audioBuffer.length,
-          "Cache-Control": "no-cache",
-          "X-TTS-Provider": "sarvam",
+          res.set({
+            "Content-Type": "audio/wav",
+            "Content-Length": audioBuffer.length,
+            "Cache-Control": "no-cache",
+            "X-TTS-Provider": "chatterbox",
+          });
+          return res.send(audioBuffer);
+        } else {
+          console.warn("⚠️ Chatterbox not running on port 5002");
+          return res.status(503).json({
+            success: false,
+            error: "Local Chatterbox TTS microservice is offline (port 5002).",
+            fallback: "browser",
+          });
+        }
+      } catch (localError) {
+        console.warn("⚠️ Chatterbox synthesis failed:", localError.message);
+        return res.status(503).json({
+          success: false,
+          error: `Chatterbox synthesis error: ${localError.message}`,
+          fallback: "browser",
         });
-
-        return res.send(audioBuffer);
-      } catch (sarvamError) {
-        console.warn("⚠️ Sarvam AI TTS failed, trying fallback:", sarvamError.message);
       }
     }
 
-    // 2. Try Chatterbox (Local dev microservice)
-    try {
-      const chatterboxAvailable = await chatterboxService.isAvailable();
+    // 2. Sarvam AI (Explicit or Auto Default)
+    if (requestedEngine === "sarvam") {
+      if (sarvamService.isAvailable()) {
+        try {
+          console.log("🎙️ [TTS] Synthesizing via Sarvam AI Bulbul v3");
+          const audioBuffer = await sarvamService.textToSpeech(text, {
+            speaker: speaker || "shubh",
+            target_language_code: language || "en-IN",
+            model: "bulbul:v3",
+            pace: 1.0,
+          });
 
-      if (chatterboxAvailable) {
-        console.log("🎙️ Using Chatterbox TTS (Local microservice)");
-        const audioBuffer = await chatterboxService.textToSpeech(text, {
-          voiceRef: voiceRef || process.env.DEFAULT_VOICE_REF,
-          language: language || "en",
+          res.set({
+            "Content-Type": "audio/wav",
+            "Content-Length": audioBuffer.length,
+            "Cache-Control": "no-cache",
+            "X-TTS-Provider": "sarvam",
+          });
+
+          return res.send(audioBuffer);
+        } catch (sarvamError) {
+          console.error("❌ Sarvam AI TTS failed:", sarvamError.message);
+          return res.status(503).json({
+            success: false,
+            error: `Sarvam AI TTS error: ${sarvamError.message}`,
+            fallback: "browser",
+          });
+        }
+      } else {
+        return res.status(503).json({
+          success: false,
+          error: "SARVAM_API_KEY is not configured in environment.",
+          fallback: "browser",
         });
-
-        res.set({
-          "Content-Type": "audio/wav",
-          "Content-Length": audioBuffer.length,
-          "Cache-Control": "no-cache",
-          "X-TTS-Provider": "chatterbox",
-        });
-
-        return res.send(audioBuffer);
       }
-    } catch (chatterboxError) {
-      console.warn("⚠️ Chatterbox TTS failed:", chatterboxError.message);
     }
 
-    // 3. Fallback to Browser Web Speech API
+    // 3. Auto Mode: Sarvam first -> Chatterbox -> Browser
+    if (requestedEngine === "auto") {
+      if (sarvamService.isAvailable()) {
+        try {
+          console.log("🎙️ [TTS] Auto: Synthesizing via Sarvam AI Bulbul v3");
+          const audioBuffer = await sarvamService.textToSpeech(text, {
+            speaker: speaker || "shubh",
+            target_language_code: language || "en-IN",
+            model: "bulbul:v3",
+            pace: 1.0,
+          });
+
+          res.set({
+            "Content-Type": "audio/wav",
+            "Content-Length": audioBuffer.length,
+            "Cache-Control": "no-cache",
+            "X-TTS-Provider": "sarvam",
+          });
+
+          return res.send(audioBuffer);
+        } catch (sarvamError) {
+          console.warn("⚠️ Sarvam TTS failed in auto mode, trying Chatterbox fallback:", sarvamError.message);
+        }
+      }
+    }
+
+    // 3. Auto fallback to Chatterbox if Sarvam wasn't used or failed
+    if (requestedEngine === "auto") {
+      try {
+        const chatterboxAvailable = await chatterboxService.isAvailable();
+        if (chatterboxAvailable) {
+          console.log("🎙️ [TTS] Fallback to Chatterbox (Local microservice)");
+          const audioBuffer = await chatterboxService.textToSpeech(text, {
+            voiceRef: voiceRef || process.env.DEFAULT_VOICE_REF,
+            language: language || "en",
+          });
+
+          res.set({
+            "Content-Type": "audio/wav",
+            "Content-Length": audioBuffer.length,
+            "Cache-Control": "no-cache",
+            "X-TTS-Provider": "chatterbox",
+          });
+
+          return res.send(audioBuffer);
+        }
+      } catch (chatterboxError) {
+        console.warn("⚠️ Chatterbox fallback failed:", chatterboxError.message);
+      }
+    }
+
+    // 4. Fallback to Browser Web Speech API
     console.log("📱 Returning 503 to trigger browser TTS fallback");
     return res.status(503).json({
       success: false,
@@ -315,23 +444,83 @@ router.post("/tts/stream", authenticateToken, async (req, res) => {
 
 /**
  * @route   POST /api/voice/tts/test
- * @desc    Test voice with sample interview phrases - DISABLED (ElevenLabs)
+ * @desc    Test voice with sample interview phrases (Sarvam AI / Chatterbox)
  * @access  Private
- * @returns 503 - Use browser TTS for testing
- *
- * NOTE: This endpoint is disabled because it relies on ElevenLabs.
- * Use browser TTS or Chatterbox for voice testing instead.
+ * @returns Binary audio/wav stream
  */
 router.post("/tts/test", authenticateToken, async (req, res) => {
-  console.log("⚠️ TTS test endpoint called but ElevenLabs is disabled");
+  try {
+    const { preset = "greeting", customText, speaker = "shubh", engine = "sarvam", language = "en-IN" } = req.body;
 
-  return res.status(503).json({
-    success: false,
-    error: "Voice test unavailable",
-    message:
-      "ElevenLabs is disabled. Use browser TTS for testing (it's already active in the interview).",
-    suggestion: "Start a Live Mode interview to test the current TTS system",
-  });
+    const SAMPLE_PRESETS = {
+      greeting:
+        "Hello! I'm your AI interviewer. I'm excited to learn more about your background and experience today.",
+      question:
+        "Can you tell me about a challenging project you worked on recently and how you approached solving the problems you encountered?",
+      acknowledgment:
+        "That's a great answer! I really appreciate the detail you provided. It gives me excellent insight into your problem-solving approach.",
+      closing:
+        "Thank you so much for your time today. You've shared some really valuable insights. We'll be in touch soon with next steps.",
+    };
+
+    const textToSynthesize = customText || SAMPLE_PRESETS[preset] || SAMPLE_PRESETS.greeting;
+
+    // 1. If Sarvam AI available
+    if (sarvamService.isAvailable() && engine !== "chatterbox" && engine !== "local") {
+      try {
+        console.log(`🎙️ [TTS Test] Synthesizing test '${preset}' with Sarvam speaker '${speaker}'`);
+        const audioBuffer = await sarvamService.textToSpeech(textToSynthesize, {
+          speaker: speaker,
+          target_language_code: language,
+          model: "bulbul:v3",
+          pace: 1.0,
+        });
+
+        res.set({
+          "Content-Type": "audio/wav",
+          "Content-Length": audioBuffer.length,
+          "Cache-Control": "no-cache",
+          "X-TTS-Provider": "sarvam",
+          "X-TTS-Speaker": speaker,
+        });
+
+        return res.send(audioBuffer);
+      } catch (sarvamErr) {
+        console.warn("⚠️ Sarvam test TTS failed:", sarvamErr.message);
+      }
+    }
+
+    // 2. Local Chatterbox fallback if available
+    const chatterboxAvailable = await chatterboxService.isAvailable();
+    if (chatterboxAvailable) {
+      console.log("🎙️ [TTS Test] Synthesizing test via Chatterbox");
+      const audioBuffer = await chatterboxService.textToSpeech(textToSynthesize, {
+        voiceRef: req.body.voiceRef || process.env.DEFAULT_VOICE_REF,
+        language: "en",
+      });
+
+      res.set({
+        "Content-Type": "audio/wav",
+        "Content-Length": audioBuffer.length,
+        "Cache-Control": "no-cache",
+        "X-TTS-Provider": "chatterbox",
+      });
+
+      return res.send(audioBuffer);
+    }
+
+    return res.status(503).json({
+      success: false,
+      error: "TTS testing service unavailable",
+      fallback: "browser",
+    });
+  } catch (error) {
+    console.error("❌ TTS test route error:", error);
+    return res.status(500).json({
+      success: false,
+      error: "TTS test failed: " + error.message,
+    });
+  }
 });
 
 export default router;

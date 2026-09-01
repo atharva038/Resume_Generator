@@ -64,8 +64,62 @@ export async function textToSpeech(text, options = {}) {
       throw new Error("Text exceeds Sarvam TTS limit of 2500 characters");
     }
 
-    const client = getClient();
-    const speaker = options.speaker || options.voice || "shubh";
+    const bulbulV3Speakers = [
+      "shubh",
+      "aditya",
+      "ashutosh",
+      "rahul",
+      "rohan",
+      "amit",
+      "dev",
+      "ratan",
+      "varun",
+      "manan",
+      "sumit",
+      "kabir",
+      "aayan",
+      "advait",
+      "anand",
+      "tarun",
+      "sunny",
+      "mani",
+      "gokul",
+      "vijay",
+      "mohit",
+      "rehan",
+      "soham",
+      "ritu",
+      "priya",
+      "neha",
+      "pooja",
+      "simran",
+      "kavya",
+      "ishita",
+      "shreya",
+      "roopa",
+      "tanya",
+      "shruti",
+      "suhani",
+      "kavitha",
+      "rupali",
+      "niharika",
+    ];
+
+    const speakerAliases = {
+      anushka: "priya",
+      amartya: "kabir",
+      meera: "pooja",
+      arvind: "aditya",
+      rachel: "priya",
+    };
+
+    let rawSpeaker = (options.speaker || options.voice || "shubh").toLowerCase();
+    let speaker = speakerAliases[rawSpeaker] || rawSpeaker;
+
+    if (!bulbulV3Speakers.includes(speaker)) {
+      speaker = "shubh";
+    }
+
     const languageCode =
       options.target_language_code || options.language || "en-IN";
     const pace = options.pace ?? 1.0;
@@ -76,6 +130,7 @@ export async function textToSpeech(text, options = {}) {
       `🎙️ [Sarvam TTS] Synthesizing ${cleanText.length} chars (Voice: ${speaker}, Lang: ${languageCode}, Model: ${model})...`
     );
 
+    const client = getClient();
     const response = await client.textToSpeech.convertStream({
       text: cleanText,
       target_language_code: languageCode,

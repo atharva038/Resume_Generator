@@ -1105,71 +1105,127 @@ export const submitVoiceAnswer = async (req, res) => {
     // Transcribe the audio using Sarvam AI (Production) or local Whisper ML service (Local dev)
     let transcribedText = "";
     let transcriptionProvider = "none";
+    const requestedEngine =
+      req.body.voiceEngine ||
+      req.body.engine ||
+      process.env.VOICE_ENGINE_PREFERENCE ||
+      "auto";
 
-    // 1. Try Sarvam AI STT if configured
-    if (sarvamService.isAvailable()) {
-      try {
-        console.log("🎙️ Using Sarvam AI STT (Saaras v3) for transcription...");
-        const sarvamResult = await sarvamService.speechToText(audioFile.buffer, {
-          filename: audioFile.originalname,
-          mimetype: audioFile.mimetype,
-          model: "saaras:v3",
-        });
+    console.log(`🎙️ [STT Engine] Requested: ${requestedEngine}`);
 
-        if (sarvamResult?.text) {
-          transcribedText = sarvamResult.text;
-          transcriptionProvider = "sarvam";
-          console.log(`✅ Sarvam AI transcription success (${transcribedText.length} chars)`);
-        }
-      } catch (sarvamError) {
-        console.warn("⚠️ Sarvam AI STT failed, trying local voice service fallback:", sarvamError.message);
-      }
-    }
+    // Helper: Local Whisper call
+    const callLocalWhisper = async () => {
+      const mlServiceUrl =
+        process.env.VOICE_SERVICE_URL ||
+        process.env.ML_SERVICE_URL ||
+        "http://localhost:5001";
 
-    // 2. Fallback to local Whisper voice-service if Sarvam wasn't used or failed
-    if (!transcribedText) {
-      const mlServiceUrl = process.env.VOICE_SERVICE_URL || process.env.ML_SERVICE_URL || "http://localhost:5001";
-
-      console.log("📡 Sending to local voice service:");
-      console.log("  - URL:", `${mlServiceUrl}/transcribe`);
-      console.log("  - Buffer length:", audioFile.buffer.length);
-      console.log("  - Original name:", audioFile.originalname);
-      console.log("  - Mimetype:", audioFile.mimetype);
-
+      console.log("📡 Sending to local Whisper voice service:", `${mlServiceUrl}/transcribe`);
       const formData = new FormData();
       formData.append("audio", audioFile.buffer, {
         filename: audioFile.originalname,
         contentType: audioFile.mimetype,
       });
 
-      try {
-        const transcriptionResponse = await axios.post(
-          `${mlServiceUrl}/transcribe`,
-          formData,
-          {
-            headers: {
-              ...formData.getHeaders(),
-            },
-            timeout: 60000, // 60 second timeout for transcription
-          }
-        );
-        const transcriptionResult = transcriptionResponse.data;
-        if (transcriptionResult?.success && transcriptionResult?.data?.text) {
-          transcribedText = transcriptionResult.data.text;
-          transcriptionProvider = "local-whisper";
-          console.log("✅ Local Whisper transcription response:", transcriptionResult);
-        } else {
-          throw new Error(transcriptionResult?.error || "Failed to transcribe audio from local service");
+      const transcriptionResponse = await axios.post(
+        `${mlServiceUrl}/transcribe`,
+        formData,
+        {
+          headers: {
+            ...formData.getHeaders(),
+          },
+          timeout: 60000,
         }
-      } catch (voiceServiceError) {
-        console.error("❌ Local voice service error:", voiceServiceError.message);
-        return res.status(400).json({
+      );
+      const transcriptionResult = transcriptionResponse.data;
+      if (transcriptionResult?.success && transcriptionResult?.data?.text) {
+        return transcriptionResult.data.text;
+      } else {
+        throw new Error(
+          transcriptionResult?.error || "Failed to transcribe audio from local service"
+        );
+      }
+    };
+
+    // Helper: Sarvam AI STT call
+    const callSarvamSTT = async () => {
+      if (!sarvamService.isAvailable()) {
+        throw new Error("Sarvam AI API key is not configured");
+      }
+      console.log("🎙️ Using Sarvam AI STT (Saaras v3) for transcription...");
+      const sarvamResult = await sarvamService.speechToText(audioFile.buffer, {
+        filename: audioFile.originalname,
+        mimetype: audioFile.mimetype,
+        model: "saaras:v3",
+      });
+      if (sarvamResult?.text) {
+        return sarvamResult.text;
+      }
+      throw new Error("Sarvam AI returned empty transcript");
+    };
+
+    // Execution based on chosen engine
+    if (requestedEngine === "local" || requestedEngine === "local-whisper") {
+      // 1. Strict Local Whisper (No silent Sarvam fallback when user explicitly selected Local)
+      try {
+        transcribedText = await callLocalWhisper();
+        transcriptionProvider = "local-whisper";
+        console.log(`✅ Local Whisper transcription success (${transcribedText.length} chars)`);
+      } catch (whisperError) {
+        console.error("❌ Local Whisper service failed:", whisperError.message);
+        return res.status(503).json({
           success: false,
           error:
-            voiceServiceError.response?.data?.error ||
-            "Failed to transcribe audio. Please ensure voice service or Sarvam AI is available.",
+            "Local Whisper microservice is not reachable on port 5001. Please start your local Whisper microservice or switch to Sarvam AI Cloud.",
+          provider: "local-whisper",
         });
       }
+    } else if (requestedEngine === "sarvam") {
+      // 2. Strict Sarvam AI
+      try {
+        transcribedText = await callSarvamSTT();
+        transcriptionProvider = "sarvam";
+        console.log(`✅ Sarvam AI transcription success (${transcribedText.length} chars)`);
+      } catch (sarvamError) {
+        console.error("❌ Sarvam STT failed:", sarvamError.message);
+        return res.status(503).json({
+          success: false,
+          error: `Sarvam AI transcription error: ${sarvamError.message}`,
+          provider: "sarvam",
+        });
+      }
+    } else {
+      // 3. Auto Mode: Sarvam if configured, else Whisper
+      if (sarvamService.isAvailable()) {
+        try {
+          transcribedText = await callSarvamSTT();
+          transcriptionProvider = "sarvam";
+          console.log(`✅ Sarvam AI transcription success (${transcribedText.length} chars)`);
+        } catch (sarvamError) {
+          console.warn("⚠️ Sarvam STT failed in auto mode, trying local Whisper fallback:", sarvamError.message);
+          try {
+            transcribedText = await callLocalWhisper();
+            transcriptionProvider = "local-whisper";
+          } catch (whisperErr) {
+            console.error("❌ Local Whisper fallback also failed:", whisperErr.message);
+          }
+        }
+      } else {
+        try {
+          transcribedText = await callLocalWhisper();
+          transcriptionProvider = "local-whisper";
+        } catch (whisperErr) {
+          console.error("❌ Local Whisper transcription failed in auto mode:", whisperErr.message);
+        }
+      }
+    }
+
+    if (!transcribedText) {
+      return res.status(400).json({
+        success: false,
+        error:
+          "Failed to transcribe audio. Please ensure either Sarvam AI API key is configured or local Whisper service is running.",
+      });
     }
 
     if (!transcribedText || transcribedText.trim().length < 10) {
