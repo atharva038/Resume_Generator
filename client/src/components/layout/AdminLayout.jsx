@@ -314,7 +314,7 @@ const AdminLayout = () => {
             <button
               onClick={() => {
                 if (window.innerWidth < 1024) {
-                  toggleSidebar();
+                  toggleMobileMenu();
                 } else {
                   toggleSidebarOpen();
                 }
