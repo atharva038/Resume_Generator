@@ -1,192 +1,190 @@
 import React from "react";
 import { INTERVIEWER_VOICES } from "./constants";
 
-// Ultra-Detailed, Realistic & Animated SVG Portrait: Shubh (Senior Technical Interviewer - Male)
+// Ultra-Detailed, Realistic & Masculine SVG Portrait: Shubh (Senior Engineering Lead - Male)
 export const ShubhInterviewerGraphic = ({ isSpeaking, isThinking, isDark = false }) => (
   <svg viewBox="0 0 200 200" className="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <style>{`
-        @keyframes shubhBlink {
-          0%, 88%, 94%, 100% { transform: scaleY(1); }
-          91% { transform: scaleY(0.08); }
+        @keyframes maleHumanBlink {
+          0%, 86%, 92%, 100% { transform: scaleY(1); }
+          89% { transform: scaleY(0.08); }
         }
-        @keyframes shubhGaze {
-          0%, 100% { transform: translate(0px, 0px); }
-          20% { transform: translate(-1px, 0.5px); }
-          45% { transform: translate(0px, 0px); }
-          65% { transform: translate(1.2px, -0.5px); }
-          85% { transform: translate(0px, 0px); }
+        @keyframes dynamicMaleEyeGaze {
+          0%, 20% { transform: translate(0px, 0px); }
+          28%, 46% { transform: translate(-3.2px, 1.2px); } /* Reading resume / code */
+          52%, 68% { transform: translate(0px, 0px); } /* Direct eye contact */
+          74%, 88% { transform: translate(3.0px, -1.2px); } /* Thoughtful evaluation */
+          94%, 100% { transform: translate(0px, 0px); }
         }
-        @keyframes shubhSpeechCadence {
-          0%, 100% { transform: scale(1, 0.4); }
-          20% { transform: scale(1.06, 1.35); }
-          40% { transform: scale(0.95, 0.55); }
-          60% { transform: scale(1.08, 1.45); }
-          80% { transform: scale(0.98, 0.7); }
+        @keyframes maleSpeechCadence {
+          0%, 100% { transform: scale(1, 0.45); }
+          22% { transform: scale(1.05, 1.25); }
+          44% { transform: scale(0.96, 0.6); }
+          66% { transform: scale(1.06, 1.35); }
+          84% { transform: scale(0.98, 0.7); }
         }
-        @keyframes shubhMicGlow {
+        @keyframes techHeadsetGlow {
           0%, 100% { r: 3.5; opacity: 0.85; filter: drop-shadow(0 0 3px #818CF8); }
           50% { r: 4.8; opacity: 1; filter: drop-shadow(0 0 8px #6366F1); }
         }
-        @keyframes shubhInhale {
+        @keyframes maleBreathTorso {
           0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-1.2px); }
+          50% { transform: translateY(-1.4px); }
         }
-        .shubh-blink {
+        .shubh-eye-blink {
           transform-origin: 100px 65px;
-          animation: shubhBlink 5.2s infinite ease-in-out;
+          animation: maleHumanBlink 4.4s infinite ease-in-out;
         }
-        .shubh-pupil-gaze {
-          animation: shubhGaze 6.8s infinite ease-in-out;
+        .shubh-active-pupils {
+          animation: dynamicMaleEyeGaze 6.2s infinite ease-in-out;
         }
-        .shubh-cadenced-mouth {
+        .shubh-talking-mouth {
           transform-origin: 100px 95px;
-          animation: shubhSpeechCadence 0.42s infinite ease-in-out;
+          animation: maleSpeechCadence 0.4s infinite ease-in-out;
         }
-        .shubh-mic-pulse {
-          animation: shubhMicGlow 1.4s infinite ease-in-out;
+        .shubh-headset-mic {
+          animation: techHeadsetGlow 1.3s infinite ease-in-out;
         }
-        .shubh-breathing {
-          animation: shubhInhale 5.2s infinite ease-in-out;
+        .shubh-torso-breath {
+          animation: maleBreathTorso 4.8s infinite ease-in-out;
         }
       `}</style>
 
-      {/* Male Skin Tone Gradients */}
-      <linearGradient id="shubhSkinGrad" x1="100" y1="30" x2="100" y2="130" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stopColor="#E6A582" />
-        <stop offset="45%" stopColor="#D48B63" />
-        <stop offset="100%" stopColor="#B3653C" />
+      {/* Masculine Skin Tones */}
+      <linearGradient id="maleSkinGrad" x1="100" y1="35" x2="100" y2="130" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#ECC2A7" />
+        <stop offset="45%" stopColor="#DCA887" />
+        <stop offset="100%" stopColor="#C48460" />
       </linearGradient>
-      <linearGradient id="shubhJawShadow" x1="100" y1="75" x2="100" y2="125" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stopColor="#B3653C" stopOpacity="0" />
-        <stop offset="100%" stopColor="#7E3A19" stopOpacity="0.65" />
-      </linearGradient>
-
-      {/* Hair Gradients (Textured Fade) */}
-      <linearGradient id="shubhHairGrad" x1="50" y1="12" x2="150" y2="80" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stopColor="#1E1916" />
-        <stop offset="60%" stopColor="#120D0A" />
-        <stop offset="100%" stopColor="#080604" />
-      </linearGradient>
-      <linearGradient id="shubhHairShine" x1="70" y1="14" x2="130" y2="40" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stopColor="#3E3028" />
-        <stop offset="100%" stopColor="#1E1916" stopOpacity="0" />
+      <linearGradient id="maleJawShadow" x1="100" y1="75" x2="100" y2="120" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#B36940" stopOpacity="0" />
+        <stop offset="100%" stopColor="#783818" stopOpacity="0.6" />
       </linearGradient>
 
-      {/* Eye Gradients */}
-      <radialGradient id="shubhIrisGrad" cx="0.4" cy="0.4" r="0.6">
-        <stop offset="0%" stopColor="#5A341A" />
-        <stop offset="60%" stopColor="#321A0A" />
-        <stop offset="100%" stopColor="#100702" />
+      {/* Short Textured Masculine Crop */}
+      <linearGradient id="maleHairGrad" x1="50" y1="10" x2="150" y2="80" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#241B15" />
+        <stop offset="60%" stopColor="#140E0A" />
+        <stop offset="100%" stopColor="#080504" />
+      </linearGradient>
+      <linearGradient id="maleHairSheen" x1="70" y1="12" x2="130" y2="38" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#4A382D" />
+        <stop offset="100%" stopColor="#140E0A" stopOpacity="0" />
+      </linearGradient>
+
+      {/* Sharp Male Iris */}
+      <radialGradient id="maleIrisDark" cx="0.4" cy="0.4" r="0.6">
+        <stop offset="0%" stopColor="#5E3314" />
+        <stop offset="60%" stopColor="#301808" />
+        <stop offset="100%" stopColor="#0D0602" />
       </radialGradient>
 
-      {/* Suiting */}
-      <linearGradient id="shubhBlazerGrad" x1="40" y1="130" x2="160" y2="200" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stopColor="#1E2640" />
-        <stop offset="60%" stopColor="#141B2D" />
-        <stop offset="100%" stopColor="#0A0E18" />
+      {/* Sharp Tailored Suiting */}
+      <linearGradient id="maleBlazerDark" x1="30" y1="130" x2="170" y2="200" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#1E2638" />
+        <stop offset="60%" stopColor="#111827" />
+        <stop offset="100%" stopColor="#090D15" />
       </linearGradient>
-      <linearGradient id="shubhLapelsGrad" x1="70" y1="138" x2="130" y2="195" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stopColor="#2B3658" />
-        <stop offset="100%" stopColor="#171E32" />
-      </linearGradient>
-      <linearGradient id="shubhShirtGrad" x1="100" y1="135" x2="100" y2="185" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stopColor="#334155" />
-        <stop offset="100%" stopColor="#1E293B" />
+      <linearGradient id="maleLapelDark" x1="70" y1="140" x2="130" y2="190" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#2A354E" />
+        <stop offset="100%" stopColor="#141C2B" />
       </linearGradient>
     </defs>
 
-    {/* BACKGROUND AMBIENT DOME */}
+    {/* AMBIENT DOME */}
     <circle cx="100" cy="100" r="92" fill={isDark ? "#0E101A" : "#EEF2F6"} />
     <circle cx="100" cy="85" r="72" fill={isDark ? "#181D33" : "#E2E8F0"} fillOpacity={isDark ? "0.4" : "0.6"} />
 
-    {/* BREATHING AVATAR BODY */}
-    <g className="shubh-breathing">
-      {/* SHOULDERS & BLAZER (Back) */}
-      <path d="M22 196C22 152 48 135 80 132L100 152L120 132C152 135 178 152 178 196V200H22V196Z" fill="url(#shubhBlazerGrad)" />
+    {/* ALIVE CHARACTER CONTAINER */}
+    <g className="shubh-torso-breath">
+      {/* BROAD MASCULINE SHOULDERS & BLAZER */}
+      <path d="M18 196C18 150 46 134 78 130L100 150L122 130C154 134 182 150 182 196V200H18V196Z" fill="url(#maleBlazerDark)" />
 
-      {/* INNER CREW-NECK TEE */}
-      <path d="M80 132C80 132 88 156 100 156C112 156 120 132 120 132V175H80V132Z" fill="url(#shubhShirtGrad)" />
-      <path d="M84 132C88 144 112 144 116 132" stroke="#475569" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+      {/* CRISP WHITE DRESS SHIRT */}
+      <path d="M78 130L100 172L122 130H78Z" fill="#FFFFFF" />
+      <path d="M96 148L100 154L104 148L103 195H97L96 148Z" fill="#2563EB" />
 
-      {/* NECK & SHADOW */}
-      <path d="M84 94V134C84 142 91 148 100 148C109 148 116 142 116 134V94H84Z" fill="url(#shubhSkinGrad)" />
-      <path d="M84 102C91 116 109 116 116 102V132C116 140 109 146 100 146C91 146 84 140 84 132V102Z" fill="url(#shubhJawShadow)" />
+      {/* BROAD MASCULINE NECK & COLLAR INTEGRATION */}
+      <path d="M82 92V130C82 138 90 144 100 144C110 144 118 138 118 130V92H82Z" fill="url(#maleSkinGrad)" />
+      <path d="M82 100C90 116 110 116 118 100V128C118 136 110 142 100 142C90 142 82 136 82 128V100Z" fill="url(#maleJawShadow)" />
 
-      {/* BLAZER LAPELS & STRUCTURE */}
-      <path d="M46 144L78 132L94 182L62 198C50 192 46 172 46 144Z" fill="url(#shubhLapelsGrad)" />
-      <path d="M154 144L122 132L106 182L138 198C150 192 154 172 154 144Z" fill="url(#shubhLapelsGrad)" />
+      {/* BLAZER LAPELS (Sharp & Broad) */}
+      <path d="M42 144L78 130L96 182L60 196C48 190 42 172 42 144Z" fill="url(#maleLapelDark)" />
+      <path d="M158 144L122 130L104 182L140 196C152 190 158 172 158 144Z" fill="url(#maleLapelDark)" />
 
-      {/* EARS */}
-      <path d="M62 70C59 70 57 76 58 84C59 90 62 94 65 92L67 78L62 70Z" fill="#D48B63" />
-      <path d="M138 70C141 70 143 76 142 84C141 90 138 94 135 92L133 78L138 70Z" fill="#D48B63" />
+      {/* MASCULINE EARS */}
+      <path d="M60 68C57 68 55 74 56 82C57 88 60 92 63 90L65 76L60 68Z" fill="#DCA887" />
+      <path d="M140 68C143 68 145 74 144 82C143 88 140 92 137 90L135 76L140 68Z" fill="#DCA887" />
 
-      {/* JAWLINE & HEAD STRUCTURE (Strong, masculine jaw) */}
-      <path d="M66 50C66 32 78 24 100 24C122 24 134 32 134 50C134 78 124 108 100 108C76 108 66 78 66 50Z" fill="url(#shubhSkinGrad)" />
-      <path d="M69 84C77 100 88 108 100 108C112 108 123 100 131 84C123 98 112 106 100 106C88 106 77 98 69 84Z" fill="url(#shubhJawShadow)" />
+      {/* STRONG CHISELED MASCULINE JAWLINE */}
+      <path d="M64 52C64 34 76 26 100 26C124 26 136 34 136 52C136 78 126 104 100 104C74 104 64 78 64 52Z" fill="url(#maleSkinGrad)" />
+      <path d="M67 82C76 96 87 104 100 104C113 104 124 96 133 82C124 96 113 102 100 102C87 102 76 96 67 82Z" fill="url(#maleJawShadow)" />
 
-      {/* GROOMED BEARD / STUBBLE (Natural stylish Indian facial hair) */}
-      <path d="M68 76C68 96 80 110 100 110C120 110 132 96 132 76C131 86 126 98 116 104C108 108 92 108 84 104C74 98 69 86 68 76Z" fill="#1A120D" fillOpacity="0.45" />
-      <path d="M88 88C92 85 97 86 100 87C103 86 108 85 112 88C108 91 104 90 100 90.5C96 90 92 91 88 88Z" fill="#1A120D" fillOpacity="0.55" />
+      {/* NEAT 5 O'CLOCK SHADOW & MASCULINE STUBBLE */}
+      <path d="M68 76C68 94 80 104 100 104C120 104 132 94 132 76C130 88 124 98 114 101C108 103 92 103 86 101C76 98 70 88 68 76Z" fill="#140E0A" fillOpacity="0.32" />
+      {/* Upper Lip Stubble */}
+      <path d="M91 85C95 83 105 83 109 85C107 88 93 88 91 85Z" fill="#140E0A" fillOpacity="0.22" />
 
-      {/* EYEBROWS (Defined, masculine) */}
-      <path d="M72 49C78 44 87 45 93 49" stroke="#140E0A" strokeWidth="2.8" strokeLinecap="round" />
-      <path d="M128 49C122 44 113 45 107 49" stroke="#140E0A" strokeWidth="2.8" strokeLinecap="round" />
+      {/* STRONG, STRAIGHT MASCULINE EYEBROWS */}
+      <path d="M71 52H94" stroke="#120B07" strokeWidth="3.2" strokeLinecap="round" />
+      <path d="M129 52H106" stroke="#120B07" strokeWidth="3.2" strokeLinecap="round" />
 
-      {/* EYES WITH BLINK & GAZE */}
-      <g className="shubh-blink">
+      {/* REALISTIC EYES WITH ACTIVE DYNAMIC EYE MOVEMENT */}
+      <g className="shubh-eye-blink">
         {/* Left Eye */}
-        <path d="M74 61C78 56 87 56 92 61" stroke="#100A06" strokeWidth="1.8" strokeLinecap="round" />
-        <path d="M75 61C79 66 86 66 91 61" fill="#FFFFFF" />
-        <g className="shubh-pupil-gaze">
-          <circle cx="83.5" cy="61" r="4.1" fill="url(#shubhIrisGrad)" />
-          <circle cx="83.5" cy="61" r="2.2" fill="#0A0502" />
-          <circle cx="82" cy="59.5" r="1.2" fill="#FFFFFF" />
-          <circle cx="85" cy="62.5" r="0.6" fill="#FFFFFF" opacity="0.8" />
+        <path d="M73 63C78 59 88 59 93 63" stroke="#120B07" strokeWidth="2" strokeLinecap="round" />
+        <path d="M74 63C78 67 88 67 92 63" fill="#FFFFFF" />
+        <g className="shubh-active-pupils">
+          <circle cx="83" cy="63" r="4.0" fill="url(#maleIrisDark)" />
+          <circle cx="83" cy="63" r="2.2" fill="#000000" />
+          <circle cx="81.5" cy="61.5" r="1.1" fill="#FFFFFF" />
+          <circle cx="84.5" cy="64.5" r="0.6" fill="#FFFFFF" opacity="0.75" />
         </g>
+        <path d="M72 63.5H94" stroke="#120B07" strokeWidth="0.8" opacity="0.4" />
 
         {/* Right Eye */}
-        <path d="M108 61C113 56 122 56 126 61" stroke="#100A06" strokeWidth="1.8" strokeLinecap="round" />
-        <path d="M109 61C114 66 121 66 125 61" fill="#FFFFFF" />
-        <g className="shubh-pupil-gaze">
-          <circle cx="116.5" cy="61" r="4.1" fill="url(#shubhIrisGrad)" />
-          <circle cx="116.5" cy="61" r="2.2" fill="#0A0502" />
-          <circle cx="115" cy="59.5" r="1.2" fill="#FFFFFF" />
-          <circle cx="118" cy="62.5" r="0.6" fill="#FFFFFF" opacity="0.8" />
+        <path d="M107 63C112 59 122 59 127 63" stroke="#120B07" strokeWidth="2" strokeLinecap="round" />
+        <path d="M108 63C112 67 122 67 126 63" fill="#FFFFFF" />
+        <g className="shubh-active-pupils">
+          <circle cx="117" cy="63" r="4.0" fill="url(#maleIrisDark)" />
+          <circle cx="117" cy="63" r="2.2" fill="#000000" />
+          <circle cx="115.5" cy="61.5" r="1.1" fill="#FFFFFF" />
+          <circle cx="118.5" cy="64.5" r="0.6" fill="#FFFFFF" opacity="0.75" />
         </g>
+        <path d="M106 63.5H128" stroke="#120B07" strokeWidth="0.8" opacity="0.4" />
       </g>
 
-      {/* NOSE */}
-      <path d="M100 52V73L95 76H105" stroke="#9A502A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      {/* STRAIGHT MASCULINE NOSE */}
+      <path d="M100 54V76L95 79H105" stroke="#9E5632" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
 
-      {/* CONVERSATIONAL SPEAKING MOUTH */}
+      {/* NATURAL MALE LIPS (NOT LIPSTICK - SUBTLE WARM SKIN TONE) */}
       {isSpeaking ? (
-        <g className="shubh-cadenced-mouth">
-          <path d="M89 93C93 90 97 91 100 92C103 91 107 90 111 93C109 99 91 99 89 93Z" fill="#C45656" />
-          <ellipse cx="100" cy="95.5" rx="7.5" ry="4" fill="#3B0712" />
-          <path d="M93 93.5H107C105 95 95 95 93 93.5Z" fill="#FFFFFF" />
-          <path d="M91 96.5C94 99.5 106 99.5 109 96.5" stroke="#9F1239" strokeWidth="1.6" strokeLinecap="round" fill="none" />
+        <g className="shubh-talking-mouth">
+          <path d="M91 91C95 89 105 89 109 91C107 96 93 96 91 91Z" fill="#A86B52" />
+          <ellipse cx="100" cy="93.5" rx="6" ry="3.2" fill="#2B120A" />
+          <path d="M95 91.5H105C103 93 97 93 95 91.5Z" fill="#EDEFEF" />
+          <path d="M92 94.5C95 96.5 105 96.5 108 94.5" stroke="#783D26" strokeWidth="1.3" strokeLinecap="round" fill="none" />
         </g>
       ) : (
         <g>
-          <path d="M90 93C93 91 97 92 100 93C103 92 107 91 110 93C108 96.5 92 96.5 90 93Z" fill="#C45656" />
-          <path d="M91 94C94 96 106 96 109 94" stroke="#7A132B" strokeWidth="1.4" strokeLinecap="round" fill="none" />
-          <path d="M94.5 94.2C96.5 95 103.5 95 105.5 94.2" fill="#FFFFFF" />
+          <path d="M91 91C95 89 105 89 109 91C107 94 93 94 91 91Z" fill="#A86B52" />
+          <path d="M92 92C95 93.5 105 93.5 108 92" stroke="#66301A" strokeWidth="1.3" strokeLinecap="round" fill="none" />
         </g>
       )}
 
-      {/* CONTEMPORARY INDIAN MALE FADE / POMPADOUR HAIRSTYLE */}
-      <path d="M64 52C62 30 76 14 100 12C124 14 138 30 136 52C130 24 116 18 100 18C84 18 70 24 64 52Z" fill="url(#shubhHairGrad)" />
-      <path d="M62 46C64 26 78 12 100 10C122 12 136 26 138 46C134 22 120 16 100 16C80 16 66 22 62 46Z" fill="url(#shubhHairGrad)" />
-      <path d="M68 40C76 26 90 18 106 18C124 18 132 26 134 40C128 28 116 22 102 22C84 22 74 28 68 40Z" fill="url(#shubhHairShine)" />
-      <path d="M64 48C63 56 63 68 66 74C67 76 68 74 67 70C65 64 65 54 66 48Z" fill="url(#shubhHairGrad)" />
-      <path d="M136 48C137 56 137 68 134 74C133 76 132 74 133 70C135 64 135 54 134 48Z" fill="url(#shubhHairGrad)" />
+      {/* CRISP MODERN MASCULINE SHORT FADE / CROPPED HAIRSTYLE */}
+      <path d="M60 48C58 28 72 14 100 12C128 14 142 28 140 48C134 24 120 18 100 18C80 18 66 24 60 48Z" fill="url(#maleHairGrad)" />
+      <path d="M62 42C72 26 86 18 104 18C124 18 132 26 136 42C128 28 116 22 100 22C84 22 70 28 62 42Z" fill="url(#maleHairSheen)" />
+      {/* Clean Tapered Temples */}
+      <path d="M62 44C61 54 61 66 64 72C65 74 66 72 65 68C63 62 63 52 64 44Z" fill="url(#maleHairGrad)" />
+      <path d="M138 44C139 54 139 66 136 72C135 74 134 72 135 68C137 62 137 52 136 44Z" fill="url(#maleHairGrad)" />
 
-      {/* STUDIO HEADSET & GLOWING MIC */}
-      <path d="M61 62C61 34 76 18 100 18C124 18 139 34 139 62" stroke="#64748B" strokeWidth="2.8" strokeLinecap="round" fill="none" />
-      <rect x="56" y="58" width="5.5" height="16" rx="2.75" fill="#1E293B" stroke="#94A3B8" strokeWidth="1.2" />
-      <path d="M59 70C54 88 60 102 82 98" stroke="#64748B" strokeWidth="2" strokeLinecap="round" fill="none" />
-      <circle cx="83" cy="98" r="3.5" fill="#6366F1" stroke="#A5B4FC" strokeWidth="1.5" className={isSpeaking ? "shubh-mic-pulse" : ""} />
+      {/* TECH LEAD STUDIO HEADSET */}
+      <path d="M58 64C58 34 74 18 100 18C126 18 142 34 142 64" stroke="#475569" strokeWidth="3" strokeLinecap="round" fill="none" />
+      <rect x="53" y="60" width="6" height="17" rx="3" fill="#1E293B" stroke="#94A3B8" strokeWidth="1.2" />
+      <path d="M56 72C50 90 56 104 80 100" stroke="#475569" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+      <circle cx="81" cy="100" r="3.5" fill="#6366F1" stroke="#A5B4FC" strokeWidth="1.5" className={isSpeaking ? "shubh-headset-mic" : ""} />
     </g>
   </svg>
 );

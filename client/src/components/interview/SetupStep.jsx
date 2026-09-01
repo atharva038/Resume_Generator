@@ -18,6 +18,8 @@ import {
   Loader2,
 } from "lucide-react";
 import { INTERVIEWER_VOICES, TYPE_ICONS } from "./constants";
+import { InterviewerGraphic } from "./InterviewerGraphic";
+import { useDarkMode } from "../../context/DarkModeContext";
 
 // Setup Step Component
 export const SetupStep = ({
@@ -37,29 +39,30 @@ export const SetupStep = ({
   setJobDescription,
   interviewDuration,
   setInterviewDuration,
-  voiceAvailable,
-  ttsAvailable,
-  voiceEngine,
+  isRecording,
+  isTestingVoice,
+  isPlayingAudio,
+  voiceEngine = "auto",
   setVoiceEngine,
   voiceProviders,
-  selectedVoice,
+  voiceAvailable,
+  ttsAvailable,
+  selectedVoice = "shubh",
   setSelectedVoice,
   isProduction = false,
   isSubmitting,
-  isTestingVoice,
-  isPlayingAudio,
   onTestVoice,
   onStart,
 }) => {
-  const isLocalWhisperAvailable = Boolean(voiceProviders?.whisper?.available);
+  const { isDarkMode } = useDarkMode();
+  const currentInterviewer =
+    INTERVIEWER_VOICES[selectedVoice] || INTERVIEWER_VOICES.shubh;
+  const isLocalWhisperAvailable = voiceProviders?.transcription?.available;
   const isSarvamAvailable = Boolean(voiceProviders?.sarvam?.available);
   const isCurrentEngineValid =
     voiceEngine === "local"
       ? isLocalWhisperAvailable
       : Boolean(isSarvamAvailable || voiceAvailable);
-
-  const currentInterviewer =
-    INTERVIEWER_VOICES[selectedVoice] || INTERVIEWER_VOICES.shubh;
 
   return (
     <div className="space-y-8">
@@ -444,6 +447,53 @@ export const SetupStep = ({
                     </button>
                   );
                 })}
+            </div>
+
+            {/* Live Interviewer Studio Graphic Preview & Voice Tester */}
+            <div className="mt-4 p-4 rounded-xl bg-gradient-to-br from-indigo-50/70 via-white to-purple-50/50 dark:from-indigo-950/20 dark:via-[#121420] dark:to-purple-950/20 border border-indigo-200/80 dark:border-indigo-500/20 flex flex-col sm:flex-row items-center gap-5 shadow-sm">
+              <div className="w-28 h-28 shrink-0">
+                <InterviewerGraphic
+                  isSpeaking={isTestingVoice || isPlayingAudio}
+                  isThinking={false}
+                  isDark={isDarkMode}
+                  voice={selectedVoice}
+                />
+              </div>
+
+              <div className="flex-1 text-center sm:text-left space-y-1">
+                <div className="flex items-center justify-center sm:justify-start gap-2">
+                  <h4 className="text-sm font-bold text-gray-900 dark:text-white">
+                    {currentInterviewer.name}
+                  </h4>
+                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
+                    {currentInterviewer.title}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  {currentInterviewer.description || `${currentInterviewer.name} evaluates technical depth, architecture trade-offs, and communication.`}
+                </p>
+
+                <div className="pt-2 flex items-center justify-center sm:justify-start gap-2">
+                  <button
+                    type="button"
+                    onClick={() => onTestVoice?.("greeting")}
+                    disabled={isTestingVoice || isPlayingAudio}
+                    className="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-xs font-bold transition-all shadow-md shadow-indigo-500/20 flex items-center gap-1.5 disabled:opacity-50"
+                  >
+                    {isTestingVoice || isPlayingAudio ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <span>Speaking...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Volume2 className="w-3.5 h-3.5" />
+                        <span>Preview Voice & Animation</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 

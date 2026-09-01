@@ -221,9 +221,12 @@ const AIInterview = () => {
             bargeInNotice={recording.bargeInNotice}
             isProduction={isProduction}
             theme={theme}
+            user={user}
             onToggleTheme={toggleTheme}
             onToggleMute={session.handleToggleMute}
+            onSkip={session.handleSkipQuestion}
             onSkipQuestion={session.handleSkipQuestion}
+            onAbandon={session.handleAbandonInterview}
             onAbandonInterview={session.handleAbandonInterview}
             onSubmitAnswer={session.handleSubmitAnswer}
             onStartRecording={() => recording.startRecording(false)}
