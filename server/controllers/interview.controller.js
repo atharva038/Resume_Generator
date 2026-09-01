@@ -4,6 +4,7 @@ import Resume from "../models/Resume.model.js";
 import * as interviewService from "../services/interview.service.js";
 import * as interviewStateManager from "../services/interview-state.service.js";
 import * as sarvamService from "../services/sarvam.service.js";
+import {transcribeAudioWithAI} from "../services/openai.service.js";
 import axios from "axios";
 import FormData from "form-data";
 
@@ -1168,58 +1169,98 @@ export const submitVoiceAnswer = async (req, res) => {
       throw new Error("Sarvam AI returned empty transcript");
     };
 
+    // Helper: OpenAI Whisper STT call (Cloud Fallback)
+    const callOpenAIWhisper = async () => {
+      console.log("🎙️ Using OpenAI Whisper Cloud API for transcription fallback...");
+      const text = await transcribeAudioWithAI(audioFile.buffer, {
+        filename: audioFile.originalname,
+        mimetype: audioFile.mimetype,
+      });
+      if (text && text.trim()) {
+        return text.trim();
+      }
+      throw new Error("OpenAI Whisper returned empty transcript");
+    };
+
     // Execution based on chosen engine
     if (requestedEngine === "local" || requestedEngine === "local-whisper") {
-      // 1. Strict Local Whisper (No silent Sarvam fallback when user explicitly selected Local)
       try {
         transcribedText = await callLocalWhisper();
         transcriptionProvider = "local-whisper";
         console.log(`✅ Local Whisper transcription success (${transcribedText.length} chars)`);
       } catch (whisperError) {
-        console.error("❌ Local Whisper service failed:", whisperError.message);
-        return res.status(503).json({
-          success: false,
-          error:
-            "Local Whisper microservice is not reachable on port 5001. Please start your local Whisper microservice or switch to Sarvam AI Cloud.",
-          provider: "local-whisper",
-        });
+        console.warn("⚠️ Local Whisper offline, falling back to cloud STT:", whisperError.message);
+        if (sarvamService.isAvailable()) {
+          try {
+            transcribedText = await callSarvamSTT();
+            transcriptionProvider = "sarvam";
+          } catch (_) {}
+        }
+        if (!transcribedText) {
+          try {
+            transcribedText = await callOpenAIWhisper();
+            transcriptionProvider = "openai-whisper";
+          } catch (_) {}
+        }
+        if (!transcribedText) {
+          return res.status(503).json({
+            success: false,
+            error: "Local Whisper microservice is not reachable on port 5001 and cloud STT fallback failed.",
+            provider: "local-whisper",
+          });
+        }
       }
     } else if (requestedEngine === "sarvam") {
-      // 2. Strict Sarvam AI
       try {
         transcribedText = await callSarvamSTT();
         transcriptionProvider = "sarvam";
         console.log(`✅ Sarvam AI transcription success (${transcribedText.length} chars)`);
       } catch (sarvamError) {
-        console.error("❌ Sarvam STT failed:", sarvamError.message);
-        return res.status(503).json({
-          success: false,
-          error: `Sarvam AI transcription error: ${sarvamError.message}`,
-          provider: "sarvam",
-        });
+        console.warn("⚠️ Sarvam STT failed, falling back to OpenAI Whisper:", sarvamError.message);
+        try {
+          transcribedText = await callOpenAIWhisper();
+          transcriptionProvider = "openai-whisper";
+        } catch (openAiErr) {
+          console.error("❌ OpenAI Whisper fallback also failed:", openAiErr.message);
+          return res.status(503).json({
+            success: false,
+            error: `Voice transcription error: ${sarvamError.message}`,
+            provider: "sarvam",
+          });
+        }
       }
     } else {
-      // 3. Auto Mode: Sarvam if configured, else Whisper
+      // Auto Mode: Sarvam -> OpenAI Whisper -> Local Whisper
       if (sarvamService.isAvailable()) {
         try {
           transcribedText = await callSarvamSTT();
           transcriptionProvider = "sarvam";
           console.log(`✅ Sarvam AI transcription success (${transcribedText.length} chars)`);
         } catch (sarvamError) {
-          console.warn("⚠️ Sarvam STT failed in auto mode, trying local Whisper fallback:", sarvamError.message);
+          console.warn("⚠️ Sarvam STT failed in auto mode, trying OpenAI Whisper:", sarvamError.message);
           try {
-            transcribedText = await callLocalWhisper();
-            transcriptionProvider = "local-whisper";
-          } catch (whisperErr) {
-            console.error("❌ Local Whisper fallback also failed:", whisperErr.message);
+            transcribedText = await callOpenAIWhisper();
+            transcriptionProvider = "openai-whisper";
+          } catch (_) {
+            try {
+              transcribedText = await callLocalWhisper();
+              transcriptionProvider = "local-whisper";
+            } catch (whisperErr) {
+              console.error("❌ All STT engines failed:", whisperErr.message);
+            }
           }
         }
       } else {
         try {
-          transcribedText = await callLocalWhisper();
-          transcriptionProvider = "local-whisper";
-        } catch (whisperErr) {
-          console.error("❌ Local Whisper transcription failed in auto mode:", whisperErr.message);
+          transcribedText = await callOpenAIWhisper();
+          transcriptionProvider = "openai-whisper";
+        } catch (_) {
+          try {
+            transcribedText = await callLocalWhisper();
+            transcriptionProvider = "local-whisper";
+          } catch (whisperErr) {
+            console.error("❌ Local Whisper transcription failed in auto mode:", whisperErr.message);
+          }
         }
       }
     }
@@ -1228,7 +1269,7 @@ export const submitVoiceAnswer = async (req, res) => {
       return res.status(400).json({
         success: false,
         error:
-          "Failed to transcribe audio. Please ensure either Sarvam AI API key is configured or local Whisper service is running.",
+          "Failed to transcribe audio. Please check your microphone and speak clearly.",
       });
     }
 

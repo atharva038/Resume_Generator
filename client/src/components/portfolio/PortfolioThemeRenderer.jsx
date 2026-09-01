@@ -97,8 +97,8 @@ const PortfolioThemeRenderer = ({
             scroll-behavior: smooth;
           }
           [data-portfolio-theme].portfolio-dark {
-            background-color: #09090b !important;
-            color: #f4f4f5 !important;
+            background-color: var(--pt-bg, #09090b) !important;
+            color: var(--pt-text, #f4f4f5) !important;
           }
 
           [data-portfolio-theme] .pt-accent-surface {
@@ -153,13 +153,14 @@ const PortfolioThemeRenderer = ({
         {/* Floating Theme Toggle Shortcut */}
         <button
           onClick={toggleDarkMode}
-          className="fixed bottom-6 right-6 z-50 p-3 rounded-full shadow-xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 transition-transform hover:scale-110 active:scale-95 border border-white/10 dark:border-black/10 cursor-pointer"
+          className="fixed bottom-6 right-6 z-50 p-3.5 rounded-full shadow-2xl bg-white/90 dark:bg-slate-900/90 text-slate-800 dark:text-amber-400 backdrop-blur-xl border border-white/80 dark:border-white/15 transition-all duration-300 hover:scale-110 active:scale-95 hover:shadow-cyan-500/20 cursor-pointer"
           aria-label="Toggle dark mode"
+          title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
         >
           {isDarkMode ? (
             <Sun className="w-5 h-5 text-amber-400" />
           ) : (
-            <Moon className="w-5 h-5 text-gray-900" />
+            <Moon className="w-5 h-5 text-slate-800" />
           )}
         </button>
       </div>

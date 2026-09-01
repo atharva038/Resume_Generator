@@ -62,18 +62,22 @@ const AIInterview = () => {
     if (INTERVIEWER_VOICES[voiceKey]) {
       setSelectedVoice(voiceKey);
       const voiceMeta = INTERVIEWER_VOICES[voiceKey];
-      toast.info(`Interviewer set to ${voiceMeta.name} (${voiceMeta.gender === "male" ? "Male" : "Female"})`);
+      toast(`Interviewer set to ${voiceMeta.name} (${voiceMeta.gender === "male" ? "Male" : "Female"})`, {
+        icon: "🎙️",
+      });
     }
   };
 
-  // Ref bridge for circular dependencies between speech & recording
+  // Ref bridge for circular dependencies between speech, recording & session
   const startRecordingBridgeRef = useRef(null);
+  const onVoiceSubmitBridgeRef = useRef(null);
+  const setInterviewPhaseBridgeRef = useRef(null);
   const isMutedRef = useRef(false);
   const isInterviewActiveRef = useRef(false);
 
   // 1. Hook for Speech & TTS
   const speech = useInterviewSpeech({
-    selectedRole: "", // will update dynamically or fallback
+    selectedRole: "", // dynamically handled
     selectedVoice,
     voiceEngine,
     serverTtsAvailable: true,
@@ -82,7 +86,7 @@ const AIInterview = () => {
     isMuted: isMutedRef.current,
     isMutedRef,
     isInterviewActiveRef,
-    setInterviewPhase: () => {}, // overridden dynamically
+    setInterviewPhase: (phase) => setInterviewPhaseBridgeRef.current?.(phase),
     startRecordingRef: startRecordingBridgeRef,
   });
 
@@ -91,12 +95,16 @@ const AIInterview = () => {
     selectedMode: "live",
     isInterviewActiveRef,
     interviewPhase: "idle",
-    setInterviewPhase: () => {}, // overridden dynamically
+    setInterviewPhase: (phase) => setInterviewPhaseBridgeRef.current?.(phase),
     isPlayingAudio: speech.isPlayingAudio,
     audioElementRef: speech.audioElementRef,
     stopLocalAudio: speech.stopLocalAudio,
     speakAndListen: speech.speakAndListen,
-    onVoiceSubmit: () => {}, // bridged dynamically
+    onVoiceSubmit: async (blob) => {
+      if (onVoiceSubmitBridgeRef.current) {
+        await onVoiceSubmitBridgeRef.current(blob);
+      }
+    },
   });
 
   startRecordingBridgeRef.current = recording.startRecording;
@@ -114,11 +122,13 @@ const AIInterview = () => {
     stopLocalAudio: speech.stopLocalAudio,
     startRecording: recording.startRecording,
     cleanupAudioStreams: recording.cleanupAudioStreams,
+    isInterviewActiveRef,
+    isMutedRef,
   });
 
-  // Keep refs in sync
-  isInterviewActiveRef.current = session.isInterviewActiveRef.current;
-  isMutedRef.current = session.isMuted;
+  // Connect bridges
+  onVoiceSubmitBridgeRef.current = session.handleVoiceSubmit;
+  setInterviewPhaseBridgeRef.current = session.setInterviewPhase;
 
   // Cleanup on unmount
   useEffect(() => {

@@ -22,10 +22,17 @@ export default function PortfolioPanel({
 
   return (
     <section className="overflow-hidden rounded-3xl border border-gray-200/90 dark:border-white/[0.1] bg-white dark:bg-zinc-950/90 shadow-sm dark:shadow-xl transition-all duration-200 hover:border-gray-300 dark:hover:border-white/20">
-      <button
-        type="button"
+      <div
+        role="button"
+        tabIndex={0}
         onClick={() => setIsOpen((current) => !current)}
-        className="flex w-full items-center justify-between gap-4 px-6 sm:px-7 py-5 sm:py-6 text-left hover:bg-gray-50/80 dark:hover:bg-zinc-900/50 transition-colors cursor-pointer"
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setIsOpen((current) => !current);
+          }
+        }}
+        className="flex w-full items-center justify-between gap-4 px-6 sm:px-7 py-5 sm:py-6 text-left hover:bg-gray-50/80 dark:hover:bg-zinc-900/50 transition-colors cursor-pointer select-none"
       >
         <div className="flex items-center gap-4 min-w-0">
           {Icon && (
@@ -60,7 +67,7 @@ export default function PortfolioPanel({
             }`}
           />
         </div>
-      </button>
+      </div>
 
       {isOpen && (
         <div className="border-t border-gray-100 dark:border-white/[0.08] p-6 sm:p-8 space-y-6 bg-gray-50/40 dark:bg-zinc-900/30">

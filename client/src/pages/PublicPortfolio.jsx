@@ -148,6 +148,10 @@ const PublicPortfolio = () => {
     portfolio.heroImage ||
     portfolio.profileImage ||
     "";
+  const favicon =
+    portfolio.seo?.favicon ||
+    portfolio.favicon ||
+    "";
 
   return (
     <>
@@ -156,6 +160,9 @@ const PublicPortfolio = () => {
         <meta name="description" content={description} />
         {keywords && <meta name="keywords" content={keywords} />}
         {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+        {favicon && <link rel="icon" href={favicon} />}
+        {favicon && <link rel="shortcut icon" href={favicon} />}
+        {favicon && <link rel="apple-touch-icon" href={favicon} />}
         {portfolio.settings?.allowIndexing === false && (
           <meta name="robots" content="noindex,nofollow" />
         )}

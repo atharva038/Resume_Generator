@@ -852,24 +852,56 @@ export default function PortfolioEditor() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-2 block">
-                    Profile Image URL
-                  </label>
-                  <input
-                    value={form.profileImage || ""}
-                    onChange={(e) => updateField("profileImage", e.target.value)}
-                    placeholder="https://example.com/headshot.jpg"
-                    className="w-full px-4 py-3.5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-xs sm:text-sm font-mono focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-                  />
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200">
+                      Profile Photo URL
+                    </label>
+                    {form.profileImage && (
+                      <button
+                        type="button"
+                        onClick={() => updateField("profileImage", "")}
+                        className="text-xs text-red-500 hover:text-red-600 font-bold cursor-pointer"
+                      >
+                        Remove Photo (Switch to Text-First)
+                      </button>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-3">
+                    {form.profileImage ? (
+                      <img
+                        src={form.profileImage}
+                        alt="Profile preview"
+                        className="w-11 h-11 rounded-full object-cover border-2 border-emerald-500 shrink-0"
+                        onError={(e) => {
+                          e.target.style.display = "none";
+                        }}
+                      />
+                    ) : (
+                      <div className="w-11 h-11 rounded-full bg-gray-100 dark:bg-zinc-800 flex items-center justify-center text-xs font-bold text-gray-400 shrink-0 border border-dashed border-gray-300 dark:border-zinc-700">
+                        No Photo
+                      </div>
+                    )}
+                    <input
+                      value={form.profileImage || ""}
+                      onChange={(e) => updateField("profileImage", e.target.value)}
+                      placeholder="https://example.com/headshot.jpg (leave empty for text-first theme)"
+                      className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-xs sm:text-sm font-mono focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                    />
+                  </div>
+                  <p className="mt-1.5 text-[11px] text-gray-500 dark:text-zinc-400">
+                    {form.profileImage
+                      ? "✓ Photo-based layout active. Headshot and avatar ring will be displayed."
+                      : "✓ Text-first layout active. Clean, commanded typography without empty photo placeholders."}
+                  </p>
                 </div>
                 <div>
                   <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-2 block">
-                    Hero Banner Image URL
+                    Hero Banner Image URL (Optional)
                   </label>
                   <input
                     value={form.heroImage || ""}
                     onChange={(e) => updateField("heroImage", e.target.value)}
-                    placeholder="https://example.com/hero.jpg"
+                    placeholder="https://example.com/hero-banner.jpg"
                     className="w-full px-4 py-3.5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-xs sm:text-sm font-mono focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
                 </div>
@@ -1746,6 +1778,58 @@ export default function PortfolioEditor() {
                     rows={3}
                     className="w-full p-4 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-sm leading-relaxed"
                   />
+                </div>
+                <div>
+                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
+                    Social Sharing Image URL (Open Graph / Twitter Card)
+                  </label>
+                  <div className="flex items-center gap-3">
+                    {form.seo?.ogImage && (
+                      <img
+                        src={form.seo.ogImage}
+                        alt="OG Preview"
+                        className="w-12 h-8 rounded-lg object-cover border border-gray-200 dark:border-white/10 shrink-0"
+                        onError={(e) => {
+                          e.target.style.display = "none";
+                        }}
+                      />
+                    )}
+                    <input
+                      value={form.seo?.ogImage || ""}
+                      onChange={(e) => updateNestedField("seo", "ogImage", e.target.value)}
+                      placeholder="https://example.com/og-banner.png"
+                      className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs sm:text-sm font-mono"
+                    />
+                  </div>
+                  <p className="mt-1 text-[11px] text-gray-500 dark:text-zinc-400">
+                    Preview image shown when your portfolio link is shared on LinkedIn, Twitter, WhatsApp, etc.
+                  </p>
+                </div>
+                <div>
+                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
+                    Custom Favicon Icon URL
+                  </label>
+                  <div className="flex items-center gap-3">
+                    {form.seo?.favicon && (
+                      <img
+                        src={form.seo.favicon}
+                        alt="Favicon Preview"
+                        className="w-7 h-7 rounded-md object-contain border border-gray-200 dark:border-white/10 shrink-0 p-0.5"
+                        onError={(e) => {
+                          e.target.style.display = "none";
+                        }}
+                      />
+                    )}
+                    <input
+                      value={form.seo?.favicon || ""}
+                      onChange={(e) => updateNestedField("seo", "favicon", e.target.value)}
+                      placeholder="https://example.com/favicon.ico or .png"
+                      className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs sm:text-sm font-mono"
+                    />
+                  </div>
+                  <p className="mt-1 text-[11px] text-gray-500 dark:text-zinc-400">
+                    Browser tab icon for your custom portfolio domain/page.
+                  </p>
                 </div>
               </div>
             </PortfolioPanel>

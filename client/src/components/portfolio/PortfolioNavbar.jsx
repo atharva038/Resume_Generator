@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Menu,
   X,
@@ -13,6 +13,38 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
+
+/* ─── Magnetic Nav Item Helper ─── */
+const MagneticNavItem = ({ children, className = "", strength = 0.28, ...props }) => {
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const ref = useRef(null);
+
+  const handleMouseMove = (e) => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const x = (e.clientX - (rect.left + rect.width / 2)) * strength;
+    const y = (e.clientY - (rect.top + rect.height / 2)) * strength;
+    setPos({ x, y });
+  };
+
+  const handleMouseLeave = () => {
+    setPos({ x: 0, y: 0 });
+  };
+
+  return (
+    <motion.div
+      ref={ref}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      animate={{ x: pos.x, y: pos.y }}
+      transition={{ type: "spring", stiffness: 260, damping: 15, mass: 0.1 }}
+      className={`inline-flex ${className}`}
+      {...props}
+    >
+      {children}
+    </motion.div>
+  );
+};
 
 export default function PortfolioNavbar({
   data,
@@ -106,52 +138,55 @@ export default function PortfolioNavbar({
       >
         <div className="flex items-center justify-between gap-2 sm:gap-4">
           {/* Brand / Name Anchor */}
-          <button
-            onClick={() => scrollTo("hero")}
-            className="flex items-center gap-2.5 text-left group cursor-pointer"
-          >
-            <div
-              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center font-black text-xs sm:text-sm text-white shadow-xs transition-transform group-hover:scale-105"
-              style={{
-                backgroundColor: accentColor || "#3b82f6",
-              }}
+          <MagneticNavItem strength={0.2}>
+            <button
+              onClick={() => scrollTo("hero")}
+              className="flex items-center gap-2.5 text-left group cursor-pointer"
             >
-              {userInitials}
-            </div>
-            <div className="min-w-0">
-              <span className="block font-black text-xs sm:text-sm tracking-tight text-gray-900 dark:text-white truncate max-w-[120px] sm:max-w-[180px]">
-                {displayName}
-              </span>
-              <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span>Available</span>
-              </span>
-            </div>
-          </button>
+              <div
+                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center font-black text-xs sm:text-sm text-white shadow-xs transition-transform group-hover:scale-105"
+                style={{
+                  backgroundColor: accentColor || "#3b82f6",
+                }}
+              >
+                {userInitials}
+              </div>
+              <div className="min-w-0">
+                <span className="block font-black text-xs sm:text-sm tracking-tight text-gray-900 dark:text-white truncate max-w-[120px] sm:max-w-[180px]">
+                  {displayName}
+                </span>
+                <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <span>Available</span>
+                </span>
+              </div>
+            </button>
+          </MagneticNavItem>
 
           {/* Desktop Nav Items */}
           <nav className="hidden md:flex items-center gap-1 lg:gap-1.5">
             {navItems.map((item) => {
               const isActive = activeSection === item.id;
               return (
-                <button
-                  key={item.id}
-                  onClick={() => scrollTo(item.id)}
-                  className={`relative px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-200 cursor-pointer ${
-                    isActive
-                      ? "text-gray-950 dark:text-white"
-                      : "text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100/60 dark:hover:bg-white/5"
-                  }`}
-                >
-                  {isActive && (
-                    <motion.div
-                      layoutId="activePortfolioPill"
-                      className="absolute inset-0 rounded-full bg-gray-100 dark:bg-white/10 -z-10"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                    />
-                  )}
-                  <span>{item.label}</span>
-                </button>
+                <MagneticNavItem key={item.id} strength={0.18}>
+                  <button
+                    onClick={() => scrollTo(item.id)}
+                    className={`relative px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-200 cursor-pointer ${
+                      isActive
+                        ? "text-gray-950 dark:text-white"
+                        : "text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100/60 dark:hover:bg-white/5"
+                    }`}
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="activePortfolioPill"
+                        className="absolute inset-0 rounded-full bg-gray-100 dark:bg-white/10 -z-10"
+                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                      />
+                    )}
+                    <span>{item.label}</span>
+                  </button>
+                </MagneticNavItem>
               );
             })}
           </nav>
@@ -160,67 +195,73 @@ export default function PortfolioNavbar({
           <div className="flex items-center gap-1.5 sm:gap-2">
             {/* Quick Email Copy / Contact */}
             {profile?.email && (
-              <button
-                onClick={handleCopyEmail}
-                title="Copy Email Address"
-                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-gray-100 dark:bg-zinc-800 text-gray-800 dark:text-zinc-200 hover:bg-gray-200 dark:hover:bg-zinc-700 transition-all cursor-pointer"
-              >
-                {copiedEmail ? (
-                  <>
-                    <Check className="w-3.5 h-3.5 text-emerald-500" />
-                    <span>Copied!</span>
-                  </>
-                ) : (
-                  <>
-                    <Mail className="w-3.5 h-3.5 text-gray-500" />
-                    <span>Contact</span>
-                  </>
-                )}
-              </button>
+              <MagneticNavItem strength={0.25}>
+                <button
+                  onClick={handleCopyEmail}
+                  title="Copy Email Address"
+                  className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-gray-100 dark:bg-zinc-800 text-gray-800 dark:text-zinc-200 hover:bg-gray-200 dark:hover:bg-zinc-700 transition-all cursor-pointer"
+                >
+                  {copiedEmail ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-emerald-500" />
+                      <span>Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Mail className="w-3.5 h-3.5 text-gray-500" />
+                      <span>Contact</span>
+                    </>
+                  )}
+                </button>
+              </MagneticNavItem>
             )}
 
             {/* Resume Download CTA */}
             {settings?.showResumeDownload !== false && (
-              actions?.resumeDownloadUrl ? (
-                <a
-                  href={actions.resumeDownloadUrl}
-                  download
-                  onClick={actions?.onResumeClick}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-black text-white shadow-xs transition-all hover:scale-105 active:scale-95 cursor-pointer"
-                  style={{
-                    backgroundColor: accentColor || "#2563eb",
-                  }}
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Resume</span>
-                </a>
-              ) : (
-                <button
-                  type="button"
-                  onClick={actions?.onResumeClick}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-black text-white shadow-xs transition-all hover:scale-105 active:scale-95 cursor-pointer"
-                  style={{
-                    backgroundColor: accentColor || "#2563eb",
-                  }}
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Resume</span>
-                </button>
-              )
+              <MagneticNavItem strength={0.25}>
+                {actions?.resumeDownloadUrl ? (
+                  <a
+                    href={actions.resumeDownloadUrl}
+                    download
+                    onClick={actions?.onResumeClick}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-black text-white shadow-xs transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                    style={{
+                      backgroundColor: accentColor || "#2563eb",
+                    }}
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Resume</span>
+                  </a>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={actions?.onResumeClick}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-black text-white shadow-xs transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                    style={{
+                      backgroundColor: accentColor || "#2563eb",
+                    }}
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Resume</span>
+                  </button>
+                )}
+              </MagneticNavItem>
             )}
 
             {/* Theme Dark/Light Toggle */}
-            <button
-              onClick={toggleDarkMode}
-              className="p-2 rounded-full text-gray-600 dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
-              aria-label="Toggle dark mode"
-            >
-              {isDarkMode ? (
-                <Sun className="w-4 h-4 text-amber-400" />
-              ) : (
-                <Moon className="w-4 h-4 text-gray-700" />
-              )}
-            </button>
+            <MagneticNavItem strength={0.3}>
+              <button
+                onClick={toggleDarkMode}
+                className="p-2 rounded-full text-gray-600 dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                aria-label="Toggle dark mode"
+              >
+                {isDarkMode ? (
+                  <Sun className="w-4 h-4 text-amber-400" />
+                ) : (
+                  <Moon className="w-4 h-4 text-gray-700" />
+                )}
+              </button>
+            </MagneticNavItem>
 
             {/* Mobile Hamburger Toggle */}
             <button

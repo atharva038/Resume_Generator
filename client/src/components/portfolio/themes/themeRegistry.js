@@ -4,8 +4,25 @@ import ProfessionalCorporateTheme from "./ProfessionalCorporateTheme";
 import CyberDevTheme from "./CyberDevTheme";
 import CreativeTheme from "./CreativeTheme";
 import TechPortfolioTheme from "./TechPortfolioTheme";
+import GlassmorphismTheme from "./GlassmorphismTheme";
 
 export const portfolioThemes = {
+  glassmorphism: {
+    id: "glassmorphism",
+    name: "Aura Glass",
+    description: "Ultra-sleek frosted glassmorphism with ambient glowing aurora & iridescent cards.",
+    component: GlassmorphismTheme,
+    allowedTiers: ["free", "one-time", "pro"],
+    accentPresets: ["#06b6d4", "#8b5cf6", "#10b981", "#f43f5e", "#3b82f6", "#f59e0b"],
+  },
+  techPortfolio: {
+    id: "techPortfolio",
+    name: "Tech Portfolio",
+    description: "Premium futuristic glassmorphism design for developers.",
+    component: TechPortfolioTheme,
+    allowedTiers: ["free", "one-time", "pro"],
+    accentPresets: ["#3b82f6", "#8b5cf6", "#06b6d4", "#10b981", "#f59e0b"],
+  },
   minimalDeveloper: {
     id: "minimalDeveloper",
     name: "Minimal Developer",
@@ -46,18 +63,11 @@ export const portfolioThemes = {
     allowedTiers: ["one-time", "pro"],
     accentPresets: ["#7c3aed", "#db2777", "#ea580c", "#0284c7", "#059669"],
   },
-  techPortfolio: {
-    id: "techPortfolio",
-    name: "Tech Portfolio",
-    description: "Premium futuristic glassmorphism design for developers.",
-    component: TechPortfolioTheme,
-    allowedTiers: ["free", "one-time", "pro"],
-    accentPresets: ["#3b82f6", "#8b5cf6", "#06b6d4", "#10b981", "#f59e0b"],
-  },
 };
 
 export const getPortfolioTheme = (themeId) => {
-  return portfolioThemes[themeId] || portfolioThemes.minimalDeveloper;
+  return portfolioThemes[themeId] || portfolioThemes.glassmorphism || portfolioThemes.minimalDeveloper;
 };
 
 export const portfolioThemeList = Object.values(portfolioThemes);
+
