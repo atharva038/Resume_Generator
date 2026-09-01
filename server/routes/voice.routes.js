@@ -1,8 +1,12 @@
 import express from "express";
 import {authenticateToken} from "../middleware/auth.middleware.js";
+import {audioUpload} from "../config/multer.config.js";
 // ElevenLabs DISABLED - using Sarvam AI (Production) + Chatterbox TTS (Local) + Browser TTS (Fallback)
 import * as sarvamService from "../services/sarvam.service.js";
 import * as chatterboxService from "../services/chatterbox.service.js";
+import {transcribeAudioWithAI} from "../services/openai.service.js";
+import FormData from "form-data";
+import axios from "axios";
 
 const router = express.Router();
 const unavailableVoiceHealthLogs = new Set();
@@ -213,6 +217,109 @@ router.get("/transcribe/health", authenticateToken, async (req, res) => {
     });
   }
 });
+
+/**
+ * @route   POST /api/voice/transcribe
+ * @desc    Transcribe uploaded audio file to text
+ * @access  Private
+ */
+router.post(
+  "/transcribe",
+  authenticateToken,
+  audioUpload.single("audio"),
+  async (req, res) => {
+    try {
+      const audioFile = req.file;
+      if (!audioFile) {
+        return res.status(400).json({
+          success: false,
+          error: "No audio file provided",
+        });
+      }
+
+      let transcribedText = "";
+      let provider = "none";
+
+      // 1. Try Sarvam AI STT (Saaras v3)
+      if (sarvamService.isAvailable()) {
+        try {
+          const sarvamResult = await sarvamService.speechToText(audioFile.buffer, {
+            filename: audioFile.originalname || "audio.webm",
+            mimetype: audioFile.mimetype || "audio/webm",
+            model: "saaras:v3",
+          });
+          if (sarvamResult?.text) {
+            transcribedText = sarvamResult.text;
+            provider = "sarvam";
+          }
+        } catch (sarvamErr) {
+          console.warn("⚠️ Sarvam STT failed in /api/voice/transcribe:", sarvamErr.message);
+        }
+      }
+
+      // 2. Try OpenAI Whisper Cloud Fallback
+      if (!transcribedText && process.env.OPENAI_API_KEY) {
+        try {
+          transcribedText = await transcribeAudioWithAI(audioFile.buffer, {
+            filename: audioFile.originalname || "audio.webm",
+            mimetype: audioFile.mimetype || "audio/webm",
+          });
+          if (transcribedText) {
+            provider = "openai-whisper";
+          }
+        } catch (openAiErr) {
+          console.warn("⚠️ OpenAI Whisper failed in /api/voice/transcribe:", openAiErr.message);
+        }
+      }
+
+      // 3. Try Local Whisper Microservice Fallback
+      if (!transcribedText) {
+        try {
+          const mlServiceUrl = getVoiceServiceUrl();
+          const formData = new FormData();
+          formData.append("audio", audioFile.buffer, {
+            filename: audioFile.originalname || "audio.webm",
+            contentType: audioFile.mimetype || "audio/webm",
+          });
+
+          const localRes = await axios.post(`${mlServiceUrl}/transcribe`, formData, {
+            headers: formData.getHeaders(),
+            timeout: 30000,
+          });
+
+          if (localRes.data?.success && localRes.data?.data?.text) {
+            transcribedText = localRes.data.data.text;
+            provider = "local-whisper";
+          }
+        } catch (localErr) {
+          console.warn("⚠️ Local Whisper failed in /api/voice/transcribe:", localErr.message);
+        }
+      }
+
+      if (!transcribedText) {
+        return res.status(500).json({
+          success: false,
+          error: "Failed to transcribe audio. Please ensure microphone audio is clear.",
+        });
+      }
+
+      return res.json({
+        success: true,
+        data: {
+          text: transcribedText.trim(),
+          provider,
+          wordCount: transcribedText.trim().split(/\s+/).filter(Boolean).length,
+        },
+      });
+    } catch (err) {
+      console.error("❌ Transcription error:", err);
+      return res.status(500).json({
+        success: false,
+        error: err.message || "Failed to transcribe audio",
+      });
+    }
+  }
+);
 
 /**
  * @route   GET /api/voice/tts/voices

@@ -16,6 +16,8 @@ export function useInterviewSession({
   stopLocalAudio,
   startRecording,
   cleanupAudioStreams,
+  isInterviewActiveRef: externalIsInterviewActiveRef,
+  isMutedRef: externalIsMutedRef,
 }) {
   // Config & options
   const [config, setConfig] = useState(null);
@@ -57,13 +59,15 @@ export function useInterviewSession({
 
   // Mute state
   const [isMuted, setIsMuted] = useState(false);
-  const isMutedRef = useRef(false);
+  const internalMutedRef = useRef(false);
+  const isMutedRef = externalIsMutedRef || internalMutedRef;
 
   // Critical refs
   const sessionRef = useRef(null);
   const currentQuestionRef = useRef(null);
   const startTimeRef = useRef(null);
-  const isInterviewActiveRef = useRef(false);
+  const internalActiveRef = useRef(false);
+  const isInterviewActiveRef = externalIsInterviewActiveRef || internalActiveRef;
   const isCompletingRef = useRef(false);
 
   const updateSession = (newSession) => {

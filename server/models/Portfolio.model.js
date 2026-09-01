@@ -279,6 +279,11 @@ const portfolioSchema = new mongoose.Schema(
         trim: true,
         default: "",
       },
+      favicon: {
+        type: String,
+        trim: true,
+        default: "",
+      },
     },
     settings: {
       showResumeDownload: {

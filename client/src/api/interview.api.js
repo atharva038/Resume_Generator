@@ -208,31 +208,15 @@ export const transcribeAudioOnly = async (audioFile) => {
   const formData = new FormData();
   formData.append("audio", audioFile);
 
-  console.log("📤 Transcribing audio (no evaluation):");
-  console.log(
-    "  - audioFile:",
-    audioFile.name,
-    audioFile.size,
-    "bytes",
-    audioFile.type
-  );
+  console.log("📤 Transcribing audio (no evaluation):", audioFile.name, audioFile.size, "bytes");
 
-  // Call voice service directly for transcription only
-  const voiceServiceUrl =
-    import.meta.env.VITE_VOICE_SERVICE_URL || "http://localhost:5001";
-
-  const response = await fetch(`${voiceServiceUrl}/transcribe`, {
-    method: "POST",
-    body: formData,
+  const response = await api.post("/voice/transcribe", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
   });
 
-  const data = await response.json();
-
-  if (!response.ok || !data.success) {
-    throw new Error(data.error || "Failed to transcribe audio");
-  }
-
-  return data;
+  return response.data;
 };
 
 /**

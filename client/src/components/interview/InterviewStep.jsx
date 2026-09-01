@@ -33,6 +33,8 @@ export const InterviewStep = ({
   setAnswer,
   evaluation,
   selectedMode,
+  selectedRole,
+  user,
   isRecording,
   isSubmitting,
   isPlayingAudio,
@@ -53,9 +55,13 @@ export const InterviewStep = ({
   onStartRecording,
   onStopRecording,
   onSkip,
+  onSkipQuestion,
   onAbandon,
+  onAbandonInterview,
   onStopAudio,
 }) => {
+  const handleEndMeeting = onAbandon || onAbandonInterview;
+  const handleSkip = onSkip || onSkipQuestion;
   const currentInterviewer =
     INTERVIEWER_VOICES[selectedVoice] || INTERVIEWER_VOICES.shubh;
 
@@ -235,8 +241,8 @@ export const InterviewStep = ({
           </div>
 
           <button
-            onClick={onAbandon}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-red-50 dark:bg-red-500/10 hover:bg-red-100 dark:hover:bg-red-500/20 border border-red-200 dark:border-red-500/25 text-red-700 dark:text-red-300 text-xs font-semibold transition-all hover:scale-105 active:scale-95"
+            onClick={handleEndMeeting}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-red-50 dark:bg-red-500/10 hover:bg-red-100 dark:hover:bg-red-500/20 border border-red-200 dark:border-red-500/25 text-red-700 dark:text-red-300 text-xs font-semibold transition-all hover:scale-105 active:scale-95 shadow-sm"
             title="Leave Interview"
           >
             <PhoneOff className="w-3.5 h-3.5" />
@@ -256,55 +262,62 @@ export const InterviewStep = ({
         </div>
       )}
 
-      {/* CENTER EXECUTIVE VIDEO/VOICE STAGE (Split Participant Cards) */}
-      <main className="flex-1 flex flex-col justify-center my-6 gap-6 px-6 sm:px-10 max-w-6xl mx-auto w-full">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-          {/* 1. INTERVIEWER PARTICIPANT CARD */}
-          <div
-            className={`relative rounded-2xl bg-white dark:bg-[#121420] border transition-all duration-500 p-6 flex flex-col justify-between min-h-[300px] shadow-md dark:shadow-2xl ${
+      {/* CENTER EXECUTIVE VIDEO/VOICE STAGE (Single Focused Interviewer Studio) */}
+      <main className="flex-1 flex flex-col justify-center my-6 gap-6 px-6 sm:px-10 max-w-4xl mx-auto w-full">
+        {/* INTERVIEWER STUDIO CARD */}
+        <div
+            className={`relative rounded-3xl bg-white dark:bg-[#121420] border transition-all duration-500 p-6 sm:p-8 flex flex-col justify-between min-h-[340px] shadow-lg dark:shadow-2xl ${
               isAISpeaking
-                ? "border-indigo-500 shadow-[0_4px_24px_rgba(99,102,241,0.18)] dark:shadow-[0_0_40px_rgba(99,102,241,0.15)] ring-2 ring-indigo-500/20 dark:ring-indigo-500/30"
-                : "border-slate-200/80 dark:border-white/10"
+                ? "border-indigo-500 shadow-[0_4px_30px_rgba(99,102,241,0.2)] dark:shadow-[0_0_50px_rgba(99,102,241,0.2)] ring-2 ring-indigo-500/20 dark:ring-indigo-500/30"
+                : isCandidateSpeaking
+                  ? "border-emerald-500 shadow-[0_4px_30px_rgba(16,185,129,0.2)] dark:shadow-[0_0_50px_rgba(16,185,129,0.2)] ring-2 ring-emerald-500/20 dark:ring-emerald-500/30"
+                  : "border-slate-200/80 dark:border-white/10"
             }`}
           >
-            {/* Card top: Speaker tag */}
+            {/* Card top: Speaker tag & Status */}
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2.5">
                 <div
-                  className={`w-2.5 h-2.5 rounded-full ${
+                  className={`w-3 h-3 rounded-full ${
                     isAISpeaking
-                      ? "bg-indigo-600 dark:bg-indigo-400 animate-pulse"
-                      : "bg-slate-400 dark:bg-gray-500"
+                      ? "bg-indigo-600 dark:bg-indigo-400 animate-pulse ring-4 ring-indigo-500/20"
+                      : isCandidateSpeaking
+                        ? "bg-emerald-500 animate-pulse ring-4 ring-emerald-500/20"
+                        : "bg-slate-400 dark:bg-gray-500"
                   }`}
                 />
-                <span className="text-xs font-bold text-slate-800 dark:text-gray-200">
+                <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-gray-200">
                   {currentInterviewer.name} • {currentInterviewer.title}
                 </span>
               </div>
 
               <span
-                className={`text-[11px] px-2.5 py-0.5 rounded-full font-semibold ${
+                className={`text-xs px-3 py-1 rounded-full font-semibold transition-all shadow-sm ${
                   isAISpeaking
-                    ? "bg-indigo-50 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30"
-                    : interviewPhase === "greeting"
-                      ? "bg-indigo-50 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30"
-                      : interviewPhase === "processing"
-                        ? "bg-amber-50 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30"
-                        : "bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-gray-400 border border-slate-200 dark:border-white/5"
+                    ? "bg-indigo-50 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30 font-bold"
+                    : isCandidateSpeaking
+                      ? "bg-emerald-50 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30 font-bold animate-pulse"
+                      : interviewPhase === "greeting"
+                        ? "bg-indigo-50 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30"
+                        : interviewPhase === "processing"
+                          ? "bg-amber-50 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30"
+                          : "bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-gray-400 border border-slate-200 dark:border-white/5"
                 }`}
               >
-                {isPlayingAudio || interviewPhase === "asking"
-                  ? "Speaking..."
-                  : interviewPhase === "greeting"
-                    ? "Starting Interview..."
-                    : interviewPhase === "processing"
-                      ? "Synthesizing Analysis..."
-                      : "Listening"}
+                {isAISpeaking
+                  ? "Interviewer Speaking..."
+                  : isCandidateSpeaking
+                    ? "Your Turn • Mic Active"
+                    : interviewPhase === "greeting"
+                      ? "Starting Interview..."
+                      : interviewPhase === "processing"
+                        ? "Synthesizing Analysis..."
+                        : "Listening"}
               </span>
             </div>
 
-            {/* Card Center: Bespoke Vector Graphic */}
-            <div className="flex flex-col items-center justify-center my-4">
+            {/* Card Center: Bespoke Vector Graphic with Dynamic Studio Glow */}
+            <div className="flex flex-col items-center justify-center my-6">
               <InterviewerGraphic
                 isSpeaking={isAISpeaking}
                 isThinking={interviewPhase === "processing"}
@@ -312,125 +325,74 @@ export const InterviewStep = ({
                 voice={selectedVoice}
               />
 
-              <div className="text-center mt-3">
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white">{currentInterviewer.name}</h3>
+              <div className="text-center mt-4">
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">{currentInterviewer.name}</h3>
                 <p className="text-xs text-slate-500 dark:text-gray-400">{currentInterviewer.title}</p>
               </div>
             </div>
 
-            {/* Card Bottom: Clean Soundwave Equalizer */}
-            <div className="flex items-center justify-center gap-1.5 h-9 bg-slate-50 dark:bg-black/25 rounded-xl px-4 border border-slate-200/80 dark:border-white/5">
+            {/* Card Bottom: Live Multi-State Audio Equalizer & Mic Controls */}
+            <div className="flex items-center justify-between gap-3 h-12 bg-slate-50 dark:bg-black/25 rounded-2xl px-5 border border-slate-200/80 dark:border-white/5">
               {isAISpeaking ? (
-                [16, 28, 38, 22, 42, 28, 36, 18, 32, 16, 24, 34].map((h, i) => (
-                  <div
-                    key={i}
-                    className="w-1 bg-indigo-600 dark:bg-indigo-400 rounded-full animate-pulse shadow-sm shadow-indigo-400"
-                    style={{
-                      height: `${h * 0.55}px`,
-                      animationDuration: `${0.3 + (i % 3) * 0.15}s`,
-                      animationDelay: `${i * 50}ms`,
-                    }}
-                  />
-                ))
-              ) : interviewPhase === "processing" ? (
-                <div className="flex items-center gap-2 text-amber-700 dark:text-amber-300 text-xs font-semibold">
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  <span>Evaluating technical response...</span>
-                </div>
-              ) : (
-                <div className="flex items-center gap-1 opacity-50">
-                  {[4, 4, 4, 4, 4, 4, 4, 4].map((_, i) => (
-                    <div key={i} className="w-1 h-1.5 rounded-full bg-slate-300 dark:bg-gray-600" />
+                <div className="flex items-center justify-center gap-1.5 w-full">
+                  {[16, 28, 38, 22, 42, 28, 36, 18, 32, 16, 24, 34, 20, 30, 26].map((h, i) => (
+                    <div
+                      key={i}
+                      className="w-1 bg-indigo-600 dark:bg-indigo-400 rounded-full animate-pulse shadow-sm shadow-indigo-400"
+                      style={{
+                        height: `${h * 0.55}px`,
+                        animationDuration: `${0.3 + (i % 3) * 0.15}s`,
+                        animationDelay: `${i * 45}ms`,
+                      }}
+                    />
                   ))}
-                  <span className="text-[11px] font-medium ml-1.5 text-slate-400 dark:text-gray-400">Standing by</span>
+                  <span className="text-xs font-semibold ml-3 text-indigo-600 dark:text-indigo-400">
+                    Interviewer Speaking
+                  </span>
                 </div>
-              )}
-            </div>
-          </div>
-
-          {/* 2. CANDIDATE PARTICIPANT CARD WITH REAL MICROPHONE WAVEFORM BINDING */}
-          <div
-            className={`relative rounded-2xl bg-white dark:bg-[#121420] border transition-all duration-500 p-6 flex flex-col justify-between min-h-[300px] shadow-md dark:shadow-2xl ${
-              isCandidateSpeaking
-                ? "border-emerald-500 shadow-[0_4px_24px_rgba(16,185,129,0.18)] dark:shadow-[0_0_40px_rgba(16,185,129,0.15)] ring-2 ring-emerald-500/20 dark:ring-emerald-500/30"
-                : "border-slate-200/80 dark:border-white/10"
-            }`}
-          >
-            {/* Card top: Speaker tag */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div
-                  className={`w-2.5 h-2.5 rounded-full ${
-                    isCandidateSpeaking ? "bg-emerald-600 dark:bg-emerald-400 animate-pulse" : "bg-slate-400 dark:bg-gray-500"
-                  }`}
-                />
-                <span className="text-xs font-bold text-slate-800 dark:text-gray-200">
-                  Candidate (You)
-                </span>
-              </div>
-
-              <span
-                className={`text-[11px] px-2.5 py-0.5 rounded-full font-semibold ${
-                  isCandidateSpeaking
-                    ? "bg-emerald-50 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30 font-semibold"
-                    : "bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-gray-400 border border-slate-200 dark:border-white/5"
-                }`}
-              >
-                {isCandidateSpeaking ? "Your Turn • Mic Active" : "Muted / Listening"}
-              </span>
-            </div>
-
-            {/* Card Center: Bespoke Vector Graphic bound to real audio frequency data */}
-            <div className="flex flex-col items-center justify-center my-4">
-              <CandidateGraphic
-                isSpeaking={isCandidateSpeaking}
-                isDark={isDarkMode}
-                frequencyBins={micFrequencyBins}
-              />
-
-              <div className="text-center mt-3">
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white">Full Stack Candidate</h3>
-                <p className="text-xs text-slate-500 dark:text-gray-400">Microphone Input</p>
-              </div>
-            </div>
-
-            {/* Card Bottom: Candidate Live Mic Equalizer reacting to real vocal volume */}
-            <div className="flex items-center justify-between gap-3 h-10 bg-slate-50 dark:bg-black/25 rounded-xl px-4 border border-slate-200/80 dark:border-white/5">
-              {isCandidateSpeaking ? (
+              ) : isCandidateSpeaking ? (
                 <>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2.5">
                     <Mic className="w-4 h-4 text-emerald-600 dark:text-emerald-400 animate-pulse" />
                     <div className="flex items-center gap-1">
-                      {(micFrequencyBins?.length ? micFrequencyBins : [12, 24, 16, 28, 14, 22, 16, 20]).map((h, i) => (
+                      {(micFrequencyBins?.length ? micFrequencyBins : [12, 24, 16, 28, 14, 22, 16, 20, 14, 18]).map((h, i) => (
                         <div
                           key={i}
                           className="w-1.5 bg-emerald-500 dark:bg-emerald-400 rounded-full transition-all duration-75 ease-out shadow-sm shadow-emerald-500/40"
-                          style={{ height: `${Math.max(6, Math.min(32, h * 0.75))}px` }}
+                          style={{ height: `${Math.max(6, Math.min(34, h * 0.8))}px` }}
                         />
                       ))}
                     </div>
-                    <span className="text-[11px] text-emerald-700 dark:text-emerald-300 font-bold ml-1">
-                      Live Mic Input
+                    <span className="text-xs text-emerald-700 dark:text-emerald-300 font-bold ml-1.5">
+                      Your Microphone is Live • Speak freely
                     </span>
                   </div>
 
                   <button
                     onClick={onStopRecording}
-                    className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white rounded-lg text-xs font-bold transition-all shadow-md shadow-emerald-500/20 flex items-center gap-1"
+                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-emerald-500/25 flex items-center gap-1.5 cursor-pointer"
                   >
                     <span>Done Speaking</span>
                     <span>✓</span>
                   </button>
                 </>
+              ) : interviewPhase === "processing" ? (
+                <div className="flex items-center justify-center gap-2 text-amber-700 dark:text-amber-300 text-xs font-semibold w-full">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Evaluating your technical response...</span>
+                </div>
               ) : (
-                <div className="flex items-center gap-2 text-[11px] text-slate-400 dark:text-gray-400 mx-auto">
-                  <MicOff className="w-3.5 h-3.5" />
-                  <span>Microphone will activate when interviewer finishes</span>
+                <div className="flex items-center justify-center gap-2 text-xs text-slate-400 dark:text-gray-400 w-full opacity-60">
+                  <div className="flex items-center gap-1">
+                    {[4, 4, 4, 4, 4, 4, 4, 4].map((_, i) => (
+                      <div key={i} className="w-1 h-1.5 rounded-full bg-slate-300 dark:bg-gray-600" />
+                    ))}
+                  </div>
+                  <span className="font-medium ml-1">Standing by</span>
                 </div>
               )}
             </div>
           </div>
-        </div>
 
         {/* QUESTION & LIVE TRANSCRIPT CARD */}
         <div className="bg-white dark:bg-[#121420] border border-slate-200/80 dark:border-white/10 rounded-2xl p-6 shadow-sm dark:shadow-xl">
@@ -548,7 +510,7 @@ export const InterviewStep = ({
             </button>
           )}
           <button
-            onClick={onSkip}
+            onClick={handleSkip}
             className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-xs font-bold text-white transition-all flex items-center gap-1.5 shadow-md shadow-indigo-500/20"
           >
             <ChevronRight className="w-3.5 h-3.5" />

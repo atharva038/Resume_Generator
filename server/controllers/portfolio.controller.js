@@ -589,6 +589,7 @@ export const updatePortfolio = async (req, res) => {
       profileImage,
       heroImage,
       ogImage: seo?.ogImage,
+      favicon: seo?.favicon,
     });
 
     if (urlError) {

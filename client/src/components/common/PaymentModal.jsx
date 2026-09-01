@@ -123,7 +123,7 @@ const PaymentModal = ({
         modal: {
           ondismiss: () => {
             setLoadingFalse();
-            toast.info("Payment cancelled");
+            toast("Payment cancelled", { icon: "ℹ️" });
           },
         },
         handler: async (response) => {

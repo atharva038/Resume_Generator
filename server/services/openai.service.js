@@ -1,4 +1,4 @@
-import OpenAI from "openai";
+import OpenAI, {toFile} from "openai";
 
 // Initialize OpenAI client (with fallback for missing API key)
 const openai = process.env.OPENAI_API_KEY
@@ -985,6 +985,32 @@ Return valid JSON only matching the schema:
   }, "OpenAI resume compression");
 }
 
+/**
+ * Transcribe audio using OpenAI Whisper API
+ * @param {Buffer} audioBuffer - Binary audio buffer
+ * @param {Object} [options={}] - Options (filename, mimetype, language)
+ * @returns {Promise<string>} Transcribed text
+ */
+export async function transcribeAudioWithAI(audioBuffer, options = {}) {
+  if (!openai) {
+    throw new Error("OpenAI API key not configured");
+  }
+
+  return executeWithRetry(async () => {
+    const filename = options.filename || options.originalname || "audio.webm";
+    const mimetype = options.mimetype || options.contentType || "audio/webm";
+    const file = await toFile(audioBuffer, filename, {type: mimetype});
+
+    const transcription = await openai.audio.transcriptions.create({
+      file,
+      model: "whisper-1",
+      language: options.language || "en",
+    });
+
+    return transcription.text || "";
+  }, "OpenAI audio transcription");
+}
+
 export default {
   parseResumeWithAI,
   enhanceContentWithAI,
@@ -997,5 +1023,6 @@ export default {
   chatCompletion,
   tailorResumeWithAI,
   compressResumeWithAI,
+  transcribeAudioWithAI,
 };
 

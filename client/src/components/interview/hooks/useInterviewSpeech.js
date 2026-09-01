@@ -104,10 +104,10 @@ export function useInterviewSpeech({
       speechRunRef.current = speechRunId;
 
       const isCurrentSpeech = () =>
-        speechRunRef.current === speechRunId && isInterviewActiveRef.current;
+        speechRunRef.current === speechRunId;
 
       const completeSpeech = () => {
-        if (!isCurrentSpeech()) return;
+        if (speechRunRef.current !== speechRunId) return;
         setIsPlayingAudio(false);
         setIsSpeaking(false);
         if (onComplete) onComplete();
@@ -130,6 +130,10 @@ export function useInterviewSpeech({
           throw new Error("Empty audio response from TTS service");
         }
 
+        if (audioBlob.type && audioBlob.type.includes("json")) {
+          throw new Error("TTS service returned non-audio response");
+        }
+
         if (!isCurrentSpeech()) return;
 
         const audioUrl = URL.createObjectURL(audioBlob);
@@ -138,16 +142,12 @@ export function useInterviewSpeech({
         audioElementRef.current = audio;
         setAudioRef(audio);
 
-        await new Promise((resolve, reject) => {
-          audio.onplay = () => {
-            if (isCurrentSpeech()) {
-              setIsPlayingAudio(true);
-              setIsSpeaking(true);
-              setInterviewPhase("asking");
-            }
-          };
-
-          audio.onended = () => {
+        await new Promise((resolve) => {
+          let hasResolved = false;
+          const finish = () => {
+            if (hasResolved) return;
+            hasResolved = true;
+            clearTimeout(safetyTimer);
             URL.revokeObjectURL(audioUrl);
             if (audioElementRef.current === audio) {
               audioElementRef.current = null;
@@ -156,16 +156,28 @@ export function useInterviewSpeech({
             resolve();
           };
 
-          audio.onerror = (e) => {
-            URL.revokeObjectURL(audioUrl);
-            if (audioElementRef.current === audio) {
-              audioElementRef.current = null;
-              setAudioRef(null);
+          const wordCount = chunkText.split(/\s+/).filter(Boolean).length;
+          const chunkMaxDurationMs = Math.max(4000, (wordCount / 100) * 60 * 1000 + 2500);
+          const safetyTimer = setTimeout(finish, chunkMaxDurationMs);
+
+          audio.onplay = () => {
+            if (isCurrentSpeech()) {
+              setIsPlayingAudio(true);
+              setIsSpeaking(true);
+              setInterviewPhase("asking");
             }
-            reject(new Error("Audio playback failed"));
           };
 
-          audio.play().catch(reject);
+          audio.onended = finish;
+          audio.onerror = (e) => {
+            console.warn("⚠️ Audio chunk error, proceeding:", e);
+            finish();
+          };
+
+          audio.play().catch((playErr) => {
+            console.warn("⚠️ Audio autoplay blocked or failed, proceeding:", playErr.message);
+            finish();
+          });
         });
       };
 
@@ -197,7 +209,7 @@ export function useInterviewSpeech({
             });
           }
 
-          if (!currentBlob || !(currentBlob instanceof Blob) || currentBlob.size === 0) {
+          if (!currentBlob || !(currentBlob instanceof Blob) || currentBlob.size === 0 || currentBlob.type?.includes("json")) {
             continue;
           }
 
@@ -249,7 +261,7 @@ export function useInterviewSpeech({
         }
 
         try {
-          if (serverTtsAvailable || voiceEngine === "sarvam" || voiceEngine === "auto") {
+          if (voiceEngine !== "browser" && (serverTtsAvailable || voiceEngine === "sarvam" || voiceEngine === "auto")) {
             await playPipelinedTts();
             return;
           }
@@ -259,7 +271,28 @@ export function useInterviewSpeech({
 
         if ("speechSynthesis" in window) {
           return new Promise((resolve) => {
+            try {
+              window.speechSynthesis.cancel();
+              window.speechSynthesis.resume();
+            } catch (_) {}
+
             const utterance = new SpeechSynthesisUtterance(text);
+            let hasCompleted = false;
+
+            const safeDone = () => {
+              if (hasCompleted) return;
+              hasCompleted = true;
+              clearTimeout(safetyTimer);
+              if (isCurrentSpeech()) {
+                completeSpeech();
+              }
+              resolve();
+            };
+
+            const wordCount = text.split(/\s+/).filter(Boolean).length;
+            const maxSpeechTimeMs = Math.max(4000, (wordCount / 120) * 60 * 1000 + 2000);
+            const safetyTimer = setTimeout(safeDone, maxSpeechTimeMs);
+
             utterance.onstart = () => {
               if (isCurrentSpeech()) {
                 setIsPlayingAudio(true);
@@ -285,27 +318,12 @@ export function useInterviewSpeech({
             }
 
             if (matchedVoice) utterance.voice = matchedVoice;
-            utterance.rate = isMale ? 0.92 : 0.96;
-            utterance.pitch = isMale ? 0.9 : 1.05;
+            utterance.rate = isMale ? 0.95 : 0.98;
+            utterance.pitch = isMale ? 0.95 : 1.05;
             utterance.volume = 1.0;
 
-            utterance.onend = () => {
-              if (!isCurrentSpeech()) {
-                resolve();
-                return;
-              }
-              completeSpeech();
-              resolve();
-            };
-
-            utterance.onerror = (e) => {
-              if (!isCurrentSpeech()) {
-                resolve();
-                return;
-              }
-              completeSpeech();
-              resolve();
-            };
+            utterance.onend = safeDone;
+            utterance.onerror = safeDone;
 
             window.speechSynthesis.speak(utterance);
           });
