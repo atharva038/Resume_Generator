@@ -78,6 +78,29 @@ const VARIABLE_METADATA = {
     testable: "sarvam",
     icon: "sarvam",
   },
+  VOICE_ENGINE_PREFERENCE: {
+    category: "AI & Intelligence",
+    label: "Default Voice Engine Preference",
+    description: "Default voice engine: 'auto' (hybrid), 'sarvam' (cloud), or 'local' (Whisper + Chatterbox)",
+    isSensitive: false,
+    icon: "voice",
+  },
+  VOICE_SERVICE_URL: {
+    category: "AI & Intelligence",
+    label: "Local Whisper STT Service URL",
+    description: "URL for offline local speech-to-text Python microservice (default: http://localhost:5001)",
+    isSensitive: false,
+    testable: "whisper",
+    icon: "voice",
+  },
+  CHATTERBOX_SERVICE_URL: {
+    category: "AI & Intelligence",
+    label: "Local Chatterbox TTS Service URL",
+    description: "URL for offline local text-to-speech Python microservice (default: http://localhost:5002)",
+    isSensitive: false,
+    testable: "chatterbox",
+    icon: "voice",
+  },
   ELEVENLABS_API_KEY: {
     category: "AI & Intelligence",
     label: "ElevenLabs API Key",
@@ -854,6 +877,36 @@ export const testApiKey = async (req, res) => {
           service: "Email SMTP",
           latencyMs: latency,
           message: `SMTP connection established successfully for ${user}!`,
+        });
+      }
+
+      case "whisper": {
+        const urlToTest = apiKey || process.env.VOICE_SERVICE_URL || "http://localhost:5001";
+        const cleanUrl = urlToTest.trim().replace(/\/$/, "");
+        const response = await axios.get(`${cleanUrl}/health`, { timeout: 4000 });
+        const latency = Date.now() - startTime;
+
+        return res.json({
+          success: true,
+          service: "Local Whisper STT",
+          latencyMs: latency,
+          message: `Whisper microservice is ONLINE and responding at ${cleanUrl}!`,
+          data: response.data,
+        });
+      }
+
+      case "chatterbox": {
+        const urlToTest = apiKey || process.env.CHATTERBOX_SERVICE_URL || "http://localhost:5002";
+        const cleanUrl = urlToTest.trim().replace(/\/$/, "");
+        const response = await axios.get(`${cleanUrl}/health`, { timeout: 4000 });
+        const latency = Date.now() - startTime;
+
+        return res.json({
+          success: true,
+          service: "Local Chatterbox TTS",
+          latencyMs: latency,
+          message: `Chatterbox microservice is ONLINE and responding at ${cleanUrl}!`,
+          data: response.data,
         });
       }
 

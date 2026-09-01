@@ -69,34 +69,26 @@ export const submitAnswer = async (sessionId, {answer, questionNumber}) => {
 export const submitVoiceAnswer = async (
   sessionId,
   audioFile,
-  questionNumber
+  questionNumber,
+  options = {}
 ) => {
   const formData = new FormData();
   formData.append("audio", audioFile);
   formData.append("questionNumber", questionNumber.toString());
 
-  console.log("📤 Submitting voice answer:");
-  console.log("  - sessionId:", sessionId);
-  console.log(
-    "  - audioFile:",
-    audioFile.name,
-    audioFile.size,
-    "bytes",
-    audioFile.type
-  );
-  console.log("  - questionNumber:", questionNumber);
-
-  // Verify FormData contents
-  console.log("  - FormData contents:");
-  for (let [key, value] of formData.entries()) {
-    if (value instanceof File) {
-      console.log(
-        `    ${key}: File(${value.name}, ${value.size} bytes, ${value.type})`
-      );
-    } else {
-      console.log(`    ${key}: ${value}`);
-    }
+  const engine = typeof options === "string" ? options : options?.voiceEngine || options?.engine;
+  if (engine) {
+    formData.append("voiceEngine", engine);
   }
+
+  console.log("📤 Submitting voice answer:", {
+    sessionId,
+    fileName: audioFile.name,
+    size: audioFile.size,
+    type: audioFile.type,
+    questionNumber,
+    voiceEngine: engine || "auto",
+  });
 
   // Use fetch API directly for FormData - axios has issues with multipart
   const token = localStorage.getItem("token");
@@ -108,7 +100,6 @@ export const submitVoiceAnswer = async (
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
-        // Don't set Content-Type - browser will set it with boundary for FormData
       },
       body: formData,
     }
@@ -260,10 +251,18 @@ export const checkTTSAvailability = async () => {
  * @param {string} [preset] - Optional voice preset (warm, question, acknowledgment, etc.)
  * @returns {Promise<Blob>} Audio blob (audio/mpeg)
  */
-export const synthesizeSpeech = async (text, voiceId, preset) => {
+export const synthesizeSpeech = async (text, optionsOrVoiceId = {}, preset) => {
+  let payload = { text };
+  if (typeof optionsOrVoiceId === "string") {
+    payload.voiceId = optionsOrVoiceId;
+    if (preset) payload.preset = preset;
+  } else if (typeof optionsOrVoiceId === "object") {
+    payload = { ...payload, ...optionsOrVoiceId };
+  }
+
   const response = await api.post(
     "/voice/tts/synthesize",
-    {text, voiceId, preset},
+    payload,
     {responseType: "blob"}
   );
   return response.data; // Returns Blob directly

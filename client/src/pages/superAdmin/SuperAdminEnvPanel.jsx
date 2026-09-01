@@ -965,6 +965,116 @@ export default function SuperAdminEnvPanel() {
                 </div>
               </div>
 
+              {/* Local Whisper STT Card */}
+              <div className="p-5 rounded-2xl bg-zinc-900/80 border border-zinc-800/80 flex flex-col justify-between space-y-4">
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-black text-white flex items-center gap-2">
+                      <Radio className="w-4 h-4 text-emerald-400" />
+                      Local Whisper STT
+                    </span>
+                    <span className="text-[10px] font-mono bg-zinc-800 px-2 py-0.5 rounded-full text-zinc-400">
+                      port 5001
+                    </span>
+                  </div>
+                  <p className="text-xs text-zinc-400">
+                    Offline speech-to-text Python microservice running on localhost.
+                  </p>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="text-[11px] font-mono text-zinc-500 truncate">
+                    URL: {variablesMap["VOICE_SERVICE_URL"] || "http://localhost:5001"}
+                  </div>
+
+                  <button
+                    onClick={() => handleTestKey("whisper")}
+                    disabled={testingService === "whisper"}
+                    className="w-full py-2.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500 text-emerald-400 hover:text-zinc-950 border border-emerald-500/20 text-xs font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-40"
+                  >
+                    {testingService === "whisper" ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Zap className="w-3.5 h-3.5" />
+                    )}
+                    <span>Ping Whisper Service</span>
+                  </button>
+
+                  {testResults["whisper"] && (
+                    <div
+                      className={`p-3 rounded-xl text-xs font-mono ${
+                        testResults["whisper"].success
+                          ? "bg-emerald-500/10 border border-emerald-500/20 text-emerald-300"
+                          : "bg-rose-500/10 border border-rose-500/20 text-rose-300"
+                      }`}
+                    >
+                      <div className="flex justify-between font-bold">
+                        <span>{testResults["whisper"].success ? "ONLINE" : "OFFLINE"}</span>
+                        <span>{testResults["whisper"].latencyMs}ms</span>
+                      </div>
+                      <p className="text-[11px] mt-1 text-zinc-400">
+                        {testResults["whisper"].message || testResults["whisper"].error}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Local Chatterbox TTS Card */}
+              <div className="p-5 rounded-2xl bg-zinc-900/80 border border-zinc-800/80 flex flex-col justify-between space-y-4">
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-black text-white flex items-center gap-2">
+                      <Radio className="w-4 h-4 text-purple-400" />
+                      Local Chatterbox TTS
+                    </span>
+                    <span className="text-[10px] font-mono bg-zinc-800 px-2 py-0.5 rounded-full text-zinc-400">
+                      port 5002
+                    </span>
+                  </div>
+                  <p className="text-xs text-zinc-400">
+                    Offline text-to-speech Python microservice running on localhost.
+                  </p>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="text-[11px] font-mono text-zinc-500 truncate">
+                    URL: {variablesMap["CHATTERBOX_SERVICE_URL"] || "http://localhost:5002"}
+                  </div>
+
+                  <button
+                    onClick={() => handleTestKey("chatterbox")}
+                    disabled={testingService === "chatterbox"}
+                    className="w-full py-2.5 rounded-xl bg-purple-500/10 hover:bg-purple-500 text-purple-400 hover:text-zinc-950 border border-purple-500/20 text-xs font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-40"
+                  >
+                    {testingService === "chatterbox" ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Zap className="w-3.5 h-3.5" />
+                    )}
+                    <span>Ping Chatterbox Service</span>
+                  </button>
+
+                  {testResults["chatterbox"] && (
+                    <div
+                      className={`p-3 rounded-xl text-xs font-mono ${
+                        testResults["chatterbox"].success
+                          ? "bg-emerald-500/10 border border-emerald-500/20 text-emerald-300"
+                          : "bg-rose-500/10 border border-rose-500/20 text-rose-300"
+                      }`}
+                    >
+                      <div className="flex justify-between font-bold">
+                        <span>{testResults["chatterbox"].success ? "ONLINE" : "OFFLINE"}</span>
+                        <span>{testResults["chatterbox"].latencyMs}ms</span>
+                      </div>
+                      <p className="text-[11px] mt-1 text-zinc-400">
+                        {testResults["chatterbox"].message || testResults["chatterbox"].error}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
               {/* Razorpay Card */}
               <div className="p-5 rounded-2xl bg-zinc-900/80 border border-zinc-800/80 flex flex-col justify-between space-y-4">
                 <div>
