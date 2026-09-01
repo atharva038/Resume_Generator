@@ -134,6 +134,15 @@ const ResumePreview = forwardRef(
 
     const SelectedTemplate = templates[template] || ClassicTemplate;
     const twoPageMode = numberOfPages > 1;
+    const layoutSettings = resumeData.layoutSettings || {};
+    const layoutStyle = {
+      "--resume-layout-top": layoutSettings.pagePaddingTop || "0.5in",
+      "--resume-layout-side": layoutSettings.pagePadding || "0.5in",
+      "--resume-layout-bottom": layoutSettings.pagePaddingBottom || "0.5in",
+      "--resume-layout-scale": String(Number(layoutSettings.fontScale || 100) / 100),
+      "--resume-layout-spacing": String(Number(layoutSettings.sectionSpacing || 100) / 100),
+      "--resume-layout-font-family": layoutSettings.fontFamily || "Arial, Helvetica, sans-serif",
+    };
 
     const handlePrint = useReactToPrint({
       contentRef: printTemplateRef,
@@ -262,7 +271,7 @@ const ResumePreview = forwardRef(
 
     return (
       <>
-        <div className="flex flex-col resume-preview">
+        <div className="flex min-w-0 max-w-full flex-col resume-preview">
           {/* Download Button */}
           <div className="mb-4 no-print flex-shrink-0">
             <button
@@ -279,7 +288,7 @@ const ResumePreview = forwardRef(
 
           {/* Scroll container — PDF viewer style */}
           <div
-            className="bg-zinc-200 dark:bg-zinc-900 rounded-xl overflow-y-auto overflow-x-hidden"
+            className="min-w-0 max-w-full bg-zinc-200 dark:bg-zinc-900 rounded-xl overflow-y-auto overflow-x-hidden"
             style={{
               maxHeight: isMobile ? "500px" : "calc(100vh - 15rem)",
               padding: isMobile ? "0.75rem" : "1.25rem",
@@ -349,15 +358,17 @@ const ResumePreview = forwardRef(
                             pageBreakInside: twoPageMode ? "auto" : "avoid",
                           }}
                         >
-                          <SelectedTemplate
-                            resumeData={resumeData}
-                            twoPageMode={twoPageMode}
-                            onPageUsageChange={
-                              pageIndex === 0
-                                ? handlePageUsageChange
-                                : () => {}
-                            }
-                          />
+                          <div className="resume-layout-shell" style={layoutStyle}>
+                            <SelectedTemplate
+                              resumeData={resumeData}
+                              twoPageMode={twoPageMode}
+                              onPageUsageChange={
+                                pageIndex === 0
+                                  ? handlePageUsageChange
+                                  : () => {}
+                              }
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -386,11 +397,13 @@ const ResumePreview = forwardRef(
             className="bg-white dark:bg-gray-50 shadow-2xl"
             style={{width: "210mm", minHeight: "11in", height: "auto"}}
           >
-            <SelectedTemplate
-              resumeData={resumeData}
-              twoPageMode={twoPageMode}
-              onPageUsageChange={handlePageUsageChange}
-            />
+            <div className="resume-layout-shell" style={layoutStyle}>
+              <SelectedTemplate
+                resumeData={resumeData}
+                twoPageMode={twoPageMode}
+                onPageUsageChange={handlePageUsageChange}
+              />
+            </div>
           </div>
         </FullPreviewModal>
 
@@ -407,13 +420,14 @@ const ResumePreview = forwardRef(
             opacity: 0,
           }}
         >
-          <SelectedTemplate
-            ref={printTemplateRef}
-            resumeData={resumeData}
-            twoPageMode={false}
-            printMode={template === "professional-v2"}
-            onPageUsageChange={() => {}}
-          />
+          <div ref={printTemplateRef} className="resume-layout-shell" style={layoutStyle}>
+            <SelectedTemplate
+              resumeData={resumeData}
+              twoPageMode={false}
+              printMode={template === "professional-v2"}
+              onPageUsageChange={() => {}}
+            />
+          </div>
         </div>
       </>
     );

@@ -6,6 +6,15 @@
 @tailwind utilities;
 
 @layer base {
+  html,
+  body,
+  #root {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    overflow-x: clip;
+  }
+
   body {
     @apply bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors;
   }
@@ -103,9 +112,86 @@
     animation: slideUp 0.4s ease-out;
   }
 
-  .animate-shimmer {
+.animate-shimmer {
     animation: shimmer 3s infinite;
   }
+}
+
+@keyframes aiSectionAdded {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+  25% { transform: scale(1.01); box-shadow: 0 0 0 5px rgba(16, 185, 129, 0.28); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.animate-ai-section-added {
+  animation: aiSectionAdded 1.35s ease-out;
+  border-radius: 0.75rem;
+}
+
+/* Shared layout controls. The shell sits around every available resume
+   template, so a user's page margins and scale stay consistent after changing
+   templates and when the resume is printed. */
+.resume-layout-shell {
+  width: 210mm;
+  min-height: 11in;
+  background: #fff;
+}
+
+.resume-layout-shell > * {
+  box-sizing: border-box !important;
+  width: calc(210mm / var(--resume-layout-scale)) !important;
+  min-height: calc(11in / var(--resume-layout-scale)) !important;
+  padding: var(--resume-layout-top) var(--resume-layout-side) var(--resume-layout-bottom) !important;
+  zoom: var(--resume-layout-scale);
+}
+
+.resume-layout-shell,
+.resume-layout-shell * {
+  font-family: var(--resume-layout-font-family) !important;
+}
+
+.resume-layout-shell section {
+  margin-bottom: calc(10px * var(--resume-layout-spacing)) !important;
+}
+
+@media print {
+  html,
+  body,
+  #root {
+    overflow: visible !important;
+  }
+
+  .resume-layout-shell {
+    width: 210mm !important;
+    min-height: 297mm !important;
+  }
+}
+
+@keyframes aiAddedFloat {
+  0% { opacity: 0; transform: translate(-50%, 14px) scale(0.92); }
+  18% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  78% { opacity: 1; transform: translate(-50%, -32px) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -48px) scale(0.98); }
+}
+
+.ai-added-float {
+  position: absolute;
+  z-index: 20;
+  left: 50%;
+  top: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  max-width: calc(100% - 2rem);
+  padding: 0.55rem 0.8rem;
+  border-radius: 9999px;
+  background: #059669;
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  box-shadow: 0 10px 25px rgba(5, 150, 105, 0.35);
+  pointer-events: none;
+  animation: aiAddedFloat 1.8s ease-out forwards;
 }
 
 #mobile-resume-print-root {

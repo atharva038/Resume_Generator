@@ -42,6 +42,7 @@ import {
   Target,
   Trophy,
   User,
+  SlidersHorizontal,
   X,
 } from "lucide-react";
 import {
@@ -72,6 +73,7 @@ import {TEMPLATES, TEMPLATE_COLOR_THEMES} from "@/components/editor/templateConf
 
 // Default section order (only editable resume sections)
 const DEFAULT_SECTION_ORDER = [
+  "layout",
   "personal",
   "summary",
   "skills",
@@ -84,6 +86,7 @@ const DEFAULT_SECTION_ORDER = [
 ];
 
 const SECTION_META = {
+  layout: {label: "Resume Layout", icon: SlidersHorizontal},
   personal: {label: "Personal Info", icon: User},
   summary: {label: "Summary", icon: FileText},
   skills: {label: "Skills", icon: Target},
@@ -93,6 +96,98 @@ const SECTION_META = {
   certifications: {label: "Certifications", icon: ScrollText},
   achievements: {label: "Achievements", icon: Trophy},
   customSections: {label: "Custom Sections", icon: PenSquare},
+};
+
+const LAYOUT_DEFAULTS = {
+  fontScale: 100,
+  fontFamily: "Arial, Helvetica, sans-serif",
+  pagePadding: "0.5in",
+  pagePaddingTop: "0.5in",
+  pagePaddingBottom: "0.5in",
+  sectionSpacing: 100,
+  contactLayout: "center-inline",
+};
+
+const ResumeLayoutControls = ({resumeData, onChange}) => {
+  const settings = {...LAYOUT_DEFAULTS, ...(resumeData.layoutSettings || {})};
+  const update = (field, value) => onChange({...settings, [field]: value});
+  const marginValue = (value) => Number.parseFloat(value) || 0.5;
+  const updateMargin = (field, value) => update(field, `${Math.min(1, Math.max(0.25, Number(value))).toFixed(2)}in`);
+  const marginPercent = (value) => Math.min(12, Math.max(2, (Number.parseFloat(value) / 11) * 100));
+  const topSpace = marginPercent(settings.pagePaddingTop);
+  const bottomSpace = marginPercent(settings.pagePaddingBottom);
+  const options = [
+    ["center-inline", "Centered inline"],
+    ["center-stacked", "Centered stacked"],
+    ["left-inline", "Left aligned"],
+  ];
+
+  return (
+    <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
+      <div className="flex items-start gap-3">
+        <div className="rounded-lg border border-gray-200 bg-gray-50 p-2 text-gray-700 dark:border-zinc-700 dark:bg-zinc-900 dark:text-gray-200">
+          <SlidersHorizontal className="h-4 w-4" />
+        </div>
+        <div>
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Resume layout</h3>
+          <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">These settings are saved with this resume and included in its PDF.</p>
+        </div>
+      </div>
+      <div className="mt-4 grid min-w-0 grid-cols-1 gap-4 lg:grid-cols-2">
+        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          Resume font
+          <select value={settings.fontFamily} onChange={(e) => update("fontFamily", e.target.value)} className="mt-2 h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm font-normal text-gray-900 outline-none transition focus:border-gray-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-gray-100">
+            <option value="Arial, Helvetica, sans-serif">Arial</option>
+            <option value="Calibri, Arial, sans-serif">Calibri</option>
+            <option value="'Times New Roman', Times, serif">Times New Roman</option>
+            <option value="Georgia, 'Times New Roman', serif">Georgia</option>
+            <option value="Garamond, Georgia, serif">Garamond</option>
+          </select>
+        </label>
+        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          Text size <span className="float-right tabular-nums text-gray-500">{settings.fontScale}%</span>
+          <input type="range" min="85" max="115" step="1" value={settings.fontScale} onChange={(e) => update("fontScale", Number(e.target.value))} className="mt-2 h-1.5 w-full cursor-pointer accent-gray-900 dark:accent-white" />
+        </label>
+        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          Section spacing <span className="float-right tabular-nums text-gray-500">{settings.sectionSpacing}%</span>
+          <input type="range" min="70" max="140" step="5" value={settings.sectionSpacing} onChange={(e) => update("sectionSpacing", Number(e.target.value))} className="mt-2 h-1.5 w-full cursor-pointer accent-gray-900 dark:accent-white" />
+        </label>
+        {[['pagePadding', 'Side margins'], ['pagePaddingTop', 'Top margin'], ['pagePaddingBottom', 'Footer / bottom margin']].map(([field, label]) => (
+          <label key={field} className="min-w-0 text-sm font-medium text-gray-700 dark:text-gray-300">
+            <span className="flex min-w-0 items-center justify-between gap-2"><span className="truncate">{label}</span>
+            <span className="flex shrink-0 items-center gap-1 text-xs font-semibold text-gray-500 dark:text-gray-400">
+              <input type="number" min="0.25" max="1" step="0.05" value={marginValue(settings[field])} onChange={(e) => updateMargin(field, e.target.value)} className="h-7 w-14 rounded border border-gray-300 bg-white px-1.5 text-right text-xs text-gray-900 outline-none focus:border-gray-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-gray-100" /> in
+            </span></span>
+            <input type="range" min="0.25" max="1" step="0.05" value={marginValue(settings[field])} onChange={(e) => updateMargin(field, e.target.value)} className="mt-3 h-1.5 w-full cursor-pointer accent-gray-900 dark:accent-white" />
+          </label>
+        ))}
+        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          Contact and links
+          <select value={settings.contactLayout} onChange={(e) => update("contactLayout", e.target.value)} className="mt-2 h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm font-normal text-gray-900 outline-none transition focus:border-gray-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-gray-100">
+            {options.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+          </select>
+        </label>
+      </div>
+      <div className="mt-5 rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/60">
+        <div className="mb-2 flex items-center justify-between text-xs">
+          <span className="font-semibold text-gray-700 dark:text-gray-200">Page-space guide</span>
+          <span className="text-gray-500 dark:text-gray-400">A4 preview</span>
+        </div>
+        <div className="mx-auto flex h-28 w-20 flex-col overflow-hidden rounded-sm border border-gray-300 bg-white shadow-sm dark:border-zinc-600">
+          <div className="bg-blue-100/80 dark:bg-blue-950/50" style={{height: `${topSpace}%`}} />
+          <div className="flex-1 border-y border-dashed border-gray-200 bg-white px-2 py-2 dark:border-zinc-700 dark:bg-zinc-950">
+            <div className="h-1 w-8 bg-gray-300 dark:bg-zinc-600" />
+            <div className="mt-2 h-1 w-full bg-gray-200 dark:bg-zinc-700" />
+            <div className="mt-1 h-1 w-10 bg-gray-200 dark:bg-zinc-700" />
+          </div>
+          <div className="bg-blue-100/80 dark:bg-blue-950/50" style={{height: `${bottomSpace}%`}} />
+        </div>
+        <div className="mt-2 flex justify-center gap-3 text-[11px] text-gray-500 dark:text-gray-400">
+          <span>Top {settings.pagePaddingTop}</span><span>Side {settings.pagePadding}</span><span>Footer {settings.pagePaddingBottom}</span>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 const SectionOutlineList = memo(
@@ -402,6 +497,9 @@ const Editor = () => {
     return false;
   };
   const [resumeData, setResumeData] = useState(null);
+  const [aiUpdatedSection, setAiUpdatedSection] = useState(null);
+  const [aiAddedMessage, setAiAddedMessage] = useState("");
+  const [aiSuggestions, setAiSuggestions] = useState([]);
   const [originalResumeData, setOriginalResumeData] = useState(null); // Track original data
   const [showPreview, togglePreview, setShowPreviewTrue, setShowPreviewFalse] =
     useToggle(false);
@@ -426,6 +524,16 @@ const Editor = () => {
     "resumeSectionOrder",
     DEFAULT_SECTION_ORDER
   );
+  // Older saved resumes predate the layout section. Add it once and keep it at
+  // the top so styling controls are available before content editing.
+  useEffect(() => {
+    if (!sectionOrder.includes("layout") || sectionOrder[0] !== "layout") {
+      setSectionOrder((currentOrder) => [
+        "layout",
+        ...currentOrder.filter((section) => section !== "layout"),
+      ]);
+    }
+  }, [sectionOrder, setSectionOrder]);
   const [activeSectionId, setActiveSectionId] = useState(
     DEFAULT_SECTION_ORDER[0]
   );
@@ -816,6 +924,54 @@ const Editor = () => {
     });
   };
 
+  // AI suggestions are previewed first; this applies only the one the user chose.
+  const handleApplyAiSuggestion = async (suggestion) => {
+    if (isReadOnlyResume) return false;
+
+    if (suggestion.section === "contact") {
+      setResumeData((prev) => ({
+        ...prev,
+        contact: {...(prev.contact || {}), ...suggestion.value},
+      }));
+    } else if (suggestion.section === "name") {
+      updateField("name", suggestion.value);
+    } else if (suggestion.section === "summary") {
+      updateField("summary", suggestion.value);
+    } else if (suggestion.section === "skills") {
+      updateField("skills", suggestion.value);
+    } else if (suggestion.fieldPatch) {
+      setResumeData((prev) => {
+        const items = [...(prev[suggestion.section] || [])];
+        items[suggestion.index] = {...items[suggestion.index], ...suggestion.value};
+        return {...prev, [suggestion.section]: items};
+      });
+    } else if (
+      ["experience", "education", "projects"].includes(suggestion.section) &&
+      suggestion.isStarter
+    ) {
+      addArrayItem(suggestion.section, suggestion.value);
+    } else if (["experience", "projects"].includes(suggestion.section)) {
+      updateArrayItem(suggestion.section, suggestion.index, "bullets", suggestion.value);
+    } else {
+      return false;
+    }
+
+    const targetSection = suggestion.targetSection || suggestion.section;
+    setAiUpdatedSection(targetSection);
+    setAiAddedMessage(`${suggestion.label} added`);
+    setTimeout(() => {
+      sectionElementRefs.current[targetSection]?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }, 50);
+    setTimeout(() => {
+      setAiUpdatedSection(null);
+      setAiAddedMessage("");
+    }, 1800);
+    return true;
+  };
+
   const addArrayItem = (section, template) => {
     if (isReadOnlyResume) return;
     setResumeData((prev) => ({
@@ -1123,134 +1279,6 @@ const Editor = () => {
     }
   };
 
-  // Enhance all sections with AI
-  const handleEnhanceAll = async (customPrompt = "") => {
-    const confirmMessage = customPrompt
-      ? `Apply AI enhancement with your custom instructions?\n\n"${customPrompt}"\n\nThis will improve your summary, experience bullets, and project descriptions.`
-      : "Apply AI enhancement to all sections? This will improve your summary, experience bullets, and project descriptions with action verbs and metrics.";
-
-    if (!window.confirm(confirmMessage)) {
-      return;
-    }
-
-    const enhancements = [];
-    let successCount = 0;
-    let failCount = 0;
-
-    try {
-      // Enhance summary
-      if (resumeData.summary) {
-        const oldSummary = resumeData.summary;
-        enhancements.push(
-          resumeAPI
-            .enhance(oldSummary, "summary", resumeData, customPrompt)
-            .then((response) => {
-              const enhanced = response.data.enhanced;
-              updateField("summary", enhanced);
-              successCount++;
-              return {section: "summary", success: true};
-            })
-            .catch((err) => {
-              failCount++;
-              return {section: "summary", success: false, error: err.message};
-            })
-        );
-      }
-
-      // Enhance experience bullets
-      if (resumeData.experience && resumeData.experience.length > 0) {
-        resumeData.experience.forEach((exp, index) => {
-          if (exp.bullets && exp.bullets.length > 0) {
-            const oldBullets = [...exp.bullets];
-            enhancements.push(
-              resumeAPI
-                .enhance(oldBullets, "experience", resumeData, customPrompt)
-                .then((response) => {
-                  const enhanced = response.data.enhanced;
-                  const bullets = Array.isArray(enhanced)
-                    ? enhanced
-                    : [enhanced];
-                  updateArrayItem("experience", index, "bullets", bullets);
-                  successCount++;
-                  return {section: `experience-${index}`, success: true};
-                })
-                .catch((err) => {
-                  failCount++;
-                  return {
-                    section: `experience-${index}`,
-                    success: false,
-                    error: err.message,
-                  };
-                })
-            );
-          }
-        });
-      }
-
-      // Enhance project bullets
-      if (resumeData.projects && resumeData.projects.length > 0) {
-        resumeData.projects.forEach((project, index) => {
-          if (project.bullets && project.bullets.length > 0) {
-            const oldBullets = [...project.bullets];
-            enhancements.push(
-              resumeAPI
-                .enhance(oldBullets, "project", resumeData, customPrompt)
-                .then((response) => {
-                  const enhanced = response.data.enhanced;
-                  const bullets = Array.isArray(enhanced)
-                    ? enhanced
-                    : [enhanced];
-                  updateArrayItem("projects", index, "bullets", bullets);
-                  successCount++;
-                  return {section: `project-${index}`, success: true};
-                })
-                .catch((err) => {
-                  failCount++;
-                  return {
-                    section: `project-${index}`,
-                    success: false,
-                    error: err.message,
-                  };
-                })
-            );
-          }
-        });
-      }
-
-      // Wait for all enhancements to complete
-      await Promise.all(enhancements);
-
-      if (failCount === 0) {
-        toast.success(
-          `All sections enhanced successfully! (${successCount} sections improved)`,
-          {
-            duration: 3000,
-          }
-        );
-      } else {
-        // react-hot-toast doesn't have toast.warning, use toast with custom styling
-        toast(
-          `Enhancement completed with some issues: ${successCount} enhanced, ${failCount} failed`,
-          {
-            duration: 4000,
-            style: {
-              background: "#FEF3C7",
-              color: "#92400E",
-              border: "1px solid #F59E0B",
-            },
-          }
-        );
-      }
-    } catch (err) {
-      toast.error(
-        "Enhancement failed: " + (err.response?.data?.error || err.message),
-        {
-          duration: 4000,
-        }
-      );
-    }
-  };
-
   useEffect(() => {
     if (isWizardMode) return;
 
@@ -1281,7 +1309,7 @@ const Editor = () => {
   }, [isWizardMode, sectionOrder]);
 
   const isTrackableSection = useCallback(
-    (sectionId) => Boolean(SECTION_META[sectionId]),
+    (sectionId) => sectionId !== "layout" && Boolean(SECTION_META[sectionId]),
     []
   );
 
@@ -1329,7 +1357,7 @@ const Editor = () => {
 
         const firstIncompleteSectionId = sectionOrder.find(
           (sectionId) =>
-            SECTION_META[sectionId] &&
+            sectionId !== "layout" && SECTION_META[sectionId] &&
             !isSectionCompleteForResume(sectionId, resumeData)
         );
 
@@ -1376,6 +1404,26 @@ const Editor = () => {
   // Render section based on section ID
   const renderSection = (sectionId) => {
     const sections = {
+      layout: (
+        <CollapsibleSection
+          key="layout"
+          sectionId="layout"
+          title="Resume Layout"
+          icon={<SlidersHorizontal className="w-5 h-5" />}
+          defaultExpanded={true}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+          isDragging={draggedSection === "layout"}
+          forceExpanded={forceSectionExpand}
+        >
+          <ResumeLayoutControls
+            resumeData={resumeData}
+            onChange={(layoutSettings) => updateField("layoutSettings", layoutSettings)}
+          />
+        </CollapsibleSection>
+      ),
       combinedScore: (
         <CollapsibleSection
           key="combinedScore"
@@ -1535,7 +1583,9 @@ const Editor = () => {
           <div className="-m-6">
             <RecommendationsPanel
               resumeData={resumeData}
-              onEnhanceAll={handleEnhanceAll}
+              onApplySuggestion={handleApplyAiSuggestion}
+              aiSuggestions={aiSuggestions}
+              onSuggestionsChange={setAiSuggestions}
               compact={true}
             />
           </div>
@@ -1733,7 +1783,7 @@ const Editor = () => {
   const collapseAllSections = () => setForceSectionExpand(false);
 
   return (
-    <div className="min-h-screen bg-gray-50/50 dark:bg-[#09090b] text-gray-900 dark:text-zinc-100 flex flex-col font-sans transition-colors duration-200">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-gray-50/50 dark:bg-[#09090b] text-gray-900 dark:text-zinc-100 flex flex-col font-sans transition-colors duration-200">
       <SEO
         title={`Editing: ${resumeData.resumeTitle || resumeData.name || "Resume"} | SmartNShine`}
         description="Craft, tailor, and design your ATS-optimized resume with AI assistance and live preview."
@@ -1773,7 +1823,7 @@ const Editor = () => {
         onTogglePreview={togglePreview}
       />
 
-      <div className="flex-1 w-full px-3 sm:px-6 lg:px-8 py-6 max-w-[1700px] mx-auto">
+      <div className="flex-1 w-full min-w-0 max-w-full px-3 sm:px-6 lg:px-8 py-6 max-w-[1700px] mx-auto">
         <MobileActionBar
           showFloatingNav={showFloatingNav}
           onToggleSections={toggleFloatingNav}
@@ -2073,9 +2123,9 @@ const Editor = () => {
           <div
             className={`grid ${
               showPreview ? "grid-cols-1 xl:grid-cols-2" : "grid-cols-1"
-            } gap-4 sm:gap-6`}
+            } min-w-0 max-w-full gap-4 sm:gap-6`}
           >
-            <div className="order-2 xl:order-1">
+            <div className="min-w-0 max-w-full order-2 xl:order-1">
               <ResumeWizard
                 resumeData={resumeData}
                 updateField={updateField}
@@ -2092,7 +2142,7 @@ const Editor = () => {
             {showPreview && (
               <div
                 ref={previewSectionRef}
-                className="xl:sticky xl:top-2 xl:h-[calc(100vh-3rem)] xl:overflow-auto order-1 xl:order-2"
+                className="order-1 min-w-0 max-w-full xl:order-2 xl:sticky xl:self-start xl:top-20 xl:max-h-[calc(100vh-5.5rem)] xl:overflow-hidden"
               >
                 <div className="bg-white dark:bg-zinc-950 rounded-xl border border-gray-200 dark:border-zinc-800 p-6">
                   <ResumePreview
@@ -2110,11 +2160,11 @@ const Editor = () => {
           <div
             className={`grid ${
               showPreview ? "grid-cols-1 xl:grid-cols-2" : "grid-cols-1"
-            } gap-4 sm:gap-6`}
+            } min-w-0 max-w-full gap-4 sm:gap-6`}
           >
             {/* Editor Panel - Dynamic Sections */}
             <div
-              className={`space-y-4 sm:space-y-6 order-2 xl:order-1 ${
+              className={`min-w-0 max-w-full space-y-4 sm:space-y-6 order-2 xl:order-1 ${
                 isReadOnlyResume ? "pointer-events-none opacity-75" : ""
               }`}
             >
@@ -2125,8 +2175,15 @@ const Editor = () => {
                   ref={(el) => {
                     if (el) sectionElementRefs.current[sectionId] = el;
                   }}
-                  className="scroll-mt-28"
+                  className={`relative scroll-mt-28 ${
+                    aiUpdatedSection === sectionId ? "animate-ai-section-added" : ""
+                  }`}
                 >
+                  {aiUpdatedSection === sectionId && (
+                    <div className="ai-added-float" role="status">
+                      <CheckCircle2 className="w-4 h-4" /> {aiAddedMessage}
+                    </div>
+                  )}
                   {renderSection(sectionId)}
                 </div>
               ))}
@@ -2136,7 +2193,7 @@ const Editor = () => {
             {showPreview && (
               <div
                 ref={previewSectionRef}
-                className="xl:sticky xl:top-2 xl:h-[calc(100vh-3rem)] xl:overflow-auto order-1 xl:order-2"
+                className="order-1 min-w-0 max-w-full xl:order-2 xl:sticky xl:self-start xl:top-20 xl:max-h-[calc(100vh-5.5rem)] xl:overflow-hidden"
               >
                 <div className="bg-white dark:bg-zinc-950 rounded-xl border border-gray-200 dark:border-zinc-800 p-6">
                   {/* Stylish Header */}
@@ -2254,7 +2311,9 @@ const Editor = () => {
                       <div className="mt-4">
                         <RecommendationsPanel
                           resumeData={resumeData}
-                          onEnhanceAll={handleEnhanceAll}
+                          onApplySuggestion={handleApplyAiSuggestion}
+                          aiSuggestions={aiSuggestions}
+                          onSuggestionsChange={setAiSuggestions}
                           compact={true}
                         />
                       </div>

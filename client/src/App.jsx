@@ -9,6 +9,7 @@ import {ProtectedRoute, AdminProtectedRoute, SuperAdminProtectedRoute} from "./c
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
 
 // Lazy load non-critical pages for better performance
 const Upload = lazy(() => import("./pages/Upload"));
@@ -17,7 +18,6 @@ const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const RateLimitExceeded = lazy(() => import("./pages/RateLimitExceeded"));
 const AuthCallback = lazy(() => import("./pages/AuthCallback"));
-const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Templates = lazy(() => import("./pages/Templates"));
 const GitHubImport = lazy(() => import("./pages/GitHubImport"));
 const ATSAnalyzer = lazy(() => import("./pages/ATSAnalyzer"));
