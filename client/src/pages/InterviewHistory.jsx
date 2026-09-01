@@ -296,21 +296,32 @@ const InterviewHistory = () => {
                     ? TrendingDown
                     : Minus;
 
+              const answeredQuestions =
+                interview.questions?.filter(
+                  (q) => q.userAnswer || q.evaluation?.score
+                )?.length || 0;
+              const totalQuestions =
+                interview.totalQuestions || interview.questions?.length || 10;
+              const progressPercent = Math.min(
+                100,
+                Math.round((answeredQuestions / totalQuestions) * 100)
+              );
+
               return (
                 <div
                   key={interview._id}
                   className="bg-white dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-white/10 p-6 hover:border-gray-300 dark:hover:border-white/20 transition-all duration-300"
                 >
-                  <div className="flex items-start justify-between">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-purple-500/20 flex items-center justify-center">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-purple-500/20 flex items-center justify-center shrink-0">
                         <Icon className="w-6 h-6 text-purple-400" />
                       </div>
                       <div>
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                           {interview.role} Interview
                         </h3>
-                        <div className="flex items-center gap-3 mt-1 text-sm text-gray-500 dark:text-gray-400">
+                        <div className="flex flex-wrap items-center gap-3 mt-1 text-sm text-gray-500 dark:text-gray-400">
                           <span className="capitalize">
                             {interview.interviewType.replace("-", " ")}
                           </span>
@@ -324,24 +335,27 @@ const InterviewHistory = () => {
                             {formatDate(interview.createdAt)}
                           </span>
                         </div>
-                        <div className="flex items-center gap-2 mt-2">
+                        <div className="flex flex-wrap items-center gap-2 mt-2">
                           <span
                             className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[interview.status]}`}
                           >
                             {interview.status}
                           </span>
-                          {interview.totalDurationSeconds && (
+                          {interview.totalDurationSeconds > 0 ? (
                             <span className="text-xs text-gray-500 flex items-center gap-1">
                               <Clock className="w-3 h-3" />
                               {formatDuration(interview.totalDurationSeconds)}
                             </span>
-                          )}
+                          ) : null}
+                          <span className="text-xs text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-md font-medium">
+                            {answeredQuestions}/{totalQuestions} questions ({progressPercent}%)
+                          </span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-4">
-                      {interview.result && (
+                    <div className="flex items-center justify-between md:justify-end gap-4 w-full md:w-auto mt-2 md:mt-0 pt-3 md:pt-0 border-t md:border-t-0 border-gray-100 dark:border-white/5">
+                      {interview.result && interview.result.overallScore > 0 ? (
                         <div className="text-right">
                           <div
                             className={`text-2xl font-bold ${
@@ -369,27 +383,44 @@ const InterviewHistory = () => {
                             {interview.result.grade}
                           </div>
                         </div>
+                      ) : (
+                        <div className="w-28 md:w-32">
+                          <div className="flex justify-between text-xs text-gray-400 mb-1">
+                            <span>Progress</span>
+                            <span>{progressPercent}%</span>
+                          </div>
+                          <div className="w-full bg-gray-200 dark:bg-white/10 h-1.5 rounded-full overflow-hidden">
+                            <div
+                              className="bg-gradient-to-r from-purple-500 to-blue-500 h-full rounded-full transition-all duration-300"
+                              style={{ width: `${progressPercent}%` }}
+                            />
+                          </div>
+                        </div>
                       )}
 
-                      {interview.status === "completed" && (
-                        <Link
-                          to={`/interview/result/${interview._id}`}
-                          className="p-2.5 text-purple-500 hover:bg-purple-500/10 rounded-xl transition-colors"
-                          title="View Details"
-                        >
-                          <Eye className="w-5 h-5" />
-                        </Link>
-                      )}
+                      <div className="flex items-center gap-2">
+                        {(interview.status === "completed" || answeredQuestions > 0) && (
+                          <Link
+                            to={`/interview/result/${interview._id}`}
+                            className="p-2 text-purple-400 hover:bg-purple-500/10 rounded-xl transition-colors flex items-center gap-1 text-sm font-medium"
+                            title={interview.status === "completed" ? "View Full Report" : "View Partial Progress"}
+                          >
+                            <Eye className="w-4 h-4" />
+                            <span className="hidden sm:inline">Details</span>
+                          </Link>
+                        )}
 
-                      {interview.status === "in-progress" && (
-                        <Link
-                          to={`/interview?resume=${interview._id}`}
-                          className="p-2.5 text-green-500 hover:bg-green-500/10 rounded-xl transition-colors"
-                          title="Continue"
-                        >
-                          <Play className="w-5 h-5" />
-                        </Link>
-                      )}
+                        {interview.status === "in-progress" && (
+                          <Link
+                            to={`/interview?resume=${interview._id}`}
+                            className="p-2 text-green-400 hover:bg-green-500/10 rounded-xl transition-colors flex items-center gap-1 text-sm font-medium"
+                            title="Continue Interview"
+                          >
+                            <Play className="w-4 h-4" />
+                            <span className="hidden sm:inline">Continue</span>
+                          </Link>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>

@@ -54,6 +54,7 @@ import {
   resetUserExtractionCounter,
   updatePromotionSettings,
   togglePromotion,
+  adminGlobalSearch,
 } from "../controllers/admin.controller.js";
 import {
   archiveNotification,
@@ -72,8 +73,12 @@ router.use(isAdmin);
 router.use(adminLimiter); // Higher limit for admin operations (200 req/15min)
 router.use(logAdminAction);
 
+// Global Search
+router.get("/search", adminGlobalSearch);
+
 // Dashboard
 router.get("/dashboard/stats", getDashboardStats);
+
 
 // Notifications
 router.get("/notifications", getAdminNotifications);

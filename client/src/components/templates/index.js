@@ -12,4 +12,5 @@ export {default as TechTemplate} from "./TechTemplate";
 export {default as Creative2Template} from "./Creative2Template";
 export {default as StrategicLeadershipTemplate} from "./StrategicLeadershipTemplate";
 export {default as ImpactProTemplate} from "./ImpactProTemplate";
+export {default as GitHubStyleTemplate} from "./GitHubStyleTemplate";
 export {default as FresherResumeTemplate} from "./GitHubStyleTemplate";

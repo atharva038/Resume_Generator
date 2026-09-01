@@ -329,12 +329,30 @@ export const resumeAPI = {
     api.post("/resume/export-pdf", data, {responseType: "blob"}),
 
   /**
+   * Tailor resume to a job description with AI
+   * @param {Object} resumeData - Current resume data
+   * @param {string} jobDescription - Target job description
+   * @returns {Promise} Axios response with tailored resume and suggestions
+   */
+  tailorResume: (resumeData, jobDescription) =>
+    api.post("/resume/tailor", {resumeData, jobDescription}),
+
+  /**
+   * Compress and compact resume content to fit cleanly on 1 page with AI
+   * @param {Object} resumeData - Current resume data
+   * @returns {Promise} Axios response with compressed resume data
+   */
+  compressResume: (resumeData) =>
+    api.post("/resume/compress", {resumeData}),
+
+  /**
    * Get short-lived PDF render payload by token
    * @param {string} token - Export session token
    * @returns {Promise} Axios response with resume data and template
    */
   getPdfSession: (token) => api.get(`/resume/pdf-session/${token}`),
 };
+
 
 /**
  * Contact form API endpoints (Admin-accessible)

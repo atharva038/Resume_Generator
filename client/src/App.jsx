@@ -3,7 +3,7 @@ import {Toaster} from "react-hot-toast";
 import {lazy, Suspense} from "react";
 import {Layout, AdminLayout} from "./components/layout";
 import {ScrollToTop} from "./components/common";
-import {ProtectedRoute, AdminProtectedRoute} from "./components/auth";
+import {ProtectedRoute, AdminProtectedRoute, SuperAdminProtectedRoute} from "./components/auth";
 
 // Critical pages - loaded immediately
 import Home from "./pages/Home";
@@ -67,7 +67,12 @@ const Earnings = lazy(() => import("./pages/admin/Earnings"));
 const AIInterview = lazy(() => import("./pages/AIInterview"));
 const InterviewHistory = lazy(() => import("./pages/InterviewHistory"));
 const InterviewResult = lazy(() => import("./pages/InterviewResult"));
+const InterviewPreviewPage = lazy(() => import("./pages/InterviewPreviewPage"));
 const PdfRender = lazy(() => import("./pages/PdfRender"));
+const SuperAdminLogin = lazy(() => import("./pages/superAdmin/SuperAdminLogin"));
+const SuperAdminEnvPanel = lazy(
+  () => import("./pages/superAdmin/SuperAdminEnvPanel")
+);
 const TechPortfolioTemplate = lazy(() => import("./pages/TechPortfolioTemplate"));
 
 import {DarkModeProvider} from "./context/DarkModeContext";
@@ -287,6 +292,10 @@ function App() {
                 }
               />
               <Route
+                path="interview/preview"
+                element={<InterviewPreviewPage />}
+              />
+              <Route
                 path="interview/history"
                 element={
                   <ProtectedRoute>
@@ -333,6 +342,25 @@ function App() {
               <Route path="notifications" element={<AdminNotifications />} />
               <Route path="settings" element={<AdminSettings />} />
             </Route>
+
+            {/* Super Admin Control Panel Routes */}
+            <Route path="/super-admin/login" element={<SuperAdminLogin />} />
+            <Route
+              path="/super-admin"
+              element={
+                <SuperAdminProtectedRoute>
+                  <SuperAdminEnvPanel />
+                </SuperAdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/super-admin/env"
+              element={
+                <SuperAdminProtectedRoute>
+                  <SuperAdminEnvPanel />
+                </SuperAdminProtectedRoute>
+              }
+            />
           </Routes>
         </Suspense>
       </NavigationBlockerProvider>

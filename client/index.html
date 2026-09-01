@@ -29,8 +29,9 @@
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; connect-src 'self' https: wss:; frame-src 'self' https://api.razorpay.com https://checkout.razorpay.com; object-src 'none'; base-uri 'self';"
+      content="default-src 'self' https: http: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://cdn.razorpay.com https://*.razorpay.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com data: https://cdnjs.cloudflare.com; img-src 'self' data: https: http: blob:; connect-src 'self' https: http: wss: ws: http://localhost:* http://127.0.0.1:* ws://localhost:* ws://127.0.0.1:* https://*.razorpay.com https://api.razorpay.com https://generativelanguage.googleapis.com https://api.openai.com; frame-src 'self' https://api.razorpay.com https://checkout.razorpay.com https://*.razorpay.com; object-src 'none'; base-uri 'self';"
     />
+
 
     <!-- AI Agent & LLM Discovery Standards (GEO / Agent Protocols) -->
     <link rel="alternate" type="text/plain" href="/llms.txt" title="LLMs.txt Manifest" />
@@ -409,8 +410,10 @@
       }
     </script>
   </head>
-  <body>
-    <div id="root">
+  <body class="bg-white dark:bg-[#09090b] text-slate-900 dark:text-white antialiased">
+    <div id="root"></div>
+
+    <noscript>
       <header role="banner" style="background:#0a0a0a; color:#fff; padding:1.5rem; border-bottom:1px solid #222;">
         <div style="max-width:1200px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
           <a href="/" style="color:#fff; text-decoration:none; font-size:1.5rem; font-weight:bold; display:flex; align-items:center; gap:0.5rem;">
@@ -503,8 +506,9 @@
         </nav>
         <p style="margin:0; font-size:0.875rem;">© 2026 SmartNShine. All rights reserved.</p>
       </footer>
-    </div>
+    </noscript>
 
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
+

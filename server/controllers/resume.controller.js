@@ -885,3 +885,103 @@ export const getPublicTemplates = async (req, res) => {
     });
   }
 };
+
+/**
+ * Tailor resume to a job description with AI
+ * POST /api/resume/tailor
+ */
+export const tailorResume = async (req, res) => {
+  try {
+    const {resumeData, jobDescription} = req.body;
+
+    if (!resumeData) {
+      return res.status(400).json({
+        success: false,
+        error: "Resume data is required",
+      });
+    }
+
+    if (!jobDescription || jobDescription.trim().length < 30) {
+      return res.status(400).json({
+        success: false,
+        error: "Job description is required (at least 30 characters)",
+      });
+    }
+
+    const userId = req.user._id || req.user.userId;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(401).json({success: false, error: "User not found"});
+    }
+
+    const result = await aiRouter.tailorResume(resumeData, jobDescription, user);
+
+    // Increment AI usage counter
+    await User.findByIdAndUpdate(userId, {
+      $inc: {
+        "usage.aiGenerationsUsed": 1,
+        "usage.aiGenerationsThisMonth": 1,
+      },
+    });
+
+    res.json({
+      success: true,
+      data: result.data,
+      aiModel: result.aiModel,
+    });
+  } catch (error) {
+    console.error("❌ Tailor resume error:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message || "Failed to tailor resume",
+    });
+  }
+};
+
+/**
+ * Compress resume to fit on a single page with AI
+ * POST /api/resume/compress
+ */
+export const compressResume = async (req, res) => {
+  try {
+    const {resumeData} = req.body;
+
+    if (!resumeData) {
+      return res.status(400).json({
+        success: false,
+        error: "Resume data is required",
+      });
+    }
+
+    const userId = req.user._id || req.user.userId;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(401).json({success: false, error: "User not found"});
+    }
+
+    const result = await aiRouter.compressResume(resumeData, user);
+
+    // Increment AI usage counter
+    await User.findByIdAndUpdate(userId, {
+      $inc: {
+        "usage.aiGenerationsUsed": 1,
+        "usage.aiGenerationsThisMonth": 1,
+      },
+    });
+
+    res.json({
+      success: true,
+      data: result.data,
+      aiModel: result.aiModel,
+    });
+  } catch (error) {
+    console.error("❌ Compress resume error:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message || "Failed to compress resume",
+    });
+  }
+};
+

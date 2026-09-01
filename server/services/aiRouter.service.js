@@ -569,6 +569,107 @@ export async function generateCoverLetter(
 }
 
 /**
+ * Tailor resume with appropriate AI service based on tier
+ * @param {Object} resumeData - Original resume data
+ * @param {string} jobDescription - Target job description
+ * @param {Object} user - User object
+ * @returns {Promise<Object>} - Tailored resume object
+ */
+export async function tailorResume(resumeData, jobDescription, user) {
+  const aiService = selectAIService(user, "resume_enhancement");
+  const startTime = Date.now();
+
+  try {
+    let result;
+    if (aiService === "gpt4o" && openaiService?.tailorResumeWithAI) {
+      try {
+        result = await openaiService.tailorResumeWithAI(resumeData, jobDescription);
+      } catch (err) {
+        console.warn("⚠️ OpenAI tailor failed, falling back to Gemini:", err.message);
+        result = await geminiService.tailorResumeWithAI(resumeData, jobDescription);
+      }
+    } else {
+      result = await geminiService.tailorResumeWithAI(resumeData, jobDescription);
+    }
+
+    const responseTime = Date.now() - startTime;
+    await logUsage(
+      user._id,
+      "resume_tailor",
+      aiService,
+      result.tokenUsage || {totalTokens: 0},
+      result.cost || {amount: 0, currency: "USD"},
+      true,
+      {responseTime}
+    );
+
+    return {...result, aiModel: aiService};
+  } catch (error) {
+    const responseTime = Date.now() - startTime;
+    await logUsage(
+      user._id,
+      "resume_tailor",
+      aiService,
+      {promptTokens: 0, candidatesTokens: 0, totalTokens: 0},
+      {amount: 0, currency: "USD"},
+      false,
+      {responseTime, error: error.message}
+    );
+    throw error;
+  }
+}
+
+/**
+ * Compress resume with appropriate AI service
+ * @param {Object} resumeData - Original resume data
+ * @param {Object} user - User object
+ * @returns {Promise<Object>} - Compressed resume object
+ */
+export async function compressResume(resumeData, user) {
+  const aiService = selectAIService(user, "resume_enhancement");
+  const startTime = Date.now();
+
+  try {
+    let result;
+    if (aiService === "gpt4o" && openaiService?.compressResumeWithAI) {
+      try {
+        result = await openaiService.compressResumeWithAI(resumeData);
+      } catch (err) {
+        console.warn("⚠️ OpenAI compress failed, falling back to Gemini:", err.message);
+        result = await geminiService.compressResumeWithAI(resumeData);
+      }
+    } else {
+      result = await geminiService.compressResumeWithAI(resumeData);
+    }
+
+    const responseTime = Date.now() - startTime;
+    await logUsage(
+      user._id,
+      "resume_compress",
+      aiService,
+      result.tokenUsage || {totalTokens: 0},
+      result.cost || {amount: 0, currency: "USD"},
+      true,
+      {responseTime}
+    );
+
+    return {...result, aiModel: aiService};
+  } catch (error) {
+    const responseTime = Date.now() - startTime;
+    await logUsage(
+      user._id,
+      "resume_compress",
+      aiService,
+      {promptTokens: 0, candidatesTokens: 0, totalTokens: 0},
+      {amount: 0, currency: "USD"},
+      false,
+      {responseTime, error: error.message}
+    );
+    throw error;
+  }
+}
+
+/**
  * Get AI service info for a user
  * @param {Object} user - User object
  * @returns {Object} - AI service configuration
@@ -591,5 +692,8 @@ export default {
   categorizeSkills,
   analyzeJobMatch,
   generateCoverLetter,
+  tailorResume,
+  compressResume,
   getAIServiceInfo,
 };
+

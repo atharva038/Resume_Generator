@@ -3666,3 +3666,102 @@ export const togglePromotion = async (req, res) => {
     });
   }
 };
+
+/**
+ * Admin Global Search
+ * GET /api/admin/search?q=...
+ */
+export const adminGlobalSearch = async (req, res) => {
+  try {
+    const {q = ""} = req.query;
+    const query = q.trim();
+
+    if (!query || query.length < 2) {
+      return res.json({
+        success: true,
+        data: {
+          users: [],
+          resumes: [],
+          subscriptions: [],
+          feedbacks: [],
+          contacts: [],
+        },
+      });
+    }
+
+    const regex = new RegExp(query, "i");
+
+    // Search Users
+    const usersPromise = User.find({
+      $or: [{name: regex}, {email: regex}, {role: regex}, {"subscription.tier": regex}],
+    })
+      .select("name email role subscription createdAt")
+      .limit(8)
+      .lean();
+
+    // Search Resumes
+    const resumesPromise = Resume.find({
+      $or: [{resumeTitle: regex}, {"contact.name": regex}, {"contact.email": regex}, {template: regex}],
+    })
+      .select("resumeTitle contact template createdAt updatedAt userId")
+      .populate("userId", "name email")
+      .limit(8)
+      .lean();
+
+    // Search Subscriptions
+    const subscriptionsPromise = Subscription.find({
+      $or: [{tier: regex}, {orderId: regex}, {paymentId: regex}, {status: regex}],
+    })
+      .select("userId tier status orderId amount currency createdAt")
+      .populate("userId", "name email")
+      .limit(8)
+      .lean();
+
+    // Search Feedback & Contacts
+    const feedbacksPromise = Feedback.find({
+      $or: [{message: regex}, {category: regex}, {name: regex}, {email: regex}],
+    })
+      .limit(5)
+      .lean();
+
+    const contactsPromise = Contact.find({
+      $or: [{subject: regex}, {message: regex}, {name: regex}, {email: regex}],
+    })
+      .limit(5)
+      .lean();
+
+    const [users, resumes, subscriptions, feedbacks, contacts] = await Promise.all([
+      usersPromise,
+      resumesPromise,
+      subscriptionsPromise,
+      feedbacksPromise,
+      contactsPromise,
+    ]);
+
+    res.json({
+      success: true,
+      data: {
+        query,
+        users,
+        resumes,
+        subscriptions,
+        feedbacks,
+        contacts,
+        totalMatches:
+          users.length +
+          resumes.length +
+          subscriptions.length +
+          feedbacks.length +
+          contacts.length,
+      },
+    });
+  } catch (error) {
+    console.error("Admin global search error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to perform global search",
+      error: error.message,
+    });
+  }
+};
+

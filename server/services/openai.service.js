@@ -891,6 +891,100 @@ export async function chatCompletion(systemPrompt, userPrompt, options = {}) {
   }, "OpenAI chat completion");
 }
 
+/**
+ * Tailor full resume content to match a specific job description using GPT-4o
+ * @param {Object} resumeData - Original resume data
+ * @param {string} jobDescription - Target job description
+ * @returns {Promise<Object>} - Tailored resume data with suggestions
+ */
+export async function tailorResumeWithAI(resumeData, jobDescription) {
+  return retryWithBackoff(async () => {
+    if (!openai) {
+      throw new Error("OpenAI API key not configured");
+    }
+
+    const systemPrompt = `You are an expert ATS resume strategist and executive career coach.
+Tailor the provided resume data to strongly align with the target job description while strictly preserving all factual accuracy.
+Return valid JSON only matching the schema:
+{
+  "tailoredResume": {
+    "summary": "...",
+    "skills": [ { "category": "...", "items": ["..."] } ],
+    "experience": [ { "title": "...", "company": "...", "bullets": ["..."] } ],
+    "projects": [ { "name": "...", "description": "...", "bullets": ["..."], "technologies": ["..."] } ]
+  },
+  "keywordsAdded": ["..."],
+  "tailoringHighlights": ["..."]
+}`;
+
+    const userPrompt = `JOB DESCRIPTION:\n${jobDescription}\n\nORIGINAL RESUME:\n${JSON.stringify(resumeData, null, 2)}`;
+
+    console.log("🤖 Calling OpenAI GPT-4o for resume tailoring...");
+    const completion = await openai.chat.completions.create({
+      model: MODEL,
+      messages: [
+        {role: "system", content: systemPrompt},
+        {role: "user", content: userPrompt},
+      ],
+      response_format: {type: "json_object"},
+      temperature: 0.3,
+      max_tokens: MAX_TOKENS,
+    });
+
+    const content = completion.choices[0].message.content;
+    const tokenUsage = extractTokenUsage(completion);
+    const cost = calculateCost(tokenUsage);
+    const data = JSON.parse(content);
+
+    return {data, tokenUsage, cost};
+  }, "OpenAI resume tailoring");
+}
+
+/**
+ * Compress and tighten resume content to fit on a single page using GPT-4o
+ * @param {Object} resumeData - Original resume data
+ * @returns {Promise<Object>} - Compressed resume data
+ */
+export async function compressResumeWithAI(resumeData) {
+  return retryWithBackoff(async () => {
+    if (!openai) {
+      throw new Error("OpenAI API key not configured");
+    }
+
+    const systemPrompt = `You are an elite resume editor. Compact and tighten the resume data to ensure it fits cleanly within a 1-page layout without losing essential metrics or achievements.
+Return valid JSON only matching the schema:
+{
+  "compressedResume": {
+    "summary": "...",
+    "experience": [ { "title": "...", "company": "...", "bullets": ["..."] } ],
+    "projects": [ { "name": "...", "description": "...", "bullets": ["..."], "technologies": ["..."] } ]
+  },
+  "spaceSavedSummary": "Summary of cuts made to fit 1 page"
+}`;
+
+    const userPrompt = `RESUME DATA:\n${JSON.stringify(resumeData, null, 2)}`;
+
+    console.log("🤖 Calling OpenAI GPT-4o for resume 1-page compression...");
+    const completion = await openai.chat.completions.create({
+      model: MODEL,
+      messages: [
+        {role: "system", content: systemPrompt},
+        {role: "user", content: userPrompt},
+      ],
+      response_format: {type: "json_object"},
+      temperature: 0.2,
+      max_tokens: MAX_TOKENS,
+    });
+
+    const content = completion.choices[0].message.content;
+    const tokenUsage = extractTokenUsage(completion);
+    const cost = calculateCost(tokenUsage);
+    const data = JSON.parse(content);
+
+    return {data, tokenUsage, cost};
+  }, "OpenAI resume compression");
+}
+
 export default {
   parseResumeWithAI,
   enhanceContentWithAI,
@@ -901,4 +995,7 @@ export default {
   analyzeResumeJobMatch,
   generateCoverLetter,
   chatCompletion,
+  tailorResumeWithAI,
+  compressResumeWithAI,
 };
+

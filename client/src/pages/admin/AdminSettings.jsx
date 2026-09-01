@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import {
   Settings as SettingsIcon,
   Save,
   RefreshCw,
   AlertCircle,
   CheckCircle,
+  KeyRound,
   Server,
   Shield,
   Zap,
@@ -274,6 +276,13 @@ export default function AdminSettings() {
         </div>
 
         <div className="flex items-center gap-3">
+          <Link
+            to="/super-admin"
+            className="flex items-center gap-2 px-4 py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs sm:text-sm font-bold rounded-xl transition-all shadow-xs"
+          >
+            <KeyRound className="w-4 h-4" />
+            <span>Super Admin (.env)</span>
+          </Link>
           <button
             onClick={fetchData}
             className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-zinc-800 hover:bg-gray-100 dark:hover:bg-zinc-700 border border-gray-200 dark:border-white/10 text-gray-800 dark:text-white text-xs sm:text-sm font-bold rounded-xl transition-all shadow-xs"

@@ -187,6 +187,9 @@ export const toggleAdminQuestionStatus = (id) =>
 export const deleteAdminQuestion = (id) =>
   adminAPI.delete(`/questions/${id}`);
 
+// Global Search
+export const globalSearch = (q) => adminAPI.get("/search", {params: {q}});
+
 // Backward compatibility aliases
 export const resetUserQuota = resetUserDailyQuota;
 export const getSystemSettings = getSettings;
@@ -194,3 +197,4 @@ export const updateSystemSettings = updateSettings;
 export const updatePaymentSettings = updateSettings;
 
 export default adminAPI;
+

@@ -150,17 +150,18 @@ INTERVIEW CONTEXT:
 ${targetSkills?.length ? `- Focus Skills: ${targetSkills.join(", ")}` : ""}
 
 QUESTION GUIDELINES:
-1. Ask ONE question at a time
-2. Questions should test ${complexity.depth}
-3. For technical roles, include scenario-based questions
-4. For behavioral questions, use STAR format expectations
-5. Never provide hints or answers within the question
-6. Make questions specific and actionable
+1. Ask exactly ONE clear, concise question at a time (strictly 1 to 2 sentences, 20-35 words).
+2. DO NOT include long resume recaps, verbose pleasantries, or stacked multi-part questions.
+3. Keep the wording punchy, natural, and direct for real-time spoken voice interview.
+4. Questions should test ${complexity.depth}
+5. For technical roles, include focused scenario-based questions.
+6. For behavioral questions, focus on specific past experiences.
+7. Never provide hints or answers within the question.
 
 RESPONSE FORMAT:
 Always respond with valid JSON in this exact format:
 {
-  "question": "Your interview question here",
+  "question": "Your concise interview question here (1-2 sentences max)",
   "questionType": "technical|behavioral|situational|resume-based",
   "category": "The skill/topic being tested",
   "difficulty": "easy|medium|hard",
