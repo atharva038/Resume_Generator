@@ -38,7 +38,9 @@ export default {
         },
       },
       fontFamily: {
+        scoutie: ['"Scoutie Sans"', "sans-serif"],
         sans: [
+          '"Scoutie Sans"',
           "Plus Jakarta Sans",
           "Inter var",
           "Inter",
@@ -47,7 +49,7 @@ export default {
           "sans-serif",
         ],
         outfit: ["Outfit", "sans-serif"],
-        display: ["Outfit", "Plus Jakarta Sans", "Inter var", "Inter", "sans-serif"],
+        display: ['"Scoutie Sans"', "Outfit", "Plus Jakarta Sans", "Inter var", "Inter", "sans-serif"],
         space: ["Space Grotesk", "sans-serif"],
         resume: ["Arial", "Helvetica", "sans-serif"],
       },
@@ -68,6 +70,8 @@ export default {
         "slide-down": "slideDown 0.5s ease-out",
         "scale-in": "scaleIn 0.3s ease-out",
         "marquee": "marquee 40s linear infinite",
+        "glidetop": "glidetop 35s linear infinite",
+        "glidebottom": "glidebottom 38s linear infinite",
       },
       keyframes: {
         fadeIn: {
@@ -89,6 +93,14 @@ export default {
         marquee: {
           "0%": { transform: "translateX(0%)" },
           "100%": { transform: "translateX(-50%)" },
+        },
+        glidetop: {
+          "0%": { transform: "translateY(0%)" },
+          "100%": { transform: "translateY(-50%)" },
+        },
+        glidebottom: {
+          "0%": { transform: "translateY(-50%)" },
+          "100%": { transform: "translateY(0%)" },
         },
       },
       backgroundImage: {

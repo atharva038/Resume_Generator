@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Scoutie+Sans:ital,wght@0,200..800;1,200..800&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap");
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
@@ -39,6 +40,51 @@
 
   .section-title {
     @apply text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3;
+  }
+
+  /* Infinite Gliding Animation Classes */
+  @keyframes streamGlideTop {
+    0% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(-50%);
+    }
+  }
+
+  @keyframes streamGlideBottom {
+    0% {
+      transform: translateY(-50%);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes streamGlideHorizontal {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  .animate-glide-top {
+    animation: streamGlideTop 28s linear infinite;
+    will-change: transform;
+  }
+
+  .animate-glide-bottom {
+    animation: streamGlideBottom 32s linear infinite;
+    will-change: transform;
+  }
+
+  .animate-glide-horizontal {
+    display: flex;
+    width: max-content;
+    animation: streamGlideHorizontal 55s linear infinite;
+    will-change: transform;
   }
 
   /* Custom Horizontal Scrollbar Styling */
