@@ -111,11 +111,9 @@ const LAYOUT_DEFAULTS = {
 const ResumeLayoutControls = ({resumeData, onChange}) => {
   const settings = {...LAYOUT_DEFAULTS, ...(resumeData.layoutSettings || {})};
   const update = (field, value) => onChange({...settings, [field]: value});
+  const resetLayout = () => onChange({...LAYOUT_DEFAULTS});
   const marginValue = (value) => Number.parseFloat(value) || 0.5;
   const updateMargin = (field, value) => update(field, `${Math.min(1, Math.max(0.25, Number(value))).toFixed(2)}in`);
-  const marginPercent = (value) => Math.min(12, Math.max(2, (Number.parseFloat(value) / 11) * 100));
-  const topSpace = marginPercent(settings.pagePaddingTop);
-  const bottomSpace = marginPercent(settings.pagePaddingBottom);
   const options = [
     ["center-inline", "Centered inline"],
     ["center-stacked", "Centered stacked"],
@@ -124,14 +122,22 @@ const ResumeLayoutControls = ({resumeData, onChange}) => {
 
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
-      <div className="flex items-start gap-3">
+      <div className="flex items-start justify-between gap-3">
         <div className="rounded-lg border border-gray-200 bg-gray-50 p-2 text-gray-700 dark:border-zinc-700 dark:bg-zinc-900 dark:text-gray-200">
           <SlidersHorizontal className="h-4 w-4" />
         </div>
-        <div>
+        <div className="min-w-0 flex-1">
           <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Resume layout</h3>
           <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">These settings are saved with this resume and included in its PDF.</p>
         </div>
+        <button
+          type="button"
+          onClick={resetLayout}
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-gray-300 px-2.5 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:border-gray-400 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 dark:border-zinc-700 dark:text-gray-200 dark:hover:bg-zinc-900 dark:focus:ring-offset-zinc-950"
+        >
+          <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
+          Reset layout
+        </button>
       </div>
       <div className="mt-4 grid min-w-0 grid-cols-1 gap-4 lg:grid-cols-2">
         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -167,24 +173,6 @@ const ResumeLayoutControls = ({resumeData, onChange}) => {
             {options.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
           </select>
         </label>
-      </div>
-      <div className="mt-5 rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/60">
-        <div className="mb-2 flex items-center justify-between text-xs">
-          <span className="font-semibold text-gray-700 dark:text-gray-200">Page-space guide</span>
-          <span className="text-gray-500 dark:text-gray-400">A4 preview</span>
-        </div>
-        <div className="mx-auto flex h-28 w-20 flex-col overflow-hidden rounded-sm border border-gray-300 bg-white shadow-sm dark:border-zinc-600">
-          <div className="bg-blue-100/80 dark:bg-blue-950/50" style={{height: `${topSpace}%`}} />
-          <div className="flex-1 border-y border-dashed border-gray-200 bg-white px-2 py-2 dark:border-zinc-700 dark:bg-zinc-950">
-            <div className="h-1 w-8 bg-gray-300 dark:bg-zinc-600" />
-            <div className="mt-2 h-1 w-full bg-gray-200 dark:bg-zinc-700" />
-            <div className="mt-1 h-1 w-10 bg-gray-200 dark:bg-zinc-700" />
-          </div>
-          <div className="bg-blue-100/80 dark:bg-blue-950/50" style={{height: `${bottomSpace}%`}} />
-        </div>
-        <div className="mt-2 flex justify-center gap-3 text-[11px] text-gray-500 dark:text-gray-400">
-          <span>Top {settings.pagePaddingTop}</span><span>Side {settings.pagePadding}</span><span>Footer {settings.pagePaddingBottom}</span>
-        </div>
       </div>
     </div>
   );
@@ -1783,7 +1771,7 @@ const Editor = () => {
   const collapseAllSections = () => setForceSectionExpand(false);
 
   return (
-    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-gray-50/50 dark:bg-[#09090b] text-gray-900 dark:text-zinc-100 flex flex-col font-sans transition-colors duration-200">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-gray-50/50 dark:bg-[#09090b] text-gray-900 dark:text-zinc-100 flex flex-col font-sans transition-colors duration-200 xl:h-screen xl:overflow-hidden">
       <SEO
         title={`Editing: ${resumeData.resumeTitle || resumeData.name || "Resume"} | SmartNShine`}
         description="Craft, tailor, and design your ATS-optimized resume with AI assistance and live preview."
@@ -1823,7 +1811,7 @@ const Editor = () => {
         onTogglePreview={togglePreview}
       />
 
-      <div className="flex-1 w-full min-w-0 max-w-full px-3 sm:px-6 lg:px-8 py-6 max-w-[1700px] mx-auto">
+      <div className="flex-1 w-full min-w-0 max-w-full px-3 sm:px-6 lg:px-8 py-6 max-w-[1700px] mx-auto xl:min-h-0 xl:overflow-hidden">
         <MobileActionBar
           showFloatingNav={showFloatingNav}
           onToggleSections={toggleFloatingNav}
@@ -2123,9 +2111,9 @@ const Editor = () => {
           <div
             className={`grid ${
               showPreview ? "grid-cols-1 xl:grid-cols-2" : "grid-cols-1"
-            } min-w-0 max-w-full gap-4 sm:gap-6`}
+            } min-w-0 max-w-full gap-4 sm:gap-6 xl:h-[calc(100vh-15rem)]`}
           >
-            <div className="min-w-0 max-w-full order-2 xl:order-1">
+            <div className="min-w-0 max-w-full order-2 xl:order-1 xl:h-full xl:overflow-y-auto xl:overscroll-contain xl:pr-2">
               <ResumeWizard
                 resumeData={resumeData}
                 updateField={updateField}
@@ -2142,7 +2130,7 @@ const Editor = () => {
             {showPreview && (
               <div
                 ref={previewSectionRef}
-                className="order-1 min-w-0 max-w-full xl:order-2 xl:sticky xl:self-start xl:top-20 xl:max-h-[calc(100vh-5.5rem)] xl:overflow-hidden"
+                className="order-1 min-w-0 max-w-full xl:order-2 xl:h-full xl:overflow-hidden"
               >
                 <div className="bg-white dark:bg-zinc-950 rounded-xl border border-gray-200 dark:border-zinc-800 p-6">
                   <ResumePreview
@@ -2160,11 +2148,11 @@ const Editor = () => {
           <div
             className={`grid ${
               showPreview ? "grid-cols-1 xl:grid-cols-2" : "grid-cols-1"
-            } min-w-0 max-w-full gap-4 sm:gap-6`}
+            } min-w-0 max-w-full gap-4 sm:gap-6 xl:h-[calc(100vh-15rem)]`}
           >
             {/* Editor Panel - Dynamic Sections */}
             <div
-              className={`min-w-0 max-w-full space-y-4 sm:space-y-6 order-2 xl:order-1 ${
+              className={`min-w-0 max-w-full space-y-4 sm:space-y-6 order-2 xl:order-1 xl:h-full xl:overflow-y-auto xl:overscroll-contain xl:pr-2 ${
                 isReadOnlyResume ? "pointer-events-none opacity-75" : ""
               }`}
             >
@@ -2193,7 +2181,7 @@ const Editor = () => {
             {showPreview && (
               <div
                 ref={previewSectionRef}
-                className="order-1 min-w-0 max-w-full xl:order-2 xl:sticky xl:self-start xl:top-20 xl:max-h-[calc(100vh-5.5rem)] xl:overflow-hidden"
+                className="order-1 min-w-0 max-w-full xl:order-2 xl:h-full xl:overflow-hidden"
               >
                 <div className="bg-white dark:bg-zinc-950 rounded-xl border border-gray-200 dark:border-zinc-800 p-6">
                   {/* Stylish Header */}
