@@ -48,7 +48,7 @@ const AuthCallback = () => {
           if (response.ok) {
             const userData = await response.json();
             setUserData(userData);
-            navigate("/my-resumes");
+            navigate("/dashboard");
           } else {
             throw new Error("Failed to fetch user data");
           }

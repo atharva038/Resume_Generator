@@ -586,7 +586,7 @@ const AdminLayout = () => {
           {/* Back to Site */}
           <div className="pt-3 border-t border-gray-100 dark:border-white/10">
             <Link
-              to="/"
+              to="/dashboard"
               onClick={closeMobileMenu}
               className="flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white rounded-xl font-semibold text-xs transition-all shadow-md shadow-purple-500/20"
             >

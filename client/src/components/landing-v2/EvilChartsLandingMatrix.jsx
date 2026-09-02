@@ -11,10 +11,12 @@ import {
   CheckCircle2
 } from "lucide-react";
 import { useDarkMode } from "../../context/DarkModeContext";
+import { useAuth } from "../../context/AuthContext";
 import GlidingMotionCanvas from "./GlidingMotionCanvas";
 
 export default function EvilChartsLandingMatrix() {
   const { isDarkMode, toggleDarkMode } = useDarkMode();
+  const { user } = useAuth();
   const [activeMode, setActiveMode] = useState("resumes"); // 'resumes' | 'portfolios'
   const [isAutoCycle, setIsAutoCycle] = useState(true);
 
@@ -123,17 +125,36 @@ export default function EvilChartsLandingMatrix() {
             </div>
           </Link>
 
-          <button
-            onClick={toggleDarkMode}
-            aria-label="Toggle theme"
-            className={`p-2.5 rounded-2xl border transition-all shadow-xs ${
-              isDarkMode
-                ? "bg-zinc-900/90 border-zinc-800 text-amber-400 hover:bg-zinc-800"
-                : "bg-white border-zinc-200 text-amber-500 hover:bg-zinc-100 shadow-sm"
-            }`}
-          >
-            {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5 text-indigo-600" />}
-          </button>
+          <div className="flex items-center gap-2 sm:gap-2.5">
+            {user ? (
+              <Link
+                to="/dashboard"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-sm active:scale-95"
+              >
+                <span>Dashboard</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                className="hidden sm:inline-flex text-xs font-bold px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-500/30 transition-colors"
+              >
+                Sign In
+              </Link>
+            )}
+
+            <button
+              onClick={toggleDarkMode}
+              aria-label="Toggle theme"
+              className={`p-2.5 rounded-2xl border transition-all shadow-xs ${
+                isDarkMode
+                  ? "bg-zinc-900/90 border-zinc-800 text-amber-400 hover:bg-zinc-800"
+                  : "bg-white border-zinc-200 text-amber-500 hover:bg-zinc-100 shadow-sm"
+              }`}
+            >
+              {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5 text-indigo-600" />}
+            </button>
+          </div>
         </div>
 
         {/* Center: Punchy Copy & Mode Motion Switcher */}
@@ -252,12 +273,22 @@ export default function EvilChartsLandingMatrix() {
           }`}
         >
           <span>© 2026 SmartNShine</span>
-          <Link
-            to="/login"
-            className="font-bold text-blue-600 dark:text-blue-400 hover:underline"
-          >
-            Sign In →
-          </Link>
+          {user ? (
+            <Link
+              to="/dashboard"
+              className="font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+            >
+              <span>Go to Dashboard</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          ) : (
+            <Link
+              to="/login"
+              className="font-bold text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              Sign In →
+            </Link>
+          )}
         </div>
       </div>
 

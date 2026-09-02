@@ -35,7 +35,7 @@ export default function PortfolioEditorHeader({
 
         <div className="h-4 sm:h-5 w-[1px] bg-gray-200 dark:bg-white/10 hidden xs:block" />
 
-        <Link to="/" className="flex items-center gap-1.5 sm:gap-2 group">
+        <Link to="/dashboard" className="flex items-center gap-1.5 sm:gap-2 group">
           <img
             src="/orb-logo.png"
             alt="SmartNShine"

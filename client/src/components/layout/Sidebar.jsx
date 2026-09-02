@@ -15,7 +15,8 @@ import {
   UserCircle,
   Tag,
   Mic,
-  TrendingUp
+  TrendingUp,
+  FileText,
 } from "lucide-react";
 import {useAuth} from "@/context/AuthContext";
 
@@ -26,10 +27,18 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
 
   const navLinks = [
     {
-      name: "Home",
-      path: "/",
-      icon: Home,
-      description: "Back to homepage",
+      name: "Dashboard",
+      path: "/dashboard",
+      icon: LayoutDashboard,
+      description: "Platform Command Center",
+      requiresAuth: true,
+    },
+    {
+      name: "My Resumes",
+      path: "/my-resumes",
+      icon: FileText,
+      description: "Manage your resumes",
+      requiresAuth: true,
     },
     {
       name: "Templates",
@@ -55,12 +64,6 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
       icon: Mic,
       description: "Practice mock interviews",
       badge: "NEW",
-    },
-    {
-      name: "My Resumes",
-      path: "/my-resumes",
-      icon: LayoutDashboard,
-      description: "Manage your resumes",
     },
     {
       name: "Career Profile",
@@ -112,6 +115,12 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
       icon: Mail,
       description: "Get in touch",
     },
+    {
+      name: "Landing Page",
+      path: "/landing-preview",
+      icon: Home,
+      description: "Explore Landing",
+    },
   ];
 
   const isActivePath = (path) => {
@@ -144,7 +153,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             {/* Expanded Logo */}
             {isOpen && (
               <Link
-                to="/"
+                to={user ? "/dashboard" : "/"}
                 className="flex items-center text-xl font-bold group"
               >
                 <img
@@ -161,7 +170,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             {/* Collapsed Logo Icon */}
             {!isOpen && (
               <Link
-                to="/"
+                to={user ? "/dashboard" : "/"}
                 className="hidden lg:flex items-center justify-center w-full group"
               >
                 <img

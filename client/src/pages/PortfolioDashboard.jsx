@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import SEO from "@/components/common/SEO";
-import { Plus, Globe2 } from "lucide-react";
+import { Plus, Globe2, ArrowLeft } from "lucide-react";
 import { portfolioAPI } from "@/api/portfolio.api";
 import PortfolioBanner from "@/components/portfolio/PortfolioBanner";
 import PortfolioCard from "@/components/portfolio/PortfolioCard";
@@ -78,7 +78,18 @@ export default function PortfolioDashboard() {
       />
 
       {/* Main Container */}
-      <main className="flex-1 px-4 sm:px-8 lg:px-12 py-8 max-w-[1600px] w-full mx-auto space-y-8">
+      <main className="flex-1 px-4 sm:px-8 lg:px-12 py-8 max-w-[1600px] w-full mx-auto space-y-6">
+        {/* Back to Dashboard Breadcrumb */}
+        <div>
+          <Link
+            to="/dashboard"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-gray-900 dark:text-zinc-400 dark:hover:text-white transition-colors group"
+          >
+            <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
+            <span>Back to Dashboard</span>
+          </Link>
+        </div>
+
         {/* Banner & Stats */}
         <PortfolioBanner
           portfoliosCount={portfolios.length}

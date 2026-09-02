@@ -51,6 +51,22 @@ const Layout = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, [setIsSidebarOpenTrue, setIsSidebarOpenFalse]);
 
+  const isWorkspace = [
+    "/dashboard",
+    "/my-resumes",
+    "/ats-analyzer",
+    "/upload",
+    "/github-import",
+    "/career-profile",
+    "/career-qa",
+    "/portfolio",
+    "/interview",
+    "/editor",
+    "/profile",
+    "/subscription",
+    "/payment",
+  ].some((route) => location.pathname.startsWith(route));
+
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-[#09090b]">
       {/* Sidebar */}
@@ -68,9 +84,9 @@ const Layout = () => {
           isSidebarOpen={isSidebarOpen}
         />
 
-        {/* Page Content: Starts below Navbar (pt-16), Festive Banner scrolls with content under Navbar */}
-        <main className="flex-1 pt-16 w-full bg-white dark:bg-[#09090b]">
-          {promotion && promotion.enabled && (
+        {/* Page Content: Starts below Navbar (pt-14 or pt-16) */}
+        <main className="flex-1 pt-14 lg:pt-16 w-full bg-[#f8fafc] dark:bg-[#09090b]">
+          {promotion && promotion.enabled && !isWorkspace && (
             <FestiveSaleBanner promotion={promotion} />
           )}
 
@@ -79,8 +95,8 @@ const Layout = () => {
           </PageTransition>
         </main>
 
-        {/* Footer */}
-        <Footer />
+        {/* Footer (Hidden on dashboard and workspace pages) */}
+        {!isWorkspace && <Footer />}
       </div>
     </div>
   );

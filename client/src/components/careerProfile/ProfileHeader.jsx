@@ -9,7 +9,7 @@ export default function ProfileHeader({ onGoBack, onSave, saving }) {
         <button
           onClick={onGoBack}
           className="inline-flex items-center gap-1.5 p-2 sm:px-3 sm:py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900 text-gray-700 dark:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-800 text-xs sm:text-sm font-semibold transition-all shadow-2xs active:scale-95 cursor-pointer"
-          title="Back to site"
+          title="Back to dashboard"
         >
           <ArrowLeft className="w-4 h-4" />
           <span className="hidden sm:inline">Back</span>
@@ -17,7 +17,7 @@ export default function ProfileHeader({ onGoBack, onSave, saving }) {
 
         <div className="h-4 sm:h-5 w-[1px] bg-gray-200 dark:bg-white/10 hidden xs:block" />
 
-        <Link to="/" className="flex items-center gap-1.5 sm:gap-2 group">
+        <Link to="/dashboard" className="flex items-center gap-1.5 sm:gap-2 group">
           <img
             src="/orb-logo.png"
             alt="SmartNShine"

@@ -354,11 +354,7 @@ export default function CareerQA() {
   };
 
   const handleGoBack = () => {
-    if (window.opener) {
-      window.close();
-    } else {
-      navigate("/");
-    }
+    navigate("/dashboard");
   };
 
   return (
