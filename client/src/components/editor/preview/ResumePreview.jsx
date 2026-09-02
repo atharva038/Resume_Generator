@@ -7,6 +7,7 @@ import {
   useCallback,
 } from "react";
 import {useReactToPrint} from "react-to-print";
+import {Download} from "lucide-react";
 import {useToggle, useMediaQuery} from "@/hooks";
 import ClassicTemplate from "@/components/templates/ClassicTemplate";
 import ModernTemplate from "@/components/templates/ModernTemplate";
@@ -273,24 +274,25 @@ const ResumePreview = forwardRef(
       <>
         <div className="flex min-w-0 max-w-full flex-col resume-preview">
           {/* Download Button */}
-          <div className="mb-4 no-print flex-shrink-0">
+          <div className="mb-4 flex flex-shrink-0 flex-col items-center no-print">
             <button
               onClick={onDownload || downloadPDF}
-              className="w-full bg-gray-900 dark:bg-white hover:bg-gray-800 dark:hover:bg-gray-100 text-white dark:text-gray-900 font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center gap-3"
+              className="inline-flex max-w-full items-center justify-center gap-2 rounded-lg border border-blue-700 bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-blue-500 dark:bg-blue-600 dark:hover:bg-blue-500 dark:focus:ring-offset-zinc-950"
+              style={{width: scaledWidthMm}}
             >
-              <span className="text-2xl">📥</span>
-              <span className="text-base">Download PDF</span>
+              <Download className="h-4 w-4" aria-hidden="true" />
+              <span>Download PDF</span>
             </button>
-            <p className="text-xs text-center mt-2 text-gray-500 dark:text-gray-400 font-medium">
+            <p className="mt-2 text-center text-xs text-gray-500 dark:text-gray-400">
               This will generate a text-based, ATS-friendly PDF
             </p>
           </div>
 
-          {/* Scroll container — PDF viewer style */}
+          {/* Scrollable preview; its scrollbar is visually hidden. */}
           <div
-            className="min-w-0 max-w-full bg-zinc-200 dark:bg-zinc-900 rounded-xl overflow-y-auto overflow-x-hidden"
+            className="min-w-0 max-w-full rounded-xl bg-zinc-200 overflow-x-hidden overflow-y-auto scrollbar-hide dark:bg-zinc-900"
             style={{
-              maxHeight: isMobile ? "500px" : "calc(100vh - 15rem)",
+              maxHeight: isMobile ? "500px" : "calc(100vh - 22rem)",
               padding: isMobile ? "0.75rem" : "1.25rem",
             }}
           >
