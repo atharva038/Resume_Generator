@@ -163,10 +163,10 @@ export default function FinalCTABanner() {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 pt-2 w-full max-w-sm sm:max-w-none mx-auto">
             <Link
               to="/templates"
-              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 hover:from-amber-300 hover:to-yellow-400 text-black text-sm font-extrabold shadow-xl shadow-amber-500/25 hover:shadow-amber-500/35 transition-all active:scale-95 cursor-pointer"
+              className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 hover:from-amber-300 hover:to-yellow-400 text-black text-sm font-extrabold shadow-xl shadow-amber-500/25 hover:shadow-amber-500/35 transition-all active:scale-95 cursor-pointer"
             >
               <span>Build Your Resume Free</span>
               <ArrowRight className="w-4 h-4 text-black stroke-[2.5]" />
@@ -174,7 +174,7 @@ export default function FinalCTABanner() {
 
             <Link
               to="/pricing"
-              className={`inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl border text-sm font-semibold transition-all active:scale-95 cursor-pointer ${
+              className={`inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-2xl border text-sm font-semibold transition-all active:scale-95 cursor-pointer ${
                 isDarkMode
                   ? "border-amber-500/30 text-amber-200 hover:bg-amber-500/10 hover:text-white"
                   : "border-slate-300 text-slate-700 hover:bg-slate-100"

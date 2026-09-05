@@ -85,10 +85,10 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // ==========================================
-// TRUST PROXY (Must be set first for Render/Vercel/etc.)
+// TRUST PROXY (Must be set first for reverse proxies)
 // ==========================================
 
-// Enable trust proxy for apps behind reverse proxies (Render, Vercel, Nginx, etc.)
+// Enable trust proxy for apps behind reverse proxies (Nginx, Vercel, Cloudflare, etc.)
 // This allows Express to correctly read X-Forwarded-* headers
 app.set("trust proxy", 1); // Trust first proxy
 

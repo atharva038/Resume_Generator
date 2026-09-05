@@ -66,7 +66,7 @@ export default function EvilChartsLandingMatrix() {
   return (
     <section
       onMouseMove={handleMouseMove}
-      className={`relative w-full min-h-screen font-scoutie overflow-hidden selection:bg-amber-500 selection:text-black transition-colors duration-300 ${
+      className={`relative w-full font-scoutie overflow-hidden selection:bg-amber-500 selection:text-black transition-colors duration-300 ${
         isDarkMode ? "bg-black text-zinc-100" : "bg-[#fbfbfa] text-zinc-900"
       }`}
     >
@@ -97,21 +97,21 @@ export default function EvilChartsLandingMatrix() {
         />
       </div>
 
-      {/* 3. Left Directional Gradient Fade Mask (Absolute inside Hero) */}
+      {/* 3. Left Directional Gradient Fade Mask (Desktop only — lg+) */}
       <div
-        className={`absolute inset-y-0 left-0 w-full lg:w-[50%] xl:w-[46%] z-20 pointer-events-none transition-colors duration-300 ${
+        className={`hidden lg:block absolute inset-y-0 left-0 w-full lg:w-[50%] xl:w-[46%] z-20 pointer-events-none transition-colors duration-300 ${
           isDarkMode
             ? "bg-gradient-to-r from-black via-black via-80% to-transparent"
             : "bg-gradient-to-r from-[#fbfbfa] via-[#fbfbfa] via-80% to-transparent"
         }`}
       />
 
-      {/* 4. Left Hero Overlay (Natural Absolute Positioning within Hero) */}
-      <div className="lg:absolute lg:top-0 lg:left-0 lg:bottom-0 w-full lg:w-[470px] xl:w-[520px] z-30 flex flex-col justify-between p-6 sm:p-10 lg:p-12 pt-24 sm:pt-28 lg:pt-32 pointer-events-none">
+      {/* 4. Left Hero Content — stacked on mobile, overlaid on lg+ */}
+      <div className="relative lg:absolute lg:top-0 lg:left-0 lg:bottom-0 w-full lg:w-[470px] xl:w-[520px] z-30 flex flex-col justify-between px-5 sm:px-10 lg:px-12 pt-20 sm:pt-24 lg:pt-32 pb-8 lg:pb-0 pointer-events-none">
         <div />
 
         {/* Center: Punchy Copy & Mode Motion Switcher */}
-        <div className="pointer-events-auto my-auto py-8 space-y-6 max-w-md text-left">
+        <div className="pointer-events-auto mt-2 lg:my-auto py-6 lg:py-8 space-y-5 lg:space-y-6 max-w-md text-left">
           {/* Live Status Pill & Mode Selector */}
           <div className="space-y-2.5">
             <div
@@ -175,7 +175,7 @@ export default function EvilChartsLandingMatrix() {
           {/* Interactive Specular Light Shader Headline */}
           <h1
             ref={headlineRef}
-            className={`text-2xl sm:text-3xl xl:text-[38px] font-extrabold tracking-tight leading-[1.16] ${
+            className={`text-3xl sm:text-4xl xl:text-[38px] font-extrabold tracking-tight leading-[1.16] ${
               isDarkMode ? "text-white" : "text-slate-900"
             }`}
           >
@@ -203,10 +203,10 @@ export default function EvilChartsLandingMatrix() {
           </p>
 
           {/* Action CTAs with Luxury Black & Gold Shade Styling */}
-          <div className="flex flex-wrap items-center gap-3 pt-1">
+          <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-3 pt-1">
             <Link
               to={activeMode === "resumes" ? "/templates" : "/portfolio/create"}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 hover:from-amber-300 hover:to-yellow-400 text-black text-sm font-extrabold transition-all shadow-lg shadow-amber-500/25 active:scale-95 cursor-pointer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 hover:from-amber-300 hover:to-yellow-400 text-black text-sm font-extrabold transition-all shadow-lg shadow-amber-500/25 active:scale-95 cursor-pointer"
             >
               <span>{activeMode === "resumes" ? "Build Your Resume Free" : "Launch Portfolio"}</span>
               <ArrowRight className="w-4 h-4 text-black stroke-[2.5]" />
@@ -214,7 +214,7 @@ export default function EvilChartsLandingMatrix() {
 
             <Link
               to="/ats-analyzer"
-              className={`inline-flex items-center gap-2 px-5 py-3 rounded-2xl text-sm font-bold transition-all active:scale-95 cursor-pointer border ${
+              className={`w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-sm font-bold transition-all active:scale-95 cursor-pointer border ${
                 isDarkMode
                   ? "bg-zinc-900/90 border-amber-500/30 text-amber-200 hover:bg-amber-500/10 hover:text-white shadow-sm"
                   : "bg-zinc-100/90 border-zinc-200 text-zinc-900 hover:bg-zinc-200 hover:text-black shadow-sm"
@@ -271,7 +271,8 @@ export default function EvilChartsLandingMatrix() {
       </div>
 
       {/* 5. Right Side: Physical Continuous Gliding Canvas */}
-      <div className="relative z-10 lg:pl-[470px] xl:pl-[520px] p-2 sm:p-4 lg:p-6 pt-20 sm:pt-24 lg:pt-20 flex items-center min-h-screen overflow-hidden">
+      {/* On mobile: fixed-height preview below the hero text. On lg+: fills the right half behind the text overlay */}
+      <div className="relative z-10 lg:pl-[470px] xl:pl-[520px] p-2 sm:p-4 lg:p-6 pt-0 lg:pt-20 flex items-center h-[55vh] sm:h-[60vh] lg:min-h-screen overflow-hidden">
         <div className="w-full max-w-[1700px] mx-auto overflow-hidden">
           <GlidingMotionCanvas activeMode={activeMode} isDarkMode={isDarkMode} />
         </div>

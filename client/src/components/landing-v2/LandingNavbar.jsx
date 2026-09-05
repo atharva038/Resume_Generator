@@ -12,13 +12,12 @@ export default function LandingNavbar() {
   return (
     <div className="fixed top-3 sm:top-5 inset-x-0 z-50 flex justify-center px-3 sm:px-6 pointer-events-none font-scoutie">
       <header
-        className={`pointer-events-auto relative w-full max-w-4xl lg:max-w-5xl rounded-full transition-all duration-300 backdrop-blur-2xl backdrop-saturate-150 ${
-          isDarkMode
+        className={`pointer-events-auto relative w-full max-w-4xl lg:max-w-5xl rounded-full transition-all duration-300 backdrop-blur-2xl backdrop-saturate-150 ${isDarkMode
             ? "bg-black/90 border border-amber-500/20 shadow-[0_16px_40px_-8px_rgba(0,0,0,0.8),inset_0_1px_1px_0_rgba(245,158,11,0.2)]"
             : "bg-gradient-to-r from-white/95 via-white/85 to-white/95 border border-black/[0.08] shadow-[0_16px_40px_-8px_rgba(0,0,0,0.06),inset_0_1px_1px_0_rgba(255,255,255,0.85)]"
-        }`}
+          }`}
       >
-        <div className="px-3 sm:px-5 h-13 sm:h-14 flex items-center justify-between">
+        <div className="px-3 sm:px-5 h-15 sm:h-16 py-2 flex items-center justify-between">
           {/* Brand Logo & Title (Clean, no 2.0 badges or extra pills) */}
           <Link to="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0">
             <Logo
@@ -53,11 +52,10 @@ export default function LandingNavbar() {
             <button
               onClick={toggleDarkMode}
               aria-label="Toggle theme"
-              className={`w-8 h-8 sm:w-8.5 sm:h-8.5 rounded-full flex items-center justify-center border transition-all cursor-pointer active:scale-90 shadow-2xs ${
-                isDarkMode
+              className={`w-8 h-8 sm:w-8.5 sm:h-8.5 rounded-full flex items-center justify-center border transition-all cursor-pointer active:scale-90 shadow-2xs ${isDarkMode
                   ? "bg-white/[0.05] border-white/10 text-amber-400 hover:bg-white/10"
                   : "bg-black/[0.03] border-black/[0.06] text-zinc-700 hover:bg-black/[0.06]"
-              }`}
+                }`}
             >
               {isDarkMode ? (
                 <Sun className="w-3.5 h-3.5" />

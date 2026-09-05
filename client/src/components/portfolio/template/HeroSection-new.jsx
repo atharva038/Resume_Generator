@@ -77,7 +77,7 @@ const HeroSection = ({ portfolioContext }) => {
               transition={{ delay: 0.3, duration: 0.8 }}
               className="space-y-4"
             >
-              <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight">
                 <motion.span
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}

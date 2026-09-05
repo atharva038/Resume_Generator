@@ -35,7 +35,7 @@ const HeroSection = ({ portfolioContext }) => {
   return (
     <section
       id="hero"
-      className="relative min-h-screen flex items-center justify-center pt-20 px-4 sm:px-6 lg:px-8 overflow-hidden"
+      className="relative min-h-screen flex items-center justify-center pt-20 px-4 sm:px-6 lg:px-8 overflow-x-hidden"
     >
       {/* Background elements */}
       <FloatingParticles />
@@ -47,7 +47,7 @@ const HeroSection = ({ portfolioContext }) => {
       </div>
 
       <div className="max-w-7xl mx-auto relative z-10 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Left Side - Content */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -77,7 +77,7 @@ const HeroSection = ({ portfolioContext }) => {
               transition={{ delay: 0.3, duration: 0.8 }}
               className="space-y-4"
             >
-              <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight">
                 <span className="text-white">
                   I Build
                 </span>
@@ -98,7 +98,7 @@ const HeroSection = ({ portfolioContext }) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.8 }}
-              className="text-xl text-gray-300 max-w-lg leading-relaxed"
+              className="text-base sm:text-lg lg:text-xl text-gray-300 max-w-lg leading-relaxed"
             >
               {bio || "Transforming ideas into exceptional web applications with clean code, modern technologies and creative solutions."}
             </motion.p>
@@ -160,12 +160,12 @@ const HeroSection = ({ portfolioContext }) => {
             </motion.div>
           </motion.div>
 
-          {/* Right Side - Laptop Illustration */}
+          {/* Right Side - Laptop Illustration (hidden on small screens to prevent overflow) */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="relative h-full min-h-96 md:min-h-full flex items-center justify-center"
+            className="hidden sm:flex relative h-full min-h-96 md:min-h-full items-center justify-center"
           >
             {/* Floating Laptop Illustration */}
             <motion.div
