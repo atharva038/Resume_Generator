@@ -212,6 +212,7 @@ export default function Dashboard() {
       <SEO
         title="My Resumes | SmartNShine"
         description="Manage and build your tailored AI resumes, download PDF formats, and check ATS optimization scores."
+        noindex={true}
       />
 
       <main className="flex-1 px-4 sm:px-8 lg:px-12 py-8 max-w-[1600px] w-full mx-auto space-y-8">

@@ -687,6 +687,7 @@ export default function PortfolioEditor() {
       <SEO
         title={`Editing: ${form.title || "Portfolio"} | SmartNShine`}
         description="Edit, design, and configure your live developer portfolio website."
+        noindex={true}
       />
 
       {/* Top Header */}

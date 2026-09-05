@@ -50,6 +50,7 @@ export default function PortfolioCreate() {
       <SEO
         title="Create Developer Portfolio | SmartNShine"
         description="Choose a resume to generate an interactive portfolio website in seconds."
+        noindex={true}
       />
 
       <main className="flex-1 px-4 sm:px-8 lg:px-12 py-8 max-w-5xl w-full mx-auto space-y-6">
