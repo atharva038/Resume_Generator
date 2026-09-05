@@ -233,7 +233,7 @@ const AIAnalytics = () => {
                   </div>
                   <div>
                     <p className="text-indigo-500 dark:text-indigo-400 text-sm font-semibold">
-                      Gemini Flash
+                      Gemini Flash (Legacy)
                     </p>
                     <p className="text-2xl font-bold text-gray-900 dark:text-white">
                       {analytics?.totals?.geminiCalls || 0} calls

@@ -267,13 +267,13 @@ export function ContactInfoSidebar() {
       </div>
 
       {/* Enterprise & Custom Inquiries */}
-      <div className="p-6 rounded-3xl bg-gradient-to-br from-purple-500/10 via-indigo-500/10 to-blue-500/10 border border-purple-500/20 space-y-2">
+      <div className="p-6 rounded-3xl bg-gradient-to-br from-blue-500/10 via-indigo-500/10 to-cyan-500/10 border border-blue-500/20 space-y-2">
         <h4 className="text-sm font-black text-gray-900 dark:text-white">
           Enterprise & University Inquiries
         </h4>
         <p className="text-xs text-gray-600 dark:text-zinc-300 leading-relaxed">
           Looking for bulk student licenses, campus career portals, or custom ATS testing integrations? Write to us directly at{" "}
-          <a href="mailto:support@smartnshine.app" className="font-bold text-purple-600 dark:text-purple-400 underline">
+          <a href="mailto:support@smartnshine.app" className="font-bold text-blue-600 dark:text-blue-400 underline">
             support@smartnshine.app
           </a>
         </p>

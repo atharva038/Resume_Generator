@@ -225,7 +225,6 @@ export default function SuperAdminEnvPanel() {
       let apiKey = null;
       let secondaryKey = null;
 
-      if (service === "gemini") apiKey = variablesMap["GEMINI_API_KEY"];
       if (service === "openai") apiKey = variablesMap["OPENAI_API_KEY"];
       if (service === "sarvam") apiKey = variablesMap["SARVAM_API_KEY"];
       if (service === "razorpay") {
@@ -800,61 +799,6 @@ export default function SuperAdminEnvPanel() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {/* Google Gemini Card */}
-              <div className="p-5 rounded-2xl bg-zinc-900/80 border border-zinc-800/80 flex flex-col justify-between space-y-4">
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-black text-white flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-emerald-400" />
-                      Google Gemini AI
-                    </span>
-                    <span className="text-[10px] font-mono bg-zinc-800 px-2 py-0.5 rounded-full text-zinc-400">
-                      gemini-2.5-flash
-                    </span>
-                  </div>
-                  <p className="text-xs text-zinc-400">
-                    Extracts resume text, rewrites bullet points, scores ATS match.
-                  </p>
-                </div>
-
-                <div className="space-y-3">
-                  <div className="text-[11px] font-mono text-zinc-500 truncate">
-                    Key: {variablesMap["GEMINI_API_KEY"] ? `${variablesMap["GEMINI_API_KEY"].slice(0, 10)}...` : "NOT CONFIGURED"}
-                  </div>
-
-                  <button
-                    onClick={() => handleTestKey("gemini")}
-                    disabled={testingService === "gemini" || !variablesMap["GEMINI_API_KEY"]}
-                    className="w-full py-2.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500 text-emerald-400 hover:text-zinc-950 border border-emerald-500/20 text-xs font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-40"
-                  >
-                    {testingService === "gemini" ? (
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    ) : (
-                      <Zap className="w-3.5 h-3.5" />
-                    )}
-                    <span>Run Gemini AI Ping</span>
-                  </button>
-
-                  {testResults["gemini"] && (
-                    <div
-                      className={`p-3 rounded-xl text-xs font-mono ${
-                        testResults["gemini"].success
-                          ? "bg-emerald-500/10 border border-emerald-500/20 text-emerald-300"
-                          : "bg-rose-500/10 border border-rose-500/20 text-rose-300"
-                      }`}
-                    >
-                      <div className="flex justify-between font-bold">
-                        <span>{testResults["gemini"].success ? "PASSED" : "FAILED"}</span>
-                        <span>{testResults["gemini"].latencyMs}ms</span>
-                      </div>
-                      <p className="text-[11px] mt-1 text-zinc-400">
-                        {testResults["gemini"].message || testResults["gemini"].error}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-
               {/* OpenAI Card */}
               <div className="p-5 rounded-2xl bg-zinc-900/80 border border-zinc-800/80 flex flex-col justify-between space-y-4">
                 <div>

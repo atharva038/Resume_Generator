@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import {useNavigate, Link} from "react-router-dom";
 import {useAuth} from "@/context/AuthContext";
 import {parseValidationErrors} from "@/utils/errorHandler";
@@ -27,8 +27,14 @@ const Register = () => {
   const [error, setError] = useState("");
   const [loading, toggleLoading, setLoadingTrue, setLoadingFalse] =
     useToggle(false);
-  const {register} = useAuth();
+  const {register, user, loading: authLoading} = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      navigate("/dashboard", {replace: true});
+    }
+  }, [user, authLoading, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -51,7 +57,7 @@ const Register = () => {
 
     try {
       await register(name, email, password);
-      navigate("/my-resumes");
+      navigate("/dashboard");
     } catch (err) {
       if (
         err.response?.status === 429 ||

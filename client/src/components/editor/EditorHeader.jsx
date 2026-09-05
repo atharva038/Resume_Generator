@@ -14,6 +14,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { DarkModeToggle } from "@/components/common";
+import Logo from "@/components/common/Logo";
 
 export default function EditorHeader({
   onGoBack,
@@ -52,13 +53,12 @@ export default function EditorHeader({
 
         <div className="h-4 sm:h-5 w-[1px] bg-gray-200 dark:bg-white/10 hidden xs:block" />
 
-        <Link to="/" className="flex items-center gap-1.5 sm:gap-2 group">
-          <img
-            src="/orb-logo.png"
-            alt="SmartNShine"
-            className="h-7 sm:h-8 w-auto object-contain group-hover:scale-105 transition-all duration-300 dark:brightness-100 dark:saturate-100 brightness-50 contrast-125 saturate-200 shrink-0"
+        <Link to="/dashboard" className="flex items-center gap-2 group">
+          <Logo
+            className="h-7 w-7 object-contain group-hover:scale-105 transition-transform duration-200 shrink-0"
+            alt="SmartNShine Logo"
           />
-          <span className="font-bold text-sm sm:text-base tracking-tight bg-gradient-to-r from-[#5d8ff0] via-[#6f7fe4] to-[#8b67df] dark:from-[#6aa0ff] dark:via-[#7f8ce7] dark:to-[#9b78ea] bg-clip-text text-transparent hidden md:inline">
+          <span className="font-extrabold text-sm sm:text-base tracking-tight text-zinc-950 dark:text-white hidden md:inline">
             SmartNShine
           </span>
           <span className="text-gray-300 dark:text-zinc-700 text-xs hidden md:inline">/</span>
@@ -171,7 +171,7 @@ export default function EditorHeader({
           onClick={onTogglePreview}
           className={`hidden lg:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-2xs ${
             showPreview
-              ? "border-purple-500/30 bg-purple-500/10 text-purple-700 dark:text-purple-300"
+              ? "border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-300"
               : "border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900 text-gray-700 dark:text-zinc-300"
           }`}
           title={showPreview ? "Hide Live Preview" : "Show Live Preview"}

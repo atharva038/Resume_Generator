@@ -82,9 +82,9 @@ const JobMatchAnalyzer = ({resumeData}) => {
     <div className="w-full max-w-5xl mx-auto">
       {/* Header */}
       <div className="text-center mb-8">
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/30 dark:to-blue-900/30 rounded-full mb-4">
-          <Sparkles className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-          <span className="text-sm font-semibold text-purple-700 dark:text-purple-300">
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-full mb-4">
+          <Sparkles className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+          <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">
             AI-Powered Matching
           </span>
         </div>
@@ -92,8 +92,7 @@ const JobMatchAnalyzer = ({resumeData}) => {
           AI Job-Resume Match Analyzer
         </h2>
         <p className="text-lg text-gray-600 dark:text-gray-400">
-          See how well your resume matches any job description using Google
-          Gemini AI
+          See how well your resume matches any job description using OpenAI GPT-4o
         </p>
       </div>
 
@@ -106,7 +105,7 @@ const JobMatchAnalyzer = ({resumeData}) => {
           value={jobDescription}
           onChange={(e) => setJobDescription(e.target.value)}
           placeholder="Paste the complete job description here... (Requirements, skills, responsibilities, etc.)"
-          className="w-full min-h-[200px] px-4 py-3 bg-gray-50 dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:border-purple-500 dark:focus:border-purple-400 focus:outline-none transition-colors resize-y text-gray-900 dark:text-white"
+          className="w-full min-h-[200px] px-4 py-3 bg-gray-50 dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none transition-colors resize-y text-gray-900 dark:text-white"
           disabled={analyzing}
         />
         <div className="flex items-center justify-between mt-3">
@@ -116,7 +115,7 @@ const JobMatchAnalyzer = ({resumeData}) => {
           <button
             onClick={handleAnalyze}
             disabled={analyzing || jobDescription.trim().length < 50}
-            className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center gap-2"
+            className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center gap-2"
           >
             {analyzing ? (
               <>
@@ -292,7 +291,7 @@ const JobMatchAnalyzer = ({resumeData}) => {
           {/* Skills Breakdown */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 md:p-8">
             <h4 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-              <TrendingUp className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+              <TrendingUp className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
               Skills Analysis
             </h4>
 

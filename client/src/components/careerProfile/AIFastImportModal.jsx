@@ -28,7 +28,7 @@ export default function AIFastImportModal({
         {/* Modal Header */}
         <div className="shrink-0 px-6 py-4 border-b border-gray-100 dark:border-white/10 flex items-center justify-between bg-gray-50/70 dark:bg-zinc-900/50">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
@@ -57,7 +57,7 @@ export default function AIFastImportModal({
             <select
               value={aiSection}
               onChange={(e) => setAiSection(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-2xl bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-white/10 text-xs font-semibold text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-4 py-2.5 rounded-2xl bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-white/10 text-xs font-semibold text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               {sections.map((s) => (
                 <option key={s.id} value={s.id}>
@@ -76,7 +76,7 @@ export default function AIFastImportModal({
               value={aiInputText}
               onChange={(e) => setAiInputText(e.target.value)}
               placeholder={`Paste unformatted text, notes, or portfolio descriptions here...\nExample: "KnockNFix is a local marketplace built with React, Node.js, and MongoDB. Decreased response times by 30%..."`}
-              className="w-full p-4 rounded-2xl bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-white/10 text-xs leading-relaxed text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:outline-none font-sans"
+              className="w-full p-4 rounded-2xl bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-white/10 text-xs leading-relaxed text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none font-sans"
             />
           </div>
 
@@ -113,7 +113,7 @@ export default function AIFastImportModal({
             <button
               onClick={onRunAIStructure}
               disabled={aiStructuring || !aiInputText.trim()}
-              className="flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-purple-600 hover:bg-purple-700 disabled:opacity-50 rounded-xl shadow-md shadow-purple-500/20 transition-all active:scale-95 cursor-pointer"
+              className="flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-xl shadow-md shadow-blue-500/20 transition-all active:scale-95 cursor-pointer"
             >
               {aiStructuring ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
               <span>{aiStructuring ? "Structuring..." : "Structure with AI"}</span>

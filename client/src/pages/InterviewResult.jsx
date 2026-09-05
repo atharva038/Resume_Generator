@@ -261,7 +261,7 @@ ${result.overallFeedback}
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-[#0a0d14] flex flex-col items-center justify-center gap-4">
-        <Loader2 className="w-10 h-10 animate-spin text-purple-500" />
+        <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
         <p className="text-gray-500 dark:text-gray-400 text-sm animate-pulse">
           Loading interview results and analytical breakdown...
         </p>
@@ -282,7 +282,7 @@ ${result.overallFeedback}
           </p>
           <Link
             to="/interview/history"
-            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-purple-600 text-white font-medium hover:bg-purple-500 transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-500 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to History
@@ -314,7 +314,7 @@ ${result.overallFeedback}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <Link
             to="/interview/history"
-            className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+            className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Interview History
@@ -325,12 +325,12 @@ ${result.overallFeedback}
               onClick={handleDownloadReport}
               className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 text-gray-700 dark:text-gray-200 transition-all shadow-sm"
             >
-              <Download className="w-4 h-4 text-purple-400" />
+              <Download className="w-4 h-4 text-indigo-400" />
               Download Report
             </button>
             <Link
               to="/interview"
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white transition-all shadow-lg shadow-purple-500/20"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white transition-all shadow-lg shadow-blue-500/20"
             >
               <Play className="w-4 h-4" />
               Start New Interview
@@ -342,8 +342,8 @@ ${result.overallFeedback}
         <div className="bg-white dark:bg-white/5 backdrop-blur-xl border border-gray-200 dark:border-white/10 rounded-2xl p-6 sm:p-8 shadow-xl">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-gray-100 dark:border-white/10">
             <div className="flex items-start gap-4">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-purple-500/20 flex items-center justify-center shrink-0">
-                <Icon className="w-8 h-8 text-purple-400" />
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500/20 to-indigo-500/20 border border-blue-500/20 flex items-center justify-center shrink-0">
+                <Icon className="w-8 h-8 text-blue-400" />
               </div>
               <div>
                 <div className="flex flex-wrap items-center gap-2 mb-1">
@@ -361,7 +361,7 @@ ${result.overallFeedback}
                 </p>
                 <div className="flex flex-wrap items-center gap-4 mt-3 text-xs text-gray-500 dark:text-gray-400">
                   <span className="flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5 text-purple-400" />
+                    <Calendar className="w-3.5 h-3.5 text-blue-400" />
                     {formatDate(result.createdAt || session.createdAt)}
                   </span>
                   {session.totalDurationSeconds > 0 && (
@@ -471,7 +471,7 @@ ${result.overallFeedback}
 
             <div className="p-3.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
               <span className="text-xs text-gray-400 block mb-1">Avg Response Depth</span>
-              <span className="text-lg font-bold text-purple-400">
+              <span className="text-lg font-bold text-indigo-400">
                 {result.overallScore >= 75 ? "Advanced" : result.overallScore >= 50 ? "Solid" : "Basic"}
               </span>
             </div>
@@ -490,7 +490,7 @@ ${result.overallFeedback}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <div>
               <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                <BarChart3 className="w-5 h-5 text-purple-400" />
+                <BarChart3 className="w-5 h-5 text-blue-400" />
                 Performance Visual Analytics
               </h2>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
@@ -503,7 +503,7 @@ ${result.overallFeedback}
                 onClick={() => setActiveChartTab("progression")}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                   activeChartTab === "progression"
-                    ? "bg-purple-600 text-white shadow-md"
+                    ? "bg-blue-600 text-white shadow-md"
                     : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                 }`}
               >
@@ -513,7 +513,7 @@ ${result.overallFeedback}
                 onClick={() => setActiveChartTab("radar")}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                   activeChartTab === "radar"
-                    ? "bg-purple-600 text-white shadow-md"
+                    ? "bg-blue-600 text-white shadow-md"
                     : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                 }`}
               >
@@ -552,7 +552,7 @@ ${result.overallFeedback}
                           const data = payload[0].payload;
                           return (
                             <div className="bg-gray-900/95 backdrop-blur-md border border-white/10 p-3 rounded-xl shadow-2xl text-xs text-white">
-                              <p className="font-bold text-sm text-purple-300">{data.fullName}</p>
+                              <p className="font-bold text-sm text-indigo-300">{data.fullName}</p>
                               <p className="text-gray-400 mt-0.5 capitalize">{data.category} • {data.difficulty}</p>
                               <div className="mt-2 flex items-center justify-between gap-4 font-semibold">
                                 <span>Score:</span>
@@ -583,7 +583,7 @@ ${result.overallFeedback}
                                 ? "#10B981"
                                 : entry.score >= 60
                                   ? "#F59E0B"
-                                  : "#8B5CF6"
+                                  : "#6366F1"
                           }
                         />
                       ))}
@@ -603,7 +603,7 @@ ${result.overallFeedback}
                   <span>Moderate (60-79%)</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded-md bg-purple-500" />
+                  <span className="w-3 h-3 rounded-md bg-indigo-500" />
                   <span>Developing (&lt;60%)</span>
                 </div>
                 <div className="flex items-center gap-1.5">
@@ -625,8 +625,8 @@ ${result.overallFeedback}
                   <Radar
                     name="Candidate Score"
                     dataKey="score"
-                    stroke="#8B5CF6"
-                    fill="#8B5CF6"
+                    stroke="#3B82F6"
+                    fill="#3B82F6"
                     fillOpacity={0.4}
                   />
                   <Tooltip
@@ -635,7 +635,7 @@ ${result.overallFeedback}
                         const data = payload[0].payload;
                         return (
                           <div className="bg-gray-900/95 backdrop-blur-md border border-white/10 p-2.5 rounded-xl shadow-xl text-xs text-white">
-                            <p className="font-bold text-purple-300">{data.subject}</p>
+                            <p className="font-bold text-indigo-300">{data.subject}</p>
                             <p className="mt-1 font-semibold text-emerald-400">{data.score}%</p>
                           </div>
                         );
@@ -653,7 +653,7 @@ ${result.overallFeedback}
         {result.overallFeedback && (
           <div className="bg-white dark:bg-white/5 backdrop-blur-xl border border-gray-200 dark:border-white/10 rounded-2xl p-6 sm:p-8 shadow-xl">
             <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-              <MessageSquare className="w-5 h-5 text-purple-400" />
+              <MessageSquare className="w-5 h-5 text-blue-400" />
               Interviewer Summary & Strategic Feedback
             </h3>
             <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-sm">
@@ -666,7 +666,7 @@ ${result.overallFeedback}
         <div className="bg-white dark:bg-white/5 backdrop-blur-xl border border-gray-200 dark:border-white/10 rounded-2xl p-6 sm:p-8 shadow-xl">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-              <BookOpen className="w-5 h-5 text-purple-400" />
+              <BookOpen className="w-5 h-5 text-blue-400" />
               Per-Question Breakdown & Spoken Answers ({session.questions?.length || 0})
             </h3>
             <span className="text-xs text-gray-500 dark:text-gray-400">
@@ -713,7 +713,7 @@ ${result.overallFeedback}
                         ? "border-emerald-500/30 bg-emerald-500/5"
                         : score >= 50
                           ? "border-amber-500/30 bg-amber-500/5"
-                          : "border-purple-500/20 bg-purple-500/5"
+                          : "border-indigo-500/20 bg-indigo-500/5"
                       : "border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 opacity-80"
                   }`}
                 >
@@ -752,7 +752,7 @@ ${result.overallFeedback}
 
                     <div className="text-gray-400 shrink-0">
                       {isExpanded ? (
-                        <ChevronUp className="w-5 h-5 text-purple-400" />
+                        <ChevronUp className="w-5 h-5 text-blue-400" />
                       ) : (
                         <ChevronDown className="w-5 h-5" />
                       )}
@@ -762,11 +762,11 @@ ${result.overallFeedback}
                   {isExpanded && (
                     <div className="p-5 pt-2 border-t border-gray-100 dark:border-white/5 space-y-4 text-sm">
                       {/* Full Question Text */}
-                      <div className="bg-purple-500/10 border border-purple-500/20 p-3.5 rounded-xl">
-                        <h4 className="text-xs font-semibold text-purple-300 uppercase tracking-wider mb-1">
+                      <div className="bg-blue-500/10 border border-blue-500/20 p-3.5 rounded-xl">
+                        <h4 className="text-xs font-semibold text-blue-300 uppercase tracking-wider mb-1">
                           Interview Question
                         </h4>
-                        <p className="text-gray-800 dark:text-purple-100 text-sm font-medium">
+                        <p className="text-gray-800 dark:text-blue-100 text-sm font-medium">
                           {qText}
                         </p>
                       </div>
@@ -791,7 +791,7 @@ ${result.overallFeedback}
                       {hasAnswered && typeof score === "number" && (
                         <div className="p-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
                           <h4 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                            <Activity className="w-3.5 h-3.5 text-purple-400" />
+                            <Activity className="w-3.5 h-3.5 text-blue-400" />
                             Question Scoring Breakdown
                           </h4>
                           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -819,7 +819,7 @@ ${result.overallFeedback}
                                 <span className="font-semibold text-gray-200">{clarity}%</span>
                               </div>
                               <div className="h-1.5 bg-gray-200 dark:bg-white/10 rounded-full overflow-hidden">
-                                <div className="h-full bg-purple-500 rounded-full" style={{width: `${clarity}%`}} />
+                                <div className="h-full bg-cyan-500 rounded-full" style={{width: `${clarity}%`}} />
                               </div>
                             </div>
                             <div>
@@ -844,7 +844,7 @@ ${result.overallFeedback}
                               {expectedKeywords.map((kw, kIdx) => (
                                 <span
                                   key={kIdx}
-                                  className="px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-300 border border-purple-500/20"
+                                  className="px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-300 border border-indigo-500/20"
                                 >
                                   {kw}
                                 </span>
@@ -870,7 +870,7 @@ ${result.overallFeedback}
                       {/* Feedback */}
                       {feedback && (
                         <div>
-                          <h4 className="text-xs font-semibold text-purple-400 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                          <h4 className="text-xs font-semibold text-blue-400 uppercase tracking-wider mb-1.5 flex items-center gap-1">
                             <Sparkles className="w-3.5 h-3.5" />
                             AI Evaluation & Feedback
                           </h4>
@@ -921,8 +921,8 @@ ${result.overallFeedback}
 
                       {/* Suggested Answer Model */}
                       {suggestedAnswer && (
-                        <div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 p-3.5 rounded-xl">
-                          <h5 className="text-xs font-bold text-purple-300 flex items-center gap-1.5 mb-1.5">
+                        <div className="bg-gradient-to-r from-blue-500/10 to-indigo-500/10 border border-blue-500/20 p-3.5 rounded-xl">
+                          <h5 className="text-xs font-bold text-blue-300 flex items-center gap-1.5 mb-1.5">
                             <Lightbulb className="w-4 h-4 text-amber-400" />
                             Sample High-Impact Answer
                           </h5>
@@ -943,7 +943,7 @@ ${result.overallFeedback}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 pb-12">
           <Link
             to="/interview"
-            className="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-semibold rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-purple-500/25 transition-all text-sm"
+            className="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-blue-500/25 transition-all text-sm"
           >
             <Play className="w-4 h-4" />
             Practice Another Interview

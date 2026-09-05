@@ -6,10 +6,11 @@ import {ScrollToTop} from "./components/common";
 import {ProtectedRoute, AdminProtectedRoute, SuperAdminProtectedRoute} from "./components/auth";
 
 // Critical pages - loaded immediately
-import Home from "./pages/Home";
+import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import DashboardOverview from "./pages/DashboardOverview";
 
 // Lazy load non-critical pages for better performance
 const Upload = lazy(() => import("./pages/Upload"));
@@ -132,6 +133,9 @@ function App() {
         />
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/landing-preview" element={<LandingPage />} />
+            <Route path="/landing-v2" element={<LandingPage />} />
             <Route path="/pdf-render/:token" element={<PdfRender />} />
             <Route path="/tech-portfolio" element={<TechPortfolioTemplate />} />
             <Route path="/u/:slug" element={<PublicPortfolio />} />
@@ -175,8 +179,15 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path="/" element={<Layout />}>
-              <Route index element={<Home />} />
+            <Route element={<Layout />}>
+              <Route
+                path="dashboard"
+                element={
+                  <ProtectedRoute>
+                    <DashboardOverview />
+                  </ProtectedRoute>
+                }
+              />
               {/* Public High-SEO Routes */}
               <Route path="templates" element={<Templates />} />
               <Route path="contact" element={<Contact />} />

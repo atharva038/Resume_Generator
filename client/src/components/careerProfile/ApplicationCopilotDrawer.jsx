@@ -85,7 +85,7 @@ export default function ApplicationCopilotDrawer({ profile = {}, qaItems = [] })
             className="fixed bottom-20 right-4 sm:right-6 z-50 w-[94vw] sm:w-[440px] max-h-[82vh] rounded-3xl bg-white/95 dark:bg-zinc-950/95 backdrop-blur-2xl border border-gray-200/90 dark:border-white/10 shadow-2xl overflow-hidden flex flex-col font-sans"
           >
             {/* Top Dock Header */}
-            <div className="p-4 sm:p-5 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-cyan-500/10 dark:from-zinc-900 dark:to-zinc-950 border-b border-gray-200/80 dark:border-white/10 flex items-center justify-between">
+            <div className="p-4 sm:p-5 bg-gradient-to-r from-blue-600/10 via-indigo-600/10 to-cyan-500/10 dark:from-zinc-900 dark:to-zinc-950 border-b border-gray-200/80 dark:border-white/10 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-md">
                   <Zap className="w-4 h-4 fill-current text-yellow-300" />
@@ -136,7 +136,7 @@ export default function ApplicationCopilotDrawer({ profile = {}, qaItems = [] })
               {activeCopilotTab === "qa" && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-black uppercase tracking-wider text-purple-600 dark:text-purple-400">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
                       Application Question Answers
                     </span>
                     <span className="text-[10px] text-gray-400">
@@ -146,11 +146,11 @@ export default function ApplicationCopilotDrawer({ profile = {}, qaItems = [] })
 
                   {savedQAList.length === 0 ? (
                     <div className="text-center py-8 text-gray-400 space-y-2">
-                      <MessageSquareQuote className="w-8 h-8 mx-auto opacity-40 text-purple-400" />
+                      <MessageSquareQuote className="w-8 h-8 mx-auto opacity-40 text-indigo-400" />
                       <p className="text-xs">No saved answers yet.</p>
                       <Link
                         to="/career-qa"
-                        className="inline-block text-[11px] text-purple-600 dark:text-purple-400 font-bold hover:underline"
+                        className="inline-block text-[11px] text-indigo-600 dark:text-indigo-400 font-bold hover:underline"
                       >
                         Generate answers in Career Q&A →
                       </Link>
@@ -161,7 +161,7 @@ export default function ApplicationCopilotDrawer({ profile = {}, qaItems = [] })
                       return (
                         <div
                           key={qa._id || idx}
-                          className="p-3 rounded-2xl bg-purple-500/5 dark:bg-zinc-900/60 border border-purple-500/20 dark:border-white/5 space-y-2"
+                          className="p-3 rounded-2xl bg-indigo-500/5 dark:bg-zinc-900/60 border border-indigo-500/20 dark:border-white/5 space-y-2"
                         >
                           <div className="flex justify-between items-start gap-2">
                             <h5 className="font-bold text-gray-900 dark:text-white text-xs leading-snug">
@@ -169,7 +169,7 @@ export default function ApplicationCopilotDrawer({ profile = {}, qaItems = [] })
                             </h5>
                             <button
                               onClick={() => copyToClipboard(ansText, `Answer for "${qa.question}"`, `qa-${idx}`)}
-                              className="px-2.5 py-1 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-[10px] font-bold flex items-center gap-1 shrink-0 shadow-xs cursor-pointer"
+                              className="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-bold flex items-center gap-1 shrink-0 shadow-xs cursor-pointer"
                             >
                               {copiedKey === `qa-${idx}` ? (
                                 <>
@@ -432,7 +432,7 @@ export default function ApplicationCopilotDrawer({ profile = {}, qaItems = [] })
                 <span className="text-gray-400">•</span>
                 <Link
                   to="/career-qa"
-                  className="text-xs font-bold text-purple-600 dark:text-purple-400 hover:underline"
+                  className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
                 >
                   Career Q&A
                 </Link>

@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import {useNavigate, useLocation, Link} from "react-router-dom";
 import {useAuth} from "@/context/AuthContext";
 import {parseValidationErrors} from "@/utils/errorHandler";
@@ -23,9 +23,15 @@ const Login = () => {
   const [error, setError] = useState("");
   const [loading, toggleLoading, setLoadingTrue, setLoadingFalse] =
     useToggle(false);
-  const {login} = useAuth();
+  const {login, user, loading: authLoading} = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      navigate("/dashboard", {replace: true});
+    }
+  }, [user, authLoading, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -46,7 +52,7 @@ const Login = () => {
 
     try {
       await login(email, password);
-      const from = location.state?.from?.pathname || "/my-resumes";
+      const from = location.state?.from?.pathname || "/dashboard";
       navigate(from, {replace: true});
     } catch (err) {
       if (

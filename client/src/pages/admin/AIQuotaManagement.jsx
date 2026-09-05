@@ -288,7 +288,7 @@ const AIQuotaManagement = () => {
 
         <div className="bg-indigo-50 dark:bg-indigo-900/10 rounded-2xl p-6 border border-indigo-200 dark:border-indigo-500/20">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-indigo-500 dark:text-indigo-400">Gemini</h3>
+            <h3 className="text-lg font-semibold text-indigo-500 dark:text-indigo-400">Gemini (Legacy)</h3>
             <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
           </div>
           <div className="space-y-2">

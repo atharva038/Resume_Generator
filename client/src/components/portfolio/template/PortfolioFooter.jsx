@@ -41,7 +41,7 @@ const PortfolioFooter = ({ portfolioContext }) => {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-lg flex items-center justify-center font-bold text-white">
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-cyan-400 rounded-lg flex items-center justify-center font-bold text-white">
                 {initials}
               </div>
               <span className="text-xl font-bold text-white">

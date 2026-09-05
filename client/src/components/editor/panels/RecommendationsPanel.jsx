@@ -79,7 +79,7 @@ const RecommendationsPanel = ({
       Experience:
         "border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-900/20",
       Summary:
-        "border-purple-200 bg-purple-50 dark:border-purple-800 dark:bg-purple-900/20",
+        "border-cyan-200 bg-cyan-50 dark:border-cyan-800 dark:bg-cyan-900/20",
       Skills:
         "border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20",
       Contact:

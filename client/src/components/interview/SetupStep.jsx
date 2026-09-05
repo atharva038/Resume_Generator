@@ -69,7 +69,7 @@ export const SetupStep = ({
       {/* Interview Type Selection */}
       <div className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-white/10 shadow-xl p-6">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-          <Target className="w-5 h-5 text-purple-500 dark:text-purple-400" />
+          <Target className="w-5 h-5 text-blue-500 dark:text-blue-400" />
           Select Interview Type
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -81,12 +81,12 @@ export const SetupStep = ({
                 onClick={() => setSelectedType(type.id)}
                 className={`p-4 rounded-xl border-2 text-left transition-all duration-300 ${
                   selectedType === type.id
-                    ? "border-purple-500 bg-gradient-to-br from-purple-500/10 to-blue-500/10 dark:from-purple-500/20 dark:to-blue-500/20 shadow-lg shadow-purple-500/20"
-                    : "border-gray-200 dark:border-white/10 hover:border-purple-300 dark:hover:border-purple-500/50 bg-white dark:bg-white/5"
+                    ? "border-blue-500 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 dark:from-blue-500/20 dark:to-indigo-500/20 shadow-lg shadow-blue-500/20"
+                    : "border-gray-200 dark:border-white/10 hover:border-blue-300 dark:hover:border-blue-500/50 bg-white dark:bg-white/5"
                 }`}
               >
                 <Icon
-                  className={`w-6 h-6 mb-2 ${selectedType === type.id ? "text-purple-500 dark:text-purple-400" : "text-gray-500 dark:text-gray-400"}`}
+                  className={`w-6 h-6 mb-2 ${selectedType === type.id ? "text-blue-500 dark:text-blue-400" : "text-gray-500 dark:text-gray-400"}`}
                 />
                 <h3 className="font-semibold text-gray-900 dark:text-white">
                   {type.name}
@@ -105,13 +105,13 @@ export const SetupStep = ({
         {/* Role Selection */}
         <div className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-white/10 shadow-xl p-6">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <Briefcase className="w-5 h-5 text-purple-500 dark:text-purple-400" />
+            <Briefcase className="w-5 h-5 text-blue-500 dark:text-blue-400" />
             Target Role
           </h2>
           <select
             value={selectedRole}
             onChange={(e) => setSelectedRole(e.target.value)}
-            className="w-full p-3 border border-gray-200 dark:border-white/10 rounded-xl bg-white dark:bg-white/5 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+            className="w-full p-3 border border-gray-200 dark:border-white/10 rounded-xl bg-white dark:bg-white/5 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
           >
             <option value="" className="bg-white dark:bg-[#1C1C1C]">
               Select a role...
@@ -135,7 +135,7 @@ export const SetupStep = ({
         {/* Experience Level */}
         <div className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-white/10 shadow-xl p-6">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <Award className="w-5 h-5 text-purple-500 dark:text-purple-400" />
+            <Award className="w-5 h-5 text-blue-500 dark:text-blue-400" />
             Experience Level
           </h2>
           <div className="grid grid-cols-3 gap-3">
@@ -145,8 +145,8 @@ export const SetupStep = ({
                 onClick={() => setSelectedLevel(level.id)}
                 className={`p-3 rounded-xl border-2 text-center transition-all duration-300 ${
                   selectedLevel === level.id
-                    ? "border-purple-500 bg-gradient-to-br from-purple-500/10 to-blue-500/10 dark:from-purple-500/20 dark:to-blue-500/20 shadow-md shadow-purple-500/20"
-                    : "border-gray-200 dark:border-white/10 hover:border-purple-300 dark:hover:border-purple-500/50 bg-white dark:bg-white/5"
+                    ? "border-blue-500 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 dark:from-blue-500/20 dark:to-indigo-500/20 shadow-md shadow-blue-500/20"
+                    : "border-gray-200 dark:border-white/10 hover:border-blue-300 dark:hover:border-blue-500/50 bg-white dark:bg-white/5"
                 }`}
               >
                 <span className="font-semibold text-gray-900 dark:text-white block">
@@ -165,7 +165,7 @@ export const SetupStep = ({
       {selectedType === "resume-based" && (
         <div className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-white/10 shadow-xl p-6">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <FileText className="w-5 h-5 text-purple-500 dark:text-purple-400" />
+            <FileText className="w-5 h-5 text-blue-500 dark:text-blue-400" />
             Select Resume
           </h2>
           {resumes?.length === 0 ? (
@@ -180,8 +180,8 @@ export const SetupStep = ({
                   onClick={() => setSelectedResume(resume._id)}
                   className={`p-3 rounded-xl border-2 text-left transition-all ${
                     selectedResume === resume._id
-                      ? "border-purple-500 bg-purple-50 dark:bg-purple-500/15"
-                      : "border-gray-200 dark:border-white/10 hover:border-purple-300"
+                      ? "border-blue-500 bg-blue-50 dark:bg-blue-500/15"
+                      : "border-gray-200 dark:border-white/10 hover:border-blue-300"
                   }`}
                 >
                   <p className="font-medium text-gray-900 dark:text-white truncate">
@@ -200,7 +200,7 @@ export const SetupStep = ({
       {selectedType === "job-description" && (
         <div className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-white/10 shadow-xl p-6">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <Briefcase className="w-5 h-5 text-purple-500 dark:text-purple-400" />
+            <Briefcase className="w-5 h-5 text-blue-500 dark:text-blue-400" />
             Job Description
           </h2>
           <textarea
@@ -208,7 +208,7 @@ export const SetupStep = ({
             onChange={(e) => setJobDescription(e.target.value)}
             placeholder="Paste the job description here..."
             rows={6}
-            className="w-full p-3 border border-gray-200 dark:border-white/10 rounded-xl bg-white dark:bg-white/5 text-gray-900 dark:text-white resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+            className="w-full p-3 border border-gray-200 dark:border-white/10 rounded-xl bg-white dark:bg-white/5 text-gray-900 dark:text-white resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
           />
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
             {jobDescription.length}/50 characters minimum
@@ -221,7 +221,7 @@ export const SetupStep = ({
         {/* Answer Mode & Voice Settings */}
         <div className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-white/10 shadow-xl p-6">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <MessageSquare className="w-5 h-5 text-purple-500 dark:text-purple-400" />
+            <MessageSquare className="w-5 h-5 text-blue-500 dark:text-blue-400" />
             Answer Mode
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -239,12 +239,12 @@ export const SetupStep = ({
                 (!isSarvamAvailable && !isLocalWhisperAvailable && !voiceAvailable) || !ttsAvailable
                   ? "opacity-50 cursor-not-allowed border-gray-200 dark:border-white/10 bg-gray-100 dark:bg-white/5"
                   : selectedMode === "live"
-                    ? "border-purple-500 bg-gradient-to-br from-purple-500/10 to-blue-500/10 dark:from-purple-500/20 dark:to-blue-500/20 shadow-lg shadow-purple-500/20 ring-1 ring-purple-500"
-                    : "border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 hover:border-purple-300 dark:hover:border-purple-500/50"
+                    ? "border-blue-500 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 dark:from-blue-500/20 dark:to-indigo-500/20 shadow-lg shadow-blue-500/20 ring-1 ring-blue-500"
+                    : "border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 hover:border-blue-300 dark:hover:border-blue-500/50"
               }`}
             >
               <Volume2
-                className={`w-6 h-6 ${selectedMode === "live" ? "text-purple-500 dark:text-purple-400" : "text-gray-500 dark:text-gray-400"}`}
+                className={`w-6 h-6 ${selectedMode === "live" ? "text-blue-500 dark:text-blue-400" : "text-gray-500 dark:text-gray-400"}`}
               />
               <span className="font-semibold text-gray-900 dark:text-white">
                 Live Voice
@@ -254,7 +254,7 @@ export const SetupStep = ({
                   Needs Voice Key
                 </span>
               ) : (
-                <span className="text-xs text-purple-600 dark:text-purple-300 font-medium">
+                <span className="text-xs text-blue-600 dark:text-blue-300 font-medium">
                   Voice-to-Voice AI
                 </span>
               )}
@@ -266,12 +266,12 @@ export const SetupStep = ({
               onClick={() => setSelectedMode("text")}
               className={`p-4 rounded-xl border-2 flex flex-col items-center gap-2 transition-all duration-300 ${
                 selectedMode === "text"
-                  ? "border-purple-500 bg-gradient-to-br from-purple-500/10 to-blue-500/10 dark:from-purple-500/20 dark:to-blue-500/20 shadow-lg shadow-purple-500/20 ring-1 ring-purple-500"
-                  : "border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 hover:border-purple-300 dark:hover:border-purple-500/50"
+                  ? "border-blue-500 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 dark:from-blue-500/20 dark:to-indigo-500/20 shadow-lg shadow-blue-500/20 ring-1 ring-blue-500"
+                  : "border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 hover:border-blue-300 dark:hover:border-blue-500/50"
               }`}
             >
               <MessageSquare
-                className={`w-6 h-6 ${selectedMode === "text" ? "text-purple-500 dark:text-purple-400" : "text-gray-500 dark:text-gray-400"}`}
+                className={`w-6 h-6 ${selectedMode === "text" ? "text-blue-500 dark:text-blue-400" : "text-gray-500 dark:text-gray-400"}`}
               />
               <span className="font-semibold text-gray-900 dark:text-white">
                 Text
@@ -284,15 +284,15 @@ export const SetupStep = ({
 
           {/* Voice Processing Engine Switcher (Always available in dev mode) */}
           {!isProduction && (
-            <div className="mt-4 p-4 rounded-xl bg-slate-50 dark:bg-black/30 border border-purple-200/60 dark:border-white/10 space-y-3">
+            <div className="mt-4 p-4 rounded-xl bg-slate-50 dark:bg-black/30 border border-blue-200/60 dark:border-white/10 space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Cpu className="w-4 h-4 text-purple-500 dark:text-purple-400" />
+                  <Cpu className="w-4 h-4 text-blue-500 dark:text-blue-400" />
                   <span className="text-xs font-bold uppercase tracking-wider text-gray-900 dark:text-white">
                     Voice Processing Engine
                   </span>
                 </div>
-                <span className="text-[11px] font-mono text-purple-600 dark:text-purple-300 bg-purple-500/10 px-2 py-0.5 rounded-full border border-purple-500/20">
+                <span className="text-[11px] font-mono text-blue-600 dark:text-blue-300 bg-blue-500/10 px-2 py-0.5 rounded-full border border-blue-500/20">
                   Dev Switcher
                 </span>
               </div>
@@ -370,16 +370,16 @@ export const SetupStep = ({
                   onClick={() => setVoiceEngine("auto")}
                   className={`p-3 rounded-xl border text-left transition-all relative ${
                     voiceEngine === "auto"
-                      ? "border-purple-500 bg-purple-50 dark:bg-purple-500/15 text-purple-950 dark:text-purple-100 shadow-sm ring-1 ring-purple-500"
-                      : "border-gray-200 dark:border-white/10 hover:border-purple-400/50 bg-white dark:bg-white/5 text-gray-700 dark:text-gray-300"
+                      ? "border-blue-500 bg-blue-50 dark:bg-blue-500/15 text-blue-950 dark:text-blue-100 shadow-sm ring-1 ring-blue-500"
+                      : "border-gray-200 dark:border-white/10 hover:border-blue-400/50 bg-white dark:bg-white/5 text-gray-700 dark:text-gray-300"
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-xs font-bold flex items-center gap-1.5">
-                      <RefreshCw className="w-3.5 h-3.5 text-purple-500 dark:text-purple-400" />
+                      <RefreshCw className="w-3.5 h-3.5 text-blue-500 dark:text-blue-400" />
                       Auto Hybrid
                     </span>
-                    <span className="text-[9px] font-bold text-purple-600 dark:text-purple-300 bg-purple-500/20 px-1 py-0.5 rounded">
+                    <span className="text-[9px] font-bold text-blue-600 dark:text-blue-300 bg-blue-500/20 px-1 py-0.5 rounded">
                       Default
                     </span>
                   </div>
@@ -450,7 +450,7 @@ export const SetupStep = ({
             </div>
 
             {/* Live Interviewer Studio Graphic Preview & Voice Tester */}
-            <div className="mt-4 p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-indigo-50/80 via-white to-purple-50/60 dark:from-indigo-950/30 dark:via-[#121420] dark:to-purple-950/25 border border-indigo-200/80 dark:border-indigo-500/25 flex flex-col sm:flex-row items-center gap-5 shadow-sm overflow-hidden">
+            <div className="mt-4 p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-indigo-50/80 via-white to-blue-50/60 dark:from-indigo-950/30 dark:via-[#121420] dark:to-blue-950/25 border border-indigo-200/80 dark:border-indigo-500/25 flex flex-col sm:flex-row items-center gap-5 shadow-sm overflow-hidden">
               <div className="shrink-0 flex items-center justify-center">
                 <InterviewerGraphic
                   isSpeaking={isTestingVoice || isPlayingAudio}
@@ -499,7 +499,7 @@ export const SetupStep = ({
           </div>
 
           {selectedMode === "live" && (
-            <p className="mt-3 text-sm text-purple-600 dark:text-purple-300 bg-purple-50 dark:bg-purple-500/10 p-3 rounded-xl border border-purple-200 dark:border-purple-500/20">
+            <p className="mt-3 text-sm text-blue-600 dark:text-blue-300 bg-blue-50 dark:bg-blue-500/10 p-3 rounded-xl border border-blue-200 dark:border-blue-500/20">
               Natural conversation mode: {currentInterviewer.name} will speak questions aloud and
               listen for your answers automatically with hands-free barge-in.
             </p>
@@ -509,7 +509,7 @@ export const SetupStep = ({
         {/* Interview Duration */}
         <div className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-white/10 shadow-xl p-6">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <Timer className="w-5 h-5 text-purple-500 dark:text-purple-400" />
+            <Timer className="w-5 h-5 text-blue-500 dark:text-blue-400" />
             Interview Duration
           </h2>
           <input
@@ -518,11 +518,11 @@ export const SetupStep = ({
             max="20"
             value={interviewDuration}
             onChange={(e) => setInterviewDuration(parseInt(e.target.value))}
-            className="w-full h-2 bg-gray-200 dark:bg-white/10 rounded-lg appearance-none cursor-pointer accent-purple-500"
+            className="w-full h-2 bg-gray-200 dark:bg-white/10 rounded-lg appearance-none cursor-pointer accent-blue-500"
           />
           <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400 mt-3">
             <span>5 min (Quick)</span>
-            <span className="font-bold text-purple-500 text-lg">
+            <span className="font-bold text-blue-600 text-lg">
               {interviewDuration} min
             </span>
             <span>20 min (Thorough)</span>
@@ -542,7 +542,7 @@ export const SetupStep = ({
           !selectedRole ||
           (selectedMode !== "text" && !isCurrentEngineValid)
         }
-        className="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 disabled:from-gray-700 disabled:to-gray-800 disabled:text-gray-500 text-white font-semibold rounded-xl flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/40 disabled:shadow-none"
+        className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 disabled:from-gray-700 disabled:to-gray-800 disabled:text-gray-500 text-white font-semibold rounded-xl flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/40 disabled:shadow-none"
       >
         {isSubmitting ? (
           <>

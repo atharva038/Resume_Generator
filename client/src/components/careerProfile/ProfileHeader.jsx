@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft, Save, RefreshCw } from "lucide-react";
 import { DarkModeToggle } from "@/components/common";
+import Logo from "@/components/common/Logo";
 
 export default function ProfileHeader({ onGoBack, onSave, saving }) {
   return (
@@ -9,7 +10,7 @@ export default function ProfileHeader({ onGoBack, onSave, saving }) {
         <button
           onClick={onGoBack}
           className="inline-flex items-center gap-1.5 p-2 sm:px-3 sm:py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900 text-gray-700 dark:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-800 text-xs sm:text-sm font-semibold transition-all shadow-2xs active:scale-95 cursor-pointer"
-          title="Back to site"
+          title="Back to dashboard"
         >
           <ArrowLeft className="w-4 h-4" />
           <span className="hidden sm:inline">Back</span>
@@ -17,13 +18,12 @@ export default function ProfileHeader({ onGoBack, onSave, saving }) {
 
         <div className="h-4 sm:h-5 w-[1px] bg-gray-200 dark:bg-white/10 hidden xs:block" />
 
-        <Link to="/" className="flex items-center gap-1.5 sm:gap-2 group">
-          <img
-            src="/orb-logo.png"
-            alt="SmartNShine"
-            className="h-7 sm:h-8 w-auto object-contain group-hover:scale-105 transition-all duration-300 dark:brightness-100 dark:saturate-100 brightness-50 contrast-125 saturate-200 shrink-0"
+        <Link to="/dashboard" className="flex items-center gap-2 group">
+          <Logo
+            className="h-7 w-7 object-contain group-hover:scale-105 transition-transform duration-200 shrink-0"
+            alt="SmartNShine Logo"
           />
-          <span className="font-bold text-sm sm:text-base tracking-tight bg-gradient-to-r from-[#5d8ff0] via-[#6f7fe4] to-[#8b67df] dark:from-[#6aa0ff] dark:via-[#7f8ce7] dark:to-[#9b78ea] bg-clip-text text-transparent hidden md:inline">
+          <span className="font-extrabold text-sm sm:text-base tracking-tight text-zinc-950 dark:text-white hidden md:inline">
             SmartNShine
           </span>
           <span className="text-gray-300 dark:text-zinc-700 text-xs hidden md:inline">/</span>

@@ -82,9 +82,9 @@ const GitHubExtractor = ({onDataExtracted}) => {
     <div className="w-full max-w-4xl mx-auto">
       {/* Header */}
       <div className="text-center mb-8">
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 rounded-full mb-4">
-          <Github className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-          <span className="text-sm font-semibold text-purple-700 dark:text-purple-300">
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-full mb-4">
+          <Github className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+          <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">
             GitHub Data Extraction
           </span>
         </div>
@@ -111,14 +111,14 @@ const GitHubExtractor = ({onDataExtracted}) => {
               onChange={(e) => setUsername(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="e.g., octocat"
-              className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-900/50 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:border-purple-500 dark:focus:border-purple-400 focus:outline-none transition-colors text-gray-900 dark:text-white placeholder-gray-400"
+              className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-900/50 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none transition-colors text-gray-900 dark:text-white placeholder-gray-400"
               disabled={loading}
             />
           </div>
           <button
             onClick={handleFetch}
             disabled={loading}
-            className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center gap-2"
+            className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center gap-2"
           >
             {loading ? (
               <>
@@ -152,13 +152,13 @@ const GitHubExtractor = ({onDataExtracted}) => {
               <img
                 src={githubData.profile.avatar}
                 alt={githubData.profile.name}
-                className="w-24 h-24 rounded-2xl shadow-lg ring-4 ring-purple-100 dark:ring-purple-900/50"
+                className="w-24 h-24 rounded-2xl shadow-lg ring-4 ring-blue-100 dark:ring-blue-900/50"
               />
               <div className="flex-1">
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                   {githubData.profile.name}
                 </h3>
-                <p className="text-purple-600 dark:text-purple-400 font-medium mb-3">
+                <p className="text-blue-600 dark:text-blue-400 font-medium mb-3">
                   @{githubData.profile.username}
                 </p>
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
@@ -184,7 +184,7 @@ const GitHubExtractor = ({onDataExtracted}) => {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-4 p-4 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl">
+            <div className="grid grid-cols-3 gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl">
               <div className="text-center">
                 <div className="flex items-center justify-center gap-1 text-2xl font-bold text-gray-900 dark:text-white mb-1">
                   <Star className="w-5 h-5 text-yellow-500" />
@@ -218,7 +218,7 @@ const GitHubExtractor = ({onDataExtracted}) => {
           {/* Top Repositories */}
           <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/50 p-6 md:p-8 mb-6">
             <div className="flex items-center gap-2 mb-6">
-              <TrendingUp className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+              <TrendingUp className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                 Top Repositories
               </h3>
@@ -235,7 +235,7 @@ const GitHubExtractor = ({onDataExtracted}) => {
                         href={repo.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-lg font-semibold text-gray-900 dark:text-white hover:text-purple-600 dark:hover:text-purple-400 transition-colors inline-flex items-center gap-2 group"
+                        className="text-lg font-semibold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors inline-flex items-center gap-2 group"
                       >
                         {repo.name}
                         <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -269,7 +269,7 @@ const GitHubExtractor = ({onDataExtracted}) => {
           {/* Skills / Languages */}
           <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/50 p-6 md:p-8 mb-6">
             <div className="flex items-center gap-2 mb-6">
-              <Code className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+              <Code className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                 Skills & Technologies
               </h3>
@@ -278,7 +278,7 @@ const GitHubExtractor = ({onDataExtracted}) => {
               {githubData.skills.languages.map((lang, idx) => (
                 <div
                   key={idx}
-                  className="px-4 py-2 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 rounded-lg border border-purple-200 dark:border-purple-700/50"
+                  className="px-4 py-2 bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-lg border border-blue-200 dark:border-blue-700/50"
                 >
                   <span className="font-semibold text-gray-900 dark:text-white">
                     {lang.name}
@@ -295,7 +295,7 @@ const GitHubExtractor = ({onDataExtracted}) => {
           {githubData.experience && githubData.experience.length > 0 && (
             <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/50 p-6 md:p-8 mb-6">
               <div className="flex items-center gap-2 mb-6">
-                <Briefcase className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                <Briefcase className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                   Experience & Contributions
                 </h3>
@@ -311,7 +311,7 @@ const GitHubExtractor = ({onDataExtracted}) => {
                         <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
                           {exp.position}
                         </h4>
-                        <p className="text-purple-600 dark:text-purple-400 font-medium">
+                        <p className="text-blue-600 dark:text-blue-400 font-medium">
                           {exp.company}
                         </p>
                         {exp.period && (
@@ -325,7 +325,7 @@ const GitHubExtractor = ({onDataExtracted}) => {
                           href={exp.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+                          className="text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                         >
                           <ExternalLink className="w-5 h-5" />
                         </a>
@@ -341,7 +341,7 @@ const GitHubExtractor = ({onDataExtracted}) => {
                             key={hIdx}
                             className="text-xs text-gray-500 dark:text-gray-400 flex items-start gap-2"
                           >
-                            <span className="text-purple-600 dark:text-purple-400 mt-0.5">
+                            <span className="text-blue-600 dark:text-blue-400 mt-0.5">
                               •
                             </span>
                             {highlight}
@@ -360,7 +360,7 @@ const GitHubExtractor = ({onDataExtracted}) => {
             githubData.certifications.length > 0 && (
               <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/50 p-6 md:p-8 mb-6">
                 <div className="flex items-center gap-2 mb-6">
-                  <Award className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                  <Award className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                     Achievements & Recognition
                   </h3>
@@ -395,13 +395,13 @@ const GitHubExtractor = ({onDataExtracted}) => {
           <div className="text-center">
             <button
               onClick={handleUseData}
-              className="group relative px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-lg font-bold rounded-xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 overflow-hidden"
+              className="group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-lg font-bold rounded-xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 overflow-hidden"
             >
               <span className="relative z-10 flex items-center gap-2">
                 <CheckCircle2 className="w-5 h-5" />
                 Use This Data for My Resume
               </span>
-              <div className="absolute inset-0 bg-gradient-to-r from-pink-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </button>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-4">
               This data will be used to enhance your resume with AI

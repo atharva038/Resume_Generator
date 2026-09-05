@@ -8,7 +8,7 @@ export function PricingComparisonTable() {
       category: "AI Engines & Ingestion",
       items: [
         { name: "Monthly AI Resume Rewrites", free: "10 / month", oneTime: "150 / 21 days", pro: "Unlimited ∞" },
-        { name: "AI Model Quality", free: "Gemini Standard", oneTime: "GPT-4o Enhanced", pro: "GPT-4o + Gemini Pro" },
+        { name: "AI Model Quality", free: "OpenAI Standard", oneTime: "OpenAI GPT-4o", pro: "OpenAI GPT-4o Priority" },
         { name: "Resume PDF/DOCX Parser", free: "1 / month", oneTime: "Full Access", pro: "Unlimited / day" },
       ],
     },
@@ -35,7 +35,7 @@ export function PricingComparisonTable() {
         { name: "Master Career Profile Hub", free: "Active", oneTime: "Full Access", pro: "2-Way Live Sync" },
         { name: "Live Public Portfolio Website", free: "Preview Only", oneTime: "1 Live Website", pro: "Unlimited Portfolios ∞" },
         { name: "Custom Portfolio Themes & Slugs", free: "Standard", oneTime: "All Themes", pro: "All Themes + Custom Slugs" },
-        { name: "Career Q&A Studio (Interview Prep)", free: "5 Questions", oneTime: "Full Access", pro: "Unlimited Practice ∞" },
+        { name: "Career Q&A Studio (Question Bank)", free: "5 Questions", oneTime: "Full Access", pro: "Unlimited Practice ∞" },
       ],
     },
   ];
@@ -62,7 +62,7 @@ export function PricingComparisonTable() {
               <th className="py-3.5 px-4 w-2/5">Capability</th>
               <th className="py-3.5 px-4 text-center">Starter Free</th>
               <th className="py-3.5 px-4 text-center text-blue-600 dark:text-blue-400">One-Time Pass</th>
-              <th className="py-3.5 px-4 text-center text-purple-600 dark:text-purple-400 font-black">Pro Unlimited</th>
+              <th className="py-3.5 px-4 text-center text-cyan-600 dark:text-cyan-400 font-black">Pro Unlimited</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-white/5">
@@ -90,7 +90,7 @@ export function PricingComparisonTable() {
                     <td className="py-3.5 px-4 text-center font-bold text-gray-800 dark:text-zinc-200">
                       {item.oneTime}
                     </td>
-                    <td className="py-3.5 px-4 text-center font-black text-purple-600 dark:text-purple-400">
+                    <td className="py-3.5 px-4 text-center font-black text-cyan-600 dark:text-cyan-400">
                       {item.pro}
                     </td>
                   </tr>
@@ -108,7 +108,7 @@ export function PricingFAQ() {
   const faqs = [
     {
       q: "What is included with the Pro Unlimited plan?",
-      a: "Pro unlocks unrestricted access to our dual GPT-4o & Gemini Pro AI rewrite engine, unlimited ATS diagnostic scans, all 11 executive resume templates, unlimited public portfolio websites with live URLs, full Career Q&A Studio interview prep, and priority PDF rendering.",
+      a: "Pro unlocks unrestricted access to our OpenAI GPT-4o rewrite engine, unlimited ATS diagnostic scans, all 11 executive resume templates, unlimited public portfolio websites with live URLs, full Career Q&A Studio answer bank, and priority PDF rendering.",
     },
     {
       q: "How does the One-Time Pass work?",

@@ -54,7 +54,7 @@ export default function AddCustomQuestionModal({
                       onClick={() => setCustomQuestionCategory(c.id)}
                       className={`p-2.5 rounded-xl text-xs font-semibold border transition-all text-left flex items-center gap-2 cursor-pointer ${
                         isSelected
-                          ? "bg-purple-50 dark:bg-purple-950/50 border-purple-500 text-purple-600 dark:text-purple-300 ring-1 ring-purple-500"
+                          ? "bg-blue-50 dark:bg-blue-950/50 border-blue-500 text-blue-600 dark:text-blue-300 ring-1 ring-blue-500"
                           : "bg-gray-50 dark:bg-zinc-900 border-gray-200 dark:border-white/10 text-gray-700 dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-800"
                       }`}
                     >
@@ -75,7 +75,7 @@ export default function AddCustomQuestionModal({
               value={customQuestionText}
               onChange={(e) => setCustomQuestionText(e.target.value)}
               placeholder="e.g. How do you approach code reviews and architectural discussions in a fast-paced team?"
-              className="w-full p-4 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:outline-none leading-relaxed font-sans"
+              className="w-full p-4 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none leading-relaxed font-sans"
             />
           </div>
         </div>
@@ -90,7 +90,7 @@ export default function AddCustomQuestionModal({
           </button>
           <button
             onClick={onAddCustomQuestion}
-            className="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold shadow-md shadow-purple-500/20 transition-all active:scale-95 cursor-pointer"
+            className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-500/20 transition-all active:scale-95 cursor-pointer"
           >
             Add Question
           </button>

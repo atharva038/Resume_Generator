@@ -29,7 +29,9 @@ import {
   Loader2,
   ShieldCheck,
   Bot,
+  Sliders,
 } from "lucide-react";
+import Logo from "@/components/common/Logo";
 import {useAuth} from "@/context/AuthContext";
 import {useDarkMode} from "@/context/DarkModeContext";
 import {PageTransition} from "@/components/common";
@@ -329,10 +331,9 @@ const AdminLayout = () => {
             {/* Brand / Logo */}
             <div className="flex items-center gap-2.5 sm:gap-3">
               <div className="w-8 h-8 sm:w-9 sm:h-9 bg-purple-500/10 dark:bg-purple-500/20 rounded-xl flex items-center justify-center border border-purple-500/20 overflow-hidden shrink-0">
-                <img
-                  src="/orb-logo.png"
-                  alt="SmartNShine logo"
+                <Logo
                   className="w-5 h-5 sm:w-6 sm:h-6 object-contain"
+                  alt="SmartNShine logo"
                 />
               </div>
               <div className="flex items-center gap-2">
@@ -586,7 +587,7 @@ const AdminLayout = () => {
           {/* Back to Site */}
           <div className="pt-3 border-t border-gray-100 dark:border-white/10">
             <Link
-              to="/"
+              to="/dashboard"
               onClick={closeMobileMenu}
               className="flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white rounded-xl font-semibold text-xs transition-all shadow-md shadow-purple-500/20"
             >

@@ -5,7 +5,6 @@ import Resume from "../models/Resume.model.js";
 import Portfolio from "../models/Portfolio.model.js";
 import PortfolioProject from "../models/PortfolioProject.model.js";
 import * as aiRouter from "./aiRouter.service.js";
-import * as geminiService from "./gemini.service.js";
 import * as openaiService from "./openai.service.js";
 
 /**
@@ -340,19 +339,8 @@ export const calculateCompleteness = (profile) => {
  * Execute AI prompt with tier-aware fallback
  */
 async function executeAIPrompt(systemPrompt, userPrompt, user) {
-  const userTier = user?.subscription?.tier || "free";
-  const preferredModel = (userTier === "pro" || userTier === "one-time") ? "gpt4o" : "gemini";
-
   try {
-    if (preferredModel === "gemini" && process.env.GEMINI_API_KEY?.trim()) {
-      const response = await geminiService.chatCompletion(systemPrompt, userPrompt, {
-        temperature: 0.3,
-        maxOutputTokens: 2000,
-        jsonMode: true,
-      });
-      const textResult = response?.text || response?.content || (typeof response === "string" ? response : "");
-      if (textResult) return textResult;
-    } else if (process.env.OPENAI_API_KEY?.trim()) {
+    if (process.env.OPENAI_API_KEY?.trim()) {
       const response = await openaiService.chatCompletion(systemPrompt, userPrompt, {
         temperature: 0.3,
         maxTokens: 2000,
@@ -360,43 +348,9 @@ async function executeAIPrompt(systemPrompt, userPrompt, user) {
       });
       const textResult = response?.text || response?.content || (typeof response === "string" ? response : "");
       if (textResult) return textResult;
-    } else if (process.env.GEMINI_API_KEY?.trim()) {
-      const response = await geminiService.chatCompletion(systemPrompt, userPrompt, {
-        temperature: 0.3,
-        maxOutputTokens: 2000,
-        jsonMode: true,
-      });
-      const textResult = response?.text || response?.content || (typeof response === "string" ? response : "");
-      if (textResult) return textResult;
     }
   } catch (error) {
-    console.error("Primary AI Generation Error, attempting backup provider:", error.message);
-    if (process.env.OPENAI_API_KEY?.trim()) {
-      try {
-        const response = await openaiService.chatCompletion(systemPrompt, userPrompt, {
-          temperature: 0.3,
-          maxTokens: 2000,
-          jsonMode: true,
-        });
-        const textResult = response?.text || response?.content || (typeof response === "string" ? response : "");
-        if (textResult) return textResult;
-      } catch (err2) {
-        console.error("Secondary OpenAI fallback error:", err2.message);
-      }
-    }
-    if (process.env.GEMINI_API_KEY?.trim()) {
-      try {
-        const response = await geminiService.chatCompletion(systemPrompt, userPrompt, {
-          temperature: 0.3,
-          maxOutputTokens: 2000,
-          jsonMode: true,
-        });
-        const textResult = response?.text || response?.content || (typeof response === "string" ? response : "");
-        if (textResult) return textResult;
-      } catch (err3) {
-        console.error("Secondary Gemini fallback error:", err3.message);
-      }
-    }
+    console.error("OpenAI Career AI Generation Error:", error.message);
   }
 
   // Graceful structured fallback

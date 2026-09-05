@@ -131,7 +131,7 @@ export default function ProjectQuestionsModal({
                         + Add to Bank
                       </button>
                     </div>
-                    <span className="text-[10px] text-purple-600 dark:text-purple-400 bg-purple-500/10 border border-purple-500/20 px-2 py-0.5 rounded-md font-semibold inline-block">
+                    <span className="text-[10px] text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-2 py-0.5 rounded-md font-semibold inline-block">
                       Focus: {qObj.focusArea}
                     </span>
                   </div>

@@ -34,7 +34,7 @@ const MainLayout = ({children}) => {
       {/* Main Content Area */}
       <div
         className={`transition-all duration-300 ${
-          isSidebarOpen ? "lg:ml-64" : "lg:ml-20"
+          isSidebarOpen ? "lg:ml-72" : "lg:ml-28"
         }`}
       >
         {/* Top Navbar */}

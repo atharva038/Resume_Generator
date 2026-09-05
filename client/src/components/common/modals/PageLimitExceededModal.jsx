@@ -155,9 +155,9 @@ const PageLimitExceededModal = ({
           </div>
 
           {/* Important Note */}
-          <div className="bg-purple-50 dark:bg-purple-900/20 rounded-xl p-4 border border-purple-200 dark:border-purple-700">
+          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-700">
             <p className="text-sm text-gray-700 dark:text-gray-300">
-              <strong className="text-purple-700 dark:text-purple-400">
+              <strong className="text-blue-700 dark:text-blue-400">
                 📌 Best Practice:
               </strong>{" "}
               Most recruiters prefer one-page resumes. They spend an average of
@@ -178,7 +178,7 @@ const PageLimitExceededModal = ({
             </button>
             <button
               onClick={onEnableTwoPages}
-              className="flex-1 px-6 py-3 bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 hover:border-purple-500 dark:hover:border-purple-500 text-gray-700 dark:text-gray-300 hover:text-purple-700 dark:hover:text-purple-400 font-semibold rounded-xl transition-all duration-200 transform hover:scale-105"
+              className="flex-1 px-6 py-3 bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-500 text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-400 font-semibold rounded-xl transition-all duration-200 transform hover:scale-105"
             >
               📄 Enable Two-Page Resume
             </button>

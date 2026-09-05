@@ -31,7 +31,7 @@ export default function PricingBanner() {
             <span>Instant Plan Activation</span>
           </div>
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-gray-100 dark:bg-zinc-800/80 text-gray-700 dark:text-zinc-300 text-xs font-semibold border border-gray-200 dark:border-white/5">
-            <Award className="w-3.5 h-3.5 text-purple-500" />
+            <Award className="w-3.5 h-3.5 text-blue-500" />
             <span>Cancel Anytime</span>
           </div>
         </div>

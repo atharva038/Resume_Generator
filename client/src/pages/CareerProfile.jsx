@@ -295,11 +295,7 @@ export default function CareerProfile() {
   };
 
   const handleGoBack = () => {
-    if (window.opener) {
-      window.close();
-    } else {
-      navigate("/");
-    }
+    navigate("/dashboard");
   };
 
   if (loading) {

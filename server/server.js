@@ -40,7 +40,6 @@ dotenv.config();
 // =========================================
 
 // Validate critical environment variables
-// NOTE: GEMINI_API_KEY is optional. The app can run with OpenAI only.
 const requiredEnvVars = ["MONGODB_URI", "JWT_SECRET"];
 const missingEnvVars = requiredEnvVars.filter((envVar) => !process.env[envVar]);
 
@@ -53,27 +52,21 @@ if (missingEnvVars.length > 0) {
   process.exit(1);
 }
 
-// Validate GEMINI_API_KEY format
-if (process.env.GEMINI_API_KEY) {
-  const apiKey = process.env.GEMINI_API_KEY.trim();
-  if (apiKey.length < 20 || !apiKey.startsWith("AIzaSy")) {
-    console.error("❌ GEMINI_API_KEY appears to be invalid");
-    console.error(
-      `   Current key: ${apiKey.substring(0, 10)}...${apiKey.substring(
-        apiKey.length - 4
-      )}`
-    );
-    console.error(
-      "💡 Please get a valid API key from: https://aistudio.google.com/app/apikey"
-    );
+// Validate OPENAI_API_KEY format
+if (process.env.OPENAI_API_KEY) {
+  const apiKey = process.env.OPENAI_API_KEY.trim();
+  if (apiKey.length < 20) {
+    console.error("❌ OPENAI_API_KEY appears to be invalid (too short)");
   } else {
     console.log(
-      `✅ GEMINI_API_KEY is present (${apiKey.substring(
+      `✅ OPENAI_API_KEY is present (${apiKey.substring(
         0,
-        10
+        7
       )}...${apiKey.substring(apiKey.length - 4)})`
     );
   }
+} else {
+  console.warn("⚠️  OPENAI_API_KEY not configured - set OPENAI_API_KEY in .env");
 }
 
 // Warn about optional OAuth variables
@@ -92,10 +85,10 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // ==========================================
-// TRUST PROXY (Must be set first for Render/Vercel/etc.)
+// TRUST PROXY (Must be set first for reverse proxies)
 // ==========================================
 
-// Enable trust proxy for apps behind reverse proxies (Render, Vercel, Nginx, etc.)
+// Enable trust proxy for apps behind reverse proxies (Nginx, Vercel, Cloudflare, etc.)
 // This allows Express to correctly read X-Forwarded-* headers
 app.set("trust proxy", 1); // Trust first proxy
 

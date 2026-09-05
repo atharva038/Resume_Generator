@@ -929,7 +929,7 @@ export const CustomSectionsManager = ({resumeData, updateField}) => {
         <h2 className="section-title mb-0">Custom Sections</h2>
         <button
           onClick={addCustomSection}
-          className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors"
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
         >
           + Add Custom Section
         </button>
@@ -1106,7 +1106,7 @@ const CustomSectionItem = ({section, index, onUpdate, onRemove}) => {
             className={`w-full py-2 px-4 rounded-lg font-medium transition-all text-sm ${
               isLoading || !contentInput.trim() || !section.title.trim()
                 ? "bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
-                : "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-md hover:shadow-lg"
+                : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg"
             }`}
           >
             {isLoading ? (

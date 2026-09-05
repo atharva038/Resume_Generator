@@ -251,7 +251,7 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
               <Github className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -276,8 +276,8 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
           {/* Step 1: Confirmation */}
           {step === "confirm" && (
             <div className="max-w-md mx-auto text-center space-y-6">
-              <div className="w-20 h-20 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mx-auto">
-                <Github className="w-10 h-10 text-purple-600 dark:text-purple-400" />
+              <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto">
+                <Github className="w-10 h-10 text-blue-600 dark:text-blue-400" />
               </div>
               <div>
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
@@ -303,7 +303,7 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
                       e.key === "Enter" && handleFetchGithubData()
                     }
                     placeholder="e.g., octocat"
-                    className="w-full pl-11 pr-4 py-3 bg-gray-50 dark:bg-gray-900/50 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:border-purple-500 dark:focus:border-purple-400 focus:outline-none transition-colors text-gray-900 dark:text-white"
+                    className="w-full pl-11 pr-4 py-3 bg-gray-50 dark:bg-gray-900/50 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none transition-colors text-gray-900 dark:text-white"
                     disabled={loading}
                   />
                 </div>
@@ -328,7 +328,7 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
                 <button
                   onClick={handleFetchGithubData}
                   disabled={loading || !username.trim()}
-                  className="flex-1 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
                 >
                   {loading ? (
                     <>
@@ -355,7 +355,7 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
                   onClick={() => setActiveTab("projects")}
                   className={`px-4 py-2 font-semibold transition-colors relative whitespace-nowrap ${
                     activeTab === "projects"
-                      ? "text-purple-600 dark:text-purple-400"
+                      ? "text-blue-600 dark:text-blue-400"
                       : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
                   }`}
                 >
@@ -364,7 +364,7 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
                   <span
                     className={
                       selectedItems.projects.length > 0
-                        ? "text-purple-600 dark:text-purple-400"
+                        ? "text-blue-600 dark:text-blue-400"
                         : ""
                     }
                   >
@@ -372,14 +372,14 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
                     {githubData.topRepositories?.length || 0})
                   </span>
                   {activeTab === "projects" && (
-                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-600 to-pink-600"></div>
+                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-600 to-indigo-600"></div>
                   )}
                 </button>
                 <button
                   onClick={() => setActiveTab("skills")}
                   className={`px-4 py-2 font-semibold transition-colors relative whitespace-nowrap ${
                     activeTab === "skills"
-                      ? "text-purple-600 dark:text-purple-400"
+                      ? "text-blue-600 dark:text-blue-400"
                       : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
                   }`}
                 >
@@ -388,7 +388,7 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
                   <span
                     className={
                       selectedItems.skills.length > 0
-                        ? "text-purple-600 dark:text-purple-400"
+                        ? "text-blue-600 dark:text-blue-400"
                         : ""
                     }
                   >
@@ -396,14 +396,14 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
                     {githubData.skills?.languages?.length || 0})
                   </span>
                   {activeTab === "skills" && (
-                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-600 to-pink-600"></div>
+                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-600 to-indigo-600"></div>
                   )}
                 </button>
                 <button
                   onClick={() => setActiveTab("experience")}
                   className={`px-4 py-2 font-semibold transition-colors relative whitespace-nowrap ${
                     activeTab === "experience"
-                      ? "text-purple-600 dark:text-purple-400"
+                      ? "text-blue-600 dark:text-blue-400"
                       : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
                   }`}
                 >
@@ -412,7 +412,7 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
                   <span
                     className={
                       selectedItems.experience.length > 0
-                        ? "text-purple-600 dark:text-purple-400"
+                        ? "text-blue-600 dark:text-blue-400"
                         : ""
                     }
                   >
@@ -420,14 +420,14 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
                     {githubData.experience?.length || 0})
                   </span>
                   {activeTab === "experience" && (
-                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-600 to-pink-600"></div>
+                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-600 to-indigo-600"></div>
                   )}
                 </button>
                 <button
                   onClick={() => setActiveTab("certifications")}
                   className={`px-4 py-2 font-semibold transition-colors relative whitespace-nowrap ${
                     activeTab === "certifications"
-                      ? "text-purple-600 dark:text-purple-400"
+                      ? "text-blue-600 dark:text-blue-400"
                       : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
                   }`}
                 >
@@ -436,7 +436,7 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
                   <span
                     className={
                       selectedItems.certifications.length > 0
-                        ? "text-purple-600 dark:text-purple-400"
+                        ? "text-blue-600 dark:text-blue-400"
                         : ""
                     }
                   >
@@ -444,21 +444,21 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
                     {githubData.certifications?.length || 0})
                   </span>
                   {activeTab === "certifications" && (
-                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-600 to-pink-600"></div>
+                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-600 to-indigo-600"></div>
                   )}
                 </button>
                 <button
                   onClick={() => setActiveTab("profile")}
                   className={`px-4 py-2 font-semibold transition-colors relative whitespace-nowrap ${
                     activeTab === "profile"
-                      ? "text-purple-600 dark:text-purple-400"
+                      ? "text-blue-600 dark:text-blue-400"
                       : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
                   }`}
                 >
                   <User className="w-4 h-4 inline mr-2" />
                   Profile
                   {activeTab === "profile" && (
-                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-600 to-pink-600"></div>
+                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-600 to-indigo-600"></div>
                   )}
                 </button>
               </div>
@@ -472,7 +472,7 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
                     </h3>
                     <button
                       onClick={selectAllProjects}
-                      className="text-sm text-purple-600 dark:text-purple-400 hover:underline font-medium"
+                      className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-medium"
                     >
                       Select All
                     </button>
@@ -495,7 +495,7 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
                           }
                           className={`px-3 py-1.5 text-sm rounded-lg font-medium transition-colors ${
                             mergeOptions.projects === "add"
-                              ? "bg-purple-600 text-white"
+                              ? "bg-blue-600 text-white"
                               : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600"
                           }`}
                         >
@@ -510,7 +510,7 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
                           }
                           className={`px-3 py-1.5 text-sm rounded-lg font-medium transition-colors ${
                             mergeOptions.projects === "replace"
-                              ? "bg-purple-600 text-white"
+                              ? "bg-blue-600 text-white"
                               : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600"
                           }`}
                         >
@@ -526,8 +526,8 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
                         key={idx}
                         className={`p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 ${
                           selectedItems.projects.includes(idx)
-                            ? "border-purple-500 bg-purple-50 dark:bg-purple-900/20"
-                            : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 hover:border-purple-300 dark:hover:border-purple-600"
+                            ? "border-blue-500 bg-blue-50 dark:bg-blue-950/20"
+                            : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 hover:border-blue-300 dark:hover:border-blue-600"
                         }`}
                         onClick={() => toggleProjectSelection(idx)}
                       >
@@ -536,7 +536,7 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
                             type="checkbox"
                             checked={selectedItems.projects.includes(idx)}
                             onChange={() => toggleProjectSelection(idx)}
-                            className="mt-1 w-5 h-5 text-purple-600 rounded focus:ring-purple-500"
+                            className="mt-1 w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
                           />
                           <div className="flex-1">
                             <h4 className="font-semibold text-gray-900 dark:text-white">
@@ -574,7 +574,7 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
                     </h3>
                     <button
                       onClick={selectAllSkills}
-                      className="text-sm text-purple-600 dark:text-purple-400 hover:underline font-medium"
+                      className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-medium"
                     >
                       Select All
                     </button>
@@ -596,7 +596,7 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
                           }
                           className={`px-3 py-1.5 text-sm rounded-lg font-medium transition-colors ${
                             mergeOptions.skills === "add"
-                              ? "bg-purple-600 text-white"
+                              ? "bg-blue-600 text-white"
                               : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600"
                           }`}
                         >
@@ -611,7 +611,7 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
                           }
                           className={`px-3 py-1.5 text-sm rounded-lg font-medium transition-colors ${
                             mergeOptions.skills === "replace"
-                              ? "bg-purple-600 text-white"
+                              ? "bg-blue-600 text-white"
                               : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600"
                           }`}
                         >
@@ -627,8 +627,8 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
                         key={idx}
                         className={`p-3 border-2 rounded-xl cursor-pointer transition-all duration-200 ${
                           selectedItems.skills.includes(idx)
-                            ? "border-purple-500 bg-purple-50 dark:bg-purple-900/20"
-                            : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 hover:border-purple-300 dark:hover:border-purple-600"
+                            ? "border-blue-500 bg-blue-50 dark:bg-blue-950/20"
+                            : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 hover:border-blue-300 dark:hover:border-blue-600"
                         }`}
                         onClick={() => toggleSkillSelection(idx)}
                       >
@@ -637,7 +637,7 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
                             type="checkbox"
                             checked={selectedItems.skills.includes(idx)}
                             onChange={() => toggleSkillSelection(idx)}
-                            className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500"
+                            className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                           />
                           <div className="flex-1">
                             <span className="font-semibold text-gray-900 dark:text-white">
@@ -663,7 +663,7 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
                     </h3>
                     <button
                       onClick={selectAllExperience}
-                      className="text-sm text-purple-600 dark:text-purple-400 hover:underline font-medium"
+                      className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-medium"
                     >
                       Select All
                     </button>
@@ -686,7 +686,7 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
                           }
                           className={`px-3 py-1.5 text-sm rounded-lg font-medium transition-colors ${
                             mergeOptions.experience === "add"
-                              ? "bg-purple-600 text-white"
+                              ? "bg-blue-600 text-white"
                               : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600"
                           }`}
                         >
@@ -701,7 +701,7 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
                           }
                           className={`px-3 py-1.5 text-sm rounded-lg font-medium transition-colors ${
                             mergeOptions.experience === "replace"
-                              ? "bg-purple-600 text-white"
+                              ? "bg-blue-600 text-white"
                               : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600"
                           }`}
                         >
@@ -717,8 +717,8 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
                         key={idx}
                         className={`p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 ${
                           selectedItems.experience.includes(idx)
-                            ? "border-purple-500 bg-purple-50 dark:bg-purple-900/20"
-                            : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 hover:border-purple-300 dark:hover:border-purple-600"
+                            ? "border-blue-500 bg-blue-50 dark:bg-blue-950/20"
+                            : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 hover:border-blue-300 dark:hover:border-blue-600"
                         }`}
                         onClick={() => toggleExperienceSelection(idx)}
                       >
@@ -727,13 +727,13 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
                             type="checkbox"
                             checked={selectedItems.experience.includes(idx)}
                             onChange={() => toggleExperienceSelection(idx)}
-                            className="mt-1 w-5 h-5 text-purple-600 rounded focus:ring-purple-500"
+                            className="mt-1 w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
                           />
                           <div className="flex-1">
                             <h4 className="font-semibold text-gray-900 dark:text-white">
                               {exp.position}
                             </h4>
-                            <p className="text-sm text-purple-600 dark:text-purple-400">
+                            <p className="text-sm text-blue-600 dark:text-blue-400">
                               {exp.company}
                             </p>
                             <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
@@ -768,7 +768,7 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
                     </h3>
                     <button
                       onClick={selectAllCertifications}
-                      className="text-sm text-purple-600 dark:text-purple-400 hover:underline font-medium"
+                      className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-medium"
                     >
                       Select All
                     </button>
@@ -791,7 +791,7 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
                           }
                           className={`px-3 py-1.5 text-sm rounded-lg font-medium transition-colors ${
                             mergeOptions.certifications === "add"
-                              ? "bg-purple-600 text-white"
+                              ? "bg-blue-600 text-white"
                               : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600"
                           }`}
                         >
@@ -806,7 +806,7 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
                           }
                           className={`px-3 py-1.5 text-sm rounded-lg font-medium transition-colors ${
                             mergeOptions.certifications === "replace"
-                              ? "bg-purple-600 text-white"
+                              ? "bg-blue-600 text-white"
                               : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600"
                           }`}
                         >
@@ -822,8 +822,8 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
                         key={idx}
                         className={`p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 ${
                           selectedItems.certifications.includes(idx)
-                            ? "border-purple-500 bg-purple-50 dark:bg-purple-900/20"
-                            : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 hover:border-purple-300 dark:hover:border-purple-600"
+                            ? "border-blue-500 bg-blue-50 dark:bg-blue-950/20"
+                            : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 hover:border-blue-300 dark:hover:border-blue-600"
                         }`}
                         onClick={() => toggleCertificationSelection(idx)}
                       >
@@ -832,7 +832,7 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
                             type="checkbox"
                             checked={selectedItems.certifications.includes(idx)}
                             onChange={() => toggleCertificationSelection(idx)}
-                            className="mt-1 w-5 h-5 text-purple-600 rounded focus:ring-purple-500"
+                            className="mt-1 w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
                           />
                           <div className="flex-1">
                             <div className="flex items-start justify-between">
@@ -866,8 +866,8 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
                   <div
                     className={`p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 ${
                       selectedItems.profile
-                        ? "border-purple-500 bg-purple-50 dark:bg-purple-900/20"
-                        : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 hover:border-purple-300 dark:hover:border-purple-600"
+                        ? "border-blue-500 bg-blue-50 dark:bg-blue-950/20"
+                        : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 hover:border-blue-300 dark:hover:border-blue-600"
                     }`}
                     onClick={() =>
                       setSelectedItems((prev) => ({
@@ -886,7 +886,7 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
                             profile: !prev.profile,
                           }))
                         }
-                        className="mt-1 w-5 h-5 text-purple-600 rounded focus:ring-purple-500"
+                        className="mt-1 w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
                       />
                       <img
                         src={githubData.profile.avatar}
@@ -923,7 +923,7 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-600 dark:text-gray-400">
                 {hasSelections() ? (
-                  <span className="font-medium text-purple-600 dark:text-purple-400">
+                  <span className="font-medium text-blue-600 dark:text-blue-400">
                     {selectedItems.projects.length} project(s),{" "}
                     {selectedItems.skills.length} skill(s),{" "}
                     {selectedItems.experience.length} experience(s),{" "}
@@ -951,7 +951,7 @@ const GitHubImportModal = ({isOpen, onClose, onImport, currentResume}) => {
                 <button
                   onClick={handleImport}
                   disabled={!hasSelections()}
-                  className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center gap-2"
+                  className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center gap-2"
                 >
                   <CheckCircle2 className="w-5 h-5" />
                   Add to Resume

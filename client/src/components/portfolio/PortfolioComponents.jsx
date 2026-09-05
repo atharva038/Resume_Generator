@@ -58,7 +58,7 @@ export const SectionHeading = ({
       <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
         {title}
         {highlight && (
-          <span className="bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
             {" "}
             {highlight}
           </span>
@@ -85,7 +85,7 @@ export const AnimatedButton = ({
 
   const variants = {
     primary:
-      "bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:shadow-lg hover:shadow-blue-500/50 hover:scale-105",
+      "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-lg hover:shadow-blue-500/50 hover:scale-105",
     secondary:
       "border border-white/20 text-white hover:bg-white/10 hover:border-white/40",
     ghost: "text-gray-300 hover:text-white hover:bg-white/5",
@@ -120,7 +120,7 @@ export const StatCard = ({ number, label, suffix = "" }) => {
         transition={{ duration: 0.6 }}
         viewport={{ once: true }}
       >
-        <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent mb-2">
+        <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent mb-2">
           {number}
           {suffix}
         </div>
@@ -140,7 +140,7 @@ export const TechBadge = ({ name, delay = 0 }) => {
       whileInView={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.4, delay }}
       viewport={{ once: true }}
-      className="px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-400/30 text-blue-300 text-sm font-medium hover:border-blue-400/60 transition-all duration-300"
+      className="px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-400/30 text-blue-300 text-sm font-medium hover:border-blue-400/60 transition-all duration-300"
     >
       {name}
     </motion.div>
@@ -165,7 +165,7 @@ export const ProjectCard = ({
       hover={true}
     >
       {/* Gradient background on hover */}
-      <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
       <div className="relative z-10">
         <h3 className="text-xl font-bold text-white mb-2">{title}</h3>
@@ -228,7 +228,7 @@ export const SkillBar = ({ name, level, delay = 0 }) => {
           whileInView={{ width: `${level}%` }}
           transition={{ duration: 1, delay: delay + 0.2 }}
           viewport={{ once: true }}
-          className="h-full bg-gradient-to-r from-blue-400 to-purple-500 rounded-full"
+          className="h-full bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full"
         />
       </div>
     </motion.div>
@@ -255,7 +255,7 @@ export const TimelineItem = ({
       className="relative"
     >
       {/* Timeline dot */}
-      <div className="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full border-2 border-black -top-2" />
+      <div className="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full border-2 border-black -top-2" />
 
       <GlassCard className={`p-6 ${index % 2 === 0 ? "mr-auto" : "ml-auto"} w-full md:w-[calc(50%-2rem)]`}>
         <div className="text-blue-400 text-sm font-semibold mb-1">

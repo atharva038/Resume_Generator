@@ -928,7 +928,7 @@ export default function PortfolioEditor() {
                     type="button"
                     onClick={handleGenerateAbout}
                     disabled={Boolean(aiAction)}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 text-xs sm:text-sm font-bold hover:bg-purple-100 transition-all cursor-pointer disabled:opacity-50"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-xs sm:text-sm font-bold hover:bg-blue-100 transition-all cursor-pointer disabled:opacity-50"
                   >
                     <Sparkles className="w-4 h-4" />
                     <span>{aiAction === "about" ? "Generating..." : "Generate with AI"}</span>
@@ -1080,7 +1080,7 @@ export default function PortfolioEditor() {
                           type="button"
                           onClick={() => handleImproveProject(project)}
                           disabled={Boolean(aiAction)}
-                          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 text-xs sm:text-sm font-bold hover:bg-purple-100 transition-all cursor-pointer disabled:opacity-50"
+                          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-xs sm:text-sm font-bold hover:bg-blue-100 transition-all cursor-pointer disabled:opacity-50"
                         >
                           <Sparkles className="w-4 h-4" />
                           <span>{aiAction === `project:${project._id}` ? "Improving..." : "AI Improve"}</span>
@@ -1750,7 +1750,7 @@ export default function PortfolioEditor() {
                   type="button"
                   onClick={handleGenerateSeo}
                   disabled={Boolean(aiAction)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 text-xs sm:text-sm font-bold hover:bg-purple-100 transition-all cursor-pointer disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-xs sm:text-sm font-bold hover:bg-blue-100 transition-all cursor-pointer disabled:opacity-50"
                 >
                   <Sparkles className="w-4 h-4" />
                   <span>{aiAction === "seo" ? "Generating..." : "AI SEO"}</span>

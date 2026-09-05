@@ -15,9 +15,11 @@ import {
   UserCircle,
   Tag,
   Mic,
-  TrendingUp
+  TrendingUp,
+  FileText,
 } from "lucide-react";
 import {useAuth} from "@/context/AuthContext";
+import Logo from "@/components/common/Logo";
 
 const Sidebar = ({ isOpen, setIsOpen }) => {
   const location = useLocation();
@@ -26,10 +28,18 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
 
   const navLinks = [
     {
-      name: "Home",
-      path: "/",
-      icon: Home,
-      description: "Back to homepage",
+      name: "Dashboard",
+      path: "/dashboard",
+      icon: LayoutDashboard,
+      description: "Platform Command Center",
+      requiresAuth: true,
+    },
+    {
+      name: "My Resumes",
+      path: "/my-resumes",
+      icon: FileText,
+      description: "Manage your resumes",
+      requiresAuth: true,
     },
     {
       name: "Templates",
@@ -48,19 +58,6 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
       path: "/ats-analyzer",
       icon: Target,
       description: "Check ATS compatibility",
-    },
-    {
-      name: "AI Interview",
-      path: "/interview",
-      icon: Mic,
-      description: "Practice mock interviews",
-      badge: "NEW",
-    },
-    {
-      name: "My Resumes",
-      path: "/my-resumes",
-      icon: LayoutDashboard,
-      description: "Manage your resumes",
     },
     {
       name: "Career Profile",
@@ -112,6 +109,12 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
       icon: Mail,
       description: "Get in touch",
     },
+    {
+      name: "Landing Page",
+      path: "/landing-preview",
+      icon: Home,
+      description: "Explore Landing",
+    },
   ];
 
   const isActivePath = (path) => {
@@ -125,65 +128,81 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
       {/* Mobile Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm"
+          className="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-xs"
           onClick={() => setIsOpen(false)}
         ></div>
       )}
 
-      {/* Sidebar */}
+      {/* Floating Sidebar (curved from top and bottom, not connected to screen) */}
       <aside
-        className={`fixed top-0 left-0 h-screen bg-white dark:bg-black border-r border-gray-200 dark:border-white/10 z-50 overflow-hidden will-change-transform will-change-[width] transition-[width,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-          isOpen
-            ? "translate-x-0 w-64"
-            : "-translate-x-full w-64 lg:translate-x-0 lg:w-20"
-        }`}
+        className={`fixed z-50 overflow-hidden will-change-transform will-change-[width] transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]
+          /* Detached floating offsets: space at top, bottom, and left */
+          top-3 bottom-3 left-3 lg:top-3.5 lg:bottom-3.5 lg:left-3.5
+          /* Curvature at top and bottom */
+          rounded-2xl lg:rounded-3xl
+          /* Elevated floating surface */
+          bg-white/95 dark:bg-[#0c0c0e]/95 backdrop-blur-xl
+          border border-gray-200/85 dark:border-white/10
+          shadow-[0_10px_35px_-5px_rgba(0,0,0,0.08),0_2px_8px_-2px_rgba(0,0,0,0.04)]
+          dark:shadow-[0_20px_45px_-10px_rgba(0,0,0,0.7),0_0_1px_1px_rgba(255,255,255,0.05)]
+          ${
+            isOpen
+              ? "translate-x-0 w-[calc(100vw-1.5rem)] max-w-72 lg:w-64"
+              : "-translate-x-[120%] w-64 lg:translate-x-0 lg:w-20"
+          }
+        `}
       >
         <div className="flex flex-col h-full">
           {/* Logo Section */}
-          <div className="h-16 flex items-center justify-between px-4 border-b border-gray-200 dark:border-white/10">
+          <div className="h-16 flex items-center justify-between px-3.5 border-b border-gray-200/80 dark:border-white/10">
             {/* Expanded Logo */}
-            {isOpen && (
-              <Link
-                to="/"
-                className="flex items-center text-xl font-bold group"
-              >
-                <img
-                  src="/orb-logo.png"
-                  alt=""
-                  className="h-16 w-auto object-contain group-hover:scale-105 transition-all duration-300 -mr-1 dark:brightness-100 dark:saturate-100 brightness-50 contrast-125 saturate-200"
-                />
-                <span className="bg-gradient-to-r from-[#5d8ff0] via-[#6f7fe4] to-[#8b67df] dark:from-[#6aa0ff] dark:via-[#7f8ce7] dark:to-[#9b78ea] bg-clip-text text-transparent tracking-tight">
-                  SmartNShine
-                </span>
-              </Link>
-            )}
+            {isOpen ? (
+              <>
+                <Link
+                  to={user ? "/dashboard" : "/"}
+                  className="flex items-center gap-2.5 text-lg font-extrabold tracking-tight text-zinc-950 dark:text-white group overflow-hidden"
+                >
+                  <Logo
+                    className="w-8 h-8 object-contain group-hover:scale-105 transition-transform duration-200 flex-shrink-0"
+                    alt="SmartNShine Logo"
+                  />
+                  <span className="leading-none font-black tracking-tight truncate">
+                    SmartNShine
+                  </span>
+                </Link>
 
-            {/* Collapsed Logo Icon */}
-            {!isOpen && (
-              <Link
-                to="/"
-                className="hidden lg:flex items-center justify-center w-full group"
-              >
-                <img
-                  src="/orb-logo.png"
-                  alt="SmartNShine"
-                  className="h-16 w-auto object-contain group-hover:scale-105 transition-all duration-300 dark:brightness-100 dark:saturate-100 brightness-50 contrast-125 saturate-200"
-                />
-              </Link>
+                {/* Toggle Button (Desktop) */}
+                <button
+                  onClick={() => setIsOpen(!isOpen)}
+                  className="hidden lg:flex items-center justify-center w-8 h-8 rounded-xl hover:bg-gray-100 dark:hover:bg-zinc-800 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all duration-200 flex-shrink-0"
+                  title="Collapse sidebar"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+              </>
+            ) : (
+              /* Collapsed Header: Clean vertical layout with logo and dedicated expand button */
+              <div className="w-full flex flex-col items-center justify-center gap-1.5 py-1">
+                <Link
+                  to={user ? "/dashboard" : "/"}
+                  className="flex items-center justify-center p-0.5 rounded-xl hover:opacity-85 transition-opacity"
+                  title="SmartNShine Dashboard"
+                >
+                  <Logo
+                    className="w-8 h-8 object-contain"
+                    alt="SmartNShine Logo"
+                  />
+                </Link>
+                <button
+                  onClick={() => setIsOpen(true)}
+                  className="w-8 h-4.5 rounded-full bg-zinc-100 dark:bg-zinc-800/90 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200/80 dark:border-white/10 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white flex items-center justify-center transition-all active:scale-90 shadow-2xs cursor-pointer group"
+                  title="Expand sidebar"
+                  aria-label="Expand sidebar"
+                >
+                  <ChevronRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                </button>
+              </div>
             )}
-
-            {/* Toggle Button (Desktop) */}
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="hidden lg:flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-50 dark:hover:bg-zinc-900 text-gray-600 dark:text-gray-400 transition-all duration-200"
-              title={isOpen ? "Collapse sidebar" : "Expand sidebar"}
-            >
-              {isOpen ? (
-                <ChevronLeft className="w-4 h-4" />
-              ) : (
-                <ChevronRight className="w-4 h-4" />
-              )}
-            </button>
           </div>
 
           {/* Navigation Links */}
@@ -194,18 +213,21 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                 <BlockableLink
                   to="/admin/dashboard"
                   onClick={() => setIsOpen(false)}
-                  className={`group flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
+                  className={`group flex items-center gap-3 py-2.5 rounded-xl transition-all duration-200 ${
+                    !isOpen ? "justify-center px-0" : "px-3"
+                  } ${
                     location.pathname.startsWith("/admin")
-                      ? "bg-gray-900/10 text-gray-900 dark:bg-white/10 dark:text-white"
-                      : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-zinc-900 hover:text-gray-900 dark:hover:text-white"
+                      ? "bg-gray-900/10 text-gray-900 dark:bg-white/10 dark:text-white font-semibold"
+                      : "text-gray-600 dark:text-gray-400 hover:bg-gray-100/80 dark:hover:bg-zinc-800/80 hover:text-gray-900 dark:hover:text-white"
                   }`}
                   title={!isOpen ? "Admin Panel" : ""}
                 >
                   <Shield
-                    className={`w-5 h-5 flex-shrink-0 ${location.pathname.startsWith("/admin")
-                      ? ""
-                      : "group-hover:scale-110 transition-transform duration-200"
-                      }`}
+                    className={`w-5 h-5 flex-shrink-0 ${
+                      location.pathname.startsWith("/admin")
+                        ? ""
+                        : "group-hover:scale-110 transition-transform duration-200"
+                    }`}
                   />
                   {isOpen && (
                     <span className="font-medium text-sm">Admin Panel</span>
@@ -226,18 +248,21 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                 const Icon = link.icon;
                 const isActive = isActivePath(link.path);
 
-                const linkClass = `group flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
+                const linkClass = `group flex items-center gap-3 py-2.5 rounded-xl transition-all duration-200 ${
+                  !isOpen ? "justify-center px-0" : "px-3"
+                } ${
                   isActive
-                    ? "bg-gray-900/10 text-gray-900 dark:bg-white/10 dark:text-white"
-                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-zinc-900 hover:text-gray-900 dark:hover:text-white"
+                    ? "bg-gray-900/10 text-gray-900 dark:bg-white/10 dark:text-white font-semibold"
+                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-100/80 dark:hover:bg-zinc-800/80 hover:text-gray-900 dark:hover:text-white"
                 }`;
 
                 const content = (
                   <>
                     <Icon
-                      className={`w-5 h-5 flex-shrink-0 ${!isActive &&
+                      className={`w-5 h-5 flex-shrink-0 ${
+                        !isActive &&
                         "group-hover:scale-110 transition-transform duration-200"
-                        }`}
+                      }`}
                     />
                     {isOpen && (
                       <div className="flex-1 flex items-center justify-between">
@@ -279,7 +304,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             </div>
 
             {/* Bottom Navigation Links (Profile, Pricing & Contact) */}
-            <div className="space-y-1 mt-auto pt-2 border-t border-gray-200 dark:border-white/10">
+            <div className="space-y-1 mt-auto pt-2 border-t border-gray-200/80 dark:border-white/10">
               {navLinks.slice(-3).map((link) => {
                 // Skip Profile link if user is not logged in
                 if (link.requiresAuth && !user) return null;
@@ -287,10 +312,12 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                 const Icon = link.icon;
                 const isActive = isActivePath(link.path);
 
-                const linkClass = `group flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
+                const linkClass = `group flex items-center gap-3 py-2.5 rounded-xl transition-all duration-200 ${
+                  !isOpen ? "justify-center px-0" : "px-3"
+                } ${
                   isActive
-                    ? "bg-gray-900/10 text-gray-900 dark:bg-white/10 dark:text-white"
-                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-zinc-900 hover:text-gray-900 dark:hover:text-white"
+                    ? "bg-gray-900/10 text-gray-900 dark:bg-white/10 dark:text-white font-semibold"
+                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-100/80 dark:hover:bg-zinc-800/80 hover:text-gray-900 dark:hover:text-white"
                 }`;
 
                 const content = (
@@ -329,13 +356,22 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
           </nav>
 
           {/* Footer */}
-          {isOpen && (
-            <div className="border-t border-gray-200 dark:border-white/10 p-4">
-              <p className="text-xs text-gray-500 dark:text-gray-500 text-center font-medium">
+          <div className="border-t border-gray-200/80 dark:border-white/10 p-3">
+            {isOpen ? (
+              <p className="text-[11px] text-gray-500 dark:text-gray-400 text-center font-medium">
                 © 2026 SmartNShine
               </p>
-            </div>
-          )}
+            ) : (
+              <button
+                onClick={() => setIsOpen(true)}
+                className="hidden lg:flex items-center justify-center w-full py-1.5 rounded-xl text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800/80 transition-all cursor-pointer"
+                title="Expand sidebar"
+                aria-label="Expand sidebar"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            )}
+          </div>
         </div>
       </aside>
     </>

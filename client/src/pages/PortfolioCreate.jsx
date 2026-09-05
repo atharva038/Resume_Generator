@@ -122,7 +122,7 @@ export default function PortfolioCreate() {
 
               <div className="rounded-2xl bg-white dark:bg-zinc-900 p-4 border border-gray-100 dark:border-white/[0.06] shadow-xs space-y-1.5">
                 <div className="flex items-center gap-2 font-bold text-gray-950 dark:text-white">
-                  <span className="w-5 h-5 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center text-[11px] font-bold">2</span>
+                  <span className="w-5 h-5 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-[11px] font-bold">2</span>
                   <span>Refine & Theme</span>
                 </div>
                 <p className="text-gray-600 dark:text-zinc-400 leading-relaxed">

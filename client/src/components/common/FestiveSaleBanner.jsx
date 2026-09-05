@@ -79,7 +79,7 @@ export default function FestiveSaleBanner({ promotion, onDismiss }) {
         };
       case "vibrant-indigo":
         return {
-          container: "bg-gradient-to-r from-indigo-700 via-purple-600 to-pink-600 text-white",
+          container: "bg-gradient-to-r from-blue-700 via-indigo-600 to-cyan-600 text-white",
           badge: "bg-white/20 text-indigo-100 border-white/30",
           badgeIcon: "text-yellow-300",
           titleText: "text-yellow-200 font-black",

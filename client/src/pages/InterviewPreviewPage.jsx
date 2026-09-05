@@ -223,7 +223,7 @@ export default function InterviewPreviewPage() {
               onClick={() => setSelectedVoice("rachel")}
               className={`px-2.5 py-1 text-xs rounded-lg font-medium transition-all ${
                 selectedVoice === "rachel"
-                  ? "bg-purple-600 text-white shadow-sm font-semibold"
+                  ? "bg-indigo-600 text-white shadow-sm font-semibold"
                   : isDarkMode ? "text-gray-400 hover:text-white" : "text-slate-600 hover:text-slate-900"
               }`}
             >

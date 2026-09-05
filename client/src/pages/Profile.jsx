@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import SEO from "@/components/common/SEO";
-import { User, CreditCard, Shield } from "lucide-react";
+import { User, CreditCard, Shield, ArrowLeft } from "lucide-react";
 import SubscriptionDashboard from "./SubscriptionDashboard";
 import {
   ProfileBanner,
@@ -45,6 +46,17 @@ export default function Profile() {
       />
 
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+        {/* Back to Dashboard Breadcrumb */}
+        <div>
+          <Link
+            to="/dashboard"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-gray-900 dark:text-zinc-400 dark:hover:text-white transition-colors group"
+          >
+            <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
+            <span>Back to Dashboard</span>
+          </Link>
+        </div>
+
         {/* Top Hero Banner */}
         <ProfileBanner user={user} currentTier={currentTier} />
 

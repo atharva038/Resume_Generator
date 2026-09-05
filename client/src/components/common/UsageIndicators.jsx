@@ -4,6 +4,29 @@ import {FaCrown, FaExclamationTriangle} from "react-icons/fa";
 import {getUsageStats} from "@/api/subscription.api";
 import {authStorage} from "@/utils/storage";
 
+const normalizeUsageData = (data) => {
+  if (!data) return null;
+  const statsUsage = data?.stats?.usage;
+  const isProOrAdmin = data?.stats?.tier === "pro" || data?.stats?.isAdmin;
+  if (!statsUsage) return data;
+
+  const getLimit = (item) => {
+    if (isProOrAdmin || item?.unlimited || item?.limit === null || item?.limit === Infinity) {
+      return Infinity;
+    }
+    return typeof item?.limit === "number" ? item.limit : 0;
+  };
+
+  return {
+    resumesUsed: statsUsage.resumes?.used || 0,
+    resumesLimit: getLimit(statsUsage.resumes),
+    atsScansUsed: statsUsage.atsScans?.used || 0,
+    atsScansLimit: getLimit(statsUsage.atsScans),
+    coverLettersUsed: statsUsage.coverLetters?.used || 0,
+    coverLettersLimit: getLimit(statsUsage.coverLetters),
+  };
+};
+
 /**
  * Usage Badge Component
  * Shows current tier and usage warnings
@@ -19,10 +42,11 @@ export const UsageBadge = ({compact = false}) => {
   const fetchUsage = async () => {
     try {
       const data = await getUsageStats();
-      setUsage(data);
+      setUsage(normalizeUsageData(data));
 
       const user = authStorage.getUser() || {};
-      setTier(user.subscription?.tier || "free");
+      const isProOrAdmin = data?.stats?.tier === "pro" || data?.stats?.isAdmin || user?.role === "admin";
+      setTier(isProOrAdmin ? "pro" : (user.subscription?.tier || "free"));
     } catch (error) {
       console.error("Failed to fetch usage:", error);
     }
@@ -32,7 +56,7 @@ export const UsageBadge = ({compact = false}) => {
     const colors = {
       free: "bg-gray-500",
       "one-time": "bg-blue-500",
-      pro: "bg-purple-500",
+      pro: "bg-amber-500",
     };
     return colors[tier] || "bg-gray-500";
   };
@@ -106,7 +130,7 @@ export const UsageProgress = ({type, label}) => {
   const fetchUsage = async () => {
     try {
       const data = await getUsageStats();
-      setUsage(data);
+      setUsage(normalizeUsageData(data));
     } catch (error) {
       console.error("Failed to fetch usage:", error);
     } finally {
@@ -199,7 +223,7 @@ export const TierIndicator = ({showUpgrade = true}) => {
     const info = {
       free: {label: "Free", color: "gray", icon: "⭐"},
       "one-time": {label: "One-Time", color: "blue", icon: "🚀"},
-      pro: {label: "Pro", color: "purple", icon: "👑"},
+      pro: {label: "Pro", color: "amber", icon: "👑"},
     };
     return info[tier] || info.free;
   };
@@ -221,7 +245,7 @@ export const TierIndicator = ({showUpgrade = true}) => {
         {showUpgrade && tier === "free" && (
           <Link
             to="/pricing"
-            className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:from-purple-700 hover:to-pink-700 transition-all"
+            className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all"
           >
             Upgrade
           </Link>
@@ -246,7 +270,7 @@ export const UsageSummaryCard = () => {
   const fetchUsage = async () => {
     try {
       const data = await getUsageStats();
-      setUsage(data);
+      setUsage(normalizeUsageData(data));
     } catch (error) {
       console.error("Failed to fetch usage:", error);
     } finally {
@@ -296,7 +320,7 @@ export const UsageSummaryCard = () => {
       </div>
       <Link
         to="/subscription"
-        className="block mt-4 text-center text-purple-600 hover:text-purple-700 font-semibold text-sm"
+        className="block mt-4 text-center text-blue-600 hover:text-blue-700 font-semibold text-sm"
       >
         View Details →
       </Link>

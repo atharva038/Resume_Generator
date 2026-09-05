@@ -37,9 +37,9 @@ const WORKFLOW_STEPS = [
     subtitle: "Custom Portal Behavioral & Project Questions",
     badge: "Verified Answers",
     icon: MessageSquareQuote,
-    accentColor: "from-purple-600 to-indigo-600",
-    borderClass: "border-purple-500/30",
-    bgClass: "bg-purple-500/10 text-purple-600 dark:text-purple-400",
+    accentColor: "from-blue-600 to-indigo-600",
+    borderClass: "border-indigo-500/30",
+    bgClass: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400",
     description:
       "When job application forms ask open-ended questions like 'Describe a complex project you built' or 'Why are you a fit for this role?', open Career Q&A to copy tailored, AI-crafted answers based on your actual verified achievements.",
     actionText: "Open Career Q&A Hub",
@@ -63,7 +63,7 @@ export default function CareerProfileExplainer() {
     <div className="relative overflow-hidden rounded-3xl border border-gray-200/90 dark:border-white/[0.08] bg-white/95 dark:bg-zinc-950/90 backdrop-blur-xl shadow-sm dark:shadow-2xl transition-all">
       {/* Decorative ambient gradients */}
       <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-blue-600/10 dark:bg-blue-500/15 blur-3xl" />
-      <div className="pointer-events-none absolute -left-24 -bottom-24 h-72 w-72 rounded-full bg-purple-600/10 dark:bg-purple-500/15 blur-3xl" />
+      <div className="pointer-events-none absolute -left-24 -bottom-24 h-72 w-72 rounded-full bg-cyan-600/10 dark:bg-cyan-500/15 blur-3xl" />
 
       {/* Header Banner & Collapse Toggle */}
       <div className="p-5 sm:p-7 border-b border-gray-100 dark:border-white/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -88,7 +88,7 @@ export default function CareerProfileExplainer() {
         <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
           <Link
             to="/career-qa"
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-700 dark:text-purple-300 border border-purple-500/30 text-xs font-black transition-all"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30 text-xs font-black transition-all"
           >
             <MessageSquareQuote className="w-3.5 h-3.5" />
             <span>Go to Career Q&A</span>
@@ -155,7 +155,7 @@ export default function CareerProfileExplainer() {
             </div>
 
             {/* Selected Workflow Detailed Sandbox */}
-            <div className="p-5 sm:p-7 rounded-2xl bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-cyan-500/5 dark:from-zinc-900/80 dark:to-zinc-950/80 border border-blue-500/20 grid lg:grid-cols-12 gap-6 items-center">
+            <div className="p-5 sm:p-7 rounded-2xl bg-gradient-to-br from-blue-500/5 via-indigo-500/5 to-cyan-500/5 dark:from-zinc-900/80 dark:to-zinc-950/80 border border-blue-500/20 grid lg:grid-cols-12 gap-6 items-center">
               <div className="lg:col-span-8 space-y-3">
                 <div className="flex items-center gap-2">
                   <div className={`w-7 h-7 rounded-lg ${activeStep.bgClass} flex items-center justify-center`}>
@@ -195,7 +195,7 @@ export default function CareerProfileExplainer() {
                 {activeStep.id === "career-qa" ? (
                   <Link
                     to="/career-qa"
-                    className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-purple-500/25 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                    className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-blue-500/25 transition-all hover:scale-105 active:scale-95 cursor-pointer"
                   >
                     <MessageSquareQuote className="w-4 h-4" />
                     <span>Open Career Q&A Hub</span>
