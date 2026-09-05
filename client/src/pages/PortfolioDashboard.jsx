@@ -75,6 +75,7 @@ export default function PortfolioDashboard() {
       <SEO
         title="Developer Portfolios | SmartNShine"
         description="Manage, customize, and publish your personalized developer portfolio websites. View live traffic metrics and resume engagement."
+        noindex={true}
       />
 
       {/* Main Container */}

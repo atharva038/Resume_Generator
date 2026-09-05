@@ -357,16 +357,39 @@ export default function Templates() {
     navigate("/editor");
   };
 
-  // Dynamic High-CTR Meta Tags tailored for top Google Ranking
-  const dynamicMetaTitle =
-    selectedCategory === "All"
-      ? "Professional Resume Templates (98% ATS Pass Rate) | Free & Pro | SmartNShine"
-      : `${selectedCategory} Resume Templates - ATS-Optimized Professional Format | SmartNShine`;
+  // Check if a specific template is currently previewed or requested via URL
+  const currentTemplate =
+    activePreviewTemplate ||
+    (templateParam
+      ? templatesList.find(
+          (m) =>
+            m.id === templateParam ||
+            m.id.toLowerCase() === templateParam.toLowerCase()
+        )
+      : null);
 
-  const dynamicMetaDescription =
-    selectedCategory === "All"
-      ? "Build an interview-ready resume with 12+ top-rated ATS resume templates. Engineered for Taleo, Workday & Greenhouse. Instant PDF download & real-time ATS scoring."
-      : `Explore top ${selectedCategory.toLowerCase()} ATS resume templates. High recruiter callback rate, clean single & two-column formats, and 1-click PDF download.`;
+  // Dynamic High-CTR Meta Tags tailored for top Google Ranking
+  const dynamicMetaTitle = currentTemplate
+    ? currentTemplate.seo?.title ||
+      `${currentTemplate.name} ATS Resume Template (${currentTemplate.atsScore || 98}% Pass Rate) | SmartNShine`
+    : selectedCategory === "All"
+    ? "Professional Resume Templates (98% ATS Pass Rate) | Free & Pro | SmartNShine"
+    : `${selectedCategory} Resume Templates - ATS-Optimized Professional Format | SmartNShine`;
+
+  const dynamicMetaDescription = currentTemplate
+    ? currentTemplate.seo?.description ||
+      `Preview and use the ${currentTemplate.name} ATS resume template. Designed for ${currentTemplate.category} roles with 1-click PDF export.`
+    : selectedCategory === "All"
+    ? "Build an interview-ready resume with 12+ top-rated ATS resume templates. Engineered for Taleo, Workday & Greenhouse. Instant PDF download & real-time ATS scoring."
+    : `Explore top ${selectedCategory.toLowerCase()} ATS resume templates. High recruiter callback rate, clean single & two-column formats, and 1-click PDF download.`;
+
+  const dynamicMetaImage = currentTemplate
+    ? `https://www.smartnshine.app/templates/${currentTemplate.id.replace("-2", "2")}.webp`
+    : "https://www.smartnshine.app/social-preview.png";
+
+  const dynamicImageAlt = currentTemplate
+    ? `${currentTemplate.name} ATS Resume Template Preview - SmartNShine`
+    : "SmartNShine - The AI Career Platform. Resumes & Portfolios built to win.";
 
   const dynamicKeywords =
     "resume, professional resume, ATS resume templates, free resume templates, modern CV format, ATS resume maker, executive resume template, software engineer resume format, download resume PDF";
@@ -402,11 +425,17 @@ export default function Templates() {
         title={dynamicMetaTitle}
         description={dynamicMetaDescription}
         keywords={dynamicKeywords}
-        url={`https://www.smartnshine.app/templates${
-          selectedCategory !== "All"
-            ? `?category=${selectedCategory.toLowerCase()}`
-            : ""
-        }`}
+        image={dynamicMetaImage}
+        imageAlt={dynamicImageAlt}
+        url={
+          currentTemplate
+            ? `https://www.smartnshine.app/templates?template=${encodeURIComponent(currentTemplate.id)}`
+            : `https://www.smartnshine.app/templates${
+                selectedCategory !== "All"
+                  ? `?category=${selectedCategory.toLowerCase()}`
+                  : ""
+              }`
+        }
       />
 
       {/* Dynamic Schema.org JSON-LD (ItemList, FAQPage, Breadcrumbs, Product) */}

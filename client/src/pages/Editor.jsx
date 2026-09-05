@@ -1787,6 +1787,7 @@ const Editor = () => {
       <SEO
         title={`Editing: ${resumeData.resumeTitle || resumeData.name || "Resume"} | SmartNShine`}
         description="Craft, tailor, and design your ATS-optimized resume with AI assistance and live preview."
+        noindex={true}
       />
 
       {/* Standalone Fullscreen Header */}
