@@ -111,7 +111,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     },
     {
       name: "Landing Page",
-      path: "/landing-preview",
+      path: "/",
       icon: Home,
       description: "Explore Landing",
     },

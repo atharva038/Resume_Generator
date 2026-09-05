@@ -1,4 +1,4 @@
-import {Routes, Route} from "react-router-dom";
+import {Routes, Route, Navigate} from "react-router-dom";
 import {Toaster} from "react-hot-toast";
 import {lazy, Suspense} from "react";
 import {Layout, AdminLayout} from "./components/layout";
@@ -134,8 +134,8 @@ function App() {
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
             <Route path="/" element={<LandingPage />} />
-            <Route path="/landing-preview" element={<LandingPage />} />
-            <Route path="/landing-v2" element={<LandingPage />} />
+            <Route path="/landing-preview" element={<Navigate to="/" replace />} />
+            <Route path="/landing-v2" element={<Navigate to="/" replace />} />
             <Route path="/pdf-render/:token" element={<PdfRender />} />
             <Route path="/tech-portfolio" element={<TechPortfolioTemplate />} />
             <Route path="/u/:slug" element={<PublicPortfolio />} />

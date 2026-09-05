@@ -1,6 +1,4 @@
 import React from "react";
-import { Navigate, useLocation } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 import SEO from "../components/common/SEO";
 import LandingNavbar from "../components/landing-v2/LandingNavbar";
 import EvilChartsLandingMatrix from "../components/landing-v2/EvilChartsLandingMatrix";
@@ -14,17 +12,6 @@ import FinalCTABanner from "../components/landing-v2/FinalCTABanner";
 import Footer from "../components/layout/Footer";
 
 export default function LandingPage() {
-  const { user, loading } = useAuth();
-  const location = useLocation();
-
-  const isExplicitPreview =
-    location.pathname === "/landing-preview" ||
-    location.pathname === "/landing-v2";
-
-  if (!isExplicitPreview && !loading && user) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
   return (
     <>
       <SEO
