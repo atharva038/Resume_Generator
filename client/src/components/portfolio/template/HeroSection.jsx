@@ -43,7 +43,7 @@ const HeroSection = ({ portfolioContext }) => {
       {/* Gradient blobs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 right-10 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 left-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-20 left-10 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" />
       </div>
 
       <div className="max-w-7xl mx-auto relative z-10 w-full">
@@ -82,12 +82,12 @@ const HeroSection = ({ portfolioContext }) => {
                   I Build
                 </span>
                 <br />
-                <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-cyan-400 bg-clip-text text-transparent">
                   Scalable Digital Experiences
                 </span>
                 <br />
                 That{" "}
-                <span className="bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
                   Make Impact.
                 </span>
               </h1>

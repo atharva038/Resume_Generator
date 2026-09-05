@@ -3,9 +3,9 @@ import PropTypes from "prop-types";
 
 const SEO = ({
   title = "SmartNShine - AI-Powered ATS Resume Builder",
-  description = "Build ATS-optimized resumes with AI assistance. Professional templates, job matching, and AI interview preparation. Get hired faster with SmartNShine.",
-  keywords = "ATS resume builder, AI resume maker, professional resume templates, job application, resume optimizer, ATS optimization, career tools, interview preparation",
-  image = "https://www.smartnshine.app/orb-logo.png",
+  description = "Build ATS-optimized resumes with AI assistance. Professional templates, job matching, and career tools. Get hired faster with SmartNShine.",
+  keywords = "ATS resume builder, AI resume maker, professional resume templates, job application, resume optimizer, ATS optimization, career tools, developer portfolio",
+  image = "https://www.smartnshine.app/logo-dark.png",
   url = "https://www.smartnshine.app",
   type = "website",
   article = null,

@@ -1041,9 +1041,7 @@ function convertResumeToText(resume) {
 }
 
 function selectAIModel(user) {
-  const tier = user.subscription?.tier || "free";
-  const paidTiers = ["one-time", "pro"];
-  return paidTiers.includes(tier) ? "gpt4o" : "gemini";
+  return "gpt4o";
 }
 
 function isPremiumUser(user) {

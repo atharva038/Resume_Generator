@@ -219,7 +219,7 @@ export const getAIConfig = async () => {
 
 /**
  * Update AI preference (PRO tier only)
- * @param {string} preference - 'gpt4o' or 'gemini'
+ * @param {string} preference - 'gpt4o'
  * @returns {Promise<Object>} Update confirmation
  */
 export const updateAIPreference = async (preference) => {

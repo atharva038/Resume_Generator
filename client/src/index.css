@@ -31,7 +31,7 @@
   }
 
   .input-field {
-    @apply w-full px-3 py-2 border border-gray-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-black text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all placeholder:text-gray-400 dark:placeholder:text-gray-500;
+    @apply w-full px-3 py-2 border border-gray-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-black text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all placeholder:text-gray-400 dark:placeholder:text-gray-500;
   }
 
   .card {
@@ -45,46 +45,75 @@
   /* Infinite Gliding Animation Classes */
   @keyframes streamGlideTop {
     0% {
-      transform: translateY(0);
+      transform: translate3d(0, 0, 0);
     }
     100% {
-      transform: translateY(-50%);
+      transform: translate3d(0, -50%, 0);
     }
   }
 
   @keyframes streamGlideBottom {
     0% {
-      transform: translateY(-50%);
+      transform: translate3d(0, -50%, 0);
     }
     100% {
-      transform: translateY(0);
+      transform: translate3d(0, 0, 0);
     }
   }
 
   @keyframes streamGlideHorizontal {
     0% {
-      transform: translateX(0);
+      transform: translate3d(0, 0, 0);
     }
     100% {
-      transform: translateX(-50%);
+      transform: translate3d(-50%, 0, 0);
     }
   }
 
   .animate-glide-top {
     animation: streamGlideTop 28s linear infinite;
     will-change: transform;
+    backface-visibility: hidden;
   }
 
   .animate-glide-bottom {
     animation: streamGlideBottom 32s linear infinite;
     will-change: transform;
+    backface-visibility: hidden;
+  }
+
+  .animate-glide-col-1 {
+    animation: streamGlideTop 52s linear infinite;
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+
+  .animate-glide-col-2 {
+    animation: streamGlideBottom 60s linear infinite;
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+
+  .animate-glide-col-3 {
+    animation: streamGlideTop 56s linear infinite;
+    will-change: transform;
+    backface-visibility: hidden;
   }
 
   .animate-glide-horizontal {
     display: flex;
     width: max-content;
-    animation: streamGlideHorizontal 55s linear infinite;
+    animation: streamGlideHorizontal 48s linear infinite;
     will-change: transform;
+    backface-visibility: hidden;
+  }
+
+  .animate-glide-horizontal-staggered {
+    display: flex;
+    width: max-content;
+    animation: streamGlideHorizontal 58s linear infinite;
+    will-change: transform;
+    backface-visibility: hidden;
   }
 
   /* Custom Horizontal Scrollbar Styling */

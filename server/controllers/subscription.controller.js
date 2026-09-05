@@ -232,22 +232,27 @@ export async function getSubscriptionStatus(req, res) {
     console.log("📊 Active subscription from DB:", subscription);
     console.log("📊 User subscription from DB:", user?.subscription);
 
+    const isAdmin = user?.role === "admin";
     // If there's an active subscription, use its data
     // Otherwise, fall back to user.subscription or free tier
     const subscriptionData = subscription || user?.subscription;
-    const tier = paymentService.normalizeTier(subscriptionData?.tier || "free");
-    const plan = tier === "free" ? "free" : subscriptionData?.plan;
+    let tier = paymentService.normalizeTier(subscriptionData?.tier || "free");
+    if (isAdmin) {
+      tier = "pro";
+    }
+    const plan = isAdmin ? "admin" : (tier === "free" ? "free" : subscriptionData?.plan);
 
     res.json({
       success: true,
       subscription: {
         tier,
         plan,
-        status: tier === "free" ? "active" : subscriptionData?.status || "active",
-        startDate: subscriptionData?.startDate,
-        endDate: subscriptionData?.endDate,
-        daysRemaining: subscription ? subscription.daysRemaining() : null,
-        autoRenew: subscriptionData?.autoRenew || false,
+        status: "active",
+        isAdmin,
+        startDate: subscriptionData?.startDate || user?.createdAt,
+        endDate: isAdmin ? null : subscriptionData?.endDate,
+        daysRemaining: isAdmin ? null : (subscription ? subscription.daysRemaining() : null),
+        autoRenew: isAdmin ? false : (subscriptionData?.autoRenew || false),
         features:
           paymentService.PRICING[tier]?.features || [],
       },
@@ -384,34 +389,47 @@ export async function getUsageStats(req, res) {
     const userId = req.user._id;
     const user = req.user;
 
+    const isAdmin = user.role === "admin";
+    const tier = isAdmin ? "pro" : (user.subscription?.tier || "free");
+
+    const getFeatureLimit = (limitType) => {
+      const limit = user.getUsageLimit(limitType);
+      const isUnlimited = isAdmin || limit === Infinity;
+      return {
+        limit: isUnlimited ? null : limit,
+        unlimited: isUnlimited,
+      };
+    };
+
     // Get basic usage stats
     const basicStats = {
-      tier: user.subscription?.tier || "free",
+      tier,
+      isAdmin,
       usage: {
         resumes: {
           used: user.usage?.resumesThisMonth || 0,
           total: user.usage?.resumesCreated || 0,
-          limit: user.getUsageLimit("resumesPerMonth"),
+          ...getFeatureLimit("resumesPerMonth"),
         },
         aiGenerations: {
           used: user.usage?.aiGenerationsThisMonth || 0,
           total: user.usage?.aiGenerationsUsed || 0,
-          limit: user.getUsageLimit("aiGenerationsPerMonth"),
+          ...getFeatureLimit("aiGenerationsPerMonth"),
         },
         atsScans: {
           used: user.usage?.atsScansThisMonth || 0,
           total: user.usage?.atsScans || 0,
-          limit: user.getUsageLimit("atsScansPerMonth"),
+          ...getFeatureLimit("atsScansPerMonth"),
         },
         jobMatches: {
           used: user.usage?.jobMatchesToday || 0,
           total: user.usage?.jobMatches || 0,
-          limit: user.getUsageLimit("jobMatchesPerDay"),
+          ...getFeatureLimit("jobMatchesPerDay"),
         },
         coverLetters: {
           used: user.usage?.coverLettersThisMonth || 0,
           total: user.usage?.coverLetters || 0,
-          limit: user.getUsageLimit("coverLettersPerMonth"),
+          ...getFeatureLimit("coverLettersPerMonth"),
         },
       },
     };
@@ -712,23 +730,13 @@ export async function getAIConfig(req, res) {
     const user = req.user;
     const tier = user.subscription?.tier || "free";
 
-    // Tier-to-AI mapping
-    const TIER_AI_MAPPING = {
-      free: "gemini",
-      pro: "hybrid",
-      "one-time": "gpt4o",
-    };
-
-    const aiModel = TIER_AI_MAPPING[tier] || TIER_AI_MAPPING.free;
+    const aiModel = "gpt4o";
     const config = {
       tier: paymentService.normalizeTier(tier),
       aiModel,
-      isHybrid: aiModel === "hybrid",
-      description: {
-        gemini: "Gemini Flash - Fast and efficient",
-        gpt4o: "GPT-4o - Premium quality",
-        hybrid: "Hybrid - 70% Gemini + 30% GPT-4o",
-      }[aiModel],
+      isHybrid: false,
+      provider: "openai",
+      description: "OpenAI GPT-4o - State of the art AI engine",
     };
 
     res.json({
@@ -746,30 +754,19 @@ export async function getAIConfig(req, res) {
 
 /**
  * Update AI model preference (DEPRECATED - kept for API compatibility)
- * AI model is now determined solely by subscription tier
- * This endpoint returns the tier-based model without changing anything
+ * All operations now use OpenAI GPT-4o exclusively
  */
 export async function updateAIPreference(req, res) {
   try {
     const user = req.user;
     const tier = user.subscription?.tier || "free";
 
-    // Tier-to-AI mapping
-    const TIER_AI_MAPPING = {
-      free: "gemini",
-      pro: "hybrid",
-      "one-time": "gpt4o",
-    };
-
-    const aiModel = TIER_AI_MAPPING[tier] || TIER_AI_MAPPING.free;
-
     res.json({
       success: true,
-      message:
-        "AI model is automatically assigned based on your subscription tier",
-      aiModel,
+      message: "OpenAI GPT-4o is the active AI engine for all features",
+      aiModel: "gpt4o",
       tier,
-      note: "User preferences are no longer used. AI selection is tier-based.",
+      provider: "openai",
     });
   } catch (error) {
     console.error("❌ Update AI preference error:", error.message);

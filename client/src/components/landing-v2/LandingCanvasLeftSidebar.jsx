@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Sparkles, Layers, ShieldCheck, Globe, Bot, UploadCloud, Sun, Moon } from "lucide-react";
 import { useDarkMode } from "../../context/DarkModeContext";
+import Logo from "@/components/common/Logo";
 
 export default function LandingCanvasLeftSidebar({ activeSection, scrollToSection }) {
   const { isDarkMode, toggleDarkMode } = useDarkMode();
@@ -11,7 +12,6 @@ export default function LandingCanvasLeftSidebar({ activeSection, scrollToSectio
     { id: "journey", label: "02. From No to Pro Journey", icon: Sparkles },
     { id: "analyzer", label: "03. Real-Time ATS Analyzer", icon: ShieldCheck },
     { id: "portfolio", label: "04. 1-Click Web Portfolio", icon: Globe },
-    { id: "interview", label: "05. AI Voice Mock Studio", icon: Bot },
   ];
 
   return (
@@ -20,10 +20,9 @@ export default function LandingCanvasLeftSidebar({ activeSection, scrollToSectio
         {/* Brand Logo & Name */}
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3 group">
-            <img
-              src="/orb-logo.png"
-              alt="SmartNShine Logo"
+            <Logo
               className="w-10 h-10 object-contain group-hover:scale-105 transition-transform"
+              alt="SmartNShine Logo"
             />
             <div className="flex flex-col">
               <span className="text-xl font-extrabold tracking-tight text-zinc-900 dark:text-white uppercase leading-none">
@@ -48,7 +47,7 @@ export default function LandingCanvasLeftSidebar({ activeSection, scrollToSectio
         {/* Small, Punchy Copy (Evil Charts Style) */}
         <div className="space-y-4 max-w-md">
           <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed font-normal">
-            The end-to-end career suite for engineers and ambitious professionals. Build ATS-compliant resumes, deploy live developer portfolios, audit keyword gaps, and ace AI mock interviews.
+            The end-to-end career suite for engineers and ambitious professionals. Build ATS-compliant resumes, deploy live developer portfolios, and audit keyword gaps.
           </p>
 
           {/* Action Buttons */}

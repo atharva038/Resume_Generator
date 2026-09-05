@@ -152,7 +152,7 @@ async function runTests() {
     const testLog = new UsageLog({
       userId: testUser._id,
       action: "resume_created",
-      aiModel: "gemini",
+      aiModel: "gpt4o",
       tokensUsed: {
         input: 500,
         output: 300,

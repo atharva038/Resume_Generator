@@ -2,6 +2,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { BlockableLink } from "@/components/auth";
 import { DarkModeToggle, FestiveSaleBanner } from "@/components/common";
+import Logo from "@/components/common/Logo";
 import { useEffect, useMemo } from "react";
 import { useToggle } from "@/hooks";
 import {
@@ -101,7 +102,7 @@ const Navbar = ({ toggleSidebar, isSidebarOpen, promotion }) => {
   return (
     <nav
       className={`fixed top-0 right-0 z-40 transition-all duration-300 no-print ${
-        isSidebarOpen ? "left-0 lg:left-64" : "left-0 lg:left-20"
+        isSidebarOpen ? "left-0 lg:left-72" : "left-0 lg:left-28"
       } ${
         isScrolled
           ? "bg-white/95 dark:bg-[#09090b]/95 backdrop-blur-xl border-b border-gray-200/80 dark:border-white/10 shadow-xs"
@@ -122,11 +123,10 @@ const Navbar = ({ toggleSidebar, isSidebarOpen, promotion }) => {
                 <Menu className="w-5 h-5" />
               </button>
 
-              <Link to={user ? "/dashboard" : "/"} className="flex items-center gap-1.5 text-sm font-bold">
-                <img
-                  src="/orb-logo.png"
-                  alt=""
-                  className="h-8 w-auto object-contain dark:brightness-100 brightness-75"
+              <Link to={user ? "/dashboard" : "/"} className="flex items-center gap-2 text-sm font-bold">
+                <Logo
+                  className="h-7 w-7 object-contain"
+                  alt="SmartNShine Logo"
                 />
                 <span className="text-zinc-900 dark:text-white font-bold">
                   SmartNShine

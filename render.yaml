@@ -16,7 +16,7 @@ services:
         value: 5000
       - key: MONGODB_URI
         sync: false
-      - key: GEMINI_API_KEY
+      - key: OPENAI_API_KEY
         sync: false
       - key: JWT_SECRET
         generateValue: true

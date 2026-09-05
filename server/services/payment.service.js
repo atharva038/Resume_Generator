@@ -39,7 +39,7 @@ export const PRICING = {
     plan: "free",
     features: [
       "1 Active resume per month",
-      "Standard Gemini AI model",
+      "OpenAI GPT-4o AI model",
       "3 Core ATS templates",
       "Master Career Profile Hub",
       "5 Career Q&A interview questions",
@@ -52,7 +52,7 @@ export const PRICING = {
     plan: "one-time",
     features: [
       "1 Dedicated resume (21-day pass)",
-      "GPT-4o Enhanced AI rewriting",
+      "OpenAI GPT-4o AI rewriting",
       "All 11 ATS-Certified templates",
       "1 Deep ATS diagnostic scan",
       "1 Live Portfolio website",
@@ -71,7 +71,7 @@ export const PRICING = {
     plan: "monthly",
     features: [
       "Unlimited resumes & exports",
-      "GPT-4o + Gemini Pro AI models",
+      "OpenAI GPT-4o Premium AI model",
       "All 11 ATS-Certified templates",
       "Unlimited ATS diagnostic scans",
       "Unlimited Public Portfolio websites",

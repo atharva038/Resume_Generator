@@ -73,7 +73,7 @@ export const analyzeResume = async (req, res) => {
       return res.status(401).json({error: "User not found"});
     }
 
-    // Analyze resume vs job description using AI Router (Gemini or GPT-4o based on tier)
+    // Analyze resume vs job description using AI Router (OpenAI GPT-4o)
     console.log(
       `🤖 Analyzing resume against job description with AI Router (User tier: ${
         user.subscription?.tier || "free"

@@ -68,14 +68,14 @@ const Layout = () => {
   ].some((route) => location.pathname.startsWith(route));
 
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-[#09090b]">
+    <div className="min-h-screen flex flex-col bg-[#f8fafc] dark:bg-[#09090b]">
       {/* Sidebar */}
       <Sidebar isOpen={isSidebarOpen} setIsOpen={toggleSidebar} />
 
       {/* Main Content Area */}
       <div
         className={`flex-1 flex flex-col transition-all duration-300 ${
-          isSidebarOpen ? "lg:ml-64" : "lg:ml-20"
+          isSidebarOpen ? "lg:ml-72" : "lg:ml-28"
         }`}
       >
         {/* Fixed Top Navbar */}

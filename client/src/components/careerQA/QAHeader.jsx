@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { DarkModeToggle } from "@/components/common";
+import Logo from "@/components/common/Logo";
 
 export default function QAHeader({ onGoBack }) {
   return (
@@ -17,17 +18,16 @@ export default function QAHeader({ onGoBack }) {
 
         <div className="h-4 sm:h-5 w-[1px] bg-gray-200 dark:bg-white/10 hidden xs:block" />
 
-        <Link to="/dashboard" className="flex items-center gap-1.5 sm:gap-2 group">
-          <img
-            src="/orb-logo.png"
-            alt="SmartNShine"
-            className="h-7 sm:h-8 w-auto object-contain group-hover:scale-105 transition-all duration-300 dark:brightness-100 dark:saturate-100 brightness-50 contrast-125 saturate-200 shrink-0"
+        <Link to="/dashboard" className="flex items-center gap-2 group">
+          <Logo
+            className="h-7 w-7 object-contain group-hover:scale-105 transition-transform duration-200 shrink-0"
+            alt="SmartNShine Logo"
           />
-          <span className="font-bold text-sm sm:text-base tracking-tight bg-gradient-to-r from-[#5d8ff0] via-[#6f7fe4] to-[#8b67df] dark:from-[#6aa0ff] dark:via-[#7f8ce7] dark:to-[#9b78ea] bg-clip-text text-transparent hidden md:inline">
+          <span className="font-extrabold text-sm sm:text-base tracking-tight text-zinc-950 dark:text-white hidden md:inline">
             SmartNShine
           </span>
           <span className="text-gray-300 dark:text-zinc-700 text-xs hidden md:inline">/</span>
-          <span className="text-[11px] sm:text-xs font-semibold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/60 border border-purple-200/60 dark:border-purple-800/60 px-2 sm:px-2.5 py-0.5 rounded-lg whitespace-nowrap">
+          <span className="text-[11px] sm:text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 border border-blue-200/60 dark:border-blue-800/60 px-2 sm:px-2.5 py-0.5 rounded-lg whitespace-nowrap">
             Career Q&A Bank
           </span>
         </Link>

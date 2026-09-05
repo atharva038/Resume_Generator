@@ -5,12 +5,12 @@ import SEO from "@/components/common/SEO";
 import { resumeAPI } from "@/api/api";
 import { portfolioAPI } from "@/api/portfolio.api";
 import careerAPI from "@/api/career.api";
-import { getHistory } from "@/api/interview.api";
 import toast from "react-hot-toast";
 import {
   FileText,
   Globe2,
   Mic,
+  MessageSquare,
   UserCircle,
   Target,
   ArrowRight,
@@ -34,7 +34,6 @@ export default function DashboardOverview() {
   const [resumes, setResumes] = useState([]);
   const [portfolios, setPortfolios] = useState([]);
   const [profileData, setProfileData] = useState(null);
-  const [interviewHistory, setInterviewHistory] = useState([]);
 
   useEffect(() => {
     fetchDashboardData();
@@ -43,12 +42,11 @@ export default function DashboardOverview() {
   const fetchDashboardData = async () => {
     setLoading(true);
     try {
-      const [resumesRes, portfoliosRes, profileRes, interviewRes] =
+      const [resumesRes, portfoliosRes, profileRes] =
         await Promise.allSettled([
           resumeAPI.list(),
           portfolioAPI.list(),
           careerAPI.getProfile(),
-          getHistory({ limit: 5 }),
         ]);
 
       if (resumesRes.status === "fulfilled") {
@@ -59,11 +57,6 @@ export default function DashboardOverview() {
       }
       if (profileRes.status === "fulfilled") {
         setProfileData(profileRes.value?.data || null);
-      }
-      if (interviewRes.status === "fulfilled") {
-        setInterviewHistory(
-          interviewRes.value?.sessions || interviewRes.value?.data?.sessions || []
-        );
       }
     } catch (err) {
       console.error("Dashboard fetch error:", err);
@@ -76,11 +69,6 @@ export default function DashboardOverview() {
   const profileCompleteness =
     profileData?.completeness?.totalScore ||
     (profileData?.profile ? 70 : 25);
-
-  const completedInterviews = interviewHistory.filter(
-    (i) => i.status === "completed"
-  );
-  const latestInterview = completedInterviews[0] || interviewHistory[0] || null;
 
   const handleCopyPortfolioUrl = async (slug) => {
     const url = `${window.location.origin}/u/${slug}`;
@@ -101,7 +89,7 @@ export default function DashboardOverview() {
     <div className="min-h-screen text-zinc-900 dark:text-zinc-100 font-sans">
       <SEO
         title="Dashboard | SmartNShine"
-        description="Unified career dashboard for resumes, developer portfolios, and interview practice."
+        description="Unified career dashboard for resumes, developer portfolios, and career assets."
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -479,60 +467,53 @@ export default function DashboardOverview() {
               </div>
             </div>
 
-            {/* AI INTERVIEW CARD */}
+            {/* CAREER Q&A CARD (Indigo Accent) */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center">
-                    <Mic className="w-3.5 h-3.5" />
+                  <div className="w-6 h-6 rounded-md bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                    <MessageSquare className="w-3.5 h-3.5" />
                   </div>
                   <h2 className="text-base font-semibold text-zinc-900 dark:text-white">
-                    AI Mock Interview
+                    Career Q&A Bank
                   </h2>
                 </div>
                 <Link
-                  to="/interview/history"
-                  className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5"
+                  to="/career-qa"
+                  className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-0.5"
                 >
-                  <span>History</span>
+                  <span>Open Studio</span>
                   <ChevronRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
 
               <div className="p-5 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900 space-y-4 shadow-xs">
-                {latestInterview ? (
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">
-                        {latestInterview.role || "Technical Role"}
-                      </span>
-                      <span className="text-xs font-bold font-mono px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700">
-                        {latestInterview.overallScore ? `${latestInterview.overallScore}/100` : "Completed"}
-                      </span>
-                    </div>
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2">
-                      {latestInterview.feedbackSummary ||
-                        "Session finished with comprehensive feedback on technical depth and communication."}
-                    </p>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">
+                      Personalized Answer Bank
+                    </span>
+                    <span className="text-[11px] font-bold font-mono px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60">
+                      AI Powered
+                    </span>
                   </div>
-                ) : (
-                  <p className="text-xs text-zinc-500">
-                    Practice realistic technical and behavioral interview questions with real-time AI feedback.
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
+                    Generate tailored, STAR-grounded answers for HR, system architecture, and role-specific questions directly from your Career Profile.
                   </p>
-                )}
+                </div>
 
                 <div className="flex items-center gap-2 pt-1">
                   <Link
-                    to="/interview"
+                    to="/career-qa"
                     className="flex-1 py-1.5 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-white dark:text-zinc-950 text-xs font-semibold transition-colors text-center shadow-xs"
                   >
-                    Start Session
+                    Open Q&A Studio
                   </Link>
                   <Link
-                    to="/career-qa"
+                    to="/career-profile"
                     className="py-1.5 px-3 rounded-xl border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-xs font-semibold text-zinc-700 dark:text-zinc-300 transition-colors"
                   >
-                    Q&A Bank
+                    Sync Profile
                   </Link>
                 </div>
               </div>
@@ -555,7 +536,7 @@ export default function DashboardOverview() {
               </span>
             </div>
             <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-              Your centralized repository of work experience, skills, and projects. Keeps all your resumes, portfolios, and mock interviews updated from one place.
+              Your centralized repository of work experience, skills, and projects. Keeps all your resumes, portfolios, and answer banks updated from one place.
             </p>
           </div>
 

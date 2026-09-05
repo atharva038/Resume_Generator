@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   ExternalLink,
   Github,
@@ -17,6 +18,8 @@ import ClassicTemplate from "../templates/ClassicTemplate";
 import TechTemplate from "../templates/TechTemplate";
 import ModernTemplate from "../templates/ModernTemplate";
 import ImpactProTemplate from "../templates/ImpactProTemplate";
+import MinimalTemplate from "../templates/MinimalTemplate";
+import ExecutiveTemplate from "../templates/ExecutiveTemplate";
 
 // Comprehensive, Rich, Fully-Packed Sample Resume Data (No Empty White Space)
 const fullResumeData1 = {
@@ -248,21 +251,395 @@ const fullResumeData4 = {
   selectedTheme: "purple",
 };
 
-export default function GlidingMotionCanvas({ activeMode = "resumes", isDarkMode = true }) {
-  const isResumes = activeMode === "resumes";
+const fullResumeData5 = {
+  ...fullResumeData1,
+  name: "Marcus Vance",
+  contact: {
+    ...fullResumeData1.contact,
+    email: "marcus.vance@enterprise-lead.com",
+    location: "New York, NY",
+    linkedin: "linkedin.com/in/marcusvance-cto",
+  },
+  summary:
+    "Distinguished Enterprise Technology Executive with 14+ years of cross-functional leadership spanning FinTech, distributed cloud scale, and AI enablement. Oversaw engineering organizations of 120+ developers with $80M annual P&L oversight.",
+  selectedTheme: "charcoal",
+};
+
+const fullResumeData6 = {
+  ...fullResumeData1,
+  name: "Priya Sharma",
+  contact: {
+    ...fullResumeData1.contact,
+    email: "priya.sharma@productlab.dev",
+    location: "Seattle, WA",
+    linkedin: "linkedin.com/in/priyasharma-dev",
+  },
+  summary:
+    "Staff Product Frontend Engineer specializing in high-performance browser rendering, accessible design systems, and WebAssembly tooling. Shipped consumer experiences enjoyed by 22M+ monthly active users across mobile and web platforms.",
+  selectedTheme: "slate",
+};
+
+// 6 Diverse Real Resume Configurations
+const row1Resumes = [
+  {
+    templateTitle: "Classic ATS Format",
+    badgeText: "99% Workday",
+    badgeColor: "blue",
+    formatText: "Single-Column Standard",
+    templateSlug: "classic",
+    template: ClassicTemplate,
+    data: fullResumeData1,
+  },
+  {
+    templateTitle: "Tech Developer",
+    badgeText: "99% ATS Pass",
+    badgeColor: "cyan",
+    formatText: "Technical Engineering",
+    templateSlug: "tech",
+    template: TechTemplate,
+    data: fullResumeData2,
+  },
+  {
+    templateTitle: "Impact Pro",
+    badgeText: "98% Lever / Green",
+    badgeColor: "emerald",
+    formatText: "STAR Metrics Layout",
+    templateSlug: "impact-pro",
+    template: ImpactProTemplate,
+    data: fullResumeData3,
+  },
+  {
+    templateTitle: "Modern Executive",
+    badgeText: "Executive ATS",
+    badgeColor: "purple",
+    formatText: "Two-Column Structure",
+    templateSlug: "modern",
+    template: ModernTemplate,
+    data: fullResumeData4,
+  },
+  {
+    templateTitle: "Executive Lead",
+    badgeText: "Top 1% C-Suite",
+    badgeColor: "amber",
+    formatText: "Strategic Executive",
+    templateSlug: "executive",
+    template: ExecutiveTemplate,
+    data: fullResumeData5,
+  },
+  {
+    templateTitle: "Minimal Clean",
+    badgeText: "100% Parsing",
+    badgeColor: "indigo",
+    formatText: "Minimalist Typo",
+    templateSlug: "minimal",
+    template: MinimalTemplate,
+    data: fullResumeData6,
+  },
+];
+
+const colAItems = [
+  row1Resumes[4], // Row 0 (Exec Lead)
+  row1Resumes[2], // Row 1 (Impact Pro)
+  row1Resumes[1], // Row 2 (Tech Dev)
+  row1Resumes[5], // Row 3 (Minimal)
+  row1Resumes[3], // Row 4 (Modern Exec)
+]; // Far Left Buffer
+
+const col1Items = [
+  row1Resumes[3], // Row 0 (Modern Exec)
+  row1Resumes[5], // Row 1 (**Minimal Clean** - target `c1-1`)
+  row1Resumes[4], // Row 2 (Exec Lead)
+  row1Resumes[0], // Row 3 (Classic ATS)
+  row1Resumes[2], // Row 4 (Impact Pro)
+]; // Left Column
+
+const col2Items = [
+  row1Resumes[0], // Row 0 (Classic ATS)
+  row1Resumes[1], // Row 1 (**Tech Developer** - target `c2-1`)
+  row1Resumes[3], // Row 2 (Modern Exec)
+  row1Resumes[4], // Row 3 (**Executive Lead** - target `c2-3`)
+  row1Resumes[5], // Row 4 (Minimal Clean)
+]; // Center Column
+
+const col3Items = [
+  row1Resumes[1], // Row 0 (Tech Dev)
+  row1Resumes[4], // Row 1 (Exec Lead)
+  row1Resumes[0], // Row 2 (**ATS Resume / Standard** - target `c3-2`)
+  row1Resumes[2], // Row 3 (**Impact Pro** - target `c3-3`)
+  row1Resumes[3], // Row 4 (Modern Exec)
+]; // Right Column
+
+const colBItems = [
+  row1Resumes[5], // Row 0 (Minimal)
+  row1Resumes[0], // Row 1 (Classic ATS)
+  row1Resumes[2], // Row 2 (Impact Pro)
+  row1Resumes[1], // Row 3 (Tech Dev)
+  row1Resumes[4], // Row 4 (Exec Lead)
+]; // Far Right Buffer
+
+// Target 5 cards in the exact requested sequence, placed diagonally across the grid:
+// Tech Developer (Col 2, Row 1) -> Impact Pro (Col 3, Row 3) -> Minimal Clean (Col 1, Row 1) -> Executive Lead (Col 2, Row 3) -> ATS Resume/Standard (Col 3, Row 2) -> repeat
+const FOCUS_TARGETS = [
+  { cardId: "c2-1", slug: "tech" },        // 0: Tech Developer (Col 2, Row 1)
+  { cardId: "c3-3", slug: "impact-pro" },  // 1: Impact Pro (Col 3, Row 3)
+  { cardId: "c1-1", slug: "minimal" },     // 2: Minimal Clean (Col 1, Row 1)
+  { cardId: "c2-3", slug: "executive" },   // 3: Executive Lead (Col 2, Row 3)
+  { cardId: "c3-2", slug: "classic" },     // 4: ATS Resume / Standard (Col 3, Row 2)
+];
+
+const ScaledResumeCard = React.memo(function ScaledResumeCard({
+  item,
+  isDarkMode,
+  cardId,
+  activeFocusIndex,
+  shouldReduceMotion,
+  onSelectCard,
+}) {
+  const [isCardHovered, setIsCardHovered] = useState(false);
+  const {
+    templateTitle,
+    badgeText,
+    badgeColor,
+    formatText,
+    templateSlug,
+    template: Template,
+    data,
+  } = item;
+
+  const badgeColors = {
+    blue: "text-zinc-700 dark:text-zinc-300 bg-zinc-500/15 border-zinc-500/30",
+    zinc: "text-zinc-700 dark:text-zinc-300 bg-zinc-500/15 border-zinc-500/30",
+    cyan: "text-cyan-600 dark:text-cyan-400 bg-cyan-500/15 border-cyan-500/30",
+    emerald: "text-emerald-600 dark:text-emerald-400 bg-emerald-500/15 border-emerald-500/30",
+    purple: "text-purple-600 dark:text-purple-400 bg-purple-500/15 border-purple-500/30",
+    amber: "text-amber-600 dark:text-amber-400 bg-amber-500/15 border-amber-500/30",
+    indigo: "text-indigo-600 dark:text-indigo-400 bg-indigo-500/15 border-indigo-500/30",
+  };
+
+  const dotColors = {
+    blue: "text-zinc-500",
+    zinc: "text-zinc-500",
+    cyan: "text-cyan-500",
+    emerald: "text-emerald-500",
+    purple: "text-purple-500",
+    amber: "text-amber-500",
+    indigo: "text-indigo-500",
+  };
+
+  // Determine cyclic distance from the currently focused card in the 5-target cycle
+  const targetIndex = FOCUS_TARGETS.findIndex((t) => t.cardId === cardId);
+  const isInCycle = targetIndex !== -1;
+
+  let distance = 99;
+  if (isInCycle) {
+    const rawDiff = Math.abs(targetIndex - activeFocusIndex);
+    distance = Math.min(rawDiff, FOCUS_TARGETS.length - rawDiff);
+  }
+
+  const isFocused = distance === 0;
+
+  // Animation targets: Compositor-only opacity & transform (Zero GPU rasterization blur penalties)
+  let animOpacity = 0.24;
+  let animScale = 0.96;
+  let animY = 0;
+
+  if (shouldReduceMotion) {
+    animOpacity = isFocused ? 1 : 0.4;
+    animScale = 1;
+    animY = 0;
+  } else if (isFocused) {
+    animOpacity = 1;
+    animScale = 1.02;
+    animY = -4;
+  } else if (distance === 1) {
+    animOpacity = 0.44;
+    animScale = 0.98;
+    animY = 0;
+  } else if (distance === 2) {
+    animOpacity = 0.28;
+    animScale = 0.96;
+    animY = 0;
+  }
+
+  const targetOpacity = isCardHovered ? 1 : animOpacity;
+  const targetScale = isCardHovered ? 1.03 : animScale;
+  const targetY = isCardHovered ? -5 : animY;
+
+  const transitionConfig = shouldReduceMotion
+    ? { duration: 0.1 }
+    : {
+        duration: isCardHovered ? 0.3 : 1.8,
+        ease: [0.45, 0, 0.2, 1],
+      };
+
+  // Hardware-accelerated CSS shadow class based on focus state
+  const shadowClasses = isFocused || isCardHovered
+    ? isDarkMode
+      ? "shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)] ring-1 ring-white/20 border-white/30"
+      : "shadow-[0_25px_50px_-12px_rgba(0,0,0,0.16)] ring-1 ring-black/10 border-zinc-400"
+    : distance === 1
+    ? isDarkMode
+      ? "shadow-lg shadow-black/40 border-white/10"
+      : "shadow-md shadow-zinc-200/60 border-zinc-200/90"
+    : isDarkMode
+    ? "border-white/5"
+    : "border-zinc-200/70";
 
   return (
-    <div className="relative w-full h-[740px] lg:h-[790px] overflow-hidden rounded-3xl select-none">
+    <motion.div
+      onMouseEnter={() => setIsCardHovered(true)}
+      onMouseLeave={() => setIsCardHovered(false)}
+      onClick={() => {
+        if (isInCycle && onSelectCard) {
+          onSelectCard(targetIndex);
+        }
+      }}
+      animate={{
+        opacity: targetOpacity,
+        scale: targetScale,
+        y: targetY,
+      }}
+      transition={transitionConfig}
+      style={{
+        zIndex: isFocused ? 25 : isCardHovered ? 20 : distance === 1 ? 8 : 1,
+        willChange: "transform, opacity",
+      }}
+      className={`w-[275px] sm:w-[290px] xl:w-[305px] shrink-0 h-[365px] rounded-2xl border p-2.5 sm:p-3 flex flex-col justify-between overflow-hidden text-left select-none group/card cursor-pointer transition-[box-shadow,border-color,background-color] duration-300 ${
+        isDarkMode
+          ? "bg-[#0b1018]/95 hover:border-white/25"
+          : "bg-white hover:border-zinc-400"
+      } ${shadowClasses}`}
+    >
+      {/* Top Badge & Template Label */}
+      <div
+        className={`flex items-center justify-between pb-1.5 mb-1.5 border-b text-[10px] sm:text-[11px] font-mono ${
+          isDarkMode ? "border-white/5 text-zinc-300" : "border-zinc-100 text-zinc-800 font-semibold"
+        }`}
+      >
+        <span className="font-bold flex items-center gap-1.5 truncate max-w-[155px]">
+          <span className={dotColors[badgeColor] || "text-zinc-500"}>⸎</span> {templateTitle}
+        </span>
+        <span
+          className={`font-bold px-1.5 sm:px-2 py-0.5 rounded-full border text-[8px] sm:text-[9px] whitespace-nowrap ${
+            badgeColors[badgeColor] || badgeColors.zinc
+          }`}
+        >
+          {badgeText}
+        </span>
+      </div>
+
+      {/* Scaled Real Resume Container */}
+      <div className="w-full flex-1 overflow-hidden rounded-lg bg-white relative shadow-2xs border border-zinc-200/80">
+        <div className="absolute top-0 left-0 w-[794px] origin-top-left transform scale-[0.33] sm:scale-[0.35] pointer-events-none select-none text-zinc-900">
+          <Template resumeData={data} isDarkMode={false} />
+        </div>
+      </div>
+
+      {/* Footer Bar */}
+      <div
+        className={`pt-1.5 mt-1.5 flex items-center justify-between text-[10px] border-t ${
+          isDarkMode ? "border-white/5 text-zinc-400" : "border-zinc-100 text-zinc-500"
+        }`}
+      >
+        <span className="font-mono truncate max-w-[140px] text-[9px] sm:text-[10px]">{formatText}</span>
+        <Link
+          to={`/templates?template=${templateSlug}`}
+          onClick={(e) => e.stopPropagation()}
+          className="font-bold flex items-center gap-1 shrink-0 text-[10px] text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white transition-colors group/link py-1 px-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/10"
+        >
+          <span>Use Template</span>
+          <ArrowRight className="w-3 h-3 group-hover/link:translate-x-0.5 transition-transform" />
+        </Link>
+      </div>
+    </motion.div>
+  );
+});
+
+export default function GlidingMotionCanvas({ activeMode = "resumes", isDarkMode = true }) {
+  const isResumes = activeMode === "resumes";
+  const [activeFocusIndex, setActiveFocusIndex] = useState(0); // 0 corresponds to Tech Developer
+  const [isHovered, setIsHovered] = useState(false);
+  const [colStep, setColStep] = useState(335);
+  const [isVisible, setIsVisible] = useState(true);
+  const containerRef = useRef(null);
+  const shouldReduceMotion = useReducedMotion();
+
+  // Responsive column step calculation for smooth centering
+  useEffect(() => {
+    const updateColStep = () => {
+      if (typeof window === "undefined") return;
+      if (window.innerWidth >= 1280) setColStep(345); // 305px card + 40px gap
+      else if (window.innerWidth >= 640) setColStep(322); // 290px card + 32px gap
+      else setColStep(299); // 275px card + 24px gap
+    };
+    updateColStep();
+    window.addEventListener("resize", updateColStep);
+    return () => window.removeEventListener("resize", updateColStep);
+  }, []);
+
+  // IntersectionObserver: automatically pause animation timer when canvas is out of viewport
+  useEffect(() => {
+    if (!containerRef.current || typeof IntersectionObserver === "undefined") return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { rootMargin: "150px" }
+    );
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  // Automatic infinite spotlight focus cycle:
+  // Tech Developer (0) -> Impact Pro (1) -> Minimal Clean (2) -> Executive Lead (3) -> ATS Resume/Standard (4) -> repeat
+  // Smoothly advances every 4.8 seconds when visible in viewport
+  useEffect(() => {
+    if (!isResumes || isHovered || !isVisible) return;
+
+    const interval = setInterval(() => {
+      setActiveFocusIndex((prev) => (prev + 1) % FOCUS_TARGETS.length);
+    }, 4800);
+
+    return () => clearInterval(interval);
+  }, [isResumes, isHovered, isVisible]);
+
+  // Dynamic 2D camera / center-stage offsets for sweeping diagonal flight:
+  const getStageOffset = (index, step) => {
+    switch (index) {
+      case 0: // Tech Developer (Col 2, Row 1)
+        return { x: 0, y: -200 };
+      case 1: // Impact Pro (Col 3, Row 3)
+        return { x: -step, y: -970 };
+      case 2: // Minimal Clean (Col 1, Row 1)
+        return { x: step, y: -175 };
+      case 3: // Executive Lead (Col 2, Row 3)
+        return { x: 0, y: -980 };
+      case 4: // ATS Resume / Standard (Col 3, Row 2)
+        return { x: -step, y: -575 };
+      default:
+        return { x: 0, y: -200 };
+    }
+  };
+
+  const currentOffset = getStageOffset(activeFocusIndex, colStep);
+
+  return (
+    <div
+      ref={containerRef}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="relative w-full h-[760px] lg:h-[820px] overflow-hidden rounded-3xl select-none group/canvas"
+    >
       {/* Top & Bottom Soft Fading Masks */}
       <div
-        className={`absolute top-0 inset-x-0 h-10 z-20 pointer-events-none transition-colors duration-300 ${
+        className={`absolute top-0 inset-x-0 h-14 z-20 pointer-events-none transition-colors duration-300 ${
           isDarkMode
             ? "bg-gradient-to-b from-[#07080c] to-transparent"
             : "bg-gradient-to-b from-[#fbfbfa] to-transparent"
         }`}
       />
       <div
-        className={`absolute bottom-0 inset-x-0 h-10 z-20 pointer-events-none transition-colors duration-300 ${
+        className={`absolute bottom-0 inset-x-0 h-14 z-20 pointer-events-none transition-colors duration-300 ${
           isDarkMode
             ? "bg-gradient-to-t from-[#07080c] to-transparent"
             : "bg-gradient-to-t from-[#fbfbfa] to-transparent"
@@ -277,212 +654,120 @@ export default function GlidingMotionCanvas({ activeMode = "resumes", isDarkMode
         }}
       >
         {/* ========================================================= */}
-        {/* STAGE 1: REAL ATS RESUMES (Continuous Horizontal Glide)   */}
+        {/* STAGE 1: REAL ATS RESUMES (Full-Density 5-Column Canvas with 2D Camera Motion) */}
         {/* ========================================================= */}
-        <div className="w-1/2 h-full overflow-hidden flex items-center">
-          <div className="animate-glide-horizontal flex items-center gap-7 h-full py-4 px-2">
-            {/* 1. Real ClassicTemplate (Royal Navy & Indigo Theme) */}
-            <div
-              className={`w-[450px] shrink-0 h-[670px] rounded-3xl border p-3.5 shadow-2xl flex flex-col justify-between transition-all overflow-hidden text-left ${
-                isDarkMode
-                  ? "border-blue-500/30 bg-[#0d121c] hover:border-blue-400 shadow-blue-500/10"
-                  : "border-blue-200 bg-white hover:border-blue-500 shadow-xl shadow-blue-500/5"
-              }`}
-            >
-              <div
-                className={`flex items-center justify-between pb-2 mb-2 border-b text-xs font-mono ${
-                  isDarkMode ? "border-blue-900/40 text-blue-300" : "border-blue-100 text-blue-900 font-bold"
-                }`}
-              >
-                <span className="font-bold flex items-center gap-1.5">
-                  <span className="text-blue-500">⸎</span> Classic ATS Template
-                </span>
-                <span className="text-blue-600 dark:text-blue-400 font-bold bg-blue-500/15 px-2.5 py-0.5 rounded-full border border-blue-500/30 text-[10px]">
-                  98% Workday Match
-                </span>
-              </div>
-
-              {/* Scaled Real Resume Container - Fully Packed Top to Bottom */}
-              <div className="w-full flex-1 overflow-hidden rounded-xl bg-white relative shadow-sm border border-zinc-200">
-                <div className="absolute top-0 left-0 w-[794px] origin-top-left transform scale-[0.56] pointer-events-none select-none text-zinc-900">
-                  <ClassicTemplate resumeData={fullResumeData1} isDarkMode={false} />
-                </div>
-              </div>
-
-              <div
-                className={`pt-2.5 flex items-center justify-between text-xs border-t ${
-                  isDarkMode ? "border-zinc-800 text-zinc-400" : "border-zinc-100 text-zinc-600"
-                }`}
-              >
-                <span className="font-mono text-[10px]">Classic Single-Column ATS</span>
-                <Link to="/templates?template=classic" className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1">
-                  <span>Use Template</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
-              </div>
-            </div>
-
-            {/* 2. Real TechTemplate (Vivid Cyan Code Theme) */}
-            <div
-              className={`w-[450px] shrink-0 h-[670px] rounded-3xl border p-3.5 shadow-2xl flex flex-col justify-between transition-all overflow-hidden text-left ${
-                isDarkMode
-                  ? "border-cyan-500/30 bg-[#09131a] hover:border-cyan-400 shadow-cyan-500/10"
-                  : "border-cyan-200 bg-white hover:border-cyan-500 shadow-xl shadow-cyan-500/5"
-              }`}
-            >
-              <div
-                className={`flex items-center justify-between pb-2 mb-2 border-b text-xs font-mono ${
-                  isDarkMode ? "border-cyan-900/40 text-cyan-300" : "border-cyan-100 text-cyan-900 font-bold"
-                }`}
-              >
-                <span className="font-bold flex items-center gap-1.5">
-                  <span className="text-cyan-500">⸎</span> Tech Developer Format
-                </span>
-                <span className="text-cyan-600 dark:text-cyan-400 font-bold bg-cyan-500/15 px-2.5 py-0.5 rounded-full border border-cyan-500/30 text-[10px]">
-                  99% ATS Pass Rate
-                </span>
-              </div>
-
-              {/* Scaled Real Tech Template - Fully Packed Top to Bottom */}
-              <div className="w-full flex-1 overflow-hidden rounded-xl bg-white relative shadow-sm border border-zinc-200">
-                <div className="absolute top-0 left-0 w-[794px] origin-top-left transform scale-[0.56] pointer-events-none select-none text-zinc-900">
-                  <TechTemplate resumeData={fullResumeData2} isDarkMode={false} />
-                </div>
-              </div>
-
-              <div
-                className={`pt-2.5 flex items-center justify-between text-xs border-t ${
-                  isDarkMode ? "border-zinc-800 text-zinc-400" : "border-zinc-100 text-zinc-600"
-                }`}
-              >
-                <span className="font-mono text-[10px]">Technical Engineering Format</span>
-                <Link to="/templates?template=tech" className="text-xs font-bold text-cyan-600 dark:text-cyan-400 hover:underline flex items-center gap-1">
-                  <span>Use Template</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
+        <div className="w-1/2 h-full overflow-hidden relative flex items-start justify-center">
+          <motion.div
+            animate={{
+              x: shouldReduceMotion ? 0 : currentOffset.x,
+              y: shouldReduceMotion ? 0 : currentOffset.y,
+              scale: shouldReduceMotion ? 1 : [1, 0.88, 1],
+            }}
+            transition={{
+              x: {
+                duration: shouldReduceMotion ? 0.1 : 2.2,
+                ease: [0.45, 0, 0.2, 1], // Slower, gradual takeoff without rapid instant jerk
+              },
+              y: {
+                duration: shouldReduceMotion ? 0.1 : 2.2,
+                ease: [0.45, 0, 0.2, 1],
+              },
+              scale: {
+                duration: shouldReduceMotion ? 0.1 : 2.2,
+                times: [0, 0.35, 1], // First comes backward (scale down to 0.88), then lands into resume (scale 1.0)
+                ease: [0.45, 0, 0.2, 1],
+              },
+            }}
+            style={{
+              transformOrigin: "center center",
+            }}
+            className="flex items-start justify-center gap-6 sm:gap-8 lg:gap-10 px-2 lg:px-6 pt-3 will-change-transform shrink-0"
+          >
+            {/* Column A: Far Left Outer Buffer */}
+            <div className="overflow-visible h-full flex flex-col w-[275px] sm:w-[290px] xl:w-[305px] shrink-0 pt-4">
+              <div className="flex flex-col gap-[26px] pb-[26px]">
+                {colAItems.map((item, idx) => (
+                  <ScaledResumeCard
+                    key={`cA-${idx}`}
+                    cardId={`cA-${idx}`}
+                    item={item}
+                    isDarkMode={isDarkMode}
+                    activeFocusIndex={activeFocusIndex}
+                    shouldReduceMotion={shouldReduceMotion}
+                    onSelectCard={setActiveFocusIndex}
+                  />
+                ))}
               </div>
             </div>
 
-            {/* 3. Real ImpactProTemplate (Vibrant Emerald Theme) */}
-            <div
-              className={`w-[450px] shrink-0 h-[670px] rounded-3xl border p-3.5 shadow-2xl flex flex-col justify-between transition-all overflow-hidden text-left ${
-                isDarkMode
-                  ? "border-emerald-500/30 bg-[#091712] hover:border-emerald-400 shadow-emerald-500/10"
-                  : "border-emerald-200 bg-white hover:border-emerald-500 shadow-xl shadow-emerald-500/5"
-              }`}
-            >
-              <div
-                className={`flex items-center justify-between pb-2 mb-2 border-b text-xs font-mono ${
-                  isDarkMode ? "border-emerald-900/40 text-emerald-300" : "border-emerald-100 text-emerald-900 font-bold"
-                }`}
-              >
-                <span className="font-bold flex items-center gap-1.5">
-                  <span className="text-emerald-500">⸎</span> Impact Pro Results
-                </span>
-                <span className="text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-500/15 px-2.5 py-0.5 rounded-full border border-emerald-500/30 text-[10px]">
-                  98% Lever / Greenhouse
-                </span>
-              </div>
-
-              {/* Scaled Real Impact Template - Fully Packed Top to Bottom */}
-              <div className="w-full flex-1 overflow-hidden rounded-xl bg-white relative shadow-sm border border-zinc-200">
-                <div className="absolute top-0 left-0 w-[794px] origin-top-left transform scale-[0.56] pointer-events-none select-none text-zinc-900">
-                  <ImpactProTemplate resumeData={fullResumeData3} isDarkMode={false} />
-                </div>
-              </div>
-
-              <div
-                className={`pt-2.5 flex items-center justify-between text-xs border-t ${
-                  isDarkMode ? "border-zinc-800 text-zinc-400" : "border-zinc-100 text-zinc-600"
-                }`}
-              >
-                <span className="font-mono text-[10px]">Executive STAR Metrics Format</span>
-                <Link to="/templates?template=impact-pro" className="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1">
-                  <span>Use Template</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
+            {/* Column 1: Left */}
+            <div className="overflow-visible h-full flex flex-col w-[275px] sm:w-[290px] xl:w-[305px] shrink-0 pt-0">
+              <div className="flex flex-col gap-[26px] pb-[26px]">
+                {col1Items.map((item, idx) => (
+                  <ScaledResumeCard
+                    key={`c1-${idx}`}
+                    cardId={`c1-${idx}`}
+                    item={item}
+                    isDarkMode={isDarkMode}
+                    activeFocusIndex={activeFocusIndex}
+                    shouldReduceMotion={shouldReduceMotion}
+                    onSelectCard={setActiveFocusIndex}
+                  />
+                ))}
               </div>
             </div>
 
-            {/* 4. Real ModernTemplate (Royal Purple / Violet Theme) */}
-            <div
-              className={`w-[450px] shrink-0 h-[670px] rounded-3xl border p-3.5 shadow-2xl flex flex-col justify-between transition-all overflow-hidden text-left ${
-                isDarkMode
-                  ? "border-purple-500/30 bg-[#130d1c] hover:border-purple-400 shadow-purple-500/10"
-                  : "border-purple-200 bg-white hover:border-purple-500 shadow-xl shadow-purple-500/5"
-              }`}
-            >
-              <div
-                className={`flex items-center justify-between pb-2 mb-2 border-b text-xs font-mono ${
-                  isDarkMode ? "border-purple-900/40 text-purple-300" : "border-purple-100 text-purple-900 font-bold"
-                }`}
-              >
-                <span className="font-bold flex items-center gap-1.5">
-                  <span className="text-purple-500">⸎</span> Modern Executive
-                </span>
-                <span className="text-purple-600 dark:text-purple-400 font-bold bg-purple-500/15 px-2.5 py-0.5 rounded-full border border-purple-500/30 text-[10px]">
-                  Executive ATS Format
-                </span>
-              </div>
-
-              {/* Scaled Real Modern Template - Fully Packed Top to Bottom */}
-              <div className="w-full flex-1 overflow-hidden rounded-xl bg-white relative shadow-sm border border-zinc-200">
-                <div className="absolute top-0 left-0 w-[794px] origin-top-left transform scale-[0.56] pointer-events-none select-none text-zinc-900">
-                  <ModernTemplate resumeData={fullResumeData4} isDarkMode={false} />
-                </div>
-              </div>
-
-              <div
-                className={`pt-2.5 flex items-center justify-between text-xs border-t ${
-                  isDarkMode ? "border-zinc-800 text-zinc-400" : "border-zinc-100 text-zinc-600"
-                }`}
-              >
-                <span className="font-mono text-[10px]">Two-Column Hierarchy</span>
-                <Link to="/templates?template=modern" className="text-xs font-bold text-purple-600 dark:text-purple-400 hover:underline flex items-center gap-1">
-                  <span>Use Template</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
+            {/* Column 2: Center */}
+            <div className="overflow-visible h-full flex flex-col w-[275px] sm:w-[290px] xl:w-[305px] shrink-0 pt-8 sm:pt-10">
+              <div className="flex flex-col gap-[26px] pb-[26px]">
+                {col2Items.map((item, idx) => (
+                  <ScaledResumeCard
+                    key={`c2-${idx}`}
+                    cardId={`c2-${idx}`}
+                    item={item}
+                    isDarkMode={isDarkMode}
+                    activeFocusIndex={activeFocusIndex}
+                    shouldReduceMotion={shouldReduceMotion}
+                    onSelectCard={setActiveFocusIndex}
+                  />
+                ))}
               </div>
             </div>
 
-            {/* DUPLICATE FOR INFINITE LOOP */}
-            <div
-              className={`w-[450px] shrink-0 h-[670px] rounded-3xl border p-3.5 shadow-2xl flex flex-col justify-between overflow-hidden text-left ${
-                isDarkMode
-                  ? "border-blue-500/30 bg-[#0d121c]"
-                  : "border-blue-200 bg-white shadow-xl"
-              }`}
-            >
-              <div
-                className={`flex items-center justify-between pb-2 mb-2 border-b text-xs font-mono ${
-                  isDarkMode ? "border-blue-900/40 text-blue-300" : "border-blue-100 text-blue-900 font-bold"
-                }`}
-              >
-                <span className="font-bold flex items-center gap-1.5">
-                  <span className="text-blue-500">⸎</span> Classic ATS Template
-                </span>
-                <span className="text-blue-600 dark:text-blue-400 font-bold bg-blue-500/15 px-2.5 py-0.5 rounded-full border border-blue-500/30 text-[10px]">
-                  98% Workday Match
-                </span>
-              </div>
-              <div className="w-full flex-1 overflow-hidden rounded-xl bg-white relative shadow-sm border border-zinc-200">
-                <div className="absolute top-0 left-0 w-[794px] origin-top-left transform scale-[0.56] pointer-events-none select-none text-zinc-900">
-                  <ClassicTemplate resumeData={fullResumeData1} isDarkMode={false} />
-                </div>
-              </div>
-              <div
-                className={`pt-2.5 flex items-center justify-between text-xs border-t ${
-                  isDarkMode ? "border-zinc-800 text-zinc-400" : "border-zinc-100 text-zinc-600"
-                }`}
-              >
-                <span className="font-mono text-[10px]">Official Codebase Template</span>
-                <Link to="/templates?template=classic" className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1">
-                  <span>Use Template</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
+            {/* Column 3: Right */}
+            <div className="overflow-visible h-full flex flex-col w-[275px] sm:w-[290px] xl:w-[305px] shrink-0 pt-4 sm:pt-6">
+              <div className="flex flex-col gap-[26px] pb-[26px]">
+                {col3Items.map((item, idx) => (
+                  <ScaledResumeCard
+                    key={`c3-${idx}`}
+                    cardId={`c3-${idx}`}
+                    item={item}
+                    isDarkMode={isDarkMode}
+                    activeFocusIndex={activeFocusIndex}
+                    shouldReduceMotion={shouldReduceMotion}
+                    onSelectCard={setActiveFocusIndex}
+                  />
+                ))}
               </div>
             </div>
-          </div>
+
+            {/* Column B: Far Right Outer Buffer */}
+            <div className="overflow-visible h-full flex flex-col w-[275px] sm:w-[290px] xl:w-[305px] shrink-0 pt-10 sm:pt-12">
+              <div className="flex flex-col gap-[26px] pb-[26px]">
+                {colBItems.map((item, idx) => (
+                  <ScaledResumeCard
+                    key={`cB-${idx}`}
+                    cardId={`cB-${idx}`}
+                    item={item}
+                    isDarkMode={isDarkMode}
+                    activeFocusIndex={activeFocusIndex}
+                    shouldReduceMotion={shouldReduceMotion}
+                    onSelectCard={setActiveFocusIndex}
+                  />
+                ))}
+              </div>
+            </div>
+          </motion.div>
         </div>
 
         {/* ========================================================= */}
@@ -741,7 +1026,7 @@ export default function GlidingMotionCanvas({ activeMode = "resumes", isDarkMode
                     <Link
                       to="/tech-portfolio"
                       target="_blank"
-                      className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-[#0ea5e9] hover:bg-[#0284c7] text-white text-xs font-bold shadow-lg shadow-blue-500/25"
+                      className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-zinc-950 hover:bg-black text-white dark:bg-white dark:hover:bg-zinc-100 dark:text-zinc-950 text-xs font-bold shadow-lg shadow-zinc-950/20 active:scale-95 transition-all"
                     >
                       <span>View My Work</span>
                       <ArrowRight className="w-3.5 h-3.5" />
@@ -760,14 +1045,14 @@ export default function GlidingMotionCanvas({ activeMode = "resumes", isDarkMode
                 </div>
 
                 <div className="col-span-5 flex items-center justify-center">
-                  <div className="w-full rounded-2xl border-2 border-blue-500/40 bg-[#090d16] p-4 shadow-2xl shadow-blue-500/10 font-mono text-left space-y-2 text-white">
-                    <div className="flex items-center gap-1.5 border-b border-blue-900/40 pb-2">
+                  <div className="w-full rounded-2xl border-2 border-zinc-800/40 bg-[#090d16] p-4 shadow-2xl font-mono text-left space-y-2 text-white">
+                    <div className="flex items-center gap-1.5 border-b border-zinc-800 pb-2">
                       <span className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
                       <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
                       <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
                     </div>
                     <div className="text-[10px] text-emerald-400 leading-relaxed pt-1 space-y-1">
-                      <div><span className="text-blue-400">const</span> developer = &#123;</div>
+                      <div><span className="text-zinc-400">const</span> developer = &#123;</div>
                       <div className="pl-3 text-zinc-300">skills: [<span className="text-amber-400">'React'</span>, <span className="text-amber-400">'Go'</span>, <span className="text-amber-400">'AWS'</span>],</div>
                       <div className="pl-3 text-zinc-300">experience: <span className="text-purple-400">4+ years</span>,</div>
                       <div className="pl-3 text-zinc-300">passion: <span className="text-cyan-400">∞</span></div>
@@ -783,7 +1068,7 @@ export default function GlidingMotionCanvas({ activeMode = "resumes", isDarkMode
                 }`}
               >
                 <span>Tech Theme • 3D Canvas Vector</span>
-                <Link to="/tech-portfolio" target="_blank" className="text-blue-500 font-bold hover:underline">
+                <Link to="/tech-portfolio" target="_blank" className="text-zinc-900 dark:text-zinc-100 font-bold hover:underline">
                   View Theme →
                 </Link>
               </div>

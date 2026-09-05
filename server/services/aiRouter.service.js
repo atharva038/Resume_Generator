@@ -1,84 +1,22 @@
-import * as geminiService from "./gemini.service.js";
 import * as openaiService from "./openai.service.js";
 import UsageLog from "../models/UsageLog.model.js";
 import AIUsage from "../models/AIUsage.model.js";
 import {notifyAIFailure} from "./adminNotification.service.js";
 
 /**
- * AI Router Service
- * Routes AI requests to appropriate service (Gemini or GPT-4o) based on user tier
+ * AI Router Service (OpenAI GPT-4o Exclusively)
+ * Routes all AI requests directly to OpenAI
  * Tracks usage and costs for analytics
- * Falls back to OpenAI if Gemini is not configured
  */
 
-// Check if Gemini is available (GEMINI_API_KEY is set)
-const GEMINI_ENABLED = Boolean(process.env.GEMINI_API_KEY?.trim());
-
-if (!GEMINI_ENABLED) {
-  console.warn(
-    "⚠️  AI Router: GEMINI_API_KEY not configured — all requests will use OpenAI (GPT-4o)"
-  );
-}
-
-// Tier to AI Model mapping
-const TIER_AI_MAPPING = {
-  free: GEMINI_ENABLED ? "gemini" : "gpt4o", // Fallback to OpenAI if Gemini disabled
-  "one-time": "gpt4o",
-  pro: GEMINI_ENABLED ? "hybrid" : "gpt4o", // Fallback to OpenAI if Gemini disabled
-};
-
-// Action types that support hybrid mode (can use Gemini for some operations)
-const HYBRID_COMPATIBLE_ACTIONS = [
-  "resume_parsed",
-  "skills_categorized",
-  "summary_generated",
-];
-
-/**
- * Determine which AI service to use based on user tier ONLY
- * @param {Object} user - User object with subscription info
- * @param {string} action - Action being performed
- * @returns {string} - 'gemini' or 'gpt4o'
- */
-function selectAIService(user, action = "resume_created") {
-  // Get default model for user's tier
-  const userTier = user.subscription?.tier || "free";
-  let tierModel = TIER_AI_MAPPING[userTier] || TIER_AI_MAPPING.free;
-
-  console.log(
-    `🎯 AI Selection: User tier "${userTier}" → Model "${tierModel}"`
-  );
-
-  // Handle hybrid mode (for pro tier)
-  if (tierModel === "hybrid") {
-    // For hybrid, use Gemini for lighter tasks, GPT-4o for critical tasks
-    if (HYBRID_COMPATIBLE_ACTIONS.includes(action)) {
-      // 70% chance of Gemini for hybrid-compatible actions
-      const selectedModel = Math.random() < 0.7 ? "gemini" : "gpt4o";
-      console.log(`   Hybrid mode: ${action} → ${selectedModel}`);
-      return selectedModel;
-    }
-    // Use GPT-4o for critical actions like content enhancement
-    console.log(`   Hybrid mode: ${action} → gpt4o (critical action)`);
-    return "gpt4o";
-  }
-
-  // Safety check: if Gemini is selected but not available, use OpenAI
-  if (tierModel === "gemini" && !GEMINI_ENABLED) {
-    console.warn(
-      `   ⚠️  Gemini requested but not available, falling back to OpenAI`
-    );
-    tierModel = "gpt4o";
-  }
-
-  return tierModel;
-}
+const AI_MODEL = "gpt4o";
+const AI_PROVIDER = "openai";
 
 /**
  * Log AI usage to database
  * @param {string} userId - User ID
  * @param {string} action - Action performed
- * @param {string} aiModel - AI model used (gemini, gpt4o, hybrid)
+ * @param {string} aiModel - AI model used
  * @param {Object} tokenUsage - Token usage data
  * @param {Object} cost - Cost data
  * @param {boolean} success - Whether operation succeeded
@@ -87,22 +25,13 @@ function selectAIService(user, action = "resume_created") {
 async function logUsage(
   userId,
   action,
-  aiModel,
-  tokenUsage,
-  cost,
+  aiModel = AI_MODEL,
+  tokenUsage = {},
+  cost = {},
   success = true,
   metadata = {}
 ) {
   try {
-    // Determine AI provider from model
-    const aiProvider =
-      aiModel === "gpt4o"
-        ? "openai"
-        : aiModel === "gemini"
-        ? "gemini"
-        : "hybrid";
-
-    // Map action to feature for AIUsage
     const featureMapping = {
       ats_scan: "ats_analysis",
       job_match: "ats_analysis",
@@ -112,18 +41,19 @@ async function logUsage(
       cover_letter: "ai_suggestions",
       summary_generated: "ai_suggestions",
       skills_categorized: "ai_suggestions",
+      resume_tailor: "resume_enhancement",
+      resume_compress: "resume_enhancement",
     };
 
     const feature = featureMapping[action] || "ai_suggestions";
 
-    // Log to UsageLog (existing)
     await UsageLog.logUsage({
       userId,
       action,
-      aiModel,
+      aiModel: AI_MODEL,
       tokensUsed: {
         input: tokenUsage.promptTokens || 0,
-        output: tokenUsage.candidatesTokens || 0,
+        output: tokenUsage.candidatesTokens || tokenUsage.completionTokens || 0,
         total: tokenUsage.totalTokens || 0,
       },
       cost: {
@@ -134,11 +64,10 @@ async function logUsage(
       metadata,
     });
 
-    // Log to AIUsage (for admin analytics)
     await AIUsage.create({
       userId,
-      aiProvider,
-      aiModel,
+      aiProvider: AI_PROVIDER,
+      aiModel: AI_MODEL,
       feature,
       tokensUsed: tokenUsage.totalTokens || 0,
       cost: cost?.amount || 0,
@@ -155,42 +84,29 @@ async function logUsage(
       notifyAIFailure({
         userId,
         feature,
-        aiProvider,
-        aiModel,
+        aiProvider: AI_PROVIDER,
+        aiModel: AI_MODEL,
         error: metadata.error || "AI request failed",
       });
     }
   } catch (error) {
     console.error("❌ Failed to log usage:", error.message);
-    // Don't throw - logging failure shouldn't break the main operation
   }
 }
 
 /**
- * Parse resume with appropriate AI service
- * @param {string} resumeText - Raw resume text
- * @param {Object} user - User object
- * @returns {Promise<Object>} - Parsed resume data
+ * Parse resume with OpenAI
  */
 export async function parseResume(resumeText, user) {
-  const aiService = selectAIService(user, "resume_parsed");
   const startTime = Date.now();
-
   try {
-    let result;
-    if (aiService === "gpt4o") {
-      result = await openaiService.parseResumeWithAI(resumeText);
-    } else {
-      result = await geminiService.parseResumeWithAI(resumeText);
-    }
-
+    const result = await openaiService.parseResumeWithAI(resumeText);
     const responseTime = Date.now() - startTime;
 
-    // Log usage
     await logUsage(
       user._id,
       "resume_parsed",
-      aiService,
+      AI_MODEL,
       result.tokenUsage,
       result.cost || {amount: 0, currency: "USD"},
       true,
@@ -199,14 +115,14 @@ export async function parseResume(resumeText, user) {
 
     return {
       ...result,
-      aiModel: aiService,
+      aiModel: AI_MODEL,
     };
   } catch (error) {
     const responseTime = Date.now() - startTime;
     await logUsage(
       user._id,
       "resume_parsed",
-      aiService,
+      AI_MODEL,
       {promptTokens: 0, candidatesTokens: 0, totalTokens: 0},
       {amount: 0, currency: "USD"},
       false,
@@ -217,13 +133,7 @@ export async function parseResume(resumeText, user) {
 }
 
 /**
- * Enhance content with appropriate AI service
- * @param {string} content - Content to enhance
- * @param {string} sectionType - Section type
- * @param {Object} resumeData - Full resume data
- * @param {Object} user - User object
- * @param {string} customPrompt - Optional custom prompt
- * @returns {Promise<Object>} - Enhanced content
+ * Enhance content with OpenAI
  */
 export async function enhanceContent(
   content,
@@ -232,34 +142,21 @@ export async function enhanceContent(
   user,
   customPrompt = ""
 ) {
-  const aiService = selectAIService(user, "content_enhanced");
   const startTime = Date.now();
-
   try {
-    let result;
-    if (aiService === "gpt4o") {
-      result = await openaiService.enhanceContentWithAI(
-        content,
-        sectionType,
-        resumeData,
-        customPrompt
-      );
-    } else {
-      result = await geminiService.enhanceContentWithAI(
-        content,
-        sectionType,
-        resumeData,
-        customPrompt
-      );
-    }
+    const result = await openaiService.enhanceContentWithAI(
+      content,
+      sectionType,
+      resumeData,
+      customPrompt
+    );
 
     const responseTime = Date.now() - startTime;
 
-    // Log usage
     await logUsage(
       user._id,
       "content_enhanced",
-      aiService,
+      AI_MODEL,
       result.tokenUsage,
       result.cost || {amount: 0, currency: "USD"},
       true,
@@ -268,14 +165,14 @@ export async function enhanceContent(
 
     return {
       ...result,
-      aiModel: aiService,
+      aiModel: AI_MODEL,
     };
   } catch (error) {
     const responseTime = Date.now() - startTime;
     await logUsage(
       user._id,
       "content_enhanced",
-      aiService,
+      AI_MODEL,
       {promptTokens: 0, candidatesTokens: 0, totalTokens: 0},
       {amount: 0, currency: "USD"},
       false,
@@ -286,30 +183,18 @@ export async function enhanceContent(
 }
 
 /**
- * Generate summary with appropriate AI service
- * @param {Object} resumeData - Resume data
- * @param {Object} user - User object
- * @returns {Promise<Object>} - Generated summary
+ * Generate summary with OpenAI
  */
 export async function generateSummary(resumeData, user) {
-  const aiService = selectAIService(user, "summary_generated");
   const startTime = Date.now();
-
   try {
-    let result;
-    if (aiService === "gpt4o") {
-      result = await openaiService.generateSummaryWithAI(resumeData);
-    } else {
-      result = await geminiService.generateSummaryWithAI(resumeData);
-    }
-
+    const result = await openaiService.generateSummaryWithAI(resumeData);
     const responseTime = Date.now() - startTime;
 
-    // Log usage
     await logUsage(
       user._id,
       "summary_generated",
-      aiService,
+      AI_MODEL,
       result.tokenUsage,
       result.cost || {amount: 0, currency: "USD"},
       true,
@@ -318,14 +203,14 @@ export async function generateSummary(resumeData, user) {
 
     return {
       ...result,
-      aiModel: aiService,
+      aiModel: AI_MODEL,
     };
   } catch (error) {
     const responseTime = Date.now() - startTime;
     await logUsage(
       user._id,
       "summary_generated",
-      aiService,
+      AI_MODEL,
       {promptTokens: 0, candidatesTokens: 0, totalTokens: 0},
       {amount: 0, currency: "USD"},
       false,
@@ -336,30 +221,18 @@ export async function generateSummary(resumeData, user) {
 }
 
 /**
- * Categorize skills with appropriate AI service
- * @param {string} skillsText - Skills text
- * @param {Object} user - User object
- * @returns {Promise<Object>} - Categorized skills
+ * Categorize skills with OpenAI
  */
 export async function categorizeSkills(skillsText, user) {
-  const aiService = selectAIService(user, "skills_categorized");
   const startTime = Date.now();
-
   try {
-    let result;
-    if (aiService === "gpt4o") {
-      result = await openaiService.categorizeSkillsWithAI(skillsText);
-    } else {
-      result = await geminiService.categorizeSkillsWithAI(skillsText);
-    }
-
+    const result = await openaiService.categorizeSkillsWithAI(skillsText);
     const responseTime = Date.now() - startTime;
 
-    // Log usage
     await logUsage(
       user._id,
       "skills_categorized",
-      aiService,
+      AI_MODEL,
       result.tokenUsage,
       result.cost || {amount: 0, currency: "USD"},
       true,
@@ -368,14 +241,14 @@ export async function categorizeSkills(skillsText, user) {
 
     return {
       ...result,
-      aiModel: aiService,
+      aiModel: AI_MODEL,
     };
   } catch (error) {
     const responseTime = Date.now() - startTime;
     await logUsage(
       user._id,
       "skills_categorized",
-      aiService,
+      AI_MODEL,
       {promptTokens: 0, candidatesTokens: 0, totalTokens: 0},
       {amount: 0, currency: "USD"},
       false,
@@ -386,106 +259,24 @@ export async function categorizeSkills(skillsText, user) {
 }
 
 /**
- * Analyze ATS job match with appropriate AI service
- * @param {string} resumeText - Resume text
- * @param {string} jobDescription - Job description
- * @param {Object} user - User object
- * @returns {Promise<Object>} - Match analysis
+ * Analyze ATS job match with OpenAI
  */
 export async function analyzeJobMatch(resumeText, jobDescription, user) {
-  const aiService = selectAIService(user, "job_match");
   const startTime = Date.now();
-
-  // Debug logging
-  console.log("🔍 [AI Router] analyzeJobMatch:");
-  console.log("   User ID:", user._id);
-  console.log("   User Tier:", user.subscription?.tier || "free");
-  console.log("   Selected AI Service:", aiService);
+  console.log("🤖 Calling OpenAI GPT-4o for resume-job match analysis...");
 
   try {
-    let result;
-    if (aiService === "gpt4o") {
-      console.log("🤖 Calling OpenAI GPT-4o for resume-job match analysis...");
-
-      // Check if OpenAI is available
-      if (
-        !openaiService ||
-        typeof openaiService.analyzeResumeJobMatch !== "function"
-      ) {
-        console.warn("⚠️ OpenAI service not available, falling back to Gemini");
-        result = await geminiService.analyzeResumeJobMatch(
-          resumeText,
-          jobDescription
-        );
-        // Override aiModel to reflect actual service used
-        const responseTime = Date.now() - startTime;
-        await logUsage(
-          user._id,
-          "job_match",
-          "gemini",
-          result.tokenUsage,
-          result.cost || {amount: 0, currency: "USD"},
-          true,
-          {responseTime, fallback: "openai_unavailable"}
-        );
-        return {
-          ...result,
-          aiModel: "gemini",
-          fallback: true,
-        };
-      }
-
-      try {
-        result = await openaiService.analyzeResumeJobMatch(
-          resumeText,
-          jobDescription
-        );
-      } catch (openaiError) {
-        console.error(
-          "❌ OpenAI GPT-4o failed, falling back to Gemini:",
-          openaiError.message
-        );
-        result = await geminiService.analyzeResumeJobMatch(
-          resumeText,
-          jobDescription
-        );
-        // Override aiModel to reflect actual service used
-        const responseTime = Date.now() - startTime;
-        await logUsage(
-          user._id,
-          "job_match",
-          "gemini",
-          result.tokenUsage,
-          result.cost || {amount: 0, currency: "USD"},
-          true,
-          {
-            responseTime,
-            fallback: "openai_error",
-            openaiError: openaiError.message,
-          }
-        );
-        return {
-          ...result,
-          aiModel: "gemini",
-          fallback: true,
-          fallbackReason: openaiError.message,
-        };
-      }
-    } else {
-      console.log("🤖 Calling Gemini API for resume-job match analysis...");
-      result = await geminiService.analyzeResumeJobMatch(
-        resumeText,
-        jobDescription
-      );
-    }
+    const result = await openaiService.analyzeResumeJobMatch(
+      resumeText,
+      jobDescription
+    );
 
     const responseTime = Date.now() - startTime;
 
-    // Log usage
     await logUsage(
       user._id,
       "job_match",
-      aiService,
+      AI_MODEL,
       result.tokenUsage,
       result.cost || {amount: 0, currency: "USD"},
       true,
@@ -494,14 +285,14 @@ export async function analyzeJobMatch(resumeText, jobDescription, user) {
 
     return {
       ...result,
-      aiModel: aiService,
+      aiModel: AI_MODEL,
     };
   } catch (error) {
     const responseTime = Date.now() - startTime;
     await logUsage(
       user._id,
       "job_match",
-      aiService,
+      AI_MODEL,
       {promptTokens: 0, candidatesTokens: 0, totalTokens: 0},
       {amount: 0, currency: "USD"},
       false,
@@ -512,12 +303,7 @@ export async function analyzeJobMatch(resumeText, jobDescription, user) {
 }
 
 /**
- * Generate cover letter with appropriate AI service (Premium feature - always GPT-4o)
- * @param {Object} resumeData - Resume data
- * @param {string} jobDescription - Job description
- * @param {string} companyName - Company name
- * @param {Object} user - User object
- * @returns {Promise<Object>} - Generated cover letter
+ * Generate cover letter with OpenAI GPT-4o
  */
 export async function generateCoverLetter(
   resumeData,
@@ -525,10 +311,7 @@ export async function generateCoverLetter(
   companyName,
   user
 ) {
-  // Cover letters always use GPT-4o for premium quality
-  const aiService = "gpt4o";
   const startTime = Date.now();
-
   try {
     const result = await openaiService.generateCoverLetter(
       resumeData,
@@ -538,11 +321,10 @@ export async function generateCoverLetter(
 
     const responseTime = Date.now() - startTime;
 
-    // Log usage
     await logUsage(
       user._id,
       "cover_letter",
-      aiService,
+      AI_MODEL,
       result.tokenUsage,
       result.cost,
       true,
@@ -551,14 +333,14 @@ export async function generateCoverLetter(
 
     return {
       ...result,
-      aiModel: aiService,
+      aiModel: AI_MODEL,
     };
   } catch (error) {
     const responseTime = Date.now() - startTime;
     await logUsage(
       user._id,
       "cover_letter",
-      aiService,
+      AI_MODEL,
       {promptTokens: 0, candidatesTokens: 0, totalTokens: 0},
       {amount: 0, currency: "USD"},
       false,
@@ -569,47 +351,34 @@ export async function generateCoverLetter(
 }
 
 /**
- * Tailor resume with appropriate AI service based on tier
- * @param {Object} resumeData - Original resume data
- * @param {string} jobDescription - Target job description
- * @param {Object} user - User object
- * @returns {Promise<Object>} - Tailored resume object
+ * Tailor resume with OpenAI
  */
 export async function tailorResume(resumeData, jobDescription, user) {
-  const aiService = selectAIService(user, "resume_enhancement");
   const startTime = Date.now();
-
   try {
-    let result;
-    if (aiService === "gpt4o" && openaiService?.tailorResumeWithAI) {
-      try {
-        result = await openaiService.tailorResumeWithAI(resumeData, jobDescription);
-      } catch (err) {
-        console.warn("⚠️ OpenAI tailor failed, falling back to Gemini:", err.message);
-        result = await geminiService.tailorResumeWithAI(resumeData, jobDescription);
-      }
-    } else {
-      result = await geminiService.tailorResumeWithAI(resumeData, jobDescription);
-    }
+    const result = await openaiService.tailorResumeWithAI(
+      resumeData,
+      jobDescription
+    );
 
     const responseTime = Date.now() - startTime;
     await logUsage(
       user._id,
       "resume_tailor",
-      aiService,
+      AI_MODEL,
       result.tokenUsage || {totalTokens: 0},
       result.cost || {amount: 0, currency: "USD"},
       true,
       {responseTime}
     );
 
-    return {...result, aiModel: aiService};
+    return {...result, aiModel: AI_MODEL};
   } catch (error) {
     const responseTime = Date.now() - startTime;
     await logUsage(
       user._id,
       "resume_tailor",
-      aiService,
+      AI_MODEL,
       {promptTokens: 0, candidatesTokens: 0, totalTokens: 0},
       {amount: 0, currency: "USD"},
       false,
@@ -620,46 +389,31 @@ export async function tailorResume(resumeData, jobDescription, user) {
 }
 
 /**
- * Compress resume with appropriate AI service
- * @param {Object} resumeData - Original resume data
- * @param {Object} user - User object
- * @returns {Promise<Object>} - Compressed resume object
+ * Compress resume with OpenAI
  */
 export async function compressResume(resumeData, user) {
-  const aiService = selectAIService(user, "resume_enhancement");
   const startTime = Date.now();
-
   try {
-    let result;
-    if (aiService === "gpt4o" && openaiService?.compressResumeWithAI) {
-      try {
-        result = await openaiService.compressResumeWithAI(resumeData);
-      } catch (err) {
-        console.warn("⚠️ OpenAI compress failed, falling back to Gemini:", err.message);
-        result = await geminiService.compressResumeWithAI(resumeData);
-      }
-    } else {
-      result = await geminiService.compressResumeWithAI(resumeData);
-    }
+    const result = await openaiService.compressResumeWithAI(resumeData);
 
     const responseTime = Date.now() - startTime;
     await logUsage(
       user._id,
       "resume_compress",
-      aiService,
+      AI_MODEL,
       result.tokenUsage || {totalTokens: 0},
       result.cost || {amount: 0, currency: "USD"},
       true,
       {responseTime}
     );
 
-    return {...result, aiModel: aiService};
+    return {...result, aiModel: AI_MODEL};
   } catch (error) {
     const responseTime = Date.now() - startTime;
     await logUsage(
       user._id,
       "resume_compress",
-      aiService,
+      AI_MODEL,
       {promptTokens: 0, candidatesTokens: 0, totalTokens: 0},
       {amount: 0, currency: "USD"},
       false,
@@ -671,17 +425,12 @@ export async function compressResume(resumeData, user) {
 
 /**
  * Get AI service info for a user
- * @param {Object} user - User object
- * @returns {Object} - AI service configuration
  */
 export function getAIServiceInfo(user) {
-  const tier = user.subscription?.tier || "free";
-  const aiModel = TIER_AI_MAPPING[tier] || TIER_AI_MAPPING.free;
-
   return {
-    tier: TIER_AI_MAPPING[tier] ? tier : "free",
-    aiModel,
-    isHybrid: aiModel === "hybrid",
+    tier: user?.subscription?.tier || "free",
+    aiModel: AI_MODEL,
+    isHybrid: false,
   };
 }
 
@@ -696,4 +445,3 @@ export default {
   compressResume,
   getAIServiceInfo,
 };
-

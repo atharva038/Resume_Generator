@@ -13,6 +13,7 @@ import {
 import { useEffect, useRef } from "react";
 import { useToggle } from "@/hooks";
 import { TextHoverEffect, FooterBackgroundGradient } from "@/components/ui/hover-footer";
+import Logo from "@/components/common/Logo";
 
 const Footer = () => {
   const footerRef = useRef(null);
@@ -75,13 +76,12 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-12 pb-10">
           {/* Brand section matching Sidebar typography and colors */}
           <div className="lg:col-span-5 space-y-4">
-            <Link to="/" className="inline-flex items-center text-2xl font-bold group">
-              <img
-                src="/orb-logo.png"
-                alt="SmartNShine"
-                className="h-14 w-auto object-contain group-hover:scale-105 transition-all duration-300 -mr-1 dark:brightness-100 dark:saturate-100 brightness-50 contrast-125 saturate-200"
+            <Link to="/" className="inline-flex items-center gap-3 text-2xl font-black tracking-tight group text-zinc-950 dark:text-white">
+              <Logo
+                className="w-9 h-9 object-contain group-hover:scale-105 transition-transform duration-200"
+                alt="SmartNShine Logo"
               />
-              <span className="bg-gradient-to-r from-[#5d8ff0] via-[#6f7fe4] to-[#8b67df] dark:from-[#6aa0ff] dark:via-[#7f8ce7] dark:to-[#9b78ea] bg-clip-text text-transparent tracking-tight font-bold">
+              <span className="leading-none">
                 SmartNShine
               </span>
             </Link>

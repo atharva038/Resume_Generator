@@ -4,7 +4,6 @@ import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import nodemailer from "nodemailer";
 import Razorpay from "razorpay";
-import {GoogleGenerativeAI} from "@google/generative-ai";
 import OpenAI from "openai";
 
 // Helper: Determine .env file location
@@ -54,18 +53,10 @@ const backupCurrentEnv = () => {
 // Variable metadata definition for UI categorization and tips
 const VARIABLE_METADATA = {
   // AI & LLM Services
-  GEMINI_API_KEY: {
-    category: "AI & Intelligence",
-    label: "Google Gemini API Key",
-    description: "Powers resume tailoring, ATS extraction, AI rewriting, and job suggestions (e.g. AIzaSy...)",
-    isSensitive: true,
-    testable: "gemini",
-    icon: "gemini",
-  },
   OPENAI_API_KEY: {
     category: "AI & Intelligence",
     label: "OpenAI API Key",
-    description: "Used for AI interview questions, answer evaluations, and deep NLP parsing (sk-...)",
+    description: "Powers AI resume tailoring, ATS extraction, bullet rewriting, and interview simulations (sk-...)",
     isSensitive: true,
     testable: "openai",
     icon: "openai",
@@ -698,35 +689,11 @@ export const testApiKey = async (req, res) => {
     if (!service) {
       return res.status(400).json({
         success: false,
-        error: "Service name is required (e.g. gemini, openai, sarvam, razorpay, mongodb, smtp)",
+        error: "Service name is required (e.g. openai, sarvam, razorpay, mongodb, smtp)",
       });
     }
 
     switch (service) {
-      case "gemini": {
-        const keyToTest = apiKey || process.env.GEMINI_API_KEY;
-        if (!keyToTest) {
-          return res.status(400).json({
-            success: false,
-            error: "No Gemini API key provided to test",
-          });
-        }
-        const genAI = new GoogleGenerativeAI(keyToTest.trim());
-        const model = genAI.getGenerativeModel({model: "gemini-2.5-flash"});
-        const result = await model.generateContent("Ping. Reply with 'OK'.");
-        const responseText = result.response.text();
-        const latency = Date.now() - startTime;
-
-        return res.json({
-          success: true,
-          service: "Google Gemini",
-          model: "gemini-2.5-flash",
-          latencyMs: latency,
-          message: `Gemini API key is ACTIVE and responded successfully!`,
-          sampleOutput: responseText.trim(),
-        });
-      }
-
       case "openai": {
         const keyToTest = apiKey || process.env.OPENAI_API_KEY;
         if (!keyToTest) {
@@ -1060,7 +1027,6 @@ export const getSystemStatus = async (req, res) => {
         name: mongoose.connection.name || "N/A",
       },
       configuredProviders: {
-        gemini: Boolean(process.env.GEMINI_API_KEY),
         openai: Boolean(process.env.OPENAI_API_KEY),
         sarvam: Boolean(process.env.SARVAM_API_KEY),
         razorpay: Boolean(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET),

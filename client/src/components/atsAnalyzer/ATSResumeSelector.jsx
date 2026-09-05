@@ -30,7 +30,7 @@ export default function ATSResumeSelector({
   return (
     <div className="bg-white dark:bg-zinc-900/90 rounded-3xl p-6 sm:p-7 border border-gray-200/90 dark:border-white/[0.08] shadow-sm space-y-5">
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-purple-500/10 dark:bg-purple-500/20 border border-purple-500/20 rounded-2xl flex items-center justify-center text-purple-600 dark:text-purple-400">
+        <div className="w-10 h-10 bg-blue-500/10 dark:bg-blue-500/20 border border-blue-500/20 rounded-2xl flex items-center justify-center text-blue-600 dark:text-blue-400">
           <Upload className="w-5 h-5" />
         </div>
         <div>
@@ -55,7 +55,7 @@ export default function ATSResumeSelector({
         }}
         className={`w-full p-4 rounded-2xl border text-left transition-all flex items-center justify-between cursor-pointer ${
           useCareerProfile
-            ? "bg-purple-50/80 dark:bg-purple-950/40 border-purple-400 dark:border-purple-600/80 shadow-sm"
+            ? "bg-blue-50/80 dark:bg-blue-950/40 border-blue-400 dark:border-blue-600/80 shadow-sm"
             : "bg-gray-50/50 dark:bg-zinc-950/60 border-gray-200 dark:border-white/5 hover:bg-gray-100 dark:hover:bg-zinc-900"
         }`}
       >
@@ -63,7 +63,7 @@ export default function ATSResumeSelector({
           <div
             className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
               useCareerProfile
-                ? "bg-purple-600 text-white shadow-sm shadow-purple-500/30"
+                ? "bg-blue-600 text-white shadow-sm shadow-blue-500/30"
                 : "bg-gray-200 dark:bg-zinc-800 text-gray-600 dark:text-zinc-400"
             }`}
           >
@@ -72,7 +72,7 @@ export default function ATSResumeSelector({
           <div>
             <div className="text-sm font-bold text-gray-900 dark:text-white flex items-center gap-2">
               <span>Master Career Profile</span>
-              <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
+              <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
                 Recommended
               </span>
             </div>
@@ -83,7 +83,7 @@ export default function ATSResumeSelector({
         </div>
 
         {useCareerProfile ? (
-          <span className="text-xs font-bold text-purple-700 dark:text-purple-300 bg-purple-100 dark:bg-purple-950/80 border border-purple-300 dark:border-purple-800 px-3 py-1 rounded-xl">
+          <span className="text-xs font-bold text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-950/80 border border-blue-300 dark:border-blue-800 px-3 py-1 rounded-xl">
             Selected ✓
           </span>
         ) : (
@@ -203,7 +203,7 @@ export default function ATSResumeSelector({
       <button
         onClick={handleAnalyze}
         disabled={analyzing || !canAnalyze}
-        className="w-full py-4 px-6 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-extrabold text-sm sm:text-base rounded-2xl shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center gap-2.5 active:scale-98 cursor-pointer"
+        className="w-full py-4 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold text-sm sm:text-base rounded-2xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center gap-2.5 active:scale-98 cursor-pointer"
       >
         {analyzing ? (
           <>

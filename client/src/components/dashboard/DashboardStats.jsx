@@ -48,7 +48,7 @@ export default function DashboardStats({ totalResumes, lastUpdated, proCount }) 
               {totalResumes}
             </p>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center justify-center">
             <Sparkles className="w-6 h-6" />
           </div>
         </div>

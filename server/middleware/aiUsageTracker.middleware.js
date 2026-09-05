@@ -13,9 +13,9 @@ import AIUsage from "../models/AIUsage.model.js";
 // - User tier-based limits (free/one-time/pro)
 // - Admin bypass capability
 //
-// Gemini API Pricing (as of 2024):
-// - Input: $0.000125 per 1K tokens
-// - Output: $0.000375 per 1K tokens
+// OpenAI GPT-4o Pricing:
+// - Input: $0.0025 per 1K tokens
+// - Output: $0.010 per 1K tokens
 // - Average cost per request: ~$0.01 (estimated)
 // ============================================
 
@@ -40,10 +40,10 @@ const QUOTA_LIMITS = {
   },
 };
 
-// Estimated token costs (Gemini API pricing)
+// Estimated token costs (OpenAI GPT-4o pricing)
 const TOKEN_COSTS = {
-  inputTokenPer1K: 0.000125, // $0.000125 per 1K input tokens
-  outputTokenPer1K: 0.000375, // $0.000375 per 1K output tokens
+  inputTokenPer1K: 0.0025,
+  outputTokenPer1K: 0.010,
 };
 
 /**
@@ -325,8 +325,8 @@ export const trackAIUsage = async (
   responseTime,
   status = "success",
   errorMessage = null,
-  aiProvider = "gemini",
-  aiModel = "gemini"
+  aiProvider = "openai",
+  aiModel = "gpt4o"
 ) => {
   try {
     // Calculate cost based on token usage

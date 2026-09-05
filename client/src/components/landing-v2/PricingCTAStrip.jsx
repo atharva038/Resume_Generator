@@ -16,7 +16,7 @@ const proFeatures = [
   "Unlimited tailored resumes",
   "Priority AI processing",
   "Custom portfolio domain",
-  "AI mock interview rooms",
+  "Instant ATS keyword gap scans",
   "Career Q&A studio",
 ];
 

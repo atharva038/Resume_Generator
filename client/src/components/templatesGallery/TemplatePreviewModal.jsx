@@ -80,7 +80,7 @@ export default function TemplatePreviewModal({
             {colorThemes && colorThemes.length > 0 && (
               <div className="space-y-3 p-4 rounded-2xl bg-gray-50 dark:bg-zinc-900 border border-gray-200/80 dark:border-white/5">
                 <div className="flex items-center gap-2">
-                  <Palette className="w-4 h-4 text-purple-500" />
+                  <Palette className="w-4 h-4 text-blue-500" />
                   <span className="text-xs font-bold text-gray-800 dark:text-zinc-200">
                     Select Color Palette
                   </span>

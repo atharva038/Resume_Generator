@@ -10,7 +10,7 @@ Public read operations (templates catalog, guidelines, health check) are free. P
 - **Included Capabilities**:
   - 1 Active resume per month
   - 3 Core ATS templates (Classic, Modern, Minimal)
-  - Standard Gemini AI bullet optimization
+  - Standard OpenAI bullet optimization
   - Basic ATS keyword check & standard PDF export
   - 5 Career Q&A interview questions
 
@@ -31,7 +31,7 @@ Public read operations (templates catalog, guidelines, health check) are free. P
   - **Yearly**: ₹1,990 INR / year (~17% discount, 2 months free)
 - **Included Capabilities**:
   - Unlimited resumes & instant PDF exports
-  - Dual AI engine: OpenAI GPT-4o + Gemini Pro
+  - OpenAI GPT-4o AI engine
   - Access to all 11+ ATS-certified templates
   - Unlimited Deep ATS diagnostic scans & missing keyword analysis
   - Unlimited Public Portfolio websites

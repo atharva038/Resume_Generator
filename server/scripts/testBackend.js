@@ -314,9 +314,9 @@ async function runTests() {
       }
     });
 
-    test("Gemini API key is configured", () => {
-      if (!process.env.GEMINI_API_KEY) {
-        throw new Error("GEMINI_API_KEY not set");
+    test("OpenAI API key is configured", () => {
+      if (!process.env.OPENAI_API_KEY) {
+        throw new Error("OPENAI_API_KEY not set");
       }
     });
 

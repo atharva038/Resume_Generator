@@ -182,7 +182,7 @@ const RateLimitExceeded = () => {
             <div className="flex flex-col sm:flex-row gap-4">
               <button
                 onClick={handleGoBack}
-                className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-gray-900 dark:text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-2"
+                className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-2"
               >
                 <ArrowLeft className="w-5 h-5" />
                 Back to Login

@@ -392,7 +392,7 @@ const ResumeWizard = ({
               <span className="text-3xl">{currentStepData.icon}</span>
             </div>
             <div className="flex-1">
-              <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 bg-clip-text text-transparent">
                 {currentStepData.title}
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
@@ -464,7 +464,7 @@ const ResumeWizard = ({
           )}
           <button
             onClick={handleNext}
-            className="flex items-center gap-2 px-8 py-3 rounded-xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+            className="flex items-center gap-2 px-8 py-3 rounded-xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 text-white hover:from-blue-700 hover:via-indigo-700 hover:to-cyan-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
           >
             {isLastStep ? (
               <>
@@ -482,7 +482,7 @@ const ResumeWizard = ({
       </div>
 
       {/* Help Text */}
-      <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900/20 dark:via-indigo-900/20 dark:to-purple-900/20 border-2 border-blue-300 dark:border-blue-700 rounded-xl p-5 shadow-md">
+      <div className="bg-gradient-to-r from-blue-50 via-indigo-50/50 to-cyan-50 dark:from-blue-900/20 dark:via-indigo-900/20 dark:to-cyan-900/20 border-2 border-blue-300 dark:border-blue-700 rounded-xl p-5 shadow-md">
         <div className="flex items-start gap-4">
           <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl p-2 shadow-md flex-shrink-0">
             <span className="text-2xl">💡</span>

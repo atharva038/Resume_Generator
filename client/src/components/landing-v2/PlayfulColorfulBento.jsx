@@ -3,33 +3,34 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { useDarkMode } from "../../context/DarkModeContext";
 
-// Magnetic Card with cursor physics, 3D tilt, and smooth return spring
+// Magnetic Card with cursor physics, 3D tilt, and smooth return spring (Zero React re-renders)
 function MagneticCard({ children, className = "", style = {} }) {
   const cardRef = useRef(null);
-  const [transform, setTransform] = useState(
-    "perspective(1000px) rotateX(0deg) rotateY(0deg) translate3d(0, 0, 0) scale3d(1, 1, 1)"
-  );
+  const rafRef = useRef(null);
 
   const handleMouseMove = (e) => {
     if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left - rect.width / 2;
-    const y = e.clientY - rect.top - rect.height / 2;
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(() => {
+      if (!cardRef.current) return;
+      const rect = cardRef.current.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
 
-    const rotateX = (-y / (rect.height / 2)) * 4.5;
-    const rotateY = (x / (rect.width / 2)) * 4.5;
-    const translateX = (x / (rect.width / 2)) * 6;
-    const translateY = (y / (rect.height / 2)) * 6;
+      const rotateX = (-y / (rect.height / 2)) * 4.5;
+      const rotateY = (x / (rect.width / 2)) * 4.5;
+      const translateX = (x / (rect.width / 2)) * 6;
+      const translateY = (y / (rect.height / 2)) * 6;
 
-    setTransform(
-      `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translate3d(${translateX.toFixed(1)}px, ${translateY.toFixed(1)}px, 0) scale3d(1.015, 1.015, 1.015)`
-    );
+      cardRef.current.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translate3d(${translateX.toFixed(1)}px, ${translateY.toFixed(1)}px, 0) scale3d(1.015, 1.015, 1.015)`;
+    });
   };
 
   const handleMouseLeave = () => {
-    setTransform(
-      "perspective(1000px) rotateX(0deg) rotateY(0deg) translate3d(0, 0, 0) scale3d(1, 1, 1)"
-    );
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    if (cardRef.current) {
+      cardRef.current.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) translate3d(0, 0, 0) scale3d(1, 1, 1)";
+    }
   };
 
   return (
@@ -38,7 +39,7 @@ function MagneticCard({ children, className = "", style = {} }) {
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{
-        transform,
+        transform: "perspective(1000px) rotateX(0deg) rotateY(0deg) translate3d(0, 0, 0) scale3d(1, 1, 1)",
         transition: "transform 0.16s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease",
         willChange: "transform",
         ...style,
@@ -71,12 +72,12 @@ export default function PlayfulColorfulBento() {
           50% { transform: translateY(-5px) rotate(1.5deg); }
         }
         @keyframes bentoWaveform {
-          0%, 100% { height: 6px; }
-          50% { height: 26px; }
+          0%, 100% { transform: scaleY(0.25); }
+          50% { transform: scaleY(1); }
         }
         @keyframes bentoPulseGlow {
-          0%, 100% { opacity: 0.6; filter: drop-shadow(0 0 3px rgba(56, 189, 248, 0.4)); }
-          50% { opacity: 1; filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.9)); }
+          0%, 100% { opacity: 0.6; }
+          50% { opacity: 1; }
         }
         .anim-dash-flow {
           stroke-dasharray: 6 6;
@@ -384,10 +385,10 @@ export default function PlayfulColorfulBento() {
                   </div>
 
                   <div className="flex items-center gap-0.5 h-4">
-                    <div className="w-1 bg-orange-500 rounded-full" style={{ animation: "bentoWaveform 1.1s ease-in-out infinite" }} />
-                    <div className="w-1 bg-orange-400 rounded-full" style={{ animation: "bentoWaveform 0.8s ease-in-out infinite 0.2s" }} />
-                    <div className="w-1 bg-orange-600 rounded-full" style={{ animation: "bentoWaveform 1.4s ease-in-out infinite 0.4s" }} />
-                    <div className="w-1 bg-orange-500 rounded-full" style={{ animation: "bentoWaveform 0.9s ease-in-out infinite 0.1s" }} />
+                    <div className="w-1 h-4 origin-bottom bg-orange-500 rounded-full" style={{ animation: "bentoWaveform 1.1s ease-in-out infinite" }} />
+                    <div className="w-1 h-4 origin-bottom bg-orange-400 rounded-full" style={{ animation: "bentoWaveform 0.8s ease-in-out infinite 0.2s" }} />
+                    <div className="w-1 h-4 origin-bottom bg-orange-600 rounded-full" style={{ animation: "bentoWaveform 1.4s ease-in-out infinite 0.4s" }} />
+                    <div className="w-1 h-4 origin-bottom bg-orange-500 rounded-full" style={{ animation: "bentoWaveform 0.9s ease-in-out infinite 0.1s" }} />
                   </div>
                 </div>
 
@@ -681,7 +682,7 @@ export default function PlayfulColorfulBento() {
                 Apply with total <br /> career confidence.
               </h3>
               <p className={`text-xs sm:text-sm font-normal leading-relaxed ${isDarkMode ? "text-zinc-400" : "text-slate-700"}`}>
-                From initial resume drafting to web portfolios and live AI mock interviews, land your dream offer without the application burnout.
+                From initial resume drafting to web portfolios and ATS optimization, land your dream offer without the application burnout.
               </p>
             </div>
 

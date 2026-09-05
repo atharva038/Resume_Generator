@@ -192,11 +192,6 @@ const ExecutiveTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
 
   const contentDensity = calculateContentDensity();
 
-  // Log content density for debugging
-  console.log(
-    `📊 ExecutiveTemplate Content Density: ${contentDensity} (low < 15, medium 15-30, high > 30)`
-  );
-
   // Dynamic styling based on content density
   const getDynamicStyles = () => {
     switch (contentDensity) {

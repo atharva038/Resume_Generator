@@ -53,7 +53,7 @@ const FALLBACK_PRICING = {
       "All 11 Executive Templates",
       "Unlimited ATS Diagnostic Scans",
       "Unlimited Resumes & Web Portfolios",
-      "AI Mock Interview Simulator",
+      "Career Q&A Studio Bank",
       "2-Way Master Profile Live Sync",
     ],
   },

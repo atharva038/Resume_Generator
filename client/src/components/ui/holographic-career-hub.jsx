@@ -381,7 +381,7 @@ export const HolographicCareerHub = () => {
 
               <Link
                 to="/career-qa"
-                className="w-full py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-black text-xs shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                className="w-full py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-blue-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white font-black text-xs shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
               >
                 <span>Practice Session</span>
                 <ArrowRight className="w-3.5 h-3.5" />
