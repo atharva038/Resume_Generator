@@ -13,6 +13,7 @@ import StrategicLeadershipTemplate from "@/components/templates/StrategicLeaders
 import ImpactProTemplate from "@/components/templates/ImpactProTemplate";
 import GitHubStyleTemplate from "@/components/templates/GitHubStyleTemplate";
 import StructuredPhotoTemplate from "@/components/templates/StructuredPhotoTemplate";
+import SiliconValleyTemplate from "@/components/templates/SiliconValleyTemplate";
 
 const templates = {
   classic: ClassicTemplate,
@@ -29,6 +30,8 @@ const templates = {
   "stratergic-leader": StrategicLeadershipTemplate,
   "impact-pro": ImpactProTemplate,
   "structured-photo": StructuredPhotoTemplate,
+  "silicon-valley": SiliconValleyTemplate,
+  siliconValley: SiliconValleyTemplate,
 };
 
 const PdfRender = () => {

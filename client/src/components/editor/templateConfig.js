@@ -10,8 +10,17 @@ import StrategicLeadershipTemplate from "@/components/templates/StrategicLeaders
 import ImpactProTemplate from "@/components/templates/ImpactProTemplate";
 import GitHubStyleTemplate from "@/components/templates/GitHubStyleTemplate";
 import StructuredPhotoTemplate from "@/components/templates/StructuredPhotoTemplate";
+import SiliconValleyTemplate from "@/components/templates/SiliconValleyTemplate";
 
 export const TEMPLATES = [
+  {
+    id: "silicon-valley",
+    name: "Silicon Valley Tech Lead",
+    component: SiliconValleyTemplate,
+    category: "Tech",
+    emoji: "⚡",
+    atsScore: 99,
+  },
   {
     id: "classic",
     name: "Classic",
@@ -197,5 +206,11 @@ export const TEMPLATE_COLOR_THEMES = {
       emoji: "🟧",
     },
     {id: "rose", name: "Rose", primary: "#db5d74", emoji: "🌹"},
+  ],
+  "silicon-valley": [
+    {id: "stripeIndigo", name: "Stripe Indigo", primary: "#4f46e5", emoji: "🟣"},
+    {id: "cyberEmerald", name: "Cyber Emerald", primary: "#059669", emoji: "🟢"},
+    {id: "midnightSlate", name: "Midnight Slate", primary: "#1e293b", emoji: "🔵"},
+    {id: "monochromePro", name: "Monochrome Pro", primary: "#18181b", emoji: "⚫"},
   ],
 };

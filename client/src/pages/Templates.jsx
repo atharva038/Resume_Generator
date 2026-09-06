@@ -17,6 +17,7 @@ import StrategicLeadershipTemplate from "@/components/templates/StrategicLeaders
 import ImpactProTemplate from "@/components/templates/ImpactProTemplate";
 import GitHubStyleTemplate from "@/components/templates/GitHubStyleTemplate";
 import StructuredPhotoTemplate from "@/components/templates/StructuredPhotoTemplate";
+import SiliconValleyTemplate from "@/components/templates/SiliconValleyTemplate";
 import {
   TemplatesBanner,
   TemplateCard,
@@ -126,9 +127,22 @@ const TEMPLATE_COMPONENTS = {
   "impact-pro": ImpactProTemplate,
   "github-style": GitHubStyleTemplate,
   "structured-photo": StructuredPhotoTemplate,
+  "silicon-valley": SiliconValleyTemplate,
 };
 
 const BASE_TEMPLATE_LIST = [
+  {
+    id: "silicon-valley",
+    name: "Silicon Valley Tech Lead",
+    component: SiliconValleyTemplate,
+    category: "Tech",
+    atsScore: 99,
+    badge: "NEW FLAGSHIP",
+    description:
+      "Stripe & Linear-inspired high-craft developer resume with dynamic ATS-safe metric highlighting and domain skill capsules.",
+    features: ["Developer Typography", "Metric Highlighting", "Skill Capsules", "Commit Rail"],
+    colors: ["#4f46e5", "#059669", "#1e293b", "#18181b"],
+  },
   {
     id: "classic",
     name: "Classic",

@@ -20,6 +20,7 @@ import StrategicLeadershipTemplate from "@/components/templates/StrategicLeaders
 import ImpactProTemplate from "@/components/templates/ImpactProTemplate";
 import GitHubStyleTemplate from "@/components/templates/GitHubStyleTemplate";
 import StructuredPhotoTemplate from "@/components/templates/StructuredPhotoTemplate";
+import SiliconValleyTemplate from "@/components/templates/SiliconValleyTemplate";
 import FullPreviewModal from "./FullPreviewModal";
 
 // Template page height in px (11 in @ 96 dpi — matches minHeight across all templates)
@@ -130,6 +131,8 @@ const ResumePreview = forwardRef(
       "stratergic-leader": StrategicLeadershipTemplate,
       "impact-pro": ImpactProTemplate,
       "structured-photo": StructuredPhotoTemplate,
+      "silicon-valley": SiliconValleyTemplate,
+      siliconValley: SiliconValleyTemplate,
     };
 
     const SelectedTemplate = templates[template] || ClassicTemplate;
