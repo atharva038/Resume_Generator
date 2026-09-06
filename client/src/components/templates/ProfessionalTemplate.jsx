@@ -1,4 +1,5 @@
 import {forwardRef, useRef, useEffect, useState} from "react";
+import {isDescriptionDuplicatedInBullets} from "./templateUtils";
 import {Mail, Phone, MapPin, Linkedin, Github, Globe} from "lucide-react";
 
 /**
@@ -107,6 +108,10 @@ const ProfessionalTemplate = forwardRef(
 
     // Calculate content density to determine styling mode
     const calculateContentDensity = () => {
+      if (resumeData?.density === "compact" || resumeData?.density === "high") return "high";
+      if (resumeData?.density === "spacious" || resumeData?.density === "low") return "low";
+      if (resumeData?.density === "medium") return "medium";
+
       let contentScore = 0;
 
       // Count experience items and bullets
@@ -493,7 +498,9 @@ const ProfessionalTemplate = forwardRef(
                   </div>
 
                   {/* Experience Description/Bullets */}
-                  {exp.description && (
+                  {exp.description &&
+                    (!exp.bullets?.length ||
+                      !isDescriptionDuplicatedInBullets(exp.description, exp.bullets)) && (
                     <p
                       style={{
                         fontSize: dynamicStyles.experienceBulletSize,
@@ -645,7 +652,9 @@ const ProfessionalTemplate = forwardRef(
                 )}
 
                 {/* Project Description */}
-                {project.description && (
+                {project.description &&
+                  (!project.bullets?.length ||
+                    !isDescriptionDuplicatedInBullets(project.description, project.bullets)) && (
                   <p
                     style={{
                       fontSize: dynamicStyles.projectBulletSize,

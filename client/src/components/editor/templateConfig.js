@@ -1,3 +1,4 @@
+import ExecutiveTemplate from "@/components/templates/ExecutiveTemplate";
 import ClassicTemplate from "@/components/templates/ClassicTemplate";
 import ModernTemplate from "@/components/templates/ModernTemplate";
 import MinimalTemplate from "@/components/templates/MinimalTemplate";
@@ -22,28 +23,36 @@ export const TEMPLATES = [
     atsScore: 99,
   },
   {
+    id: "executive",
+    name: "The Wall Street / Ivy League",
+    component: ExecutiveTemplate,
+    category: "Executive",
+    emoji: "🏛️",
+    atsScore: 99,
+  },
+  {
     id: "classic",
-    name: "Classic",
+    name: "The Open-Source Architect",
     component: ClassicTemplate,
-    category: "Professional",
-    emoji: "📋",
-    atsScore: 95,
+    category: "Tech",
+    emoji: "🛠️",
+    atsScore: 99,
   },
   {
     id: "modern",
-    name: "Modern",
+    name: "Linear / Vercel Minimalist",
     component: ModernTemplate,
-    category: "Professional",
-    emoji: "🎨",
-    atsScore: 92,
+    category: "Tech",
+    emoji: "⚡",
+    atsScore: 98,
   },
   {
     id: "minimal",
-    name: "Minimal",
+    name: "The Swiss Minimalist",
     component: MinimalTemplate,
     category: "Professional",
     emoji: "✨",
-    atsScore: 98,
+    atsScore: 99,
   },
   {
     id: "professional",

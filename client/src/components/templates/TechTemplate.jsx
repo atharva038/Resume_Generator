@@ -1,4 +1,5 @@
 import {forwardRef, useRef, useEffect, useState} from "react";
+import {isDescriptionDuplicatedInBullets} from "./templateUtils";
 
 /**
  * TechTemplate - Technology-focused resume template for developers and engineers
@@ -271,6 +272,20 @@ const TechTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
               >
                 {exp.company} {exp.location && `| ${exp.location}`}
               </div>
+              {exp.description &&
+                (!exp.bullets?.length ||
+                  !isDescriptionDuplicatedInBullets(exp.description, exp.bullets)) && (
+                <p
+                  style={{
+                    fontSize: "9.5pt",
+                    margin: "4px 0",
+                    color: selectedTheme.text,
+                    lineHeight: "1.4",
+                  }}
+                >
+                  {exp.description}
+                </p>
+              )}
               {exp.bullets && exp.bullets.length > 0 && (
                 <ul
                   style={{
@@ -366,7 +381,9 @@ const TechTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
                   </span>
                 )}
               </div>
-              {project.description && (
+              {project.description &&
+                (!project.bullets?.length ||
+                  !isDescriptionDuplicatedInBullets(project.description, project.bullets)) && (
                 <p
                   style={{
                     fontSize: "9.5pt",

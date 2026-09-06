@@ -1,16 +1,36 @@
 import { forwardRef, useRef, useEffect, useMemo } from "react";
+import { isDescriptionDuplicatedInBullets } from "./templateUtils";
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Globe,
+  User,
+  Briefcase,
+  Code2,
+  Cpu,
+  GraduationCap,
+  Award,
+  Trophy,
+  Sparkles,
+  BookOpen,
+  Heart,
+  Compass,
+} from "lucide-react";
 
 /**
  * SiliconValleyTemplate - Flagship Modern Developer Resume Template
  *
- * Inspired by high-growth engineering organizations (Stripe, Linear, Vercel, Apple).
+ * Inspired by Stripe, Linear, Vercel, and Apple engineering resumes.
  * Features:
  * - 99% ATS Compatibility Guarantee with clean semantic DOM flow
  * - Curated developer typography (Plus Jakarta Sans + Inter + JetBrains Mono)
+ * - Intelligent Content Density Engine (automatically scales spacing to guarantee 1-page fit)
  * - ATS-safe dynamic metric highlighting (+40%, $2.4M, 10x, 99.99% SLA)
- * - Domain-grouped skill capsules (Languages, Frameworks, Cloud & Infra)
- * - Refined commit-rail timeline with clean tabular dates
- * - Micro-icon contact masthead with direct links
+ * - Sleek project entries with inline tech tags & redundant description deduplication
+ * - Grouped skill capsules with compact domain pills
+ * - Refined commit-rail timeline with tabular dates
+ * - Sleek micro-icon contact strip
  * - 4 high-end color themes: Stripe Indigo, Cyber Emerald, Midnight Slate, Monochrome Pro
  */
 
@@ -18,11 +38,6 @@ import { forwardRef, useRef, useEffect, useMemo } from "react";
 const highlightMetrics = (text, primaryColor) => {
   if (!text || typeof text !== "string") return text;
 
-  // Regex pattern matches:
-  // - Percentages (+45%, 99.99%, -20%)
-  // - Financials ($1.2M, $500K, €20M, $100k+)
-  // - Multipliers (10x, 3.5x)
-  // - Quantified scale numbers (100k+, 50M+, 1,000+, 25+ engineers, 400ms)
   const metricRegex =
     /(\b(?:\+|-)?\$\d+[\d,.]*[kKmMbB]?(?:\+)?|\b(?:\+|-)?\d+[\d,.]*\%|\b\d+(?:\.\d+)?x\b|\b\d+[\d,.]*\+?\s*(?:users|MAU|DAU|customers|clients|engineers|developers|nodes|services|microservices|req\/s|rps|qps|ms|fps|stars|downloads|pull requests|PRs)\b|\b\d{2,4}\+\b)/gi;
 
@@ -84,7 +99,7 @@ const SiliconValleyTemplate = forwardRef(
         name: "Stripe Indigo",
         primary: "#4f46e5",
         primaryDark: "#3730a3",
-        primaryLight: "#eef2ff",
+        primaryLight: "#e0e7ff",
         accent: "#06b6d4",
         badgeBg: "#f5f7ff",
         badgeBorder: "#c7d2fe",
@@ -94,14 +109,14 @@ const SiliconValleyTemplate = forwardRef(
         textMuted: "#64748b",
         border: "#e2e8f0",
         rail: "#818cf8",
-        highlightBg: "#eef2ff",
+        highlightBg: "#f8faff",
       },
       cyberEmerald: {
         id: "cyberEmerald",
         name: "Cyber Emerald",
         primary: "#059669",
         primaryDark: "#065f46",
-        primaryLight: "#ecfdf5",
+        primaryLight: "#d1fae5",
         accent: "#10b981",
         badgeBg: "#f0fdf4",
         badgeBorder: "#a7f3d0",
@@ -111,14 +126,14 @@ const SiliconValleyTemplate = forwardRef(
         textMuted: "#64748b",
         border: "#e2e8f0",
         rail: "#34d399",
-        highlightBg: "#ecfdf5",
+        highlightBg: "#f0fdf4",
       },
       midnightSlate: {
         id: "midnightSlate",
         name: "Midnight Slate",
         primary: "#1e293b",
         primaryDark: "#0f172a",
-        primaryLight: "#f1f5f9",
+        primaryLight: "#e2e8f0",
         accent: "#2563eb",
         badgeBg: "#f8fafc",
         badgeBorder: "#cbd5e1",
@@ -128,14 +143,14 @@ const SiliconValleyTemplate = forwardRef(
         textMuted: "#64748b",
         border: "#e2e8f0",
         rail: "#3b82f6",
-        highlightBg: "#f1f5f9",
+        highlightBg: "#f8fafc",
       },
       monochromePro: {
         id: "monochromePro",
         name: "Monochrome Pro",
         primary: "#18181b",
         primaryDark: "#09090b",
-        primaryLight: "#f4f4f5",
+        primaryLight: "#e4e4e7",
         accent: "#52525b",
         badgeBg: "#f4f4f5",
         badgeBorder: "#d4d4d8",
@@ -149,67 +164,136 @@ const SiliconValleyTemplate = forwardRef(
       },
     };
 
+    // Aliases for compatibility across templates
+    colorThemes.blue = colorThemes.stripeIndigo;
+    colorThemes.indigo = colorThemes.stripeIndigo;
+    colorThemes.green = colorThemes.cyberEmerald;
+    colorThemes.emerald = colorThemes.cyberEmerald;
+    colorThemes.slate = colorThemes.midnightSlate;
+    colorThemes.charcoal = colorThemes.monochromePro;
+    colorThemes.monochrome = colorThemes.monochromePro;
+
     const selectedTheme =
       colorThemes[resumeData?.selectedTheme || resumeData?.colorTheme] ||
       colorThemes.stripeIndigo;
 
-    // Density calculation
-    const density = resumeData?.density || "medium";
-    const dynamicStyles = useMemo(() => {
-      switch (density) {
-        case "compact":
-          return {
-            pagePadding: "0.38in 0.44in",
-            nameSize: "22pt",
-            titleSize: "10.5pt",
-            bodySize: "8.8pt",
-            bodyLineHeight: "1.35",
-            sectionHeadingSize: "10.5pt",
-            sectionMarginBottom: "10px",
-            itemMarginBottom: "7px",
-            bulletMarginBottom: "2px",
-            pillPadding: "1px 6px",
-            pillFontSize: "7.8pt",
-          };
-        case "relaxed":
-          return {
-            pagePadding: "0.55in 0.6in",
-            nameSize: "26pt",
-            titleSize: "12pt",
-            bodySize: "9.5pt",
-            bodyLineHeight: "1.5",
-            sectionHeadingSize: "12pt",
-            sectionMarginBottom: "16px",
-            itemMarginBottom: "12px",
-            bulletMarginBottom: "4px",
-            pillPadding: "2.5px 8px",
-            pillFontSize: "8.5pt",
-          };
-        case "medium":
-        default:
-          return {
-            pagePadding: "0.45in 0.5in",
-            nameSize: "24pt",
-            titleSize: "11pt",
-            bodySize: "9pt",
-            bodyLineHeight: "1.42",
-            sectionHeadingSize: "11pt",
-            sectionMarginBottom: "12px",
-            itemMarginBottom: "9px",
-            bulletMarginBottom: "2.5px",
-            pillPadding: "2px 7px",
-            pillFontSize: "8pt",
-          };
+    // Content Weight Calculation for Intelligent Auto-Density
+    const contentWeight = useMemo(() => {
+      let weight = 0;
+      (resumeData?.experience || []).forEach((exp) => {
+        weight += 2;
+        weight += (exp.bullets?.length || 0) * 1.25;
+      });
+      (resumeData?.projects || []).forEach((proj) => {
+        weight += 1.5;
+        weight += (proj.bullets?.length || 0) * 1.1;
+        if (proj.description && (!proj.bullets || proj.bullets.length === 0)) {
+          weight += 1.2;
+        }
+      });
+      weight += (resumeData?.skills?.length || 0) * 1.2;
+      weight += (resumeData?.education?.length || 0) * 1.4;
+      weight += (resumeData?.achievements?.length || 0) * 1.1;
+      weight += (resumeData?.certifications?.length || 0) * 1.1;
+      if (resumeData?.summary) {
+        weight += Math.ceil(resumeData.summary.length / 85);
       }
-    }, [density]);
+      return weight;
+    }, [resumeData]);
 
-    // Typography styles
-    const fontHeading =
+    // Dynamic styles based on content volume or explicit density
+    const dynamicStyles = useMemo(() => {
+      const explicitDensity = resumeData?.density;
+      const isHighDensity =
+        explicitDensity === "compact" ||
+        (!explicitDensity && contentWeight >= 50);
+      const isMediumDensity =
+        explicitDensity === "medium" ||
+        (!explicitDensity && contentWeight >= 32 && contentWeight < 50);
+
+      if (isHighDensity) {
+        return {
+          pagePadding: "0.28in 0.38in",
+          headerMarginBottom: "8px",
+          nameSize: "21pt",
+          titleSize: "10pt",
+          bodySize: "9.1pt",
+          bodyLineHeight: "1.28",
+          sectionHeadingSize: "9.8pt",
+          sectionMarginBottom: "7px",
+          sectionHeadingMarginBottom: "3px",
+          itemMarginBottom: "5px",
+          bulletMarginBottom: "1.5px",
+          pillPadding: "0.5px 5px",
+          pillFontSize: "7.5pt",
+          timelinePaddingLeft: "11px",
+          timelineNodeSize: "6px",
+          contactGap: "4px 12px",
+        };
+      }
+
+      if (isMediumDensity) {
+        return {
+          pagePadding: "0.38in 0.46in",
+          headerMarginBottom: "11px",
+          nameSize: "22pt",
+          titleSize: "10.4pt",
+          bodySize: "8.8pt",
+          bodyLineHeight: "1.36",
+          sectionHeadingSize: "10.2pt",
+          sectionMarginBottom: "10px",
+          sectionHeadingMarginBottom: "4px",
+          itemMarginBottom: "7px",
+          bulletMarginBottom: "2.2px",
+          pillPadding: "1px 6px",
+          pillFontSize: "7.6pt",
+          timelinePaddingLeft: "12px",
+          timelineNodeSize: "7px",
+          contactGap: "5px 14px",
+        };
+      }
+
+      // Relaxed / Balanced mode (clean breathing room)
+      return {
+        pagePadding: "0.45in 0.52in",
+        headerMarginBottom: "14px",
+        nameSize: "24pt",
+        titleSize: "11pt",
+        bodySize: "9.1pt",
+        bodyLineHeight: "1.42",
+        sectionHeadingSize: "10.8pt",
+        sectionMarginBottom: "13px",
+        sectionHeadingMarginBottom: "5px",
+        itemMarginBottom: "9px",
+        bulletMarginBottom: "3px",
+        pillPadding: "2px 7px",
+        pillFontSize: "8pt",
+        timelinePaddingLeft: "14px",
+        timelineNodeSize: "8px",
+        contactGap: "6px 16px",
+      };
+    }, [resumeData?.density, contentWeight]);
+
+    // Typography styles based on user selection
+    const fontPairing = resumeData?.fontPairing || "modernSans";
+    let fontHeading =
       '"Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-    const fontBody =
+    let fontBody =
       '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-    const fontMono =
+    let fontMono =
       '"JetBrains Mono", "SF Mono", Consolas, "Liberation Mono", Menlo, monospace';
+
+    if (fontPairing === "editorialSerif") {
+      fontHeading =
+        '"Newsreader", "Playfair Display", Georgia, Cambria, "Times New Roman", Times, serif';
+      fontBody =
+        '"Newsreader", Georgia, Cambria, "Times New Roman", Times, serif';
+    } else if (fontPairing === "techMono") {
+      fontHeading =
+        '"JetBrains Mono", "SF Mono", Consolas, "Liberation Mono", Menlo, monospace';
+      fontBody =
+        '"JetBrains Mono", "SF Mono", Consolas, "Liberation Mono", Menlo, monospace';
+    }
 
     // Section ordering
     const DEFAULT_SECTION_ORDER = [
@@ -237,121 +321,44 @@ const SiliconValleyTemplate = forwardRef(
         id: "email",
         label: contact.email,
         href: `mailto:${contact.email}`,
-        icon: (
-          <svg
-            width="12"
-            height="12"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <rect width="20" height="16" x="2" y="4" rx="2" />
-            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-          </svg>
-        ),
+        icon: <Mail size={11} strokeWidth={2.2} />,
       },
       contact.phone && {
         id: "phone",
         label: contact.phone,
         href: `tel:${contact.phone}`,
-        icon: (
-          <svg
-            width="12"
-            height="12"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-          </svg>
-        ),
+        icon: <Phone size={11} strokeWidth={2.2} />,
       },
       contact.location && {
         id: "location",
         label: contact.location,
-        icon: (
-          <svg
-            width="12"
-            height="12"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-            <circle cx="12" cy="10" r="3" />
-          </svg>
-        ),
+        icon: <MapPin size={11} strokeWidth={2.2} />,
       },
       contact.linkedin && {
         id: "linkedin",
-        label: contact.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.com\/in\//i, "linkedin/"),
+        label: "LinkedIn",
         href: contact.linkedin.startsWith("http") ? contact.linkedin : `https://${contact.linkedin}`,
         icon: (
-          <svg
-            width="12"
-            height="12"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-            <rect width="4" height="12" x="2" y="9" />
-            <circle cx="4" cy="4" r="2" />
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z" />
           </svg>
         ),
       },
       contact.github && {
         id: "github",
-        label: contact.github.replace(/^https?:\/\/(www\.)?github\.com\//i, "github/"),
+        label: "GitHub",
         href: contact.github.startsWith("http") ? contact.github : `https://${contact.github}`,
         icon: (
-          <svg
-            width="12"
-            height="12"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
-            <path d="M9 18c-4.51 2-5-2-7-2" />
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
+            <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
           </svg>
         ),
       },
       contact.website && {
         id: "website",
-        label: contact.website.replace(/^https?:\/\/(www\.)?/i, ""),
+        label: "Portfolio",
         href: contact.website.startsWith("http") ? contact.website : `https://${contact.website}`,
-        icon: (
-          <svg
-            width="12"
-            height="12"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <circle cx="12" cy="12" r="10" />
-            <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
-            <path d="M2 12h20" />
-          </svg>
-        ),
+        icon: <Globe size={11} strokeWidth={2.2} />,
       },
     ].filter(Boolean);
 
@@ -360,53 +367,103 @@ const SiliconValleyTemplate = forwardRef(
       const titles = resumeData?.sectionTitles || {};
       const defaultTitles = {
         summary: "Professional Summary",
-        experience: "Work Experience",
+        experience: "Experience",
         projects: "Featured Projects",
         skills: "Technical Skills",
         education: "Education",
-        certifications: "Licenses & Certifications",
-        achievements: "Key Honors & Awards",
+        certifications: "Certifications",
+        achievements: "Achievements & Honors",
         customSections: "Additional Information",
       };
       return titles[sectionKey] || defaultTitles[sectionKey] || sectionKey.toUpperCase();
     };
 
-    // Render section heading with tech terminal accent
-    const renderSectionHeading = (title) => (
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          marginBottom: "8px",
-          borderBottom: `1.5px solid ${selectedTheme.border}`,
-          paddingBottom: "4px",
-        }}
-      >
-        <span
+    const sectionIcons = {
+      summary: <User size={12.5} strokeWidth={2.2} />,
+      experience: <Briefcase size={12.5} strokeWidth={2.2} />,
+      projects: <Code2 size={12.5} strokeWidth={2.2} />,
+      skills: <Cpu size={12.5} strokeWidth={2.2} />,
+      education: <GraduationCap size={12.5} strokeWidth={2.2} />,
+      certifications: <Award size={12.5} strokeWidth={2.2} />,
+      achievements: <Trophy size={12.5} strokeWidth={2.2} />,
+      publications: <BookOpen size={12.5} strokeWidth={2.2} />,
+      volunteer: <Heart size={12.5} strokeWidth={2.2} />,
+      interests: <Compass size={12.5} strokeWidth={2.2} />,
+      courses: <BookOpen size={12.5} strokeWidth={2.2} />,
+      custom: <Sparkles size={12.5} strokeWidth={2.2} />,
+    };
+
+    // Render section heading with sleek, premium icon
+    const renderSectionHeading = (title, sectionKey) => {
+      const normalizedTitle = (title || "").toLowerCase();
+      let icon = (sectionKey && sectionIcons[sectionKey]) || null;
+
+      if (!icon) {
+        if (normalizedTitle.includes("summar") || normalizedTitle.includes("about") || normalizedTitle.includes("profile")) {
+          icon = sectionIcons.summary;
+        } else if (normalizedTitle.includes("exper") || normalizedTitle.includes("work") || normalizedTitle.includes("employ")) {
+          icon = sectionIcons.experience;
+        } else if (normalizedTitle.includes("proj")) {
+          icon = sectionIcons.projects;
+        } else if (normalizedTitle.includes("skill") || normalizedTitle.includes("tech")) {
+          icon = sectionIcons.skills;
+        } else if (normalizedTitle.includes("edu") || normalizedTitle.includes("acad")) {
+          icon = sectionIcons.education;
+        } else if (normalizedTitle.includes("cert") || normalizedTitle.includes("licens")) {
+          icon = sectionIcons.certifications;
+        } else if (normalizedTitle.includes("achieve") || normalizedTitle.includes("honor") || normalizedTitle.includes("award")) {
+          icon = sectionIcons.achievements;
+        } else if (normalizedTitle.includes("publi")) {
+          icon = sectionIcons.publications;
+        } else if (normalizedTitle.includes("volun")) {
+          icon = sectionIcons.volunteer;
+        } else if (normalizedTitle.includes("interest")) {
+          icon = sectionIcons.interests;
+        } else {
+          icon = sectionIcons.custom;
+        }
+      }
+
+      return (
+        <div
           style={{
-            display: "inline-block",
-            width: "6px",
-            height: "12px",
-            backgroundColor: selectedTheme.primary,
-            borderRadius: "1.5px",
-          }}
-        />
-        <h2
-          style={{
-            fontFamily: fontHeading,
-            fontSize: dynamicStyles.sectionHeadingSize,
-            fontWeight: 800,
-            textTransform: "uppercase",
-            letterSpacing: "0.06em",
-            color: selectedTheme.primaryDark,
-            margin: 0,
+            display: "flex",
+            alignItems: "center",
+            gap: "7px",
+            marginBottom: dynamicStyles.sectionHeadingMarginBottom,
+            borderBottom: `1.5px solid ${selectedTheme.border}`,
+            paddingBottom: "3px",
+            paddingTop: "2px",
           }}
         >
-          {title}
-        </h2>
-      </div>
-    );
+          <span
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: selectedTheme.primary,
+              flexShrink: 0,
+            }}
+          >
+            {icon}
+          </span>
+          <h2
+            style={{
+              fontFamily: fontHeading,
+              fontSize: dynamicStyles.sectionHeadingSize,
+              fontWeight: 800,
+              textTransform: "uppercase",
+              letterSpacing: "0.06em",
+              color: selectedTheme.primaryDark,
+              margin: 0,
+              lineHeight: 1.2,
+            }}
+          >
+            {title}
+          </h2>
+        </div>
+      );
+    };
 
     // Section Content Handlers
     const sectionRenderers = {
@@ -415,7 +472,7 @@ const SiliconValleyTemplate = forwardRef(
           key="summary"
           style={{ marginBottom: dynamicStyles.sectionMarginBottom }}
         >
-          {renderSectionHeading(getSectionTitle("summary"))}
+          {renderSectionHeading(getSectionTitle("summary"), "summary")}
           <p
             style={{
               fontFamily: fontBody,
@@ -423,7 +480,7 @@ const SiliconValleyTemplate = forwardRef(
               lineHeight: dynamicStyles.bodyLineHeight,
               color: selectedTheme.textLight,
               margin: 0,
-              textAlign: "justify",
+              textAlign: "left",
             }}
           >
             {highlightMetrics(resumeData.summary, selectedTheme.primary)}
@@ -436,28 +493,28 @@ const SiliconValleyTemplate = forwardRef(
           key="experience"
           style={{ marginBottom: dynamicStyles.sectionMarginBottom }}
         >
-          {renderSectionHeading(getSectionTitle("experience"))}
+          {renderSectionHeading(getSectionTitle("experience"), "experience")}
           <div style={{ display: "flex", flexDirection: "column", gap: dynamicStyles.itemMarginBottom }}>
             {resumeData.experience.map((exp, index) => (
               <div
                 key={index}
                 style={{
                   position: "relative",
-                  paddingLeft: "14px",
-                  borderLeft: `2px solid ${selectedTheme.primaryLight}`,
+                  paddingLeft: dynamicStyles.timelinePaddingLeft,
+                  borderLeft: `1.5px solid ${selectedTheme.primaryLight}`,
                 }}
               >
                 {/* Timeline node */}
                 <div
                   style={{
                     position: "absolute",
-                    left: "-5px",
-                    top: "4px",
-                    width: "8px",
-                    height: "8px",
+                    left: "-4px",
+                    top: "3.5px",
+                    width: dynamicStyles.timelineNodeSize,
+                    height: dynamicStyles.timelineNodeSize,
                     borderRadius: "50%",
                     backgroundColor: selectedTheme.primary,
-                    border: "2px solid #ffffff",
+                    border: "1.5px solid #ffffff",
                     boxShadow: `0 0 0 1px ${selectedTheme.border}`,
                   }}
                 />
@@ -469,11 +526,11 @@ const SiliconValleyTemplate = forwardRef(
                     justifyContent: "space-between",
                     alignItems: "baseline",
                     flexWrap: "wrap",
-                    gap: "4px",
-                    marginBottom: "2px",
+                    gap: "2px 6px",
+                    marginBottom: "1px",
                   }}
                 >
-                  <div style={{ display: "flex", alignItems: "baseline", gap: "6px", flexWrap: "wrap" }}>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: "5px", flexWrap: "wrap" }}>
                     <h3
                       style={{
                         fontFamily: fontHeading,
@@ -481,6 +538,7 @@ const SiliconValleyTemplate = forwardRef(
                         fontWeight: 700,
                         color: selectedTheme.text,
                         margin: 0,
+                        lineHeight: 1.25,
                       }}
                     >
                       {exp.position || exp.title}
@@ -499,7 +557,7 @@ const SiliconValleyTemplate = forwardRef(
                       <span
                         style={{
                           fontFamily: fontMono,
-                          fontSize: "7.8pt",
+                          fontSize: "7.2pt",
                           color: selectedTheme.textMuted,
                         }}
                       >
@@ -508,38 +566,50 @@ const SiliconValleyTemplate = forwardRef(
                     )}
                   </div>
 
-                  {/* Tabular Date Pill */}
-                  <div
+                  {/* Tabular Date */}
+                  <span
                     style={{
                       fontFamily: fontMono,
-                      fontSize: "8pt",
+                      fontSize: "7.4pt",
                       fontWeight: 600,
-                      color: selectedTheme.badgeText,
-                      backgroundColor: selectedTheme.badgeBg,
-                      border: `1px solid ${selectedTheme.badgeBorder}`,
-                      borderRadius: "4px",
-                      padding: dynamicStyles.pillPadding,
+                      color: selectedTheme.textMuted,
                       whiteSpace: "nowrap",
                     }}
                   >
                     {exp.startDate} — {exp.endDate || "Present"}
-                  </div>
+                  </span>
                 </div>
+
+                {/* Non-duplicated description if present */}
+                {exp.description &&
+                  (!exp.bullets?.length ||
+                    !isDescriptionDuplicatedInBullets(exp.description, exp.bullets)) && (
+                    <p
+                      style={{
+                        fontFamily: fontBody,
+                        fontSize: dynamicStyles.bodySize,
+                        lineHeight: dynamicStyles.bodyLineHeight,
+                        color: selectedTheme.textLight,
+                        margin: "0 0 3px 0",
+                      }}
+                    >
+                      {highlightMetrics(exp.description, selectedTheme.primary)}
+                    </p>
+                  )}
 
                 {/* Bullets with ATS-Safe Metric Highlighting */}
                 {exp.bullets && exp.bullets.length > 0 && (
                   <ul
                     style={{
-                      margin: "4px 0 0 0",
-                      paddingLeft: "16px",
-                      listStyleType: "none",
+                      margin: "2px 0 0 0",
+                      paddingLeft: "15px",
+                      listStyleType: "disc",
                     }}
                   >
                     {exp.bullets.map((bullet, bIdx) => (
                       <li
                         key={bIdx}
                         style={{
-                          position: "relative",
                           fontFamily: fontBody,
                           fontSize: dynamicStyles.bodySize,
                           lineHeight: dynamicStyles.bodyLineHeight,
@@ -547,18 +617,6 @@ const SiliconValleyTemplate = forwardRef(
                           marginBottom: dynamicStyles.bulletMarginBottom,
                         }}
                       >
-                        <span
-                          style={{
-                            position: "absolute",
-                            left: "-14px",
-                            top: "0px",
-                            color: selectedTheme.primary,
-                            fontFamily: fontMono,
-                            fontWeight: 700,
-                          }}
-                        >
-                          ›
-                        </span>
                         {highlightMetrics(bullet, selectedTheme.primary)}
                       </li>
                     ))}
@@ -575,141 +633,124 @@ const SiliconValleyTemplate = forwardRef(
           key="projects"
           style={{ marginBottom: dynamicStyles.sectionMarginBottom }}
         >
-          {renderSectionHeading(getSectionTitle("projects"))}
+          {renderSectionHeading(getSectionTitle("projects"), "projects")}
           <div style={{ display: "flex", flexDirection: "column", gap: dynamicStyles.itemMarginBottom }}>
-            {resumeData.projects.map((proj, index) => (
-              <div
-                key={index}
-                style={{
-                  backgroundColor: selectedTheme.highlightBg,
-                  border: `1px solid ${selectedTheme.badgeBorder}`,
-                  borderRadius: "6px",
-                  padding: "8px 10px",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "baseline",
-                    flexWrap: "wrap",
-                    gap: "6px",
-                    marginBottom: "3px",
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <h3
-                      style={{
-                        fontFamily: fontHeading,
-                        fontSize: dynamicStyles.titleSize,
-                        fontWeight: 700,
-                        color: selectedTheme.text,
-                        margin: 0,
-                      }}
-                    >
-                      {proj.name}
-                    </h3>
-                    {proj.link && (
-                      <a
-                        href={proj.link.startsWith("http") ? proj.link : `https://${proj.link}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
+            {resumeData.projects.map((proj, index) => {
+              const hasBullets = proj.bullets && proj.bullets.length > 0;
+              const skipDescription =
+                hasBullets && isDescriptionDuplicatedInBullets(proj.description, proj.bullets);
+
+              return (
+                <div key={index} style={{ marginBottom: dynamicStyles.itemMarginBottom }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "baseline",
+                      flexWrap: "wrap",
+                      gap: "2px 8px",
+                      marginBottom: "2px",
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "baseline", gap: "6px", flexWrap: "wrap" }}>
+                      <h3
                         style={{
-                          fontFamily: fontMono,
-                          fontSize: "7.8pt",
-                          color: selectedTheme.primary,
-                          textDecoration: "none",
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: "2px",
-                          fontWeight: 600,
+                          fontFamily: fontHeading,
+                          fontSize: dynamicStyles.titleSize,
+                          fontWeight: 700,
+                          color: selectedTheme.text,
+                          margin: 0,
+                          lineHeight: 1.25,
                         }}
                       >
-                        <span>repo / demo</span>
-                        <span>↗</span>
-                      </a>
+                        {proj.name}
+                      </h3>
+                      {proj.link && (
+                        <a
+                          href={proj.link.startsWith("http") ? proj.link : `https://${proj.link}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            fontFamily: fontMono,
+                            fontSize: "7.4pt",
+                            color: selectedTheme.primary,
+                            textDecoration: "none",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "1.5px",
+                            fontWeight: 600,
+                          }}
+                        >
+                          <span>repo / demo</span>
+                          <span>↗</span>
+                        </a>
+                      )}
+                    </div>
+
+                    {/* Technologies tags inline */}
+                    {proj.technologies && (
+                      <span
+                        style={{
+                          fontFamily: fontMono,
+                          fontSize: "7.2pt",
+                          color: selectedTheme.primary,
+                          fontWeight: 500,
+                        }}
+                      >
+                        {(Array.isArray(proj.technologies)
+                          ? proj.technologies
+                          : proj.technologies.split(/[,•|]/)
+                        )
+                          .map((tech) => tech.trim())
+                          .filter(Boolean)
+                          .join(" • ")}
+                      </span>
                     )}
                   </div>
 
-                  {/* Technologies tags */}
-                  {proj.technologies && (
-                    <div style={{ display: "flex", gap: "4px", flexWrap: "wrap" }}>
-                      {(Array.isArray(proj.technologies)
-                        ? proj.technologies
-                        : proj.technologies.split(/[,•|]/)
-                      ).map((tech, tIdx) => (
-                        <span
-                          key={tIdx}
+                  {/* Render description only if not duplicate of bullets */}
+                  {!skipDescription && proj.description && (
+                    <p
+                      style={{
+                        fontFamily: fontBody,
+                        fontSize: dynamicStyles.bodySize,
+                        lineHeight: dynamicStyles.bodyLineHeight,
+                        color: selectedTheme.textLight,
+                        margin: "0 0 2px 0",
+                      }}
+                    >
+                      {highlightMetrics(proj.description, selectedTheme.primary)}
+                    </p>
+                  )}
+
+                  {/* Project Bullets */}
+                  {hasBullets && (
+                    <ul
+                      style={{
+                        margin: 0,
+                        paddingLeft: "15px",
+                        listStyleType: "disc",
+                      }}
+                    >
+                      {proj.bullets.map((bullet, bIdx) => (
+                        <li
+                          key={bIdx}
                           style={{
-                            fontFamily: fontMono,
-                            fontSize: "7.5pt",
-                            color: selectedTheme.badgeText,
-                            backgroundColor: "#ffffff",
-                            border: `1px solid ${selectedTheme.badgeBorder}`,
-                            borderRadius: "3px",
-                            padding: "1px 5px",
-                            fontWeight: 500,
+                            fontFamily: fontBody,
+                            fontSize: dynamicStyles.bodySize,
+                            lineHeight: dynamicStyles.bodyLineHeight,
+                            color: selectedTheme.textLight,
+                            marginBottom: dynamicStyles.bulletMarginBottom,
                           }}
                         >
-                          {tech.trim()}
-                        </span>
+                          {highlightMetrics(bullet, selectedTheme.primary)}
+                        </li>
                       ))}
-                    </div>
+                    </ul>
                   )}
                 </div>
-
-                {proj.description && (
-                  <p
-                    style={{
-                      fontFamily: fontBody,
-                      fontSize: dynamicStyles.bodySize,
-                      lineHeight: dynamicStyles.bodyLineHeight,
-                      color: selectedTheme.textLight,
-                      margin: "0 0 4px 0",
-                    }}
-                  >
-                    {highlightMetrics(proj.description, selectedTheme.primary)}
-                  </p>
-                )}
-
-                {proj.bullets && proj.bullets.length > 0 && (
-                  <ul
-                    style={{
-                      margin: 0,
-                      paddingLeft: "14px",
-                      listStyleType: "none",
-                    }}
-                  >
-                    {proj.bullets.map((bullet, bIdx) => (
-                      <li
-                        key={bIdx}
-                        style={{
-                          position: "relative",
-                          fontFamily: fontBody,
-                          fontSize: dynamicStyles.bodySize,
-                          lineHeight: dynamicStyles.bodyLineHeight,
-                          color: selectedTheme.textLight,
-                          marginBottom: "2px",
-                        }}
-                      >
-                        <span
-                          style={{
-                            position: "absolute",
-                            left: "-12px",
-                            top: "0px",
-                            color: selectedTheme.primary,
-                            fontFamily: fontMono,
-                          }}
-                        >
-                          ›
-                        </span>
-                        {highlightMetrics(bullet, selectedTheme.primary)}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
       ),
@@ -719,8 +760,8 @@ const SiliconValleyTemplate = forwardRef(
           key="skills"
           style={{ marginBottom: dynamicStyles.sectionMarginBottom }}
         >
-          {renderSectionHeading(getSectionTitle("skills"))}
-          <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+          {renderSectionHeading(getSectionTitle("skills"), "skills")}
+          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
             {resumeData.skills.map((skillGroup, index) => {
               const isGrouped = typeof skillGroup === "object" && skillGroup.category;
               const category = isGrouped ? skillGroup.category : null;
@@ -737,7 +778,7 @@ const SiliconValleyTemplate = forwardRef(
                     display: "flex",
                     alignItems: "baseline",
                     flexWrap: "wrap",
-                    gap: "8px",
+                    gap: "4px 8px",
                   }}
                 >
                   {category && (
@@ -747,32 +788,24 @@ const SiliconValleyTemplate = forwardRef(
                         fontSize: dynamicStyles.pillFontSize,
                         fontWeight: 700,
                         color: selectedTheme.text,
-                        minWidth: "110px",
+                        minWidth: "120px",
                         letterSpacing: "-0.01em",
                       }}
                     >
                       {category}:
                     </span>
                   )}
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", flex: 1 }}>
-                    {items.map((skill, sIdx) => (
-                      <span
-                        key={sIdx}
-                        style={{
-                          fontFamily: fontBody,
-                          fontSize: dynamicStyles.pillFontSize,
-                          fontWeight: 500,
-                          color: selectedTheme.badgeText,
-                          backgroundColor: selectedTheme.badgeBg,
-                          border: `1px solid ${selectedTheme.badgeBorder}`,
-                          borderRadius: "4px",
-                          padding: dynamicStyles.pillPadding,
-                        }}
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
+                  <span
+                    style={{
+                      fontFamily: fontBody,
+                      fontSize: dynamicStyles.bodySize,
+                      color: selectedTheme.textLight,
+                      flex: 1,
+                      lineHeight: dynamicStyles.bodyLineHeight,
+                    }}
+                  >
+                    {items.join(" • ")}
+                  </span>
                 </div>
               );
             })}
@@ -785,8 +818,8 @@ const SiliconValleyTemplate = forwardRef(
           key="education"
           style={{ marginBottom: dynamicStyles.sectionMarginBottom }}
         >
-          {renderSectionHeading(getSectionTitle("education"))}
-          <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+          {renderSectionHeading(getSectionTitle("education"), "education")}
+          <div style={{ display: "flex", flexDirection: "column", gap: dynamicStyles.itemMarginBottom }}>
             {resumeData.education.map((edu, index) => (
               <div
                 key={index}
@@ -795,7 +828,7 @@ const SiliconValleyTemplate = forwardRef(
                   justifyContent: "space-between",
                   alignItems: "baseline",
                   flexWrap: "wrap",
-                  gap: "4px",
+                  gap: "2px 6px",
                 }}
               >
                 <div>
@@ -806,6 +839,7 @@ const SiliconValleyTemplate = forwardRef(
                       fontWeight: 700,
                       color: selectedTheme.text,
                       margin: 0,
+                      lineHeight: 1.25,
                     }}
                   >
                     {edu.degree}
@@ -820,7 +854,15 @@ const SiliconValleyTemplate = forwardRef(
                     {edu.institution || edu.school}
                     {edu.location && ` • ${edu.location}`}
                     {edu.gpa && (
-                      <span style={{ fontFamily: fontMono, fontSize: "8pt", marginLeft: "6px", color: selectedTheme.primary }}>
+                      <span
+                        style={{
+                          fontFamily: fontMono,
+                          fontSize: "7.4pt",
+                          marginLeft: "5px",
+                          color: selectedTheme.primary,
+                          fontWeight: 600,
+                        }}
+                      >
                         (GPA: {edu.gpa})
                       </span>
                     )}
@@ -831,7 +873,7 @@ const SiliconValleyTemplate = forwardRef(
                   <span
                     style={{
                       fontFamily: fontMono,
-                      fontSize: "8pt",
+                      fontSize: "7.4pt",
                       fontWeight: 600,
                       color: selectedTheme.textMuted,
                     }}
@@ -850,22 +892,18 @@ const SiliconValleyTemplate = forwardRef(
           key="certifications"
           style={{ marginBottom: dynamicStyles.sectionMarginBottom }}
         >
-          {renderSectionHeading(getSectionTitle("certifications"))}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+          {renderSectionHeading(getSectionTitle("certifications"), "certifications")}
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "4px 10px" }}>
             {resumeData.certifications.map((cert, index) => (
               <div
                 key={index}
                 style={{
                   display: "inline-flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  backgroundColor: selectedTheme.badgeBg,
-                  border: `1px solid ${selectedTheme.badgeBorder}`,
-                  borderRadius: "5px",
-                  padding: "3px 8px",
+                  alignItems: "baseline",
+                  gap: "4px",
                 }}
               >
-                <span style={{ color: selectedTheme.primary, fontSize: "10pt" }}>✓</span>
+                <span style={{ color: selectedTheme.primary, fontSize: "8pt" }}>✓</span>
                 <span
                   style={{
                     fontFamily: fontBody,
@@ -880,7 +918,7 @@ const SiliconValleyTemplate = forwardRef(
                   <span
                     style={{
                       fontFamily: fontMono,
-                      fontSize: "7.5pt",
+                      fontSize: "7pt",
                       color: selectedTheme.textMuted,
                     }}
                   >
@@ -891,7 +929,7 @@ const SiliconValleyTemplate = forwardRef(
                   <span
                     style={{
                       fontFamily: fontMono,
-                      fontSize: "7.5pt",
+                      fontSize: "7pt",
                       color: selectedTheme.primary,
                     }}
                   >
@@ -909,31 +947,19 @@ const SiliconValleyTemplate = forwardRef(
           key="achievements"
           style={{ marginBottom: dynamicStyles.sectionMarginBottom }}
         >
-          {renderSectionHeading(getSectionTitle("achievements"))}
-          <ul style={{ margin: 0, paddingLeft: "16px", listStyleType: "none" }}>
+          {renderSectionHeading(getSectionTitle("achievements"), "achievements")}
+          <ul style={{ margin: 0, paddingLeft: "15px", listStyleType: "disc" }}>
             {resumeData.achievements.map((ach, index) => (
               <li
                 key={index}
                 style={{
-                  position: "relative",
                   fontFamily: fontBody,
                   fontSize: dynamicStyles.bodySize,
                   lineHeight: dynamicStyles.bodyLineHeight,
                   color: selectedTheme.textLight,
-                  marginBottom: "3px",
+                  marginBottom: dynamicStyles.bulletMarginBottom,
                 }}
               >
-                <span
-                  style={{
-                    position: "absolute",
-                    left: "-14px",
-                    color: selectedTheme.primary,
-                    fontFamily: fontMono,
-                    fontWeight: 700,
-                  }}
-                >
-                  ★
-                </span>
                 {highlightMetrics(typeof ach === "string" ? ach : ach.title || ach.description, selectedTheme.primary)}
               </li>
             ))}
@@ -947,8 +973,8 @@ const SiliconValleyTemplate = forwardRef(
           style={{ marginBottom: dynamicStyles.sectionMarginBottom }}
         >
           {resumeData.customSections.map((sec, index) => (
-            <div key={index} style={{ marginBottom: "8px" }}>
-              {renderSectionHeading(sec.title)}
+            <div key={index} style={{ marginBottom: "4px" }}>
+              {renderSectionHeading(sec.title, "custom")}
               <div
                 style={{
                   fontFamily: fontBody,
@@ -992,24 +1018,24 @@ const SiliconValleyTemplate = forwardRef(
             top: 0,
             left: 0,
             right: 0,
-            height: "4px",
+            height: "3px",
             background: `linear-gradient(90deg, ${selectedTheme.primary} 0%, ${selectedTheme.accent} 100%)`,
           }}
         />
 
         {/* Header / Masthead */}
-        <header style={{ marginBottom: "14px", paddingTop: "4px" }}>
+        <header style={{ marginBottom: dynamicStyles.headerMarginBottom, paddingTop: "1px" }}>
           <div
             style={{
               display: "flex",
               justifyContent: "space-between",
-              alignItems: "flex-start",
+              alignItems: "center",
               flexWrap: "wrap",
-              gap: "8px",
-              marginBottom: "8px",
+              gap: "4px 8px",
+              marginBottom: "6px",
             }}
           >
-            <div>
+            <div style={{ display: "flex", alignItems: "baseline", gap: "8px", flexWrap: "wrap" }}>
               <h1
                 style={{
                   fontFamily: fontHeading,
@@ -1023,49 +1049,21 @@ const SiliconValleyTemplate = forwardRef(
               >
                 {resumeData.name || "Candidate Name"}
               </h1>
-              {resumeData.title && (
-                <div
-                  style={{
-                    fontFamily: fontMono,
-                    fontSize: dynamicStyles.titleSize,
-                    fontWeight: 600,
-                    letterSpacing: "0.02em",
-                    color: selectedTheme.primary,
-                    marginTop: "3px",
-                  }}
-                >
-                  {resumeData.title}
-                </div>
-              )}
             </div>
 
-            {/* Status Pill Badge */}
-            <div
-              style={{
-                fontFamily: fontMono,
-                fontSize: "7.8pt",
-                fontWeight: 600,
-                color: selectedTheme.badgeText,
-                backgroundColor: selectedTheme.badgeBg,
-                border: `1px solid ${selectedTheme.badgeBorder}`,
-                borderRadius: "9999px",
-                padding: "3px 10px",
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "5px",
-              }}
-            >
-              <span
+            {resumeData.title && (
+              <div
                 style={{
-                  width: "6px",
-                  height: "6px",
-                  borderRadius: "50%",
-                  backgroundColor: selectedTheme.primary,
-                  display: "inline-block",
+                  fontFamily: fontMono,
+                  fontSize: dynamicStyles.titleSize,
+                  fontWeight: 600,
+                  letterSpacing: "0.02em",
+                  color: selectedTheme.primary,
                 }}
-              />
-              <span>100% ATS VERIFIED</span>
-            </div>
+              >
+                {resumeData.title}
+              </div>
+            )}
           </div>
 
           {/* Contact Strip */}
@@ -1075,8 +1073,9 @@ const SiliconValleyTemplate = forwardRef(
                 display: "flex",
                 flexWrap: "wrap",
                 alignItems: "center",
-                gap: "10px 14px",
+                gap: dynamicStyles.contactGap,
                 paddingTop: "6px",
+                paddingBottom: "2px",
                 borderTop: `1px dashed ${selectedTheme.border}`,
               }}
             >
@@ -1086,9 +1085,9 @@ const SiliconValleyTemplate = forwardRef(
                   style={{
                     display: "inline-flex",
                     alignItems: "center",
-                    gap: "5px",
+                    gap: "4px",
                     fontFamily: fontMono,
-                    fontSize: "8.2pt",
+                    fontSize: "7.6pt",
                     color: selectedTheme.textLight,
                   }}
                 >

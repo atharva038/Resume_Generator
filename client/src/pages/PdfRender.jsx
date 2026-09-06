@@ -72,6 +72,20 @@ const PdfRender = () => {
 
   const SelectedTemplate = templates[payload.template] || ClassicTemplate;
 
+  const layoutSettings = payload.resumeData?.layoutSettings || {};
+  const activeFontFamily =
+    layoutSettings.fontFamily ||
+    '"Arial", Helvetica, sans-serif';
+
+  const layoutStyle = {
+    "--resume-layout-top": layoutSettings.pagePaddingTop || layoutSettings.pagePadding || "0.5in",
+    "--resume-layout-side": layoutSettings.pagePadding || "0.5in",
+    "--resume-layout-bottom": layoutSettings.pagePaddingBottom || layoutSettings.pagePadding || "0.5in",
+    "--resume-layout-scale": String(Number(layoutSettings.fontScale || 100) / 100),
+    "--resume-layout-spacing": String(Number(layoutSettings.sectionSpacing || 100) / 100),
+    "--resume-layout-font-family": activeFontFamily,
+  };
+
   return (
     <main className="bg-white text-black">
       <style>{`
@@ -96,12 +110,19 @@ const PdfRender = () => {
         }
       `}</style>
       <div id="pdf-render-ready" style={{width: "210mm", minHeight: "297mm"}}>
-        <SelectedTemplate
-          resumeData={payload.resumeData}
-          twoPageMode={false}
-          printMode={payload.template === "professional-v2"}
-          onPageUsageChange={() => {}}
-        />
+        <div
+          className="resume-layout-shell"
+          style={layoutStyle}
+          data-contact={layoutSettings.contactLayout || "center-inline"}
+          data-density={payload.resumeData?.density || "medium"}
+        >
+          <SelectedTemplate
+            resumeData={payload.resumeData}
+            twoPageMode={false}
+            printMode={payload.template === "professional-v2"}
+            onPageUsageChange={() => {}}
+          />
+        </div>
       </div>
     </main>
   );

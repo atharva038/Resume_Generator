@@ -52,15 +52,15 @@ const CollapsibleSection = ({
     >
       {/* Header with collapse toggle and drag handle */}
       <div
-        className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-t-lg transition-colors"
+        className="flex items-center justify-between px-3.5 py-2.5 cursor-pointer hover:bg-gray-50/80 dark:hover:bg-zinc-900/80 rounded-t-xl transition-colors"
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5 min-w-0">
           {/* Drag handle */}
-          <div className="cursor-move text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">
+          <div className="cursor-move text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 shrink-0">
             <svg
-              width="20"
-              height="20"
+              width="15"
+              height="15"
               viewBox="0 0 20 20"
               fill="currentColor"
               className="drag-handle"
@@ -70,12 +70,12 @@ const CollapsibleSection = ({
           </div>
 
           {/* Icon and title */}
-          {icon && <span className="text-xl inline-flex">{icon}</span>}
-          <h2 className="section-title mb-0">{title}</h2>
+          {icon && <span className="text-base inline-flex shrink-0 text-gray-600 dark:text-gray-400">{icon}</span>}
+          <h2 className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-100 truncate mb-0">{title}</h2>
 
           {/* Item count badge (if applicable) */}
           {children && children.props && children.props.items && (
-            <span className="text-xs bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 px-2 py-1 rounded-full font-medium">
+            <span className="text-[10px] bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 px-1.5 py-0.5 rounded-full font-medium shrink-0">
               {children.props.items.length} items
             </span>
           )}
@@ -83,12 +83,12 @@ const CollapsibleSection = ({
 
         {/* Expand/collapse icon */}
         <div
-          className="text-gray-400 dark:text-gray-500 transition-transform duration-200"
+          className="text-gray-400 dark:text-gray-500 transition-transform duration-200 shrink-0"
           style={{
             transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
           }}
         >
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
             <path
               fillRule="evenodd"
               d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
@@ -104,7 +104,7 @@ const CollapsibleSection = ({
           isExpanded ? "max-h-[5000px] opacity-100" : "max-h-0 opacity-0"
         }`}
       >
-        <div className="px-6 pb-6">{children}</div>
+        <div className="px-3.5 pb-3.5 pt-0.5">{children}</div>
       </div>
     </div>
   );

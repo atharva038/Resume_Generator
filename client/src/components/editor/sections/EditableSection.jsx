@@ -201,16 +201,17 @@ const EditableSection = ({
   };
 
   return (
-    <div className="card p-6">
-      <div className="flex justify-between items-start mb-4">
-        <div className="flex-1">
-          <h2 className="section-title mb-0">{title}</h2>
+    <div className="card p-3 sm:p-3.5 mb-2.5">
+      <div className="flex justify-between items-center mb-2.5">
+        <div className="flex-1 min-w-0">
+          <h2 className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-100 truncate mb-0">{title}</h2>
         </div>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-1.5">
           {onMoveUp && (
             <button
               onClick={onMoveUp}
-              className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 p-1"
+              className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 p-1 text-xs"
+              title="Move Up"
             >
               ↑
             </button>
@@ -218,7 +219,8 @@ const EditableSection = ({
           {onMoveDown && (
             <button
               onClick={onMoveDown}
-              className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 p-1"
+              className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 p-1 text-xs"
+              title="Move Down"
             >
               ↓
             </button>
@@ -226,16 +228,16 @@ const EditableSection = ({
           <button
             onClick={handleEnhance}
             disabled={enhancing}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg border border-blue-500/40 dark:border-blue-400/40 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all duration-200 font-semibold disabled:opacity-60 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md border border-blue-500/40 dark:border-blue-400/40 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all duration-200 text-xs font-medium disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {enhancing ? (
               <>
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
                 Enhancing...
               </>
             ) : (
               <>
-                <Sparkles className="w-4 h-4" />
+                <Sparkles className="w-3.5 h-3.5" />
                 Enhance
               </>
             )}
@@ -243,7 +245,7 @@ const EditableSection = ({
           {onRemove && (
             <button
               onClick={onRemove}
-              className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-500 font-medium px-3 py-1"
+              className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-500 text-xs font-medium px-2 py-1"
             >
               Remove
             </button>
@@ -357,35 +359,38 @@ const EditableSection = ({
       )}
 
       {/* TipTap Editor */}
-      <div className="border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
-        <div className="bg-gray-50 dark:bg-gray-800 border-b border-gray-300 dark:border-gray-600 p-2 flex gap-2">
+      <div className="border border-gray-200 dark:border-zinc-700 rounded-lg overflow-hidden bg-white dark:bg-zinc-900 text-gray-900 dark:text-zinc-100">
+        <div className="bg-gray-50 dark:bg-zinc-800/80 border-b border-gray-200 dark:border-zinc-700 p-1.5 flex gap-1.5">
           <button
+            type="button"
             onClick={() => editor?.chain().focus().toggleBold().run()}
-            className={`px-2 py-1 rounded ${
+            className={`px-2 py-1 rounded text-xs font-semibold ${
               editor?.isActive("bold")
                 ? "bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400"
-                : "hover:bg-gray-200 dark:hover:bg-gray-700"
+                : "hover:bg-gray-200 dark:hover:bg-zinc-700 text-gray-700 dark:text-zinc-300"
             }`}
           >
             <strong>B</strong>
           </button>
           <button
+            type="button"
             onClick={() => editor?.chain().focus().toggleItalic().run()}
-            className={`px-2 py-1 rounded ${
+            className={`px-2 py-1 rounded text-xs font-semibold ${
               editor?.isActive("italic")
                 ? "bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400"
-                : "hover:bg-gray-200 dark:hover:bg-gray-700"
+                : "hover:bg-gray-200 dark:hover:bg-zinc-700 text-gray-700 dark:text-zinc-300"
             }`}
           >
             <em>I</em>
           </button>
           {sectionType !== "summary" && (
             <button
+              type="button"
               onClick={() => editor?.chain().focus().toggleBulletList().run()}
-              className={`px-2 py-1 rounded ${
+              className={`px-2 py-1 rounded text-xs font-semibold ${
                 editor?.isActive("bulletList")
                   ? "bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400"
-                  : "hover:bg-gray-200 dark:hover:bg-gray-700"
+                  : "hover:bg-gray-200 dark:hover:bg-zinc-700 text-gray-700 dark:text-zinc-300"
               }`}
             >
               • List
@@ -394,7 +399,7 @@ const EditableSection = ({
         </div>
         <EditorContent
           editor={editor}
-          className="prose dark:prose-invert max-w-none"
+          className="max-w-none text-gray-900 dark:text-zinc-100 bg-white dark:bg-zinc-900"
         />
       </div>
 

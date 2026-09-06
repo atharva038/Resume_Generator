@@ -21,16 +21,16 @@ export const PersonalInfoSection = ({
   updateField,
   updateContact,
 }) => (
-  <div className="space-y-3">
+  <div className="space-y-2">
     <input
       type="text"
       value={resumeData.name || ""}
       onChange={(e) => updateField("name", e.target.value)}
       placeholder="Full Name"
-      className="input-field font-semibold text-lg"
+      className="input-field font-semibold text-sm sm:text-base"
       autoComplete="name"
     />
-    <div className="grid grid-cols-2 gap-3">
+    <div className="grid grid-cols-2 gap-2">
       <input
         type="email"
         value={resumeData.contact?.email || ""}
