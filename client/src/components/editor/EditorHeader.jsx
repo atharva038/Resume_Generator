@@ -184,7 +184,7 @@ export default function EditorHeader({
         <button
           onClick={onSave}
           disabled={saving || autoSaving}
-          className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 bg-gray-900 hover:bg-gray-800 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 text-xs sm:text-sm font-bold rounded-xl shadow-xs transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-gray-900 bg-gray-900 px-3 sm:px-4 py-1.5 sm:py-2 text-xs font-semibold text-white transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white dark:bg-white dark:text-black dark:hover:bg-gray-100 dark:focus:ring-offset-zinc-950 sm:text-sm"
         >
           {saving || autoSaving ? (
             <RefreshCw className="w-3.5 h-3.5 animate-spin" />
@@ -198,7 +198,7 @@ export default function EditorHeader({
         <button
           onClick={onExport}
           disabled={isExportLocked}
-          className="hidden md:inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md shadow-emerald-500/20 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
+          className="hidden md:inline-flex items-center gap-1.5 rounded-lg border border-emerald-700 bg-emerald-700 px-3.5 sm:px-4 py-1.5 sm:py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-emerald-500 dark:bg-emerald-600 dark:hover:bg-emerald-500 dark:focus:ring-offset-zinc-950 sm:text-sm"
           title="Download PDF resume"
         >
           <Download className="w-3.5 h-3.5" />
