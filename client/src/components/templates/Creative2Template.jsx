@@ -1,4 +1,5 @@
 import React, {forwardRef, useRef, useEffect, useState} from "react";
+import {isDescriptionDuplicatedInBullets} from "./templateUtils";
 
 /**
  * Creative2Template - Modern Creative Resume Template with ATS Optimization
@@ -102,6 +103,10 @@ const Creative2Template = forwardRef((props, ref) => {
 
   // Calculate content density for dynamic styling
   const calculateContentDensity = () => {
+    if (resumeData?.density === "compact" || resumeData?.density === "high") return 35;
+    if (resumeData?.density === "spacious" || resumeData?.density === "low") return 10;
+    if (resumeData?.density === "medium") return 20;
+
     let score = 0;
 
     // Experience scoring (3 points + 1 per bullet)
@@ -630,7 +635,9 @@ const Creative2Template = forwardRef((props, ref) => {
                       {exp.startDate} - {exp.endDate || "Present"}
                     </div>
                   </div>
-                  {exp.description && (
+                  {exp.description &&
+                    (!exp.bullets?.length ||
+                      !isDescriptionDuplicatedInBullets(exp.description, exp.bullets)) && (
                     <p
                       style={{
                         fontSize: dynamicStyles.experienceBulletSize,
@@ -815,7 +822,9 @@ const Creative2Template = forwardRef((props, ref) => {
                       </div>
                     )}
                   </div>
-                  {project.description && (
+                  {project.description &&
+                    (!project.bullets?.length ||
+                      !isDescriptionDuplicatedInBullets(project.description, project.bullets)) && (
                     <p
                       style={{
                         fontSize: dynamicStyles.projectBulletSize,

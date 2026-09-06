@@ -6,6 +6,7 @@ import {
   TEMPLATES,
   TEMPLATE_COLOR_THEMES,
 } from "@/components/editor/templateConfig";
+import ExecutiveTemplate from "@/components/templates/ExecutiveTemplate";
 import ClassicTemplate from "@/components/templates/ClassicTemplate";
 import ModernTemplate from "@/components/templates/ModernTemplate";
 import MinimalTemplate from "@/components/templates/MinimalTemplate";
@@ -17,6 +18,7 @@ import StrategicLeadershipTemplate from "@/components/templates/StrategicLeaders
 import ImpactProTemplate from "@/components/templates/ImpactProTemplate";
 import GitHubStyleTemplate from "@/components/templates/GitHubStyleTemplate";
 import StructuredPhotoTemplate from "@/components/templates/StructuredPhotoTemplate";
+import SiliconValleyTemplate from "@/components/templates/SiliconValleyTemplate";
 import {
   TemplatesBanner,
   TemplateCard,
@@ -115,6 +117,7 @@ const sampleResumeData = {
 };
 
 const TEMPLATE_COMPONENTS = {
+  executive: ExecutiveTemplate,
   classic: ClassicTemplate,
   modern: ModernTemplate,
   minimal: MinimalTemplate,
@@ -126,41 +129,68 @@ const TEMPLATE_COMPONENTS = {
   "impact-pro": ImpactProTemplate,
   "github-style": GitHubStyleTemplate,
   "structured-photo": StructuredPhotoTemplate,
+  "silicon-valley": SiliconValleyTemplate,
 };
 
 const BASE_TEMPLATE_LIST = [
   {
-    id: "classic",
-    name: "Classic",
-    component: ClassicTemplate,
-    category: "Professional",
-    atsScore: 98,
+    id: "silicon-valley",
+    name: "Silicon Valley Tech Lead",
+    component: SiliconValleyTemplate,
+    category: "Tech",
+    atsScore: 99,
+    badge: "NEW FLAGSHIP",
     description:
-      "Traditional serif design with clear hierarchy and timeless appeal",
-    features: ["Serif Typography", "Traditional", "Maximum Compatibility"],
-    colors: ["#2d3748", "#1a365d", "#742a2a", "#1c4532"],
+      "Stripe & Linear-inspired high-craft developer resume with dynamic ATS-safe metric highlighting and domain skill capsules.",
+    features: ["Developer Typography", "Metric Highlighting", "Skill Capsules", "Commit Rail"],
+    colors: ["#4f46e5", "#059669", "#1e293b", "#18181b"],
+  },
+  {
+    id: "executive",
+    name: "The Wall Street / Ivy League",
+    component: ExecutiveTemplate,
+    category: "Leadership",
+    atsScore: 99,
+    badge: "EXECUTIVE",
+    description:
+      "Dignified Ivy League aesthetic with centered masthead, Oxford double-rules, small-caps headers, and deal metric highlighting.",
+    features: ["Ivy League Serif", "Oxford Double-Rule", "Deal Metrics", "1-Page Fit"],
+    colors: ["#1e3a8a", "#065f46", "#1e293b", "#111827"],
+  },
+  {
+    id: "classic",
+    name: "The Open-Source Architect",
+    component: ClassicTemplate,
+    category: "Tech",
+    atsScore: 99,
+    badge: "ATS 99%",
+    description:
+      "Developer-centric, markdown-inspired layout with commit-style bullet points, repo badges, and 1-page auto-density.",
+    features: ["Markdown Aesthetic", "Repo Metrics", "Commit-Style Bullets", "1-Page Fit"],
+    colors: ["#0969da", "#16a34a", "#d97706", "#24292f"],
   },
   {
     id: "modern",
-    name: "Modern",
+    name: "Linear / Vercel Minimalist",
     component: ModernTemplate,
-    category: "Modern",
-    atsScore: 95,
+    category: "Tech",
+    atsScore: 98,
+    badge: "MINIMALIST",
     description:
-      "Contemporary two-column layout with left sidebar and high visual appeal",
-    features: ["Two Column", "Sidebar Layout", "Visual Appeal"],
-    colors: ["#3b82f6", "#10b981", "#8b5cf6", "#f59e0b"],
+      "Precision engineering aesthetic with monospaced metadata, sleek timeline rail, and inline tech pills.",
+    features: ["Monospaced Meta", "Timeline Rail", "Tech Pills", "1-Page Fit"],
+    colors: ["#5e6ad2", "#059669", "#334155", "#000000"],
   },
   {
     id: "minimal",
-    name: "Minimal",
+    name: "The Swiss Minimalist",
     component: MinimalTemplate,
     category: "Minimal",
     atsScore: 99,
     description:
-      "Ultra-clean black & white design with generous whitespace and modern typography",
-    features: ["Single Column", "Generous Spacing", "99% ATS Friendly"],
-    colors: ["#18181b", "#3f3f46", "#0284c7"],
+      "Ultra-clean Swiss typography, hairline dividers, space-efficient 2-line metadata, and guaranteed 1-page fit.",
+    features: ["Swiss Typography", "Hairline Dividers", "Deduplicated Bullets", "1-Page Fit"],
+    colors: ["#4338ca", "#047857", "#1e293b", "#09090b"],
   },
   {
     id: "professional",

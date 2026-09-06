@@ -1,4 +1,5 @@
 import React, {forwardRef, useRef, useEffect, useState} from "react";
+import {isDescriptionDuplicatedInBullets} from "./templateUtils";
 
 /**
  * ImpactProTemplate - Results-Driven Resume Template with Dynamic Features
@@ -74,6 +75,10 @@ const ImpactProTemplate = forwardRef((props, ref) => {
 
   // Calculate content density for dynamic styling
   const calculateContentDensity = () => {
+    if (resumeData?.density === "compact" || resumeData?.density === "high") return 35;
+    if (resumeData?.density === "spacious" || resumeData?.density === "low") return 10;
+    if (resumeData?.density === "medium") return 20;
+
     let score = 0;
 
     // Experience scoring (3 points + 1 per bullet)
@@ -562,7 +567,9 @@ const ImpactProTemplate = forwardRef((props, ref) => {
                     {exp.startDate} - {exp.endDate || "Present"}
                   </div>
                 </div>
-                {exp.description && (
+                {exp.description &&
+                  (!exp.bullets?.length ||
+                    !isDescriptionDuplicatedInBullets(exp.description, exp.bullets)) && (
                   <p
                     style={{
                       fontSize: dynamicStyles.experienceBulletSize,
@@ -739,7 +746,9 @@ const ImpactProTemplate = forwardRef((props, ref) => {
                     </div>
                   )}
                 </div>
-                {project.description && (
+                {project.description &&
+                  (!project.bullets?.length ||
+                    !isDescriptionDuplicatedInBullets(project.description, project.bullets)) && (
                   <p
                     style={{
                       fontSize: dynamicStyles.projectBulletSize,

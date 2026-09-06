@@ -1,4 +1,5 @@
 import React, {forwardRef, useRef, useEffect, useState, useMemo} from "react";
+import {isDescriptionDuplicatedInBullets} from "./templateUtils";
 
 /**
  * Professional2Template - Premium ATS-Optimized Resume Template
@@ -77,6 +78,10 @@ const Professional2Template = forwardRef((props, ref) => {
 
   // Calculate content density for dynamic styling - Memoized to prevent recalculation on every render
   const contentDensity = useMemo(() => {
+    if (resumeData?.density === "compact" || resumeData?.density === "high") return 35;
+    if (resumeData?.density === "spacious" || resumeData?.density === "low") return 10;
+    if (resumeData?.density === "medium") return 20;
+
     let score = 0;
 
     // Experience scoring (3 points + 1 per bullet)
@@ -502,7 +507,9 @@ const Professional2Template = forwardRef((props, ref) => {
               </div>
 
               {/* Description */}
-              {exp.description && (
+              {exp.description &&
+                (!exp.bullets?.length ||
+                  !isDescriptionDuplicatedInBullets(exp.description, exp.bullets)) && (
                 <p
                   style={{
                     fontSize: dynamicStyles.experienceBulletSize,
@@ -651,7 +658,9 @@ const Professional2Template = forwardRef((props, ref) => {
               )}
 
               {/* Description */}
-              {project.description && (
+              {project.description &&
+                (!project.bullets?.length ||
+                  !isDescriptionDuplicatedInBullets(project.description, project.bullets)) && (
                 <p
                   style={{
                     fontSize: dynamicStyles.projectBulletSize,

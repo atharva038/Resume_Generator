@@ -1,4 +1,5 @@
 import {forwardRef, useRef, useEffect, useMemo} from "react";
+import {isDescriptionDuplicatedInBullets} from "./templateUtils";
 import {Mail, Phone, MapPin, Linkedin, Github, Globe} from "lucide-react";
 
 const COLOR_THEMES = {
@@ -389,7 +390,9 @@ const ProfessionalV2Template = forwardRef(
                       )}
                     </div>
                   </div>
-                  {exp.descriptionText && (
+                  {exp.descriptionText &&
+                    (!exp.bulletItems?.length ||
+                      !isDescriptionDuplicatedInBullets(exp.descriptionText, exp.bulletItems)) && (
                     <p className="experience-description">
                       {exp.descriptionText}
                     </p>
@@ -449,7 +452,9 @@ const ProfessionalV2Template = forwardRef(
                       </a>
                     )}
                   </div>
-                  {project.descriptionText && (
+                  {project.descriptionText &&
+                    (!project.bulletItems?.length ||
+                      !isDescriptionDuplicatedInBullets(project.descriptionText, project.bulletItems)) && (
                     <p className="project-description">
                       {project.descriptionText}
                     </p>

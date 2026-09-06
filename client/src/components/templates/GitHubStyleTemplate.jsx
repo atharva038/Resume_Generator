@@ -1,4 +1,5 @@
 import {forwardRef, useRef, useEffect, useMemo} from "react";
+import {isDescriptionDuplicatedInBullets} from "./templateUtils";
 
 /**
  * Metro Grid Narrative template
@@ -334,7 +335,9 @@ const GitHubStyleTemplate = forwardRef(
                 {exp.location}
               </div>
             )}
-            {exp.description && (
+            {exp.description &&
+              (!exp.bullets?.length ||
+                !isDescriptionDuplicatedInBullets(exp.description, exp.bullets)) && (
               <p
                 style={{
                   margin: "0 0 3px 0",
@@ -433,7 +436,9 @@ const GitHubStyleTemplate = forwardRef(
                 ))}
               </div>
             )}
-            {project.description && (
+            {project.description &&
+              (!project.bullets?.length ||
+                !isDescriptionDuplicatedInBullets(project.description, project.bullets)) && (
               <p
                 style={{
                   margin: "0 0 3px 0",
