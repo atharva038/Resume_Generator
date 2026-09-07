@@ -1,5 +1,5 @@
 import { forwardRef, useRef, useEffect, useMemo } from "react";
-import { isDescriptionDuplicatedInBullets } from "./templateUtils";
+import { isDescriptionDuplicatedInBullets, cleanBulletText } from "./templateUtils";
 import {
   Mail,
   Phone,
@@ -127,6 +127,57 @@ const SiliconValleyTemplate = forwardRef(
         border: "#e2e8f0",
         rail: "#34d399",
         highlightBg: "#f0fdf4",
+      },
+      electricCobalt: {
+        id: "electricCobalt",
+        name: "Electric Cobalt",
+        primary: "#2563eb",
+        primaryDark: "#1d4ed8",
+        primaryLight: "#dbeafe",
+        accent: "#38bdf8",
+        badgeBg: "#eff6ff",
+        badgeBorder: "#bfdbfe",
+        badgeText: "#1e40af",
+        text: "#0f172a",
+        textLight: "#334155",
+        textMuted: "#64748b",
+        border: "#e2e8f0",
+        rail: "#60a5fa",
+        highlightBg: "#f0f9ff",
+      },
+      crimsonEdge: {
+        id: "crimsonEdge",
+        name: "Crimson Edge",
+        primary: "#be123c",
+        primaryDark: "#9f1239",
+        primaryLight: "#ffe4e6",
+        accent: "#f43f5e",
+        badgeBg: "#fff1f2",
+        badgeBorder: "#fecdd3",
+        badgeText: "#9f1239",
+        text: "#0f172a",
+        textLight: "#334155",
+        textMuted: "#64748b",
+        border: "#e2e8f0",
+        rail: "#fb7185",
+        highlightBg: "#fff1f2",
+      },
+      nordicTeal: {
+        id: "nordicTeal",
+        name: "Nordic Teal",
+        primary: "#0f766e",
+        primaryDark: "#115e59",
+        primaryLight: "#ccfbf1",
+        accent: "#14b8a6",
+        badgeBg: "#f0fdfa",
+        badgeBorder: "#99f6e4",
+        badgeText: "#115e59",
+        text: "#0f172a",
+        textLight: "#334155",
+        textMuted: "#64748b",
+        border: "#e2e8f0",
+        rail: "#2dd4bf",
+        highlightBg: "#f0fdfa",
       },
       midnightSlate: {
         id: "midnightSlate",
@@ -606,20 +657,24 @@ const SiliconValleyTemplate = forwardRef(
                       listStyleType: "disc",
                     }}
                   >
-                    {exp.bullets.map((bullet, bIdx) => (
-                      <li
-                        key={bIdx}
-                        style={{
-                          fontFamily: fontBody,
-                          fontSize: dynamicStyles.bodySize,
-                          lineHeight: dynamicStyles.bodyLineHeight,
-                          color: selectedTheme.textLight,
-                          marginBottom: dynamicStyles.bulletMarginBottom,
-                        }}
-                      >
-                        {highlightMetrics(bullet, selectedTheme.primary)}
-                      </li>
-                    ))}
+                    {exp.bullets.map((bullet, bIdx) => {
+                      const cleaned = cleanBulletText(bullet);
+                      if (!cleaned) return null;
+                      return (
+                        <li
+                          key={bIdx}
+                          style={{
+                            fontFamily: fontBody,
+                            fontSize: dynamicStyles.bodySize,
+                            lineHeight: dynamicStyles.bodyLineHeight,
+                            color: selectedTheme.textLight,
+                            marginBottom: dynamicStyles.bulletMarginBottom,
+                          }}
+                        >
+                          {highlightMetrics(cleaned, selectedTheme.primary)}
+                        </li>
+                      );
+                    })}
                   </ul>
                 )}
               </div>
@@ -732,20 +787,24 @@ const SiliconValleyTemplate = forwardRef(
                         listStyleType: "disc",
                       }}
                     >
-                      {proj.bullets.map((bullet, bIdx) => (
-                        <li
-                          key={bIdx}
-                          style={{
-                            fontFamily: fontBody,
-                            fontSize: dynamicStyles.bodySize,
-                            lineHeight: dynamicStyles.bodyLineHeight,
-                            color: selectedTheme.textLight,
-                            marginBottom: dynamicStyles.bulletMarginBottom,
-                          }}
-                        >
-                          {highlightMetrics(bullet, selectedTheme.primary)}
-                        </li>
-                      ))}
+                      {proj.bullets.map((bullet, bIdx) => {
+                        const cleaned = cleanBulletText(bullet);
+                        if (!cleaned) return null;
+                        return (
+                          <li
+                            key={bIdx}
+                            style={{
+                              fontFamily: fontBody,
+                              fontSize: dynamicStyles.bodySize,
+                              lineHeight: dynamicStyles.bodyLineHeight,
+                              color: selectedTheme.textLight,
+                              marginBottom: dynamicStyles.bulletMarginBottom,
+                            }}
+                          >
+                            {highlightMetrics(cleaned, selectedTheme.primary)}
+                          </li>
+                        );
+                      })}
                     </ul>
                   )}
                 </div>

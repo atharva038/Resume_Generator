@@ -1,17 +1,12 @@
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 
 /**
- * CollapsibleSection - Wrapper component for collapsible, draggable sections
+ * CollapsibleSection - Clean wrapper component for collapsible editor sections
  * @param {string} title - Section title
  * @param {ReactNode} icon - Icon element for the section
  * @param {ReactNode} children - Section content
  * @param {boolean} defaultExpanded - Whether section starts expanded
- * @param {function} onDragStart - Drag start handler
- * @param {function} onDragEnd - Drag end handler
- * @param {function} onDragOver - Drag over handler
- * @param {function} onDrop - Drop handler
  * @param {string} sectionId - Unique section identifier
- * @param {boolean} isDragging - Whether this section is being dragged
  * @param {boolean|null} forceExpanded - Optional external expand/collapse control
  */
 const CollapsibleSection = ({
@@ -19,12 +14,7 @@ const CollapsibleSection = ({
   icon = null,
   children,
   defaultExpanded = true,
-  onDragStart,
-  onDragEnd,
-  onDragOver,
-  onDrop,
   sectionId,
-  isDragging = false,
   forceExpanded = null,
 }) => {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
@@ -36,42 +26,22 @@ const CollapsibleSection = ({
   }, [forceExpanded]);
 
   return (
-    <div
-      draggable
-      onDragStart={(e) => onDragStart && onDragStart(e, sectionId)}
-      onDragEnd={(e) => onDragEnd && onDragEnd(e)}
-      onDragOver={(e) => onDragOver && onDragOver(e)}
-      onDrop={(e) => onDrop && onDrop(e, sectionId)}
-      className={`card transition-all duration-200 ${
-        isDragging ? "opacity-50 scale-95" : "opacity-100 scale-100"
-      }`}
-      style={{
-        cursor: "move",
-        border: isDragging ? "2px dashed #3b82f6" : undefined,
-      }}
-    >
-      {/* Header with collapse toggle and drag handle */}
+    <div className="card transition-all duration-200 opacity-100 scale-100">
+      {/* Clean Header with collapse toggle */}
       <div
-        className="flex items-center justify-between px-3.5 py-2.5 cursor-pointer hover:bg-gray-50/80 dark:hover:bg-zinc-900/80 rounded-t-xl transition-colors"
+        className="flex items-center justify-between px-3.5 py-2.5 cursor-pointer hover:bg-gray-50/80 dark:hover:bg-zinc-900/80 rounded-t-xl transition-colors select-none"
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center gap-2.5 min-w-0">
-          {/* Drag handle */}
-          <div className="cursor-move text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 shrink-0">
-            <svg
-              width="15"
-              height="15"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className="drag-handle"
-            >
-              <path d="M7 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 14zm6-8a2 2 0 1 0-.001-4.001A2 2 0 0 0 13 6zm0 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 14z" />
-            </svg>
-          </div>
-
           {/* Icon and title */}
-          {icon && <span className="text-base inline-flex shrink-0 text-gray-600 dark:text-gray-400">{icon}</span>}
-          <h2 className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-100 truncate mb-0">{title}</h2>
+          {icon && (
+            <span className="text-base inline-flex shrink-0 text-gray-600 dark:text-gray-400">
+              {icon}
+            </span>
+          )}
+          <h2 className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-100 truncate mb-0">
+            {title}
+          </h2>
 
           {/* Item count badge (if applicable) */}
           {children && children.props && children.props.items && (
@@ -81,7 +51,7 @@ const CollapsibleSection = ({
           )}
         </div>
 
-        {/* Expand/collapse icon */}
+        {/* Expand/collapse chevron icon */}
         <div
           className="text-gray-400 dark:text-gray-500 transition-transform duration-200 shrink-0"
           style={{

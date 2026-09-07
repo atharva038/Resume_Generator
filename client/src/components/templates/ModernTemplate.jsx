@@ -83,7 +83,7 @@ const ModernTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }, ref) 
   // Linear & Vercel Minimalist Color Palettes
   const colorThemes = {
     // Toolbar mapping themes
-    stripeIndigo: {
+    linearIndigo: {
       primary: "#5e6ad2", // Linear Violet
       primaryDark: "#4c55ba",
       primaryLight: "#eef0fb",
@@ -97,7 +97,7 @@ const ModernTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }, ref) 
       border: "#e4e4e7",
       rail: "#c7d2fe",
     },
-    cyberEmerald: {
+    raycastEmerald: {
       primary: "#059669", // Terminal Emerald
       primaryDark: "#047857",
       primaryLight: "#ecfdf5",
@@ -111,8 +111,92 @@ const ModernTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }, ref) 
       border: "#e4e4e7",
       rail: "#a7f3d0",
     },
+    vercelSlate: {
+      primary: "#000000", // Vercel Obsidian
+      primaryDark: "#000000",
+      primaryLight: "#f4f4f5",
+      accent: "#18181b",
+      badgeBg: "#fafafa",
+      badgeBorder: "#d4d4d8",
+      badgeText: "#18181b",
+      text: "#09090b",
+      textLight: "#27272a",
+      textMuted: "#71717a",
+      border: "#e4e4e7",
+      rail: "#d4d4d8",
+    },
+    arcElectric: {
+      primary: "#2563eb",
+      primaryDark: "#1d4ed8",
+      primaryLight: "#eff6ff",
+      accent: "#3b82f6",
+      badgeBg: "#eff6ff",
+      badgeBorder: "#bfdbfe",
+      badgeText: "#1d4ed8",
+      text: "#09090b",
+      textLight: "#27272a",
+      textMuted: "#71717a",
+      border: "#e4e4e7",
+      rail: "#93c5fd",
+    },
+    neonMagenta: {
+      primary: "#c026d3",
+      primaryDark: "#a21caf",
+      primaryLight: "#fdf4ff",
+      accent: "#d946ef",
+      badgeBg: "#fdf4ff",
+      badgeBorder: "#f5d0fe",
+      badgeText: "#a21caf",
+      text: "#09090b",
+      textLight: "#27272a",
+      textMuted: "#71717a",
+      border: "#e4e4e7",
+      rail: "#f0abfc",
+    },
+    cyberAmber: {
+      primary: "#d97706",
+      primaryDark: "#b45309",
+      primaryLight: "#fffbeb",
+      accent: "#f59e0b",
+      badgeBg: "#fffbeb",
+      badgeBorder: "#fde68a",
+      badgeText: "#b45309",
+      text: "#09090b",
+      textLight: "#27272a",
+      textMuted: "#71717a",
+      border: "#e4e4e7",
+      rail: "#fde68a",
+    },
+    stripeIndigo: {
+      primary: "#5e6ad2",
+      primaryDark: "#4c55ba",
+      primaryLight: "#eef0fb",
+      accent: "#6366f1",
+      badgeBg: "#f8f9fe",
+      badgeBorder: "#dbe0f8",
+      badgeText: "#434ca8",
+      text: "#09090b",
+      textLight: "#27272a",
+      textMuted: "#71717a",
+      border: "#e4e4e7",
+      rail: "#c7d2fe",
+    },
+    cyberEmerald: {
+      primary: "#059669",
+      primaryDark: "#047857",
+      primaryLight: "#ecfdf5",
+      accent: "#10b981",
+      badgeBg: "#f0fdf4",
+      badgeBorder: "#a7f3d0",
+      badgeText: "#065f46",
+      text: "#09090b",
+      textLight: "#27272a",
+      textMuted: "#71717a",
+      border: "#e4e4e7",
+      rail: "#a7f3d0",
+    },
     midnightSlate: {
-      primary: "#334155", // Titanium Slate
+      primary: "#334155",
       primaryDark: "#1e293b",
       primaryLight: "#f1f5f9",
       accent: "#2563eb",
@@ -126,7 +210,7 @@ const ModernTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }, ref) 
       rail: "#cbd5e1",
     },
     monochromePro: {
-      primary: "#000000", // Vercel Obsidian
+      primary: "#000000",
       primaryDark: "#000000",
       primaryLight: "#f4f4f5",
       accent: "#18181b",
@@ -154,6 +238,48 @@ const ModernTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }, ref) 
       border: "#e4e4e7",
       rail: "#c7d2fe",
     },
+    teal: {
+      primary: "#0d9488",
+      primaryDark: "#0f766e",
+      primaryLight: "#f0fdfa",
+      accent: "#14b8a6",
+      badgeBg: "#f0fdfa",
+      badgeBorder: "#99f6e4",
+      badgeText: "#0f766e",
+      text: "#09090b",
+      textLight: "#27272a",
+      textMuted: "#71717a",
+      border: "#e4e4e7",
+      rail: "#99f6e4",
+    },
+    purple: {
+      primary: "#7c3aed",
+      primaryDark: "#6d28d9",
+      primaryLight: "#f5f3ff",
+      accent: "#8b5cf6",
+      badgeBg: "#f5f3ff",
+      badgeBorder: "#ddd6fe",
+      badgeText: "#6d28d9",
+      text: "#09090b",
+      textLight: "#27272a",
+      textMuted: "#71717a",
+      border: "#e4e4e7",
+      rail: "#ddd6fe",
+    },
+    orange: {
+      primary: "#ea580c",
+      primaryDark: "#c2410c",
+      primaryLight: "#fff7ed",
+      accent: "#f97316",
+      badgeBg: "#fff7ed",
+      badgeBorder: "#ffedd5",
+      badgeText: "#c2410c",
+      text: "#09090b",
+      textLight: "#27272a",
+      textMuted: "#71717a",
+      border: "#e4e4e7",
+      rail: "#fed7aa",
+    },
     slate: {
       primary: "#334155",
       primaryDark: "#1e293b",
@@ -172,6 +298,7 @@ const ModernTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }, ref) 
 
   const selectedTheme =
     colorThemes[resumeData?.selectedTheme || resumeData?.colorTheme] ||
+    colorThemes.linearIndigo ||
     colorThemes.stripeIndigo;
 
   // 1-Page Content Density Engine

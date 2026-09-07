@@ -3,6 +3,71 @@ import {isDescriptionDuplicatedInBullets} from "./templateUtils";
 import {Mail, Phone, MapPin, Linkedin, Github, Globe} from "lucide-react";
 
 const COLOR_THEMES = {
+  royalSapphire: {
+    primary: "#1d4ed8",
+    secondary: "#2563eb",
+    accent: "#3b82f6",
+    text: "#111827",
+    textLight: "#4b5563",
+    textMuted: "#6b7280",
+  },
+  emeraldPrestige: {
+    primary: "#047857",
+    secondary: "#059669",
+    accent: "#10b981",
+    text: "#111827",
+    textLight: "#4b5563",
+    textMuted: "#6b7280",
+  },
+  cabernetBurgundy: {
+    primary: "#831843",
+    secondary: "#9f1239",
+    accent: "#be185d",
+    text: "#111827",
+    textLight: "#4b5563",
+    textMuted: "#6b7280",
+  },
+  nordicTeal: {
+    primary: "#0f766e",
+    secondary: "#14b8a6",
+    accent: "#2dd4bf",
+    text: "#111827",
+    textLight: "#4b5563",
+    textMuted: "#6b7280",
+  },
+  imperialPlum: {
+    primary: "#6b21a8",
+    secondary: "#7e22ce",
+    accent: "#9333ea",
+    text: "#111827",
+    textLight: "#4b5563",
+    textMuted: "#6b7280",
+  },
+  warmTerracotta: {
+    primary: "#c2410c",
+    secondary: "#ea580c",
+    accent: "#f97316",
+    text: "#111827",
+    textLight: "#4b5563",
+    textMuted: "#6b7280",
+  },
+  deepOcean: {
+    primary: "#0369a1",
+    secondary: "#0284c7",
+    accent: "#38bdf8",
+    text: "#111827",
+    textLight: "#4b5563",
+    textMuted: "#6b7280",
+  },
+  titaniumSlate: {
+    primary: "#1e293b",
+    secondary: "#334155",
+    accent: "#475569",
+    text: "#0f172a",
+    textLight: "#334155",
+    textMuted: "#64748b",
+  },
+  // Legacy aliases
   blue: {
     primary: "#1d4ed8",
     secondary: "#2563eb",
@@ -34,6 +99,38 @@ const COLOR_THEMES = {
     text: "#111827",
     textLight: "#4b5563",
     textMuted: "#6b7280",
+  },
+  stripeIndigo: {
+    primary: "#1d4ed8",
+    secondary: "#2563eb",
+    accent: "#3b82f6",
+    text: "#111827",
+    textLight: "#4b5563",
+    textMuted: "#6b7280",
+  },
+  cyberEmerald: {
+    primary: "#0f766e",
+    secondary: "#14b8a6",
+    accent: "#2dd4bf",
+    text: "#111827",
+    textLight: "#4b5563",
+    textMuted: "#6b7280",
+  },
+  midnightSlate: {
+    primary: "#1e293b",
+    secondary: "#334155",
+    accent: "#475569",
+    text: "#0f172a",
+    textLight: "#334155",
+    textMuted: "#64748b",
+  },
+  monochromePro: {
+    primary: "#111827",
+    secondary: "#1f2937",
+    accent: "#374151",
+    text: "#000000",
+    textLight: "#1f2937",
+    textMuted: "#4b5563",
   },
 };
 
@@ -142,8 +239,12 @@ const ProfessionalV2Template = forwardRef(
     const languageList = Array.isArray(data.languages) ? data.languages : [];
 
     const selectedTheme = useMemo(
-      () => COLOR_THEMES[data?.colorTheme] || COLOR_THEMES.blue,
-      [data?.colorTheme]
+      () =>
+        COLOR_THEMES[data?.selectedTheme] ||
+        COLOR_THEMES[data?.colorTheme] ||
+        COLOR_THEMES.royalSapphire ||
+        COLOR_THEMES.blue,
+      [data?.selectedTheme, data?.colorTheme]
     );
 
     // Helper function to safely format skills (returns array)

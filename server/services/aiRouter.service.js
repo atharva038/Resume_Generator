@@ -424,6 +424,55 @@ export async function compressResume(resumeData, user) {
 }
 
 /**
+ * Generate 3 tailored variations of a bullet or summary (Quantified, Executive, Keyword-Enriched)
+ */
+export async function generateBulletVariations(
+  content,
+  sectionType,
+  context,
+  resumeData,
+  user,
+  customInstruction = ""
+) {
+  const startTime = Date.now();
+  try {
+    const result = await openaiService.generateBulletVariationsWithAI(
+      content,
+      sectionType,
+      context,
+      resumeData,
+      customInstruction
+    );
+
+    const responseTime = Date.now() - startTime;
+
+    await logUsage(
+      user._id,
+      "content_enhanced",
+      AI_MODEL,
+      result.tokenUsage || {totalTokens: 0},
+      result.cost || {amount: 0, currency: "USD"},
+      true,
+      {responseTime, sectionType, feature: "bullet_power_polish"}
+    );
+
+    return {...result, aiModel: AI_MODEL};
+  } catch (error) {
+    const responseTime = Date.now() - startTime;
+    await logUsage(
+      user._id,
+      "content_enhanced",
+      AI_MODEL,
+      {promptTokens: 0, candidatesTokens: 0, totalTokens: 0},
+      {amount: 0, currency: "USD"},
+      false,
+      {responseTime, sectionType, error: error.message}
+    );
+    throw error;
+  }
+}
+
+/**
  * Get AI service info for a user
  */
 export function getAIServiceInfo(user) {
@@ -437,6 +486,7 @@ export function getAIServiceInfo(user) {
 export default {
   parseResume,
   enhanceContent,
+  generateBulletVariations,
   generateSummary,
   categorizeSkills,
   analyzeJobMatch,
@@ -445,3 +495,4 @@ export default {
   compressResume,
   getAIServiceInfo,
 };
+

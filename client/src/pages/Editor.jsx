@@ -49,7 +49,6 @@ const Editor = () => {
   const { user } = useAuth();
   const resumePreviewRef = useRef(null);
   const previewSectionRef = useRef(null);
-  const colorDropdownRef = useRef(null);
   const sectionElementRefs = useRef({});
 
   // Helper function to check if subscription is expired
@@ -79,12 +78,6 @@ const Editor = () => {
     toggleTemplateSelector,
     showTemplateSelectorTrue,
     showTemplateSelectorFalse,
-  ] = useToggle(false);
-  const [
-    showColorThemeSelector,
-    toggleColorThemeSelector,
-    showColorThemeSelectorTrue,
-    showColorThemeSelectorFalse,
   ] = useToggle(false);
   const [sectionOrder, setSectionOrder] = useLocalStorage(
     "resumeSectionOrder",
@@ -185,22 +178,6 @@ const Editor = () => {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  useEffect(() => {
-    if (!showColorThemeSelector) return;
-
-    const handleClickOutside = (event) => {
-      if (
-        colorDropdownRef.current &&
-        !colorDropdownRef.current.contains(event.target)
-      ) {
-        showColorThemeSelectorFalse();
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [showColorThemeSelector, showColorThemeSelectorFalse]);
 
   // Load resume data on mount
   useEffect(() => {
@@ -451,6 +428,24 @@ const Editor = () => {
     setDraggedSection(null);
   };
 
+  // Reorder section by ID (up / down)
+  const handleMoveSection = (sectionId, direction) => {
+    const currentIndex = sectionOrder.indexOf(sectionId);
+    if (currentIndex === -1) return;
+    const targetIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
+    if (targetIndex < 0 || targetIndex >= sectionOrder.length) return;
+
+    const newOrder = [...sectionOrder];
+    newOrder.splice(currentIndex, 1);
+    newOrder.splice(targetIndex, 0, sectionId);
+
+    setSectionOrder(newOrder);
+    setResumeData((prev) => ({
+      ...prev,
+      sectionOrder: newOrder,
+    }));
+  };
+
   // GitHub Import Handler
   const handleGitHubImport = async (importedData) => {
     let updatedResumeData = null;
@@ -622,16 +617,24 @@ const Editor = () => {
     return () => window.removeEventListener("keydown", handleSectionShortcuts);
   }, [isWizardMode, resumeData, sectionOrder, closeFloatingNav]);
 
-  const availableColorThemes = useMemo(
-    () => TEMPLATE_COLOR_THEMES[selectedTemplate] || [],
-    [selectedTemplate]
-  );
-  const activeColorTheme = useMemo(
-    () =>
-      availableColorThemes.find((theme) => theme.id === resumeData?.colorTheme) ||
-      availableColorThemes[0],
-    [availableColorThemes, resumeData?.colorTheme]
-  );
+  const handleApplyTemplate = (templateId) => {
+    setSelectedTemplate(templateId);
+    const newThemes = TEMPLATE_COLOR_THEMES[templateId] || [];
+    if (newThemes.length > 0) {
+      const exists = newThemes.some(
+        (t) =>
+          t.id === resumeData?.colorTheme ||
+          t.id === resumeData?.selectedTheme
+      );
+      if (!exists) {
+        setResumeData((prev) => ({
+          ...prev,
+          colorTheme: newThemes[0].id,
+          selectedTheme: newThemes[0].id,
+        }));
+      }
+    }
+  };
 
   const scrollToSection = (sectionId) => {
     const element = sectionElementRefs.current[sectionId];
@@ -691,22 +694,6 @@ const Editor = () => {
         onImportCareerProfile={handleImportFromCareerProfile}
         onResetOrder={handleResetOrder}
         onShowTemplateSelector={showTemplateSelectorTrue}
-        colorDropdownRef={colorDropdownRef}
-        showColorThemeSelector={showColorThemeSelector}
-        onToggleColorThemeSelector={toggleColorThemeSelector}
-        availableColorThemes={availableColorThemes}
-        activeColorTheme={activeColorTheme}
-        onSelectColorTheme={(theme) => {
-          setResumeData((prev) => ({
-            ...prev,
-            colorTheme: theme.id,
-          }));
-          showColorThemeSelectorFalse();
-          toast.success(`${theme.name} theme applied!`, {
-            duration: 2000,
-            position: "bottom-right",
-          });
-        }}
         onSave={guardedHandleSave}
         onExport={handleDownloadPDF}
         isExportLocked={isExportLocked}
@@ -737,6 +724,7 @@ const Editor = () => {
           activeSectionId={activeSectionId}
           sectionCompletionMap={sectionCompletionMap}
           onSelectSection={scrollToSection}
+          onMoveSection={handleMoveSection}
         />
 
         {/* Compact Floating Action Rail - Desktop Only */}
@@ -748,7 +736,7 @@ const Editor = () => {
           autoSaving={autoSaving}
           hasUnsavedChanges={hasUnsavedChanges}
           handleDownloadPDF={handleDownloadPDF}
-          isSubscriptionExpired={isSubscriptionExpired}
+          isSubscriptionExpired={isExportLocked}
           showScrollTop={showScrollTop}
         />
 
@@ -808,6 +796,7 @@ const Editor = () => {
             activeSectionId={activeSectionId}
             sectionCompletionMap={sectionCompletionMap}
             onSelectSection={scrollToSection}
+            onMoveSection={handleMoveSection}
           />
         )}
 
@@ -883,6 +872,7 @@ const Editor = () => {
                   <EditorSectionRenderer
                     sectionId={sectionId}
                     resumeData={resumeData}
+                    template={selectedTemplate}
                     setResumeData={setResumeData}
                     updateField={updateField}
                     updateContact={updateContact}
@@ -947,7 +937,7 @@ const Editor = () => {
           templates={TEMPLATES}
           resumeData={resumeData}
           selectedTemplate={selectedTemplate}
-          onApplyTemplate={setSelectedTemplate}
+          onApplyTemplate={handleApplyTemplate}
         />
 
         {/* Slide-in Analysis Drawer */}

@@ -36,21 +36,19 @@ const MobileActionBar = memo(
     activeSectionId,
     sectionCompletionMap,
     onSelectSection,
+    onMoveSection,
   }) => (
     <div
-      className="lg:hidden sticky z-30 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl border-b border-gray-200 dark:border-zinc-800 shadow-sm -mx-2 sm:-mx-4 px-2 sm:px-4 pt-2.5 mb-4 no-print"
-      style={{
-        top: "calc(4rem + env(safe-area-inset-top, 0px))",
-        paddingBottom: "max(0.625rem, env(safe-area-inset-bottom, 0px))",
-      }}
+      className="xl:hidden fixed bottom-3 left-3 right-3 z-50 rounded-2xl border border-gray-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md p-2 shadow-xl no-print"
+      style={{ paddingBottom: "max(0.5rem, env(safe-area-inset-bottom))" }}
     >
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid grid-cols-4 gap-1.5">
         <button
           onClick={onToggleSections}
           className={`h-11 rounded-xl border transition-colors flex flex-col items-center justify-center gap-0.5 cursor-pointer ${
             showFloatingNav
-              ? "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300"
-              : "bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-700 text-gray-600 dark:text-gray-300"
+              ? "bg-violet-50 dark:bg-violet-900/30 border-violet-200 dark:border-violet-800 text-violet-700 dark:text-violet-300"
+              : "bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800"
           }`}
         >
           {showFloatingNav ? <X className="w-4 h-4" /> : <List className="w-4 h-4" />}
@@ -61,37 +59,34 @@ const MobileActionBar = memo(
           onClick={onTogglePreview}
           className={`h-11 rounded-xl border transition-colors flex flex-col items-center justify-center gap-0.5 cursor-pointer ${
             showPreview
-              ? "bg-violet-50 dark:bg-violet-900/20 border-violet-200 dark:border-violet-800 text-violet-700 dark:text-violet-300"
-              : "bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-700 text-gray-600 dark:text-gray-300"
+              ? "bg-violet-50 dark:bg-violet-900/30 border-violet-200 dark:border-violet-800 text-violet-700 dark:text-violet-300"
+              : "bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800"
           }`}
         >
-          {showPreview ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-          <span className="text-[10px] font-semibold">Preview</span>
+          {showPreview ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+          <span className="text-[10px] font-semibold">{showPreview ? "Editor" : "Preview"}</span>
         </button>
 
         <button
           onClick={onSave}
           disabled={saving || autoSaving}
-          className={`h-11 rounded-xl border transition-colors relative flex flex-col items-center justify-center gap-0.5 cursor-pointer ${
+          className={`h-11 rounded-xl border transition-colors flex flex-col items-center justify-center gap-0.5 cursor-pointer ${
             saving || autoSaving
               ? "bg-gray-100 dark:bg-zinc-800 border-gray-200 dark:border-zinc-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
               : hasUnsavedChanges
-                ? "bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-300"
-                : "bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-700 text-gray-600 dark:text-gray-300"
+                ? "bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300"
+                : "bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800"
           }`}
         >
-          {hasUnsavedChanges && !saving && !autoSaving && (
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-orange-500" />
-          )}
           {saving || autoSaving ? (
             <Loader2 className="w-4 h-4 animate-spin" />
           ) : hasUnsavedChanges ? (
-            <Download className="w-4 h-4" />
+            <span className="w-2 h-2 rounded-full bg-amber-500" />
           ) : (
-            <Check className="w-4 h-4" />
+            <Check className="w-4 h-4 text-emerald-500" />
           )}
           <span className="text-[10px] font-semibold">
-            {saving || autoSaving ? "Saving" : hasUnsavedChanges ? "Save" : "Saved"}
+            {saving || autoSaving ? "Saving…" : hasUnsavedChanges ? "Save*" : "Saved"}
           </span>
         </button>
 
@@ -157,6 +152,7 @@ const MobileActionBar = memo(
               activeSectionId={activeSectionId}
               sectionCompletionMap={sectionCompletionMap}
               onSelectSection={onSelectSection}
+              onMoveSection={onMoveSection}
             />
           </div>
         </div>

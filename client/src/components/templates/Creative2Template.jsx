@@ -1,1408 +1,1297 @@
-import React, {forwardRef, useRef, useEffect, useState} from "react";
-import {isDescriptionDuplicatedInBullets} from "./templateUtils";
+import { forwardRef, useRef, useEffect, useMemo } from "react";
+import { isDescriptionDuplicatedInBullets } from "./templateUtils";
+import {
+  Globe,
+  Mail,
+  Phone,
+  MapPin,
+  ExternalLink,
+  Sparkles,
+  Award,
+  GraduationCap,
+  Briefcase,
+  Layers,
+  Code2,
+  FolderGit2,
+  Star,
+} from "lucide-react";
 
 /**
- * Creative2Template - Modern Creative Resume Template with ATS Optimization
+ * Creative2Template — "The Studio & Portfolio Designer" Archetype
  *
- * Key Features:
- * - 94% ATS Compatibility Score
- * - Vibrant, visually appealing design with creative flair
- * - Dynamic content density (3 modes: low, medium, high)
- * - Page overflow tracking and warnings
- * - 6 vibrant color themes (purple, coral, teal, rose, indigo, cyan)
- * - All resume sections supported
- * - Inline styles for consistent rendering
- * - Proper bullet point formatting
- * - Creative visual elements (gradients, borders, icons)
- * - Section headers with unique styling
+ * Designed for Graphic Designers, UI/UX Designers, Creative Developers, and Visual Artists.
+ * Features:
+ * - Asymmetric 2-column studio layout with textured archival background
+ * - Graphic studio monogram stamp [ INITIALS • STUDIO ]
+ * - Visual project showcase cards with live link pills and tech badges
+ * - Connected timeline rail for studio practice / experience
+ * - Authentic, high-end editorial palettes (Terracotta & Sand, Klein Cobalt, Nordic Forest, Darkroom Noir)
+ * - Corner crop/registration marks and geometric dividers
+ * - Responsive 1-page density & multi-page pagination support
  */
 
-const Creative2Template = forwardRef((props, ref) => {
-  const {resumeData, scale = 1, onPageUsageChange} = props;
-  const contentRef = useRef(null);
-  const [pages, setPages] = useState([]);
+// Procedural SVG woodgrain texture for tactile natural timber & handcrafted wood pulp
+const WOOD_TEXTURE_DATA_URI =
+  "data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='woodGrain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.015 0.32' numOctaves='4' result='noise'/%3E%3CfeColorMatrix type='matrix' values='0.4 0 0 0 0.4 0.3 0 0 0 0.28 0.18 0 0 0 0.16 0 0 0 0.07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23woodGrain)'/%3E%3C/svg%3E";
 
-  // Color Themes - Vibrant Creative palettes
-  const colorThemes = {
-    purple: {
-      primary: "#8b5cf6",
-      secondary: "#c084fc",
-      accent: "#a78bfa",
-      text: "#1f2937",
-      textLight: "#4b5563",
-      textMuted: "#6b7280",
-      border: "#e9d5ff",
-      linkColor: "#7c3aed",
-      gradientStart: "#8b5cf6",
-      gradientEnd: "#ec4899",
-    },
-    coral: {
-      primary: "#f97316",
-      secondary: "#fb923c",
-      accent: "#fdba74",
-      text: "#1f2937",
-      textLight: "#4b5563",
-      textMuted: "#6b7280",
-      border: "#fed7aa",
-      linkColor: "#ea580c",
-      gradientStart: "#f97316",
-      gradientEnd: "#dc2626",
-    },
-    teal: {
-      primary: "#14b8a6",
-      secondary: "#2dd4bf",
-      accent: "#5eead4",
-      text: "#1f2937",
-      textLight: "#4b5563",
-      textMuted: "#6b7280",
-      border: "#99f6e4",
-      linkColor: "#0f766e",
-      gradientStart: "#14b8a6",
-      gradientEnd: "#06b6d4",
-    },
-    rose: {
-      primary: "#e11d48",
-      secondary: "#fb7185",
-      accent: "#fda4af",
-      text: "#1f2937",
-      textLight: "#4b5563",
-      textMuted: "#6b7280",
-      border: "#fecdd3",
-      linkColor: "#be123c",
-      gradientStart: "#e11d48",
-      gradientEnd: "#db2777",
-    },
-    indigo: {
-      primary: "#4f46e5",
-      secondary: "#6366f1",
-      accent: "#818cf8",
-      text: "#1f2937",
-      textLight: "#4b5563",
-      textMuted: "#6b7280",
-      border: "#c7d2fe",
-      linkColor: "#4338ca",
-      gradientStart: "#4f46e5",
-      gradientEnd: "#7c3aed",
-    },
-    cyan: {
-      primary: "#0891b2",
-      secondary: "#06b6d4",
-      accent: "#22d3ee",
-      text: "#1f2937",
-      textLight: "#4b5563",
-      textMuted: "#6b7280",
-      border: "#a5f3fc",
-      linkColor: "#0e7490",
-      gradientStart: "#0891b2",
-      gradientEnd: "#14b8a6",
-    },
-  };
+const highlightMetrics = (text, primaryColor) => {
+  if (!text || typeof text !== "string") return text;
 
-  const selectedTheme =
-    colorThemes[resumeData?.colorTheme] || colorThemes.purple;
+  const metricRegex =
+    /(\b(?:\+|-)?\$\d+[\d,.]*[kKmMbB]?(?:\+)?|\b(?:\+|-)?\d+[\d,.]*\%|\b\d+(?:\.\d+)?x\b|\b\d{2,4}\+\b|\b\d+[\d,.]*\+?\s*(?:users|MAU|DAU|downloads|clients|readers|exhibitions|awards|stars|projects|visitors|views|followers|tokens|components)\b)/gi;
 
-  // Calculate content density for dynamic styling
-  const calculateContentDensity = () => {
-    if (resumeData?.density === "compact" || resumeData?.density === "high") return 35;
-    if (resumeData?.density === "spacious" || resumeData?.density === "low") return 10;
-    if (resumeData?.density === "medium") return 20;
+  const parts = text.split(metricRegex);
+  if (parts.length === 1) return text;
 
-    let score = 0;
-
-    // Experience scoring (3 points + 1 per bullet)
-    if (resumeData?.experience?.length > 0) {
-      resumeData.experience.forEach((exp) => {
-        score += 3;
-        if (exp.bullets?.length > 0) {
-          score += exp.bullets.length;
-        }
-        if (exp.description) score += 2;
-        if (exp.achievements?.length > 0) {
-          score += exp.achievements.length;
-        }
-      });
+  return parts.map((part, index) => {
+    if (index % 2 === 1) {
+      return (
+        <span
+          key={index}
+          style={{
+            fontWeight: 700,
+            color: primaryColor,
+          }}
+        >
+          {part}
+        </span>
+      );
     }
+    return part;
+  });
+};
 
-    // Projects scoring (2 points + bullets)
-    if (resumeData?.projects?.length > 0) {
-      resumeData.projects.forEach((proj) => {
-        score += 2;
-        if (proj.bullets?.length > 0) {
-          score += proj.bullets.length;
-        }
-        if (proj.description) score += 1;
-      });
-    }
+const Creative2Template = forwardRef(({ resumeData = {}, onPageUsageChange }, ref) => {
+  const containerRef = useRef(null);
 
-    // Other sections
-    if (resumeData?.education?.length > 0) {
-      score += resumeData.education.length * 2;
-    }
-    if (resumeData?.skills?.length > 0) {
-      score += resumeData.skills.length * 1.5;
-    }
-    if (resumeData?.certifications?.length > 0) {
-      score += resumeData.certifications.length;
-    }
-    if (resumeData?.achievements?.length > 0) {
-      score += resumeData.achievements.length;
-    }
-    if (resumeData?.languages?.length > 0) {
-      score += resumeData.languages.length * 0.5;
-    }
-    if (resumeData?.volunteer?.length > 0) {
-      score += resumeData.volunteer.length * 1.5;
-    }
-    if (resumeData?.summary && resumeData.summary.length > 150) {
-      score += 3;
-    } else if (resumeData?.summary) {
-      score += 2;
-    }
-
-    return score;
-  };
-
-  const contentDensity = calculateContentDensity();
-
-  // Dynamic styles based on content density
-  const getDynamicStyles = () => {
-    // LOW DENSITY: < 15 points (spacious creative layout)
-    if (contentDensity < 15) {
-      return {
-        // Page margins
-        pageMarginTop: "24px",
-        pageMarginBottom: "24px",
-        pageMarginLeft: "38px",
-        pageMarginRight: "38px",
-
-        // Header - reduced size
-        nameSize: "34px",
-        nameMarginBottom: "6px",
-        contactSize: "12.5px",
-        contactGap: "12px",
-        contactMarginBottom: "14px",
-
-        // Section headings
-        sectionHeadingSize: "19px",
-        sectionHeadingMarginBottom: "8px",
-        sectionHeadingPaddingBottom: "4px",
-        sectionMarginBottom: "15px",
-
-        // Summary - increased
-        summarySize: "12.5px",
-        summaryLineHeight: "1.5",
-
-        // Experience - increased
-        experienceTitleSize: "15px",
-        experienceCompanySize: "14px",
-        experienceDateSize: "12.5px",
-        experienceLocationSize: "12.5px",
-        experienceMarginBottom: "12px",
-        experienceBulletSize: "12.5px",
-        experienceBulletMarginBottom: "3px",
-        experienceBulletLineHeight: "1.5",
-
-        // Projects - increased
-        projectTitleSize: "14.5px",
-        projectTechSize: "12px",
-        projectLinkSize: "11.5px",
-        projectMarginBottom: "11px",
-        projectBulletSize: "12.5px",
-        projectBulletMarginBottom: "3px",
-        projectBulletLineHeight: "1.5",
-        projectTechMarginBottom: "4px",
-
-        // Education - increased
-        educationDegreeSize: "14.5px",
-        educationInstitutionSize: "13.5px",
-        educationDateSize: "12.5px",
-        educationMarginBottom: "11px",
-        educationGpaSize: "12.5px",
-
-        // Skills - increased
-        skillCategorySize: "13.5px",
-        skillItemSize: "12.5px",
-        skillMarginBottom: "9px",
-
-        // Certifications - increased
-        certificationNameSize: "13.5px",
-        certificationIssuerSize: "12.5px",
-        certificationMarginBottom: "8px",
-
-        // Other items - increased
-        itemMarginBottom: "8px",
-        itemTitleSize: "13.5px",
-        itemDetailSize: "12.5px",
-      };
-    }
-    // MEDIUM DENSITY: 15-30 points (balanced)
-    else if (contentDensity < 30) {
-      return {
-        pageMarginTop: "20px",
-        pageMarginBottom: "20px",
-        pageMarginLeft: "34px",
-        pageMarginRight: "34px",
-
-        // Header - reduced size
-        nameSize: "30px",
-        nameMarginBottom: "6px",
-        contactSize: "12px",
-        contactGap: "10px",
-        contactMarginBottom: "13px",
-
-        sectionHeadingSize: "17px",
-        sectionHeadingMarginBottom: "7px",
-        sectionHeadingPaddingBottom: "3px",
-        sectionMarginBottom: "12px",
-
-        // Summary - increased
-        summarySize: "12px",
-        summaryLineHeight: "1.4",
-
-        // Experience - increased
-        experienceTitleSize: "14px",
-        experienceCompanySize: "13px",
-        experienceDateSize: "11.5px",
-        experienceLocationSize: "11.5px",
-        experienceMarginBottom: "10px",
-        experienceBulletSize: "12px",
-        experienceBulletMarginBottom: "2.5px",
-        experienceBulletLineHeight: "1.4",
-
-        // Projects - increased
-        projectTitleSize: "13.5px",
-        projectTechSize: "11.5px",
-        projectLinkSize: "11px",
-        projectMarginBottom: "9px",
-        projectBulletSize: "12px",
-        projectBulletMarginBottom: "2.5px",
-        projectBulletLineHeight: "1.4",
-        projectTechMarginBottom: "3px",
-
-        // Education - increased
-        educationDegreeSize: "13.5px",
-        educationInstitutionSize: "12.5px",
-        educationDateSize: "11.5px",
-        educationMarginBottom: "9px",
-        educationGpaSize: "11.5px",
-
-        // Skills - increased
-        skillCategorySize: "12.5px",
-        skillItemSize: "12px",
-        skillMarginBottom: "7px",
-
-        // Certifications - increased
-        certificationNameSize: "12.5px",
-        certificationIssuerSize: "11.5px",
-        certificationMarginBottom: "7px",
-
-        // Other items - increased
-        itemMarginBottom: "7px",
-        itemTitleSize: "12.5px",
-        itemDetailSize: "11.5px",
-      };
-    }
-    // HIGH DENSITY: 30+ points (compact)
-    else {
-      return {
-        pageMarginTop: "18px",
-        pageMarginBottom: "18px",
-        pageMarginLeft: "30px",
-        pageMarginRight: "30px",
-
-        // Header - reduced size
-        nameSize: "28px",
-        nameMarginBottom: "5px",
-        contactSize: "11.5px",
-        contactGap: "8px",
-        contactMarginBottom: "11px",
-
-        sectionHeadingSize: "16px",
-        sectionHeadingMarginBottom: "6px",
-        sectionHeadingPaddingBottom: "2px",
-        sectionMarginBottom: "10px",
-
-        // Summary - increased
-        summarySize: "11.5px",
-        summaryLineHeight: "1.35",
-
-        // Experience - increased
-        experienceTitleSize: "13.5px",
-        experienceCompanySize: "12.5px",
-        experienceDateSize: "11px",
-        experienceLocationSize: "11px",
-        experienceMarginBottom: "8px",
-        experienceBulletSize: "11.5px",
-        experienceBulletMarginBottom: "2px",
-        experienceBulletLineHeight: "1.35",
-
-        // Projects - increased
-        projectTitleSize: "13px",
-        projectTechSize: "11px",
-        projectLinkSize: "10.5px",
-        projectMarginBottom: "7px",
-        projectBulletSize: "11.5px",
-        projectBulletMarginBottom: "2px",
-        projectBulletLineHeight: "1.35",
-        projectTechMarginBottom: "2.5px",
-
-        // Education - increased
-        educationDegreeSize: "13px",
-        educationInstitutionSize: "12px",
-        educationDateSize: "11px",
-        educationMarginBottom: "7px",
-        educationGpaSize: "11px",
-
-        // Skills - increased
-        skillCategorySize: "12px",
-        skillItemSize: "11.5px",
-        skillMarginBottom: "6px",
-
-        // Certifications - increased
-        certificationNameSize: "12px",
-        certificationIssuerSize: "11px",
-        certificationMarginBottom: "6px",
-
-        // Other items - increased
-        itemMarginBottom: "6px",
-        itemTitleSize: "11.5px",
-        itemDetailSize: "10.5px",
-      };
-    }
-  };
-
-  const dynamicStyles = getDynamicStyles();
-
-  // Page tracking for overflow detection
+  // Page overflow detection (11in @ 96 DPI = 1056px)
   useEffect(() => {
-    if (!contentRef.current || !onPageUsageChange) return;
-
-    const updatePageUsage = () => {
-      const element = contentRef.current;
-      if (!element) return;
-
-      const currentHeight = element.scrollHeight;
-      const maxHeight = 1056; // 11in at 96dpi (matches template minHeight)
-
-      const percentage = Math.round((currentHeight / maxHeight) * 100);
+    if (containerRef.current) {
+      const currentHeight = containerRef.current.scrollHeight;
+      const maxHeight = 1056;
       const isOverflowing = currentHeight > maxHeight;
       const overflowPercentage = isOverflowing
         ? Math.round(((currentHeight - maxHeight) / maxHeight) * 100)
         : 0;
 
-      onPageUsageChange({
+      const usageInfo = {
         isOverflowing,
         currentHeight,
         maxHeight,
-        percentage,
         overflowPercentage,
-        templateName: "Creative Designer Pro",
-      });
+        percentage: Math.round((currentHeight / maxHeight) * 100),
+        templateName: "Studio & Portfolio Designer",
+      };
+
+      if (onPageUsageChange) {
+        onPageUsageChange(usageInfo);
+      }
+    }
+  }, [resumeData, onPageUsageChange]);
+
+  // Authentic Handcrafted Wooden Themes (Single Unified Shade, No Split Tones)
+  const colorThemes = {
+    // 1. Honey Teak & Oak (Default Wood Theme)
+    teakWood: {
+      id: "teakWood",
+      name: "Honey Teak & Oak",
+      canvasBg: "#faf6ee", // Warm natural wood paper
+      sidebarBg: "#faf6ee", // Single uniform shade across whole page
+      cardBg: "rgba(255, 255, 255, 0.52)",
+      cardBorder: "rgba(154, 52, 18, 0.16)",
+      textPrimary: "#23170f", // Deep espresso bark
+      textSecondary: "#4a3828", // Warm timber shadow
+      textMuted: "#7c6655", // Aged wood grain
+      primary: "#9a3412", // Rich Warm Teak / Cedar Wood
+      primaryLight: "#ffedd5",
+      accent: "#b45309", // Golden Oak / Honey Amber
+      divider: "rgba(154, 52, 18, 0.16)",
+      badgeBg: "#fef3c7",
+      badgeText: "#78350f",
+      tagBg: "rgba(154, 52, 18, 0.08)",
+      tagBorder: "rgba(154, 52, 18, 0.22)",
+      tagText: "#9a3412",
+      monogramBg: "#9a3412",
+      monogramText: "#ffffff",
+      isDark: false,
+    },
+    // Backward-compat alias for archivalPaper -> teakWood
+    archivalPaper: {
+      id: "archivalPaper",
+      name: "Honey Teak & Oak",
+      canvasBg: "#faf6ee",
+      sidebarBg: "#faf6ee",
+      cardBg: "rgba(255, 255, 255, 0.52)",
+      cardBorder: "rgba(154, 52, 18, 0.16)",
+      textPrimary: "#23170f",
+      textSecondary: "#4a3828",
+      textMuted: "#7c6655",
+      primary: "#9a3412",
+      primaryLight: "#ffedd5",
+      accent: "#b45309",
+      divider: "rgba(154, 52, 18, 0.16)",
+      badgeBg: "#fef3c7",
+      badgeText: "#78350f",
+      tagBg: "rgba(154, 52, 18, 0.08)",
+      tagBorder: "rgba(154, 52, 18, 0.22)",
+      tagText: "#9a3412",
+      monogramBg: "#9a3412",
+      monogramText: "#ffffff",
+      isDark: false,
+    },
+
+    // 2. Smoked Walnut & Brass Timber (Dark Wood Theme)
+    smokedWalnut: {
+      id: "smokedWalnut",
+      name: "Smoked Walnut & Brass",
+      canvasBg: "#1b140f", // Deep roasted walnut wood
+      sidebarBg: "#1b140f", // Single uniform shade across whole page
+      cardBg: "rgba(42, 31, 23, 0.55)",
+      cardBorder: "rgba(245, 158, 11, 0.2)",
+      textPrimary: "#fdfaf6", // Bone maple
+      textSecondary: "#d6c5b4", // Warm birch
+      textMuted: "#9e8b7c",
+      primary: "#d97706", // Amber Brass / Roasted Timber
+      primaryLight: "rgba(217, 119, 6, 0.2)",
+      accent: "#ea580c", // Cinnamon wood
+      divider: "rgba(245, 158, 11, 0.18)",
+      badgeBg: "rgba(217, 119, 6, 0.22)",
+      badgeText: "#fbbf24",
+      tagBg: "rgba(217, 119, 6, 0.1)",
+      tagBorder: "rgba(217, 119, 6, 0.28)",
+      tagText: "#fde68a",
+      monogramBg: "#d97706",
+      monogramText: "#18181b",
+      isDark: true,
+    },
+    galleryNoir: {
+      id: "galleryNoir",
+      name: "Smoked Walnut & Brass",
+      canvasBg: "#1b140f",
+      sidebarBg: "#1b140f",
+      cardBg: "rgba(42, 31, 23, 0.55)",
+      cardBorder: "rgba(245, 158, 11, 0.2)",
+      textPrimary: "#fdfaf6",
+      textSecondary: "#d6c5b4",
+      textMuted: "#9e8b7c",
+      primary: "#d97706",
+      primaryLight: "rgba(217, 119, 6, 0.2)",
+      accent: "#ea580c",
+      divider: "rgba(245, 158, 11, 0.18)",
+      badgeBg: "rgba(217, 119, 6, 0.22)",
+      badgeText: "#fbbf24",
+      tagBg: "rgba(217, 119, 6, 0.1)",
+      tagBorder: "rgba(217, 119, 6, 0.28)",
+      tagText: "#fde68a",
+      monogramBg: "#d97706",
+      monogramText: "#18181b",
+      isDark: true,
+    },
+    midnightSlate: {
+      id: "midnightSlate",
+      name: "Smoked Walnut & Brass",
+      canvasBg: "#1b140f",
+      sidebarBg: "#1b140f",
+      cardBg: "rgba(42, 31, 23, 0.55)",
+      cardBorder: "rgba(245, 158, 11, 0.2)",
+      textPrimary: "#fdfaf6",
+      textSecondary: "#d6c5b4",
+      textMuted: "#9e8b7c",
+      primary: "#d97706",
+      primaryLight: "rgba(217, 119, 6, 0.2)",
+      accent: "#ea580c",
+      divider: "rgba(245, 158, 11, 0.18)",
+      badgeBg: "rgba(217, 119, 6, 0.22)",
+      badgeText: "#fbbf24",
+      tagBg: "rgba(217, 119, 6, 0.1)",
+      tagBorder: "rgba(217, 119, 6, 0.28)",
+      tagText: "#fde68a",
+      monogramBg: "#d97706",
+      monogramText: "#18181b",
+      isDark: true,
+    },
+
+    // 3. Nordic Birch & Pine
+    nordicBirch: {
+      id: "nordicBirch",
+      name: "Nordic Birch & Pine",
+      canvasBg: "#f7f6f0", // Clean pale birchwood
+      sidebarBg: "#f7f6f0", // Single uniform shade across whole page
+      cardBg: "rgba(255, 255, 255, 0.55)",
+      cardBorder: "rgba(45, 106, 79, 0.18)",
+      textPrimary: "#19241b",
+      textSecondary: "#38493d",
+      textMuted: "#627568",
+      primary: "#2d6a4f", // Evergreen spruce
+      primaryLight: "#d8f3dc",
+      accent: "#a0522d", // Warm sienna wood
+      divider: "rgba(45, 106, 79, 0.16)",
+      badgeBg: "#e8f5e9",
+      badgeText: "#1b4332",
+      tagBg: "rgba(45, 106, 79, 0.08)",
+      tagBorder: "rgba(45, 106, 79, 0.24)",
+      tagText: "#2d6a4f",
+      monogramBg: "#2d6a4f",
+      monogramText: "#ffffff",
+      isDark: false,
+    },
+    nordicSage: {
+      id: "nordicSage",
+      name: "Nordic Birch & Pine",
+      canvasBg: "#f7f6f0",
+      sidebarBg: "#f7f6f0",
+      cardBg: "rgba(255, 255, 255, 0.55)",
+      cardBorder: "rgba(45, 106, 79, 0.18)",
+      textPrimary: "#19241b",
+      textSecondary: "#38493d",
+      textMuted: "#627568",
+      primary: "#2d6a4f",
+      primaryLight: "#d8f3dc",
+      accent: "#a0522d",
+      divider: "rgba(45, 106, 79, 0.16)",
+      badgeBg: "#e8f5e9",
+      badgeText: "#1b4332",
+      tagBg: "rgba(45, 106, 79, 0.08)",
+      tagBorder: "rgba(45, 106, 79, 0.24)",
+      tagText: "#2d6a4f",
+      monogramBg: "#2d6a4f",
+      monogramText: "#ffffff",
+      isDark: false,
+    },
+    cyberEmerald: {
+      id: "cyberEmerald",
+      name: "Nordic Birch & Pine",
+      canvasBg: "#f7f6f0",
+      sidebarBg: "#f7f6f0",
+      cardBg: "rgba(255, 255, 255, 0.55)",
+      cardBorder: "rgba(45, 106, 79, 0.18)",
+      textPrimary: "#19241b",
+      textSecondary: "#38493d",
+      textMuted: "#627568",
+      primary: "#2d6a4f",
+      primaryLight: "#d8f3dc",
+      accent: "#a0522d",
+      divider: "rgba(45, 106, 79, 0.16)",
+      badgeBg: "#e8f5e9",
+      badgeText: "#1b4332",
+      tagBg: "rgba(45, 106, 79, 0.08)",
+      tagBorder: "rgba(45, 106, 79, 0.24)",
+      tagText: "#2d6a4f",
+      monogramBg: "#2d6a4f",
+      monogramText: "#ffffff",
+      isDark: false,
+    },
+
+    // 4. Mahogany & Rosewood
+    rosewoodMahogany: {
+      id: "rosewoodMahogany",
+      name: "Rosewood & Mahogany",
+      canvasBg: "#fbf5f2", // Warm rosewood grain
+      sidebarBg: "#fbf5f2", // Single uniform shade across whole page
+      cardBg: "rgba(255, 255, 255, 0.55)",
+      cardBorder: "rgba(136, 19, 55, 0.18)",
+      textPrimary: "#231218",
+      textSecondary: "#4b2b36",
+      textMuted: "#7c5563",
+      primary: "#881337", // Deep Mahogany
+      primaryLight: "#ffe4e6",
+      accent: "#9a3412", // Burnished Teak
+      divider: "rgba(136, 19, 55, 0.16)",
+      badgeBg: "#ffe4e6",
+      badgeText: "#881337",
+      tagBg: "rgba(136, 19, 55, 0.08)",
+      tagBorder: "rgba(136, 19, 55, 0.24)",
+      tagText: "#881337",
+      monogramBg: "#881337",
+      monogramText: "#ffffff",
+      isDark: false,
+    },
+    studioKlein: {
+      id: "studioKlein",
+      name: "Rosewood & Mahogany",
+      canvasBg: "#fbf5f2",
+      sidebarBg: "#fbf5f2",
+      cardBg: "rgba(255, 255, 255, 0.55)",
+      cardBorder: "rgba(136, 19, 55, 0.18)",
+      textPrimary: "#231218",
+      textSecondary: "#4b2b36",
+      textMuted: "#7c5563",
+      primary: "#881337",
+      primaryLight: "#ffe4e6",
+      accent: "#9a3412",
+      divider: "rgba(136, 19, 55, 0.16)",
+      badgeBg: "#ffe4e6",
+      badgeText: "#881337",
+      tagBg: "rgba(136, 19, 55, 0.08)",
+      tagBorder: "rgba(136, 19, 55, 0.24)",
+      tagText: "#881337",
+      monogramBg: "#881337",
+      monogramText: "#ffffff",
+      isDark: false,
+    },
+    stripeIndigo: {
+      id: "stripeIndigo",
+      name: "Rosewood & Mahogany",
+      canvasBg: "#fbf5f2",
+      sidebarBg: "#fbf5f2",
+      cardBg: "rgba(255, 255, 255, 0.55)",
+      cardBorder: "rgba(136, 19, 55, 0.18)",
+      textPrimary: "#231218",
+      textSecondary: "#4b2b36",
+      textMuted: "#7c5563",
+      primary: "#881337",
+      primaryLight: "#ffe4e6",
+      accent: "#9a3412",
+      divider: "rgba(136, 19, 55, 0.16)",
+      badgeBg: "#ffe4e6",
+      badgeText: "#881337",
+      tagBg: "rgba(136, 19, 55, 0.08)",
+      tagBorder: "rgba(136, 19, 55, 0.24)",
+      tagText: "#881337",
+      monogramBg: "#881337",
+      monogramText: "#ffffff",
+      isDark: false,
+    },
+
+    // 5. Charred Ebony & Ash
+    charredEbony: {
+      id: "charredEbony",
+      name: "Charred Ebony & Ash",
+      canvasBg: "#f9f9f9",
+      sidebarBg: "#f9f9f9",
+      cardBg: "rgba(255, 255, 255, 0.6)",
+      cardBorder: "rgba(38, 38, 38, 0.16)",
+      textPrimary: "#171717", // Shou sugi ban
+      textSecondary: "#404040",
+      textMuted: "#737373",
+      primary: "#262626", // Charred timber
+      primaryLight: "#f5f5f5",
+      accent: "#525252",
+      divider: "rgba(0, 0, 0, 0.14)",
+      badgeBg: "#f5f5f5",
+      badgeText: "#262626",
+      tagBg: "rgba(0, 0, 0, 0.05)",
+      tagBorder: "rgba(0, 0, 0, 0.2)",
+      tagText: "#171717",
+      monogramBg: "#262626",
+      monogramText: "#ffffff",
+      isDark: false,
+    },
+    monochromePro: {
+      id: "monochromePro",
+      name: "Charred Ebony & Ash",
+      canvasBg: "#f9f9f9",
+      sidebarBg: "#f9f9f9",
+      cardBg: "rgba(255, 255, 255, 0.6)",
+      cardBorder: "rgba(38, 38, 38, 0.16)",
+      textPrimary: "#171717",
+      textSecondary: "#404040",
+      textMuted: "#737373",
+      primary: "#262626",
+      primaryLight: "#f5f5f5",
+      accent: "#525252",
+      divider: "rgba(0, 0, 0, 0.14)",
+      badgeBg: "#f5f5f5",
+      badgeText: "#262626",
+      tagBg: "rgba(0, 0, 0, 0.05)",
+      tagBorder: "rgba(0, 0, 0, 0.2)",
+      tagText: "#171717",
+      monogramBg: "#262626",
+      monogramText: "#ffffff",
+      isDark: false,
+    },
+  };
+
+  const rawTheme = resumeData?.selectedTheme || resumeData?.colorTheme || "teakWood";
+  const theme = colorThemes[rawTheme] || colorThemes.teakWood;
+
+  // Density settings
+  const density = resumeData?.density || "medium";
+  const isCompact = density === "compact";
+  const isSpacious = density === "spacious";
+
+  const spacing = useMemo(() => {
+    if (isCompact) {
+      return {
+        padding: "0.26in 0.34in",
+        gap: "14px",
+        sectionGap: "11px",
+        itemGap: "7px",
+        bodySize: "8.6pt",
+        metaSize: "8pt",
+        nameSize: "22pt",
+        titleSize: "9.8pt",
+        lineHeight: 1.3,
+        cardPadding: "7px 9px",
+      };
+    }
+    if (isSpacious) {
+      return {
+        padding: "0.48in 0.55in",
+        gap: "22px",
+        sectionGap: "18px",
+        itemGap: "12px",
+        bodySize: "9.6pt",
+        metaSize: "8.8pt",
+        nameSize: "28pt",
+        titleSize: "11.5pt",
+        lineHeight: 1.5,
+        cardPadding: "11px 14px",
+      };
+    }
+    // Balanced
+    return {
+      padding: "0.38in 0.44in",
+      gap: "18px",
+      sectionGap: "14px",
+      itemGap: "9px",
+      bodySize: "9pt",
+      metaSize: "8.4pt",
+      nameSize: "25pt",
+      titleSize: "10.5pt",
+      lineHeight: 1.38,
+      cardPadding: "9px 12px",
     };
+  }, [isCompact, isSpacious]);
 
-    // Initial check
-    updatePageUsage();
+  const name = resumeData.name || "Creative Designer";
 
-    // Re-check after a short delay to account for font loading
-    const timer = setTimeout(updatePageUsage, 100);
+  const contact = resumeData.contact || {};
+  const portfolioUrl =
+    contact.portfolio ||
+    contact.website ||
+    resumeData.portfolioUrl ||
+    resumeData.website;
 
-    // Observe size changes
-    const resizeObserver = new ResizeObserver(updatePageUsage);
-    resizeObserver.observe(contentRef.current);
+  const contactList = [
+    portfolioUrl && {
+      icon: Globe,
+      label: portfolioUrl.replace(/^https?:\/\/(www\.)?/i, "").replace(/\/$/, ""),
+      href: portfolioUrl.startsWith("http") ? portfolioUrl : `https://${portfolioUrl}`,
+      isHighlight: true,
+      tag: "PORTFOLIO",
+    },
+    contact.email && {
+      icon: Mail,
+      label: contact.email,
+      href: `mailto:${contact.email}`,
+    },
+    contact.phone && {
+      icon: Phone,
+      label: contact.phone,
+      href: null,
+    },
+    (contact.location || resumeData.location) && {
+      icon: MapPin,
+      label: contact.location || resumeData.location,
+      href: null,
+    },
+    contact.linkedin && {
+      icon: ExternalLink,
+      label: "LinkedIn",
+      href: contact.linkedin.startsWith("http") ? contact.linkedin : `https://${contact.linkedin}`,
+    },
+    contact.github && {
+      icon: ExternalLink,
+      label: "GitHub",
+      href: contact.github.startsWith("http") ? contact.github : `https://${contact.github}`,
+    },
+  ].filter(Boolean);
 
-    return () => {
-      clearTimeout(timer);
-      resizeObserver.disconnect();
-    };
-  }, [resumeData]); // Don't include onPageUsageChange to prevent infinite loops
-
-  // Default section order optimized for creative roles
-  const DEFAULT_SECTION_ORDER = [
-    "summary",
-    "skills",
-    "experience",
-    "projects",
-    "education",
-    "certifications",
-    "achievements",
-    "languages",
-    "volunteer",
-  ];
-
-  const sectionOrder =
-    resumeData.sectionOrder && resumeData.sectionOrder.length > 0
-      ? resumeData.sectionOrder.filter(
-          (id) => !["score", "personal", "recommendations"].includes(id)
-        )
-      : DEFAULT_SECTION_ORDER;
-
-  // Render section helper function
-  const renderSection = (sectionId) => {
-    const sections = {
-      summary: resumeData.summary && (
-        <section
-          key="summary"
-          style={{marginBottom: dynamicStyles.sectionMarginBottom}}
+  // Section Header with graphic glyph
+  const GraphicSectionHeader = ({ title, icon: Icon, tag }) => (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        borderBottom: `1.5px solid ${theme.primary}`,
+        paddingBottom: "4px",
+        marginBottom: "8px",
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+        {Icon && <Icon size={12} style={{ color: theme.primary }} />}
+        <h3
+          style={{
+            fontFamily: '"Playfair Display", Georgia, serif',
+            fontSize: "10pt",
+            fontWeight: 800,
+            letterSpacing: "0.05em",
+            textTransform: "uppercase",
+            color: theme.textPrimary,
+            margin: 0,
+          }}
         >
-          <div style={{position: "relative"}}>
-            <div
-              style={{
-                position: "absolute",
-                left: "-6px",
-                top: "0",
-                width: "4px",
-                height: "100%",
-                background: `linear-gradient(to bottom, ${selectedTheme.gradientStart}, ${selectedTheme.gradientEnd})`,
-                borderRadius: "2px",
-              }}
-            ></div>
-            <h2
-              style={{
-                fontSize: dynamicStyles.sectionHeadingSize,
-                fontWeight: "bold",
-                color: selectedTheme.primary,
-                marginBottom: dynamicStyles.sectionHeadingMarginBottom,
-                paddingLeft: "10px",
-                textTransform: "uppercase",
-                letterSpacing: "1.5px",
-              }}
-            >
-              About Me
-            </h2>
-            <p
-              style={{
-                fontSize: dynamicStyles.summarySize,
-                lineHeight: dynamicStyles.summaryLineHeight,
-                color: selectedTheme.text,
-                paddingLeft: "10px",
-              }}
-            >
-              {resumeData.summary}
-            </p>
-          </div>
-        </section>
-      ),
-
-      skills: resumeData.skills && resumeData.skills.length > 0 && (
-        <section
-          key="skills"
-          style={{marginBottom: dynamicStyles.sectionMarginBottom}}
+          {title}
+        </h3>
+      </div>
+      {tag && (
+        <span
+          style={{
+            fontFamily: '"JetBrains Mono", monospace',
+            fontSize: "6.5pt",
+            fontWeight: 700,
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            color: theme.primary,
+            backgroundColor: theme.tagBg,
+            padding: "1px 5px",
+            borderRadius: "3px",
+            border: `1px solid ${theme.tagBorder}`,
+          }}
         >
-          <div style={{position: "relative"}}>
-            <div
-              style={{
-                position: "absolute",
-                left: "-6px",
-                top: "0",
-                width: "4px",
-                height: "100%",
-                background: `linear-gradient(to bottom, ${selectedTheme.gradientStart}, ${selectedTheme.gradientEnd})`,
-                borderRadius: "2px",
-              }}
-            ></div>
-            <h2
-              style={{
-                fontSize: dynamicStyles.sectionHeadingSize,
-                fontWeight: "bold",
-                color: selectedTheme.primary,
-                marginBottom: dynamicStyles.sectionHeadingMarginBottom,
-                paddingLeft: "10px",
-                textTransform: "uppercase",
-                letterSpacing: "1.5px",
-              }}
-            >
-              Skills & Expertise
-            </h2>
-            <div
-              style={{
-                paddingLeft: "10px",
-                display: "grid",
-                gridTemplateColumns: "repeat(2, 1fr)",
-                gap: "10px 20px",
-                columnGap: "20px",
-              }}
-            >
-              {resumeData.skills.map((skillGroup, index) => (
-                <div
-                  key={index}
-                  style={{
-                    marginBottom: dynamicStyles.skillMarginBottom,
-                    breakInside: "avoid",
-                  }}
-                >
-                  <div
-                    style={{
-                      fontSize: dynamicStyles.skillCategorySize,
-                      fontWeight: "600",
-                      color: selectedTheme.primary,
-                      marginBottom: "4px",
-                    }}
-                  >
-                    {skillGroup.category}
-                  </div>
-                  <div
-                    style={{
-                      fontSize: dynamicStyles.skillItemSize,
-                      color: selectedTheme.textLight,
-                      lineHeight: "1.6",
-                    }}
-                  >
-                    {skillGroup.items.join(" • ")}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      ),
+          {tag}
+        </span>
+      )}
+    </div>
+  );
 
-      experience: resumeData.experience && resumeData.experience.length > 0 && (
-        <section
-          key="experience"
-          style={{marginBottom: dynamicStyles.sectionMarginBottom}}
+  return (
+    <div
+      ref={(node) => {
+        containerRef.current = node;
+        if (typeof ref === "function") ref(node);
+        else if (ref) ref.current = node;
+      }}
+      className="creative-studio-template"
+      style={{
+        width: "210mm",
+        minHeight: "11in",
+        height: "100%",
+        boxSizing: "border-box",
+        padding: spacing.padding,
+        backgroundColor: theme.canvasBg,
+        backgroundImage: `url("${WOOD_TEXTURE_DATA_URI}")`,
+        backgroundRepeat: "repeat",
+        color: theme.textPrimary,
+        fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        position: "relative",
+      }}
+    >
+      {/* ─── ARCHITECTURAL CORNER CROP MARKS (Classic Graphic Studio Aesthetic) ─── */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          top: "8px",
+          left: "8px",
+          fontFamily: '"JetBrains Mono", monospace',
+          fontSize: "10px",
+          color: theme.textMuted,
+          opacity: 0.45,
+          userSelect: "none",
+        }}
+      >
+        +
+      </div>
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          top: "8px",
+          right: "8px",
+          fontFamily: '"JetBrains Mono", monospace',
+          fontSize: "10px",
+          color: theme.textMuted,
+          opacity: 0.45,
+          userSelect: "none",
+        }}
+      >
+        +
+      </div>
+
+      {/* ─── BOLD GRAPHIC MASTHEAD BANNER ─── */}
+      <header
+        style={{
+          marginBottom: spacing.sectionGap,
+          borderBottom: `2px solid ${theme.textPrimary}`,
+          paddingBottom: "10px",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-end",
+            gap: "12px",
+            flexWrap: "wrap",
+          }}
         >
-          <div style={{position: "relative"}}>
-            <div
-              style={{
-                position: "absolute",
-                left: "-6px",
-                top: "0",
-                width: "4px",
-                height: "100%",
-                background: `linear-gradient(to bottom, ${selectedTheme.gradientStart}, ${selectedTheme.gradientEnd})`,
-                borderRadius: "2px",
-              }}
-            ></div>
-            <h2
-              style={{
-                fontSize: dynamicStyles.sectionHeadingSize,
-                fontWeight: "bold",
-                color: selectedTheme.primary,
-                marginBottom: dynamicStyles.sectionHeadingMarginBottom,
-                paddingLeft: "10px",
-                textTransform: "uppercase",
-                letterSpacing: "1.5px",
-              }}
-            >
-              Experience
-            </h2>
-            <div style={{paddingLeft: "10px"}}>
-              {resumeData.experience.map((exp, index) => (
-                <div
-                  key={index}
-                  style={{
-                    marginBottom: dynamicStyles.experienceMarginBottom,
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "flex-start",
-                      marginBottom: "3px",
-                    }}
-                  >
-                    <div style={{flex: 1}}>
-                      <div
-                        style={{
-                          fontSize: dynamicStyles.experienceTitleSize,
-                          fontWeight: "600",
-                          color: selectedTheme.text,
-                        }}
-                      >
-                        {exp.position}
-                      </div>
-                      <div
-                        style={{
-                          fontSize: dynamicStyles.experienceCompanySize,
-                          fontWeight: "500",
-                          color: selectedTheme.primary,
-                          marginTop: "1px",
-                        }}
-                      >
-                        {exp.company}
-                        {exp.location && ` • ${exp.location}`}
-                      </div>
-                    </div>
-                    <div
-                      style={{
-                        fontSize: dynamicStyles.experienceDateSize,
-                        color: selectedTheme.textMuted,
-                        whiteSpace: "nowrap",
-                        marginLeft: "15px",
-                      }}
-                    >
-                      {exp.startDate} - {exp.endDate || "Present"}
-                    </div>
-                  </div>
-                  {exp.description &&
-                    (!exp.bullets?.length ||
-                      !isDescriptionDuplicatedInBullets(exp.description, exp.bullets)) && (
-                    <p
-                      style={{
-                        fontSize: dynamicStyles.experienceBulletSize,
-                        lineHeight: dynamicStyles.experienceBulletLineHeight,
-                        color: selectedTheme.textLight,
-                        marginTop: "4px",
-                        marginBottom: "4px",
-                      }}
-                    >
-                      {exp.description}
-                    </p>
-                  )}
-                  {exp.bullets && exp.bullets.length > 0 && (
-                    <ul
-                      style={{
-                        marginTop: "4px",
-                        marginBottom: "0",
-                        paddingLeft: "0",
-                        listStyleType: "none",
-                      }}
-                    >
-                      {exp.bullets
-                        .filter((bullet) => bullet && bullet.trim())
-                        .map((bullet, bulletIndex) => (
-                          <li
-                            key={bulletIndex}
-                            style={{
-                              fontSize: dynamicStyles.experienceBulletSize,
-                              lineHeight:
-                                dynamicStyles.experienceBulletLineHeight,
-                              color: selectedTheme.textLight,
-                              marginBottom:
-                                dynamicStyles.experienceBulletMarginBottom,
-                              marginLeft: "20px",
-                              listStyleType: "disc",
-                              listStylePosition: "outside",
-                              display: "list-item",
-                            }}
-                          >
-                            {bullet}
-                          </li>
-                        ))}
-                    </ul>
-                  )}
-                  {exp.achievements && exp.achievements.length > 0 && (
-                    <ul
-                      style={{
-                        marginTop: "4px",
-                        marginBottom: "0",
-                        paddingLeft: "0",
-                        listStyleType: "none",
-                      }}
-                    >
-                      {exp.achievements
-                        .filter(
-                          (achievement) =>
-                            achievement &&
-                            (typeof achievement === "string"
-                              ? achievement.trim()
-                              : achievement.title || achievement.description)
-                        )
-                        .map((achievement, achIndex) => (
-                          <li
-                            key={achIndex}
-                            style={{
-                              fontSize: dynamicStyles.experienceBulletSize,
-                              lineHeight:
-                                dynamicStyles.experienceBulletLineHeight,
-                              color: selectedTheme.textLight,
-                              marginBottom:
-                                dynamicStyles.experienceBulletMarginBottom,
-                              marginLeft: "20px",
-                              listStyleType: "disc",
-                              listStylePosition: "outside",
-                              display: "list-item",
-                            }}
-                          >
-                            {achievement}
-                          </li>
-                        ))}
-                    </ul>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      ),
-
-      projects: resumeData.projects && resumeData.projects.length > 0 && (
-        <section
-          key="projects"
-          style={{marginBottom: dynamicStyles.sectionMarginBottom}}
-        >
-          <div style={{position: "relative"}}>
-            <div
-              style={{
-                position: "absolute",
-                left: "-6px",
-                top: "0",
-                width: "4px",
-                height: "100%",
-                background: `linear-gradient(to bottom, ${selectedTheme.gradientStart}, ${selectedTheme.gradientEnd})`,
-                borderRadius: "2px",
-              }}
-            ></div>
-            <h2
-              style={{
-                fontSize: dynamicStyles.sectionHeadingSize,
-                fontWeight: "bold",
-                color: selectedTheme.primary,
-                marginBottom: dynamicStyles.sectionHeadingMarginBottom,
-                paddingLeft: "10px",
-                textTransform: "uppercase",
-                letterSpacing: "1.5px",
-              }}
-            >
-              Projects
-            </h2>
-            <div style={{paddingLeft: "10px"}}>
-              {resumeData.projects.map((project, index) => (
-                <div
-                  key={index}
-                  style={{
-                    marginBottom: dynamicStyles.projectMarginBottom,
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "flex-start",
-                      marginBottom: "2px",
-                    }}
-                  >
-                    <div style={{flex: 1}}>
-                      <div
-                        style={{
-                          fontSize: dynamicStyles.projectTitleSize,
-                          fontWeight: "600",
-                          color: selectedTheme.text,
-                        }}
-                      >
-                        {project.name}
-                        {project.url && (
-                          <span
-                            style={{
-                              fontSize: dynamicStyles.projectLinkSize,
-                              color: selectedTheme.linkColor,
-                              marginLeft: "8px",
-                              fontWeight: "normal",
-                            }}
-                          >
-                            ({project.url})
-                          </span>
-                        )}
-                      </div>
-                      {project.technologies &&
-                        project.technologies.length > 0 && (
-                          <div
-                            style={{
-                              fontSize: dynamicStyles.projectTechSize,
-                              color: selectedTheme.primary,
-                              marginTop: "2px",
-                              fontWeight: "500",
-                            }}
-                          >
-                            {project.technologies.join(" • ")}
-                          </div>
-                        )}
-                    </div>
-                    {project.date && (
-                      <div
-                        style={{
-                          fontSize: dynamicStyles.experienceDateSize,
-                          color: selectedTheme.textMuted,
-                          whiteSpace: "nowrap",
-                          marginLeft: "15px",
-                        }}
-                      >
-                        {project.date}
-                      </div>
-                    )}
-                  </div>
-                  {project.description &&
-                    (!project.bullets?.length ||
-                      !isDescriptionDuplicatedInBullets(project.description, project.bullets)) && (
-                    <p
-                      style={{
-                        fontSize: dynamicStyles.projectBulletSize,
-                        lineHeight: dynamicStyles.projectBulletLineHeight,
-                        color: selectedTheme.textLight,
-                        marginTop: dynamicStyles.projectTechMarginBottom,
-                        marginBottom: "4px",
-                      }}
-                    >
-                      {project.description}
-                    </p>
-                  )}
-                  {project.bullets && project.bullets.length > 0 && (
-                    <ul
-                      style={{
-                        marginTop: dynamicStyles.projectTechMarginBottom,
-                        marginBottom: "0",
-                        paddingLeft: "0",
-                        listStyleType: "none",
-                      }}
-                    >
-                      {project.bullets
-                        .filter((bullet) => bullet && bullet.trim())
-                        .map((bullet, bulletIndex) => (
-                          <li
-                            key={bulletIndex}
-                            style={{
-                              fontSize: dynamicStyles.projectBulletSize,
-                              lineHeight: dynamicStyles.projectBulletLineHeight,
-                              color: selectedTheme.textLight,
-                              marginBottom:
-                                dynamicStyles.projectBulletMarginBottom,
-                              marginLeft: "20px",
-                              listStyleType: "disc",
-                              listStylePosition: "outside",
-                              display: "list-item",
-                            }}
-                          >
-                            {bullet}
-                          </li>
-                        ))}
-                    </ul>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      ),
-
-      education: resumeData.education && resumeData.education.length > 0 && (
-        <section
-          key="education"
-          style={{marginBottom: dynamicStyles.sectionMarginBottom}}
-        >
-          <div style={{position: "relative"}}>
-            <div
-              style={{
-                position: "absolute",
-                left: "-6px",
-                top: "0",
-                width: "4px",
-                height: "100%",
-                background: `linear-gradient(to bottom, ${selectedTheme.gradientStart}, ${selectedTheme.gradientEnd})`,
-                borderRadius: "2px",
-              }}
-            ></div>
-            <h2
-              style={{
-                fontSize: dynamicStyles.sectionHeadingSize,
-                fontWeight: "bold",
-                color: selectedTheme.primary,
-                marginBottom: dynamicStyles.sectionHeadingMarginBottom,
-                paddingLeft: "10px",
-                textTransform: "uppercase",
-                letterSpacing: "1.5px",
-              }}
-            >
-              Education
-            </h2>
-            <div style={{paddingLeft: "10px"}}>
-              {resumeData.education.map((edu, index) => (
-                <div
-                  key={index}
-                  style={{
-                    marginBottom: dynamicStyles.educationMarginBottom,
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "flex-start",
-                    }}
-                  >
-                    <div style={{flex: 1}}>
-                      <div
-                        style={{
-                          fontSize: dynamicStyles.educationDegreeSize,
-                          fontWeight: "600",
-                          color: selectedTheme.text,
-                        }}
-                      >
-                        {edu.degree}
-                        {edu.field && ` in ${edu.field}`}
-                      </div>
-                      <div
-                        style={{
-                          fontSize: dynamicStyles.educationInstitutionSize,
-                          color: selectedTheme.primary,
-                          marginTop: "1px",
-                          fontWeight: "500",
-                        }}
-                      >
-                        {edu.institution}
-                        {edu.location && ` • ${edu.location}`}
-                      </div>
-                      {edu.gpa && (
-                        <div
-                          style={{
-                            fontSize: dynamicStyles.educationGpaSize,
-                            color: selectedTheme.textLight,
-                            marginTop: "2px",
-                          }}
-                        >
-                          GPA: {edu.gpa}
-                        </div>
-                      )}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: dynamicStyles.educationDateSize,
-                        color: selectedTheme.textMuted,
-                        whiteSpace: "nowrap",
-                        marginLeft: "15px",
-                      }}
-                    >
-                      {edu.graduationDate}
-                    </div>
-                  </div>
-                  {edu.bullets && edu.bullets.length > 0 && (
-                    <ul
-                      style={{
-                        marginTop: "4px",
-                        marginBottom: "0",
-                        paddingLeft: "0",
-                        listStyleType: "none",
-                      }}
-                    >
-                      {edu.bullets
-                        .filter((bullet) => bullet && bullet.trim())
-                        .map((bullet, bulletIndex) => (
-                          <li
-                            key={bulletIndex}
-                            style={{
-                              fontSize: dynamicStyles.projectBulletSize,
-                              lineHeight: dynamicStyles.projectBulletLineHeight,
-                              color: selectedTheme.textLight,
-                              marginBottom:
-                                dynamicStyles.projectBulletMarginBottom,
-                              marginLeft: "20px",
-                              listStyleType: "disc",
-                              listStylePosition: "outside",
-                              display: "list-item",
-                            }}
-                          >
-                            {bullet}
-                          </li>
-                        ))}
-                    </ul>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      ),
-
-      certifications: resumeData.certifications &&
-        resumeData.certifications.length > 0 && (
-          <section
-            key="certifications"
-            style={{marginBottom: dynamicStyles.sectionMarginBottom}}
-          >
-            <div style={{position: "relative"}}>
-              <div
+          {/* Left: Identity */}
+          <div>
+            <h1
                 style={{
-                  position: "absolute",
-                  left: "-6px",
-                  top: "0",
-                  width: "4px",
-                  height: "100%",
-                  background: `linear-gradient(to bottom, ${selectedTheme.gradientStart}, ${selectedTheme.gradientEnd})`,
-                  borderRadius: "2px",
-                }}
-              ></div>
-              <h2
-                style={{
-                  fontSize: dynamicStyles.sectionHeadingSize,
-                  fontWeight: "bold",
-                  color: selectedTheme.primary,
-                  marginBottom: dynamicStyles.sectionHeadingMarginBottom,
-                  paddingLeft: "10px",
-                  textTransform: "uppercase",
-                  letterSpacing: "1.5px",
+                  fontFamily: '"Playfair Display", Georgia, serif',
+                  fontSize: spacing.nameSize,
+                  fontWeight: 900,
+                  letterSpacing: "-0.025em",
+                  lineHeight: 1.05,
+                  color: theme.textPrimary,
+                  margin: "0 0 2px 0",
                 }}
               >
-                Certifications
-              </h2>
-              <div style={{paddingLeft: "10px"}}>
-                {resumeData.certifications.map((cert, index) => (
+                {name}
+              </h1>
+              {(resumeData.title || resumeData.jobTitle) && (
+                <div
+                  style={{
+                    fontSize: spacing.titleSize,
+                    fontFamily: '"Newsreader", "Playfair Display", Georgia, serif',
+                    fontStyle: "italic",
+                    fontWeight: 600,
+                    color: theme.primary,
+                    letterSpacing: "0.01em",
+                  }}
+                >
+                  {resumeData.title || resumeData.jobTitle}
+                </div>
+              )}
+            </div>
+
+          {/* Right: Portfolio Spotlight Badge */}
+          {portfolioUrl && (
+            <a
+              href={portfolioUrl.startsWith("http") ? portfolioUrl : `https://${portfolioUrl}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                padding: "6px 12px",
+                borderRadius: "6px",
+                backgroundColor: theme.primary,
+                color: "#ffffff",
+                textDecoration: "none",
+                fontWeight: 700,
+                fontSize: "8.5pt",
+                boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+                transition: "all 0.2s ease",
+              }}
+            >
+              <Globe size={13} strokeWidth={2.5} />
+              <span>{portfolioUrl.replace(/^https?:\/\/(www\.)?/i, "").replace(/\/$/, "")}</span>
+              <ExternalLink size={11} strokeWidth={2.5} />
+            </a>
+          )}
+        </div>
+      </header>
+
+      {/* ─── 2-COLUMN ASYMMETRIC STUDIO GRID ─── */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "33% 67%",
+          gap: spacing.gap,
+          alignItems: "start",
+        }}
+      >
+        {/* ════════════ LEFT COLUMN: STUDIO SIDEBAR (33%) ════════════ */}
+        <aside
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: spacing.sectionGap,
+          }}
+        >
+          {/* 1. CONTACT & SOCIALS */}
+          <section
+            style={{
+              backgroundColor: theme.cardBg,
+              borderRadius: "8px",
+              padding: spacing.cardPadding,
+              border: `1px solid ${theme.cardBorder}`,
+            }}
+          >
+            <GraphicSectionHeader title="Contact" icon={Mail} />
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "5px",
+                fontSize: spacing.metaSize,
+              }}
+            >
+              {contactList.map((cItem, cIdx) => {
+                const Icon = cItem.icon;
+                return (
                   <div
-                    key={index}
+                    key={cIdx}
                     style={{
-                      marginBottom: dynamicStyles.certificationMarginBottom,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "6px",
+                      wordBreak: "break-word",
                     }}
                   >
+                    <div
+                      style={{
+                        width: "18px",
+                        height: "18px",
+                        borderRadius: "4px",
+                        backgroundColor: cItem.isHighlight ? theme.primary : theme.canvasBg,
+                        color: cItem.isHighlight ? "#ffffff" : theme.primary,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <Icon size={10} strokeWidth={2.2} />
+                    </div>
+                    {cItem.href ? (
+                      <a
+                        href={cItem.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          color: cItem.isHighlight ? theme.primary : theme.textPrimary,
+                          fontWeight: cItem.isHighlight ? 700 : 500,
+                          textDecoration: "none",
+                        }}
+                      >
+                        {cItem.label}
+                      </a>
+                    ) : (
+                      <span style={{ color: theme.textSecondary }}>{cItem.label}</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* 2. CREATIVE TOOLKIT & DISCIPLINES (Skills) */}
+          {resumeData.skills && resumeData.skills.length > 0 && (
+            <section
+              style={{
+                backgroundColor: theme.cardBg,
+                borderRadius: "8px",
+                padding: spacing.cardPadding,
+                border: `1px solid ${theme.cardBorder}`,
+              }}
+            >
+              <GraphicSectionHeader title="Toolkit" icon={Layers} tag="SKILLS" />
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                {resumeData.skills.map((skillGroup, sIdx) => {
+                  const items = Array.isArray(skillGroup.items)
+                    ? skillGroup.items
+                    : [skillGroup.items];
+
+                  return (
+                    <div key={sIdx} style={{ breakInside: "avoid" }}>
+                      <div
+                        style={{
+                          fontFamily: '"JetBrains Mono", monospace',
+                          fontSize: "7pt",
+                          fontWeight: 700,
+                          textTransform: "uppercase",
+                          letterSpacing: "0.08em",
+                          color: theme.primary,
+                          marginBottom: "3px",
+                        }}
+                      >
+                        {skillGroup.category}
+                      </div>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "3.5px" }}>
+                        {items.map((item, iIdx) => (
+                          <span
+                            key={iIdx}
+                            style={{
+                              fontSize: "7.5pt",
+                              fontWeight: 600,
+                              padding: "2px 6px",
+                              borderRadius: "4px",
+                              backgroundColor: theme.cardBg,
+                              color: theme.textPrimary,
+                              border: `1px solid ${theme.divider}`,
+                              lineHeight: 1.25,
+                            }}
+                          >
+                            {item}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+          )}
+
+          {/* 3. EDUCATION */}
+          {resumeData.education && resumeData.education.length > 0 && (
+            <section
+              style={{
+                backgroundColor: theme.cardBg,
+                borderRadius: "8px",
+                padding: spacing.cardPadding,
+                border: `1px solid ${theme.cardBorder}`,
+              }}
+            >
+              <GraphicSectionHeader title="Education" icon={GraduationCap} />
+              <div style={{ display: "flex", flexDirection: "column", gap: "7px" }}>
+                {resumeData.education.map((edu, eIdx) => (
+                  <div key={eIdx} style={{ breakInside: "avoid" }}>
+                    <div
+                      style={{
+                        fontSize: spacing.bodySize,
+                        fontWeight: 700,
+                        color: theme.textPrimary,
+                        lineHeight: 1.2,
+                      }}
+                    >
+                      {edu.degree}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: "8pt",
+                        color: theme.textSecondary,
+                        marginTop: "1px",
+                      }}
+                    >
+                      {edu.institution}
+                    </div>
                     <div
                       style={{
                         display: "flex",
                         justifyContent: "space-between",
-                        alignItems: "flex-start",
+                        fontSize: "7pt",
+                        fontFamily: '"JetBrains Mono", monospace',
+                        color: theme.textMuted,
+                        marginTop: "2px",
                       }}
                     >
-                      <div style={{flex: 1}}>
-                        <div
-                          style={{
-                            fontSize: dynamicStyles.certificationNameSize,
-                            fontWeight: "600",
-                            color: selectedTheme.text,
-                          }}
-                        >
-                          {cert.name}
-                        </div>
-                        <div
-                          style={{
-                            fontSize: dynamicStyles.certificationIssuerSize,
-                            color: selectedTheme.primary,
-                            marginTop: "1px",
-                            fontWeight: "500",
-                          }}
-                        >
-                          {cert.issuer}
-                        </div>
-                      </div>
-                      {cert.date && (
-                        <div
-                          style={{
-                            fontSize: dynamicStyles.certificationIssuerSize,
-                            color: selectedTheme.textMuted,
-                            whiteSpace: "nowrap",
-                            marginLeft: "15px",
-                          }}
-                        >
-                          {cert.date}
-                        </div>
+                      <span>{edu.graduationDate || edu.endDate}</span>
+                      {edu.gpa && (
+                        <span style={{ color: theme.primary, fontWeight: 700 }}>
+                          GPA: {edu.gpa}
+                        </span>
                       )}
                     </div>
                   </div>
                 ))}
               </div>
-            </div>
-          </section>
-        ),
+            </section>
+          )}
 
-      achievements: resumeData.achievements &&
-        resumeData.achievements.length > 0 && (
-          <section
-            key="achievements"
-            style={{marginBottom: dynamicStyles.sectionMarginBottom}}
-          >
-            <div style={{position: "relative"}}>
+          {/* 4. RECOGNITION & HONORS */}
+          {resumeData.achievements && resumeData.achievements.length > 0 && (
+            <section
+              style={{
+                backgroundColor: theme.cardBg,
+                borderRadius: "8px",
+                padding: spacing.cardPadding,
+                border: `1px solid ${theme.cardBorder}`,
+              }}
+            >
+              <GraphicSectionHeader title="Honors" icon={Award} tag="AWARDS" />
+              <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+                {resumeData.achievements.map((ach, aIdx) => {
+                  const text = typeof ach === "string" ? ach : ach.title || ach.description;
+                  return (
+                    <div
+                      key={aIdx}
+                      style={{
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: "5px",
+                        fontSize: spacing.metaSize,
+                        lineHeight: 1.3,
+                        color: theme.textSecondary,
+                      }}
+                    >
+                      <Star
+                        size={10}
+                        style={{ color: theme.primary, flexShrink: 0, marginTop: "2px" }}
+                      />
+                      <span>{highlightMetrics(text, theme.primary)}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+          )}
+        </aside>
+
+        {/* ════════════ RIGHT COLUMN: MAIN CANVAS (67%) ════════════ */}
+        <main
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: spacing.sectionGap,
+          }}
+        >
+          {/* 1. CREATIVE STATEMENT / BIO */}
+          {resumeData.summary && (
+            <section
+              data-section="summary"
+              style={{
+                backgroundColor: theme.cardBg,
+                borderRadius: "8px",
+                padding: spacing.cardPadding,
+                borderLeft: `4px solid ${theme.primary}`,
+                border: `1px solid ${theme.cardBorder}`,
+                borderLeftWidth: "4px",
+                borderLeftColor: theme.primary,
+                boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
+              }}
+            >
               <div
                 style={{
-                  position: "absolute",
-                  left: "-6px",
-                  top: "0",
-                  width: "4px",
-                  height: "100%",
-                  background: `linear-gradient(to bottom, ${selectedTheme.gradientStart}, ${selectedTheme.gradientEnd})`,
-                  borderRadius: "2px",
-                }}
-              ></div>
-              <h2
-                style={{
-                  fontSize: dynamicStyles.sectionHeadingSize,
-                  fontWeight: "bold",
-                  color: selectedTheme.primary,
-                  marginBottom: dynamicStyles.sectionHeadingMarginBottom,
-                  paddingLeft: "10px",
+                  fontSize: "7pt",
+                  fontFamily: '"JetBrains Mono", monospace',
+                  fontWeight: 700,
+                  letterSpacing: "0.14em",
                   textTransform: "uppercase",
-                  letterSpacing: "1.5px",
+                  color: theme.primary,
+                  marginBottom: "3px",
                 }}
               >
-                Achievements
-              </h2>
-              <ul
+                STATEMENT // PHILOSOPHY
+              </div>
+              <p
                 style={{
-                  marginTop: "4px",
-                  marginBottom: "0",
-                  paddingLeft: "10px",
-                  listStyleType: "none",
+                  fontFamily: '"Newsreader", "Playfair Display", Georgia, serif',
+                  fontSize: "9.5pt",
+                  fontStyle: "italic",
+                  lineHeight: 1.45,
+                  color: theme.textPrimary,
+                  margin: 0,
                 }}
               >
-                {resumeData.achievements
-                  .filter(
-                    (achievement) =>
-                      achievement &&
-                      (typeof achievement === "string"
-                        ? achievement.trim()
-                        : achievement.title || achievement.description)
-                  )
-                  .map((achievement, index) => (
-                    <li
-                      key={index}
+                “{resumeData.summary}”
+              </p>
+            </section>
+          )}
+
+          {/* 2. SELECTED WORKS / FEATURED CASE STUDIES (Visual Feature Cards) */}
+          {resumeData.projects && resumeData.projects.length > 0 && (
+            <section data-section="projects">
+              <GraphicSectionHeader
+                title="Featured Works"
+                icon={Sparkles}
+                tag="CASE STUDIES"
+              />
+              <div style={{ display: "flex", flexDirection: "column", gap: spacing.itemGap }}>
+                {resumeData.projects.map((proj, pIdx) => {
+                  const hasBullets = proj.bullets && proj.bullets.length > 0;
+                  const showDesc =
+                    proj.description &&
+                    (!hasBullets ||
+                      !isDescriptionDuplicatedInBullets(proj.description, proj.bullets));
+
+                  return (
+                    <div
+                      key={proj.id || pIdx}
                       style={{
-                        fontSize: dynamicStyles.itemTitleSize,
-                        lineHeight: "1.5",
-                        color: selectedTheme.textLight,
-                        marginBottom: dynamicStyles.itemMarginBottom,
-                        marginLeft: "20px",
-                        listStyleType: "disc",
-                        listStylePosition: "outside",
-                        display: "list-item",
+                        backgroundColor: theme.cardBg,
+                        borderRadius: "8px",
+                        padding: spacing.cardPadding,
+                        border: `1px solid ${theme.cardBorder}`,
+                        boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+                        breakInside: "avoid",
                       }}
                     >
-                      {achievement}
-                    </li>
-                  ))}
-              </ul>
-            </div>
-          </section>
-        ),
+                      {/* Project Header Strip */}
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "flex-start",
+                          gap: "8px",
+                          marginBottom: "4px",
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                          <span
+                            style={{
+                              fontSize: spacing.bodySize,
+                              fontWeight: 800,
+                              color: theme.textPrimary,
+                              letterSpacing: "-0.01em",
+                            }}
+                          >
+                            {proj.name}
+                          </span>
+                        </div>
 
-      languages: resumeData.languages && resumeData.languages.length > 0 && (
-        <section
-          key="languages"
-          style={{marginBottom: dynamicStyles.sectionMarginBottom}}
-        >
-          <div style={{position: "relative"}}>
-            <div
-              style={{
-                position: "absolute",
-                left: "-6px",
-                top: "0",
-                width: "4px",
-                height: "100%",
-                background: `linear-gradient(to bottom, ${selectedTheme.gradientStart}, ${selectedTheme.gradientEnd})`,
-                borderRadius: "2px",
-              }}
-            ></div>
-            <h2
-              style={{
-                fontSize: dynamicStyles.sectionHeadingSize,
-                fontWeight: "bold",
-                color: selectedTheme.primary,
-                marginBottom: dynamicStyles.sectionHeadingMarginBottom,
-                paddingLeft: "10px",
-                textTransform: "uppercase",
-                letterSpacing: "1.5px",
-              }}
-            >
-              Languages
-            </h2>
-            <div style={{paddingLeft: "10px"}}>
-              {resumeData.languages.map((lang, index) => (
-                <div
-                  key={index}
-                  style={{
-                    marginBottom: dynamicStyles.itemMarginBottom,
-                  }}
-                >
-                  <span
-                    style={{
-                      fontSize: dynamicStyles.itemTitleSize,
-                      fontWeight: "600",
-                      color: selectedTheme.text,
-                    }}
-                  >
-                    {lang.language}
-                  </span>
-                  {lang.proficiency && (
-                    <span
+                        {proj.url && (
+                          <a
+                            href={proj.url.startsWith("http") ? proj.url : `https://${proj.url}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "3px",
+                              fontSize: "7.5pt",
+                              fontWeight: 700,
+                              padding: "1.5px 7px",
+                              borderRadius: "4px",
+                              backgroundColor: theme.tagBg,
+                              color: theme.primary,
+                              border: `1px solid ${theme.tagBorder}`,
+                              textDecoration: "none",
+                            }}
+                          >
+                            <span>Live Demo</span>
+                            <ExternalLink size={9} strokeWidth={2.5} />
+                          </a>
+                        )}
+                      </div>
+
+                      {/* Technology / Discipline Tags */}
+                      {proj.technologies && proj.technologies.length > 0 && (
+                        <div
+                          style={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: "3.5px",
+                            marginBottom: "5px",
+                          }}
+                        >
+                          {proj.technologies.map((t, tIdx) => (
+                            <span
+                              key={tIdx}
+                              style={{
+                                fontSize: "6.8pt",
+                                fontWeight: 600,
+                                fontFamily: '"JetBrains Mono", monospace',
+                                padding: "1px 5px",
+                                borderRadius: "3px",
+                                backgroundColor: theme.sidebarBg,
+                                color: theme.textSecondary,
+                                border: `1px solid ${theme.divider}`,
+                              }}
+                            >
+                              {t}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      {showDesc && (
+                        <p
+                          style={{
+                            fontSize: spacing.bodySize,
+                            lineHeight: spacing.lineHeight,
+                            color: theme.textSecondary,
+                            margin: "2px 0 4px 0",
+                          }}
+                        >
+                          {highlightMetrics(proj.description, theme.primary)}
+                        </p>
+                      )}
+
+                      {hasBullets && (
+                        <ul
+                          style={{
+                            margin: 0,
+                            paddingLeft: "1.05rem",
+                          }}
+                        >
+                          {proj.bullets
+                            .filter((b) => Boolean(b && b.trim()))
+                            .map((bullet, bIdx) => (
+                              <li
+                                key={bIdx}
+                                style={{
+                                  fontSize: spacing.bodySize,
+                                  lineHeight: spacing.lineHeight,
+                                  color: theme.textSecondary,
+                                  marginBottom: "2px",
+                                }}
+                              >
+                                {highlightMetrics(bullet, theme.primary)}
+                              </li>
+                            ))}
+                        </ul>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+          )}
+
+          {/* 3. EXPERIENCE / STUDIO PRACTICE (Timeline Layout) */}
+          {resumeData.experience && resumeData.experience.length > 0 && (
+            <section data-section="experience">
+              <GraphicSectionHeader
+                title="Practice"
+                icon={Briefcase}
+                tag="EXPERIENCE"
+              />
+              <div style={{ display: "flex", flexDirection: "column", gap: spacing.itemGap }}>
+                {resumeData.experience.map((exp, eIdx) => {
+                  const hasBullets = exp.bullets && exp.bullets.length > 0;
+                  const showDesc =
+                    exp.description &&
+                    (!hasBullets ||
+                      !isDescriptionDuplicatedInBullets(exp.description, exp.bullets));
+
+                  return (
+                    <div
+                      key={exp.id || eIdx}
                       style={{
-                        fontSize: dynamicStyles.itemDetailSize,
-                        color: selectedTheme.textLight,
-                        marginLeft: "8px",
+                        position: "relative",
+                        paddingLeft: "14px",
+                        borderLeft: `2px solid ${theme.tagBorder}`,
+                        breakInside: "avoid",
                       }}
                     >
-                      — {lang.proficiency}
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      ),
+                      {/* Timeline graphic bullet dot */}
+                      <div
+                        style={{
+                          position: "absolute",
+                          left: "-5px",
+                          top: "3px",
+                          width: "8px",
+                          height: "8px",
+                          borderRadius: "50%",
+                          backgroundColor: theme.primary,
+                          border: `2px solid ${theme.canvasBg}`,
+                        }}
+                      />
 
-      volunteer: resumeData.volunteer && resumeData.volunteer.length > 0 && (
-        <section
-          key="volunteer"
-          style={{marginBottom: dynamicStyles.sectionMarginBottom}}
-        >
-          <div style={{position: "relative"}}>
-            <div
-              style={{
-                position: "absolute",
-                left: "-6px",
-                top: "0",
-                width: "4px",
-                height: "100%",
-                background: `linear-gradient(to bottom, ${selectedTheme.gradientStart}, ${selectedTheme.gradientEnd})`,
-                borderRadius: "2px",
-              }}
-            ></div>
-            <h2
-              style={{
-                fontSize: dynamicStyles.sectionHeadingSize,
-                fontWeight: "bold",
-                color: selectedTheme.primary,
-                marginBottom: dynamicStyles.sectionHeadingMarginBottom,
-                paddingLeft: "10px",
-                textTransform: "uppercase",
-                letterSpacing: "1.5px",
-              }}
-            >
-              Volunteer Experience
-            </h2>
-            <div style={{paddingLeft: "10px"}}>
-              {resumeData.volunteer.map((vol, index) => (
-                <div
-                  key={index}
-                  style={{
-                    marginBottom: dynamicStyles.itemMarginBottom,
-                  }}
-                >
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "baseline",
+                          gap: "8px",
+                          flexWrap: "wrap",
+                          marginBottom: "2px",
+                        }}
+                      >
+                        <div>
+                          <span
+                            style={{
+                              fontSize: spacing.bodySize,
+                              fontWeight: 800,
+                              color: theme.textPrimary,
+                            }}
+                          >
+                            {exp.position || exp.title}
+                          </span>
+                          <span style={{ color: theme.textMuted, margin: "0 5px" }}>@</span>
+                          <span
+                            style={{
+                              fontSize: spacing.bodySize,
+                              fontStyle: "italic",
+                              fontFamily: '"Newsreader", Georgia, serif',
+                              color: theme.primary,
+                              fontWeight: 700,
+                            }}
+                          >
+                            {exp.company}
+                          </span>
+                          {exp.location && (
+                            <span style={{ fontSize: "7pt", color: theme.textMuted, marginLeft: "5px" }}>
+                              ({exp.location})
+                            </span>
+                          )}
+                        </div>
+
+                        <span
+                          style={{
+                            fontFamily: '"JetBrains Mono", monospace',
+                            fontSize: "7pt",
+                            color: theme.textSecondary,
+                            backgroundColor: theme.tagBg,
+                            padding: "1px 6px",
+                            borderRadius: "3px",
+                            border: `1px solid ${theme.tagBorder}`,
+                          }}
+                        >
+                          {exp.startDate} – {exp.endDate || "Present"}
+                        </span>
+                      </div>
+
+                      {showDesc && (
+                        <p
+                          style={{
+                            fontSize: spacing.bodySize,
+                            lineHeight: spacing.lineHeight,
+                            color: theme.textSecondary,
+                            margin: "2px 0 3px 0",
+                          }}
+                        >
+                          {highlightMetrics(exp.description, theme.primary)}
+                        </p>
+                      )}
+
+                      {hasBullets && (
+                        <ul
+                          style={{
+                            margin: "2px 0 0 0",
+                            paddingLeft: "1.05rem",
+                          }}
+                        >
+                          {exp.bullets
+                            .filter((b) => Boolean(b && b.trim()))
+                            .map((bullet, bIdx) => (
+                              <li
+                                key={bIdx}
+                                style={{
+                                  fontSize: spacing.bodySize,
+                                  lineHeight: spacing.lineHeight,
+                                  color: theme.textSecondary,
+                                  marginBottom: "2px",
+                                }}
+                              >
+                                {highlightMetrics(bullet, theme.primary)}
+                              </li>
+                            ))}
+                        </ul>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+          )}
+
+          {/* 4. CERTIFICATIONS & SPECIALIZATIONS */}
+          {resumeData.certifications && resumeData.certifications.length > 0 && (
+            <section data-section="certifications">
+              <GraphicSectionHeader title="Credentials" tag="CERTIFICATIONS" />
+              <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                {resumeData.certifications.map((cert, cIdx) => (
                   <div
+                    key={cIdx}
                     style={{
                       display: "flex",
                       justifyContent: "space-between",
-                      alignItems: "flex-start",
+                      fontSize: spacing.bodySize,
                     }}
                   >
-                    <div style={{flex: 1}}>
-                      <div
+                    <span>
+                      <strong style={{ color: theme.textPrimary }}>{cert.name}</strong>
+                      {cert.issuer && (
+                        <span style={{ color: theme.textMuted }}> — {cert.issuer}</span>
+                      )}
+                    </span>
+                    {cert.date && (
+                      <span
                         style={{
-                          fontSize: dynamicStyles.itemTitleSize,
-                          fontWeight: "600",
-                          color: selectedTheme.text,
+                          fontFamily: '"JetBrains Mono", monospace',
+                          fontSize: "7pt",
+                          color: theme.textMuted,
                         }}
                       >
-                        {vol.role}
-                      </div>
-                      <div
-                        style={{
-                          fontSize: dynamicStyles.itemDetailSize,
-                          color: selectedTheme.primary,
-                          marginTop: "1px",
-                          fontWeight: "500",
-                        }}
-                      >
-                        {vol.organization}
-                      </div>
-                    </div>
-                    {vol.date && (
-                      <div
-                        style={{
-                          fontSize: dynamicStyles.itemDetailSize,
-                          color: selectedTheme.textMuted,
-                          whiteSpace: "nowrap",
-                          marginLeft: "15px",
-                        }}
-                      >
-                        {vol.date}
-                      </div>
+                        {cert.date}
+                      </span>
                     )}
                   </div>
-                  {vol.description && (
-                    <p
-                      style={{
-                        fontSize: dynamicStyles.itemDetailSize,
-                        lineHeight: "1.5",
-                        color: selectedTheme.textLight,
-                        marginTop: "3px",
-                        marginBottom: "0",
-                      }}
-                    >
-                      {vol.description}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      ),
-    };
-
-    return sections[sectionId];
-  };
-
-  return (
-    <div
-      ref={ref}
-      style={{
-        width: "210mm",
-        minHeight: "11in",
-        backgroundColor: "#ffffff",
-        fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
-        color: selectedTheme.text,
-        padding: `${dynamicStyles.pageMarginTop} ${dynamicStyles.pageMarginRight} ${dynamicStyles.pageMarginBottom} ${dynamicStyles.pageMarginLeft}`,
-        boxSizing: "border-box",
-        transform: `scale(${scale})`,
-        transformOrigin: "top left",
-        position: "relative",
-      }}
-    >
-      <div ref={contentRef}>
-        {/* Header Section */}
-        <header style={{marginBottom: dynamicStyles.contactMarginBottom}}>
-          <div
-            style={{
-              background: `linear-gradient(135deg, ${selectedTheme.gradientStart}, ${selectedTheme.gradientEnd})`,
-              padding: "16px 20px",
-              borderRadius: "8px",
-              marginBottom: "12px",
-            }}
-          >
-            <h1
-              style={{
-                fontSize: dynamicStyles.nameSize,
-                fontWeight: "bold",
-                color: "#ffffff",
-                margin: "0",
-                letterSpacing: "0.5px",
-              }}
-            >
-              {resumeData.name || "Your Name"}
-            </h1>
-          </div>
-
-          {/* Contact Information */}
-          {resumeData.contact && (
-            <div
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: dynamicStyles.contactGap,
-                fontSize: dynamicStyles.contactSize,
-                color: selectedTheme.textLight,
-                paddingLeft: "4px",
-              }}
-            >
-              {resumeData.contact.email && (
-                <span>{resumeData.contact.email}</span>
-              )}
-              {resumeData.contact.phone && (
-                <span>• {resumeData.contact.phone}</span>
-              )}
-              {resumeData.contact.location && (
-                <span>• {resumeData.contact.location}</span>
-              )}
-              {resumeData.contact.linkedin && (
-                <span>• {resumeData.contact.linkedin}</span>
-              )}
-              {resumeData.contact.github && (
-                <span>• {resumeData.contact.github}</span>
-              )}
-              {(resumeData.contact.portfolio || resumeData.contact.website) && (
-                <span>• {resumeData.contact.portfolio || resumeData.contact.website}</span>
-              )}
-            </div>
+                ))}
+              </div>
+            </section>
           )}
-        </header>
-
-        {/* Dynamic Sections */}
-        {sectionOrder.map((sectionId) => renderSection(sectionId))}
+        </main>
       </div>
     </div>
   );

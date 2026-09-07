@@ -464,7 +464,7 @@ const ResumeWizard = ({
           )}
           <button
             onClick={handleNext}
-            className="flex items-center gap-2 px-8 py-3 rounded-xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 text-white hover:from-blue-700 hover:via-indigo-700 hover:to-cyan-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+            className="flex items-center gap-2 px-8 py-3 rounded-xl font-bold bg-zinc-900 hover:bg-black text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 transition-all duration-300 shadow-md hover:shadow-lg cursor-pointer"
           >
             {isLastStep ? (
               <>

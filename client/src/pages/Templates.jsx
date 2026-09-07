@@ -19,6 +19,8 @@ import ImpactProTemplate from "@/components/templates/ImpactProTemplate";
 import GitHubStyleTemplate from "@/components/templates/GitHubStyleTemplate";
 import StructuredPhotoTemplate from "@/components/templates/StructuredPhotoTemplate";
 import SiliconValleyTemplate from "@/components/templates/SiliconValleyTemplate";
+import LatexAcademicTemplate from "@/components/templates/LatexAcademicTemplate";
+import NordicSplitTemplate from "@/components/templates/NordicSplitTemplate";
 import {
   TemplatesBanner,
   TemplateCard,
@@ -117,6 +119,8 @@ const sampleResumeData = {
 };
 
 const TEMPLATE_COMPONENTS = {
+  "latex-academic": LatexAcademicTemplate,
+  "nordic-split": NordicSplitTemplate,
   executive: ExecutiveTemplate,
   classic: ClassicTemplate,
   modern: ModernTemplate,
@@ -133,6 +137,30 @@ const TEMPLATE_COMPONENTS = {
 };
 
 const BASE_TEMPLATE_LIST = [
+  {
+    id: "latex-academic",
+    name: "Stanford / LaTeX Academic Pro",
+    component: LatexAcademicTemplate,
+    category: "Academic",
+    atsScore: 100,
+    badge: "100% ATS GRADE",
+    description:
+      "Mathematical precision with classic academic serif typography, fine hairline rules, and publication metrics.",
+    features: ["LaTeX Typography", "Hairline Rules", "Research Metrics", "1-Page Fit"],
+    colors: ["#002147", "#8c1515", "#005a9c", "#065f46"],
+  },
+  {
+    id: "nordic-split",
+    name: "Nordic Two-Column Architect",
+    component: NordicSplitTemplate,
+    category: "Leadership",
+    atsScore: 99,
+    badge: "NEW FLAGSHIP",
+    description:
+      "Asymmetric 32/68 split layout with stylish left sidebar rail for skills & credentials and spacious right body.",
+    features: ["Split-Rail Layout", "Skills Pills", "Impact Metrics", "Single-Flow ATS"],
+    colors: ["#1d4ed8", "#047857", "#1e293b", "#0f766e"],
+  },
   {
     id: "silicon-valley",
     name: "Silicon Valley Tech Lead",

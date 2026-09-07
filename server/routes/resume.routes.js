@@ -40,6 +40,7 @@ import {
   getPublicTemplates,
   tailorResume,
   compressResume,
+  getBulletRewrites,
 } from "../controllers/resume.controller.js";
 
 const router = express.Router();
@@ -133,6 +134,18 @@ router.post(
   checkAIQuota,
   compressResume
 );
+
+// Protected routes - generate 3 tailored variations of bullet/summary with AI
+router.post(
+  "/bullet-rewrites",
+  authenticateToken,
+  checkSubscription,
+  checkUsageLimit("aiGenerationsPerMonth"),
+  aiLimiter,
+  checkAIQuota,
+  getBulletRewrites
+);
+
 
 // Protected routes - process custom section with AI (requires authentication + AI rate limiting + quota check)
 router.post(

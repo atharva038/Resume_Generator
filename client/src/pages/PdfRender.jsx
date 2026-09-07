@@ -14,6 +14,8 @@ import ImpactProTemplate from "@/components/templates/ImpactProTemplate";
 import GitHubStyleTemplate from "@/components/templates/GitHubStyleTemplate";
 import StructuredPhotoTemplate from "@/components/templates/StructuredPhotoTemplate";
 import SiliconValleyTemplate from "@/components/templates/SiliconValleyTemplate";
+import LatexAcademicTemplate from "@/components/templates/LatexAcademicTemplate";
+import NordicSplitTemplate from "@/components/templates/NordicSplitTemplate";
 
 const templates = {
   classic: ClassicTemplate,
@@ -32,6 +34,10 @@ const templates = {
   "structured-photo": StructuredPhotoTemplate,
   "silicon-valley": SiliconValleyTemplate,
   siliconValley: SiliconValleyTemplate,
+  "latex-academic": LatexAcademicTemplate,
+  latexAcademic: LatexAcademicTemplate,
+  "nordic-split": NordicSplitTemplate,
+  nordicSplit: NordicSplitTemplate,
 };
 
 const PdfRender = () => {

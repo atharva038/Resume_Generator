@@ -66,7 +66,7 @@ export default function EditorFloatingActionRail({
         {/* Export PDF */}
         <button
           onClick={handleDownloadPDF}
-          disabled={isSubscriptionExpired}
+          disabled={Boolean(typeof isSubscriptionExpired === "function" ? isSubscriptionExpired() : isSubscriptionExpired)}
           className={`group relative w-9 h-9 flex items-center justify-center rounded-xl transition-colors cursor-pointer ${
             isSubscriptionExpired
               ? "text-gray-300 dark:text-gray-600 cursor-not-allowed"
