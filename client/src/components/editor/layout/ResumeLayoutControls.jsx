@@ -2,7 +2,6 @@ import { useState } from "react";
 import {
   SlidersHorizontal,
   RotateCcw,
-  Palette,
   Sliders,
   Type,
   Check,
@@ -10,14 +9,6 @@ import {
   ChevronUp,
 } from "lucide-react";
 import { LAYOUT_DEFAULTS } from "../constants/editorConstants";
-
-// Matched 1:1 with ResumePreview toolbar
-const PREVIEW_THEMES = [
-  { id: "stripeIndigo", name: "Stripe Indigo", color: "#4f46e5" },
-  { id: "cyberEmerald", name: "Cyber Emerald", color: "#059669" },
-  { id: "midnightSlate", name: "Midnight Slate", color: "#1e293b" },
-  { id: "monochromePro", name: "Monochrome Pro", color: "#18181b" },
-];
 
 const PREVIEW_DENSITIES = [
   { id: "compact", label: "⚡ Smart 1-Page" },
@@ -53,8 +44,6 @@ const ResumeLayoutControls = ({ resumeData = {}, updateField, onChange }) => {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const settings = { ...LAYOUT_DEFAULTS, ...(resumeData.layoutSettings || {}) };
 
-  const activeTheme =
-    resumeData.selectedTheme || resumeData.colorTheme || "stripeIndigo";
   const activeDensity = resumeData.density || "medium";
   const activeFont = resumeData.fontPairing || "modernSans";
 
@@ -69,16 +58,7 @@ const ResumeLayoutControls = ({ resumeData = {}, updateField, onChange }) => {
     if (updateField) {
       updateField("layoutSettings", { ...LAYOUT_DEFAULTS });
       updateField("density", "medium");
-      updateField("selectedTheme", "stripeIndigo");
-      updateField("colorTheme", "stripeIndigo");
       updateField("fontPairing", "modernSans");
-    }
-  };
-
-  const handleThemeChange = (themeId) => {
-    if (updateField) {
-      updateField("selectedTheme", themeId);
-      updateField("colorTheme", themeId);
     }
   };
 
@@ -139,7 +119,7 @@ const ResumeLayoutControls = ({ resumeData = {}, updateField, onChange }) => {
               Resume Styling & Layout
             </h3>
             <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
-              100% matched with preview toolbar
+              Fine-tune margins, spacing & density
             </p>
           </div>
         </div>
@@ -153,49 +133,7 @@ const ResumeLayoutControls = ({ resumeData = {}, updateField, onChange }) => {
         </button>
       </div>
 
-      {/* 1. Color Themes - Matched 1:1 with Preview Toolbar */}
-      <div className="mt-3">
-        <div className="flex items-center justify-between mb-1.5">
-          <label className="text-xs font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
-            <Palette className="w-3.5 h-3.5 text-gray-400" />
-            Color Theme
-          </label>
-          <span className="text-[11px] font-medium text-gray-500 dark:text-gray-400">
-            {PREVIEW_THEMES.find((t) => t.id === activeTheme)?.name || "Default"}
-          </span>
-        </div>
-        <div className="grid grid-cols-4 gap-2">
-          {PREVIEW_THEMES.map((theme) => {
-            const isSelected = activeTheme === theme.id;
-            return (
-              <button
-                key={theme.id}
-                type="button"
-                onClick={() => handleThemeChange(theme.id)}
-                className={`flex flex-col items-center gap-1 p-2 rounded-lg border transition-all cursor-pointer ${
-                  isSelected
-                    ? "border-blue-600 bg-blue-50/50 dark:border-blue-500 dark:bg-blue-950/40 shadow-xs"
-                    : "border-gray-200 dark:border-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-900"
-                }`}
-              >
-                <div
-                  className="w-5 h-5 rounded-full flex items-center justify-center relative shadow-xs"
-                  style={{ backgroundColor: theme.color }}
-                >
-                  {isSelected && (
-                    <Check className="w-3 h-3 text-white" strokeWidth={3} />
-                  )}
-                </div>
-                <span className="text-[10px] font-medium text-gray-700 dark:text-gray-300 text-center truncate w-full">
-                  {theme.name.split(" ")[0]}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* 2. Page Density & 1-Page Fit - Matched 1:1 with Preview Toolbar */}
+      {/* 1. Page Density & 1-Page Fit */}
       <div className="mt-3.5">
         <div className="flex items-center justify-between mb-1.5">
           <label className="text-xs font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-1.5">

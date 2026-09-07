@@ -7,9 +7,9 @@ import {
   useCallback,
   useMemo,
 } from "react";
-import {useReactToPrint} from "react-to-print";
-import {Download, Palette, Sliders, Type, Check, Maximize2} from "lucide-react";
-import {useToggle, useMediaQuery} from "@/hooks";
+import { useReactToPrint } from "react-to-print";
+import { Download, Palette, Sliders, Type, Check, Maximize2 } from "lucide-react";
+import { useToggle, useMediaQuery } from "@/hooks";
 import ClassicTemplate from "@/components/templates/ClassicTemplate";
 import ModernTemplate from "@/components/templates/ModernTemplate";
 import MinimalTemplate from "@/components/templates/MinimalTemplate";
@@ -23,16 +23,12 @@ import ImpactProTemplate from "@/components/templates/ImpactProTemplate";
 import GitHubStyleTemplate from "@/components/templates/GitHubStyleTemplate";
 import StructuredPhotoTemplate from "@/components/templates/StructuredPhotoTemplate";
 import SiliconValleyTemplate from "@/components/templates/SiliconValleyTemplate";
+import LatexAcademicTemplate from "@/components/templates/LatexAcademicTemplate";
+import NordicSplitTemplate from "@/components/templates/NordicSplitTemplate";
+import Professional2Template from "@/components/templates/Professional2Template";
 import FullPreviewModal from "./FullPreviewModal";
 import ResumeWatermark from "./ResumeWatermark";
-
-// Color themes supported for live toolbar customization
-const PREVIEW_THEMES = [
-  { id: "stripeIndigo", name: "Stripe Indigo", color: "#4f46e5" },
-  { id: "cyberEmerald", name: "Cyber Emerald", color: "#059669" },
-  { id: "midnightSlate", name: "Midnight Slate", color: "#1e293b" },
-  { id: "monochromePro", name: "Monochrome Pro", color: "#18181b" },
-];
+import { TEMPLATE_COLOR_THEMES } from "../templateConfig";
 
 const PREVIEW_DENSITIES = [
   { id: "compact", label: "⚡ Smart 1-Page" },
@@ -50,11 +46,30 @@ const PREVIEW_FONTS = [
 const PAGE_HEIGHT_PX = 1056;
 // Minimum px of content before allowing a page break (avoids near-empty pages)
 const MIN_CONTENT_PX = 100;
-// Pages only appear when content overflows by more than this amount (avoids false 2nd pages)
-const OVERFLOW_THRESHOLD_PX = 80;
+// Subpixel variance tolerance (avoids false 2nd pages on microscopic 1-2px rounding differences)
+const PAGE_TOLERANCE_PX = 4;
+
+const WOOD_TEXTURE_DATA_URI =
+  "data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='woodGrain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.015 0.32' numOctaves='4' result='noise'/%3E%3CfeColorMatrix type='matrix' values='0.4 0 0 0 0.4 0.3 0 0 0 0.28 0.18 0 0 0 0.16 0 0 0 0.07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23woodGrain)'/%3E%3C/svg%3E";
+
+const CREATIVE2_CANVAS_MAP = {
+  teakWood: "#faf6ee",
+  archivalPaper: "#faf6ee",
+  smokedWalnut: "#1b140f",
+  galleryNoir: "#1b140f",
+  midnightSlate: "#1b140f",
+  nordicBirch: "#f7f6f0",
+  nordicSage: "#f7f6f0",
+  cyberEmerald: "#f7f6f0",
+  rosewoodMahogany: "#fbf5f2",
+  studioKlein: "#fbf5f2",
+  stripeIndigo: "#fbf5f2",
+  charredEbony: "#f9f9f9",
+  monochromePro: "#f9f9f9",
+};
 
 const ResumePreview = forwardRef(
-  ({resumeData, template = "classic", onPageUsageChange, onDownload, onUpdateField}, ref) => {
+  ({ resumeData, template = "classic", onPageUsageChange, onDownload, onUpdateField }, ref) => {
     const printTemplateRef = useRef();
     const templateRef = useRef(); // page-0 template wrapper — used for DOM section measurement
     const [showFullPreview, , setShowFullPreviewTrue, setShowFullPreviewFalse] =
@@ -65,8 +80,27 @@ const ResumePreview = forwardRef(
     // pageBreaks[i] = template-coordinate y where page i starts (template px, pre-scale)
     const [pageBreaks, setPageBreaks] = useState([0]);
 
+    const templateThemes = useMemo(() => {
+      const list = TEMPLATE_COLOR_THEMES[template] || [];
+      if (list.length > 0) {
+        return list.map((t) => ({
+          id: t.id,
+          name: t.name,
+          color: t.primary,
+          emoji: t.emoji,
+        }));
+      }
+      return [
+        { id: "navy", name: "Navy Blue", color: "#1e3a8a" },
+        { id: "burgundy", name: "Burgundy", color: "#881337" },
+        { id: "forest", name: "Forest Green", color: "#065f46" },
+        { id: "charcoal", name: "Charcoal", color: "#374151" },
+      ];
+    }, [template]);
+
+    const defaultThemeId = templateThemes[0]?.id || "teakWood";
     const [localTheme, setLocalTheme] = useState(
-      resumeData?.selectedTheme || resumeData?.colorTheme || "stripeIndigo"
+      resumeData?.selectedTheme || resumeData?.colorTheme || defaultThemeId
     );
     const [localDensity, setLocalDensity] = useState(
       resumeData?.density || "medium"
@@ -75,7 +109,8 @@ const ResumePreview = forwardRef(
       resumeData?.fontPairing || "modernSans"
     );
 
-    const activeTheme = resumeData?.selectedTheme || resumeData?.colorTheme || localTheme;
+    const activeTheme =
+      resumeData?.selectedTheme || resumeData?.colorTheme || localTheme || defaultThemeId;
     const activeDensity = resumeData?.density || localDensity;
     const activeFont = resumeData?.fontPairing || localFont;
 
@@ -104,7 +139,10 @@ const ResumePreview = forwardRef(
         resumeData.selectedTheme = themeId;
         resumeData.colorTheme = themeId;
       }
-      if (onUpdateField) onUpdateField("selectedTheme", themeId);
+      if (onUpdateField) {
+        onUpdateField("selectedTheme", themeId);
+        onUpdateField("colorTheme", themeId);
+      }
     };
 
     const DENSITY_SPACING_MAP = {
@@ -120,12 +158,26 @@ const ResumePreview = forwardRef(
         resumeData.density = densityId;
         if (!resumeData.layoutSettings) resumeData.layoutSettings = {};
         resumeData.layoutSettings.sectionSpacing = spacingVal;
+        if (densityId === "compact") {
+          resumeData.layoutSettings.fontScale = 100;
+          resumeData.layoutSettings.pagePaddingTop = "0.22in";
+          resumeData.layoutSettings.pagePaddingBottom = "0.22in";
+          resumeData.layoutSettings.pagePadding = "0.35in";
+        }
       }
       if (onUpdateField) {
         onUpdateField("density", densityId);
         onUpdateField("layoutSettings", {
           ...(resumeData?.layoutSettings || {}),
           sectionSpacing: spacingVal,
+          ...(densityId === "compact"
+            ? {
+                fontScale: 100,
+                pagePaddingTop: "0.22in",
+                pagePaddingBottom: "0.22in",
+                pagePadding: "0.35in",
+              }
+            : {}),
         });
       }
     };
@@ -151,19 +203,24 @@ const ResumePreview = forwardRef(
       if (usageInfo.currentHeight > 0) {
         setMeasuredHeight(usageInfo.currentHeight);
 
-        // In 1-Page Fit mode, guarantee 1 page if content can fit (up to 1450px unscaled)
-        if (isCompact && (usageInfo.currentHeight <= 1450 || usageInfo.currentHeight * autoFitScale <= 1060)) {
+        const fitsOnOnePage =
+          usageInfo.currentHeight <= usageInfo.maxHeight + PAGE_TOLERANCE_PX;
+
+        if (fitsOnOnePage) {
           setNumberOfPages(1);
           setPageBreaks([0]);
         } else {
-          const effectiveH = isCompact
-            ? usageInfo.currentHeight * autoFitScale
-            : usageInfo.currentHeight;
           const pages = Math.max(
-            1,
-            Math.ceil((effectiveH - OVERFLOW_THRESHOLD_PX) / usageInfo.maxHeight)
+            2,
+            Math.ceil(
+              (usageInfo.currentHeight - PAGE_TOLERANCE_PX) / usageInfo.maxHeight
+            )
           );
           setNumberOfPages(pages);
+          setPageBreaks((prev) => {
+            if (prev.length === pages) return prev;
+            return Array.from({ length: pages }, (_, i) => i * PAGE_HEIGHT_PX);
+          });
         }
       }
       if (onPageUsageChange) onPageUsageChange(usageInfo);
@@ -184,15 +241,27 @@ const ResumePreview = forwardRef(
 
         const scale = isMobile ? 0.38 : 0.65;
         const wrapperTop = el.getBoundingClientRect().top;
-        const totalH = el.scrollHeight; // template-coord height (not affected by scale)
 
         // Collect every <section> in template coords (divide visual offset by scale)
-        const sectionRects = Array.from(el.querySelectorAll("section"))
+        const sections = Array.from(el.querySelectorAll("section"));
+        const sectionRects = sections
           .map((s) => {
             const r = s.getBoundingClientRect();
+            // Direct child elements inside section (job/project/education items)
+            const itemRects = Array.from(s.querySelectorAll(":scope > div"))
+              .map((c) => {
+                const cr = c.getBoundingClientRect();
+                return {
+                  top: (cr.top - wrapperTop) / scale,
+                  bottom: (cr.bottom - wrapperTop) / scale,
+                };
+              })
+              .filter((cr) => cr.bottom > cr.top + 5);
+
             return {
               top: (r.top - wrapperTop) / scale,
               bottom: (r.bottom - wrapperTop) / scale,
+              items: itemRects,
             };
           })
           .filter((r) => r.top >= 0 && r.bottom > r.top + 10);
@@ -202,31 +271,72 @@ const ResumePreview = forwardRef(
 
         for (let p = 0; p < numberOfPages - 1; p++) {
           const nominalEnd = pageStart + PAGE_HEIGHT_PX;
-          if (nominalEnd >= totalH) break;
 
           // Any section whose body spans the page boundary?
           const straddling = sectionRects.find(
             (r) => r.top < nominalEnd && r.bottom > nominalEnd
           );
 
-          if (
-            straddling &&
-            straddling.top > pageStart + MIN_CONTENT_PX
-          ) {
-            // Break just before this section starts
-            breaks.push(straddling.top);
-            pageStart = straddling.top;
-          } else {
-            breaks.push(nominalEnd);
-            pageStart = nominalEnd;
+          let chosenBreak = nominalEnd;
+
+          if (straddling) {
+            // Case 1: If the section header is near the boundary (within 300px), break cleanly before this section
+            if (
+              straddling.top >= nominalEnd - 300 &&
+              straddling.top > pageStart + MIN_CONTENT_PX
+            ) {
+              chosenBreak = straddling.top;
+            } else if (straddling.items && straddling.items.length > 1) {
+              // Case 2: Section spans a large area, look for child items crossing boundary
+              const straddlingItem = straddling.items.find(
+                (item) => item.top < nominalEnd && item.bottom > nominalEnd
+              );
+              if (
+                straddlingItem &&
+                straddlingItem.top > pageStart + MIN_CONTENT_PX
+              ) {
+                chosenBreak = straddlingItem.top;
+              } else {
+                // Pick the last item that completely fits before nominalEnd
+                const fittingItems = straddling.items.filter(
+                  (item) => item.bottom <= nominalEnd && item.top > pageStart
+                );
+                if (fittingItems.length > 0) {
+                  const lastFitting = fittingItems[fittingItems.length - 1];
+                  chosenBreak = lastFitting.bottom;
+                } else if (straddling.top > pageStart + MIN_CONTENT_PX) {
+                  chosenBreak = straddling.top;
+                }
+              }
+            } else if (straddling.top > pageStart + MIN_CONTENT_PX) {
+              chosenBreak = straddling.top;
+            }
           }
+
+          breaks.push(chosenBreak);
+          pageStart = chosenBreak;
+        }
+
+        // Guarantee breaks has exactly numberOfPages elements
+        while (breaks.length < numberOfPages) {
+          breaks.push(pageStart + PAGE_HEIGHT_PX);
+          pageStart += PAGE_HEIGHT_PX;
         }
 
         setPageBreaks(breaks);
       }, 150);
 
       return () => clearTimeout(tid);
-    }, [numberOfPages, activeTheme, activeDensity, activeFont, resumeData, template, isMobile]);
+    }, [
+      numberOfPages,
+      activeTheme,
+      activeDensity,
+      activeFont,
+      resumeData,
+      template,
+      isMobile,
+      measuredHeight,
+    ]);
 
     const templates = {
       classic: ClassicTemplate,
@@ -234,10 +344,14 @@ const ResumePreview = forwardRef(
       minimal: MinimalTemplate,
       professional: ProfessionalTemplate,
       "professional-v2": ProfessionalV2Template,
+      "professional-2": Professional2Template,
+      professional2: Professional2Template,
       executive: ExecutiveTemplate,
       tech: TechTemplate,
       GitHubStyle: GitHubStyleTemplate,
+      "github-style": GitHubStyleTemplate,
       creative2: Creative2Template,
+      "creative-2": Creative2Template,
       "strategic-leader": StrategicLeadershipTemplate,
       "strategic-leadership": StrategicLeadershipTemplate,
       "stratergic-leader": StrategicLeadershipTemplate,
@@ -245,6 +359,10 @@ const ResumePreview = forwardRef(
       "structured-photo": StructuredPhotoTemplate,
       "silicon-valley": SiliconValleyTemplate,
       siliconValley: SiliconValleyTemplate,
+      "latex-academic": LatexAcademicTemplate,
+      latexAcademic: LatexAcademicTemplate,
+      "nordic-split": NordicSplitTemplate,
+      nordicSplit: NordicSplitTemplate,
     };
 
     const SelectedTemplate = templates[template] || ClassicTemplate;
@@ -273,18 +391,18 @@ const ResumePreview = forwardRef(
     const defaultTopPad = isCompact
       ? "0.22in"
       : activeDensity === "spacious"
-      ? "0.50in"
-      : "0.35in";
+        ? "0.50in"
+        : "0.35in";
     const defaultSidePad = isCompact
       ? "0.35in"
       : activeDensity === "spacious"
-      ? "0.50in"
-      : "0.44in";
+        ? "0.50in"
+        : "0.44in";
     const defaultBottomPad = isCompact
       ? "0.22in"
       : activeDensity === "spacious"
-      ? "0.50in"
-      : "0.35in";
+        ? "0.50in"
+        : "0.35in";
 
     const densityMultiplier =
       isCompact ? 0.52 : activeDensity === "spacious" ? 1.4 : 1.0;
@@ -295,7 +413,9 @@ const ResumePreview = forwardRef(
     );
 
     const activeThemeColor =
-      PREVIEW_THEMES.find((t) => t.id === activeTheme)?.color || "#4f46e5";
+      templateThemes.find((t) => t.id === activeTheme)?.color ||
+      templateThemes[0]?.color ||
+      "#4f46e5";
 
     const layoutStyle = {
       "--resume-layout-top": layoutSettings.pagePaddingTop || defaultTopPad,
@@ -318,7 +438,7 @@ const ResumePreview = forwardRef(
       `,
     });
 
-    const handleMobilePrint = useCallback(async ({targetWindow} = {}) => {
+    const handleMobilePrint = useCallback(async ({ targetWindow } = {}) => {
       const printNode = printTemplateRef.current;
       if (!printNode) {
         handlePrint();
@@ -448,14 +568,14 @@ const ResumePreview = forwardRef(
                   <Palette className="w-3.5 h-3.5 text-gray-600 dark:text-gray-300" />
                   <span className="hidden sm:inline">Color:</span>
                 </span>
-                <div className="flex items-center gap-1">
-                  {PREVIEW_THEMES.map((t) => (
+                <div className="flex items-center gap-1.5">
+                  {templateThemes.map((t) => (
                     <button
                       key={t.id}
                       onClick={() => handleThemeChange(t.id)}
                       title={t.name}
                       type="button"
-                      className={`relative flex h-5 w-5 items-center justify-center rounded-full transition-all duration-150 ${
+                      className={`relative flex h-5 w-5 items-center justify-center rounded-full transition-all duration-150 cursor-pointer ${
                         activeTheme === t.id
                           ? "ring-2 ring-blue-500 ring-offset-1 scale-110 shadow-xs"
                           : "opacity-75 hover:opacity-100 hover:scale-105"
@@ -481,13 +601,12 @@ const ResumePreview = forwardRef(
                       key={d.id}
                       onClick={() => handleDensityChange(d.id)}
                       type="button"
-                      className={`px-2 py-0.5 text-[10.5px] font-semibold rounded-md transition-all flex items-center gap-1 ${
-                        isSelected
+                      className={`px-2 py-0.5 text-[10.5px] font-semibold rounded-md transition-all flex items-center gap-1 ${isSelected
                           ? isOnePage
                             ? "bg-emerald-600 text-white shadow-xs dark:bg-emerald-600 dark:text-white"
                             : "bg-white text-gray-900 shadow-xs dark:bg-zinc-800 dark:text-white"
                           : "text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
-                      }`}
+                        }`}
                     >
                       {d.label}
                     </button>
@@ -520,9 +639,8 @@ const ResumePreview = forwardRef(
                 <div className="flex items-center justify-between px-2.5 py-1 rounded-lg bg-gray-100/70 dark:bg-zinc-900 border border-gray-200/60 dark:border-zinc-800/80 text-[11px]">
                   <span className="text-gray-600 dark:text-gray-300 font-medium flex items-center gap-1.5">
                     <span
-                      className={`w-2 h-2 rounded-full ${
-                        isOnePage ? "bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.6)]" : "bg-amber-500 animate-pulse"
-                      }`}
+                      className={`w-2 h-2 rounded-full ${isOnePage ? "bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.6)]" : "bg-amber-500 animate-pulse"
+                        }`}
                     />
                     Page Fill:{" "}
                     <strong className={isOnePage ? "text-emerald-700 dark:text-emerald-400 font-bold" : "text-amber-700 dark:text-amber-400 font-bold"}>
@@ -531,16 +649,17 @@ const ResumePreview = forwardRef(
                     <span className="text-gray-400 dark:text-gray-500">({numberOfPages} {numberOfPages === 1 ? "page" : "pages"})</span>
                   </span>
 
-                  {!isCompact && !isOnePage && (
+                  {!isOnePage && (
                     <button
                       type="button"
                       onClick={() => handleDensityChange("compact")}
                       className="inline-flex items-center gap-0.5 text-[10.5px] font-bold text-emerald-700 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-300 transition-colors cursor-pointer"
+                      title="Reset margins and text scale to fit 1 page"
                     >
                       ⚡ Auto-Fit 1 Page
                     </button>
                   )}
-                  {isCompact && (
+                  {isOnePage && isCompact && (
                     <span className="text-[10px] font-semibold text-emerald-700 dark:text-emerald-400 flex items-center gap-1">
                       ✓ Smart Fit Active
                     </span>
@@ -587,7 +706,7 @@ const ResumePreview = forwardRef(
             {/* Pages stack */}
             <div
               className="flex flex-col items-center relative z-10"
-              style={{gap: isMobile ? "10px" : "18px"}}
+              style={{ gap: isMobile ? "10px" : "18px" }}
               onClick={isMobile ? setShowFullPreviewTrue : undefined}
             >
               {pageBreaks.map((pageStart, pageIndex) => {
@@ -601,6 +720,11 @@ const ResumePreview = forwardRef(
                     ? nextBreak - pageStart // precise clip at section boundary
                     : PAGE_HEIGHT_PX; // last page — show full page height
 
+                const isCreative2 = template === "creative2";
+                const creative2CanvasBg = isCreative2
+                  ? (CREATIVE2_CANVAS_MAP[activeTheme] || "#faf6ee")
+                  : null;
+
                 return (
                   <div
                     key={pageIndex}
@@ -609,10 +733,12 @@ const ResumePreview = forwardRef(
                       height: `${scaledPageHeightPx}px`,
                       position: "relative",
                       flexShrink: 0,
+                      backgroundColor: creative2CanvasBg || undefined,
+                      backgroundImage: isCreative2 ? `url("${WOOD_TEXTURE_DATA_URI}")` : undefined,
+                      backgroundRepeat: "repeat",
                     }}
-                    className={`bg-white dark:bg-gray-50 shadow-[0_4px_24px_rgba(0,0,0,0.18)] rounded-sm overflow-hidden ${
-                      isMobile ? "cursor-pointer" : ""
-                    }`}
+                    className={`${isCreative2 ? "" : "bg-white dark:bg-gray-50"} shadow-[0_4px_24px_rgba(0,0,0,0.18)] rounded-sm overflow-hidden ${isMobile ? "cursor-pointer" : ""
+                      }`}
                   >
                     {/* Anti-AI 3-tier SmartNShine security watermark overlay */}
                     <ResumeWatermark isMobile={isMobile} />
@@ -621,23 +747,24 @@ const ResumePreview = forwardRef(
                       Inner clip div: height = visibleTemplatePx * scale.
                       overflow:hidden provides a hard pixel-perfect cut at the
                       section boundary — no floating-point overlay tricks needed.
-                      The outer page card (white bg) fills the remaining space,
-                      creating a blank "rest of page" just like a real PDF.
+                      The outer page card fills the remaining space with seamless template background.
                     */}
                     <div
                       style={{
                         height: `${visibleTemplatePx * scaleFactor}px`,
                         overflow: "hidden",
                         position: "relative",
+                        backgroundColor: creative2CanvasBg || undefined,
                       }}
                     >
                       <div
                         ref={pageIndex === 0 ? templateRef : undefined}
-                        className="bg-white dark:bg-gray-50"
+                        className={isCreative2 ? "" : "bg-white dark:bg-gray-50"}
                         style={{
                           width: "210mm",
                           minHeight: "11in",
                           height: "auto",
+                          backgroundColor: creative2CanvasBg || undefined,
                           transform: `scale(${scaleFactor})`,
                           transformOrigin: "top left",
                           position: "absolute",
@@ -658,7 +785,7 @@ const ResumePreview = forwardRef(
                               onPageUsageChange={
                                 pageIndex === 0
                                   ? handlePageUsageChange
-                                  : () => {}
+                                  : () => { }
                               }
                             />
                           </div>
@@ -690,7 +817,7 @@ const ResumePreview = forwardRef(
         >
           <div
             className="bg-white dark:bg-gray-50 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.55)] rounded-sm border border-black/10 dark:border-white/10 relative overflow-hidden"
-            style={{width: "210mm", minHeight: "11in", height: "auto"}}
+            style={{ width: "210mm", minHeight: "11in", height: "auto" }}
           >
             {/* Anti-AI 3-tier SmartNShine security watermark overlay */}
             <ResumeWatermark isMobile={isMobile} />
@@ -723,7 +850,7 @@ const ResumePreview = forwardRef(
               resumeData={mergedResumeData}
               twoPageMode={false}
               printMode={template === "professional-v2"}
-              onPageUsageChange={() => {}}
+              onPageUsageChange={() => { }}
             />
           </div>
         </div>

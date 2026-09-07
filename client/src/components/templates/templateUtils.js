@@ -1,7 +1,29 @@
 /**
  * Resume Template Utilities
- * Shared helpers for ATS-safe rendering and text deduplication
+ * Shared helpers for ATS-safe rendering, text deduplication, and bullet sanitization
  */
+
+/**
+ * Strips leading bullet symbols, asterisks, dashes, and duplicate symbols from bullet text.
+ * Ensures text never renders on top of or double-bulleted with template bullet markers.
+ *
+ * @param {string|object} bullet - The bullet text or object
+ * @returns {string} Cleaned text string without leading bullet symbols
+ */
+export const cleanBulletText = (bullet) => {
+  if (!bullet) return "";
+  const rawText =
+    typeof bullet === "string"
+      ? bullet
+      : bullet?.text || bullet?.content || bullet?.value || "";
+
+  if (!rawText || typeof rawText !== "string") return "";
+
+  // Strip leading bullet symbols, dots, dashes, asterisks, triangles, diamonds and whitespace
+  return rawText
+    .replace(/^[\s•\-\*\u2022\u2023\u25E6\u2043\u2219\u25B8\u25AA\u25AB\u25CF\u25CB\u25C6\u25C7\u25BA\u25BC\u25A0\u25A1\u2713\u2714\u25B6\u25B7\u25C0\u25C1\u00B7\u22C5\u2219\u2043\u2022]+\s*/, "")
+    .trim();
+};
 
 /**
  * Checks if a description paragraph is already duplicated or substantially covered by bullet points.

@@ -31,6 +31,7 @@ import {
 export default function EditorSectionRenderer({
   sectionId,
   resumeData,
+  template,
   setResumeData,
   updateField,
   updateContact,
@@ -66,6 +67,7 @@ export default function EditorSectionRenderer({
         >
           <ResumeLayoutControls
             resumeData={resumeData}
+            template={template}
             updateField={updateField}
             onChange={(layoutSettings) =>
               updateField("layoutSettings", layoutSettings)

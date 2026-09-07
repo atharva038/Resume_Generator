@@ -1011,9 +1011,92 @@ export async function transcribeAudioWithAI(audioBuffer, options = {}) {
   }, "OpenAI audio transcription");
 }
 
+/**
+ * Generate 3 tailored variations of a bullet point or summary (Quantified, Executive Concise, ATS Keyword-Enriched)
+ * @param {string} content - The bullet point or summary to rewrite
+ * @param {string} sectionType - Type of section (experience, projects, summary, achievements, etc.)
+ * @param {Object} context - Extra role/company/project info
+ * @param {Object} resumeData - Full resume context
+ * @param {string} customInstruction - Optional user instruction
+ * @returns {Promise<Object>} - Object with 3 distinct variations
+ */
+export async function generateBulletVariationsWithAI(
+  content,
+  sectionType = "experience",
+  context = {},
+  resumeData = null,
+  customInstruction = ""
+) {
+  return retryWithBackoff(async () => {
+    if (!openai) {
+      throw new Error("OpenAI API key not configured");
+    }
+
+    const systemPrompt = `You are an elite executive resume coach and ATS optimization specialist.
+Your task is to take a candidate's resume bullet point or summary statement and instantly generate 3 distinct, high-impact variations tailored for maximum recruitment success.
+
+THE 3 TAILORED ARCHETYPES:
+1. "quantified": Quantified & Results-Oriented
+   - Injects realistic, context-appropriate metrics (%, $, scale, users, speedup, time saved, throughput, volume).
+   - Demonstrates bottom-line business ROI and measurable technical outcomes.
+   - Maintains believable parameters without fabricating ungrounded claims.
+
+2. "concise": Executive & Fluff-Free
+   - Eliminates passive phrasing, filler words ("responsible for", "helped to", "worked on", "assisted").
+   - Starts immediately with powerful executive action verbs (e.g. "Spearheaded", "Architected", "Engineered", "Orchestrated", "Steered", "Automated").
+   - Punchy, high signal-to-noise ratio, crisp phrasing.
+
+3. "keywordEnriched": ATS Keyword-Enriched
+   - Packed with high-ranking industry keywords, modern frameworks, system design concepts, and core competencies.
+   - Perfectly tuned to pass ATS algorithmic filters and match recruiter Boolean search queries.
+   - Retains natural sentence flow and clarity.
+
+GUIDELINES:
+- Output valid JSON ONLY matching the following schema:
+{
+  "quantified": "...",
+  "concise": "...",
+  "keywordEnriched": "...",
+  "detectedRole": "...",
+  "keywordsUsed": ["keyword1", "keyword2", "keyword3"]
+}
+- If content is a single bullet point, keep each variation to 1-2 powerful lines (12-25 words).
+- If content is a summary, keep each variation to a tight 2-3 sentence executive pitch (35-55 words).
+- Remove personal pronouns (I, my, our).`;
+
+    const userPrompt = `ORIGINAL CONTENT TO POLISH:
+"${content}"
+
+SECTION: ${sectionType}
+ROLE / CONTEXT: ${context.role || context.title || ""} at ${context.company || context.name || ""}
+${customInstruction ? `USER SPECIAL INSTRUCTION: ${customInstruction}` : ""}
+${resumeData?.skills ? `RELEVANT CANDIDATE SKILLS: ${JSON.stringify(resumeData.skills)}` : ""}`;
+
+    console.log("🤖 Generating 3 AI Power Polish variations with GPT-4o...");
+    const completion = await openai.chat.completions.create({
+      model: MODEL,
+      messages: [
+        {role: "system", content: systemPrompt},
+        {role: "user", content: userPrompt},
+      ],
+      response_format: {type: "json_object"},
+      temperature: 0.6,
+      max_tokens: 1024,
+    });
+
+    const responseContent = completion.choices[0].message.content;
+    const tokenUsage = extractTokenUsage(completion);
+    const cost = calculateCost(tokenUsage);
+    const data = JSON.parse(responseContent);
+
+    return {data, tokenUsage, cost};
+  }, "OpenAI bullet power polish");
+}
+
 export default {
   parseResumeWithAI,
   enhanceContentWithAI,
+  generateBulletVariationsWithAI,
   generateSummaryWithAI,
   categorizeSkillsWithAI,
   segregateAchievementsWithAI,
@@ -1025,4 +1108,5 @@ export default {
   compressResumeWithAI,
   transcribeAudioWithAI,
 };
+
 

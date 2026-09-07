@@ -24,6 +24,54 @@ const Professional2Template = forwardRef((props, ref) => {
 
   // Color Themes - Professional ATS-friendly palettes
   const colorThemes = {
+    royalSapphire: {
+      primary: "#1d4ed8",
+      text: "#1f2937",
+      textLight: "#4b5563",
+      textMuted: "#6b7280",
+      border: "#cbd5e1",
+      linkColor: "#1d4ed8",
+    },
+    emeraldPrestige: {
+      primary: "#047857",
+      text: "#1f2937",
+      textLight: "#4b5563",
+      textMuted: "#6b7280",
+      border: "#cbd5e1",
+      linkColor: "#047857",
+    },
+    cabernetBurgundy: {
+      primary: "#831843",
+      text: "#1f2937",
+      textLight: "#4b5563",
+      textMuted: "#6b7280",
+      border: "#cbd5e1",
+      linkColor: "#831843",
+    },
+    nordicTeal: {
+      primary: "#0f766e",
+      text: "#1f2937",
+      textLight: "#4b5563",
+      textMuted: "#6b7280",
+      border: "#cbd5e1",
+      linkColor: "#0f766e",
+    },
+    titaniumSlate: {
+      primary: "#1e293b",
+      text: "#1e293b",
+      textLight: "#475569",
+      textMuted: "#64748b",
+      border: "#cbd5e1",
+      linkColor: "#1e293b",
+    },
+    warmTerracotta: {
+      primary: "#c2410c",
+      text: "#1f2937",
+      textLight: "#4b5563",
+      textMuted: "#6b7280",
+      border: "#cbd5e1",
+      linkColor: "#c2410c",
+    },
     navy: {
       primary: "#1e3a8a",
       text: "#1f2937",
@@ -74,7 +122,11 @@ const Professional2Template = forwardRef((props, ref) => {
     },
   };
 
-  const selectedTheme = colorThemes[resumeData?.colorTheme] || colorThemes.navy;
+  const selectedTheme =
+    colorThemes[resumeData?.selectedTheme] ||
+    colorThemes[resumeData?.colorTheme] ||
+    colorThemes.royalSapphire ||
+    colorThemes.navy;
 
   // Calculate content density for dynamic styling - Memoized to prevent recalculation on every render
   const contentDensity = useMemo(() => {

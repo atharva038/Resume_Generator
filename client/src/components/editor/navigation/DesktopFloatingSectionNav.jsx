@@ -18,6 +18,7 @@ const DesktopFloatingSectionNav = memo(
     activeSectionId,
     sectionCompletionMap,
     onSelectSection,
+    onMoveSection,
   }) => (
     <div
       ref={floatingNavContainerRef}
@@ -72,6 +73,7 @@ const DesktopFloatingSectionNav = memo(
               activeSectionId={activeSectionId}
               sectionCompletionMap={sectionCompletionMap}
               onSelectSection={onSelectSection}
+              onMoveSection={onMoveSection}
             />
           </div>
         </div>

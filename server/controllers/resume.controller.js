@@ -985,3 +985,57 @@ export const compressResume = async (req, res) => {
   }
 };
 
+/**
+ * Generate 3 tailored variations of a bullet point or summary
+ * POST /api/resume/bullet-rewrites
+ */
+export const getBulletRewrites = async (req, res) => {
+  try {
+    const {content, sectionType = "experience", context = {}, resumeData = null, customInstruction = ""} = req.body;
+
+    if (!content || typeof content !== "string" || !content.trim()) {
+      return res.status(400).json({
+        success: false,
+        error: "Content is required for AI bullet rewrite",
+      });
+    }
+
+    const userId = req.user._id || req.user.userId;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(401).json({success: false, error: "User not found"});
+    }
+
+    const result = await aiRouter.generateBulletVariations(
+      content,
+      sectionType,
+      context,
+      resumeData,
+      user,
+      customInstruction
+    );
+
+    // Increment AI usage counter
+    await User.findByIdAndUpdate(userId, {
+      $inc: {
+        "usage.aiGenerationsUsed": 1,
+        "usage.aiGenerationsThisMonth": 1,
+      },
+    });
+
+    res.json({
+      success: true,
+      data: result.data,
+      aiModel: result.aiModel,
+    });
+  } catch (error) {
+    console.error("❌ Bullet rewrite error:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message || "Failed to generate bullet variations",
+    });
+  }
+};
+
+

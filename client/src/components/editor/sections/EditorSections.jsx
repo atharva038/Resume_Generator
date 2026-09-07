@@ -15,6 +15,8 @@ import {
   X,
 } from "lucide-react";
 import {handleDateChange, isValidDate, getDateValidationMessage} from "@/utils/dateValidation";
+import AIBulletRewritePill from "./AIBulletRewritePill";
+
 
 export const PersonalInfoSection = ({
   resumeData,
@@ -209,10 +211,10 @@ export const SkillsSection = ({resumeData, updateField}) => {
           <button
             onClick={handleCategorize}
             disabled={isLoading || !skillsInput.trim()}
-            className={`w-full sm:w-auto py-2.5 px-5 rounded-lg text-sm font-semibold transition-all border inline-flex items-center justify-center gap-2 ${
+            className={`w-full sm:w-auto py-2.5 px-5 rounded-lg text-sm font-semibold transition-all border inline-flex items-center justify-center gap-2 cursor-pointer ${
               isLoading || !skillsInput.trim()
                 ? "bg-gray-200 dark:bg-zinc-800 border-gray-300 dark:border-zinc-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
-                : "bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 border-transparent text-white shadow-md hover:shadow-lg"
+                : "bg-zinc-900 hover:bg-black text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 border-zinc-800 dark:border-zinc-200 shadow-sm hover:shadow"
             }`}
           >
             {isLoading ? (
@@ -820,10 +822,10 @@ export const AchievementsSection = ({resumeData, updateField}) => {
             <button
               onClick={handleSegregate}
               disabled={isLoading || !achievementsInput.trim()}
-              className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all border flex items-center justify-center gap-2 ${
+              className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all border flex items-center justify-center gap-2 cursor-pointer ${
                 isLoading || !achievementsInput.trim()
                   ? "bg-gray-200 dark:bg-zinc-800 border-gray-300 dark:border-zinc-700 text-gray-500 cursor-not-allowed"
-                  : "bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 border-transparent text-white shadow-md hover:shadow-lg"
+                  : "bg-zinc-900 hover:bg-black text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 border-zinc-800 dark:border-zinc-200 shadow-sm hover:shadow"
               }`}
             >
               {isLoading ? (
@@ -869,24 +871,35 @@ export const AchievementsSection = ({resumeData, updateField}) => {
               </div>
 
               {achievements.map((achievement, index) => (
-                <div key={index} className="flex gap-2">
+                <div key={index} className="group relative flex gap-2 items-center">
                   <input
                     type="text"
                     value={achievement || ""}
                     onChange={(e) => updateAchievement(index, e.target.value)}
                     placeholder="Enter achievement"
-                    className="input-field flex-1"
+                    className="input-field flex-1 pr-28"
                     autoComplete="off"
                   />
+                  <div className="absolute right-12 top-1/2 -translate-y-1/2 flex items-center">
+                    <AIBulletRewritePill
+                      text={achievement}
+                      onApply={(newText) => updateAchievement(index, newText)}
+                      sectionType="achievements"
+                      context={{ role: resumeData?.title }}
+                      resumeData={resumeData}
+                      size="xs"
+                    />
+                  </div>
                   <button
                     onClick={() => removeAchievement(index)}
-                    className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 w-9 h-9 flex items-center justify-center hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+                    className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 w-9 h-9 flex items-center justify-center hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors shrink-0"
                     title="Remove achievement"
                   >
                     <X className="w-4 h-4" />
                   </button>
                 </div>
               ))}
+
             </div>
           )}
         </div>
@@ -1103,10 +1116,10 @@ const CustomSectionItem = ({section, index, onUpdate, onRemove}) => {
             disabled={
               isLoading || !contentInput.trim() || !section.title.trim()
             }
-            className={`w-full py-2 px-4 rounded-lg font-medium transition-all text-sm ${
+            className={`w-full py-2.5 px-4 rounded-lg font-semibold transition-all text-sm border cursor-pointer ${
               isLoading || !contentInput.trim() || !section.title.trim()
-                ? "bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
-                : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg"
+                ? "bg-gray-200 dark:bg-zinc-800 border-gray-300 dark:border-zinc-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                : "bg-zinc-900 hover:bg-black text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 border-zinc-800 dark:border-zinc-200 shadow-sm hover:shadow"
             }`}
           >
             {isLoading ? (
@@ -1159,18 +1172,27 @@ const CustomSectionItem = ({section, index, onUpdate, onRemove}) => {
               {section.items.map((item, itemIndex) => (
                 <div
                   key={`${section.id}-item-${itemIndex}`}
-                  className="flex gap-2"
+                  className="group relative flex gap-2 items-center"
                 >
                   <input
                     type="text"
                     value={item}
                     onChange={(e) => updateItem(itemIndex, e.target.value)}
                     placeholder="Enter item"
-                    className="input-field flex-1 text-sm"
+                    className="input-field flex-1 text-sm pr-28"
                   />
+                  <div className="absolute right-10 top-1/2 -translate-y-1/2 flex items-center">
+                    <AIBulletRewritePill
+                      text={item}
+                      onApply={(newText) => updateItem(itemIndex, newText)}
+                      sectionType="custom"
+                      context={{ title: section.title }}
+                      size="xs"
+                    />
+                  </div>
                   <button
                     onClick={() => removeItem(itemIndex)}
-                    className="text-red-600 hover:text-red-700 dark:text-red-400 px-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded text-sm"
+                    className="text-red-600 hover:text-red-700 dark:text-red-400 px-2 py-1.5 hover:bg-red-50 dark:hover:bg-red-900/20 rounded text-sm shrink-0"
                     title="Remove item"
                   >
                     ✕
