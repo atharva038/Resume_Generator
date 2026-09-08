@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useRef, useState} from "react";
+import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {useParams} from "react-router-dom";
 import {Helmet} from "react-helmet-async";
 import {portfolioAPI} from "@/api/portfolio.api";
@@ -108,6 +108,90 @@ const PublicPortfolio = () => {
     };
   }, [downloadPublicResume]);
 
+  const portfolio = data?.portfolio || null;
+  const resume = data?.resume || null;
+  const projects = data?.projects || [];
+
+  const pageTitle =
+    portfolio?.seo?.title ||
+    (portfolio ? `${resume?.name || portfolio.title} Portfolio` : "Portfolio");
+  const description =
+    portfolio?.seo?.description ||
+    portfolio?.tagline ||
+    portfolio?.about ||
+    "Professional portfolio";
+  const keywords = Array.isArray(portfolio?.seo?.keywords)
+    ? portfolio.seo.keywords.join(", ")
+    : portfolio?.seo?.keywords || "";
+  const canonicalUrl =
+    typeof window !== "undefined" ? window.location.href.split("?")[0] : "";
+
+  const rawOgImage = resolveImageUrl(
+    portfolio?.seo?.ogImage ||
+      portfolio?.profileImage ||
+      portfolio?.heroImage ||
+      portfolio?.profile?.profileImage ||
+      resume?.photo ||
+      ""
+  );
+
+  const origin =
+    typeof window !== "undefined"
+      ? window.location.origin
+      : "https://www.smartnshine.app";
+
+  const ogImage = useMemo(() => {
+    if (!rawOgImage) return `${origin}/social-preview.png?v=4`;
+    if (rawOgImage.startsWith("http://") || rawOgImage.startsWith("https://")) {
+      return rawOgImage;
+    }
+    return `${origin}${rawOgImage.startsWith("/") ? "" : "/"}${rawOgImage}`;
+  }, [rawOgImage, origin]);
+
+  const rawFavicon = resolveImageUrl(
+    portfolio?.seo?.favicon ||
+      portfolio?.favicon ||
+      portfolio?.seo?.ogImage ||
+      portfolio?.profileImage ||
+      portfolio?.profile?.profileImage ||
+      portfolio?.heroImage ||
+      resume?.photo ||
+      portfolio?.userId?.profileImage ||
+      ""
+  );
+
+  const favicon = useMemo(() => {
+    if (!rawFavicon) return "";
+    if (rawFavicon.startsWith("http://") || rawFavicon.startsWith("https://")) {
+      return rawFavicon;
+    }
+    return `${origin}${rawFavicon.startsWith("/") ? "" : "/"}${rawFavicon}`;
+  }, [rawFavicon, origin]);
+
+  // Dynamically update browser tab favicon in DOM with profile photo / custom favicon
+  useEffect(() => {
+    if (!favicon) return;
+
+    // Remove existing favicon tags to force browser to repaint tab icon
+    const existingIcons = document.querySelectorAll("link[rel*='icon']");
+    existingIcons.forEach((node) => node.remove());
+
+    const iconLink = document.createElement("link");
+    iconLink.rel = "icon";
+    iconLink.href = favicon;
+    document.head.appendChild(iconLink);
+
+    const shortcutLink = document.createElement("link");
+    shortcutLink.rel = "shortcut icon";
+    shortcutLink.href = favicon;
+    document.head.appendChild(shortcutLink);
+
+    const appleLink = document.createElement("link");
+    appleLink.rel = "apple-touch-icon";
+    appleLink.href = favicon;
+    document.head.appendChild(appleLink);
+  }, [favicon]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -116,7 +200,7 @@ const PublicPortfolio = () => {
     );
   }
 
-  if (error || !data) {
+  if (error || !data || !portfolio) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center px-4">
         <div className="text-center max-w-md">
@@ -130,57 +214,6 @@ const PublicPortfolio = () => {
       </div>
     );
   }
-
-  const {portfolio, resume, projects} = data;
-  const pageTitle =
-    portfolio.seo?.title || `${resume?.name || portfolio.title} Portfolio`;
-  const description =
-    portfolio.seo?.description ||
-    portfolio.tagline ||
-    portfolio.about ||
-    "Professional portfolio";
-  const canonicalUrl =
-    typeof window !== "undefined" ? window.location.href.split("?")[0] : "";
-  const rawOgImage = resolveImageUrl(
-    portfolio.seo?.ogImage ||
-    portfolio.profileImage ||
-    portfolio.heroImage ||
-    portfolio.profile?.profileImage ||
-    resume?.photo ||
-    ""
-  );
-
-  const origin = typeof window !== "undefined" ? window.location.origin : "https://www.smartnshine.app";
-
-  const ogImage = useMemo(() => {
-    if (!rawOgImage) return `${origin}/social-preview.png?v=4`;
-    if (rawOgImage.startsWith("http://") || rawOgImage.startsWith("https://")) {
-      return rawOgImage;
-    }
-    return `${origin}${rawOgImage.startsWith("/") ? "" : "/"}${rawOgImage}`;
-  }, [rawOgImage, origin]);
-
-  const rawFavicon = portfolio.seo?.favicon || portfolio.favicon || "";
-  const favicon = useMemo(() => {
-    if (!rawFavicon) return "";
-    if (rawFavicon.startsWith("http://") || rawFavicon.startsWith("https://")) {
-      return rawFavicon;
-    }
-    return `${origin}${rawFavicon.startsWith("/") ? "" : "/"}${rawFavicon}`;
-  }, [rawFavicon, origin]);
-
-  // Dynamically update browser tab favicon in DOM
-  useEffect(() => {
-    if (favicon) {
-      let link = document.querySelector("link[rel~='icon']");
-      if (!link) {
-        link = document.createElement("link");
-        link.rel = "icon";
-        document.head.appendChild(link);
-      }
-      link.href = favicon;
-    }
-  }, [favicon]);
 
   return (
     <>

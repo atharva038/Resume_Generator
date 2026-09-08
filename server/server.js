@@ -310,8 +310,16 @@ app.get(["/u/:slug", "/portfolio/:slug"], async (req, res, next) => {
     }
     const escapedOgImage = escapeHtml(ogImageUrl);
 
-    // Resolve Favicon
-    let rawFavicon = portfolio.seo?.favicon || "";
+    // Resolve Favicon (with fallback to custom favicon -> profile photo -> og image -> default)
+    let rawFavicon =
+      portfolio.seo?.favicon ||
+      portfolio.favicon ||
+      portfolio.seo?.ogImage ||
+      portfolio.profileImage ||
+      portfolio.heroImage ||
+      portfolio.userId?.profileImage ||
+      portfolio.resumeId?.personalInfo?.photo ||
+      "";
     let faviconUrl = "";
     if (rawFavicon) {
       if (
