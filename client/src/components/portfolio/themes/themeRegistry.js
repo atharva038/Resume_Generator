@@ -6,8 +6,34 @@ import CreativeTheme from "./CreativeTheme";
 import TechPortfolioTheme from "./TechPortfolioTheme";
 import GlassmorphismTheme from "./GlassmorphismTheme";
 import SmartNShineTheme from "./SmartNShineTheme";
+import NeomorphicTheme from "./NeomorphicTheme";
+import LiquidGlassTheme from "./LiquidGlassTheme";
 
 export const portfolioThemes = {
+  liquidGlass: {
+    id: "liquidGlass",
+    name: "Liquid Glass Spatial",
+    category: "Spatial Glass",
+    badge: "Spatial 3D",
+    subtitle: "Liquid Glass × Spatial UI × Editorial Typography × Subtle Luxury.",
+    description: "Layered translucent glass surfaces floating above slow ambient fluid light. Refraction highlights, floating stats, and spatial gallery layouts.",
+    tags: ["Liquid Glass", "Spatial UI", "Subtle Luxury", "Translucent", "Dark & Light"],
+    component: LiquidGlassTheme,
+    allowedTiers: ["free", "one-time", "pro"],
+    accentPresets: ["#b89047", "#e6be58", "#38bdf8", "#818cf8", "#34d399", "#f43f5e"],
+  },
+  neomorphic: {
+    id: "neomorphic",
+    name: "Tactile Neomorphic",
+    category: "Neumorphic",
+    badge: "New Flagship",
+    subtitle: "Modern Neumorphism × Soft 3D Surfaces × Editorial Typography.",
+    description: "Physical hardware precision translated into digital software. Soft tactile raised/inset surfaces, control-board capabilities, and champagne gold accents.",
+    tags: ["Neumorphism", "Soft 3D", "Tactile", "Editorial", "Dark & Light"],
+    component: NeomorphicTheme,
+    allowedTiers: ["free", "one-time", "pro"],
+    accentPresets: ["#b89047", "#d4af37", "#10b981", "#3b82f6", "#f43f5e", "#06b6d4"],
+  },
   smartnshine: {
     id: "smartnshine",
     name: "SmartNShine Editorial",

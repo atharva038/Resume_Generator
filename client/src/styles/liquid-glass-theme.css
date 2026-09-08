@@ -1,0 +1,240 @@
+/* ==========================================================================
+   SmartNShine Liquid Glass & Spatial UI Theme Styles
+   Art Direction: Spatial Glass × Refractive Lens × Fluid Caustics × High-Fashion Precision
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+.liquid-glass-theme {
+  --lg-font-display: 'Outfit', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --lg-font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --lg-font-tech: 'Space Grotesk', monospace;
+
+  /* --- LIGHT MODE: Pearl Crystalline & Caustic Daylight --- */
+  --lg-bg: #f5f3ef;
+  --lg-bg-gradient: radial-gradient(at 10% 10%, rgba(220, 235, 255, 0.6) 0px, transparent 50%),
+                    radial-gradient(at 90% 15%, rgba(255, 235, 210, 0.5) 0px, transparent 50%),
+                    radial-gradient(at 50% 90%, rgba(230, 245, 240, 0.5) 0px, transparent 50%);
+  
+  --lg-glass-surface: rgba(255, 255, 255, 0.55);
+  --lg-glass-surface-hover: rgba(255, 255, 255, 0.75);
+  --lg-glass-elevated: rgba(255, 255, 255, 0.82);
+  --lg-glass-inset: rgba(240, 238, 232, 0.5);
+  
+  --lg-glass-border: rgba(255, 255, 255, 0.9);
+  --lg-glass-border-subtle: rgba(255, 255, 255, 0.45);
+  --lg-specular: rgba(255, 255, 255, 0.95);
+  
+  --lg-shadow-prism: 0 20px 50px -15px rgba(130, 140, 160, 0.2),
+                     inset 0 1px 1px 0 rgba(255, 255, 255, 0.9),
+                     inset 0 -1px 1px 0 rgba(0, 0, 0, 0.03);
+
+  --lg-shadow-glow: 0 0 35px -5px rgba(212, 175, 55, 0.25);
+
+  --lg-text-primary: #0f1115;
+  --lg-text-secondary: #4a5160;
+  --lg-text-muted: #7c8594;
+
+  --lg-accent-primary: #d4af37;
+  --lg-accent-cyan: #0284c7;
+  --lg-accent-gradient: linear-gradient(135deg, #e6be58 0%, #d4af37 50%, #b89047 100%);
+
+  font-family: var(--lg-font-sans);
+  background-color: var(--lg-bg);
+  background-image: var(--lg-bg-gradient);
+  background-attachment: fixed;
+  color: var(--lg-text-primary);
+  min-height: 100vh;
+  transition: background-color 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              color 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- DARK MODE: Pure Charcoal Titanium, Obsidian Glass & Platinum Reflections --- */
+.liquid-glass-theme.dark-mode,
+.dark .liquid-glass-theme,
+[data-theme="dark"] .liquid-glass-theme {
+  --lg-bg: #0c0d0f;
+  --lg-bg-gradient: radial-gradient(at 15% 15%, rgba(255, 255, 255, 0.05) 0px, transparent 55%),
+                    radial-gradient(at 85% 20%, rgba(255, 255, 255, 0.035) 0px, transparent 55%),
+                    radial-gradient(at 50% 85%, rgba(255, 255, 255, 0.04) 0px, transparent 60%);
+  
+  --lg-glass-surface: rgba(20, 21, 25, 0.72);
+  --lg-glass-surface-hover: rgba(28, 30, 36, 0.86);
+  --lg-glass-elevated: rgba(36, 38, 46, 0.92);
+  --lg-glass-inset: rgba(12, 13, 16, 0.8);
+  
+  --lg-glass-border: rgba(255, 255, 255, 0.14);
+  --lg-glass-border-subtle: rgba(255, 255, 255, 0.07);
+  --lg-specular: rgba(255, 255, 255, 0.65);
+  
+  --lg-shadow-prism: 0 25px 60px -15px rgba(0, 0, 0, 0.95),
+                     inset 0 1px 1px 0 rgba(255, 255, 255, 0.22),
+                     inset 0 -1px 1px 0 rgba(0, 0, 0, 0.7);
+
+  --lg-shadow-glow: 0 0 35px -5px rgba(255, 255, 255, 0.18);
+
+  --lg-text-primary: #ffffff;
+  --lg-text-secondary: #a1a1aa;
+  --lg-text-muted: #71717a;
+
+  --lg-accent-primary: #ffffff;
+  --lg-accent-cyan: #e4e4e7;
+  --lg-accent-gradient: linear-gradient(135deg, #ffffff 0%, #e4e4e7 50%, #a1a1aa 100%);
+}
+
+/* ==========================================================================
+   SPATIAL GLASS UTILITIES
+   ========================================================================== */
+
+/* VisionOS Floating Island Slab */
+.spatial-glass-panel {
+  background: var(--lg-glass-surface);
+  backdrop-filter: blur(28px) saturate(210%);
+  -webkit-backdrop-filter: blur(28px) saturate(210%);
+  border: 1px solid var(--lg-glass-border);
+  box-shadow: var(--lg-shadow-prism);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.spatial-glass-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--lg-specular) 50%, transparent 100%);
+  pointer-events: none;
+}
+
+.spatial-glass-panel:hover {
+  background: var(--lg-glass-surface-hover);
+  border-color: rgba(255, 255, 255, 0.35);
+  box-shadow: var(--lg-shadow-prism), var(--lg-shadow-glow);
+  transform: translateY(-4px);
+}
+
+/* Clear Spatial Glass Capsule */
+.spatial-capsule {
+  background: var(--lg-glass-surface);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--lg-glass-border-subtle);
+  box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.1),
+              inset 0 1px 0 0 var(--lg-specular);
+  border-radius: 9999px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.spatial-capsule:hover {
+  background: var(--lg-glass-surface-hover);
+  border-color: var(--lg-glass-border);
+  transform: translateY(-2px);
+}
+
+/* Glass Viewport Lens for Media */
+.spatial-lens {
+  background: var(--lg-glass-inset);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--lg-glass-border-subtle);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.15);
+  border-radius: 1.75rem;
+  overflow: hidden;
+  position: relative;
+}
+
+.spatial-lens::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* Liquid Refraction CTA Button */
+.liquid-cta-btn {
+  background: var(--lg-accent-gradient);
+  color: #0b0c10 !important;
+  font-weight: 700;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 10px 30px var(--lg-shadow-glow),
+              inset 0 1px 1px rgba(255, 255, 255, 0.8);
+  border-radius: 9999px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.liquid-cta-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transition: left 0.6s ease;
+}
+
+.liquid-cta-btn:hover::before {
+  left: 100%;
+}
+
+.liquid-cta-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 15px 40px var(--lg-shadow-glow),
+              inset 0 1px 1px rgba(255, 255, 255, 1);
+}
+
+.liquid-cta-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Fluid Caustic Mesh Animation */
+@keyframes fluid-drift {
+  0% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+  33% {
+    transform: translate(50px, -40px) rotate(120deg) scale(1.15);
+  }
+  66% {
+    transform: translate(-40px, 30px) rotate(240deg) scale(0.95);
+  }
+  100% {
+    transform: translate(0, 0) rotate(360deg) scale(1);
+  }
+}
+
+.caustic-blob {
+  position: absolute;
+  border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+  filter: blur(90px);
+  pointer-events: none;
+  animation: fluid-drift 24s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* Typography Classes */
+.font-spatial {
+  font-family: var(--lg-font-display);
+  letter-spacing: -0.025em;
+  line-height: 1.12;
+  font-weight: 700;
+}
+
+.font-tech {
+  font-family: var(--lg-font-tech);
+}
+
+.lg-container {
+  max-width: 1320px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: clamp(1.5rem, 5vw, 4rem);
+  padding-right: clamp(1.5rem, 5vw, 4rem);
+}

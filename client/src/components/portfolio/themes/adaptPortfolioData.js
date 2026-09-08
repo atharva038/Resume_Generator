@@ -37,28 +37,65 @@ const pickArray = (primary, fallback) => {
   return Array.isArray(primary) ? primary : fallback || [];
 };
 
-const normalizeProject = (project = {}) => ({
-  id: project._id || project.id || project.title,
-  title: project.title || "Untitled Project",
-  description:
-    project.shortDescription ||
-    project.description ||
-    project.longDescription ||
-    "",
-  longDescription: project.longDescription || "",
-  problem: project.problem || "",
-  solution: project.solution || "",
-  impact: project.impact || "",
-  technologies: project.technologies || [],
-  highlights: project.highlights || [],
-  featured: Boolean(project.featured),
-  links: project.links || {},
-  images: (project.images || []).map((img) =>
-    typeof img === "string"
-      ? { url: resolveImageUrl(img), alt: "" }
-      : { ...img, url: resolveImageUrl(img.url) }
-  ),
-});
+const normalizeProject = (project = {}) => {
+  const liveUrl =
+    project.links?.live ||
+    project.liveUrl ||
+    project.projectUrl ||
+    project.demoUrl ||
+    project.websiteUrl ||
+    project.link ||
+    project.url ||
+    "";
+  const githubUrl =
+    project.links?.github ||
+    project.githubUrl ||
+    project.repoUrl ||
+    project.repo ||
+    project.github ||
+    project.sourceCode ||
+    "";
+  const caseStudyUrl = project.links?.caseStudy || project.caseStudyUrl || "";
+
+  return {
+    ...project,
+    id: project._id || project.id || project.title,
+    title: project.title || project.name || "Untitled Project",
+    description:
+      project.shortDescription ||
+      project.description ||
+      project.longDescription ||
+      "",
+    longDescription: project.longDescription || "",
+    problem: project.problem || "",
+    solution: project.solution || "",
+    impact: project.impact || "",
+    technologies: Array.isArray(project.technologies)
+      ? project.technologies
+      : typeof project.technologies === "string"
+      ? project.technologies.split(",").map((s) => s.trim())
+      : [],
+    highlights: project.highlights || [],
+    featured: Boolean(project.featured),
+    links: {
+      ...(project.links || {}),
+      live: liveUrl,
+      github: githubUrl,
+      caseStudy: caseStudyUrl,
+    },
+    liveUrl,
+    githubUrl,
+    caseStudyUrl,
+    image: resolveImageUrl(
+      project.images?.[0]?.url || project.image || project.thumbnail || ""
+    ),
+    images: (project.images || []).map((img) =>
+      typeof img === "string"
+        ? { url: resolveImageUrl(img), alt: "" }
+        : { ...img, url: resolveImageUrl(img.url) }
+    ),
+  };
+};
 
 export const adaptPortfolioData = ({
   portfolio = {},
