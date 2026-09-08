@@ -485,6 +485,19 @@ const Editor = () => {
     return false;
   };
   const [resumeData, setResumeData] = useState(null);
+  const [showAtsRecommendation, setShowAtsRecommendation] = useState(
+    Boolean(location.state?.atsRecommendation)
+  );
+  const atsRecommendation = location.state?.atsRecommendation || "";
+  const atsRecommendationTarget = /keyword|skill|technology/i.test(atsRecommendation)
+    ? {section: "skills", label: "Edit Skills"}
+    : /experience|work history|role/i.test(atsRecommendation)
+      ? {section: "experience", label: "Edit Experience"}
+      : /project|portfolio/i.test(atsRecommendation)
+        ? {section: "projects", label: "Edit Projects"}
+        : /education|degree|certification/i.test(atsRecommendation)
+          ? {section: "education", label: "Edit Education"}
+          : {section: "summary", label: "Edit Summary"};
   const [aiUpdatedSection, setAiUpdatedSection] = useState(null);
   const [aiAddedMessage, setAiAddedMessage] = useState("");
   const [aiSuggestions, setAiSuggestions] = useState([]);
@@ -542,6 +555,7 @@ const Editor = () => {
   } = useFloatingSectionNav({isWizardMode});
   const [draggedSection, setDraggedSection] = useState(null);
   const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
+  const [isRecommendationsOpen, setIsRecommendationsOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [forceSectionExpand, setForceSectionExpand] = useState(null);
 
@@ -1836,6 +1850,45 @@ const Editor = () => {
           onSelectSection={scrollToSection}
         />
 
+        {showAtsRecommendation && atsRecommendation && (
+          <section
+            className="mb-5 flex flex-col gap-4 rounded-2xl border border-amber-500/25 bg-amber-500/10 p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between"
+            aria-labelledby="ats-improvement-title"
+          >
+            <div className="flex min-w-0 items-start gap-3">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400">
+                <Lightbulb className="h-4 w-4" />
+              </div>
+              <div className="min-w-0">
+                <h2 id="ats-improvement-title" className="text-sm font-extrabold text-gray-900 dark:text-white">
+                  ATS Improvement to Add
+                </h2>
+                <p className="mt-1 text-xs leading-relaxed text-gray-700 dark:text-zinc-300">
+                  {atsRecommendation}
+                </p>
+              </div>
+            </div>
+            <div className="flex shrink-0 items-center gap-2 sm:self-center">
+              <button
+                type="button"
+                onClick={() => scrollToSection(atsRecommendationTarget.section)}
+                className="inline-flex items-center justify-center rounded-xl bg-amber-500 px-3 py-2 text-xs font-extrabold text-white transition-colors hover:bg-amber-600"
+              >
+                <PencilLine className="mr-1.5 h-3.5 w-3.5" />
+                {atsRecommendationTarget.label}
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowAtsRecommendation(false)}
+                aria-label="Dismiss ATS improvement"
+                className="rounded-xl p-2 text-gray-500 transition-colors hover:bg-black/10 hover:text-gray-900 dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-white"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          </section>
+        )}
+
         {/* Compact Floating Action Rail - Desktop Only */}
         <div className="hidden lg:block fixed right-5 top-1/2 -translate-y-1/2 z-50 no-print">
           <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-2xl shadow-lg p-1.5 flex flex-col gap-0.5">
@@ -2027,26 +2080,35 @@ const Editor = () => {
                 </span>
               </div>
 
-              {/* Right: CTA button */}
-              <button
-                onClick={() => setIsAnalysisOpen(true)}
-                className="flex-shrink-0 flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/40 px-3 py-1.5 rounded-lg transition-colors"
-              >
-                Full Analysis
-                <svg
-                  className="w-3.5 h-3.5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+              {/* Right: focused analysis actions */}
+              <div className="flex flex-shrink-0 items-center gap-2">
+                <button
+                  onClick={() => setIsRecommendationsOpen(true)}
+                  className="flex items-center gap-1.5 rounded-lg bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-700 transition-colors hover:bg-amber-100 hover:text-amber-800 dark:bg-amber-900/20 dark:text-amber-300 dark:hover:bg-amber-900/40 dark:hover:text-amber-200 sm:text-sm"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </button>
+                  <Lightbulb className="h-3.5 w-3.5" />
+                  Recommendations
+                </button>
+                <button
+                  onClick={() => setIsAnalysisOpen(true)}
+                  className="flex items-center gap-1.5 rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-600 transition-colors hover:bg-blue-100 hover:text-blue-700 dark:bg-blue-900/20 dark:text-blue-400 dark:hover:bg-blue-900/40 dark:hover:text-blue-300 sm:text-sm"
+                >
+                  Full Analysis
+                  <svg
+                    className="h-3.5 w-3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -2281,31 +2343,42 @@ const Editor = () => {
                   </div>
                 </div>
 
-                {/* Recommendations */}
-                <div className="bg-white dark:bg-zinc-950 rounded-xl border border-gray-200 dark:border-zinc-800">
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Separate recommendations drawer */}
+        {isRecommendationsOpen && (
+          <>
+            <div
+              className="fixed inset-0 z-40 bg-black/50 transition-opacity"
+              onClick={() => setIsRecommendationsOpen(false)}
+            />
+            <div className="fixed right-0 top-0 z-50 flex h-full w-full max-w-2xl flex-col overflow-hidden bg-white shadow-2xl dark:bg-zinc-950">
+              <div className="flex flex-shrink-0 items-center justify-between border-b border-gray-200 px-6 py-4 dark:border-zinc-800">
+                <h2 className="flex items-center gap-2 text-lg font-bold text-gray-900 dark:text-gray-100">
+                  <Lightbulb className="h-5 w-5 text-amber-500" />
+                  Recommendations & Improvements
+                </h2>
+                <button
+                  onClick={() => setIsRecommendationsOpen(false)}
+                  aria-label="Close recommendations"
+                  className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-zinc-800 dark:hover:text-gray-200"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="flex-1 overflow-y-auto bg-gray-50 p-4 dark:bg-zinc-900 sm:p-6">
+                <div className="rounded-xl border border-gray-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
                   <div className="p-4 sm:p-6">
-                    <details>
-                      <summary className="list-none cursor-pointer">
-                        <div className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center justify-between gap-2">
-                          <span className="flex items-center gap-2">
-                            <Lightbulb className="w-4 h-4" />
-                            Improvement Recommendations
-                          </span>
-                          <span className="text-xs text-gray-500 dark:text-gray-400 font-normal">
-                            Expand
-                          </span>
-                        </div>
-                      </summary>
-                      <div className="mt-4">
-                        <RecommendationsPanel
-                          resumeData={resumeData}
-                          onApplySuggestion={handleApplyAiSuggestion}
-                          aiSuggestions={aiSuggestions}
-                          onSuggestionsChange={setAiSuggestions}
-                          compact={true}
-                        />
-                      </div>
-                    </details>
+                    <RecommendationsPanel
+                      resumeData={resumeData}
+                      onApplySuggestion={handleApplyAiSuggestion}
+                      aiSuggestions={aiSuggestions}
+                      onSuggestionsChange={setAiSuggestions}
+                      compact={true}
+                    />
                   </div>
                 </div>
               </div>

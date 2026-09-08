@@ -1,3 +1,5 @@
+import { getProfileImageUrl } from "@/utils/profileImageUrl";
+
 const hasItems = (items) => Array.isArray(items) && items.length > 0;
 
 const DEFAULT_SECTION_ORDER = [
@@ -96,7 +98,9 @@ export const adaptPortfolioData = ({
       phone: portfolio.contact?.phone || "",
       showEmail: portfolio.contact?.showEmail !== false,
       showPhone: Boolean(portfolio.contact?.showPhone),
-      profileImage: portfolio.profileImage || "",
+      profileImage: getProfileImageUrl(
+        portfolio.profileImage || resume?.profileImage || resume?.photo
+      ),
       heroImage: portfolio.heroImage || "",
     },
     links: (portfolio.socialLinks || []).filter((link) => link?.url),

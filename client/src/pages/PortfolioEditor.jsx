@@ -29,6 +29,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { portfolioAPI } from "@/api/portfolio.api";
+import { getProfileImageUrl } from "@/utils/profileImageUrl";
 import { portfolioThemeList } from "@/components/portfolio/themes/themeRegistry";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigationBlocker } from "@/context/NavigationBlockerContext";
@@ -869,7 +870,7 @@ export default function PortfolioEditor() {
                   <div className="flex items-center gap-3">
                     {form.profileImage ? (
                       <img
-                        src={form.profileImage}
+                        src={getProfileImageUrl(form.profileImage)}
                         alt="Profile preview"
                         className="w-11 h-11 rounded-full object-cover border-2 border-emerald-500 shrink-0"
                         onError={(e) => {
@@ -883,7 +884,7 @@ export default function PortfolioEditor() {
                     )}
                     <input
                       value={form.profileImage || ""}
-                      onChange={(e) => updateField("profileImage", e.target.value)}
+                      onChange={(e) => updateField("profileImage", e.target.value.trim())}
                       placeholder="https://example.com/headshot.jpg (leave empty for text-first theme)"
                       className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-xs sm:text-sm font-mono focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                     />
@@ -900,7 +901,7 @@ export default function PortfolioEditor() {
                   </label>
                   <input
                     value={form.heroImage || ""}
-                    onChange={(e) => updateField("heroImage", e.target.value)}
+                    onChange={(e) => updateField("heroImage", e.target.value.trim())}
                     placeholder="https://example.com/hero-banner.jpg"
                     className="w-full px-4 py-3.5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-xs sm:text-sm font-mono focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
