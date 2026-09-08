@@ -160,9 +160,9 @@ app.post(
   handleSubscriptionWebhook
 );
 
-// Body parser with size limits
-app.use(express.json({limit: "10kb"}));
-app.use(express.urlencoded({extended: true, limit: "10kb"}));
+// Body parser with generous size limits for portfolios, resumes, and images
+app.use(express.json({limit: "50mb"}));
+app.use(express.urlencoded({extended: true, limit: "50mb"}));
 
 // Data sanitization against NoSQL query injection
 app.use(mongoSanitize());

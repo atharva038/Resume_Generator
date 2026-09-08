@@ -9,8 +9,21 @@ import SmartNShineTheme from "./SmartNShineTheme";
 import NeomorphicTheme from "./NeomorphicTheme";
 import LiquidGlassTheme from "./LiquidGlassTheme";
 import RetroFuturisticTheme from "./RetroFuturisticTheme";
+import MagazineTheme from "./MagazineTheme";
 
 export const portfolioThemes = {
+  magazine: {
+    id: "magazine",
+    name: "Magazine Editorial",
+    category: "Editorial",
+    badge: "New Signature",
+    subtitle: "Monocle × Kinfolk × Contemporary Digital Publication × Portfolio Monograph.",
+    description: "High-fashion editorial magazine architecture. 12-column asymmetric grid, monumental typography, cover story hero, feature spreads, floating hover archive, and Day/Night editions.",
+    tags: ["Magazine", "Editorial", "Typography", "Art Direction", "Day & Night"],
+    component: MagazineTheme,
+    allowedTiers: ["free", "one-time", "pro"],
+    accentPresets: ["#b8943f", "#c9a853", "#6b1d2f", "#1e3d2f", "#2c3e50", "#8c6239"],
+  },
   retroFuturistic: {
     id: "retroFuturistic",
     name: "Retro-Futuristic OS",

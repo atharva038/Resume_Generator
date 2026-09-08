@@ -86,15 +86,9 @@ class CloudinaryService {
     const { folder = "smartnshine/portfolios", publicId = null } = options;
 
     if (!this.isConfigured()) {
-      // Fallback for development without Cloudinary credentials:
-      const base64Data = buffer.toString("base64");
-      const mimeType = options.mimetype || "image/png";
-      return {
-        success: true,
-        secure_url: `data:${mimeType};base64,${base64Data}`,
-        public_id: "local_dev_fallback",
-        format: mimeType.split("/")[1] || "png",
-      };
+      throw new Error(
+        "Cloudinary is not configured. Please add CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET via the Super Admin Environment Panel."
+      );
     }
 
     const timestamp = Math.round(new Date().getTime() / 1000);

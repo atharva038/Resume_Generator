@@ -742,7 +742,7 @@ export default function PortfolioEditor() {
     }
     const oldUrl = form.profileImage;
     setUploadingProfile(true);
-    const toastId = toast.loading("Uploading profile photo to Cloud CDN...");
+    const toastId = toast.loading("Uploading profile photo to Cloudinary...");
     try {
       const res = await portfolioAPI.uploadImage(file, oldUrl);
       if (res.data?.url) {
@@ -750,23 +750,16 @@ export default function PortfolioEditor() {
         if (!form.seo?.ogImage || form.seo.ogImage === oldUrl) {
           updateNestedField("seo", "ogImage", res.data.url);
         }
-        toast.success("Profile photo uploaded and linked to social share preview (OG Image)!", { id: toastId });
+        toast.success("Profile photo uploaded to Cloudinary!", { id: toastId });
         return;
       }
-      throw new Error("No upload URL returned");
+      throw new Error("No upload URL returned from cloud storage");
     } catch (err) {
-      console.warn("Cloud upload fallback:", err);
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        if (ev.target?.result) {
-          updateField("profileImage", ev.target.result);
-          if (!form.seo?.ogImage || form.seo.ogImage === oldUrl) {
-            updateNestedField("seo", "ogImage", ev.target.result);
-          }
-          toast.success("Photo loaded!", { id: toastId });
-        }
-      };
-      reader.readAsDataURL(file);
+      console.error("Cloudinary upload failed:", err);
+      toast.error(
+        err.response?.data?.error || err.message || "Failed to upload to Cloudinary. Please check credentials in Super Admin.",
+        { id: toastId }
+      );
     } finally {
       setUploadingProfile(false);
     }
@@ -792,25 +785,21 @@ export default function PortfolioEditor() {
     }
     const oldUrl = form.heroImage;
     setUploadingHero(true);
-    const toastId = toast.loading("Uploading hero banner / cutout to Cloud CDN...");
+    const toastId = toast.loading("Uploading hero banner to Cloudinary...");
     try {
       const res = await portfolioAPI.uploadImage(file, oldUrl);
       if (res.data?.url) {
         updateField("heroImage", res.data.url);
-        toast.success("Hero image uploaded to Cloud CDN!", { id: toastId });
+        toast.success("Hero image uploaded to Cloudinary!", { id: toastId });
         return;
       }
-      throw new Error("No upload URL returned");
+      throw new Error("No upload URL returned from cloud storage");
     } catch (err) {
-      console.warn("Cloud upload fallback:", err);
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        if (ev.target?.result) {
-          updateField("heroImage", ev.target.result);
-          toast.success("Hero image loaded!", { id: toastId });
-        }
-      };
-      reader.readAsDataURL(file);
+      console.error("Cloudinary upload failed:", err);
+      toast.error(
+        err.response?.data?.error || err.message || "Failed to upload to Cloudinary. Please check credentials in Super Admin.",
+        { id: toastId }
+      );
     } finally {
       setUploadingHero(false);
     }
@@ -833,25 +822,21 @@ export default function PortfolioEditor() {
     }
     const oldUrl = form.seo?.ogImage;
     setUploadingOgImage(true);
-    const toastId = toast.loading("Uploading social share banner to Cloud CDN...");
+    const toastId = toast.loading("Uploading social share banner to Cloudinary...");
     try {
       const res = await portfolioAPI.uploadImage(file, oldUrl);
       if (res.data?.url) {
         updateNestedField("seo", "ogImage", res.data.url);
-        toast.success("Custom social sharing banner uploaded!", { id: toastId });
+        toast.success("Social sharing banner uploaded to Cloudinary!", { id: toastId });
         return;
       }
-      throw new Error("No upload URL returned");
+      throw new Error("No upload URL returned from cloud storage");
     } catch (err) {
-      console.warn("Cloud upload fallback:", err);
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        if (ev.target?.result) {
-          updateNestedField("seo", "ogImage", ev.target.result);
-          toast.success("Banner loaded!", { id: toastId });
-        }
-      };
-      reader.readAsDataURL(file);
+      console.error("Cloudinary upload failed:", err);
+      toast.error(
+        err.response?.data?.error || err.message || "Failed to upload to Cloudinary. Please check credentials in Super Admin.",
+        { id: toastId }
+      );
     } finally {
       setUploadingOgImage(false);
     }
@@ -874,28 +859,24 @@ export default function PortfolioEditor() {
     }
     const oldUrl = form.seo?.favicon;
     setUploadingFavicon(true);
-    const toastId = toast.loading("Processing & converting favicon to 64x64 PNG...");
+    const toastId = toast.loading("Processing favicon to 64x64 PNG...");
     try {
       const faviconFile = await resizeImageToFavicon(file, 64);
-      toast.loading("Uploading favicon to Cloud CDN...", { id: toastId });
+      toast.loading("Uploading favicon to Cloudinary...", { id: toastId });
 
       const res = await portfolioAPI.uploadImage(faviconFile, oldUrl);
       if (res.data?.url) {
         updateNestedField("seo", "favicon", res.data.url);
-        toast.success("Favicon converted to 64x64 PNG and saved!", { id: toastId });
+        toast.success("Favicon uploaded to Cloudinary!", { id: toastId });
         return;
       }
-      throw new Error("No upload URL returned");
+      throw new Error("No upload URL returned from cloud storage");
     } catch (err) {
-      console.warn("Favicon upload fallback:", err);
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        if (ev.target?.result) {
-          updateNestedField("seo", "favicon", ev.target.result);
-          toast.success("Favicon loaded!", { id: toastId });
-        }
-      };
-      reader.readAsDataURL(file);
+      console.error("Cloudinary upload failed:", err);
+      toast.error(
+        err.response?.data?.error || err.message || "Failed to upload favicon to Cloudinary. Please check credentials in Super Admin.",
+        { id: toastId }
+      );
     } finally {
       setUploadingFavicon(false);
     }
