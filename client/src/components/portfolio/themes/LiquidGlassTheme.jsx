@@ -241,8 +241,8 @@ export default function LiquidGlassTheme({
       {/* =========================================================================
           1. SPATIAL GLASS ISLAND DOCK (NAVBAR)
           ========================================================================= */}
-      <header className="sticky top-5 z-50 w-full px-4 sm:px-8">
-        <div className="lg-container flex items-center justify-between">
+      <header className="sticky top-2 sm:top-5 z-50 w-full px-2 sm:px-6">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
           {/* Logo Capsule */}
           <a
             href="#hero"
@@ -250,25 +250,25 @@ export default function LiquidGlassTheme({
               e.preventDefault();
               scrollToSection("hero");
             }}
-            className="spatial-capsule px-4 py-2 flex items-center gap-3 group select-none"
+            className="spatial-capsule px-2.5 py-1.5 sm:px-4 sm:py-2 flex items-center gap-2 sm:gap-3 group select-none shrink min-w-0 max-w-[150px] sm:max-w-[220px] md:max-w-[260px]"
           >
-            <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-[var(--lg-accent-primary)] to-zinc-200 text-black flex items-center justify-center font-bold text-xs shadow-sm">
+            <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-gradient-to-tr from-[var(--lg-accent-primary)] to-zinc-200 text-black flex items-center justify-center font-bold text-[10px] sm:text-xs shadow-sm shrink-0">
               {initials}
             </div>
-            <span className="font-semibold text-sm tracking-tight text-[var(--lg-text-primary)]">
+            <span className="font-semibold text-xs sm:text-sm tracking-tight text-[var(--lg-text-primary)] truncate">
               {name}
             </span>
           </a>
 
-          {/* Center VisionOS Floating Pill Tabs */}
-          <nav className="hidden md:flex items-center gap-1 spatial-capsule px-3 py-1.5">
+          {/* Center VisionOS Floating Pill Tabs (Spacious & Clean) */}
+          <nav className="hidden xl:flex items-center gap-1 spatial-capsule px-2 py-1 shrink-0">
             {navItems.map((item) => {
               const isActive = activeSection === item.id;
               return (
                 <button
                   key={item.id}
                   onClick={() => scrollToSection(item.id)}
-                  className={`relative px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 ${
+                  className={`relative px-3.5 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
                     isActive
                       ? "bg-white/90 dark:bg-white/15 text-[var(--lg-text-primary)] shadow-md font-bold"
                       : "text-[var(--lg-text-secondary)] hover:text-[var(--lg-text-primary)]"
@@ -287,18 +287,18 @@ export default function LiquidGlassTheme({
           </nav>
 
           {/* Right Floating Controls */}
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
             {/* Liquid Theme Switch */}
             <button
               onClick={toggleDark}
-              className="spatial-capsule w-14 h-8 p-1 flex items-center cursor-pointer select-none shrink-0"
+              className="spatial-capsule w-11 sm:w-14 h-7 sm:h-8 p-0.5 sm:p-1 flex items-center cursor-pointer select-none shrink-0"
               aria-label="Toggle Spatial Theme"
               title={isDark ? "Switch to Daylight" : "Switch to Midnight Spatial"}
             >
               <motion.div
-                className="w-6 h-6 rounded-full bg-white dark:bg-zinc-800 flex items-center justify-center shadow-md text-xs"
+                className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white dark:bg-zinc-800 flex items-center justify-center shadow-md text-xs"
                 animate={{
-                  x: isDark ? 24 : 0,
+                  x: isDark ? (typeof window !== "undefined" && window.innerWidth < 640 ? 16 : 20) : 0,
                   rotate: isDark ? 360 : 0,
                 }}
                 transition={{
@@ -316,7 +316,7 @@ export default function LiquidGlassTheme({
                       exit={{ opacity: 0, scale: 0.5 }}
                       transition={{ duration: 0.15 }}
                     >
-                      <Moon className="w-3.5 h-3.5 text-[var(--lg-accent-primary)]" />
+                      <Moon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[var(--lg-accent-primary)]" />
                     </motion.div>
                   ) : (
                     <motion.div
@@ -326,7 +326,7 @@ export default function LiquidGlassTheme({
                       exit={{ opacity: 0, scale: 0.5 }}
                       transition={{ duration: 0.15 }}
                     >
-                      <Sun className="w-3.5 h-3.5 text-[var(--lg-accent-primary)]" />
+                      <Sun className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[var(--lg-accent-primary)]" />
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -339,66 +339,75 @@ export default function LiquidGlassTheme({
                 href={resumeUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="spatial-capsule hidden sm:flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold uppercase tracking-wider text-[var(--lg-text-primary)]"
+                className="spatial-capsule hidden md:flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 text-xs font-semibold uppercase tracking-wider text-[var(--lg-text-primary)] shrink-0"
               >
                 <Download className="w-3.5 h-3.5 text-[var(--lg-accent-primary)]" />
                 <span>CV</span>
               </a>
             )}
 
-            {/* Talk Button */}
+            {/* Connect Button */}
             <button
               onClick={() => scrollToSection("contact")}
-              className="liquid-cta-btn flex items-center gap-1.5 px-4 py-2 text-xs font-semibold uppercase tracking-wider"
+              className="liquid-cta-btn hidden sm:flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 text-xs font-semibold uppercase tracking-wider shrink-0 cursor-pointer"
             >
               <span>Connect</span>
               <ArrowUpRight className="w-3.5 h-3.5" />
             </button>
 
-            {/* Mobile Menu Trigger */}
+            {/* Mobile / Tablet Menu Trigger */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="spatial-capsule md:hidden p-2 rounded-full"
+              className="spatial-capsule xl:hidden p-2 rounded-full cursor-pointer"
               aria-label="Toggle Menu"
             >
               {mobileMenuOpen ? (
-                <X className="w-5 h-5 text-[var(--lg-text-primary)]" />
+                <X className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--lg-text-primary)]" />
               ) : (
-                <Menu className="w-5 h-5 text-[var(--lg-text-primary)]" />
+                <Menu className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--lg-text-primary)]" />
               )}
             </button>
           </div>
         </div>
 
-        {/* Mobile Dropdown */}
+        {/* Mobile / Tablet Dropdown Drawer */}
         <AnimatePresence>
           {mobileMenuOpen && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="md:hidden spatial-glass-panel mt-3 p-4 rounded-3xl flex flex-col gap-2 shadow-2xl"
+              className="xl:hidden spatial-glass-panel mt-3 p-4 rounded-3xl flex flex-col gap-2 shadow-2xl max-w-lg mx-auto"
             >
               {navItems.map((item) => (
                 <button
                   key={item.id}
                   onClick={() => scrollToSection(item.id)}
-                  className="spatial-capsule text-left px-4 py-3 text-sm font-semibold uppercase tracking-wider text-[var(--lg-text-primary)]"
+                  className="spatial-capsule text-left px-4 py-2.5 text-xs sm:text-sm font-semibold uppercase tracking-wider text-[var(--lg-text-primary)] cursor-pointer"
                 >
                   {item.label}
                 </button>
               ))}
-              {resumeUrl && (
-                <a
-                  href={resumeUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="spatial-capsule flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold uppercase tracking-wider text-[var(--lg-text-primary)]"
+              <div className="flex gap-2 pt-2 border-t border-[var(--lg-glass-border-subtle)]">
+                {resumeUrl && (
+                  <a
+                    href={resumeUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="spatial-capsule flex-1 flex items-center justify-center gap-2 px-3 py-2.5 text-xs font-semibold uppercase tracking-wider text-[var(--lg-text-primary)]"
+                  >
+                    <Download className="w-3.5 h-3.5 text-[var(--lg-accent-primary)]" />
+                    <span>Resume</span>
+                  </a>
+                )}
+                <button
+                  onClick={() => scrollToSection("contact")}
+                  className="liquid-cta-btn flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-semibold uppercase tracking-wider cursor-pointer"
                 >
-                  <Download className="w-4 h-4 text-[var(--lg-accent-primary)]" />
-                  <span>Download CV PDF</span>
-                </a>
-              )}
+                  <span>Connect</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -407,38 +416,38 @@ export default function LiquidGlassTheme({
       {/* =========================================================================
           2. SPATIAL CINEMATIC HERO
           ========================================================================= */}
-      <section id="hero" className="pt-16 pb-20 sm:pt-24 sm:pb-32 relative z-10">
-        <div className="lg-container">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+      <section id="hero" className="pt-6 pb-12 sm:pt-16 sm:pb-24 lg:pt-20 lg:pb-28 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
             {/* Left Spatial Statement */}
-            <div className="lg:col-span-7 flex flex-col items-start">
+            <div className="lg:col-span-7 flex flex-col items-start min-w-0">
               {/* Massive Modern Headline */}
-              <h1 className="font-spatial text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-[var(--lg-text-primary)] mb-6 leading-[1.04]">
+              <h1 className="font-spatial text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-[var(--lg-text-primary)] mb-5 sm:mb-6 leading-[1.08] break-words">
                 {headline}
               </h1>
 
               {/* Bio Summary */}
-              <p className="text-base sm:text-lg text-[var(--lg-text-secondary)] font-normal leading-relaxed max-w-2xl mb-8">
+              <p className="text-sm sm:text-base md:text-lg text-[var(--lg-text-secondary)] font-normal leading-relaxed max-w-2xl mb-8">
                 {bio ||
                   `Hi, I'm ${name} — crafting modern high-performance web applications and fluid digital experiences.`}
               </p>
 
               {/* Floating Spatial Capabilities Pill Array */}
-              <div className="flex flex-wrap gap-2.5 mb-10">
+              <div className="flex flex-wrap gap-2 sm:gap-2.5 mb-8 sm:mb-10">
                 {role && (
-                  <div className="spatial-capsule px-3.5 py-1.5 flex items-center gap-2 text-xs font-semibold text-[var(--lg-text-primary)]">
+                  <div className="spatial-capsule px-3 py-1.5 sm:px-3.5 sm:py-1.5 flex items-center gap-2 text-xs font-semibold text-[var(--lg-text-primary)]">
                     <Briefcase className="w-3.5 h-3.5 text-[var(--lg-accent-primary)]" />
                     <span>{role}</span>
                   </div>
                 )}
                 {location && (
-                  <div className="spatial-capsule px-3.5 py-1.5 flex items-center gap-2 text-xs font-semibold text-[var(--lg-text-primary)]">
+                  <div className="spatial-capsule px-3 py-1.5 sm:px-3.5 sm:py-1.5 flex items-center gap-2 text-xs font-semibold text-[var(--lg-text-primary)]">
                     <MapPin className="w-3.5 h-3.5 text-[var(--lg-accent-primary)]" />
                     <span>{location}</span>
                   </div>
                 )}
                 {availabilityStatus && (
-                  <div className="spatial-capsule px-3.5 py-1.5 flex items-center gap-2 text-xs font-semibold text-emerald-500">
+                  <div className="spatial-capsule px-3 py-1.5 sm:px-3.5 sm:py-1.5 flex items-center gap-2 text-xs font-semibold text-emerald-500">
                     <Radio className="w-3.5 h-3.5 animate-pulse" />
                     <span>{availabilityStatus}</span>
                   </div>
@@ -446,10 +455,10 @@ export default function LiquidGlassTheme({
               </div>
 
               {/* Dual Action Deck */}
-              <div className="flex flex-wrap items-center gap-4">
+              <div className="flex flex-wrap items-center gap-3 sm:gap-4">
                 <button
                   onClick={() => scrollToSection("work")}
-                  className="spatial-capsule px-6 py-3.5 text-xs sm:text-sm font-semibold uppercase tracking-wider text-[var(--lg-text-primary)] hover:bg-white/30 dark:hover:bg-white/10"
+                  className="spatial-capsule px-4 py-2.5 sm:px-6 sm:py-3.5 text-xs sm:text-sm font-semibold uppercase tracking-wider text-[var(--lg-text-primary)] hover:bg-white/30 dark:hover:bg-white/10"
                 >
                   <span className="flex items-center gap-2">
                     <Boxes className="w-4 h-4 text-[var(--lg-accent-primary)]" />
@@ -459,7 +468,7 @@ export default function LiquidGlassTheme({
 
                 <button
                   onClick={() => scrollToSection("contact")}
-                  className="liquid-cta-btn px-6 py-3.5 text-xs sm:text-sm font-semibold uppercase tracking-wider flex items-center gap-2"
+                  className="liquid-cta-btn px-4 py-2.5 sm:px-6 sm:py-3.5 text-xs sm:text-sm font-semibold uppercase tracking-wider flex items-center gap-2"
                 >
                   <span>Get in Touch</span>
                   <ArrowUpRight className="w-4 h-4" />
@@ -504,20 +513,20 @@ export default function LiquidGlassTheme({
           3. SPATIAL BENTO MATRIX (ABOUT)
           ========================================================================= */}
       {sections?.showAbout !== false && (
-        <section id="about" className="py-20 sm:py-28 relative z-10">
+        <section id="about" className="py-12 sm:py-20 lg:py-28 relative z-10">
           <div className="lg-container">
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-5 sm:gap-6">
               {/* Large Bento Statement Slab */}
-              <div className="md:col-span-8 spatial-glass-panel p-8 sm:p-12 rounded-[2.5rem] flex flex-col justify-between">
+              <div className="md:col-span-8 spatial-glass-panel p-6 sm:p-8 md:p-12 rounded-3xl sm:rounded-[2.5rem] flex flex-col justify-between">
                 <div>
                   <div className="flex items-center gap-2 mb-4 font-tech text-xs font-bold uppercase tracking-[0.2em] text-[var(--lg-accent-primary)]">
                     <Compass className="w-4 h-4" />
                     <span>ABOUT ME</span>
                   </div>
-                  <h2 className="font-spatial text-3xl sm:text-4xl font-bold text-[var(--lg-text-primary)] leading-[1.15] mb-6">
+                  <h2 className="font-spatial text-2xl sm:text-3xl md:text-4xl font-bold text-[var(--lg-text-primary)] leading-[1.15] mb-4 sm:mb-6">
                     {headline}
                   </h2>
-                  <p className="text-base sm:text-lg text-[var(--lg-text-secondary)] leading-relaxed font-normal">
+                  <p className="text-sm sm:text-base md:text-lg text-[var(--lg-text-secondary)] leading-relaxed font-normal">
                     {bio ||
                       "Passionate about building scalable web architectures, fluid user interfaces, and clean code that solves real-world problems."}
                   </p>
@@ -525,63 +534,63 @@ export default function LiquidGlassTheme({
               </div>
 
               {/* Bento Stat Pillar 1 */}
-              <div className="md:col-span-4 spatial-glass-panel p-8 rounded-[2.5rem] flex flex-col justify-between">
+              <div className="md:col-span-4 spatial-glass-panel p-6 sm:p-8 rounded-3xl sm:rounded-[2.5rem] flex flex-col justify-between">
                 <div>
                   <span className="font-tech text-xs font-bold text-[var(--lg-text-muted)] uppercase tracking-widest">
                     PROJECTS
                   </span>
-                  <p className="font-spatial text-5xl sm:text-6xl font-black text-[var(--lg-accent-primary)] my-4">
+                  <p className="font-spatial text-4xl sm:text-5xl md:text-6xl font-black text-[var(--lg-accent-primary)] my-3 sm:my-4">
                     {totalProjects.toString().padStart(2, "0")}+
                   </p>
-                  <p className="text-sm font-semibold text-[var(--lg-text-primary)] uppercase tracking-wider">
+                  <p className="text-xs sm:text-sm font-semibold text-[var(--lg-text-primary)] uppercase tracking-wider">
                     Completed Works
                   </p>
                 </div>
               </div>
 
               {/* Bento Stat Pillar 2 */}
-              <div className="md:col-span-4 spatial-glass-panel p-8 rounded-[2.5rem] flex flex-col justify-between">
+              <div className="md:col-span-4 spatial-glass-panel p-6 sm:p-8 rounded-3xl sm:rounded-[2.5rem] flex flex-col justify-between">
                 <div>
                   <span className="font-tech text-xs font-bold text-[var(--lg-text-muted)] uppercase tracking-widest">
                     EXPERIENCE
                   </span>
-                  <p className="font-spatial text-5xl sm:text-6xl font-black text-[var(--lg-accent-primary)] my-4">
+                  <p className="font-spatial text-4xl sm:text-5xl md:text-6xl font-black text-[var(--lg-accent-primary)] my-3 sm:my-4">
                     {yearsExperience}
                   </p>
-                  <p className="text-sm font-semibold text-[var(--lg-text-primary)] uppercase tracking-wider">
+                  <p className="text-xs sm:text-sm font-semibold text-[var(--lg-text-primary)] uppercase tracking-wider">
                     Years in Industry
                   </p>
                 </div>
               </div>
 
               {/* Bento Stat Pillar 3 */}
-              <div className="md:col-span-8 spatial-glass-panel p-8 rounded-[2.5rem] flex flex-col justify-between">
+              <div className="md:col-span-8 spatial-glass-panel p-6 sm:p-8 rounded-3xl sm:rounded-[2.5rem] flex flex-col justify-between">
                 <div>
                   <span className="font-tech text-xs font-bold text-[var(--lg-text-muted)] uppercase tracking-widest">
                     SKILLS & CAPABILITIES
                   </span>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-6">
-                    <div className="spatial-lens p-4 text-center">
-                      <p className="font-spatial text-2xl font-bold text-[var(--lg-accent-primary)]">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 mt-6">
+                    <div className="spatial-lens p-3.5 sm:p-4 text-center">
+                      <p className="font-spatial text-xl sm:text-2xl font-bold text-[var(--lg-accent-primary)]">
                         {totalSkillsCount}
                       </p>
-                      <p className="text-[11px] font-semibold text-[var(--lg-text-secondary)] mt-1 uppercase font-tech">
+                      <p className="text-[10px] sm:text-[11px] font-semibold text-[var(--lg-text-secondary)] mt-1 uppercase font-tech">
                         Technologies
                       </p>
                     </div>
-                    <div className="spatial-lens p-4 text-center">
-                      <p className="font-spatial text-2xl font-bold text-[var(--lg-accent-primary)]">
+                    <div className="spatial-lens p-3.5 sm:p-4 text-center">
+                      <p className="font-spatial text-xl sm:text-2xl font-bold text-[var(--lg-accent-primary)]">
                         {categorizedSkills.length}
                       </p>
-                      <p className="text-[11px] font-semibold text-[var(--lg-text-secondary)] mt-1 uppercase font-tech">
+                      <p className="text-[10px] sm:text-[11px] font-semibold text-[var(--lg-text-secondary)] mt-1 uppercase font-tech">
                         Skill Domains
                       </p>
                     </div>
-                    <div className="spatial-lens p-4 text-center">
-                      <p className="font-spatial text-2xl font-bold text-[var(--lg-accent-primary)]">
+                    <div className="spatial-lens p-3.5 sm:p-4 text-center col-span-2 sm:col-span-1">
+                      <p className="font-spatial text-xl sm:text-2xl font-bold text-[var(--lg-accent-primary)]">
                         {experience.length}
                       </p>
-                      <p className="text-[11px] font-semibold text-[var(--lg-text-secondary)] mt-1 uppercase font-tech">
+                      <p className="text-[10px] sm:text-[11px] font-semibold text-[var(--lg-text-secondary)] mt-1 uppercase font-tech">
                         Positions Held
                       </p>
                     </div>

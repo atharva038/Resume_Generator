@@ -8,8 +8,21 @@ import GlassmorphismTheme from "./GlassmorphismTheme";
 import SmartNShineTheme from "./SmartNShineTheme";
 import NeomorphicTheme from "./NeomorphicTheme";
 import LiquidGlassTheme from "./LiquidGlassTheme";
+import RetroFuturisticTheme from "./RetroFuturisticTheme";
 
 export const portfolioThemes = {
+  retroFuturistic: {
+    id: "retroFuturistic",
+    name: "Retro-Futuristic OS",
+    category: "Retro-Futurism",
+    badge: "New Flagship",
+    subtitle: "80s/90s Computing × CRT HUD × Modern Editorial Architecture.",
+    description: "What someone in 1995 imagined the internet of 2035 would look like. Phosphor CRT monitor frames, diagnostic telemetry, interactive command prompt, and system logs.",
+    tags: ["Retro-Futuristic", "CRT Display", "System HUD", "Monospace", "Dark & Light"],
+    component: RetroFuturisticTheme,
+    allowedTiers: ["free", "one-time", "pro"],
+    accentPresets: ["#00ff66", "#ffb000", "#00f0ff", "#ff6b35", "#d4af37", "#a855f7"],
+  },
   liquidGlass: {
     id: "liquidGlass",
     name: "Liquid Glass Spatial",

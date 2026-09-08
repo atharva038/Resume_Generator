@@ -86,9 +86,16 @@ const normalizeProject = (project = {}) => {
     liveUrl,
     githubUrl,
     caseStudyUrl,
-    image: resolveImageUrl(
-      project.images?.[0]?.url || project.image || project.thumbnail || ""
-    ),
+    image:
+      resolveImageUrl(
+        project.images?.[0]?.url || project.image || project.thumbnail || ""
+      ) ||
+      (liveUrl
+        ? `https://s0.wp.com/mshots/v1/${encodeURIComponent(liveUrl)}?w=1280`
+        : ""),
+    websitePreviewUrl: liveUrl
+      ? `https://s0.wp.com/mshots/v1/${encodeURIComponent(liveUrl)}?w=1280`
+      : "",
     images: (project.images || []).map((img) =>
       typeof img === "string"
         ? { url: resolveImageUrl(img), alt: "" }

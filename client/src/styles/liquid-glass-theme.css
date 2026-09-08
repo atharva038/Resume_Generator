@@ -225,6 +225,8 @@
   letter-spacing: -0.025em;
   line-height: 1.12;
   font-weight: 700;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .font-tech {
@@ -232,9 +234,33 @@
 }
 
 .lg-container {
-  max-width: 1320px;
+  width: 100%;
+  max-width: 1280px;
   margin-left: auto;
   margin-right: auto;
-  padding-left: clamp(1.5rem, 5vw, 4rem);
-  padding-right: clamp(1.5rem, 5vw, 4rem);
+  padding-left: clamp(1rem, 4vw, 2.5rem);
+  padding-right: clamp(1rem, 4vw, 2.5rem);
+  box-sizing: border-box;
+}
+
+/* Fluid responsive safeguards */
+.liquid-glass-theme * {
+  box-sizing: border-box;
+}
+
+.liquid-glass-theme img {
+  max-width: 100%;
+  height: auto;
+}
+
+@media (max-width: 640px) {
+  .spatial-glass-panel {
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+  }
+  
+  .caustic-blob {
+    filter: blur(60px);
+    opacity: 0.6;
+  }
 }

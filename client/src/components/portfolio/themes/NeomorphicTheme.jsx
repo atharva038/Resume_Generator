@@ -216,7 +216,7 @@ export default function NeomorphicTheme({
 
   return (
     <div
-      className={`neomorphic-theme min-h-screen ${
+      className={`neomorphic-theme w-full overflow-x-hidden min-h-screen ${
         isDark ? "dark-mode" : "light-mode"
       }`}
       style={{
@@ -246,14 +246,14 @@ export default function NeomorphicTheme({
           </a>
 
           {/* Center Navigation Bar (Desktop) */}
-          <nav className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-2xl neo-inset-sm">
+          <nav className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-2xl neo-inset-sm">
             {navItems.map((item) => {
               const isActive = activeSection === item.id;
               return (
                 <button
                   key={item.id}
                   onClick={() => scrollToSection(item.id)}
-                  className={`relative px-3.5 py-1.5 rounded-xl text-xs uppercase tracking-wider font-semibold transition-all duration-300 flex items-center gap-1.5 ${
+                  className={`relative px-3.5 py-1.5 rounded-xl text-xs uppercase tracking-wider font-semibold transition-all duration-300 flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
                     isActive
                       ? "neo-raised-sm neo-accent-gold shadow-md font-bold"
                       : "text-[var(--neo-text-secondary)] hover:text-[var(--neo-text-primary)]"
@@ -272,11 +272,11 @@ export default function NeomorphicTheme({
           </nav>
 
           {/* Right Controls: Physical Theme Toggle & CTA */}
-          <div className="flex items-center gap-2.5 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             {/* Ultra-Smooth Physical Neumorphic Rocker Switch */}
             <button
               onClick={toggleDark}
-              className="neo-switch-track w-14 h-8 p-1 flex items-center cursor-pointer select-none"
+              className="neo-switch-track w-14 h-8 p-1 flex items-center cursor-pointer select-none shrink-0"
               aria-label="Toggle Theme Mode"
               title={isDark ? "Switch to Daylight Mode" : "Switch to Midnight Dark"}
             >
@@ -324,7 +324,7 @@ export default function NeomorphicTheme({
                 href={resumeUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="neo-btn hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider"
+                className="neo-btn hidden md:flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider shrink-0"
               >
                 <Download className="w-3.5 h-3.5 neo-accent-gold" />
                 <span>Resume</span>
@@ -333,7 +333,7 @@ export default function NeomorphicTheme({
 
             <button
               onClick={() => scrollToSection("contact")}
-              className="neo-btn-gold flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider"
+              className="neo-btn-gold hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider shrink-0 cursor-pointer"
             >
               <span>Let's Talk</span>
               <ArrowUpRight className="w-3.5 h-3.5" />
@@ -342,7 +342,7 @@ export default function NeomorphicTheme({
             {/* Mobile Menu Trigger */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="neo-btn md:hidden p-2 rounded-xl"
+              className="neo-btn lg:hidden p-2 rounded-xl cursor-pointer"
               aria-label="Toggle Navigation Menu"
             >
               {mobileMenuOpen ? (
@@ -354,14 +354,14 @@ export default function NeomorphicTheme({
           </div>
         </div>
 
-        {/* Mobile Dropdown Panel */}
+        {/* Mobile / Tablet Drawer */}
         <AnimatePresence>
           {mobileMenuOpen && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="md:hidden neo-raised mt-4 mx-4 p-5 rounded-2xl flex flex-col gap-3"
+              className="lg:hidden neo-panel mt-3 p-4 rounded-3xl flex flex-col gap-2 max-w-lg mx-auto"
             >
               {["about", "work", "skills", "experience", "contact"].map((sec) => (
                 <button
