@@ -27,6 +27,12 @@ import {
   Copy,
   Check,
   ExternalLink,
+  Camera,
+  Upload,
+  RefreshCw,
+  Loader2,
+  RotateCcw,
+  Image as ImageIcon,
 } from "lucide-react";
 import { portfolioAPI } from "@/api/portfolio.api";
 import { portfolioThemeList } from "@/components/portfolio/themes/themeRegistry";
@@ -34,6 +40,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useNavigationBlocker } from "@/context/NavigationBlockerContext";
 import PortfolioEditorHeader from "@/components/portfolio/PortfolioEditorHeader";
 import PortfolioPanel from "@/components/portfolio/PortfolioPanel";
+import { resolveImageUrl } from "@/utils/imageUrlResolver";
 
 const blankProject = {
   title: "",
@@ -208,6 +215,12 @@ export default function PortfolioEditor() {
   const [saving, setSaving] = useState(false);
   const [aiAction, setAiAction] = useState("");
   const [copiedLink, setCopiedLink] = useState(false);
+  const [showProfileUrlInput, setShowProfileUrlInput] = useState(false);
+  const [showHeroUrlInput, setShowHeroUrlInput] = useState(false);
+  const [uploadingProfile, setUploadingProfile] = useState(false);
+  const [uploadingHero, setUploadingHero] = useState(false);
+  const [uploadingOgImage, setUploadingOgImage] = useState(false);
+  const [showOgUrlInput, setShowOgUrlInput] = useState(false);
   const [panelControl, setPanelControl] = useState({
     version: 0,
     open: null,
@@ -656,6 +669,138 @@ export default function PortfolioEditor() {
     }
   };
 
+  const handleUploadProfilePhoto = async (file) => {
+    if (!file) return;
+    if (file.size > 8 * 1024 * 1024) {
+      toast.error("Image must be under 8MB");
+      return;
+    }
+    const oldUrl = form.profileImage;
+    setUploadingProfile(true);
+    const toastId = toast.loading("Uploading profile photo to Cloud CDN...");
+    try {
+      const res = await portfolioAPI.uploadImage(file, oldUrl);
+      if (res.data?.url) {
+        updateField("profileImage", res.data.url);
+        if (!form.seo?.ogImage || form.seo.ogImage === oldUrl) {
+          updateNestedField("seo", "ogImage", res.data.url);
+        }
+        toast.success("Profile photo uploaded and linked to social share preview (OG Image)!", { id: toastId });
+        return;
+      }
+      throw new Error("No upload URL returned");
+    } catch (err) {
+      console.warn("Cloud upload fallback:", err);
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        if (ev.target?.result) {
+          updateField("profileImage", ev.target.result);
+          if (!form.seo?.ogImage || form.seo.ogImage === oldUrl) {
+            updateNestedField("seo", "ogImage", ev.target.result);
+          }
+          toast.success("Photo loaded!", { id: toastId });
+        }
+      };
+      reader.readAsDataURL(file);
+    } finally {
+      setUploadingProfile(false);
+    }
+  };
+
+  const handleRemoveProfilePhoto = async () => {
+    const oldUrl = form.profileImage;
+    updateField("profileImage", "");
+    if (form.seo?.ogImage === oldUrl) {
+      updateNestedField("seo", "ogImage", "");
+    }
+    if (oldUrl && oldUrl.includes("cloudinary.com")) {
+      portfolioAPI.deleteImage(oldUrl).catch(() => {});
+    }
+    toast.success("Profile photo removed (switched to text-first)");
+  };
+
+  const handleUploadHeroBanner = async (file) => {
+    if (!file) return;
+    if (file.size > 8 * 1024 * 1024) {
+      toast.error("Image must be under 8MB");
+      return;
+    }
+    const oldUrl = form.heroImage;
+    setUploadingHero(true);
+    const toastId = toast.loading("Uploading hero banner / cutout to Cloud CDN...");
+    try {
+      const res = await portfolioAPI.uploadImage(file, oldUrl);
+      if (res.data?.url) {
+        updateField("heroImage", res.data.url);
+        toast.success("Hero image uploaded to Cloud CDN!", { id: toastId });
+        return;
+      }
+      throw new Error("No upload URL returned");
+    } catch (err) {
+      console.warn("Cloud upload fallback:", err);
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        if (ev.target?.result) {
+          updateField("heroImage", ev.target.result);
+          toast.success("Hero image loaded!", { id: toastId });
+        }
+      };
+      reader.readAsDataURL(file);
+    } finally {
+      setUploadingHero(false);
+    }
+  };
+
+  const handleRemoveHeroBanner = async () => {
+    const oldUrl = form.heroImage;
+    updateField("heroImage", "");
+    if (oldUrl && oldUrl.includes("cloudinary.com")) {
+      portfolioAPI.deleteImage(oldUrl).catch(() => {});
+    }
+    toast.success("Hero banner removed");
+  };
+
+  const handleUploadOgImage = async (file) => {
+    if (!file) return;
+    if (file.size > 8 * 1024 * 1024) {
+      toast.error("Image must be under 8MB");
+      return;
+    }
+    const oldUrl = form.seo?.ogImage;
+    setUploadingOgImage(true);
+    const toastId = toast.loading("Uploading social share banner to Cloud CDN...");
+    try {
+      const res = await portfolioAPI.uploadImage(file, oldUrl);
+      if (res.data?.url) {
+        updateNestedField("seo", "ogImage", res.data.url);
+        toast.success("Custom social sharing banner uploaded!", { id: toastId });
+        return;
+      }
+      throw new Error("No upload URL returned");
+    } catch (err) {
+      console.warn("Cloud upload fallback:", err);
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        if (ev.target?.result) {
+          updateNestedField("seo", "ogImage", ev.target.result);
+          toast.success("Banner loaded!", { id: toastId });
+        }
+      };
+      reader.readAsDataURL(file);
+    } finally {
+      setUploadingOgImage(false);
+    }
+  };
+
+  const handleResetOgImage = async () => {
+    const oldUrl = form.seo?.ogImage;
+    updateNestedField("seo", "ogImage", "");
+    if (oldUrl && oldUrl !== form.profileImage && oldUrl.includes("cloudinary.com")) {
+      portfolioAPI.deleteImage(oldUrl).catch(() => {});
+    }
+    toast.success("Reset to Profile Photo as default social share preview!");
+  };
+
   const handleCopyPublicLink = () => {
     if (!publicUrl) return;
     navigator.clipboard.writeText(publicUrl);
@@ -852,59 +997,251 @@ export default function PortfolioEditor() {
                     className="w-full px-4 py-3.5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm sm:text-base font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
                 </div>
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200">
-                      Profile Photo URL
-                    </label>
-                    {form.profileImage && (
-                      <button
-                        type="button"
-                        onClick={() => updateField("profileImage", "")}
-                        className="text-xs text-red-500 hover:text-red-600 font-bold cursor-pointer"
-                      >
-                        Remove Photo (Switch to Text-First)
-                      </button>
-                    )}
+                {/* Profile Photo (Visual Preview Box) */}
+                <div className="rounded-2xl border border-gray-200/90 dark:border-white/[0.08] bg-gray-50/50 dark:bg-zinc-900/40 p-4 sm:p-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <label className="text-xs sm:text-sm font-bold text-gray-900 dark:text-zinc-100 flex items-center gap-2">
+                        <span>Profile Photo / Headshot</span>
+                        {form.profileImage && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                            ✓ Active
+                          </span>
+                        )}
+                      </label>
+                      <p className="text-[11px] text-gray-500 dark:text-zinc-400 mt-0.5">
+                        Clean portrait headshot or transparent background cutout.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowProfileUrlInput(!showProfileUrlInput)}
+                      className="text-[11px] text-gray-500 dark:text-zinc-400 hover:text-emerald-600 dark:hover:text-emerald-400 underline font-medium transition-colors"
+                    >
+                      {showProfileUrlInput ? "Hide URL" : "Edit URL"}
+                    </button>
                   </div>
-                  <div className="flex items-center gap-3">
-                    {form.profileImage ? (
-                      <img
-                        src={form.profileImage}
-                        alt="Profile preview"
-                        className="w-11 h-11 rounded-full object-cover border-2 border-emerald-500 shrink-0"
-                        onError={(e) => {
-                          e.target.style.display = "none";
-                        }}
-                      />
-                    ) : (
-                      <div className="w-11 h-11 rounded-full bg-gray-100 dark:bg-zinc-800 flex items-center justify-center text-xs font-bold text-gray-400 shrink-0 border border-dashed border-gray-300 dark:border-zinc-700">
-                        No Photo
+
+                  {form.profileImage ? (
+                    <div className="flex flex-col sm:flex-row items-center gap-4 p-3 rounded-2xl bg-white dark:bg-zinc-900/90 border border-gray-200 dark:border-white/10 shadow-sm">
+                      {/* Large Image Preview Box */}
+                      <div className="relative group w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden bg-gray-100 dark:bg-zinc-950 border-2 border-emerald-500/40 shrink-0 shadow-inner flex items-center justify-center">
+                        <img
+                          src={resolveImageUrl(form.profileImage)}
+                          alt="Profile photo preview"
+                          referrerPolicy="no-referrer"
+                          crossOrigin="anonymous"
+                          className="w-full h-full object-cover object-center"
+                          onError={(e) => {
+                            e.target.style.display = "none";
+                          }}
+                        />
                       </div>
-                    )}
-                    <input
-                      value={form.profileImage || ""}
-                      onChange={(e) => updateField("profileImage", e.target.value)}
-                      placeholder="https://example.com/headshot.jpg (leave empty for text-first theme)"
-                      className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-xs sm:text-sm font-mono focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-                    />
-                  </div>
-                  <p className="mt-1.5 text-[11px] text-gray-500 dark:text-zinc-400">
-                    {form.profileImage
-                      ? "✓ Photo-based layout active. Headshot and avatar ring will be displayed."
-                      : "✓ Text-first layout active. Clean, commanded typography without empty photo placeholders."}
-                  </p>
+
+                      {/* Control Actions & Info */}
+                      <div className="flex-1 space-y-2 text-center sm:text-left w-full sm:w-auto">
+                        <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                          <label className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold cursor-pointer transition-all shadow-sm shadow-emerald-600/20 active:scale-95">
+                            {uploadingProfile ? (
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            ) : (
+                              <RefreshCw className="w-3.5 h-3.5" />
+                            )}
+                            <span>{uploadingProfile ? "Uploading..." : "Replace Photo"}</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              disabled={uploadingProfile}
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) handleUploadProfilePhoto(file);
+                              }}
+                            />
+                          </label>
+
+                          <button
+                            type="button"
+                            onClick={handleRemoveProfilePhoto}
+                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/20 text-xs font-bold transition-colors cursor-pointer"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            <span>Remove Photo</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    /* Upload Dropzone Box */
+                    <div className="relative rounded-2xl border-2 border-dashed border-gray-300 dark:border-zinc-700/80 bg-white dark:bg-zinc-900/60 hover:border-emerald-500 dark:hover:border-emerald-500/70 transition-all p-5 text-center flex flex-col items-center justify-center gap-2">
+                      <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 dark:bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                        <Camera className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <span className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 block">
+                          No profile photo added (Text-First Layout)
+                        </span>
+                        <span className="text-[11px] text-gray-500 dark:text-zinc-400 block mt-0.5">
+                          PNG cutouts, JPG, WEBP up to 8MB
+                        </span>
+                      </div>
+                      <label className="mt-1 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold cursor-pointer transition-all shadow-md shadow-emerald-500/20 active:scale-95">
+                        {uploadingProfile ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                          <Upload className="w-3.5 h-3.5" />
+                        )}
+                        <span>{uploadingProfile ? "Uploading..." : "Upload Photo / Cutout"}</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          disabled={uploadingProfile}
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) handleUploadProfilePhoto(file);
+                          }}
+                        />
+                      </label>
+                    </div>
+                  )}
+
+                  {/* Collapsible Manual URL Box */}
+                  {showProfileUrlInput && (
+                    <div className="mt-3 pt-3 border-t border-gray-200 dark:border-white/10 flex gap-2">
+                      <input
+                        value={form.profileImage || ""}
+                        onChange={(e) => updateField("profileImage", resolveImageUrl(e.target.value))}
+                        placeholder="Paste image link, Cloudinary URL, or Google Drive link..."
+                        className="w-full px-3.5 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs font-mono focus:ring-2 focus:ring-emerald-500 focus:outline-none text-gray-800 dark:text-zinc-200"
+                      />
+                    </div>
+                  )}
                 </div>
-                <div>
-                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-2 block">
-                    Hero Banner Image URL (Optional)
-                  </label>
-                  <input
-                    value={form.heroImage || ""}
-                    onChange={(e) => updateField("heroImage", e.target.value)}
-                    placeholder="https://example.com/hero-banner.jpg"
-                    className="w-full px-4 py-3.5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-xs sm:text-sm font-mono focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-                  />
+
+                {/* Hero Banner / Cutout Image (Visual Preview Box) */}
+                <div className="rounded-2xl border border-gray-200/90 dark:border-white/[0.08] bg-gray-50/50 dark:bg-zinc-900/40 p-4 sm:p-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <label className="text-xs sm:text-sm font-bold text-gray-900 dark:text-zinc-100 flex items-center gap-2">
+                        <span>Hero Right-Side Cutout / Banner Image</span>
+                        {form.heroImage && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20">
+                            ✓ Active
+                          </span>
+                        )}
+                      </label>
+                      <p className="text-[11px] text-gray-500 dark:text-zinc-400 mt-0.5">
+                        Displays prominently on templates like SmartNShine Editorial & modern split hero styles.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowHeroUrlInput(!showHeroUrlInput)}
+                      className="text-[11px] text-gray-500 dark:text-zinc-400 hover:text-sky-600 dark:hover:text-sky-400 underline font-medium transition-colors"
+                    >
+                      {showHeroUrlInput ? "Hide URL" : "Edit URL"}
+                    </button>
+                  </div>
+
+                  {form.heroImage ? (
+                    <div className="flex flex-col sm:flex-row items-center gap-4 p-3 rounded-2xl bg-white dark:bg-zinc-900/90 border border-gray-200 dark:border-white/10 shadow-sm">
+                      {/* Large Banner Preview Box */}
+                      <div className="relative group w-full sm:w-36 h-24 rounded-2xl overflow-hidden bg-gray-100 dark:bg-zinc-950 border-2 border-sky-500/40 shrink-0 shadow-inner flex items-center justify-center">
+                        <img
+                          src={resolveImageUrl(form.heroImage)}
+                          alt="Hero banner preview"
+                          referrerPolicy="no-referrer"
+                          crossOrigin="anonymous"
+                          className="w-full h-full object-cover object-center"
+                          onError={(e) => {
+                            e.target.style.display = "none";
+                          }}
+                        />
+                      </div>
+
+                      {/* Control Actions & Info */}
+                      <div className="flex-1 space-y-2 text-center sm:text-left w-full sm:w-auto">
+                        <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                          <label className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold cursor-pointer transition-all shadow-sm shadow-sky-600/20 active:scale-95">
+                            {uploadingHero ? (
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            ) : (
+                              <RefreshCw className="w-3.5 h-3.5" />
+                            )}
+                            <span>{uploadingHero ? "Uploading..." : "Replace Banner"}</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              disabled={uploadingHero}
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) handleUploadHeroBanner(file);
+                              }}
+                            />
+                          </label>
+
+                          <button
+                            type="button"
+                            onClick={handleRemoveHeroBanner}
+                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/20 text-xs font-bold transition-colors cursor-pointer"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            <span>Remove Banner</span>
+                          </button>
+                        </div>
+                        <p className="text-[11px] text-gray-500 dark:text-zinc-400">
+                          ✓ High resolution cloud CDN hosting with automatic WebP conversion.
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    /* Upload Dropzone Box */
+                    <div className="relative rounded-2xl border-2 border-dashed border-gray-300 dark:border-zinc-700/80 bg-white dark:bg-zinc-900/60 hover:border-sky-500 dark:hover:border-sky-500/70 transition-all p-5 text-center flex flex-col items-center justify-center gap-2">
+                      <div className="w-12 h-12 rounded-2xl bg-sky-500/10 dark:bg-sky-500/10 flex items-center justify-center text-sky-600 dark:text-sky-400">
+                        <ImageIcon className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <span className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 block">
+                          No hero banner or cutout image added
+                        </span>
+                        <span className="text-[11px] text-gray-500 dark:text-zinc-400 block mt-0.5">
+                          Upload transparent PNG cutout or landscape banner
+                        </span>
+                      </div>
+                      <label className="mt-1 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white text-xs font-bold cursor-pointer transition-all shadow-md shadow-sky-500/20 active:scale-95">
+                        {uploadingHero ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                          <Upload className="w-3.5 h-3.5" />
+                        )}
+                        <span>{uploadingHero ? "Uploading..." : "Upload Hero Banner / Cutout"}</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          disabled={uploadingHero}
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) handleUploadHeroBanner(file);
+                          }}
+                        />
+                      </label>
+                    </div>
+                  )}
+
+                  {/* Collapsible Manual URL Box */}
+                  {showHeroUrlInput && (
+                    <div className="mt-3 pt-3 border-t border-gray-200 dark:border-white/10 flex gap-2">
+                      <input
+                        value={form.heroImage || ""}
+                        onChange={(e) => updateField("heroImage", resolveImageUrl(e.target.value))}
+                        placeholder="Paste image link, Cloudinary URL, or Google Drive link..."
+                        className="w-full px-3.5 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs font-mono focus:ring-2 focus:ring-sky-500 focus:outline-none text-gray-800 dark:text-zinc-200"
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -1781,29 +2118,122 @@ export default function PortfolioEditor() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
-                    Social Sharing Image URL (Open Graph / Twitter Card)
-                  </label>
-                  <div className="flex items-center gap-3">
-                    {form.seo?.ogImage && (
-                      <img
-                        src={form.seo.ogImage}
-                        alt="OG Preview"
-                        className="w-12 h-8 rounded-lg object-cover border border-gray-200 dark:border-white/10 shrink-0"
-                        onError={(e) => {
-                          e.target.style.display = "none";
-                        }}
-                      />
-                    )}
-                    <input
-                      value={form.seo?.ogImage || ""}
-                      onChange={(e) => updateNestedField("seo", "ogImage", e.target.value)}
-                      placeholder="https://example.com/og-banner.png"
-                      className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs sm:text-sm font-mono"
-                    />
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 block">
+                        Social Sharing Card Image (Open Graph / Twitter Preview)
+                      </label>
+                      {form.seo?.ogImage ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                          Custom Banner
+                        </span>
+                      ) : form.profileImage ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                          ✓ Default: Profile Photo
+                        </span>
+                      ) : null}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowOgUrlInput(!showOgUrlInput)}
+                      className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer"
+                    >
+                      {showOgUrlInput ? "Hide URL Field" : "Edit URL Directly"}
+                    </button>
                   </div>
-                  <p className="mt-1 text-[11px] text-gray-500 dark:text-zinc-400">
-                    Preview image shown when your portfolio link is shared on LinkedIn, Twitter, WhatsApp, etc.
+
+                  {/* Visual Preview + Action Controls Card */}
+                  <div className="p-4 rounded-2xl border border-gray-200 dark:border-white/10 bg-white/50 dark:bg-zinc-950/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div className="flex items-center gap-3.5 min-w-0">
+                      {(form.seo?.ogImage || form.profileImage) ? (
+                        <img
+                          src={resolveImageUrl(form.seo?.ogImage || form.profileImage)}
+                          alt="Social Card Preview"
+                          className="w-16 h-12 rounded-xl object-cover border border-gray-200 dark:border-white/10 shrink-0 shadow-sm"
+                          onError={(e) => {
+                            e.target.style.display = "none";
+                          }}
+                        />
+                      ) : (
+                        <div className="w-16 h-12 rounded-xl bg-gray-100 dark:bg-zinc-900 border border-gray-200 dark:border-white/10 flex items-center justify-center text-gray-400 shrink-0">
+                          <ImageIcon className="w-5 h-5" />
+                        </div>
+                      )}
+                      <div className="min-w-0">
+                        <span className="text-xs font-semibold text-gray-800 dark:text-zinc-200 block truncate">
+                          {form.seo?.ogImage
+                            ? "Custom Social Banner active"
+                            : form.profileImage
+                            ? "Default Profile Photo active"
+                            : "No image set (Text preview only)"}
+                        </span>
+                        <span className="text-[11px] text-gray-500 dark:text-zinc-400 block truncate">
+                          {form.seo?.ogImage
+                            ? "Overriding default profile photo for social previews."
+                            : form.profileImage
+                            ? "Shared automatically on LinkedIn, WhatsApp, Twitter, etc."
+                            : "Upload a photo or custom card banner."}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      {/* Upload Custom OG Button */}
+                      <label className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-500 text-white hover:bg-emerald-600 text-xs font-bold transition-all shadow-sm cursor-pointer">
+                        {uploadingOgImage ? (
+                          <>
+                            <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                            <span>Uploading...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="w-3.5 h-3.5" />
+                            <span>{form.seo?.ogImage ? "Replace Banner" : "Upload Custom Banner"}</span>
+                          </>
+                        )}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          disabled={uploadingOgImage}
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              handleUploadOgImage(e.target.files[0]);
+                              e.target.value = "";
+                            }
+                          }}
+                        />
+                      </label>
+
+                      {/* Reset to Profile Photo button */}
+                      {form.seo?.ogImage && (
+                        <button
+                          type="button"
+                          onClick={handleResetOgImage}
+                          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-gray-700 dark:text-zinc-300 text-xs font-bold transition-colors cursor-pointer"
+                          title="Reset to default Profile Photo"
+                        >
+                          <RotateCcw className="w-3.5 h-3.5" />
+                          <span>Use Profile Photo</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Optional Direct URL Input Field */}
+                  {showOgUrlInput && (
+                    <div className="mt-3">
+                      <input
+                        value={form.seo?.ogImage || ""}
+                        onChange={(e) => updateNestedField("seo", "ogImage", e.target.value)}
+                        placeholder={form.profileImage ? "Leave empty to use Profile Photo, or enter custom URL" : "https://example.com/og-banner.png"}
+                        className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs sm:text-sm font-mono"
+                      />
+                    </div>
+                  )}
+
+                  <p className="mt-2 text-[11px] text-gray-500 dark:text-zinc-400">
+                    Displayed automatically as the visual card when your portfolio link is shared on WhatsApp, LinkedIn, X/Twitter, Discord, etc.
                   </p>
                 </div>
                 <div>

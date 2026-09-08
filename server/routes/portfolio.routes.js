@@ -9,10 +9,12 @@ import {
   portfolioAnalyticsLimiter,
 } from "../middleware/rateLimiter.middleware.js";
 import {checkAIQuota} from "../middleware/aiUsageTracker.middleware.js";
+import multer from "multer";
 import {
   createPortfolioFromResume,
   createPortfolioProject,
   deletePortfolio,
+  deletePortfolioImage,
   deletePortfolioProject,
   downloadPublicResume,
   generatePortfolioAbout,
@@ -29,7 +31,13 @@ import {
   unpublishPortfolio,
   updatePortfolio,
   updatePortfolioProject,
+  uploadPortfolioImage,
 } from "../controllers/portfolio.controller.js";
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 8 * 1024 * 1024 }, // 8MB limit
+});
 
 const router = express.Router();
 
@@ -54,6 +62,17 @@ router.post(
 );
 
 // Protected portfolio routes.
+router.post(
+  "/upload-image",
+  authenticateToken,
+  upload.single("image"),
+  uploadPortfolioImage
+);
+router.post(
+  "/delete-image",
+  authenticateToken,
+  deletePortfolioImage
+);
 router.post(
   "/from-resume/:resumeId",
   authenticateToken,

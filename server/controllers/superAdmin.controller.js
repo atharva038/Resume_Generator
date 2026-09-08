@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import nodemailer from "nodemailer";
 import Razorpay from "razorpay";
 import OpenAI from "openai";
+import axios from "axios";
 
 // Helper: Determine .env file location
 export const getEnvPath = () => {
@@ -98,6 +99,32 @@ const VARIABLE_METADATA = {
     description: "Optional voice synthesis API key",
     isSensitive: true,
     icon: "voice",
+  },
+
+  // Media & Cloud Storage
+  CLOUDINARY_CLOUD_NAME: {
+    category: "Media & Cloud Storage",
+    label: "Cloudinary Cloud Name",
+    description: "Cloud name for portfolio hero cutouts, profile avatars, and template media hosting",
+    isSensitive: false,
+    testable: "cloudinary",
+    icon: "image",
+  },
+  CLOUDINARY_API_KEY: {
+    category: "Media & Cloud Storage",
+    label: "Cloudinary API Key",
+    description: "Public API key for Cloudinary REST authentication",
+    isSensitive: false,
+    testable: "cloudinary",
+    icon: "key",
+  },
+  CLOUDINARY_API_SECRET: {
+    category: "Media & Cloud Storage",
+    label: "Cloudinary API Secret",
+    description: "Secret key for secure SHA-1 upload signatures and asset management",
+    isSensitive: true,
+    testable: "cloudinary",
+    icon: "lock",
   },
 
   // Payment Gateway
@@ -422,6 +449,7 @@ export const getEnvVariables = async (req, res) => {
     const parsedMap = {};
     const categoriesMap = {
       "AI & Intelligence": [],
+      "Media & Cloud Storage": [],
       "Payments & Billing": [],
       "Database & Security": [],
       "Email & SMTP": [],
@@ -877,6 +905,40 @@ export const testApiKey = async (req, res) => {
         });
       }
 
+      case "cloudinary": {
+        const cloudName = (apiKey || process.env.CLOUDINARY_CLOUD_NAME || "").trim();
+        const apiSecret = (secondaryKey || process.env.CLOUDINARY_API_SECRET || "").trim();
+        const keyId = (req.body.extraKey || process.env.CLOUDINARY_API_KEY || "").trim();
+
+        if (!cloudName) {
+          return res.status(400).json({
+            success: false,
+            error: "Cloudinary Cloud Name is required to test.",
+          });
+        }
+
+        const headers = {};
+        if (keyId && apiSecret) {
+          const authString = Buffer.from(`${keyId}:${apiSecret}`).toString("base64");
+          headers["Authorization"] = `Basic ${authString}`;
+        }
+
+        const response = await axios.get(
+          `https://api.cloudinary.com/v1_1/${cloudName}/ping`,
+          { headers, timeout: 6000 }
+        );
+        const latency = Date.now() - startTime;
+
+        return res.json({
+          success: true,
+          service: "Cloudinary Media CDN",
+          latencyMs: latency,
+          message: `Cloudinary account '${cloudName}' is ACTIVE and connected with fast CDN delivery!`,
+          cloudName,
+          status: response.data?.status || "ok",
+        });
+      }
+
       default:
         return res.status(400).json({
           success: false,
@@ -1029,6 +1091,7 @@ export const getSystemStatus = async (req, res) => {
       configuredProviders: {
         openai: Boolean(process.env.OPENAI_API_KEY),
         sarvam: Boolean(process.env.SARVAM_API_KEY),
+        cloudinary: Boolean(process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET),
         razorpay: Boolean(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET),
         emailSmtp: Boolean(process.env.EMAIL_USER && process.env.EMAIL_PASSWORD),
         googleOAuth: Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET),

@@ -36,6 +36,7 @@ import {
   HelpCircle,
   HardDrive,
   CheckCircle,
+  Image as ImageIcon,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import {
@@ -224,9 +225,15 @@ export default function SuperAdminEnvPanel() {
       setTestingService(service);
       let apiKey = null;
       let secondaryKey = null;
+      let extraKey = null;
 
       if (service === "openai") apiKey = variablesMap["OPENAI_API_KEY"];
       if (service === "sarvam") apiKey = variablesMap["SARVAM_API_KEY"];
+      if (service === "cloudinary") {
+        apiKey = variablesMap["CLOUDINARY_CLOUD_NAME"];
+        secondaryKey = variablesMap["CLOUDINARY_API_SECRET"];
+        extraKey = variablesMap["CLOUDINARY_API_KEY"];
+      }
       if (service === "razorpay") {
         apiKey = variablesMap["RAZORPAY_KEY_ID"];
         secondaryKey = variablesMap["RAZORPAY_KEY_SECRET"];
@@ -237,7 +244,7 @@ export default function SuperAdminEnvPanel() {
         secondaryKey = variablesMap["EMAIL_PASSWORD"];
       }
 
-      const res = await testApiKey(service, apiKey, secondaryKey);
+      const res = await testApiKey(service, apiKey, secondaryKey, extraKey);
       setTestResults((prev) => ({
         ...prev,
         [service]: {
@@ -903,6 +910,64 @@ export default function SuperAdminEnvPanel() {
                       </div>
                       <p className="text-[11px] mt-1 text-zinc-400">
                         {testResults["sarvam"].message || testResults["sarvam"].error}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Cloudinary Media Card */}
+              <div className="p-5 rounded-2xl bg-zinc-900/80 border border-zinc-800/80 flex flex-col justify-between space-y-4">
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-black text-white flex items-center gap-2">
+                      <ImageIcon className="w-4 h-4 text-sky-400" />
+                      Cloudinary Media CDN
+                    </span>
+                    <span className="text-[10px] font-mono bg-zinc-800 px-2 py-0.5 rounded-full text-zinc-400">
+                      REST API
+                    </span>
+                  </div>
+                  <p className="text-xs text-zinc-400">
+                    High-speed global cloud image storage, WebP optimization & portfolio cutout hosting.
+                  </p>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="text-[11px] font-mono text-zinc-500 truncate">
+                    Cloud: {variablesMap["CLOUDINARY_CLOUD_NAME"] || "NOT CONFIGURED"}
+                  </div>
+
+                  <button
+                    onClick={() => handleTestKey("cloudinary")}
+                    disabled={
+                      testingService === "cloudinary" ||
+                      !variablesMap["CLOUDINARY_CLOUD_NAME"]
+                    }
+                    className="w-full py-2.5 rounded-xl bg-sky-500/10 hover:bg-sky-500 text-sky-400 hover:text-zinc-950 border border-sky-500/20 text-xs font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-40"
+                  >
+                    {testingService === "cloudinary" ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Zap className="w-3.5 h-3.5" />
+                    )}
+                    <span>Ping Cloudinary CDN</span>
+                  </button>
+
+                  {testResults["cloudinary"] && (
+                    <div
+                      className={`p-3 rounded-xl text-xs font-mono ${
+                        testResults["cloudinary"].success
+                          ? "bg-emerald-500/10 border border-emerald-500/20 text-emerald-300"
+                          : "bg-rose-500/10 border border-rose-500/20 text-rose-300"
+                      }`}
+                    >
+                      <div className="flex justify-between font-bold">
+                        <span>{testResults["cloudinary"].success ? "ONLINE & ACTIVE" : "FAILED"}</span>
+                        <span>{testResults["cloudinary"].latencyMs}ms</span>
+                      </div>
+                      <p className="text-[11px] mt-1 text-zinc-400">
+                        {testResults["cloudinary"].message || testResults["cloudinary"].error}
                       </p>
                     </div>
                   )}

@@ -35,6 +35,17 @@ export const portfolioAPI = {
   improveProjectDescription: (portfolioId, data) =>
     api.post(`/portfolio/${portfolioId}/ai/project-description`, data),
   generateSeo: (portfolioId) => api.post(`/portfolio/${portfolioId}/ai/seo`),
+  uploadImage: (file, oldImageUrl = null) => {
+    const formData = new FormData();
+    formData.append("image", file);
+    if (oldImageUrl) {
+      formData.append("oldImageUrl", oldImageUrl);
+    }
+    return api.post("/portfolio/upload-image", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+  },
+  deleteImage: (imageUrl) => api.post("/portfolio/delete-image", { imageUrl }),
 };
 
 export default portfolioAPI;

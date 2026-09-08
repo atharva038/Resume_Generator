@@ -5,8 +5,17 @@ import CyberDevTheme from "./CyberDevTheme";
 import CreativeTheme from "./CreativeTheme";
 import TechPortfolioTheme from "./TechPortfolioTheme";
 import GlassmorphismTheme from "./GlassmorphismTheme";
+import SmartNShineTheme from "./SmartNShineTheme";
 
 export const portfolioThemes = {
+  smartnshine: {
+    id: "smartnshine",
+    name: "SmartNShine Editorial",
+    description: "Quiet luxury × Editorial typography × Modern minimalist product design.",
+    component: SmartNShineTheme,
+    allowedTiers: ["free", "one-time", "pro"],
+    accentPresets: ["#b8943f", "#c9a853", "#10b981", "#3b82f6", "#f43f5e"],
+  },
   glassmorphism: {
     id: "glassmorphism",
     name: "Aura Glass",
