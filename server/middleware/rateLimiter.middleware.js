@@ -34,7 +34,7 @@ export const authLimiter = rateLimit({
 /**
  * AI Operations Rate Limiter (Per User)
  * Applied to: AI-powered endpoints (enhance, generate-summary, categorize-skills, etc.)
- * Purpose: Prevent API abuse and control costs (Gemini API is paid)
+ * Purpose: Prevent API abuse and control costs (OpenAI API is paid)
  */
 export const aiLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour

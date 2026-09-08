@@ -295,11 +295,7 @@ export default function CareerProfile() {
   };
 
   const handleGoBack = () => {
-    if (window.opener) {
-      window.close();
-    } else {
-      navigate("/");
-    }
+    navigate("/dashboard");
   };
 
   if (loading) {
@@ -323,6 +319,7 @@ export default function CareerProfile() {
       <SEO
         title="Career Profile | SmartNShine"
         description="Your unified professional master profile. Enter your career information once and reuse everywhere across resumes, ATS analysis, and interview prep."
+        noindex={true}
       />
 
       {/* Standalone Full-Screen Top Bar */}

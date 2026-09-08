@@ -1,4 +1,4 @@
-import {Routes, Route} from "react-router-dom";
+import {Routes, Route, Navigate} from "react-router-dom";
 import {Toaster} from "react-hot-toast";
 import {lazy, Suspense} from "react";
 import {Layout, AdminLayout} from "./components/layout";
@@ -6,10 +6,11 @@ import {ScrollToTop} from "./components/common";
 import {ProtectedRoute, AdminProtectedRoute, SuperAdminProtectedRoute} from "./components/auth";
 
 // Critical pages - loaded immediately
-import Home from "./pages/Home";
+import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import DashboardOverview from "./pages/DashboardOverview";
 
 // Lazy load non-critical pages for better performance
 const Upload = lazy(() => import("./pages/Upload"));
@@ -77,6 +78,7 @@ const SuperAdminEnvPanel = lazy(
   () => import("./pages/superAdmin/SuperAdminEnvPanel")
 );
 const TechPortfolioTemplate = lazy(() => import("./pages/TechPortfolioTemplate"));
+const SmartNShinePortfolioTemplate = lazy(() => import("./pages/SmartNShinePortfolioTemplate"));
 
 import {DarkModeProvider} from "./context/DarkModeContext";
 import {NavigationBlockerProvider} from "./context/NavigationBlockerContext";
@@ -132,8 +134,13 @@ function App() {
         />
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/landing-preview" element={<Navigate to="/" replace />} />
+            <Route path="/landing-v2" element={<Navigate to="/" replace />} />
             <Route path="/pdf-render/:token" element={<PdfRender />} />
             <Route path="/tech-portfolio" element={<TechPortfolioTemplate />} />
+            <Route path="/smartnshine-portfolio" element={<SmartNShinePortfolioTemplate />} />
+            <Route path="/smartnshine" element={<SmartNShinePortfolioTemplate />} />
             <Route path="/u/:slug" element={<PublicPortfolio />} />
             <Route
               path="/portfolio/:id/edit"
@@ -175,8 +182,15 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path="/" element={<Layout />}>
-              <Route index element={<Home />} />
+            <Route element={<Layout />}>
+              <Route
+                path="dashboard"
+                element={
+                  <ProtectedRoute>
+                    <DashboardOverview />
+                  </ProtectedRoute>
+                }
+              />
               {/* Public High-SEO Routes */}
               <Route path="templates" element={<Templates />} />
               <Route path="contact" element={<Contact />} />

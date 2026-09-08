@@ -1,0 +1,420 @@
+/* ==========================================================================
+   SmartNShine Retro-Futuristic OS Theme Styles
+   Art Direction: 80s/90s Computing × CRT HUD × Early Web × Modern Editorial Design
+   Concept: "What someone in 1995 imagined the internet of 2035 would look like."
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+.retro-futuristic-theme {
+  --rf-font-display: 'Chakra Petch', 'Space Grotesk', system-ui, sans-serif;
+  --rf-font-mono: 'JetBrains Mono', 'Space Mono', monospace;
+  --rf-font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+
+  /* --- DARK MODE (FLAGSHIP): Deep Charcoal / Obsidian / Phosphor Green --- */
+  --rf-bg: #07090c;
+  --rf-bg-panel: rgba(14, 18, 24, 0.85);
+  --rf-bg-surface: rgba(19, 25, 34, 0.92);
+  --rf-bg-inset: rgba(9, 12, 16, 0.95);
+  --rf-bg-header: rgba(7, 9, 12, 0.88);
+  
+  --rf-border-primary: rgba(0, 255, 102, 0.28);
+  --rf-border-secondary: rgba(255, 255, 255, 0.12);
+  --rf-border-subtle: rgba(255, 255, 255, 0.06);
+  --rf-border-highlight: rgba(0, 255, 102, 0.7);
+
+  --rf-text-primary: #f0f6fc;
+  --rf-text-secondary: #9aa5b5;
+  --rf-text-muted: #576579;
+  
+  /* Primary Accent: Phosphor Green / Secondary: Amber / Gold highlight */
+  --rf-accent-primary: #00ff66;
+  --rf-accent-dim: rgba(0, 255, 102, 0.14);
+  --rf-accent-glow: rgba(0, 255, 102, 0.35);
+  --rf-accent-secondary: #ffb000;
+  --rf-accent-secondary-dim: rgba(255, 176, 0, 0.15);
+  --rf-accent-gold: #d4af37;
+
+  --rf-scanline-opacity: 0.12;
+  --rf-grid-opacity: 0.08;
+  --rf-crt-curve: 0px;
+
+  font-family: var(--rf-font-body);
+  background-color: var(--rf-bg);
+  color: var(--rf-text-primary);
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  transition: background-color 0.4s ease, color 0.4s ease;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- LIGHT MODE: 1990s Technical Manual × Modern Cyber Interface --- */
+.retro-futuristic-theme.light-mode,
+.retro-futuristic-theme[data-rf-mode="light"] {
+  --rf-bg: #f3efe6;
+  --rf-bg-panel: rgba(248, 245, 238, 0.9);
+  --rf-bg-surface: #ffffff;
+  --rf-bg-inset: rgba(235, 230, 218, 0.85);
+  --rf-bg-header: rgba(243, 239, 230, 0.92);
+
+  --rf-border-primary: rgba(16, 120, 58, 0.38);
+  --rf-border-secondary: rgba(50, 60, 50, 0.18);
+  --rf-border-subtle: rgba(0, 0, 0, 0.07);
+  --rf-border-highlight: rgba(16, 120, 58, 0.85);
+
+  --rf-text-primary: #121815;
+  --rf-text-secondary: #425248;
+  --rf-text-muted: #73857a;
+
+  --rf-accent-primary: #0d8a43;
+  --rf-accent-dim: rgba(13, 138, 67, 0.12);
+  --rf-accent-glow: rgba(13, 138, 67, 0.22);
+  --rf-accent-secondary: #c26900;
+  --rf-accent-secondary-dim: rgba(194, 105, 0, 0.12);
+  --rf-accent-gold: #b8860b;
+
+  --rf-scanline-opacity: 0.04;
+  --rf-grid-opacity: 0.06;
+}
+
+/* ==========================================================================
+   TECHNICAL BACKGROUND GRID & BRUTALIST ATMOSPHERE
+   ========================================================================== */
+
+.rf-background-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-color: var(--rf-bg);
+  background-image: 
+    radial-gradient(circle at 50% 10%, rgba(0, 255, 102, 0.04) 0%, transparent 60%),
+    radial-gradient(circle at 90% 80%, rgba(255, 176, 0, 0.025) 0%, transparent 50%),
+    /* Major 160px Engineering Grid */
+    linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    /* Minor 32px Fine Micro-Grid */
+    linear-gradient(to right, rgba(255, 255, 255, 0.012) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.012) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 160px 160px, 160px 160px, 32px 32px, 32px 32px;
+  background-position: center, center, center, center, center, center;
+}
+
+.retro-futuristic-theme.light-mode .rf-background-layer,
+.retro-futuristic-theme[data-rf-mode="light"] .rf-background-layer {
+  background-image: 
+    radial-gradient(circle at 50% 10%, rgba(13, 138, 67, 0.03) 0%, transparent 60%),
+    radial-gradient(circle at 90% 80%, rgba(194, 105, 0, 0.02) 0%, transparent 50%),
+    linear-gradient(to right, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(to right, rgba(0, 0, 0, 0.015) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.015) 1px, transparent 1px);
+}
+
+/* Eye-soothing subtle CRT Scanlines */
+.rf-scanlines {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 40;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.12) 50%
+  );
+  background-size: 100% 4px;
+  opacity: var(--rf-scanline-opacity);
+}
+
+/* Soft Screen Edge Vignette */
+.rf-crt-vignette {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 39;
+  background: radial-gradient(circle at center, transparent 70%, rgba(0, 0, 0, 0.3) 100%);
+}
+
+/* ==========================================================================
+   HARDWARE PANELS & INTERFACES
+   ========================================================================== */
+
+.rf-panel {
+  background: var(--rf-bg-panel);
+  border: 1px solid var(--rf-border-secondary);
+  position: relative;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rf-panel-highlight {
+  border-color: var(--rf-border-primary);
+  box-shadow: 0 0 25px -5px var(--rf-accent-dim), inset 0 0 15px -5px var(--rf-accent-dim);
+}
+
+.rf-panel:hover {
+  border-color: var(--rf-border-primary);
+}
+
+/* Corner Rivets / Screws */
+.rf-rivet-tl, .rf-rivet-tr, .rf-rivet-bl, .rf-rivet-br {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  font-size: 9px;
+  line-height: 1;
+  color: var(--rf-text-muted);
+  opacity: 0.65;
+  user-select: none;
+  pointer-events: none;
+}
+.rf-rivet-tl { top: 4px; left: 4px; }
+.rf-rivet-tr { top: 4px; right: 4px; }
+.rf-rivet-bl { bottom: 4px; left: 4px; }
+.rf-rivet-br { bottom: 4px; right: 4px; }
+
+/* CRT Monitor Frame */
+.rf-monitor-frame {
+  background: linear-gradient(145deg, #1c232d 0%, #0d1218 100%);
+  border: 2px solid #2d3846;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 
+    0 20px 50px rgba(0, 0, 0, 0.8),
+    inset 0 2px 4px rgba(255, 255, 255, 0.1),
+    inset 0 -2px 6px rgba(0, 0, 0, 0.9);
+  position: relative;
+}
+
+.retro-futuristic-theme.light-mode .rf-monitor-frame,
+.retro-futuristic-theme[data-rf-mode="light"] .rf-monitor-frame {
+  background: linear-gradient(145deg, #e4ded0 0%, #cfc8b6 100%);
+  border: 2px solid #b5ad9a;
+  box-shadow: 
+    0 15px 35px rgba(0, 0, 0, 0.15),
+    inset 0 2px 4px rgba(255, 255, 255, 0.6),
+    inset 0 -2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.rf-monitor-screen {
+  background: #030507;
+  border: 1px solid rgba(0, 255, 102, 0.3);
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 0 30px rgba(0, 255, 102, 0.08);
+}
+
+.retro-futuristic-theme.light-mode .rf-monitor-screen,
+.retro-futuristic-theme[data-rf-mode="light"] .rf-monitor-screen {
+  background: #1a221d;
+  border: 1px solid rgba(13, 138, 67, 0.4);
+}
+
+/* Glass Screen Glare */
+.rf-screen-glare {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 45%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* ==========================================================================
+   BUTTONS & HARDWARE CONTROLS
+   ========================================================================== */
+
+.rf-btn {
+  font-family: var(--rf-font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: var(--rf-bg-surface);
+  color: var(--rf-text-primary);
+  border: 1px solid var(--rf-border-secondary);
+  padding: 0.55rem 1.15rem;
+  border-radius: 3px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease-in-out;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.4);
+}
+
+.rf-btn:hover {
+  border-color: var(--rf-accent-primary);
+  color: var(--rf-accent-primary);
+  background: var(--rf-accent-dim);
+  box-shadow: 0 0 15px var(--rf-accent-glow);
+  transform: translateY(-1px);
+}
+
+.rf-btn:active {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+
+.rf-btn-primary {
+  background: var(--rf-accent-primary);
+  color: #07090c !important;
+  font-weight: 700;
+  border-color: var(--rf-accent-primary);
+  box-shadow: 0 0 20px var(--rf-accent-glow);
+}
+
+.rf-btn-primary:hover {
+  background: #33ff85;
+  color: #000000 !important;
+  box-shadow: 0 0 30px var(--rf-accent-glow);
+}
+
+.retro-futuristic-theme.light-mode .rf-btn-primary,
+.retro-futuristic-theme[data-rf-mode="light"] .rf-btn-primary {
+  background: var(--rf-accent-primary);
+  color: #ffffff !important;
+}
+
+.rf-btn-amber {
+  border-color: rgba(255, 176, 0, 0.4);
+  color: var(--rf-accent-secondary);
+}
+.rf-btn-amber:hover {
+  border-color: var(--rf-accent-secondary);
+  background: var(--rf-accent-secondary-dim);
+  box-shadow: 0 0 15px rgba(255, 176, 0, 0.3);
+}
+
+/* Hardware LED indicator */
+.rf-led {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.rf-led-green {
+  background-color: #00ff66;
+  box-shadow: 0 0 8px #00ff66;
+}
+.rf-led-amber {
+  background-color: #ffb000;
+  box-shadow: 0 0 8px #ffb000;
+}
+.rf-led-red {
+  background-color: #ff3344;
+  box-shadow: 0 0 8px #ff3344;
+}
+
+/* ==========================================================================
+   TERMINAL & COMMAND PROMPT
+   ========================================================================== */
+
+.rf-terminal-window {
+  background: rgba(5, 7, 10, 0.95);
+  border: 1px solid var(--rf-border-primary);
+  border-radius: 4px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7), inset 0 0 20px rgba(0, 255, 102, 0.05);
+  font-family: var(--rf-font-mono);
+}
+
+.rf-cursor-blink {
+  display: inline-block;
+  width: 8px;
+  height: 1.1em;
+  background-color: var(--rf-accent-primary);
+  vertical-align: text-bottom;
+  animation: rf-blink 1s step-end infinite;
+}
+
+@keyframes rf-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Segmented Diagnostics Bar */
+.rf-segment-bar {
+  font-family: var(--rf-font-mono);
+  letter-spacing: -0.05em;
+  color: var(--rf-accent-primary);
+}
+
+/* Technical HUD Crosshairs */
+.rf-crosshair {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  pointer-events: none;
+  opacity: 0.5;
+}
+.rf-crosshair::before {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--rf-accent-primary);
+}
+.rf-crosshair::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--rf-accent-primary);
+}
+
+/* Scanline Sweeper on Project Hover */
+.rf-scanline-sweep {
+  position: absolute;
+  top: -100%;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background: linear-gradient(180deg, transparent, var(--rf-accent-dim), transparent);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.group:hover .rf-scanline-sweep {
+  opacity: 1;
+  animation: rf-sweep 1.2s ease-in-out infinite;
+}
+
+@keyframes rf-sweep {
+  0% { top: -20%; }
+  100% { top: 120%; }
+}
+
+/* ==========================================================================
+   CUSTOM RETICLE CURSOR
+   ========================================================================== */
+.rf-custom-cursor {
+  position: fixed;
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: width 0.2s ease, height 0.2s ease, border-color 0.2s ease, transform 0.05s linear;
+}
+
+/* Reduced motion respect */
+@media (prefers-reduced-motion: reduce) {
+  .rf-cursor-blink,
+  .rf-scanline-sweep {
+    animation: none !important;
+  }
+  .retro-futuristic-theme {
+    transition: none !important;
+  }
+}

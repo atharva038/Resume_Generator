@@ -27,7 +27,7 @@ const SkillsSection = ({ portfolioContext }) => {
             >
               <GlassCard className="p-8">
                 <h3 className="text-2xl font-bold text-white mb-8 flex items-center gap-2">
-                  <span className="w-1 h-8 bg-gradient-to-b from-blue-400 to-purple-500 rounded-full" />
+                  <span className="w-1 h-8 bg-gradient-to-b from-blue-400 to-cyan-400 rounded-full" />
                   {category.category || category.name}
                 </h3>
 

@@ -6,6 +6,7 @@ import {
   TEMPLATES,
   TEMPLATE_COLOR_THEMES,
 } from "@/components/editor/templateConfig";
+import ExecutiveTemplate from "@/components/templates/ExecutiveTemplate";
 import ClassicTemplate from "@/components/templates/ClassicTemplate";
 import ModernTemplate from "@/components/templates/ModernTemplate";
 import MinimalTemplate from "@/components/templates/MinimalTemplate";
@@ -17,6 +18,9 @@ import StrategicLeadershipTemplate from "@/components/templates/StrategicLeaders
 import ImpactProTemplate from "@/components/templates/ImpactProTemplate";
 import GitHubStyleTemplate from "@/components/templates/GitHubStyleTemplate";
 import StructuredPhotoTemplate from "@/components/templates/StructuredPhotoTemplate";
+import SiliconValleyTemplate from "@/components/templates/SiliconValleyTemplate";
+import LatexAcademicTemplate from "@/components/templates/LatexAcademicTemplate";
+import NordicSplitTemplate from "@/components/templates/NordicSplitTemplate";
 import {
   TemplatesBanner,
   TemplateCard,
@@ -115,6 +119,9 @@ const sampleResumeData = {
 };
 
 const TEMPLATE_COMPONENTS = {
+  "latex-academic": LatexAcademicTemplate,
+  "nordic-split": NordicSplitTemplate,
+  executive: ExecutiveTemplate,
   classic: ClassicTemplate,
   modern: ModernTemplate,
   minimal: MinimalTemplate,
@@ -126,41 +133,92 @@ const TEMPLATE_COMPONENTS = {
   "impact-pro": ImpactProTemplate,
   "github-style": GitHubStyleTemplate,
   "structured-photo": StructuredPhotoTemplate,
+  "silicon-valley": SiliconValleyTemplate,
 };
 
 const BASE_TEMPLATE_LIST = [
   {
-    id: "classic",
-    name: "Classic",
-    component: ClassicTemplate,
-    category: "Professional",
-    atsScore: 98,
+    id: "latex-academic",
+    name: "Stanford / LaTeX Academic Pro",
+    component: LatexAcademicTemplate,
+    category: "Academic",
+    atsScore: 100,
+    badge: "100% ATS GRADE",
     description:
-      "Traditional serif design with clear hierarchy and timeless appeal",
-    features: ["Serif Typography", "Traditional", "Maximum Compatibility"],
-    colors: ["#2d3748", "#1a365d", "#742a2a", "#1c4532"],
+      "Mathematical precision with classic academic serif typography, fine hairline rules, and publication metrics.",
+    features: ["LaTeX Typography", "Hairline Rules", "Research Metrics", "1-Page Fit"],
+    colors: ["#002147", "#8c1515", "#005a9c", "#065f46"],
+  },
+  {
+    id: "nordic-split",
+    name: "Nordic Two-Column Architect",
+    component: NordicSplitTemplate,
+    category: "Leadership",
+    atsScore: 99,
+    badge: "NEW FLAGSHIP",
+    description:
+      "Asymmetric 32/68 split layout with stylish left sidebar rail for skills & credentials and spacious right body.",
+    features: ["Split-Rail Layout", "Skills Pills", "Impact Metrics", "Single-Flow ATS"],
+    colors: ["#1d4ed8", "#047857", "#1e293b", "#0f766e"],
+  },
+  {
+    id: "silicon-valley",
+    name: "Silicon Valley Tech Lead",
+    component: SiliconValleyTemplate,
+    category: "Tech",
+    atsScore: 99,
+    badge: "NEW FLAGSHIP",
+    description:
+      "Stripe & Linear-inspired high-craft developer resume with dynamic ATS-safe metric highlighting and domain skill capsules.",
+    features: ["Developer Typography", "Metric Highlighting", "Skill Capsules", "Commit Rail"],
+    colors: ["#4f46e5", "#059669", "#1e293b", "#18181b"],
+  },
+  {
+    id: "executive",
+    name: "The Wall Street / Ivy League",
+    component: ExecutiveTemplate,
+    category: "Leadership",
+    atsScore: 99,
+    badge: "EXECUTIVE",
+    description:
+      "Dignified Ivy League aesthetic with centered masthead, Oxford double-rules, small-caps headers, and deal metric highlighting.",
+    features: ["Ivy League Serif", "Oxford Double-Rule", "Deal Metrics", "1-Page Fit"],
+    colors: ["#1e3a8a", "#065f46", "#1e293b", "#111827"],
+  },
+  {
+    id: "classic",
+    name: "The Open-Source Architect",
+    component: ClassicTemplate,
+    category: "Tech",
+    atsScore: 99,
+    badge: "ATS 99%",
+    description:
+      "Developer-centric, markdown-inspired layout with commit-style bullet points, repo badges, and 1-page auto-density.",
+    features: ["Markdown Aesthetic", "Repo Metrics", "Commit-Style Bullets", "1-Page Fit"],
+    colors: ["#0969da", "#16a34a", "#d97706", "#24292f"],
   },
   {
     id: "modern",
-    name: "Modern",
+    name: "Linear / Vercel Minimalist",
     component: ModernTemplate,
-    category: "Modern",
-    atsScore: 95,
+    category: "Tech",
+    atsScore: 98,
+    badge: "MINIMALIST",
     description:
-      "Contemporary two-column layout with left sidebar and high visual appeal",
-    features: ["Two Column", "Sidebar Layout", "Visual Appeal"],
-    colors: ["#3b82f6", "#10b981", "#8b5cf6", "#f59e0b"],
+      "Precision engineering aesthetic with monospaced metadata, sleek timeline rail, and inline tech pills.",
+    features: ["Monospaced Meta", "Timeline Rail", "Tech Pills", "1-Page Fit"],
+    colors: ["#5e6ad2", "#059669", "#334155", "#000000"],
   },
   {
     id: "minimal",
-    name: "Minimal",
+    name: "The Swiss Minimalist",
     component: MinimalTemplate,
     category: "Minimal",
     atsScore: 99,
     description:
-      "Ultra-clean black & white design with generous whitespace and modern typography",
-    features: ["Single Column", "Generous Spacing", "99% ATS Friendly"],
-    colors: ["#18181b", "#3f3f46", "#0284c7"],
+      "Ultra-clean Swiss typography, hairline dividers, space-efficient 2-line metadata, and guaranteed 1-page fit.",
+    features: ["Swiss Typography", "Hairline Dividers", "Deduplicated Bullets", "1-Page Fit"],
+    colors: ["#4338ca", "#047857", "#1e293b", "#09090b"],
   },
   {
     id: "professional",
@@ -357,16 +415,39 @@ export default function Templates() {
     navigate("/editor");
   };
 
-  // Dynamic High-CTR Meta Tags tailored for top Google Ranking
-  const dynamicMetaTitle =
-    selectedCategory === "All"
-      ? "Professional Resume Templates (98% ATS Pass Rate) | Free & Pro | SmartNShine"
-      : `${selectedCategory} Resume Templates - ATS-Optimized Professional Format | SmartNShine`;
+  // Check if a specific template is currently previewed or requested via URL
+  const currentTemplate =
+    activePreviewTemplate ||
+    (templateParam
+      ? templatesList.find(
+          (m) =>
+            m.id === templateParam ||
+            m.id.toLowerCase() === templateParam.toLowerCase()
+        )
+      : null);
 
-  const dynamicMetaDescription =
-    selectedCategory === "All"
-      ? "Build an interview-ready resume with 12+ top-rated ATS resume templates. Engineered for Taleo, Workday & Greenhouse. Instant PDF download & real-time ATS scoring."
-      : `Explore top ${selectedCategory.toLowerCase()} ATS resume templates. High recruiter callback rate, clean single & two-column formats, and 1-click PDF download.`;
+  // Dynamic High-CTR Meta Tags tailored for top Google Ranking
+  const dynamicMetaTitle = currentTemplate
+    ? currentTemplate.seo?.title ||
+      `${currentTemplate.name} ATS Resume Template (${currentTemplate.atsScore || 98}% Pass Rate) | SmartNShine`
+    : selectedCategory === "All"
+    ? "Professional Resume Templates (98% ATS Pass Rate) | Free & Pro | SmartNShine"
+    : `${selectedCategory} Resume Templates - ATS-Optimized Professional Format | SmartNShine`;
+
+  const dynamicMetaDescription = currentTemplate
+    ? currentTemplate.seo?.description ||
+      `Preview and use the ${currentTemplate.name} ATS resume template. Designed for ${currentTemplate.category} roles with 1-click PDF export.`
+    : selectedCategory === "All"
+    ? "Build an interview-ready resume with 12+ top-rated ATS resume templates. Engineered for Taleo, Workday & Greenhouse. Instant PDF download & real-time ATS scoring."
+    : `Explore top ${selectedCategory.toLowerCase()} ATS resume templates. High recruiter callback rate, clean single & two-column formats, and 1-click PDF download.`;
+
+  const dynamicMetaImage = currentTemplate
+    ? `https://www.smartnshine.app/templates/${currentTemplate.id.replace("-2", "2")}.webp`
+    : "https://www.smartnshine.app/social-preview.png";
+
+  const dynamicImageAlt = currentTemplate
+    ? `${currentTemplate.name} ATS Resume Template Preview - SmartNShine`
+    : "SmartNShine - The AI Career Platform. Resumes & Portfolios built to win.";
 
   const dynamicKeywords =
     "resume, professional resume, ATS resume templates, free resume templates, modern CV format, ATS resume maker, executive resume template, software engineer resume format, download resume PDF";
@@ -402,11 +483,17 @@ export default function Templates() {
         title={dynamicMetaTitle}
         description={dynamicMetaDescription}
         keywords={dynamicKeywords}
-        url={`https://www.smartnshine.app/templates${
-          selectedCategory !== "All"
-            ? `?category=${selectedCategory.toLowerCase()}`
-            : ""
-        }`}
+        image={dynamicMetaImage}
+        imageAlt={dynamicImageAlt}
+        url={
+          currentTemplate
+            ? `https://www.smartnshine.app/templates?template=${encodeURIComponent(currentTemplate.id)}`
+            : `https://www.smartnshine.app/templates${
+                selectedCategory !== "All"
+                  ? `?category=${selectedCategory.toLowerCase()}`
+                  : ""
+              }`
+        }
       />
 
       {/* Dynamic Schema.org JSON-LD (ItemList, FAQPage, Breadcrumbs, Product) */}
@@ -489,7 +576,7 @@ export default function Templates() {
             </div>
 
             <div className="bg-white dark:bg-zinc-900/80 p-6 rounded-2xl border border-gray-200 dark:border-white/10 space-y-3 shadow-xs">
-              <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold">
+              <div className="w-10 h-10 rounded-xl bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 flex items-center justify-center font-bold">
                 <Sparkles className="w-5 h-5" />
               </div>
               <h3 className="text-base font-black text-gray-900 dark:text-white">

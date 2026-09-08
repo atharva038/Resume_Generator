@@ -80,17 +80,17 @@ export const InterviewStep = ({
         return {
           icon: Sparkles,
           text: "Preparing your interview session...",
-          bgClass: "bg-purple-500/10 border-purple-500/20",
-          iconClass: "text-purple-400 animate-spin",
-          textClass: "text-purple-300",
+          bgClass: "bg-indigo-500/10 border-indigo-500/20",
+          iconClass: "text-indigo-400 animate-spin",
+          textClass: "text-indigo-300",
         };
       case "asking":
         return {
           icon: Volume2,
           text: "Interviewer is speaking...",
-          bgClass: "bg-purple-500/15 border-purple-500/30",
-          iconClass: "text-purple-400 animate-pulse",
-          textClass: "text-purple-300",
+          bgClass: "bg-blue-500/15 border-blue-500/30",
+          iconClass: "text-blue-400 animate-pulse",
+          textClass: "text-blue-300",
         };
       case "waiting":
         return {
@@ -120,9 +120,9 @@ export const InterviewStep = ({
         return {
           icon: Award,
           text: "Interview concluding...",
-          bgClass: "bg-purple-500/10 border-purple-500/20",
-          iconClass: "text-purple-400 animate-pulse",
-          textClass: "text-purple-300",
+          bgClass: "bg-indigo-500/10 border-indigo-500/20",
+          iconClass: "text-indigo-400 animate-pulse",
+          textClass: "text-indigo-300",
         };
       default:
         return null;
@@ -215,8 +215,8 @@ export const InterviewStep = ({
                 </>
               ) : (
                 <>
-                  <RefreshCw className="w-3.5 h-3.5 text-purple-500 dark:text-purple-400" />
-                  <span className="text-purple-700 dark:text-purple-300 font-mono text-[11px] hidden sm:inline">
+                  <RefreshCw className="w-3.5 h-3.5 text-blue-500 dark:text-blue-400" />
+                  <span className="text-blue-700 dark:text-blue-300 font-mono text-[11px] hidden sm:inline">
                     Auto
                   </span>
                 </>

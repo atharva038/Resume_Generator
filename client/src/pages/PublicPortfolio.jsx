@@ -1,8 +1,9 @@
-import {useCallback, useEffect, useRef, useState} from "react";
+import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {useParams} from "react-router-dom";
 import {Helmet} from "react-helmet-async";
 import {portfolioAPI} from "@/api/portfolio.api";
 import PortfolioThemeRenderer from "@/components/portfolio/PortfolioThemeRenderer";
+import {resolveImageUrl} from "@/utils/imageUrlResolver";
 
 const PublicPortfolio = () => {
   const {slug} = useParams();
@@ -107,6 +108,90 @@ const PublicPortfolio = () => {
     };
   }, [downloadPublicResume]);
 
+  const portfolio = data?.portfolio || null;
+  const resume = data?.resume || null;
+  const projects = data?.projects || [];
+
+  const pageTitle =
+    portfolio?.seo?.title ||
+    (portfolio ? `${resume?.name || portfolio.title} Portfolio` : "Portfolio");
+  const description =
+    portfolio?.seo?.description ||
+    portfolio?.tagline ||
+    portfolio?.about ||
+    "Professional portfolio";
+  const keywords = Array.isArray(portfolio?.seo?.keywords)
+    ? portfolio.seo.keywords.join(", ")
+    : portfolio?.seo?.keywords || "";
+  const canonicalUrl =
+    typeof window !== "undefined" ? window.location.href.split("?")[0] : "";
+
+  const rawOgImage = resolveImageUrl(
+    portfolio?.seo?.ogImage ||
+      portfolio?.profileImage ||
+      portfolio?.heroImage ||
+      portfolio?.profile?.profileImage ||
+      resume?.photo ||
+      ""
+  );
+
+  const origin =
+    typeof window !== "undefined"
+      ? window.location.origin
+      : "https://www.smartnshine.app";
+
+  const ogImage = useMemo(() => {
+    if (!rawOgImage) return `${origin}/social-preview.png?v=4`;
+    if (rawOgImage.startsWith("http://") || rawOgImage.startsWith("https://")) {
+      return rawOgImage;
+    }
+    return `${origin}${rawOgImage.startsWith("/") ? "" : "/"}${rawOgImage}`;
+  }, [rawOgImage, origin]);
+
+  const rawFavicon = resolveImageUrl(
+    portfolio?.seo?.favicon ||
+      portfolio?.favicon ||
+      portfolio?.seo?.ogImage ||
+      portfolio?.profileImage ||
+      portfolio?.profile?.profileImage ||
+      portfolio?.heroImage ||
+      resume?.photo ||
+      portfolio?.userId?.profileImage ||
+      ""
+  );
+
+  const favicon = useMemo(() => {
+    if (!rawFavicon) return "";
+    if (rawFavicon.startsWith("http://") || rawFavicon.startsWith("https://")) {
+      return rawFavicon;
+    }
+    return `${origin}${rawFavicon.startsWith("/") ? "" : "/"}${rawFavicon}`;
+  }, [rawFavicon, origin]);
+
+  // Dynamically update browser tab favicon in DOM with profile photo / custom favicon
+  useEffect(() => {
+    if (!favicon) return;
+
+    // Remove existing favicon tags to force browser to repaint tab icon
+    const existingIcons = document.querySelectorAll("link[rel*='icon']");
+    existingIcons.forEach((node) => node.remove());
+
+    const iconLink = document.createElement("link");
+    iconLink.rel = "icon";
+    iconLink.href = favicon;
+    document.head.appendChild(iconLink);
+
+    const shortcutLink = document.createElement("link");
+    shortcutLink.rel = "shortcut icon";
+    shortcutLink.href = favicon;
+    document.head.appendChild(shortcutLink);
+
+    const appleLink = document.createElement("link");
+    appleLink.rel = "apple-touch-icon";
+    appleLink.href = favicon;
+    document.head.appendChild(appleLink);
+  }, [favicon]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -115,7 +200,7 @@ const PublicPortfolio = () => {
     );
   }
 
-  if (error || !data) {
+  if (error || !data || !portfolio) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center px-4">
         <div className="text-center max-w-md">
@@ -130,29 +215,6 @@ const PublicPortfolio = () => {
     );
   }
 
-  const {portfolio, resume, projects} = data;
-  const pageTitle =
-    portfolio.seo?.title || `${resume?.name || portfolio.title} Portfolio`;
-  const description =
-    portfolio.seo?.description ||
-    portfolio.tagline ||
-    portfolio.about ||
-    "Professional portfolio";
-  const canonicalUrl =
-    typeof window !== "undefined" ? window.location.href.split("?")[0] : "";
-  const keywords = Array.isArray(portfolio.seo?.keywords)
-    ? portfolio.seo.keywords.filter(Boolean).join(", ")
-    : "";
-  const ogImage =
-    portfolio.seo?.ogImage ||
-    portfolio.heroImage ||
-    portfolio.profileImage ||
-    "";
-  const favicon =
-    portfolio.seo?.favicon ||
-    portfolio.favicon ||
-    "";
-
   return (
     <>
       <Helmet>
@@ -163,21 +225,29 @@ const PublicPortfolio = () => {
         {favicon && <link rel="icon" href={favicon} />}
         {favicon && <link rel="shortcut icon" href={favicon} />}
         {favicon && <link rel="apple-touch-icon" href={favicon} />}
-        {portfolio.settings?.allowIndexing === false && (
+        {portfolio.settings?.allowIndexing === false ? (
           <meta name="robots" content="noindex,nofollow" />
+        ) : (
+          <meta name="robots" content="index,follow,max-image-preview:large" />
         )}
+        <meta property="og:type" content="profile" />
+        <meta property="og:site_name" content="SmartNShine" />
+        <meta property="og:url" content={canonicalUrl || `${origin}/u/${portfolio.slug}`} />
         <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={description} />
-        <meta property="og:type" content="profile" />
-        {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
-        {ogImage && <meta property="og:image" content={ogImage} />}
-        <meta
-          name="twitter:card"
-          content={ogImage ? "summary_large_image" : "summary"}
-        />
+        <meta property="og:image" content={ogImage} />
+        <meta property="og:image:secure_url" content={ogImage} />
+        <meta property="og:image:type" content="image/png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content={`${pageTitle} Preview`} />
+        <meta property="og:locale" content="en_US" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={canonicalUrl || `${origin}/u/${portfolio.slug}`} />
         <meta name="twitter:title" content={pageTitle} />
         <meta name="twitter:description" content={description} />
-        {ogImage && <meta name="twitter:image" content={ogImage} />}
+        <meta name="twitter:image" content={ogImage} />
+        <meta name="twitter:image:alt" content={`${pageTitle} Preview`} />
       </Helmet>
       <div ref={pageRef}>
         <PortfolioThemeRenderer

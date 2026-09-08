@@ -48,7 +48,7 @@ const AuthCallback = () => {
           if (response.ok) {
             const userData = await response.json();
             setUserData(userData);
-            navigate("/my-resumes");
+            navigate("/dashboard");
           } else {
             throw new Error("Failed to fetch user data");
           }
@@ -70,7 +70,7 @@ const AuthCallback = () => {
   }, [searchParams, navigate, setUserData]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950">
       <div className="text-center">
         <Loader2 className="w-16 h-16 animate-spin text-indigo-600 dark:text-indigo-400 mx-auto mb-4" />
         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-900 dark:text-white mb-2">

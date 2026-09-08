@@ -45,9 +45,9 @@ export function ProfileSettingsTab({ user }) {
       </div>
 
       {/* Sync with Master Career Profile */}
-      <div className="p-5 rounded-2xl bg-purple-50/60 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-900/40 flex items-center justify-between gap-4">
+      <div className="p-5 rounded-2xl bg-blue-50/60 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900/40 flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
             <Sparkles className="w-5 h-5" />
           </div>
           <div>
@@ -62,7 +62,7 @@ export function ProfileSettingsTab({ user }) {
 
         <a
           href="/career-profile"
-          className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors shrink-0 inline-flex items-center gap-1.5"
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors shrink-0 inline-flex items-center gap-1.5"
         >
           <span>Open Hub</span>
           <ArrowRight className="w-3.5 h-3.5" />

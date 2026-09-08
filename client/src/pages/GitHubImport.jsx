@@ -21,7 +21,7 @@ const GitHubImport = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-indigo-950 dark:to-purple-950 py-20 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/50 to-slate-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950 py-20 px-4">
       <div className="container mx-auto">
         <GitHubExtractor onDataExtracted={handleDataExtracted} />
 
@@ -39,7 +39,7 @@ const GitHubImport = () => {
                 Redirecting to AI Resume Builder...
               </p>
               <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
-                <div className="bg-gradient-to-r from-purple-600 to-pink-600 h-full animate-progress"></div>
+                <div className="bg-gradient-to-r from-blue-600 to-indigo-600 h-full animate-progress"></div>
               </div>
             </div>
           </div>

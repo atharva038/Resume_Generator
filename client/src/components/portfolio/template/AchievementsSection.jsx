@@ -65,11 +65,11 @@ export default function AchievementsSection({ portfolioContext }) {
               <motion.div
                 animate={{ rotate: -360 }}
                 transition={{ duration: 20, repeat: Infinity, linear: true }}
-                className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-6"
+                className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6"
               >
                 <Award className="w-8 h-8 text-white" />
               </motion.div>
-              <div className="text-5xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
+              <div className="text-5xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent mb-2">
                 Consistent
               </div>
               <p className="text-gray-400 mb-6">Problem Solver & Learner</p>

@@ -103,7 +103,7 @@ const RefundPolicy = () => {
               </div>
 
               {/* Pro Monthly */}
-              <div className="bg-purple-50 dark:bg-purple-950/20 rounded-xl p-5 border border-purple-200 dark:border-purple-900/40">
+              <div className="bg-blue-50 dark:bg-blue-950/20 rounded-xl p-5 border border-blue-200 dark:border-blue-900/40">
                 <div className="flex items-start gap-3">
                   <CheckCircle className="w-6 h-6 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-1" />
                   <div>
@@ -486,7 +486,7 @@ const RefundPolicy = () => {
           </section>
 
           {/* Contact Section */}
-          <section className="bg-purple-50 dark:bg-purple-950/20 rounded-xl p-5 border border-purple-200 dark:border-purple-900/40">
+          <section className="bg-blue-50 dark:bg-blue-950/20 rounded-xl p-5 border border-blue-200 dark:border-blue-900/40">
             <div className="flex items-center gap-3 mb-3">
               <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               <h3 className="text-xl font-bold text-gray-900 dark:text-white">

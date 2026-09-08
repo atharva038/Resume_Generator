@@ -24,11 +24,11 @@ const AboutSection = ({ portfolioContext }) => {
           >
             <div className="relative h-96 rounded-2xl overflow-hidden">
               {/* Glowing circular background */}
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 blur-3xl" />
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 blur-3xl" />
               
               {/* Placeholder avatar with name initial */}
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/30 to-purple-500/30 flex items-center justify-center">
-                <div className="w-48 h-48 rounded-full bg-gradient-to-br from-blue-400/50 to-purple-400/50 border-2 border-white/20 flex items-center justify-center text-6xl font-bold text-white/30">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/30 to-cyan-500/30 flex items-center justify-center">
+                <div className="w-48 h-48 rounded-full bg-gradient-to-br from-blue-400/50 to-cyan-400/50 border-2 border-white/20 flex items-center justify-center text-6xl font-bold text-white/30">
                   {name.charAt(0).toUpperCase()}
                 </div>
               </div>
@@ -40,7 +40,7 @@ const AboutSection = ({ portfolioContext }) => {
                 className="absolute inset-0 pointer-events-none"
               >
                 <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl" />
-                <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl" />
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl" />
               </motion.div>
             </div>
           </motion.div>
@@ -60,7 +60,7 @@ const AboutSection = ({ portfolioContext }) => {
             />
 
             <div className="space-y-4">
-              <p className="text-lg font-semibold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+              <p className="text-lg font-semibold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
                 Hi, I'm {name}
               </p>
               <p className="text-gray-300 leading-relaxed">
@@ -89,7 +89,7 @@ const AboutSection = ({ portfolioContext }) => {
             >
               <GlassCard className="p-6">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-400/30 to-purple-400/30 border border-blue-400/30 flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-400/30 to-cyan-400/30 border border-blue-400/30 flex items-center justify-center flex-shrink-0">
                     <span className="text-lg">⚡</span>
                   </div>
                   <div>

@@ -15,9 +15,9 @@ const NotFound = () => {
     <div className="min-h-screen bg-white dark:bg-black relative overflow-hidden">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-40 left-20 w-[500px] h-[500px] bg-purple-500/5 dark:bg-purple-500/5 rounded-full blur-[150px]"></div>
-        <div className="absolute bottom-40 right-20 w-[400px] h-[400px] bg-blue-500/5 dark:bg-blue-500/5 rounded-full blur-[120px]"></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-pink-500/3 dark:bg-pink-500/3 rounded-full blur-[100px]"></div>
+        <div className="absolute top-40 left-20 w-[500px] h-[500px] bg-blue-500/5 dark:bg-blue-500/5 rounded-full blur-[150px]"></div>
+        <div className="absolute bottom-40 right-20 w-[400px] h-[400px] bg-cyan-500/5 dark:bg-cyan-500/5 rounded-full blur-[120px]"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-indigo-500/3 dark:bg-indigo-500/3 rounded-full blur-[100px]"></div>
       </div>
 
       <div className="relative min-h-screen flex items-center justify-center px-4 py-8">
@@ -55,7 +55,7 @@ const NotFound = () => {
 
                 {/* Glowing 404 */}
                 <h1 className="text-[8rem] md:text-[12rem] lg:text-[14rem] font-black leading-none mb-2">
-                  <span className="bg-gradient-to-r from-purple-600 via-blue-600 to-pink-600 dark:from-purple-400 dark:via-blue-400 dark:to-pink-400 bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 dark:from-blue-400 dark:via-indigo-400 dark:to-cyan-400 bg-clip-text text-transparent">
                     404
                   </span>
                 </h1>
@@ -79,7 +79,7 @@ const NotFound = () => {
                       left: `${i < 4 ? 5 + i * 10 : 65 + (i - 4) * 10}%`,
                     }}
                   >
-                    <Sparkles className="w-5 h-5 text-purple-400 dark:text-purple-300" />
+                    <Sparkles className="w-5 h-5 text-blue-400 dark:text-cyan-300" />
                   </motion.div>
                 ))}
 
@@ -125,8 +125,8 @@ const NotFound = () => {
             >
               <div className="bg-white dark:bg-black backdrop-blur-xl rounded-3xl shadow-2xl border border-gray-200 dark:border-zinc-800 p-8 md:p-12">
                 {/* Alert Icon */}
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-purple-50 dark:bg-purple-500/10 border border-purple-200 dark:border-purple-500/30 mb-6">
-                  <AlertTriangle className="w-8 h-8 text-purple-600 dark:text-purple-400" />
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/30 mb-6">
+                  <AlertTriangle className="w-8 h-8 text-blue-600 dark:text-blue-400" />
                 </div>
 
                 {/* Main Message */}
@@ -147,7 +147,7 @@ const NotFound = () => {
                       title: "Homepage",
                       desc: "Start fresh",
                       path: "/",
-                      gradient: "from-purple-500 to-blue-500",
+                      gradient: "from-blue-600 to-indigo-600",
                     },
                     {
                       icon: FileText,
@@ -161,7 +161,7 @@ const NotFound = () => {
                       title: "Create Resume",
                       desc: "Build new",
                       path: "/upload",
-                      gradient: "from-pink-500 to-purple-500",
+                      gradient: "from-cyan-500 to-indigo-600",
                     },
                   ].map((link, index) => (
                     <motion.button
@@ -205,7 +205,7 @@ const NotFound = () => {
                     animate={{opacity: 1, scale: 1}}
                     transition={{delay: 0.8}}
                     onClick={() => navigate("/")}
-                    className="group inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-semibold rounded-xl shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40 transition-all duration-300 hover:scale-105"
+                    className="group inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-300 hover:scale-105"
                   >
                     <Home className="w-5 h-5" />
                     Go to Homepage
@@ -235,7 +235,7 @@ const NotFound = () => {
                 Still can't find what you're looking for?{" "}
                 <a
                   href="/contact"
-                  className="text-purple-600 dark:text-purple-400 hover:underline font-semibold"
+                  className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
                 >
                   Contact our support team
                 </a>

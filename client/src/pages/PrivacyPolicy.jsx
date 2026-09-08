@@ -95,11 +95,10 @@ const PrivacyPolicy = () => {
                   1.3 AI-Generated Content
                 </h3>
                 <p className="leading-relaxed">
-                  We process your resume content through AI services (Google
-                  Gemini and OpenAI GPT-4o) to provide resume enhancement,
-                  parsing, and ATS analysis features. This data is processed
-                  securely and not stored by the AI providers beyond the
-                  processing time.
+                  We process your resume content through AI services (OpenAI
+                  GPT-4o) to provide resume enhancement, parsing, and ATS
+                  analysis features. This data is processed securely and not
+                  stored by the AI providers beyond the processing time.
                 </p>
               </div>
             </div>
@@ -108,8 +107,8 @@ const PrivacyPolicy = () => {
           {/* 2. How We Use Your Information */}
           <section>
             <div className="flex items-center gap-3 mb-4">
-              <div className="p-3 bg-purple-100 dark:bg-purple-900 rounded-lg">
-                <Eye className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+              <div className="p-3 bg-blue-100 dark:bg-blue-900/40 rounded-lg">
+                <Eye className="w-6 h-6 text-blue-600 dark:text-blue-400" />
               </div>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
                 2. How We Use Your Information
@@ -207,28 +206,11 @@ const PrivacyPolicy = () => {
               <div className="space-y-3">
                 <div className="bg-white dark:bg-black p-5 rounded-xl border border-gray-200 dark:border-white/10">
                   <h4 className="font-semibold text-gray-900 dark:text-white mb-1">
-                    Google Gemini AI
-                  </h4>
-                  <p className="text-sm">
-                    Used for resume parsing and content enhancement for free and
-                    pro tier users. Subject to{" "}
-                    <a
-                      href="https://policies.google.com/privacy"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 dark:text-blue-400 hover:underline"
-                    >
-                      Google's Privacy Policy
-                    </a>
-                    .
-                  </p>
-                </div>
-                <div className="bg-white dark:bg-black p-5 rounded-xl border border-gray-200 dark:border-white/10">
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-1">
                     OpenAI GPT-4o
                   </h4>
                   <p className="text-sm">
-                    Used for premium AI features for paid tier users. Subject to{" "}
+                    Used for AI resume parsing, STAR bullet enhancement, and ATS
+                    diagnostic features. Subject to{" "}
                     <a
                       href="https://openai.com/policies/privacy-policy"
                       target="_blank"

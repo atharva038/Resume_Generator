@@ -1,5 +1,6 @@
+@import url("https://fonts.googleapis.com/css2?family=Scoutie+Sans:ital,wght@0,200..800;1,200..800&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap");
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@300;400;500;600;700;800;900&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&family=Playfair+Display:ital,wght@0,400..700;1,400..700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -18,6 +19,12 @@
   body {
     @apply bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors;
   }
+
+  input,
+  textarea,
+  select {
+    @apply text-gray-900 dark:text-zinc-100;
+  }
 }
 
 @layer components {
@@ -30,20 +37,95 @@
   }
 
   .input-field {
-    @apply w-full px-3 py-2 border border-gray-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-black text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all placeholder:text-gray-400 dark:placeholder:text-gray-500;
+    @apply w-full px-3 py-1.5 text-xs sm:text-sm border border-gray-200 dark:border-zinc-800 rounded-md bg-white dark:bg-zinc-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all placeholder:text-gray-400 dark:placeholder:text-gray-500;
   }
 
   .card {
-    @apply bg-white dark:bg-black rounded-lg shadow-sm dark:shadow-lg border border-gray-200 dark:border-zinc-800;
+    @apply bg-white dark:bg-zinc-950 rounded-xl shadow-sm border border-gray-200 dark:border-zinc-800/80;
   }
 
   .section-title {
-    @apply text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3;
+    @apply text-sm sm:text-base font-semibold text-gray-900 dark:text-gray-100 mb-2;
   }
 
-  /* Custom Horizontal Scrollbar Styling */
+  /* Infinite Gliding Animation Classes */
+  @keyframes streamGlideTop {
+    0% {
+      transform: translate3d(0, 0, 0);
+    }
+    100% {
+      transform: translate3d(0, -50%, 0);
+    }
+  }
+
+  @keyframes streamGlideBottom {
+    0% {
+      transform: translate3d(0, -50%, 0);
+    }
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes streamGlideHorizontal {
+    0% {
+      transform: translate3d(0, 0, 0);
+    }
+    100% {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+
+  .animate-glide-top {
+    animation: streamGlideTop 28s linear infinite;
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+
+  .animate-glide-bottom {
+    animation: streamGlideBottom 32s linear infinite;
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+
+  .animate-glide-col-1 {
+    animation: streamGlideTop 52s linear infinite;
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+
+  .animate-glide-col-2 {
+    animation: streamGlideBottom 60s linear infinite;
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+
+  .animate-glide-col-3 {
+    animation: streamGlideTop 56s linear infinite;
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+
+  .animate-glide-horizontal {
+    display: flex;
+    width: max-content;
+    animation: streamGlideHorizontal 48s linear infinite;
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+
+  .animate-glide-horizontal-staggered {
+    display: flex;
+    width: max-content;
+    animation: streamGlideHorizontal 58s linear infinite;
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+
+  /* Custom Slim Scrollbar Styling (Vertical & Horizontal) */
   .scrollbar-thin::-webkit-scrollbar {
-    height: 6px;
+    width: 5px;
+    height: 5px;
   }
 
   .scrollbar-thin::-webkit-scrollbar-track {
@@ -51,15 +133,26 @@
   }
 
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    @apply bg-zinc-700 rounded-full;
+    background-color: rgba(161, 161, 170, 0.45);
+    border-radius: 9999px;
   }
 
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    @apply bg-zinc-600;
+    background-color: rgba(161, 161, 170, 0.75);
   }
 
-  /* Smooth scrolling for horizontal containers */
+  .dark .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: rgba(113, 113, 122, 0.5);
+  }
+
+  .dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(161, 161, 170, 0.75);
+  }
+
+  /* Smooth scrolling for containers */
   .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(161, 161, 170, 0.45) transparent;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
   }
@@ -139,19 +232,182 @@
 
 .resume-layout-shell > * {
   box-sizing: border-box !important;
-  width: calc(210mm / var(--resume-layout-scale)) !important;
-  min-height: calc(11in / var(--resume-layout-scale)) !important;
-  padding: var(--resume-layout-top) var(--resume-layout-side) var(--resume-layout-bottom) !important;
-  zoom: var(--resume-layout-scale);
+  width: calc(210mm / var(--resume-layout-scale, 1)) !important;
+  min-height: calc(11in / var(--resume-layout-scale, 1)) !important;
+  padding: var(--resume-layout-top, 0.35in) var(--resume-layout-side, 0.45in) var(--resume-layout-bottom, 0.35in) !important;
+  zoom: var(--resume-layout-scale, 1);
 }
 
+/* Universal font family override across ALL templates */
 .resume-layout-shell,
-.resume-layout-shell * {
-  font-family: var(--resume-layout-font-family) !important;
+.resume-layout-shell *,
+.resume-layout-shell h1,
+.resume-layout-shell h2,
+.resume-layout-shell h3,
+.resume-layout-shell h4,
+.resume-layout-shell p,
+.resume-layout-shell span,
+.resume-layout-shell a,
+.resume-layout-shell div,
+.resume-layout-shell li,
+.resume-layout-shell .font-resume,
+.resume-layout-shell .font-sans,
+.resume-layout-shell [class*="font-"] {
+  font-family: var(--resume-layout-font-family, "Arial, Helvetica, sans-serif") !important;
 }
 
-.resume-layout-shell section {
-  margin-bottom: calc(10px * var(--resume-layout-spacing)) !important;
+/* Scalable section & element spacing across all templates */
+.resume-layout-shell section,
+.resume-layout-shell [data-section],
+.resume-layout-shell .resume-section {
+  margin-bottom: calc(13px * var(--resume-layout-spacing, 1)) !important;
+}
+
+.resume-layout-shell[data-density="compact"] section,
+.resume-layout-shell[data-density="compact"] [data-section],
+.resume-layout-shell[data-density="compact"] .resume-section {
+  margin-bottom: calc(7px * var(--resume-layout-spacing, 1)) !important;
+}
+
+.resume-layout-shell[data-density="medium"] section,
+.resume-layout-shell[data-density="medium"] [data-section],
+.resume-layout-shell[data-density="medium"] .resume-section {
+  margin-bottom: calc(13px * var(--resume-layout-spacing, 1)) !important;
+}
+
+.resume-layout-shell[data-density="spacious"] section,
+.resume-layout-shell[data-density="spacious"] [data-section],
+.resume-layout-shell[data-density="spacious"] .resume-section {
+  margin-bottom: calc(21px * var(--resume-layout-spacing, 1)) !important;
+}
+
+/* Direct section children (job, project, education item spacing) */
+.resume-layout-shell section > div:not(:last-child),
+.resume-layout-shell [data-section] > div:not(:last-child),
+.resume-layout-shell .resume-section > div:not(:last-child) {
+  margin-bottom: calc(7px * var(--resume-layout-spacing, 1)) !important;
+}
+
+.resume-layout-shell[data-density="compact"] section > div:not(:last-child),
+.resume-layout-shell[data-density="compact"] [data-section] > div:not(:last-child),
+.resume-layout-shell[data-density="compact"] .resume-section > div:not(:last-child) {
+  margin-bottom: calc(3.5px * var(--resume-layout-spacing, 1)) !important;
+}
+
+.resume-layout-shell[data-density="spacious"] section > div:not(:last-child),
+.resume-layout-shell[data-density="spacious"] [data-section] > div:not(:last-child),
+.resume-layout-shell[data-density="spacious"] .resume-section > div:not(:last-child) {
+  margin-bottom: calc(13px * var(--resume-layout-spacing, 1)) !important;
+}
+
+/* Bullet lists and line height spacing */
+.resume-layout-shell ul {
+  margin-top: calc(2px * var(--resume-layout-spacing, 1)) !important;
+  margin-bottom: calc(2.5px * var(--resume-layout-spacing, 1)) !important;
+  padding-left: 1.05rem !important;
+  list-style-type: disc !important;
+}
+
+.resume-layout-shell li {
+  margin-bottom: calc(1.8px * var(--resume-layout-spacing, 1)) !important;
+  line-height: calc(1.24 + 0.15 * var(--resume-layout-spacing, 1)) !important;
+  padding-left: 2px !important;
+}
+
+.resume-layout-shell li::marker {
+  color: var(--resume-layout-bullet-color, #4f46e5);
+  font-size: 0.72em;
+}
+
+.resume-layout-shell p {
+  line-height: calc(1.22 + 0.16 * var(--resume-layout-spacing, 1)) !important;
+}
+
+.resume-layout-shell[data-density="compact"] ul {
+  padding-left: 0.95rem !important;
+  margin-top: 1.5px !important;
+  margin-bottom: 2px !important;
+}
+
+.resume-layout-shell[data-density="compact"] li,
+.resume-layout-shell[data-density="compact"] p {
+  line-height: 1.25 !important;
+  margin-bottom: 1.5px !important;
+}
+
+.resume-layout-shell[data-density="medium"] li,
+.resume-layout-shell[data-density="medium"] p {
+  line-height: 1.38 !important;
+  margin-bottom: 3px !important;
+}
+
+.resume-layout-shell[data-density="spacious"] li,
+.resume-layout-shell[data-density="spacious"] p {
+  line-height: 1.55 !important;
+  margin-bottom: 6px !important;
+}
+
+/* Section headings margin and padding */
+.resume-layout-shell section > h2,
+.resume-layout-shell section > h3,
+.resume-layout-shell [data-section] > h2,
+.resume-layout-shell [data-section] > h3 {
+  margin-bottom: calc(4px * var(--resume-layout-spacing, 1)) !important;
+  padding-bottom: calc(2px * var(--resume-layout-spacing, 1)) !important;
+}
+
+.resume-layout-shell[data-density="compact"] section > h2,
+.resume-layout-shell[data-density="compact"] section > h3 {
+  margin-bottom: 3px !important;
+  padding-bottom: 1.5px !important;
+}
+
+.resume-layout-shell[data-density="spacious"] section > h2,
+.resume-layout-shell[data-density="spacious"] section > h3 {
+  margin-bottom: 8px !important;
+  padding-bottom: 4px !important;
+}
+
+/* Header & Contact block spacing */
+.resume-layout-shell header,
+.resume-layout-shell [data-header] {
+  margin-bottom: calc(10px * var(--resume-layout-spacing, 1)) !important;
+  padding-bottom: calc(6px * var(--resume-layout-spacing, 1)) !important;
+}
+
+.resume-layout-shell[data-density="compact"] header,
+.resume-layout-shell[data-density="compact"] [data-header] {
+  margin-bottom: 5px !important;
+  padding-bottom: 3px !important;
+}
+
+.resume-layout-shell[data-density="spacious"] header,
+.resume-layout-shell[data-density="spacious"] [data-header] {
+  margin-bottom: 18px !important;
+  padding-bottom: 10px !important;
+}
+
+/* Contact Alignment & Stacking across all templates */
+.resume-layout-shell[data-contact="left-inline"] header .contact-container,
+.resume-layout-shell[data-contact="left-inline"] header [data-contact-row],
+.resume-layout-shell[data-contact="left-inline"] header [class*="contact"] {
+  justify-content: flex-start !important;
+  text-align: left !important;
+}
+
+.resume-layout-shell[data-contact="center-inline"] header .contact-container,
+.resume-layout-shell[data-contact="center-inline"] header [data-contact-row],
+.resume-layout-shell[data-contact="center-inline"] header [class*="contact"] {
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+.resume-layout-shell[data-contact="center-stacked"] header .contact-container,
+.resume-layout-shell[data-contact="center-stacked"] header [data-contact-row],
+.resume-layout-shell[data-contact="center-stacked"] header [class*="contact"] {
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 @media print {
@@ -241,9 +497,18 @@
   }
 }
 
-/* TipTap Editor Styles */
+/* TipTap Editor Styles with full Dark Mode support */
 .ProseMirror {
-  @apply outline-none min-h-[100px] px-3 py-2;
+  @apply outline-none min-h-[100px] px-3 py-2 text-gray-900 dark:text-zinc-100 bg-white dark:bg-zinc-900 text-xs sm:text-sm;
+}
+
+.ProseMirror,
+.ProseMirror *,
+.ProseMirror p,
+.ProseMirror li,
+.ProseMirror span,
+.ProseMirror ul {
+  color: inherit !important;
 }
 
 .ProseMirror ul {

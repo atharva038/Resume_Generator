@@ -78,9 +78,9 @@ const AdvancedAnalytics = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-zinc-900 dark:via-black dark:to-zinc-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-zinc-900 dark:via-black dark:to-zinc-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-indigo-600 dark:border-purple-500 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-indigo-600 dark:border-blue-500 mx-auto mb-4"></div>
           <p className="text-gray-600 dark:text-gray-400 text-lg">
             Loading analytics...
           </p>
@@ -91,10 +91,10 @@ const AdvancedAnalytics = () => {
 
   if (error?.upgradeRequired) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-zinc-900 dark:via-black dark:to-zinc-900 flex items-center justify-center p-6">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-zinc-900 dark:via-black dark:to-zinc-900 flex items-center justify-center p-6">
         <div className="max-w-md w-full bg-white dark:bg-zinc-900/80 dark:backdrop-blur-xl rounded-2xl shadow-xl dark:shadow-2xl border dark:border-white/10 p-8 text-center">
           <div className="mb-6">
-            <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
               <Sparkles className="w-10 h-10 text-white" />
             </div>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
@@ -106,7 +106,7 @@ const AdvancedAnalytics = () => {
           <div className="space-y-3">
             <button
               onClick={() => navigate("/pricing")}
-              className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl"
             >
               View Pro Plans
             </button>
@@ -124,7 +124,7 @@ const AdvancedAnalytics = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-zinc-900 dark:via-black dark:to-zinc-900 flex items-center justify-center p-6">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-zinc-900 dark:via-black dark:to-zinc-900 flex items-center justify-center p-6">
         <div className="text-center bg-white dark:bg-zinc-900/80 dark:backdrop-blur-xl rounded-2xl shadow-xl dark:shadow-2xl border dark:border-white/10 p-8 max-w-md">
           <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
             <Activity className="w-8 h-8 text-red-600 dark:text-red-400" />
@@ -173,20 +173,20 @@ const AdvancedAnalytics = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-zinc-900 dark:via-black dark:to-zinc-900 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-zinc-900 dark:via-black dark:to-zinc-900 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                 Advanced Analytics
               </h1>
               <p className="text-gray-600 dark:text-gray-400 mt-2">
                 Comprehensive insights into your resume building journey
               </p>
             </div>
-            <div className="bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30 px-4 py-2 rounded-lg border dark:border-white/10">
+            <div className="bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30 px-4 py-2 rounded-lg border dark:border-white/10">
               <span className="text-sm font-semibold text-indigo-700 dark:text-indigo-400">
                 {analytics.subscriptionInfo.tier.toUpperCase()} PLAN
               </span>
@@ -215,7 +215,7 @@ const AdvancedAnalytics = () => {
             title="AI Requests"
             value={analytics.aiAnalytics.last30Days}
             subtitle="Last 30 days"
-            color="purple"
+            color="cyan"
           />
           <StatCard
             icon={<Target className="w-6 h-6" />}
@@ -474,7 +474,7 @@ const AdvancedAnalytics = () => {
 const StatCard = ({icon, title, value, subtitle, color}) => {
   const colorClasses = {
     indigo: "from-indigo-500 to-indigo-600",
-    purple: "from-purple-500 to-purple-600",
+    cyan: "from-cyan-500 to-blue-600",
     pink: "from-pink-500 to-pink-600",
     green: "from-green-500 to-green-600",
   };

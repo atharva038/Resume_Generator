@@ -44,7 +44,7 @@ export default function PortfolioCard({ portfolio, onCopy, onDelete }) {
 
             {portfolio.themeId && (
               <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-gray-100 dark:bg-zinc-900 text-gray-600 dark:text-zinc-400 border border-gray-200 dark:border-white/[0.06] capitalize">
-                <Sparkles className="w-3 h-3 text-purple-500" />
+                <Sparkles className="w-3 h-3 text-indigo-500" />
                 <span>{portfolio.themeId}</span>
               </span>
             )}
@@ -86,7 +86,7 @@ export default function PortfolioCard({ portfolio, onCopy, onDelete }) {
           <div className="rounded-2xl bg-gray-50 dark:bg-zinc-900/60 p-3 border border-gray-100 dark:border-white/[0.04]">
             <div className="flex items-center justify-between text-gray-500 dark:text-zinc-400 text-[11px] font-medium">
               <span>Resume DLs</span>
-              <Download className="w-3.5 h-3.5 text-purple-500" />
+              <Download className="w-3.5 h-3.5 text-cyan-500" />
             </div>
             <div className="text-lg font-black text-gray-900 dark:text-white mt-0.5">
               {portfolio.analytics?.resumeDownloads || 0}

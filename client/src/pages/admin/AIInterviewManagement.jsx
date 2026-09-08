@@ -613,7 +613,7 @@ const AIInterviewManagement = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Cpu className="w-5 h-5 text-purple-500" />
-                  <h3 className="font-semibold text-gray-900 dark:text-white">OpenAI / Gemini LLM</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-white">OpenAI LLM</h3>
                 </div>
                 <span className="text-xs font-bold px-2 py-0.5 rounded bg-purple-500/10 text-purple-600">
                   {stats?.costs?.breakdown?.llm?.percentage || 0}% of spend

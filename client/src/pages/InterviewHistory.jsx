@@ -118,7 +118,7 @@ const InterviewHistory = () => {
       <div className="min-h-screen bg-white dark:bg-[#0C0C0C] flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="relative">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 animate-pulse"></div>
+            <div className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 animate-pulse"></div>
             <Loader2 className="w-8 h-8 animate-spin text-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
           </div>
           <p className="text-gray-600 dark:text-gray-400">Loading history...</p>
@@ -130,19 +130,19 @@ const InterviewHistory = () => {
   return (
     <div className="min-h-screen bg-white dark:bg-[#0C0C0C] overflow-x-hidden">
       {/* Ambient gradient blur effects */}
-      <div className="fixed top-40 left-20 w-[500px] h-[500px] bg-purple-500/10 dark:bg-purple-500/5 rounded-full blur-[150px] pointer-events-none"></div>
-      <div className="fixed top-60 right-20 w-[400px] h-[400px] bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-[150px] pointer-events-none"></div>
+      <div className="fixed top-40 left-20 w-[500px] h-[500px] bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-[150px] pointer-events-none"></div>
+      <div className="fixed top-60 right-20 w-[400px] h-[400px] bg-cyan-500/10 dark:bg-cyan-500/5 rounded-full blur-[150px] pointer-events-none"></div>
 
       <div className="relative max-w-6xl mx-auto px-4 py-12">
         {/* Header */}
         <div className="mb-10 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500/10 to-blue-500/10 dark:backdrop-blur-xl border border-purple-500/20 dark:border-white/10 rounded-full text-sm font-medium text-purple-600 dark:text-purple-300 shadow-lg mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 dark:backdrop-blur-xl border border-blue-500/20 dark:border-white/10 rounded-full text-sm font-medium text-blue-600 dark:text-blue-300 shadow-lg mb-6">
             <BarChart3 className="w-4 h-4" />
             Interview Analytics
           </div>
           <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white tracking-tight">
             Your{" "}
-            <span className="bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-400 bg-clip-text text-transparent">
               Interview History
             </span>
           </h1>
@@ -152,7 +152,7 @@ const InterviewHistory = () => {
           <div className="mt-6">
             <Link
               to="/interview"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
             >
               <Play className="w-5 h-5" />
               New Interview
@@ -185,7 +185,7 @@ const InterviewHistory = () => {
               icon={Clock}
               label="Total Practice Time"
               value={formatDuration(stats.totalTimeSpent)}
-              color="purple"
+              color="cyan"
             />
             <StatsCard
               icon={TrendingUp}
@@ -213,7 +213,7 @@ const InterviewHistory = () => {
         {stats?.improvementTrend?.length > 0 && (
           <div className="bg-white dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-white/10 p-6 mb-8">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-purple-400" />
+              <TrendingUp className="w-5 h-5 text-blue-500" />
               Score Trend
             </h2>
             <div className="h-32 flex items-end gap-2">
@@ -255,7 +255,7 @@ const InterviewHistory = () => {
               setFilter(e.target.value);
               setPagination((prev) => ({...prev, skip: 0}));
             }}
-            className="px-4 py-2.5 border border-gray-200 dark:border-white/10 rounded-xl bg-white dark:bg-white/5 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
+            className="px-4 py-2.5 border border-gray-200 dark:border-white/10 rounded-xl bg-white dark:bg-white/5 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
           >
             <option value="">All Interviews</option>
             <option value="completed">Completed</option>
@@ -267,8 +267,8 @@ const InterviewHistory = () => {
         {/* History List */}
         {history.length === 0 ? (
           <div className="bg-white dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-white/10 p-12 text-center">
-            <div className="w-20 h-20 rounded-full bg-purple-500/10 flex items-center justify-center mx-auto mb-6">
-              <Sparkles className="w-10 h-10 text-purple-400" />
+            <div className="w-20 h-20 rounded-full bg-blue-500/10 flex items-center justify-center mx-auto mb-6">
+              <Sparkles className="w-10 h-10 text-blue-400" />
             </div>
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
               No Interviews Yet
@@ -279,7 +279,7 @@ const InterviewHistory = () => {
             </p>
             <Link
               to="/interview"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
             >
               <Play className="w-5 h-5" />
               Start Interview
@@ -314,8 +314,8 @@ const InterviewHistory = () => {
                 >
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-purple-500/20 flex items-center justify-center shrink-0">
-                        <Icon className="w-6 h-6 text-purple-400" />
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border border-blue-500/20 flex items-center justify-center shrink-0">
+                        <Icon className="w-6 h-6 text-blue-400" />
                       </div>
                       <div>
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -347,7 +347,7 @@ const InterviewHistory = () => {
                               {formatDuration(interview.totalDurationSeconds)}
                             </span>
                           ) : null}
-                          <span className="text-xs text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-md font-medium">
+                          <span className="text-xs text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded-md font-medium">
                             {answeredQuestions}/{totalQuestions} questions ({progressPercent}%)
                           </span>
                         </div>
@@ -357,20 +357,12 @@ const InterviewHistory = () => {
                     <div className="flex items-center justify-between md:justify-end gap-4 w-full md:w-auto mt-2 md:mt-0 pt-3 md:pt-0 border-t md:border-t-0 border-gray-100 dark:border-white/5">
                       {interview.result && interview.result.overallScore > 0 ? (
                         <div className="text-right">
-                          <div
-                            className={`text-2xl font-bold ${
-                              interview.result.overallScore >= 70
-                                ? "text-green-500"
-                                : interview.result.overallScore >= 50
-                                  ? "text-yellow-500"
-                                  : "text-red-500"
-                            }`}
-                          >
-                            {interview.result.overallScore}%
-                          </div>
-                          <div className="flex items-center gap-1 text-xs text-gray-500">
+                          <div className="flex items-center gap-2">
+                            <span className="text-2xl font-bold text-gray-900 dark:text-white">
+                              {interview.result.overallScore}%
+                            </span>
                             <TrendIcon
-                              className={`w-3 h-3 ${
+                              className={`w-4 h-4 ${
                                 interview.result?.comparisonData?.trend ===
                                 "improving"
                                   ? "text-green-500"
@@ -380,6 +372,8 @@ const InterviewHistory = () => {
                                     : "text-gray-500"
                               }`}
                             />
+                          </div>
+                          <div className="text-xs text-gray-500">
                             {interview.result.grade}
                           </div>
                         </div>
@@ -391,7 +385,7 @@ const InterviewHistory = () => {
                           </div>
                           <div className="w-full bg-gray-200 dark:bg-white/10 h-1.5 rounded-full overflow-hidden">
                             <div
-                              className="bg-gradient-to-r from-purple-500 to-blue-500 h-full rounded-full transition-all duration-300"
+                              className="bg-gradient-to-r from-blue-600 to-cyan-500 h-full rounded-full transition-all duration-300"
                               style={{ width: `${progressPercent}%` }}
                             />
                           </div>
@@ -402,7 +396,7 @@ const InterviewHistory = () => {
                         {(interview.status === "completed" || answeredQuestions > 0) && (
                           <Link
                             to={`/interview/result/${interview._id}`}
-                            className="p-2 text-purple-400 hover:bg-purple-500/10 rounded-xl transition-colors flex items-center gap-1 text-sm font-medium"
+                            className="p-2 text-blue-500 hover:bg-blue-500/10 rounded-xl transition-colors flex items-center gap-1 text-sm font-medium"
                             title={interview.status === "completed" ? "View Full Report" : "View Partial Progress"}
                           >
                             <Eye className="w-4 h-4" />
@@ -469,8 +463,7 @@ const StatsCard = ({icon: Icon, label, value, color}) => {
     yellow:
       "from-yellow-500/20 to-yellow-600/20 border-yellow-500/20 text-yellow-400",
     red: "from-red-500/20 to-red-600/20 border-red-500/20 text-red-400",
-    purple:
-      "from-purple-500/20 to-purple-600/20 border-purple-500/20 text-purple-400",
+    cyan: "from-cyan-500/20 to-blue-600/20 border-cyan-500/20 text-cyan-400",
   };
 
   const iconBgClasses = {
@@ -478,7 +471,7 @@ const StatsCard = ({icon: Icon, label, value, color}) => {
     green: "bg-green-500/10 text-green-400",
     yellow: "bg-yellow-500/10 text-yellow-400",
     red: "bg-red-500/10 text-red-400",
-    purple: "bg-purple-500/10 text-purple-400",
+    cyan: "bg-cyan-500/10 text-cyan-400",
   };
 
   return (

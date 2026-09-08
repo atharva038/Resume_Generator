@@ -257,7 +257,7 @@ export const getInterviewAdminStats = async (req, res) => {
                   : 0,
             },
             llm: {
-              name: "OpenAI / Gemini LLM Tokens",
+              name: "OpenAI LLM Tokens",
               costInr: +aggregateLlmCostInr.toFixed(2),
               costUsd: +(aggregateLlmCostInr / exchangeRate).toFixed(2),
               percentage:

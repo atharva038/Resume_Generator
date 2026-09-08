@@ -1,4 +1,6 @@
 import {forwardRef, useRef, useEffect, useMemo} from "react";
+import {isDescriptionDuplicatedInBullets, cleanBulletText} from "./templateUtils";
+import {Mail, Phone, MapPin, Linkedin, Github, Globe, ExternalLink} from "lucide-react";
 
 /**
  * Metro Grid Narrative template
@@ -24,7 +26,7 @@ const GitHubStyleTemplate = forwardRef(
           currentHeight,
           maxHeight,
           overflowPercentage,
-          percentage: Math.round((currentHeight / maxHeight) * 100), // Allow > 100% for overflow
+          percentage: Math.round((currentHeight / maxHeight) * 100),
           templateName: "GitHubStyleTemplate",
         };
 
@@ -43,7 +45,7 @@ const GitHubStyleTemplate = forwardRef(
         text: "#111827",
         textLight: "#374151",
         textMuted: "#4b5563",
-        border: "#d1d5db",
+        border: "#cbd5e1",
         panelBg: "#f8fafc",
         bg: "#ffffff",
       },
@@ -55,8 +57,8 @@ const GitHubStyleTemplate = forwardRef(
         text: "#111827",
         textLight: "#334155",
         textMuted: "#475569",
-        border: "#d4d4d8",
-        panelBg: "#f8fafc",
+        border: "#cbd5e1",
+        panelBg: "#f0fdfa",
         bg: "#ffffff",
       },
       metroBurgundy: {
@@ -67,8 +69,68 @@ const GitHubStyleTemplate = forwardRef(
         text: "#1f2937",
         textLight: "#374151",
         textMuted: "#6b7280",
-        border: "#d4d4d8",
-        panelBg: "#faf7f7",
+        border: "#fbcfe8",
+        panelBg: "#fdf2f8",
+        bg: "#ffffff",
+      },
+      cyberIndigo: {
+        primary: "#3730a3",
+        accent: "#4f46e5",
+        rail: "#6366f1",
+        badgeText: "#ffffff",
+        text: "#0f172a",
+        textLight: "#334155",
+        textMuted: "#64748b",
+        border: "#c7d2fe",
+        panelBg: "#f5f7ff",
+        bg: "#ffffff",
+      },
+      terminalGreen: {
+        primary: "#14532d",
+        accent: "#16a34a",
+        rail: "#22c55e",
+        badgeText: "#ffffff",
+        text: "#0f172a",
+        textLight: "#334155",
+        textMuted: "#64748b",
+        border: "#bbf7d0",
+        panelBg: "#f0fdf4",
+        bg: "#ffffff",
+      },
+      electricCobalt: {
+        primary: "#1e40af",
+        accent: "#2563eb",
+        rail: "#3b82f6",
+        badgeText: "#ffffff",
+        text: "#0f172a",
+        textLight: "#334155",
+        textMuted: "#64748b",
+        border: "#bfdbfe",
+        panelBg: "#eff6ff",
+        bg: "#ffffff",
+      },
+      amberOchre: {
+        primary: "#9a3412",
+        accent: "#c2410c",
+        rail: "#ea580c",
+        badgeText: "#ffffff",
+        text: "#1f2937",
+        textLight: "#374151",
+        textMuted: "#6b7280",
+        border: "#fed7aa",
+        panelBg: "#fff7ed",
+        bg: "#ffffff",
+      },
+      obsidianSlate: {
+        primary: "#18181b",
+        accent: "#27272a",
+        rail: "#52525b",
+        badgeText: "#ffffff",
+        text: "#09090b",
+        textLight: "#27272a",
+        textMuted: "#52525b",
+        border: "#e4e4e7",
+        panelBg: "#f4f4f5",
         bg: "#ffffff",
       },
     };
@@ -139,47 +201,6 @@ const GitHubStyleTemplate = forwardRef(
         customSections: "Additional Information",
       };
       return customTitles[sectionId] || defaultTitles[sectionId] || sectionId;
-    };
-
-    const formatContactItem = (label, value) => {
-      if (!value) return null;
-
-      let href = null;
-      if (value.includes("@")) {
-        href = `mailto:${value}`;
-      } else if (value.startsWith("http")) {
-        href = value;
-      } else if (
-        label === "LinkedIn" ||
-        label === "GitHub" ||
-        label === "Website" ||
-        label === "Portfolio"
-      ) {
-        href = value.startsWith("www.") ? `https://${value}` : `https://${value}`;
-      }
-
-      if (!href) {
-        return (
-          <span style={{fontSize: "9pt", color: selectedTheme.textLight}}>
-            {label}: {value}
-          </span>
-        );
-      }
-
-      return (
-        <a
-          href={href}
-          target={href.startsWith("mailto:") ? undefined : "_blank"}
-          rel={href.startsWith("mailto:") ? undefined : "noopener noreferrer"}
-          style={{
-            fontSize: "9pt",
-            color: selectedTheme.accent,
-            textDecoration: "none",
-          }}
-        >
-          {label}: {value}
-        </a>
-      );
     };
 
     const renderBandHeader = (label, index) => (
@@ -334,7 +355,9 @@ const GitHubStyleTemplate = forwardRef(
                 {exp.location}
               </div>
             )}
-            {exp.description && (
+            {exp.description &&
+              (!exp.bullets?.length ||
+                !isDescriptionDuplicatedInBullets(exp.description, exp.bullets)) && (
               <p
                 style={{
                   margin: "0 0 3px 0",
@@ -348,21 +371,29 @@ const GitHubStyleTemplate = forwardRef(
               </p>
             )}
             {exp.bullets?.length > 0 && (
-              <ul style={{margin: "0", paddingLeft: "18px"}}>
-                {exp.bullets.map((bullet, bulletIndex) => (
-                  <li
-                    key={bulletIndex}
-                    style={{
-                      marginBottom: "1px",
-                      color: selectedTheme.text,
-                      fontSize: compact.bodySize,
-                      lineHeight: "1.3",
-                      fontFamily: bodyFont,
-                    }}
-                  >
-                    {bullet}
-                  </li>
-                ))}
+              <ul style={{margin: "0", paddingLeft: "0", listStyle: "none"}}>
+                {exp.bullets.map((bullet, bulletIndex) => {
+                  const cleaned = cleanBulletText(bullet);
+                  if (!cleaned) return null;
+                  return (
+                    <li
+                      key={bulletIndex}
+                      style={{
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: "6px",
+                        marginBottom: "1px",
+                        color: selectedTheme.text,
+                        fontSize: compact.bodySize,
+                        lineHeight: "1.3",
+                        fontFamily: bodyFont,
+                      }}
+                    >
+                      <span style={{ color: selectedTheme.accent, fontWeight: "700", flexShrink: 0 }}>•</span>
+                      <span style={{ flex: 1 }}>{cleaned}</span>
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </div>
@@ -433,7 +464,9 @@ const GitHubStyleTemplate = forwardRef(
                 ))}
               </div>
             )}
-            {project.description && (
+            {project.description &&
+              (!project.bullets?.length ||
+                !isDescriptionDuplicatedInBullets(project.description, project.bullets)) && (
               <p
                 style={{
                   margin: "0 0 3px 0",
@@ -447,21 +480,29 @@ const GitHubStyleTemplate = forwardRef(
               </p>
             )}
             {project.bullets?.length > 0 && (
-              <ul style={{margin: 0, paddingLeft: "18px"}}>
-                {project.bullets.map((bullet, bulletIndex) => (
-                  <li
-                    key={bulletIndex}
-                    style={{
-                      marginBottom: "1px",
-                      color: selectedTheme.text,
-                      fontSize: compact.bodySize,
-                      lineHeight: "1.3",
-                      fontFamily: bodyFont,
-                    }}
-                  >
-                    {bullet}
-                  </li>
-                ))}
+              <ul style={{margin: 0, paddingLeft: 0, listStyle: "none"}}>
+                {project.bullets.map((bullet, bulletIndex) => {
+                  const cleaned = cleanBulletText(bullet);
+                  if (!cleaned) return null;
+                  return (
+                    <li
+                      key={bulletIndex}
+                      style={{
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: "6px",
+                        marginBottom: "1px",
+                        color: selectedTheme.text,
+                        fontSize: compact.bodySize,
+                        lineHeight: "1.3",
+                        fontFamily: bodyFont,
+                      }}
+                    >
+                      <span style={{ color: selectedTheme.accent, fontWeight: "700", flexShrink: 0 }}>•</span>
+                      <span style={{ flex: 1 }}>{cleaned}</span>
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </div>
@@ -643,17 +684,72 @@ const GitHubStyleTemplate = forwardRef(
       return null;
     };
 
+    const formatContactItem = (icon, label, value) => {
+      if (!value) return null;
+
+      let href = null;
+      let displayValue = value;
+
+      if (value.includes("@")) {
+        href = `mailto:${value}`;
+      } else if (value.startsWith("http")) {
+        href = value;
+        displayValue = value.replace(/^https?:\/\/(www\.)?/i, "").replace(/\/$/, "");
+      } else if (
+        label === "LinkedIn" ||
+        label === "GitHub" ||
+        label === "Website" ||
+        label === "Portfolio"
+      ) {
+        href = value.startsWith("www.") ? `https://${value}` : `https://${value}`;
+        displayValue = value.replace(/^https?:\/\/(www\.)?/i, "").replace(/\/$/, "");
+      }
+
+      const IconComponent = icon;
+
+      return (
+        <div
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "5px",
+            fontSize: compact.smallText,
+            color: selectedTheme.textLight,
+          }}
+        >
+          {IconComponent && (
+            <IconComponent size={12} style={{ color: selectedTheme.accent, flexShrink: 0 }} />
+          )}
+          {href ? (
+            <a
+              href={href}
+              target={href.startsWith("mailto:") ? undefined : "_blank"}
+              rel={href.startsWith("mailto:") ? undefined : "noopener noreferrer"}
+              style={{
+                color: selectedTheme.accent,
+                textDecoration: "none",
+                borderBottom: `1px dotted ${selectedTheme.border}`,
+              }}
+            >
+              {displayValue}
+            </a>
+          ) : (
+            <span>{displayValue}</span>
+          )}
+        </div>
+      );
+    };
+
     const contacts = [
-      ["Email", resumeData?.contact?.email],
-      ["Phone", resumeData?.contact?.phone],
-      ["Location", resumeData?.contact?.location],
-      ["LinkedIn", resumeData?.contact?.linkedin],
-      ["GitHub", resumeData?.contact?.github],
-      ["Portfolio", resumeData?.contact?.portfolio],
-      ["Website", resumeData?.contact?.website],
+      [Mail, "Email", resumeData?.contact?.email],
+      [Phone, "Phone", resumeData?.contact?.phone],
+      [MapPin, "Location", resumeData?.contact?.location || resumeData?.location],
+      [Linkedin, "LinkedIn", resumeData?.contact?.linkedin],
+      [Github, "GitHub", resumeData?.contact?.github],
+      [Globe, "Portfolio", resumeData?.contact?.portfolio || resumeData?.contact?.website],
     ]
-      .map(([label, value]) => {
-        const item = formatContactItem(label, value);
+      .map(([icon, label, value]) => {
+        const item = formatContactItem(icon, label, value);
         if (!item) return null;
         return <span key={`${label}-${value}`}>{item}</span>;
       })
@@ -680,75 +776,68 @@ const GitHubStyleTemplate = forwardRef(
       >
         <header
           style={{
-            display: "grid",
-            gridTemplateColumns: "1.3fr 1fr",
-            gap: "10px",
-            marginBottom: "8px",
-            borderBottom: `1px solid ${selectedTheme.border}`,
-            paddingBottom: "5px",
+            marginBottom: "10px",
+            borderBottom: `1.5px solid ${selectedTheme.border}`,
+            paddingBottom: "8px",
           }}
         >
-          <div>
-            <h1
-              style={{
-                margin: "0 0 2px 0",
-                color: selectedTheme.primary,
-                fontSize: isDenseContent ? "18pt" : "20pt",
-                lineHeight: "1.1",
-                fontWeight: "800",
-                letterSpacing: "0.4px",
-                fontFamily: headingFont,
-              }}
-            >
-              {resumeData?.name || "Your Name"}
-            </h1>
-            <div
-              style={{
-                fontSize: compact.smallText,
-                color: selectedTheme.textLight,
-                fontFamily: headingFont,
-                fontWeight: "600",
-                letterSpacing: "0.3px",
-              }}
-            >
-              METRO GRID NARRATIVE PROFILE
-            </div>
-          </div>
-
           <div
             style={{
               display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-start",
-              gap: "2px",
-              border: `1px solid ${selectedTheme.border}`,
-              borderRadius: "6px",
-              padding: "5px 7px",
-              backgroundColor: selectedTheme.panelBg,
-              minHeight: "fit-content",
+              justifyContent: "space-between",
+              alignItems: "flex-end",
+              flexWrap: "wrap",
+              gap: "6px",
             }}
           >
+            <div>
+              <h1
+                style={{
+                  margin: 0,
+                  color: selectedTheme.primary,
+                  fontSize: isDenseContent ? "20pt" : "23pt",
+                  lineHeight: "1.15",
+                  fontWeight: "800",
+                  letterSpacing: "-0.4px",
+                  fontFamily: headingFont,
+                }}
+              >
+                {resumeData?.name || "Your Name"}
+              </h1>
+              {(resumeData?.title || resumeData?.jobTitle || resumeData?.designation) && (
+                <div
+                  style={{
+                    fontSize: isDenseContent ? "9.8pt" : "11pt",
+                    color: selectedTheme.accent,
+                    fontFamily: headingFont,
+                    fontWeight: "700",
+                    letterSpacing: "0.2px",
+                    marginTop: "3px",
+                  }}
+                >
+                  {resumeData.title || resumeData.jobTitle || resumeData.designation}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {contacts.length > 0 && (
             <div
               style={{
-                color: selectedTheme.primary,
-                fontWeight: "700",
-                fontSize: compact.smallText,
-                fontFamily: headingFont,
-                textTransform: "uppercase",
-                letterSpacing: "0.6px",
-                marginBottom: "1px",
+                display: "flex",
+                flexWrap: "wrap",
+                alignItems: "center",
+                gap: "5px 14px",
+                border: `1px solid ${selectedTheme.border}`,
+                borderRadius: "6px",
+                padding: "5px 10px",
+                backgroundColor: selectedTheme.panelBg,
+                marginTop: "7px",
               }}
             >
-              Contact
+              {contacts}
             </div>
-            {contacts.length > 0 ? (
-              contacts
-            ) : (
-              <span style={{fontSize: compact.smallText, color: selectedTheme.textMuted}}>
-                Add contact details in the editor.
-              </span>
-            )}
-          </div>
+          )}
         </header>
 
         {sectionOrder.map((sectionId, index) =>

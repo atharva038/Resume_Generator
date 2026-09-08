@@ -27,14 +27,23 @@ import {
   Copy,
   Check,
   ExternalLink,
+  Camera,
+  Upload,
+  RefreshCw,
+  Loader2,
+  RotateCcw,
+  Image as ImageIcon,
+  X,
+  LayoutTemplate,
 } from "lucide-react";
 import { portfolioAPI } from "@/api/portfolio.api";
-import { getProfileImageUrl } from "@/utils/profileImageUrl";
 import { portfolioThemeList } from "@/components/portfolio/themes/themeRegistry";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigationBlocker } from "@/context/NavigationBlockerContext";
 import PortfolioEditorHeader from "@/components/portfolio/PortfolioEditorHeader";
 import PortfolioPanel from "@/components/portfolio/PortfolioPanel";
+import PortfolioTemplateSelectorModal from "@/components/portfolio/PortfolioTemplateSelectorModal";
+import { resolveImageUrl } from "@/utils/imageUrlResolver";
 
 const blankProject = {
   title: "",
@@ -195,6 +204,65 @@ const normalizeSectionOrder = (sectionOrder) =>
     ]),
   ].filter((section) => DEFAULT_SECTION_ORDER.includes(section));
 
+const resizeImageToFavicon = (file, size = 64) => {
+  return new Promise((resolve, reject) => {
+    if (file.type === "image/svg+xml" || file.name.endsWith(".ico")) {
+      resolve(file);
+      return;
+    }
+    const reader = new FileReader();
+    reader.onerror = (err) => reject(err);
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onerror = (err) => reject(err);
+      img.onload = () => {
+        try {
+          const canvas = document.createElement("canvas");
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) {
+            resolve(file);
+            return;
+          }
+
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = "high";
+
+          // Center crop to 1:1 aspect ratio
+          const minDim = Math.min(img.width, img.height);
+          const sx = (img.width - minDim) / 2;
+          const sy = (img.height - minDim) / 2;
+
+          ctx.clearRect(0, 0, size, size);
+          ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, size, size);
+
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                const resizedFile = new File([blob], "favicon.png", {
+                  type: "image/png",
+                  lastModified: Date.now(),
+                });
+                resolve(resizedFile);
+              } else {
+                resolve(file);
+              }
+            },
+            "image/png",
+            1.0
+          );
+        } catch (err) {
+          console.warn("Canvas resize failed, fallback to original file:", err);
+          resolve(file);
+        }
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+};
+
 export default function PortfolioEditor() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -209,6 +277,15 @@ export default function PortfolioEditor() {
   const [saving, setSaving] = useState(false);
   const [aiAction, setAiAction] = useState("");
   const [copiedLink, setCopiedLink] = useState(false);
+  const [showProfileUrlInput, setShowProfileUrlInput] = useState(false);
+  const [showHeroUrlInput, setShowHeroUrlInput] = useState(false);
+  const [uploadingProfile, setUploadingProfile] = useState(false);
+  const [uploadingHero, setUploadingHero] = useState(false);
+  const [uploadingOgImage, setUploadingOgImage] = useState(false);
+  const [showOgUrlInput, setShowOgUrlInput] = useState(false);
+  const [uploadingFavicon, setUploadingFavicon] = useState(false);
+  const [showFaviconUrlInput, setShowFaviconUrlInput] = useState(false);
+  const [showTemplateSelector, setShowTemplateSelector] = useState(false);
   const [panelControl, setPanelControl] = useState({
     version: 0,
     open: null,
@@ -657,6 +734,182 @@ export default function PortfolioEditor() {
     }
   };
 
+  const handleUploadProfilePhoto = async (file) => {
+    if (!file) return;
+    if (file.size > 8 * 1024 * 1024) {
+      toast.error("Image must be under 8MB");
+      return;
+    }
+    const oldUrl = form.profileImage;
+    setUploadingProfile(true);
+    const toastId = toast.loading("Uploading profile photo to Cloud CDN...");
+    try {
+      const res = await portfolioAPI.uploadImage(file, oldUrl);
+      if (res.data?.url) {
+        updateField("profileImage", res.data.url);
+        if (!form.seo?.ogImage || form.seo.ogImage === oldUrl) {
+          updateNestedField("seo", "ogImage", res.data.url);
+        }
+        toast.success("Profile photo uploaded and linked to social share preview (OG Image)!", { id: toastId });
+        return;
+      }
+      throw new Error("No upload URL returned");
+    } catch (err) {
+      console.warn("Cloud upload fallback:", err);
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        if (ev.target?.result) {
+          updateField("profileImage", ev.target.result);
+          if (!form.seo?.ogImage || form.seo.ogImage === oldUrl) {
+            updateNestedField("seo", "ogImage", ev.target.result);
+          }
+          toast.success("Photo loaded!", { id: toastId });
+        }
+      };
+      reader.readAsDataURL(file);
+    } finally {
+      setUploadingProfile(false);
+    }
+  };
+
+  const handleRemoveProfilePhoto = async () => {
+    const oldUrl = form.profileImage;
+    updateField("profileImage", "");
+    if (form.seo?.ogImage === oldUrl) {
+      updateNestedField("seo", "ogImage", "");
+    }
+    if (oldUrl && oldUrl.includes("cloudinary.com")) {
+      portfolioAPI.deleteImage(oldUrl).catch(() => {});
+    }
+    toast.success("Profile photo removed (switched to text-first)");
+  };
+
+  const handleUploadHeroBanner = async (file) => {
+    if (!file) return;
+    if (file.size > 8 * 1024 * 1024) {
+      toast.error("Image must be under 8MB");
+      return;
+    }
+    const oldUrl = form.heroImage;
+    setUploadingHero(true);
+    const toastId = toast.loading("Uploading hero banner / cutout to Cloud CDN...");
+    try {
+      const res = await portfolioAPI.uploadImage(file, oldUrl);
+      if (res.data?.url) {
+        updateField("heroImage", res.data.url);
+        toast.success("Hero image uploaded to Cloud CDN!", { id: toastId });
+        return;
+      }
+      throw new Error("No upload URL returned");
+    } catch (err) {
+      console.warn("Cloud upload fallback:", err);
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        if (ev.target?.result) {
+          updateField("heroImage", ev.target.result);
+          toast.success("Hero image loaded!", { id: toastId });
+        }
+      };
+      reader.readAsDataURL(file);
+    } finally {
+      setUploadingHero(false);
+    }
+  };
+
+  const handleRemoveHeroBanner = async () => {
+    const oldUrl = form.heroImage;
+    updateField("heroImage", "");
+    if (oldUrl && oldUrl.includes("cloudinary.com")) {
+      portfolioAPI.deleteImage(oldUrl).catch(() => {});
+    }
+    toast.success("Hero banner removed");
+  };
+
+  const handleUploadOgImage = async (file) => {
+    if (!file) return;
+    if (file.size > 8 * 1024 * 1024) {
+      toast.error("Image must be under 8MB");
+      return;
+    }
+    const oldUrl = form.seo?.ogImage;
+    setUploadingOgImage(true);
+    const toastId = toast.loading("Uploading social share banner to Cloud CDN...");
+    try {
+      const res = await portfolioAPI.uploadImage(file, oldUrl);
+      if (res.data?.url) {
+        updateNestedField("seo", "ogImage", res.data.url);
+        toast.success("Custom social sharing banner uploaded!", { id: toastId });
+        return;
+      }
+      throw new Error("No upload URL returned");
+    } catch (err) {
+      console.warn("Cloud upload fallback:", err);
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        if (ev.target?.result) {
+          updateNestedField("seo", "ogImage", ev.target.result);
+          toast.success("Banner loaded!", { id: toastId });
+        }
+      };
+      reader.readAsDataURL(file);
+    } finally {
+      setUploadingOgImage(false);
+    }
+  };
+
+  const handleResetOgImage = async () => {
+    const oldUrl = form.seo?.ogImage;
+    updateNestedField("seo", "ogImage", "");
+    if (oldUrl && oldUrl !== form.profileImage && oldUrl.includes("cloudinary.com")) {
+      portfolioAPI.deleteImage(oldUrl).catch(() => {});
+    }
+    toast.success("Reset to Profile Photo as default social share preview!");
+  };
+
+  const handleUploadFavicon = async (file) => {
+    if (!file) return;
+    if (file.size > 8 * 1024 * 1024) {
+      toast.error("Image must be under 8MB");
+      return;
+    }
+    const oldUrl = form.seo?.favicon;
+    setUploadingFavicon(true);
+    const toastId = toast.loading("Processing & converting favicon to 64x64 PNG...");
+    try {
+      const faviconFile = await resizeImageToFavicon(file, 64);
+      toast.loading("Uploading favicon to Cloud CDN...", { id: toastId });
+
+      const res = await portfolioAPI.uploadImage(faviconFile, oldUrl);
+      if (res.data?.url) {
+        updateNestedField("seo", "favicon", res.data.url);
+        toast.success("Favicon converted to 64x64 PNG and saved!", { id: toastId });
+        return;
+      }
+      throw new Error("No upload URL returned");
+    } catch (err) {
+      console.warn("Favicon upload fallback:", err);
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        if (ev.target?.result) {
+          updateNestedField("seo", "favicon", ev.target.result);
+          toast.success("Favicon loaded!", { id: toastId });
+        }
+      };
+      reader.readAsDataURL(file);
+    } finally {
+      setUploadingFavicon(false);
+    }
+  };
+
+  const handleRemoveFavicon = async () => {
+    const oldUrl = form.seo?.favicon;
+    updateNestedField("seo", "favicon", "");
+    if (oldUrl && oldUrl.includes("cloudinary.com")) {
+      portfolioAPI.deleteImage(oldUrl).catch(() => {});
+    }
+    toast.success("Favicon removed");
+  };
+
   const handleCopyPublicLink = () => {
     if (!publicUrl) return;
     navigator.clipboard.writeText(publicUrl);
@@ -688,6 +941,7 @@ export default function PortfolioEditor() {
       <SEO
         title={`Editing: ${form.title || "Portfolio"} | SmartNShine`}
         description="Edit, design, and configure your live developer portfolio website."
+        noindex={true}
       />
 
       {/* Top Header */}
@@ -697,6 +951,7 @@ export default function PortfolioEditor() {
         saving={saving}
         onSave={() => handleSave()}
         onPreview={handlePreview}
+        onShowTemplateSelector={() => setShowTemplateSelector(true)}
         onPublishToggle={handlePublishToggle}
         isPublished={isPublished}
         publicUrl={publicUrl}
@@ -852,59 +1107,251 @@ export default function PortfolioEditor() {
                     className="w-full px-4 py-3.5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm sm:text-base font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
                 </div>
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200">
-                      Profile Photo URL
-                    </label>
-                    {form.profileImage && (
-                      <button
-                        type="button"
-                        onClick={() => updateField("profileImage", "")}
-                        className="text-xs text-red-500 hover:text-red-600 font-bold cursor-pointer"
-                      >
-                        Remove Photo (Switch to Text-First)
-                      </button>
-                    )}
+                {/* Profile Photo (Visual Preview Box) */}
+                <div className="rounded-2xl border border-gray-200/90 dark:border-white/[0.08] bg-gray-50/50 dark:bg-zinc-900/40 p-4 sm:p-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <label className="text-xs sm:text-sm font-bold text-gray-900 dark:text-zinc-100 flex items-center gap-2">
+                        <span>Profile Photo / Headshot</span>
+                        {form.profileImage && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                            ✓ Active
+                          </span>
+                        )}
+                      </label>
+                      <p className="text-[11px] text-gray-500 dark:text-zinc-400 mt-0.5">
+                        Clean portrait headshot or transparent background cutout.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowProfileUrlInput(!showProfileUrlInput)}
+                      className="text-[11px] text-gray-500 dark:text-zinc-400 hover:text-emerald-600 dark:hover:text-emerald-400 underline font-medium transition-colors"
+                    >
+                      {showProfileUrlInput ? "Hide URL" : "Edit URL"}
+                    </button>
                   </div>
-                  <div className="flex items-center gap-3">
-                    {form.profileImage ? (
-                      <img
-                        src={getProfileImageUrl(form.profileImage)}
-                        alt="Profile preview"
-                        className="w-11 h-11 rounded-full object-cover border-2 border-emerald-500 shrink-0"
-                        onError={(e) => {
-                          e.target.style.display = "none";
-                        }}
-                      />
-                    ) : (
-                      <div className="w-11 h-11 rounded-full bg-gray-100 dark:bg-zinc-800 flex items-center justify-center text-xs font-bold text-gray-400 shrink-0 border border-dashed border-gray-300 dark:border-zinc-700">
-                        No Photo
+
+                  {form.profileImage ? (
+                    <div className="flex flex-col sm:flex-row items-center gap-4 p-3 rounded-2xl bg-white dark:bg-zinc-900/90 border border-gray-200 dark:border-white/10 shadow-sm">
+                      {/* Large Image Preview Box */}
+                      <div className="relative group w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden bg-gray-100 dark:bg-zinc-950 border-2 border-emerald-500/40 shrink-0 shadow-inner flex items-center justify-center">
+                        <img
+                          src={resolveImageUrl(form.profileImage)}
+                          alt="Profile photo preview"
+                          referrerPolicy="no-referrer"
+                          crossOrigin="anonymous"
+                          className="w-full h-full object-cover object-center"
+                          onError={(e) => {
+                            e.target.style.display = "none";
+                          }}
+                        />
                       </div>
-                    )}
-                    <input
-                      value={form.profileImage || ""}
-                      onChange={(e) => updateField("profileImage", e.target.value.trim())}
-                      placeholder="https://example.com/headshot.jpg (leave empty for text-first theme)"
-                      className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-xs sm:text-sm font-mono focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-                    />
-                  </div>
-                  <p className="mt-1.5 text-[11px] text-gray-500 dark:text-zinc-400">
-                    {form.profileImage
-                      ? "✓ Photo-based layout active. Headshot and avatar ring will be displayed."
-                      : "✓ Text-first layout active. Clean, commanded typography without empty photo placeholders."}
-                  </p>
+
+                      {/* Control Actions & Info */}
+                      <div className="flex-1 space-y-2 text-center sm:text-left w-full sm:w-auto">
+                        <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                          <label className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold cursor-pointer transition-all shadow-sm shadow-emerald-600/20 active:scale-95">
+                            {uploadingProfile ? (
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            ) : (
+                              <RefreshCw className="w-3.5 h-3.5" />
+                            )}
+                            <span>{uploadingProfile ? "Uploading..." : "Replace Photo"}</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              disabled={uploadingProfile}
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) handleUploadProfilePhoto(file);
+                              }}
+                            />
+                          </label>
+
+                          <button
+                            type="button"
+                            onClick={handleRemoveProfilePhoto}
+                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/20 text-xs font-bold transition-colors cursor-pointer"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            <span>Remove Photo</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    /* Upload Dropzone Box */
+                    <div className="relative rounded-2xl border-2 border-dashed border-gray-300 dark:border-zinc-700/80 bg-white dark:bg-zinc-900/60 hover:border-emerald-500 dark:hover:border-emerald-500/70 transition-all p-5 text-center flex flex-col items-center justify-center gap-2">
+                      <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 dark:bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                        <Camera className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <span className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 block">
+                          No profile photo added (Text-First Layout)
+                        </span>
+                        <span className="text-[11px] text-gray-500 dark:text-zinc-400 block mt-0.5">
+                          PNG cutouts, JPG, WEBP up to 8MB
+                        </span>
+                      </div>
+                      <label className="mt-1 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold cursor-pointer transition-all shadow-md shadow-emerald-500/20 active:scale-95">
+                        {uploadingProfile ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                          <Upload className="w-3.5 h-3.5" />
+                        )}
+                        <span>{uploadingProfile ? "Uploading..." : "Upload Photo / Cutout"}</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          disabled={uploadingProfile}
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) handleUploadProfilePhoto(file);
+                          }}
+                        />
+                      </label>
+                    </div>
+                  )}
+
+                  {/* Collapsible Manual URL Box */}
+                  {showProfileUrlInput && (
+                    <div className="mt-3 pt-3 border-t border-gray-200 dark:border-white/10 flex gap-2">
+                      <input
+                        value={form.profileImage || ""}
+                        onChange={(e) => updateField("profileImage", resolveImageUrl(e.target.value))}
+                        placeholder="Paste image link, Cloudinary URL, or Google Drive link..."
+                        className="w-full px-3.5 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs font-mono focus:ring-2 focus:ring-emerald-500 focus:outline-none text-gray-800 dark:text-zinc-200"
+                      />
+                    </div>
+                  )}
                 </div>
-                <div>
-                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-2 block">
-                    Hero Banner Image URL (Optional)
-                  </label>
-                  <input
-                    value={form.heroImage || ""}
-                    onChange={(e) => updateField("heroImage", e.target.value.trim())}
-                    placeholder="https://example.com/hero-banner.jpg"
-                    className="w-full px-4 py-3.5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-xs sm:text-sm font-mono focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-                  />
+
+                {/* Hero Banner / Cutout Image (Visual Preview Box) */}
+                <div className="rounded-2xl border border-gray-200/90 dark:border-white/[0.08] bg-gray-50/50 dark:bg-zinc-900/40 p-4 sm:p-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <label className="text-xs sm:text-sm font-bold text-gray-900 dark:text-zinc-100 flex items-center gap-2">
+                        <span>Hero Right-Side Cutout / Banner Image</span>
+                        {form.heroImage && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20">
+                            ✓ Active
+                          </span>
+                        )}
+                      </label>
+                      <p className="text-[11px] text-gray-500 dark:text-zinc-400 mt-0.5">
+                        Displays prominently on templates like SmartNShine Editorial & modern split hero styles.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowHeroUrlInput(!showHeroUrlInput)}
+                      className="text-[11px] text-gray-500 dark:text-zinc-400 hover:text-sky-600 dark:hover:text-sky-400 underline font-medium transition-colors"
+                    >
+                      {showHeroUrlInput ? "Hide URL" : "Edit URL"}
+                    </button>
+                  </div>
+
+                  {form.heroImage ? (
+                    <div className="flex flex-col sm:flex-row items-center gap-4 p-3 rounded-2xl bg-white dark:bg-zinc-900/90 border border-gray-200 dark:border-white/10 shadow-sm">
+                      {/* Large Banner Preview Box */}
+                      <div className="relative group w-full sm:w-36 h-24 rounded-2xl overflow-hidden bg-gray-100 dark:bg-zinc-950 border-2 border-sky-500/40 shrink-0 shadow-inner flex items-center justify-center">
+                        <img
+                          src={resolveImageUrl(form.heroImage)}
+                          alt="Hero banner preview"
+                          referrerPolicy="no-referrer"
+                          crossOrigin="anonymous"
+                          className="w-full h-full object-cover object-center"
+                          onError={(e) => {
+                            e.target.style.display = "none";
+                          }}
+                        />
+                      </div>
+
+                      {/* Control Actions & Info */}
+                      <div className="flex-1 space-y-2 text-center sm:text-left w-full sm:w-auto">
+                        <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                          <label className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold cursor-pointer transition-all shadow-sm shadow-sky-600/20 active:scale-95">
+                            {uploadingHero ? (
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            ) : (
+                              <RefreshCw className="w-3.5 h-3.5" />
+                            )}
+                            <span>{uploadingHero ? "Uploading..." : "Replace Banner"}</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              disabled={uploadingHero}
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) handleUploadHeroBanner(file);
+                              }}
+                            />
+                          </label>
+
+                          <button
+                            type="button"
+                            onClick={handleRemoveHeroBanner}
+                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/20 text-xs font-bold transition-colors cursor-pointer"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            <span>Remove Banner</span>
+                          </button>
+                        </div>
+                        <p className="text-[11px] text-gray-500 dark:text-zinc-400">
+                          ✓ High resolution cloud CDN hosting with automatic WebP conversion.
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    /* Upload Dropzone Box */
+                    <div className="relative rounded-2xl border-2 border-dashed border-gray-300 dark:border-zinc-700/80 bg-white dark:bg-zinc-900/60 hover:border-sky-500 dark:hover:border-sky-500/70 transition-all p-5 text-center flex flex-col items-center justify-center gap-2">
+                      <div className="w-12 h-12 rounded-2xl bg-sky-500/10 dark:bg-sky-500/10 flex items-center justify-center text-sky-600 dark:text-sky-400">
+                        <ImageIcon className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <span className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 block">
+                          No hero banner or cutout image added
+                        </span>
+                        <span className="text-[11px] text-gray-500 dark:text-zinc-400 block mt-0.5">
+                          Upload transparent PNG cutout or landscape banner
+                        </span>
+                      </div>
+                      <label className="mt-1 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white text-xs font-bold cursor-pointer transition-all shadow-md shadow-sky-500/20 active:scale-95">
+                        {uploadingHero ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                          <Upload className="w-3.5 h-3.5" />
+                        )}
+                        <span>{uploadingHero ? "Uploading..." : "Upload Hero Banner / Cutout"}</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          disabled={uploadingHero}
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) handleUploadHeroBanner(file);
+                          }}
+                        />
+                      </label>
+                    </div>
+                  )}
+
+                  {/* Collapsible Manual URL Box */}
+                  {showHeroUrlInput && (
+                    <div className="mt-3 pt-3 border-t border-gray-200 dark:border-white/10 flex gap-2">
+                      <input
+                        value={form.heroImage || ""}
+                        onChange={(e) => updateField("heroImage", resolveImageUrl(e.target.value))}
+                        placeholder="Paste image link, Cloudinary URL, or Google Drive link..."
+                        className="w-full px-3.5 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs font-mono focus:ring-2 focus:ring-sky-500 focus:outline-none text-gray-800 dark:text-zinc-200"
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -929,7 +1376,7 @@ export default function PortfolioEditor() {
                     type="button"
                     onClick={handleGenerateAbout}
                     disabled={Boolean(aiAction)}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 text-xs sm:text-sm font-bold hover:bg-purple-100 transition-all cursor-pointer disabled:opacity-50"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-xs sm:text-sm font-bold hover:bg-blue-100 transition-all cursor-pointer disabled:opacity-50"
                   >
                     <Sparkles className="w-4 h-4" />
                     <span>{aiAction === "about" ? "Generating..." : "Generate with AI"}</span>
@@ -1081,7 +1528,7 @@ export default function PortfolioEditor() {
                           type="button"
                           onClick={() => handleImproveProject(project)}
                           disabled={Boolean(aiAction)}
-                          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 text-xs sm:text-sm font-bold hover:bg-purple-100 transition-all cursor-pointer disabled:opacity-50"
+                          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-xs sm:text-sm font-bold hover:bg-blue-100 transition-all cursor-pointer disabled:opacity-50"
                         >
                           <Sparkles className="w-4 h-4" />
                           <span>{aiAction === `project:${project._id}` ? "Improving..." : "AI Improve"}</span>
@@ -1622,67 +2069,80 @@ export default function PortfolioEditor() {
               forceState={panelControl.open}
               forceVersion={panelControl.version}
             >
-              <div className="space-y-3.5">
-                {portfolioThemeList.map((theme) => {
-                  const allowed = isThemeAllowed(theme);
-                  const isSelected = form.themeId === theme.id;
-
-                  return (
-                    <button
-                      key={theme.id}
-                      type="button"
-                      onClick={() => allowed && updateField("themeId", theme.id)}
-                      disabled={!allowed}
-                      className={`w-full rounded-2xl border p-4 text-left transition-all cursor-pointer ${
-                        isSelected
-                          ? "border-emerald-500 bg-emerald-500/10 text-emerald-950 dark:text-emerald-100 ring-2 ring-emerald-500/30"
-                          : "border-gray-200 dark:border-white/[0.08] hover:bg-gray-50 dark:hover:bg-zinc-900"
-                      } ${!allowed ? "opacity-50 cursor-not-allowed" : ""}`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-sm sm:text-base">{theme.name}</span>
-                        {!allowed && (
-                          <span className="rounded-full bg-amber-500/15 px-2.5 py-0.5 text-xs font-bold text-amber-600 dark:text-amber-400">
-                            Upgrade
-                          </span>
-                        )}
-                      </div>
-                      <p className="mt-1 text-xs sm:text-sm text-gray-500 dark:text-zinc-400 leading-relaxed">
-                        {theme.description}
-                      </p>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Accent Colour Customizer */}
               {(() => {
                 const activeTheme = portfolioThemeList.find(
-                  (t) => t.id === (form.themeId || "minimalDeveloper")
-                );
+                  (t) => t.id === (form.themeId || "smartnshine")
+                ) || portfolioThemeList[0];
                 const presets = activeTheme?.accentPresets || [];
-                const currentAccent = form.themeAccent || "";
+                const currentAccent = form.themeAccent || presets[0] || "";
 
                 return (
-                  <div className="pt-5 border-t border-gray-100 dark:border-white/[0.08] space-y-2.5">
-                    <p className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200">
-                      Theme Accent Color
-                    </p>
-                    <div className="flex flex-wrap items-center gap-2.5">
-                      {presets.map((hex) => (
-                        <button
-                          key={hex}
-                          type="button"
-                          title={hex}
-                          onClick={() => updateField("themeAccent", hex)}
-                          style={{ background: hex }}
-                          className={`h-8 w-8 rounded-full border-2 transition-transform hover:scale-110 cursor-pointer ${
-                            currentAccent === hex
-                              ? "border-gray-900 dark:border-white scale-110 ring-2 ring-offset-1 ring-emerald-500"
-                              : "border-transparent"
-                          }`}
-                        />
-                      ))}
+                  <div className="space-y-4">
+                    {/* Active Selected Theme Card */}
+                    <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 dark:bg-emerald-500/10 p-4 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                          Active Template
+                        </span>
+                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20">
+                          {activeTheme.category}
+                        </span>
+                      </div>
+
+                      <div>
+                        <h4 className="font-extrabold text-base text-gray-900 dark:text-white flex items-center gap-2">
+                          <span>{activeTheme.name}</span>
+                          {activeTheme.badge && (
+                            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-gray-900 text-white dark:bg-white dark:text-gray-950 font-bold">
+                              {activeTheme.badge}
+                            </span>
+                          )}
+                        </h4>
+                        <p className="mt-1 text-xs text-gray-600 dark:text-zinc-400 line-clamp-2 leading-relaxed">
+                          {activeTheme.subtitle || activeTheme.description}
+                        </p>
+                      </div>
+
+                      {/* Browse All Templates Button */}
+                      <button
+                        type="button"
+                        onClick={() => setShowTemplateSelector(true)}
+                        className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gray-950 dark:bg-white text-white dark:text-gray-950 hover:bg-gray-800 dark:hover:bg-gray-100 text-xs font-bold transition-all shadow-md active:scale-98 cursor-pointer group"
+                      >
+                        <LayoutTemplate className="w-4 h-4 text-emerald-400 dark:text-emerald-600 group-hover:rotate-12 transition-transform" />
+                        <span>Browse & Switch Templates</span>
+                        <span className="ml-auto text-[10px] px-2 py-0.5 rounded-md bg-white/10 dark:bg-black/10 font-normal">
+                          {portfolioThemeList.length} Styles
+                        </span>
+                      </button>
+                    </div>
+
+                    {/* Accent Colour Customizer */}
+                    <div className="pt-3 border-t border-gray-100 dark:border-white/[0.08] space-y-2.5">
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200">
+                          Theme Accent Color
+                        </p>
+                        <span className="text-[10px] font-mono text-gray-400">
+                          {currentAccent}
+                        </span>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2.5">
+                        {presets.map((hex) => (
+                          <button
+                            key={hex}
+                            type="button"
+                            title={hex}
+                            onClick={() => updateField("themeAccent", hex)}
+                            style={{ background: hex }}
+                            className={`h-8 w-8 rounded-full border-2 transition-transform hover:scale-110 cursor-pointer ${
+                              currentAccent === hex
+                                ? "border-gray-900 dark:border-white scale-110 ring-2 ring-offset-1 ring-emerald-500"
+                                : "border-transparent"
+                            }`}
+                          />
+                        ))}
+                      </div>
                     </div>
                   </div>
                 );
@@ -1751,7 +2211,7 @@ export default function PortfolioEditor() {
                   type="button"
                   onClick={handleGenerateSeo}
                   disabled={Boolean(aiAction)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 text-xs sm:text-sm font-bold hover:bg-purple-100 transition-all cursor-pointer disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-xs sm:text-sm font-bold hover:bg-blue-100 transition-all cursor-pointer disabled:opacity-50"
                 >
                   <Sparkles className="w-4 h-4" />
                   <span>{aiAction === "seo" ? "Generating..." : "AI SEO"}</span>
@@ -1781,56 +2241,227 @@ export default function PortfolioEditor() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
-                    Social Sharing Image URL (Open Graph / Twitter Card)
-                  </label>
-                  <div className="flex items-center gap-3">
-                    {form.seo?.ogImage && (
-                      <img
-                        src={form.seo.ogImage}
-                        alt="OG Preview"
-                        className="w-12 h-8 rounded-lg object-cover border border-gray-200 dark:border-white/10 shrink-0"
-                        onError={(e) => {
-                          e.target.style.display = "none";
-                        }}
-                      />
-                    )}
-                    <input
-                      value={form.seo?.ogImage || ""}
-                      onChange={(e) => updateNestedField("seo", "ogImage", e.target.value)}
-                      placeholder="https://example.com/og-banner.png"
-                      className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs sm:text-sm font-mono"
-                    />
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 block">
+                        Social Sharing Card Image (Open Graph / Twitter Preview)
+                      </label>
+                      {form.seo?.ogImage ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                          Custom Banner
+                        </span>
+                      ) : form.profileImage ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                          ✓ Default: Profile Photo
+                        </span>
+                      ) : null}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowOgUrlInput(!showOgUrlInput)}
+                      className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer"
+                    >
+                      {showOgUrlInput ? "Hide URL Field" : "Edit URL Directly"}
+                    </button>
                   </div>
-                  <p className="mt-1 text-[11px] text-gray-500 dark:text-zinc-400">
-                    Preview image shown when your portfolio link is shared on LinkedIn, Twitter, WhatsApp, etc.
+
+                  {/* Visual Preview + Action Controls Card */}
+                  <div className="p-4 rounded-2xl border border-gray-200 dark:border-white/10 bg-white/50 dark:bg-zinc-950/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div className="flex items-center gap-3.5 min-w-0">
+                      {(form.seo?.ogImage || form.profileImage) ? (
+                        <img
+                          src={resolveImageUrl(form.seo?.ogImage || form.profileImage)}
+                          alt="Social Card Preview"
+                          className="w-16 h-12 rounded-xl object-cover border border-gray-200 dark:border-white/10 shrink-0 shadow-sm"
+                          onError={(e) => {
+                            e.target.style.display = "none";
+                          }}
+                        />
+                      ) : (
+                        <div className="w-16 h-12 rounded-xl bg-gray-100 dark:bg-zinc-900 border border-gray-200 dark:border-white/10 flex items-center justify-center text-gray-400 shrink-0">
+                          <ImageIcon className="w-5 h-5" />
+                        </div>
+                      )}
+                      <div className="min-w-0">
+                        <span className="text-xs font-semibold text-gray-800 dark:text-zinc-200 block truncate">
+                          {form.seo?.ogImage
+                            ? "Custom Social Banner active"
+                            : form.profileImage
+                            ? "Default Profile Photo active"
+                            : "No image set (Text preview only)"}
+                        </span>
+                        <span className="text-[11px] text-gray-500 dark:text-zinc-400 block truncate">
+                          {form.seo?.ogImage
+                            ? "Overriding default profile photo for social previews."
+                            : form.profileImage
+                            ? "Shared automatically on LinkedIn, WhatsApp, Twitter, etc."
+                            : "Upload a photo or custom card banner."}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      {/* Upload Custom OG Button */}
+                      <label className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-500 text-white hover:bg-emerald-600 text-xs font-bold transition-all shadow-sm cursor-pointer">
+                        {uploadingOgImage ? (
+                          <>
+                            <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                            <span>Uploading...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="w-3.5 h-3.5" />
+                            <span>{form.seo?.ogImage ? "Replace Banner" : "Upload Custom Banner"}</span>
+                          </>
+                        )}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          disabled={uploadingOgImage}
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              handleUploadOgImage(e.target.files[0]);
+                              e.target.value = "";
+                            }
+                          }}
+                        />
+                      </label>
+
+                      {/* Reset to Profile Photo button */}
+                      {form.seo?.ogImage && (
+                        <button
+                          type="button"
+                          onClick={handleResetOgImage}
+                          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-gray-700 dark:text-zinc-300 text-xs font-bold transition-colors cursor-pointer"
+                          title="Reset to default Profile Photo"
+                        >
+                          <RotateCcw className="w-3.5 h-3.5" />
+                          <span>Use Profile Photo</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Optional Direct URL Input Field */}
+                  {showOgUrlInput && (
+                    <div className="mt-3">
+                      <input
+                        value={form.seo?.ogImage || ""}
+                        onChange={(e) => updateNestedField("seo", "ogImage", e.target.value)}
+                        placeholder={form.profileImage ? "Leave empty to use Profile Photo, or enter custom URL" : "https://example.com/og-banner.png"}
+                        className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs sm:text-sm font-mono"
+                      />
+                    </div>
+                  )}
+
+                  <p className="mt-2 text-[11px] text-gray-500 dark:text-zinc-400">
+                    Displayed automatically as the visual card when your portfolio link is shared on WhatsApp, LinkedIn, X/Twitter, Discord, etc.
                   </p>
                 </div>
-                <div>
-                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
-                    Custom Favicon Icon URL
-                  </label>
-                  <div className="flex items-center gap-3">
-                    {form.seo?.favicon && (
-                      <img
-                        src={form.seo.favicon}
-                        alt="Favicon Preview"
-                        className="w-7 h-7 rounded-md object-contain border border-gray-200 dark:border-white/10 shrink-0 p-0.5"
-                        onError={(e) => {
-                          e.target.style.display = "none";
+                {/* Favicon Upload & Browser Tab Preview Card */}
+                <div className="rounded-2xl border border-gray-200/90 dark:border-white/[0.08] bg-gray-50/50 dark:bg-zinc-900/40 p-4 sm:p-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <label className="text-xs sm:text-sm font-bold text-gray-900 dark:text-zinc-100 flex items-center gap-2">
+                        <span>Browser Tab Favicon</span>
+                        {form.seo?.favicon ? (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                            ✓ Custom 64×64 Favicon
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-gray-200/60 dark:bg-zinc-800 text-gray-600 dark:text-zinc-400 border border-gray-300/40 dark:border-white/5">
+                            Default Icon
+                          </span>
+                        )}
+                      </label>
+                      <p className="text-[11px] text-gray-500 dark:text-zinc-400 mt-0.5">
+                        Uploaded image is auto-cropped and resized to a crisp 64×64 PNG for browser tabs & bookmarks.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowFaviconUrlInput(!showFaviconUrlInput)}
+                      className="text-[11px] text-gray-500 dark:text-zinc-400 hover:text-amber-600 dark:hover:text-amber-400 underline font-medium transition-colors cursor-pointer"
+                    >
+                      {showFaviconUrlInput ? "Hide URL" : "Edit URL"}
+                    </button>
+                  </div>
+
+                  {/* Browser Tab Live Mockup Preview */}
+                  <div className="mb-3.5 p-3 rounded-2xl bg-white dark:bg-zinc-900 border border-gray-200 dark:border-white/10 shadow-sm">
+                    <span className="text-[10px] font-mono font-bold text-gray-400 dark:text-zinc-500 block mb-2 uppercase tracking-wider">
+                      Browser Tab Preview
+                    </span>
+                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-t-lg bg-gray-100 dark:bg-zinc-800/90 border-t border-x border-gray-200 dark:border-white/10 shadow-xs max-w-full">
+                      <div className="w-4 h-4 rounded-sm flex items-center justify-center shrink-0 overflow-hidden bg-white/60 dark:bg-zinc-950/60">
+                        {form.seo?.favicon ? (
+                          <img
+                            src={form.seo.favicon}
+                            alt="Favicon"
+                            className="w-full h-full object-contain"
+                            onError={(e) => {
+                              e.target.style.display = "none";
+                            }}
+                          />
+                        ) : (
+                          <Globe2 className="w-3.5 h-3.5 text-gray-500 dark:text-zinc-400" />
+                        )}
+                      </div>
+                      <span className="text-xs font-medium text-gray-800 dark:text-zinc-200 truncate max-w-[180px] sm:max-w-[240px]">
+                        {form.seo?.title || form.title || "My Portfolio"}
+                      </span>
+                      <X className="w-3 h-3 text-gray-400 hover:text-gray-600 dark:hover:text-zinc-200 ml-1 shrink-0 opacity-60" />
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex flex-wrap items-center gap-2">
+                    <label className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white text-xs font-bold cursor-pointer transition-all shadow-sm shadow-amber-500/20 active:scale-95">
+                      {uploadingFavicon ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      ) : (
+                        <Upload className="w-3.5 h-3.5" />
+                      )}
+                      <span>{uploadingFavicon ? "Converting & Uploading..." : form.seo?.favicon ? "Replace Favicon" : "Upload Favicon (Auto 64×64)"}</span>
+                      <input
+                        type="file"
+                        accept="image/*,.ico,.svg"
+                        className="hidden"
+                        disabled={uploadingFavicon}
+                        onChange={(e) => {
+                          if (e.target.files?.[0]) {
+                            handleUploadFavicon(e.target.files[0]);
+                            e.target.value = "";
+                          }
                         }}
                       />
+                    </label>
+
+                    {form.seo?.favicon && (
+                      <button
+                        type="button"
+                        onClick={handleRemoveFavicon}
+                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/20 text-xs font-bold transition-colors cursor-pointer"
+                        title="Remove custom favicon"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>Remove</span>
+                      </button>
                     )}
-                    <input
-                      value={form.seo?.favicon || ""}
-                      onChange={(e) => updateNestedField("seo", "favicon", e.target.value)}
-                      placeholder="https://example.com/favicon.ico or .png"
-                      className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs sm:text-sm font-mono"
-                    />
                   </div>
-                  <p className="mt-1 text-[11px] text-gray-500 dark:text-zinc-400">
-                    Browser tab icon for your custom portfolio domain/page.
-                  </p>
+
+                  {/* Optional Direct URL Input Field */}
+                  {showFaviconUrlInput && (
+                    <div className="mt-3">
+                      <input
+                        value={form.seo?.favicon || ""}
+                        onChange={(e) => updateNestedField("seo", "favicon", e.target.value)}
+                        placeholder="https://example.com/favicon.png or .ico"
+                        className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs sm:text-sm font-mono"
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             </PortfolioPanel>
@@ -1876,6 +2507,18 @@ export default function PortfolioEditor() {
           </aside>
         </div>
       </main>
+
+      {/* Portfolio Template Selector Modal */}
+      <PortfolioTemplateSelectorModal
+        isOpen={showTemplateSelector}
+        onClose={() => setShowTemplateSelector(false)}
+        selectedThemeId={form.themeId || "smartnshine"}
+        onApplyTheme={(themeId) => updateField("themeId", themeId)}
+        form={form}
+        resume={portfolio?.resumeSnapshot}
+        projects={projects}
+        userTier={userTier}
+      />
     </div>
   );
 }

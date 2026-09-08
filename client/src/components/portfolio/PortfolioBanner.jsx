@@ -73,9 +73,9 @@ export default function PortfolioBanner({
         <div className="p-5 rounded-3xl bg-white dark:bg-zinc-950/90 border border-gray-200/80 dark:border-white/[0.08] shadow-sm dark:shadow-xl space-y-1">
           <div className="flex items-center justify-between text-gray-500 dark:text-zinc-400 text-xs font-semibold">
             <span>Resume Downloads</span>
-            <Download className="w-4 h-4 text-purple-500" />
+            <Download className="w-4 h-4 text-cyan-500" />
           </div>
-          <div className="text-2xl font-black text-purple-600 dark:text-purple-400">
+          <div className="text-2xl font-black text-cyan-600 dark:text-cyan-400">
             {totalResumeDownloads}
           </div>
         </div>

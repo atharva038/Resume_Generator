@@ -57,7 +57,7 @@ const PortfolioTemplateNavbar = ({ isDarkMode = true }) => {
             whileHover={{ scale: 1.05 }}
             className="flex items-center gap-2 text-white font-bold text-xl group"
           >
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-lg flex items-center justify-center font-bold">
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-cyan-400 rounded-lg flex items-center justify-center font-bold">
               {personalInfo.initials}
             </div>
             <span className="hidden sm:inline">{personalInfo.name}</span>

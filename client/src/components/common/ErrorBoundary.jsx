@@ -77,7 +77,7 @@ function ErrorFallback({ error, errorInfo, resetError }) {
     <div className="min-h-screen bg-gray-50 dark:bg-[#09090b] text-gray-900 dark:text-zinc-100 flex items-center justify-center p-4 sm:p-6 transition-colors duration-200">
       {/* Background ambient lighting */}
       <div className="pointer-events-none fixed -top-40 -left-40 h-96 w-96 rounded-full bg-rose-500/10 blur-3xl" />
-      <div className="pointer-events-none fixed -bottom-40 -right-40 h-96 w-96 rounded-full bg-purple-500/10 blur-3xl" />
+      <div className="pointer-events-none fixed -bottom-40 -right-40 h-96 w-96 rounded-full bg-blue-500/10 blur-3xl" />
 
       <div className="relative z-10 max-w-2xl w-full">
         {/* Main Error Card */}

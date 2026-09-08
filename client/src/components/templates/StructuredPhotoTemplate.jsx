@@ -97,6 +97,9 @@ const StructuredPhotoTemplate = forwardRef(({resumeData, onPageUsageChange}, ref
   const contact = data?.contact || data?.personalInfo?.contact || {};
 
   const dense = useMemo(() => {
+    if (data?.density === "compact" || data?.density === "high") return true;
+    if (data?.density === "spacious" || data?.density === "low") return false;
+
     let score = 0;
     score += (data?.experience?.length || 0) * 3;
     score += (data?.projects?.length || 0) * 2;

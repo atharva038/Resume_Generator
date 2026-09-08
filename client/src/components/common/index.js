@@ -5,4 +5,4 @@ export { default as ScrollToTop } from "./ScrollToTop";
 export { default as FestiveSaleBanner } from "./FestiveSaleBanner";
 export * from "./modals";
 export * from "./cards";
-
+export { default as Logo } from "./Logo";

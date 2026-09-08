@@ -1,4 +1,3 @@
-import * as geminiService from "./gemini.service.js";
 import * as openaiService from "./openai.service.js";
 import AIUsage from "../models/AIUsage.model.js";
 
@@ -434,18 +433,10 @@ export async function generateQuestion(config, user) {
     const systemPrompt = buildInterviewerSystemPrompt(config);
     const userPrompt = buildQuestionPrompt(config);
 
-    let response;
-    if (aiService === "gpt4o") {
-      response = await openaiService.chatCompletion(systemPrompt, userPrompt, {
-        temperature: 0.7,
-        maxTokens: 800,
-      });
-    } else {
-      response = await geminiService.chatCompletion(systemPrompt, userPrompt, {
-        temperature: 0.7,
-        maxOutputTokens: 800,
-      });
-    }
+    const response = await openaiService.chatCompletion(systemPrompt, userPrompt, {
+      temperature: 0.7,
+      maxTokens: 800,
+    });
 
     const responseTime = Date.now() - startTime;
 
@@ -527,18 +518,10 @@ ${answer}
 
 Evaluate this response thoroughly and provide structured feedback.`;
 
-    let response;
-    if (aiService === "gpt4o") {
-      response = await openaiService.chatCompletion(systemPrompt, userPrompt, {
-        temperature: 0.3, // Lower temperature for more consistent evaluation
-        maxTokens: 1200,
-      });
-    } else {
-      response = await geminiService.chatCompletion(systemPrompt, userPrompt, {
-        temperature: 0.3,
-        maxOutputTokens: 1200,
-      });
-    }
+    const response = await openaiService.chatCompletion(systemPrompt, userPrompt, {
+      temperature: 0.3, // Lower temperature for more consistent evaluation
+      maxTokens: 1200,
+    });
 
     const responseTime = Date.now() - startTime;
 
@@ -626,18 +609,10 @@ ${followUpReason || "The answer needs more depth or clarification."}
 Generate a natural follow-up question that digs deeper into what the candidate mentioned.
 Make it conversational, like a real interviewer probing for more details.`;
 
-    let response;
-    if (aiService === "gpt4o") {
-      response = await openaiService.chatCompletion(systemPrompt, userPrompt, {
-        temperature: 0.7,
-        maxTokens: 600,
-      });
-    } else {
-      response = await geminiService.chatCompletion(systemPrompt, userPrompt, {
-        temperature: 0.7,
-        maxOutputTokens: 600,
-      });
-    }
+    const response = await openaiService.chatCompletion(systemPrompt, userPrompt, {
+      temperature: 0.7,
+      maxTokens: 600,
+    });
 
     const responseTime = Date.now() - startTime;
 
@@ -718,18 +693,10 @@ QUESTIONS ANSWERED: ${session.questions.filter((q) => q.userAnswer).length}/${
 
 Generate a comprehensive interview performance report with actionable feedback.`;
 
-    let response;
-    if (aiService === "gpt4o") {
-      response = await openaiService.chatCompletion(systemPrompt, userPrompt, {
-        temperature: 0.4,
-        maxTokens: 2000,
-      });
-    } else {
-      response = await geminiService.chatCompletion(systemPrompt, userPrompt, {
-        temperature: 0.4,
-        maxOutputTokens: 2000,
-      });
-    }
+    const response = await openaiService.chatCompletion(systemPrompt, userPrompt, {
+      temperature: 0.4,
+      maxTokens: 2000,
+    });
 
     const responseTime = Date.now() - startTime;
 
@@ -782,7 +749,7 @@ Generate a comprehensive interview performance report with actionable feedback.`
 async function logInterviewUsage(
   userId,
   action,
-  aiModel,
+  aiModel = "gpt4o",
   tokenUsage = {},
   responseTime = 0,
   success = true,
@@ -791,11 +758,11 @@ async function logInterviewUsage(
   try {
     await AIUsage.create({
       userId,
-      aiProvider: aiModel === "gpt4o" ? "openai" : "gemini",
-      aiModel,
+      aiProvider: "openai",
+      aiModel: "gpt4o",
       feature: "ai_interview",
       tokensUsed: tokenUsage?.totalTokens || 0,
-      cost: calculateCost(tokenUsage, aiModel),
+      cost: calculateCost(tokenUsage, "gpt4o"),
       responseTime,
       status: success ? "success" : "error",
       errorMessage,
@@ -809,18 +776,15 @@ async function logInterviewUsage(
 /**
  * Calculate cost based on token usage
  */
-function calculateCost(tokenUsage, aiModel) {
+function calculateCost(tokenUsage, aiModel = "gpt4o") {
   if (!tokenUsage?.totalTokens) return 0;
 
-  // Approximate costs per 1000 tokens
-  const rates = {
-    gpt4o: {input: 0.005, output: 0.015},
-    gemini: {input: 0.00025, output: 0.0005},
-  };
-
-  const rate = rates[aiModel] || rates.gemini;
+  // Approximate costs per 1000 tokens for GPT-4o
+  const rate = {input: 0.005, output: 0.015};
   const inputCost = ((tokenUsage.promptTokens || 0) / 1000) * rate.input;
-  const outputCost = ((tokenUsage.candidatesTokens || 0) / 1000) * rate.output;
+  const outputCost =
+    ((tokenUsage.completionTokens || tokenUsage.candidatesTokens || 0) / 1000) *
+    rate.output;
 
   return inputCost + outputCost;
 }

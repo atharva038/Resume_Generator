@@ -94,10 +94,13 @@ const StrategicLeadershipTemplate = forwardRef(
     }, [resumeData]);
 
     const density = useMemo(() => {
+      if (resumeData?.density === "compact" || resumeData?.density === "high") return "compact";
+      if (resumeData?.density === "medium" || resumeData?.density === "balanced") return "balanced";
+      if (resumeData?.density === "spacious" || resumeData?.density === "low") return "comfortable";
       if (sectionVolume >= 90) return "compact";
       if (sectionVolume >= 55) return "balanced";
       return "comfortable";
-    }, [sectionVolume]);
+    }, [resumeData?.density, sectionVolume]);
 
     const stylePack = useMemo(() => {
       if (density === "compact") {

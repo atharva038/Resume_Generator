@@ -5,10 +5,10 @@ export function ATSEmptyState() {
     <div className="relative overflow-hidden bg-white dark:bg-zinc-900/90 rounded-3xl p-8 sm:p-12 text-center border border-gray-200/90 dark:border-white/[0.08] shadow-sm">
       {/* Ambient background glow */}
       <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-blue-500/10 blur-3xl" />
-      <div className="pointer-events-none absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-purple-500/10 blur-3xl" />
+      <div className="pointer-events-none absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl" />
 
       <div className="relative z-10 space-y-6 max-w-md mx-auto">
-        <div className="w-20 h-20 mx-auto bg-gradient-to-tr from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-3xl flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-md">
+        <div className="w-20 h-20 mx-auto bg-gradient-to-tr from-blue-500/20 to-indigo-500/20 border border-blue-500/30 rounded-3xl flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-md">
           <Target className="w-10 h-10" />
         </div>
 
@@ -27,7 +27,7 @@ export function ATSEmptyState() {
             <span>Instant keyword match percentage</span>
           </div>
           <div className="flex items-center gap-3 text-xs sm:text-sm font-semibold text-gray-700 dark:text-zinc-300">
-            <Brain className="w-4 h-4 text-purple-500 shrink-0" />
+            <Brain className="w-4 h-4 text-indigo-500 shrink-0" />
             <span>Semantic skills & qualifications scoring</span>
           </div>
           <div className="flex items-center gap-3 text-xs sm:text-sm font-semibold text-gray-700 dark:text-zinc-300">

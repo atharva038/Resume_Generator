@@ -30,7 +30,7 @@ const ShippingPolicy = () => {
         {/* Content */}
         <div className="bg-white dark:bg-black rounded-3xl shadow-sm dark:shadow-none p-8 space-y-8 border border-gray-200 dark:border-white/10">
           {/* Section 1 */}
-          <section className="bg-purple-50 dark:bg-purple-950/20 rounded-xl p-5 border border-purple-200 dark:border-purple-900/40">
+          <section className="bg-blue-50 dark:bg-blue-950/20 rounded-xl p-5 border border-blue-200 dark:border-blue-900/40">
             <div className="flex items-center gap-3 mb-4">
               <Zap className="w-8 h-8 text-blue-600 dark:text-blue-400" />
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -45,9 +45,9 @@ const ShippingPolicy = () => {
             </p>
 
             {/* Delivery Timeline Summary */}
-            <div className="bg-white dark:bg-black rounded-xl p-5 mt-4 border border-gray-200 dark:border-white/10 border-l-4 border-l-purple-600">
+            <div className="bg-white dark:bg-black rounded-xl p-5 mt-4 border border-gray-200 dark:border-white/10 border-l-4 border-l-blue-600">
               <h3 className="font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                <Clock className="w-5 h-5 text-purple-600" />
+                <Clock className="w-5 h-5 text-blue-600" />
                 Delivery Timeline Summary
               </h3>
               <div className="grid md:grid-cols-2 gap-4">
@@ -99,7 +99,7 @@ const ShippingPolicy = () => {
                   <li>Cover letter generator</li>
                 </ul>
               </div>
-              <div className="bg-purple-50 dark:bg-purple-950/20 rounded-xl p-5 border border-purple-200 dark:border-purple-900/40">
+              <div className="bg-blue-50 dark:bg-blue-950/20 rounded-xl p-5 border border-blue-200 dark:border-blue-900/40">
                 <h3 className="font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
                   <Clock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                   Instant Access
@@ -209,7 +209,7 @@ const ShippingPolicy = () => {
               </div>
 
               {/* Pro Monthly */}
-              <div className="border border-purple-200 dark:border-purple-900/40 rounded-xl p-5 bg-purple-50 dark:bg-purple-950/20">
+              <div className="border border-blue-200 dark:border-blue-900/40 rounded-xl p-5 bg-blue-50 dark:bg-blue-950/20">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
                   Pro Monthly Plan (₹199/month)
                 </h3>
@@ -238,7 +238,7 @@ const ShippingPolicy = () => {
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
               4. What Happens After Purchase?
             </h2>
-            <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg p-6">
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-6">
               <ol className="space-y-3 text-gray-700 dark:text-gray-300">
                 <li className="flex items-start gap-3">
                   <span className="bg-blue-600 text-gray-900 dark:text-white rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 text-sm font-bold">
@@ -250,7 +250,7 @@ const ShippingPolicy = () => {
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-purple-600 text-gray-900 dark:text-white rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 text-sm font-bold">
+                  <span className="bg-blue-600 text-gray-900 dark:text-white rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 text-sm font-bold">
                     2
                   </span>
                   <div>
@@ -387,7 +387,7 @@ const ShippingPolicy = () => {
           </section>
 
           {/* Contact Section */}
-          <section className="bg-purple-50 dark:bg-purple-950/20 rounded-xl p-5 border border-purple-200 dark:border-purple-900/40">
+          <section className="bg-blue-50 dark:bg-blue-950/20 rounded-xl p-5 border border-blue-200 dark:border-blue-900/40">
             <div className="flex items-center gap-3 mb-3">
               <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               <h3 className="text-xl font-bold text-gray-900 dark:text-white">

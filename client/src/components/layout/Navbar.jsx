@@ -2,6 +2,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { BlockableLink } from "@/components/auth";
 import { DarkModeToggle, FestiveSaleBanner } from "@/components/common";
+import Logo from "@/components/common/Logo";
 import { useEffect, useMemo } from "react";
 import { useToggle } from "@/hooks";
 import {
@@ -20,6 +21,7 @@ import {
   Globe2,
   Tag,
   Home,
+  FileText,
 } from "lucide-react";
 
 const Navbar = ({ toggleSidebar, isSidebarOpen, promotion }) => {
@@ -56,37 +58,43 @@ const Navbar = ({ toggleSidebar, isSidebarOpen, promotion }) => {
   // Dynamic Workspace Meta for Desktop Header
   const activeWorkspace = useMemo(() => {
     const path = location.pathname;
+    if (path.startsWith("/dashboard")) {
+      return { title: "Dashboard", icon: LayoutDashboard, color: "text-blue-600 dark:text-blue-400" };
+    }
     if (path.startsWith("/templates")) {
-      return { title: "Resume Templates", icon: Palette, badge: "Gallery" };
+      return { title: "Resume Templates", icon: Palette, color: "text-blue-600 dark:text-blue-400" };
     }
     if (path.startsWith("/upload")) {
-      return { title: "AI Enhancer", icon: Wand2, badge: "Parser" };
+      return { title: "AI Enhancer", icon: Wand2, color: "text-blue-600 dark:text-blue-400" };
     }
     if (path.startsWith("/ats-analyzer")) {
-      return { title: "ATS Analyzer", icon: Target, badge: "Diagnostics" };
+      return { title: "ATS Diagnostics", icon: Target, color: "text-emerald-600 dark:text-emerald-400" };
+    }
+    if (path.startsWith("/interview")) {
+      return { title: "AI Interview Studio", icon: Mic, color: "text-blue-600 dark:text-blue-400" };
     }
     if (path.startsWith("/my-resumes")) {
-      return { title: "My Resumes", icon: LayoutDashboard, badge: "Hub" };
+      return { title: "My Resumes", icon: FileText, color: "text-blue-600 dark:text-blue-400" };
     }
     if (path.startsWith("/career-profile")) {
-      return { title: "Career Profile", icon: UserCircle, badge: "Master Data" };
+      return { title: "Career Profile", icon: UserCircle, color: "text-amber-600 dark:text-amber-400" };
     }
     if (path.startsWith("/career-qa")) {
-      return { title: "Career Q&A", icon: Mic, badge: "Interview Prep" };
+      return { title: "Career Q&A", icon: Mic, color: "text-blue-600 dark:text-blue-400" };
     }
     if (path.startsWith("/portfolio")) {
-      return { title: "Portfolios", icon: Globe2, badge: "Websites" };
+      return { title: "Developer Portfolios", icon: Globe2, color: "text-cyan-600 dark:text-cyan-400" };
     }
     if (path.startsWith("/pricing")) {
-      return { title: "Pricing & Plans", icon: Tag, badge: "Pro" };
+      return { title: "Pricing & Plans", icon: Tag, color: "text-blue-600 dark:text-blue-400" };
     }
     if (path.startsWith("/admin")) {
-      return { title: "Admin Console", icon: Shield, badge: "Management" };
+      return { title: "Admin Console", icon: Shield, color: "text-zinc-600 dark:text-zinc-400" };
     }
     if (path.startsWith("/profile")) {
-      return { title: "Account & Profile", icon: User, badge: "Settings" };
+      return { title: "Account & Profile", icon: User, color: "text-zinc-600 dark:text-zinc-400" };
     }
-    return { title: "SmartNShine", icon: Home, badge: "Workspace" };
+    return { title: "SmartNShine", icon: Home, color: "text-zinc-400" };
   }, [location.pathname]);
 
   const ActiveIcon = activeWorkspace.icon;
@@ -94,7 +102,7 @@ const Navbar = ({ toggleSidebar, isSidebarOpen, promotion }) => {
   return (
     <nav
       className={`fixed top-0 right-0 z-40 transition-all duration-300 no-print ${
-        isSidebarOpen ? "left-0 lg:left-64" : "left-0 lg:left-20"
+        isSidebarOpen ? "left-0 lg:left-72" : "left-0 lg:left-28"
       } ${
         isScrolled
           ? "bg-white/95 dark:bg-[#09090b]/95 backdrop-blur-xl border-b border-gray-200/80 dark:border-white/10 shadow-xs"
@@ -102,49 +110,41 @@ const Navbar = ({ toggleSidebar, isSidebarOpen, promotion }) => {
       }`}
     >
       <div className="mx-auto px-4 lg:px-6">
-        <div className="flex items-center justify-between h-16">
-          {/* Left Section: Mobile Logo OR Desktop Workspace Breadcrumb */}
+        <div className="flex items-center justify-between h-14">
+          {/* Left Section: Mobile Menu OR Desktop Clean Workspace Indicator */}
           <div className="flex items-center gap-3">
-            {/* Mobile Menu Button + Brand Logo (Shown only on Mobile/Tablet) */}
+            {/* Mobile Menu Button + Brand Logo */}
             <div className="flex items-center gap-2 lg:hidden">
               <button
                 onClick={toggleSidebar}
-                className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-xl transition-colors duration-200"
+                className="p-1.5 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                 aria-label="Toggle sidebar"
               >
                 <Menu className="w-5 h-5" />
               </button>
 
-              <Link to="/" className="flex items-center text-lg font-bold group">
-                <img
-                  src="/orb-logo.png"
-                  alt=""
-                  className="h-10 w-auto object-contain -mr-1 dark:brightness-100 brightness-75"
+              <Link to={user ? "/dashboard" : "/"} className="flex items-center gap-2 text-sm font-bold">
+                <Logo
+                  className="h-7 w-7 object-contain"
+                  alt="SmartNShine Logo"
                 />
-                <span className="bg-gradient-to-r from-[#5d8ff0] via-[#6f7fe4] to-[#8b67df] dark:from-[#6aa0ff] dark:via-[#7f8ce7] dark:to-[#9b78ea] bg-clip-text text-transparent tracking-tight font-extrabold text-sm sm:text-base">
+                <span className="text-zinc-900 dark:text-white font-bold">
                   SmartNShine
                 </span>
               </Link>
             </div>
 
-            {/* Desktop Workspace Breadcrumb (Replaces duplicate logo next to sidebar) */}
-            <div className="hidden lg:flex items-center gap-3 animate-in fade-in duration-200">
-              <div className="w-8 h-8 rounded-xl bg-blue-500/10 dark:bg-blue-500/20 border border-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-2xs">
-                <ActiveIcon className="w-4 h-4" />
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-black text-gray-900 dark:text-white tracking-tight">
-                  {activeWorkspace.title}
-                </span>
-                <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-zinc-400 border border-gray-200 dark:border-white/5">
-                  {activeWorkspace.badge}
-                </span>
-              </div>
+            {/* Desktop Clean Workspace Indicator (Calm, minimal, zero noise) */}
+            <div className="hidden lg:flex items-center gap-2 text-zinc-800 dark:text-zinc-200">
+              <ActiveIcon className={`w-4 h-4 ${activeWorkspace.color || "text-zinc-400"}`} />
+              <span className="text-sm font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
+                {activeWorkspace.title}
+              </span>
             </div>
           </div>
 
-          {/* Right Section: Actions */}
-          <div className="flex items-center gap-2.5 sm:gap-3">
+          {/* Right Section: Clean, minimal actions */}
+          <div className="flex items-center gap-2 sm:gap-3">
             {/* Dark Mode Toggle */}
             <DarkModeToggle />
 
@@ -154,7 +154,7 @@ const Navbar = ({ toggleSidebar, isSidebarOpen, promotion }) => {
                 {isAdmin && (
                   <BlockableLink
                     to="/admin/dashboard"
-                    className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/60 rounded-xl hover:bg-purple-100 dark:hover:bg-purple-900/50 transition-all"
+                    className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                     title="Admin Portal"
                   >
                     <Shield className="w-3.5 h-3.5" />
@@ -165,13 +165,13 @@ const Navbar = ({ toggleSidebar, isSidebarOpen, promotion }) => {
                 {/* User Avatar & Name linking to Profile */}
                 <BlockableLink
                   to="/profile"
-                  className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-zinc-800/80 border border-transparent hover:border-gray-200 dark:hover:border-white/10 transition-all duration-200 group"
+                  className="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors group"
                   title="Profile & Settings"
                 >
-                  <div className="w-7 h-7 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 text-white flex items-center justify-center text-xs font-black shadow-2xs">
+                  <div className="w-7 h-7 rounded-lg bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 flex items-center justify-center text-xs font-bold">
                     {userInitial}
                   </div>
-                  <span className="hidden sm:inline text-xs font-bold text-gray-700 dark:text-zinc-200 group-hover:text-gray-900 dark:group-hover:text-white max-w-[130px] truncate">
+                  <span className="hidden sm:inline text-xs font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white max-w-[130px] truncate">
                     {displayName}
                   </span>
                 </BlockableLink>
@@ -179,7 +179,7 @@ const Navbar = ({ toggleSidebar, isSidebarOpen, promotion }) => {
                 {/* Logout Button */}
                 <button
                   onClick={handleLogout}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-gray-600 dark:text-zinc-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-xl transition-all duration-200 border border-transparent hover:border-red-200 dark:hover:border-red-900/30 cursor-pointer"
+                  className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors cursor-pointer"
                   title="Logout"
                 >
                   <LogOut className="w-3.5 h-3.5" />

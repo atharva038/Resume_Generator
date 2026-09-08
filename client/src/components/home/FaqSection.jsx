@@ -15,7 +15,7 @@ export const faqs = [
   {
     question: "How does the AI enhancement and interview prep work?",
     answer:
-      "We combine GPT-4o and Gemini Pro to rewrite achievement bullets, quantify career impact, and generate customized role-specific mock interview questions with expert answers.",
+      "We utilize OpenAI GPT-4o to rewrite achievement bullets, quantify career impact, and generate customized role-specific mock interview questions with expert answers.",
   },
   {
     question: "Can I generate a public portfolio website?",

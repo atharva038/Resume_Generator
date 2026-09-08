@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 export default function BottomCtaSection() {
   return (
     <section className="py-20 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center space-y-6">
-      <div className="p-8 sm:p-14 rounded-3xl bg-gradient-to-b from-blue-600/10 via-indigo-600/10 to-purple-600/10 border border-blue-500/20 space-y-6">
+      <div className="p-8 sm:p-14 rounded-3xl bg-gradient-to-b from-blue-600/10 via-indigo-600/10 to-cyan-600/10 border border-blue-500/20 space-y-6">
         <h2 className="text-3xl sm:text-5xl font-black text-gray-900 dark:text-white tracking-tight">
           Ready to Accelerate Your Career?
         </h2>

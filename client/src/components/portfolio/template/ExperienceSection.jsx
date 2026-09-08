@@ -18,7 +18,7 @@ const ExperienceSection = ({ portfolioContext }) => {
         {/* Timeline */}
         <div className="relative">
           {/* Center line (hidden on mobile) */}
-          <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-400/20 via-purple-400/40 to-transparent transform -translate-x-1/2" />
+          <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-400/20 via-indigo-400/40 to-transparent transform -translate-x-1/2" />
 
           <div className="space-y-12">
             {experience.map((exp, idx) => (

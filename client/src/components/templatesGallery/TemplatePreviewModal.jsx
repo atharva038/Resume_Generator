@@ -49,7 +49,37 @@ export default function TemplatePreviewModal({
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* Resume PDF Paper View */}
           <div className="lg:col-span-8 bg-gray-100 dark:bg-zinc-900 rounded-2xl p-4 sm:p-6 flex items-center justify-center overflow-auto max-h-[65vh]">
-            <div className="bg-white shadow-2xl rounded-sm w-[210mm] min-h-[297mm] p-6 text-black origin-top transform scale-[0.6] sm:scale-[0.75] md:scale-[0.85] lg:scale-[0.9]">
+            <div className="bg-white shadow-2xl rounded-sm w-[210mm] min-h-[297mm] p-6 text-black origin-top transform scale-[0.6] sm:scale-[0.75] md:scale-[0.85] lg:scale-[0.9] relative overflow-hidden">
+              {/* SmartNShine watermark directly ON the page */}
+              <div
+                className="pointer-events-none select-none absolute inset-0 z-20 flex items-center justify-center overflow-hidden"
+                aria-hidden="true"
+              >
+                <span
+                  className="font-black uppercase tracking-widest select-none"
+                  style={{
+                    fontSize: "64px",
+                    letterSpacing: "0.22em",
+                    color: "#0f172a",
+                    opacity: 0.05,
+                    transform: "rotate(-25deg)",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  SmartNShine
+                </span>
+              </div>
+
+              {/* Repeating watermark pattern ON the page */}
+              <div
+                className="pointer-events-none select-none absolute inset-0 z-10"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='90' viewBox='0 0 160 90'><text x='20' y='50' fill='%230f172a' fill-opacity='0.025' font-size='12' font-family='sans-serif' font-weight='800' letter-spacing='1.5' transform='rotate(-20 20 50)'>SmartNShine</text></svg>")`,
+                  backgroundSize: "160px 90px",
+                }}
+                aria-hidden="true"
+              />
+
               <TemplateComponent
                 resumeData={{
                   ...sampleResumeData,
@@ -80,7 +110,7 @@ export default function TemplatePreviewModal({
             {colorThemes && colorThemes.length > 0 && (
               <div className="space-y-3 p-4 rounded-2xl bg-gray-50 dark:bg-zinc-900 border border-gray-200/80 dark:border-white/5">
                 <div className="flex items-center gap-2">
-                  <Palette className="w-4 h-4 text-purple-500" />
+                  <Palette className="w-4 h-4 text-blue-500" />
                   <span className="text-xs font-bold text-gray-800 dark:text-zinc-200">
                     Select Color Palette
                   </span>

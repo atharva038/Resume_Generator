@@ -9,7 +9,7 @@ import {
   getPdfExportSession,
 } from "../services/pdfExportSession.service.js";
 import {renderResumePdf} from "../services/pdfExport.service.js";
-// Import ALL AI functions from OpenAI (Gemini has quota limits)
+// Import ALL AI functions from OpenAI
 import {
   parseResumeWithAI as parseResumeWithOpenAI,
   enhanceContentWithAI,
@@ -100,7 +100,7 @@ export const uploadResume = async (req, res) => {
       console.log(`✅ Admin user - AI extraction count not incremented`);
     }
 
-    // AI usage tracking is handled by gemini.service.js internally
+    // AI usage tracking is handled by openai.service.js internally
     // No need to track here as parseResumeWithAI doesn't go through aiRouter
 
     // Add raw text to parsed data
@@ -125,7 +125,7 @@ export const uploadResume = async (req, res) => {
 
     console.error("Upload error:", error);
 
-    // Check if it's a Gemini quota error (more comprehensive check)
+    // Check if it's an AI quota or rate limit error (more comprehensive check)
     const errorMsg = error.message?.toLowerCase() || "";
     const isQuotaError =
       errorMsg.includes("429") ||
@@ -178,7 +178,7 @@ export const enhanceContent = async (req, res) => {
     // One-time users get 100 AI generations per month
     // Pro/Premium/Lifetime users get unlimited
 
-    // Enhance content using Gemini AI with full resume context and custom prompt
+    // Enhance content using OpenAI with full resume context and custom prompt
     const startTime = Date.now();
     const {data: enhancedContent, tokenUsage} = await enhanceContentWithAI(
       content,
@@ -260,7 +260,7 @@ export const generateSummary = async (req, res) => {
     // Usage limits are checked by checkUsageLimit middleware
     // Free users: 10 AI generations/month, One-time: 100/month, Pro+: Unlimited
 
-    // Generate summary using Gemini AI
+    // Generate summary using OpenAI
     const startTime = Date.now();
     const {data: summary, tokenUsage} = await generateSummaryWithAI(resumeData);
     const responseTime = Date.now() - startTime;
@@ -563,7 +563,7 @@ export const categorizeSkills = async (req, res) => {
     // Usage limits are checked by checkUsageLimit middleware
     // Free users: 10 AI generations/month, One-time: 100/month, Pro+: Unlimited
 
-    // Categorize skills using Gemini AI
+    // Categorize skills using OpenAI
     const startTime = Date.now();
     const {data: categorizedSkills, tokenUsage} = await categorizeSkillsWithAI(
       skills
@@ -634,7 +634,7 @@ export const segregateAchievements = async (req, res) => {
     // Usage limits are checked by checkUsageLimit middleware
     // Free users: 10 AI generations/month, One-time: 100/month, Pro+: Unlimited
 
-    // Segregate achievements using Gemini AI
+    // Segregate achievements using OpenAI
     const startTime = Date.now();
     const {data: segregatedAchievements, tokenUsage} =
       await segregateAchievementsWithAI(achievements);
@@ -704,7 +704,7 @@ export const processCustomSection = async (req, res) => {
     // Usage limits are checked by checkUsageLimit middleware
     // Free users: 10 AI generations/month, One-time: 100/month, Pro+: Unlimited
 
-    // Process custom section using Gemini AI
+    // Process custom section using OpenAI
     const startTime = Date.now();
     const {data: processedContent, tokenUsage} =
       await processCustomSectionWithAI(content, title || "Custom Section");
@@ -984,4 +984,58 @@ export const compressResume = async (req, res) => {
     });
   }
 };
+
+/**
+ * Generate 3 tailored variations of a bullet point or summary
+ * POST /api/resume/bullet-rewrites
+ */
+export const getBulletRewrites = async (req, res) => {
+  try {
+    const {content, sectionType = "experience", context = {}, resumeData = null, customInstruction = ""} = req.body;
+
+    if (!content || typeof content !== "string" || !content.trim()) {
+      return res.status(400).json({
+        success: false,
+        error: "Content is required for AI bullet rewrite",
+      });
+    }
+
+    const userId = req.user._id || req.user.userId;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(401).json({success: false, error: "User not found"});
+    }
+
+    const result = await aiRouter.generateBulletVariations(
+      content,
+      sectionType,
+      context,
+      resumeData,
+      user,
+      customInstruction
+    );
+
+    // Increment AI usage counter
+    await User.findByIdAndUpdate(userId, {
+      $inc: {
+        "usage.aiGenerationsUsed": 1,
+        "usage.aiGenerationsThisMonth": 1,
+      },
+    });
+
+    res.json({
+      success: true,
+      data: result.data,
+      aiModel: result.aiModel,
+    });
+  } catch (error) {
+    console.error("❌ Bullet rewrite error:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message || "Failed to generate bullet variations",
+    });
+  }
+};
+
 

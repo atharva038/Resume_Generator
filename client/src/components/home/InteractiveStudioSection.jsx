@@ -611,7 +611,7 @@ export default function InteractiveStudioSection() {
               </div>
 
               {/* Right: Diagnostic HUD Terminal & Score Gauge */}
-              <div className="lg:col-span-5 p-3.5 sm:p-7 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-blue-500/5 via-indigo-500/5 to-purple-500/5 dark:from-zinc-900/90 dark:to-zinc-900/50 border border-gray-200/90 dark:border-white/10 space-y-3 sm:space-y-6">
+              <div className="lg:col-span-5 p-3.5 sm:p-7 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-blue-500/5 via-indigo-500/5 to-cyan-500/5 dark:from-zinc-900/90 dark:to-zinc-900/50 border border-gray-200/90 dark:border-white/10 space-y-3 sm:space-y-6">
                 {/* Circular Score Gauge & Top Badge */}
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5 sm:space-y-1">

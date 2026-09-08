@@ -13,6 +13,9 @@ import StrategicLeadershipTemplate from "@/components/templates/StrategicLeaders
 import ImpactProTemplate from "@/components/templates/ImpactProTemplate";
 import GitHubStyleTemplate from "@/components/templates/GitHubStyleTemplate";
 import StructuredPhotoTemplate from "@/components/templates/StructuredPhotoTemplate";
+import SiliconValleyTemplate from "@/components/templates/SiliconValleyTemplate";
+import LatexAcademicTemplate from "@/components/templates/LatexAcademicTemplate";
+import NordicSplitTemplate from "@/components/templates/NordicSplitTemplate";
 
 const templates = {
   classic: ClassicTemplate,
@@ -29,6 +32,12 @@ const templates = {
   "stratergic-leader": StrategicLeadershipTemplate,
   "impact-pro": ImpactProTemplate,
   "structured-photo": StructuredPhotoTemplate,
+  "silicon-valley": SiliconValleyTemplate,
+  siliconValley: SiliconValleyTemplate,
+  "latex-academic": LatexAcademicTemplate,
+  latexAcademic: LatexAcademicTemplate,
+  "nordic-split": NordicSplitTemplate,
+  nordicSplit: NordicSplitTemplate,
 };
 
 const PdfRender = () => {
@@ -69,6 +78,20 @@ const PdfRender = () => {
 
   const SelectedTemplate = templates[payload.template] || ClassicTemplate;
 
+  const layoutSettings = payload.resumeData?.layoutSettings || {};
+  const activeFontFamily =
+    layoutSettings.fontFamily ||
+    '"Arial", Helvetica, sans-serif';
+
+  const layoutStyle = {
+    "--resume-layout-top": layoutSettings.pagePaddingTop || layoutSettings.pagePadding || "0.5in",
+    "--resume-layout-side": layoutSettings.pagePadding || "0.5in",
+    "--resume-layout-bottom": layoutSettings.pagePaddingBottom || layoutSettings.pagePadding || "0.5in",
+    "--resume-layout-scale": String(Number(layoutSettings.fontScale || 100) / 100),
+    "--resume-layout-spacing": String(Number(layoutSettings.sectionSpacing || 100) / 100),
+    "--resume-layout-font-family": activeFontFamily,
+  };
+
   return (
     <main className="bg-white text-black">
       <style>{`
@@ -93,12 +116,19 @@ const PdfRender = () => {
         }
       `}</style>
       <div id="pdf-render-ready" style={{width: "210mm", minHeight: "297mm"}}>
-        <SelectedTemplate
-          resumeData={payload.resumeData}
-          twoPageMode={false}
-          printMode={payload.template === "professional-v2"}
-          onPageUsageChange={() => {}}
-        />
+        <div
+          className="resume-layout-shell"
+          style={layoutStyle}
+          data-contact={layoutSettings.contactLayout || "center-inline"}
+          data-density={payload.resumeData?.density || "medium"}
+        >
+          <SelectedTemplate
+            resumeData={payload.resumeData}
+            twoPageMode={false}
+            printMode={payload.template === "professional-v2"}
+            onPageUsageChange={() => {}}
+          />
+        </div>
       </div>
     </main>
   );

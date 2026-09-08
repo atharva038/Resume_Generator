@@ -12,7 +12,7 @@ const badgeVariants = {
   danger:
     "bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-300 border border-red-200 dark:border-red-800",
   gradient:
-    "bg-gradient-to-r from-primary-500 to-accent-purple text-white border-0 shadow-sm",
+    "bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-0 shadow-sm",
 };
 
 export const Badge = ({

@@ -1,50 +1,65 @@
-import {forwardRef, useRef, useEffect, useState} from "react";
+import { forwardRef, useRef, useEffect, useMemo } from "react";
+import { isDescriptionDuplicatedInBullets, cleanBulletText } from "./templateUtils";
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Globe,
+  Github,
+  Linkedin,
+  ExternalLink,
+  Terminal,
+} from "lucide-react";
 
 /**
- * TechTemplate - Technology-focused resume template for developers and engineers
+ * TechTemplate - "Cloud & Systems Developer" Archetype
  *
+ * Designed for Full-Stack Developers, Cloud Architects, Backend Engineers, and DevOps.
  * Features:
- * - Tech-industry optimized layout
- * - Emphasis on skills, projects, and technical experience
- * - Multiple color themes (blue, purple, green, orange, cyan, gray)
- * - Clean, code-like aesthetic
- * - Automatic page overflow detection with logging
- * - ATS-compatible structure
- *
- * @component
- * @param {Object} props - Component props
- * @param {Object} props.resumeData - Complete resume data object (same structure as ClassicTemplate)
- * @param {string} [props.resumeData.selectedTheme] - Color theme (blue, purple, green, orange, cyan, gray)
- * @param {Function} [props.onPageUsageChange] - Callback for page overflow detection
- * @param {React.Ref} ref - Forwarded ref for PDF generation
- *
- * @example
- * <TechTemplate
- *   ref={templateRef}
- *   resumeData={{
- *     name: "Jordan Dev",
- *     contact: { email: "jordan@example.com", github: "github.com/jordandev" },
- *     skills: [{ category: "Languages", items: ["Python", "JavaScript", "Go"] }],
- *     selectedTheme: "blue"
- *   }}
- * />
+ * - Ultra-clean open developer canvas with JetBrains Mono + Inter
+ * - Syntax-accented section headers (<TechnicalSkills />, <EngineeringExperience />)
+ * - Developer prompt accent styling (>_ name and const role =)
+ * - Quantifiable system & performance metric highlighter (req/s, ms, 99.99% SLA, $, %, scale)
+ * - Intelligent 1-page auto-density engine with Compact / Balanced / Spacious modes
+ * - 100% text-based, ATS-compliant semantic structure
  */
-const TechTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
-  // Page overflow detection state
-  const containerRef = useRef(null);
-  const [pageOverflowInfo, setPageOverflowInfo] = useState({
-    isOverflowing: false,
-    currentHeight: 0,
-    maxHeight: 1056, // 11in at 96dpi (matches template minHeight)
-    overflowPercentage: 0,
-    templateName: "TechTemplate",
-  });
 
-  // Detect page overflow whenever resumeData changes
+// ATS-safe metric highlighter for technical and performance metrics
+const highlightMetrics = (text, primaryColor) => {
+  if (!text || typeof text !== "string") return text;
+
+  const metricRegex =
+    /(\b(?:\+|-)?\$\d+[\d,.]*[kKmMbB]?(?:\+)?|\b(?:\+|-)?\d+[\d,.]*\%|\b\d+(?:\.\d+)?x\b|\b\d{2,4}\+\b|\b\d+[\d,.]*\+?\s*(?:users|MAU|DAU|customers|clients|engineers|developers|nodes|services|microservices|req\/s|rps|qps|ms|fps|stars|downloads|pull requests|PRs|tps|commits)\b)/gi;
+
+  const parts = text.split(metricRegex);
+  if (parts.length === 1) return text;
+
+  return parts.map((part, index) => {
+    if (index % 2 === 1) {
+      return (
+        <span
+          key={index}
+          style={{
+            fontWeight: 700,
+            color: primaryColor,
+          }}
+        >
+          {part}
+        </span>
+      );
+    }
+    return part;
+  });
+};
+
+const TechTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }, ref) => {
+  const containerRef = useRef(null);
+
+  // Page overflow detection (11in @ 96 DPI = 1056px)
   useEffect(() => {
     if (containerRef.current) {
       const currentHeight = containerRef.current.scrollHeight;
-      const maxHeight = 1056; // 11in at 96dpi (matches template minHeight)
+      const maxHeight = 1056;
       const isOverflowing = currentHeight > maxHeight;
       const overflowPercentage = isOverflowing
         ? Math.round(((currentHeight - maxHeight) / maxHeight) * 100)
@@ -55,80 +70,426 @@ const TechTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
         currentHeight,
         maxHeight,
         overflowPercentage,
-        percentage: Math.round((currentHeight / maxHeight) * 100), // Allow > 100% for overflow
+        percentage: Math.round((currentHeight / maxHeight) * 100),
         templateName: "TechTemplate",
       };
 
-      setPageOverflowInfo(usageInfo);
-
-      // Pass data to parent component if callback provided
       if (onPageUsageChange) {
         onPageUsageChange(usageInfo);
       }
     }
-  }, [resumeData]); // Don't include onPageUsageChange to avoid infinite loops
+  }, [resumeData, onPageUsageChange]);
 
-  // Color themes for the template
+  // Refined modern developer palettes (Clean, high-contrast, professional)
   const colorThemes = {
+    githubBlue: {
+      primary: "#0969da",
+      secondary: "#0550ae",
+      accent: "#218bff",
+      badgeBg: "#f6f8fa",
+      badgeBorder: "#d0d7de",
+      badgeText: "#0969da",
+      tagBg: "#ddf4ff",
+      tagBorder: "#b6e3ff",
+      tagText: "#0969da",
+      text: "#1f2328",
+      textLight: "#333d47",
+      textMuted: "#656d76",
+      border: "#d0d7de",
+      rule: "#0969da",
+    },
+    supabaseEmerald: {
+      primary: "#059669",
+      secondary: "#047857",
+      accent: "#10b981",
+      badgeBg: "#f0fdf4",
+      badgeBorder: "#bbf7d0",
+      badgeText: "#047857",
+      tagBg: "#dcfce7",
+      tagBorder: "#86efac",
+      tagText: "#15803d",
+      text: "#0f172a",
+      textLight: "#334155",
+      textMuted: "#64748b",
+      border: "#e2e8f0",
+      rule: "#059669",
+    },
+    raycastIndigo: {
+      primary: "#4f46e5",
+      secondary: "#4338ca",
+      accent: "#6366f1",
+      badgeBg: "#f8f9fe",
+      badgeBorder: "#dbe0f8",
+      badgeText: "#434ca8",
+      tagBg: "#eef2ff",
+      tagBorder: "#c7d2fe",
+      tagText: "#3730a3",
+      text: "#0f172a",
+      textLight: "#334155",
+      textMuted: "#64748b",
+      border: "#e2e8f0",
+      rule: "#4f46e5",
+    },
+    rustAmber: {
+      primary: "#d97706",
+      secondary: "#b45309",
+      accent: "#f59e0b",
+      badgeBg: "#fffbeb",
+      badgeBorder: "#fde68a",
+      badgeText: "#b45309",
+      tagBg: "#fef3c7",
+      tagBorder: "#fde68a",
+      tagText: "#92400e",
+      text: "#1f2328",
+      textLight: "#333d47",
+      textMuted: "#656d76",
+      border: "#e2e8f0",
+      rule: "#d97706",
+    },
+    cyberCyan: {
+      primary: "#0891b2",
+      secondary: "#0e7490",
+      accent: "#06b6d4",
+      badgeBg: "#ecfeff",
+      badgeBorder: "#a5f3fc",
+      badgeText: "#0891b2",
+      tagBg: "#cffafe",
+      tagBorder: "#67e8f9",
+      tagText: "#0e7490",
+      text: "#0f172a",
+      textLight: "#334155",
+      textMuted: "#64748b",
+      border: "#e2e8f0",
+      rule: "#0891b2",
+    },
+    pythonGold: {
+      primary: "#ca8a04",
+      secondary: "#a16207",
+      accent: "#eab308",
+      badgeBg: "#fefce8",
+      badgeBorder: "#fef08a",
+      badgeText: "#a16207",
+      tagBg: "#fef9c3",
+      tagBorder: "#fde047",
+      tagText: "#854d0e",
+      text: "#1f2328",
+      textLight: "#333d47",
+      textMuted: "#656d76",
+      border: "#e2e8f0",
+      rule: "#ca8a04",
+    },
+    vercelStealth: {
+      primary: "#18181b",
+      secondary: "#27272a",
+      accent: "#52525b",
+      badgeBg: "#f4f4f5",
+      badgeBorder: "#e4e4e7",
+      badgeText: "#18181b",
+      tagBg: "#f4f4f5",
+      tagBorder: "#d4d4d8",
+      tagText: "#27272a",
+      text: "#09090b",
+      textLight: "#27272a",
+      textMuted: "#71717a",
+      border: "#e4e4e7",
+      rule: "#18181b",
+    },
+    // Aliases for legacy & toolbar compatibility
+    terminalCyan: {
+      primary: "#0969da",
+      secondary: "#0550ae",
+      accent: "#218bff",
+      badgeBg: "#f6f8fa",
+      badgeBorder: "#d0d7de",
+      badgeText: "#0969da",
+      tagBg: "#ddf4ff",
+      tagBorder: "#b6e3ff",
+      tagText: "#0969da",
+      text: "#1f2328",
+      textLight: "#333d47",
+      textMuted: "#656d76",
+      border: "#d0d7de",
+      rule: "#0969da",
+    },
+    matrixEmerald: {
+      primary: "#059669",
+      secondary: "#047857",
+      accent: "#10b981",
+      badgeBg: "#f0fdf4",
+      badgeBorder: "#bbf7d0",
+      badgeText: "#047857",
+      tagBg: "#dcfce7",
+      tagBorder: "#86efac",
+      tagText: "#15803d",
+      text: "#0f172a",
+      textLight: "#334155",
+      textMuted: "#64748b",
+      border: "#e2e8f0",
+      rule: "#059669",
+    },
+    deepViolet: {
+      primary: "#4f46e5",
+      secondary: "#4338ca",
+      accent: "#6366f1",
+      badgeBg: "#f8f9fe",
+      badgeBorder: "#dbe0f8",
+      badgeText: "#434ca8",
+      tagBg: "#eef2ff",
+      tagBorder: "#c7d2fe",
+      tagText: "#3730a3",
+      text: "#0f172a",
+      textLight: "#334155",
+      textMuted: "#64748b",
+      border: "#e2e8f0",
+      rule: "#4f46e5",
+    },
+    darkSlate: {
+      primary: "#18181b",
+      secondary: "#27272a",
+      accent: "#52525b",
+      badgeBg: "#f4f4f5",
+      badgeBorder: "#e4e4e7",
+      badgeText: "#18181b",
+      tagBg: "#f4f4f5",
+      tagBorder: "#d4d4d8",
+      tagText: "#27272a",
+      text: "#09090b",
+      textLight: "#27272a",
+      textMuted: "#71717a",
+      border: "#e4e4e7",
+      rule: "#18181b",
+    },
     black: {
-      primary: "#0f172a", // slate-900 - Deep tech black
-      secondary: "#1e293b", // slate-800
-      accent: "#334155", // slate-700
-      text: "#1e293b", // slate-800
-      textLight: "#475569", // slate-600
-      border: "#0f172a",
-      headerBg: "#0f172a", // Black header
-      headerText: "#ffffff",
+      primary: "#18181b",
+      secondary: "#27272a",
+      accent: "#52525b",
+      badgeBg: "#f4f4f5",
+      badgeBorder: "#e4e4e7",
+      badgeText: "#18181b",
+      tagBg: "#f4f4f5",
+      tagBorder: "#d4d4d8",
+      tagText: "#27272a",
+      text: "#09090b",
+      textLight: "#27272a",
+      textMuted: "#71717a",
+      border: "#e4e4e7",
+      rule: "#18181b",
     },
     blue: {
-      primary: "#1e40af", // blue-800 - Solid blue
-      secondary: "#1e3a8a", // blue-900
-      accent: "#3b82f6", // blue-500
-      text: "#1e293b", // slate-800
-      textLight: "#475569", // slate-600
-      border: "#1e40af",
-      headerBg: "#1e40af",
-      headerText: "#ffffff",
+      primary: "#0969da",
+      secondary: "#0550ae",
+      accent: "#218bff",
+      badgeBg: "#f6f8fa",
+      badgeBorder: "#d0d7de",
+      badgeText: "#0969da",
+      tagBg: "#ddf4ff",
+      tagBorder: "#b6e3ff",
+      tagText: "#0969da",
+      text: "#1f2328",
+      textLight: "#333d47",
+      textMuted: "#656d76",
+      border: "#d0d7de",
+      rule: "#0969da",
     },
     purple: {
-      primary: "#7e22ce", // purple-700 - Solid purple
-      secondary: "#6b21a8", // purple-800
-      accent: "#a855f7", // purple-500
-      text: "#1e293b",
-      textLight: "#475569",
-      border: "#7e22ce",
-      headerBg: "#7e22ce",
-      headerText: "#ffffff",
+      primary: "#4f46e5",
+      secondary: "#4338ca",
+      accent: "#6366f1",
+      badgeBg: "#f8f9fe",
+      badgeBorder: "#dbe0f8",
+      badgeText: "#434ca8",
+      tagBg: "#eef2ff",
+      tagBorder: "#c7d2fe",
+      tagText: "#3730a3",
+      text: "#0f172a",
+      textLight: "#334155",
+      textMuted: "#64748b",
+      border: "#e2e8f0",
+      rule: "#4f46e5",
     },
     teal: {
-      primary: "#0f766e", // teal-700 - Solid teal
-      secondary: "#115e59", // teal-800
-      accent: "#14b8a6", // teal-500
-      text: "#1e293b",
-      textLight: "#475569",
-      border: "#0f766e",
-      headerBg: "#0f766e",
-      headerText: "#ffffff",
+      primary: "#0d9488",
+      secondary: "#0f766e",
+      accent: "#14b8a6",
+      badgeBg: "#f0fdfa",
+      badgeBorder: "#99f6e4",
+      badgeText: "#0f766e",
+      tagBg: "#ccfbf1",
+      tagBorder: "#5eead4",
+      tagText: "#115e59",
+      text: "#0f172a",
+      textLight: "#334155",
+      textMuted: "#64748b",
+      border: "#e2e8f0",
+      rule: "#0d9488",
+    },
+    stripeIndigo: {
+      primary: "#4f46e5",
+      secondary: "#4338ca",
+      accent: "#6366f1",
+      badgeBg: "#f8f9fe",
+      badgeBorder: "#dbe0f8",
+      badgeText: "#434ca8",
+      tagBg: "#eef2ff",
+      tagBorder: "#c7d2fe",
+      tagText: "#3730a3",
+      text: "#0f172a",
+      textLight: "#334155",
+      textMuted: "#64748b",
+      border: "#e2e8f0",
+      rule: "#4f46e5",
+    },
+    cyberEmerald: {
+      primary: "#059669",
+      secondary: "#047857",
+      accent: "#10b981",
+      badgeBg: "#f0fdf4",
+      badgeBorder: "#bbf7d0",
+      badgeText: "#047857",
+      tagBg: "#dcfce7",
+      tagBorder: "#86efac",
+      tagText: "#15803d",
+      text: "#0f172a",
+      textLight: "#334155",
+      textMuted: "#64748b",
+      border: "#e2e8f0",
+      rule: "#059669",
+    },
+    midnightSlate: {
+      primary: "#18181b",
+      secondary: "#27272a",
+      accent: "#52525b",
+      badgeBg: "#f4f4f5",
+      badgeBorder: "#e4e4e7",
+      badgeText: "#18181b",
+      tagBg: "#f4f4f5",
+      tagBorder: "#d4d4d8",
+      tagText: "#27272a",
+      text: "#09090b",
+      textLight: "#27272a",
+      textMuted: "#71717a",
+      border: "#e4e4e7",
+      rule: "#18181b",
+    },
+    monochromePro: {
+      primary: "#18181b",
+      secondary: "#27272a",
+      accent: "#52525b",
+      badgeBg: "#f4f4f5",
+      badgeBorder: "#e4e4e7",
+      badgeText: "#18181b",
+      tagBg: "#f4f4f5",
+      tagBorder: "#d4d4d8",
+      tagText: "#27272a",
+      text: "#09090b",
+      textLight: "#27272a",
+      textMuted: "#71717a",
+      border: "#e4e4e7",
+      rule: "#18181b",
     },
   };
 
-  // Select the color theme (default to black if not specified)
   const selectedTheme =
-    colorThemes[resumeData?.colorTheme] || colorThemes.black;
+    colorThemes[resumeData?.selectedTheme || resumeData?.colorTheme] ||
+    colorThemes.githubBlue ||
+    colorThemes.terminalCyan;
 
-  // Helper function to safely format skills (handles both array and string)
-  const formatSkills = (items) => {
-    if (Array.isArray(items)) {
-      return items.join(" • ");
-    }
-    if (typeof items === "string") {
-      return items;
-    }
-    return "";
-  };
+  // 1-Page Content Density Engine
+  const density = useMemo(() => {
+    if (resumeData?.density === "compact" || resumeData?.density === "high") return "compact";
+    if (resumeData?.density === "spacious" || resumeData?.density === "low") return "spacious";
+    if (resumeData?.density === "medium") return "medium";
 
-  // Default section order optimized for tech roles
-  const DEFAULT_SECTION_ORDER = [
+    let score = 0;
+    if (resumeData.experience?.length) {
+      score += resumeData.experience.length * 3.5;
+      resumeData.experience.forEach((e) => {
+        score += (e.bullets?.length || 0) * 1.1;
+      });
+    }
+    if (resumeData.projects?.length) {
+      score += resumeData.projects.length * 2.5;
+      resumeData.projects.forEach((p) => {
+        score += (p.bullets?.length || 0) * 1;
+      });
+    }
+    if (resumeData.education?.length) score += resumeData.education.length * 2;
+    if (resumeData.skills?.length) score += resumeData.skills.length * 1.2;
+    if (resumeData.certifications?.length) score += resumeData.certifications.length;
+    if (resumeData.achievements?.length) score += resumeData.achievements.length;
+    if ((resumeData.summary || "").length > 250) score += 3;
+
+    if (score >= 32) return "compact";
+    if (score >= 18) return "medium";
+    return "spacious";
+  }, [resumeData]);
+
+  // Dynamic Spacing & Typography based on Density
+  const styles = useMemo(() => {
+    if (density === "compact") {
+      return {
+        padding: "0.38in 0.48in",
+        nameSize: "20pt",
+        titleSize: "9.5pt",
+        contactSize: "8.2pt",
+        headerMarginBottom: "9px",
+        sectionMarginBottom: "8px",
+        headingSize: "10pt",
+        headingPaddingBottom: "2px",
+        headingMarginBottom: "4px",
+        itemMarginBottom: "5px",
+        bodySize: "8.8pt",
+        metaSize: "8.2pt",
+        lineHeight: 1.3,
+        bulletMarginBottom: "2px",
+        bulletMarginLeft: "1.1rem",
+        skillPadding: "4px 8px",
+      };
+    }
+    if (density === "spacious") {
+      return {
+        padding: "0.58in 0.65in",
+        nameSize: "25pt",
+        titleSize: "11pt",
+        contactSize: "9.2pt",
+        headerMarginBottom: "16px",
+        sectionMarginBottom: "15px",
+        headingSize: "11.8pt",
+        headingPaddingBottom: "4px",
+        headingMarginBottom: "8px",
+        itemMarginBottom: "10px",
+        bodySize: "9.8pt",
+        metaSize: "9pt",
+        lineHeight: 1.5,
+        bulletMarginBottom: "4px",
+        bulletMarginLeft: "1.3rem",
+        skillPadding: "7px 12px",
+      };
+    }
+    // Balanced / Medium default
+    return {
+      padding: "0.46in 0.55in",
+      nameSize: "22pt",
+      titleSize: "10.2pt",
+      contactSize: "8.6pt",
+      headerMarginBottom: "12px",
+      sectionMarginBottom: "11px",
+      headingSize: "10.8pt",
+      headingPaddingBottom: "3px",
+      headingMarginBottom: "6px",
+      itemMarginBottom: "7px",
+      bodySize: "9.2pt",
+      metaSize: "8.6pt",
+      lineHeight: 1.38,
+      bulletMarginBottom: "2.5px",
+      bulletMarginLeft: "1.2rem",
+      skillPadding: "5px 10px",
+    };
+  }, [density]);
+
+  // Section Ordering
+  const defaultOrder = [
+    "summary",
     "skills",
     "experience",
     "projects",
@@ -141,625 +502,792 @@ const TechTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
   const sectionOrder =
     resumeData.sectionOrder && resumeData.sectionOrder.length > 0
       ? resumeData.sectionOrder.filter(
-          (id) =>
-            !["score", "personal", "recommendations", "summary"].includes(id)
+          (id) => !["score", "personal", "recommendations"].includes(id)
         )
-      : DEFAULT_SECTION_ORDER;
+      : defaultOrder;
 
-  // Render section helper function
-  const renderSection = (sectionId) => {
-    // Common style to prevent page breaks inside sections
-    const sectionStyle = {
-      marginBottom: "10px",
-      pageBreakInside: "avoid",
-      breakInside: "avoid",
-    };
+  // Contact items helper
+  const contact = resumeData.contact || {};
+  const contactParts = [
+    contact.email && {
+      icon: Mail,
+      label: contact.email,
+      href: `mailto:${contact.email}`,
+    },
+    contact.phone && { icon: Phone, label: contact.phone },
+    (contact.location || resumeData.location) && {
+      icon: MapPin,
+      label: contact.location || resumeData.location,
+    },
+    contact.github && {
+      icon: Github,
+      label: contact.github.replace(/^https?:\/\/(www\.)?github\.com\//i, "github.com/"),
+      href: contact.github.startsWith("http") ? contact.github : `https://${contact.github}`,
+    },
+    contact.linkedin && {
+      icon: Linkedin,
+      label: contact.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.com\/in\//i, "linkedin.com/in/"),
+      href: contact.linkedin.startsWith("http") ? contact.linkedin : `https://${contact.linkedin}`,
+    },
+    (contact.website || contact.portfolio) && {
+      icon: Globe,
+      label: (contact.website || contact.portfolio).replace(/^https?:\/\/(www\.)?/i, ""),
+      href: (contact.website || contact.portfolio).startsWith("http")
+        ? contact.website || contact.portfolio
+        : `https://${contact.website || contact.portfolio}`,
+    },
+  ].filter(Boolean);
 
-    const sections = {
-      skills: resumeData.skills && resumeData.skills.length > 0 && (
-        <section key="skills" style={sectionStyle}>
-          <h2
+  // Section Header Renderer
+  const renderSectionHeader = (tag, title) => (
+    <div style={{ marginBottom: styles.headingMarginBottom }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          paddingBottom: styles.headingPaddingBottom,
+          borderBottom: `1.5px solid ${selectedTheme.primary}`,
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+          }}
+        >
+          <span
             style={{
-              fontSize: "13pt",
-              fontWeight: "bold",
+              fontFamily: '"JetBrains Mono", monospace',
+              fontSize: styles.headingSize,
+              fontWeight: 700,
               color: selectedTheme.primary,
-              marginBottom: "8px",
-              paddingBottom: "4px",
-              borderBottom: `2px solid ${selectedTheme.border}`,
-              fontFamily: "'Courier New', monospace",
-              letterSpacing: "1px",
+              letterSpacing: "-0.2px",
             }}
           >
-            {"<Technical Skills />"}
-          </h2>
-          <div
+            {`<${tag} />`}
+          </span>
+          <span
             style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: "10px",
-              backgroundColor: `${selectedTheme.primary}10`,
-              padding: "10px",
-              borderRadius: "4px",
+              fontFamily: '"Inter", -apple-system, sans-serif',
+              fontSize: styles.metaSize,
+              fontWeight: 600,
+              color: selectedTheme.textMuted,
+              textTransform: "uppercase",
+              letterSpacing: "0.6px",
             }}
           >
-            {resumeData.skills.map((skillGroup, index) => (
-              <div key={index} style={{fontSize: "10pt"}}>
-                <div
-                  style={{
-                    fontWeight: "bold",
-                    color: selectedTheme.text,
-                    marginBottom: "3px",
-                    fontFamily: "'Courier New', monospace",
-                  }}
-                >
-                  {skillGroup.category}
-                </div>
-                <div
-                  style={{
-                    color: selectedTheme.textLight,
-                    fontSize: "9.5pt",
-                    lineHeight: "1.4",
-                  }}
-                >
-                  {formatSkills(skillGroup.items)}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      ),
-
-      experience: resumeData.experience && resumeData.experience.length > 0 && (
-        <section key="experience" style={sectionStyle}>
-          <h2
-            style={{
-              fontSize: "13pt",
-              fontWeight: "bold",
-              color: selectedTheme.primary,
-              marginBottom: "8px",
-              paddingBottom: "4px",
-              borderBottom: `2px solid ${selectedTheme.border}`,
-              fontFamily: "'Courier New', monospace",
-              letterSpacing: "1px",
-            }}
-          >
-            {"<Work Experience />"}
-          </h2>
-          {resumeData.experience.map((exp, index) => (
-            <div
-              key={index}
-              style={{
-                marginBottom: "8px",
-                borderLeft: `3px solid ${selectedTheme.border}`,
-                paddingLeft: "12px",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "baseline",
-                  marginBottom: "3px",
-                }}
-              >
-                <h3
-                  style={{
-                    fontSize: "11pt",
-                    fontWeight: "bold",
-                    color: selectedTheme.text,
-                  }}
-                >
-                  {exp.position}
-                </h3>
-                <span
-                  style={{
-                    fontSize: "9pt",
-                    color: selectedTheme.textLight,
-                    fontFamily: "'Courier New', monospace",
-                  }}
-                >
-                  {exp.startDate} → {exp.endDate || "Present"}
-                </span>
-              </div>
-              <div
-                style={{
-                  fontSize: "10pt",
-                  color: selectedTheme.textLight,
-                  fontWeight: "600",
-                  marginBottom: "4px",
-                }}
-              >
-                {exp.company} {exp.location && `| ${exp.location}`}
-              </div>
-              {exp.bullets && exp.bullets.length > 0 && (
-                <ul
-                  style={{
-                    margin: 0,
-                    paddingLeft: "18px",
-                    listStyleType: "none",
-                  }}
-                >
-                  {exp.bullets.map((bullet, idx) => (
-                    <li
-                      key={idx}
-                      style={{
-                        fontSize: "9.5pt",
-                        marginBottom: "3px",
-                        lineHeight: "1.4",
-                        color: selectedTheme.text,
-                        position: "relative",
-                        paddingLeft: "10px",
-                      }}
-                    >
-                      <span
-                        style={{
-                          position: "absolute",
-                          left: "-10px",
-                          color: selectedTheme.primary,
-                          fontWeight: "bold",
-                        }}
-                      >
-                        ▹
-                      </span>
-                      {bullet}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          ))}
-        </section>
-      ),
-
-      projects: resumeData.projects && resumeData.projects.length > 0 && (
-        <section key="projects" style={sectionStyle}>
-          <h2
-            style={{
-              fontSize: "13pt",
-              fontWeight: "bold",
-              color: selectedTheme.primary,
-              marginBottom: "8px",
-              paddingBottom: "4px",
-              borderBottom: `2px solid ${selectedTheme.border}`,
-              fontFamily: "'Courier New', monospace",
-              letterSpacing: "1px",
-            }}
-          >
-            {"<Projects />"}
-          </h2>
-          {resumeData.projects.map((project, index) => (
-            <div
-              key={index}
-              style={{
-                marginBottom: "8px",
-                backgroundColor: `${selectedTheme.primary}10`,
-                padding: "10px",
-                borderRadius: "4px",
-                borderLeft: `3px solid ${selectedTheme.border}`,
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "baseline",
-                }}
-              >
-                <h3
-                  style={{
-                    fontSize: "10.5pt",
-                    fontWeight: "bold",
-                    color: selectedTheme.text,
-                  }}
-                >
-                  {project.name}
-                </h3>
-                {project.date && (
-                  <span
-                    style={{
-                      fontSize: "9pt",
-                      color: selectedTheme.textLight,
-                      fontFamily: "'Courier New', monospace",
-                    }}
-                  >
-                    {project.date}
-                  </span>
-                )}
-              </div>
-              {project.description && (
-                <p
-                  style={{
-                    fontSize: "9.5pt",
-                    margin: "4px 0",
-                    color: selectedTheme.text,
-                    lineHeight: "1.5",
-                  }}
-                >
-                  {project.description}
-                </p>
-              )}
-              {project.bullets && project.bullets.length > 0 && (
-                <ul
-                  style={{
-                    margin: "5px 0 0 0",
-                    paddingLeft: "18px",
-                    listStyleType: "none",
-                  }}
-                >
-                  {project.bullets.map((bullet, idx) => (
-                    <li
-                      key={idx}
-                      style={{
-                        fontSize: "9.5pt",
-                        marginBottom: "3px",
-                        lineHeight: "1.5",
-                        color: selectedTheme.text,
-                        position: "relative",
-                        paddingLeft: "10px",
-                      }}
-                    >
-                      <span
-                        style={{
-                          position: "absolute",
-                          left: "-10px",
-                          color: selectedTheme.primary,
-                          fontWeight: "bold",
-                        }}
-                      >
-                        ▹
-                      </span>
-                      {bullet}
-                    </li>
-                  ))}
-                </ul>
-              )}
-              {project.technologies && (
-                <div
-                  style={{
-                    fontSize: "9pt",
-                    color: selectedTheme.textLight,
-                    marginTop: "5px",
-                    fontFamily: "'Courier New', monospace",
-                    backgroundColor: `${selectedTheme.accent}30`,
-                    padding: "4px 8px",
-                    borderRadius: "3px",
-                    display: "inline-block",
-                  }}
-                >
-                  {project.technologies}
-                </div>
-              )}
-              {project.link && (
-                <div
-                  style={{
-                    fontSize: "9pt",
-                    color: selectedTheme.primary,
-                    marginTop: "3px",
-                  }}
-                >
-                  🔗 {project.link}
-                </div>
-              )}
-            </div>
-          ))}
-        </section>
-      ),
-
-      education: resumeData.education && resumeData.education.length > 0 && (
-        <section key="education" style={sectionStyle}>
-          <h2
-            style={{
-              fontSize: "13pt",
-              fontWeight: "bold",
-              color: selectedTheme.primary,
-              marginBottom: "8px",
-              paddingBottom: "4px",
-              borderBottom: `2px solid ${selectedTheme.border}`,
-              fontFamily: "'Courier New', monospace",
-              letterSpacing: "1px",
-            }}
-          >
-            {"<Education />"}
-          </h2>
-          {resumeData.education.map((edu, index) => (
-            <div key={index} style={{marginBottom: "8px"}}>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "baseline",
-                }}
-              >
-                <div>
-                  <div
-                    style={{
-                      fontSize: "10.5pt",
-                      fontWeight: "bold",
-                      color: selectedTheme.text,
-                    }}
-                  >
-                    {edu.degree} in {edu.field}
-                  </div>
-                  <div
-                    style={{fontSize: "9.5pt", color: selectedTheme.textLight}}
-                  >
-                    {edu.institution} {edu.location && `• ${edu.location}`}
-                  </div>
-                </div>
-                <span
-                  style={{
-                    fontSize: "9pt",
-                    color: selectedTheme.textLight,
-                    fontFamily: "'Courier New', monospace",
-                  }}
-                >
-                  {edu.graduationDate}
-                </span>
-              </div>
-              {edu.gpa && (
-                <div
-                  style={{
-                    fontSize: "9pt",
-                    color: selectedTheme.textLight,
-                    marginTop: "2px",
-                  }}
-                >
-                  GPA: {edu.gpa}
-                </div>
-              )}
-            </div>
-          ))}
-        </section>
-      ),
-
-      certifications: resumeData.certifications &&
-        resumeData.certifications.length > 0 && (
-          <section key="certifications" style={sectionStyle}>
-            <h2
-              style={{
-                fontSize: "13pt",
-                fontWeight: "bold",
-                color: selectedTheme.primary,
-                marginBottom: "8px",
-                paddingBottom: "4px",
-                borderBottom: `2px solid ${selectedTheme.border}`,
-                fontFamily: "'Courier New', monospace",
-                letterSpacing: "1px",
-              }}
-            >
-              {"<Certifications />"}
-            </h2>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "6px",
-              }}
-            >
-              {resumeData.certifications.map((cert, index) => (
-                <div
-                  key={index}
-                  style={{
-                    fontSize: "9.5pt",
-                    color: selectedTheme.text,
-                    backgroundColor: `${selectedTheme.primary}10`,
-                    padding: "6px 10px",
-                    borderRadius: "3px",
-                  }}
-                >
-                  <span style={{fontWeight: "600"}}>{cert.name}</span>
-                  {cert.issuer && (
-                    <div
-                      style={{
-                        fontSize: "8.5pt",
-                        color: selectedTheme.textLight,
-                      }}
-                    >
-                      {cert.issuer}
-                    </div>
-                  )}
-                  {cert.date && (
-                    <div
-                      style={{
-                        fontSize: "8.5pt",
-                        color: selectedTheme.textLight,
-                        fontFamily: "'Courier New', monospace",
-                      }}
-                    >
-                      {cert.date}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </section>
-        ),
-
-      achievements: resumeData.achievements &&
-        resumeData.achievements.length > 0 && (
-          <section key="achievements" style={sectionStyle}>
-            <h2
-              style={{
-                fontSize: "13pt",
-                fontWeight: "bold",
-                color: selectedTheme.primary,
-                marginBottom: "8px",
-                paddingBottom: "4px",
-                borderBottom: `2px solid ${selectedTheme.border}`,
-                fontFamily: "'Courier New', monospace",
-                letterSpacing: "1px",
-              }}
-            >
-              {"<Achievements />"}
-            </h2>
-            <ul style={{margin: 0, paddingLeft: "18px", listStyleType: "none"}}>
-              {resumeData.achievements.map((achievement, index) => (
-                <li
-                  key={index}
-                  style={{
-                    fontSize: "9.5pt",
-                    marginBottom: "4px",
-                    lineHeight: "1.5",
-                    color: selectedTheme.text,
-                    position: "relative",
-                    paddingLeft: "10px",
-                  }}
-                >
-                  <span
-                    style={{
-                      position: "absolute",
-                      left: "-10px",
-                      color: selectedTheme.primary,
-                      fontWeight: "bold",
-                    }}
-                  >
-                    ▹
-                  </span>
-                  {achievement}
-                </li>
-              ))}
-            </ul>
-          </section>
-        ),
-
-      customSections: resumeData.customSections &&
-        resumeData.customSections.length > 0 && (
-          <>
-            {resumeData.customSections.map((section, index) => {
-              if (section.title && section.items && section.items.length > 0) {
-                return (
-                  <section key={`custom-${index}`} style={sectionStyle}>
-                    <h2
-                      style={{
-                        fontSize: "13pt",
-                        fontWeight: "bold",
-                        color: selectedTheme.primary,
-                        marginBottom: "8px",
-                        paddingBottom: "4px",
-                        borderBottom: `2px solid ${selectedTheme.border}`,
-                        fontFamily: "'Courier New', monospace",
-                        letterSpacing: "1px",
-                      }}
-                    >
-                      {"<" + section.title + " />"}
-                    </h2>
-                    <ul
-                      style={{
-                        fontSize: "9.5pt",
-                        lineHeight: "1.5",
-                        color: selectedTheme.text,
-                        paddingLeft: "20px",
-                        margin: "0",
-                      }}
-                    >
-                      {section.items.map((item, itemIndex) => (
-                        <li
-                          key={`${section.id || index}-item-${itemIndex}`}
-                          style={{
-                            marginBottom: "4px",
-                          }}
-                        >
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </section>
-                );
-              }
-              return null;
-            })}
-          </>
-        ),
-    };
-
-    return sections[sectionId] || null;
-  };
+            // {title}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div
       ref={(node) => {
         containerRef.current = node;
-        if (typeof ref === "function") {
-          ref(node);
-        } else if (ref) {
-          ref.current = node;
-        }
+        if (typeof ref === "function") ref(node);
+        else if (ref) ref.current = node;
       }}
-      className="resume-preview"
+      className="bg-white text-gray-900"
       style={{
+        width: "210mm",
         minHeight: "11in",
-        backgroundColor: "white",
-        padding: "0.5in",
-        fontFamily: "'Arial', 'Helvetica', sans-serif",
+        boxSizing: "border-box",
+        padding: styles.padding,
+        fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
         color: selectedTheme.text,
-        boxShadow: "0 0 10px rgba(0,0,0,0.1)",
       }}
     >
-      {/* Header Section - Tech Style */}
+      {/* Header: Clean Modern Developer Masthead */}
       <header
         style={{
-          marginBottom: "12px",
-          backgroundColor: selectedTheme.headerBg || selectedTheme.primary,
-          color: selectedTheme.headerText || "white",
-          padding: "14px",
-          borderRadius: "6px",
+          marginBottom: styles.headerMarginBottom,
+          paddingBottom: "10px",
+          borderBottom: `1px solid ${selectedTheme.border}`,
         }}
       >
-        <h1
-          style={{
-            fontSize: "22pt",
-            fontWeight: "bold",
-            marginBottom: "6px",
-            fontFamily: "'Courier New', monospace",
-            letterSpacing: "1px",
-          }}
-        >
-          {resumeData.name || "Your Name"}
-        </h1>
-        {resumeData.summary && (
-          <p
-            style={{
-              fontSize: "10pt",
-              marginBottom: "10px",
-              color: "rgba(255, 255, 255, 0.9)",
-              lineHeight: "1.5",
-            }}
-          >
-            {resumeData.summary}
-          </p>
-        )}
         <div
           style={{
-            fontSize: "9.5pt",
-            color: "rgba(255, 255, 255, 0.8)",
             display: "flex",
-            gap: "12px",
+            justifyContent: "space-between",
+            alignItems: "baseline",
             flexWrap: "wrap",
+            gap: "4px",
           }}
         >
-          {resumeData.contact?.email && (
-            <span>✉️ {resumeData.contact.email}</span>
-          )}
-          {resumeData.contact?.phone && (
-            <span>📱 {resumeData.contact.phone}</span>
-          )}
-          {resumeData.contact?.location && (
-            <span>📍 {resumeData.contact.location}</span>
-          )}
-          {resumeData.contact?.linkedin && (
-            <span>🔗 {resumeData.contact.linkedin}</span>
-          )}
-          {resumeData.contact?.github && (
-            <span>💻 {resumeData.contact.github}</span>
-          )}
-          {(resumeData.contact?.portfolio || resumeData.contact?.website) && (
-            <span>🌐 {resumeData.contact.portfolio || resumeData.contact.website}</span>
-          )}
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <span
+                style={{
+                  fontFamily: '"JetBrains Mono", monospace',
+                  fontSize: "12pt",
+                  fontWeight: 700,
+                  color: selectedTheme.primary,
+                }}
+              >
+                &gt;_
+              </span>
+              <h1
+                style={{
+                  fontFamily: '"JetBrains Mono", monospace',
+                  fontSize: styles.nameSize,
+                  fontWeight: 800,
+                  color: selectedTheme.text,
+                  margin: 0,
+                  letterSpacing: "-0.5px",
+                  lineHeight: 1.15,
+                }}
+              >
+                {resumeData.name || "Developer Candidate"}
+              </h1>
+            </div>
+
+            {(resumeData.title || resumeData.jobTitle) && (
+              <div
+                style={{
+                  fontFamily: '"JetBrains Mono", monospace',
+                  fontSize: styles.titleSize,
+                  color: selectedTheme.primary,
+                  fontWeight: 600,
+                  marginTop: "3px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                }}
+              >
+                <span style={{ color: selectedTheme.textMuted }}>const role =</span>
+                <span>"{resumeData.title || resumeData.jobTitle}";</span>
+              </div>
+            )}
+          </div>
         </div>
+
+        {/* Contact Links Bar */}
+        {contactParts.length > 0 && (
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              alignItems: "center",
+              gap: "6px 14px",
+              marginTop: "8px",
+              fontSize: styles.contactSize,
+              fontFamily: '"JetBrains Mono", monospace',
+              color: selectedTheme.textMuted,
+            }}
+          >
+            {contactParts.map((item, index) => {
+              const Icon = item.icon;
+              return (
+                <div key={index} style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                  <Icon size={12} style={{ color: selectedTheme.primary }} />
+                  {item.href ? (
+                    <a
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        color: selectedTheme.textLight,
+                        textDecoration: "none",
+                        borderBottom: `1px dotted ${selectedTheme.border}`,
+                      }}
+                    >
+                      {item.label}
+                    </a>
+                  ) : (
+                    <span>{item.label}</span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </header>
 
-      {/* Body Sections */}
-      <div>{sectionOrder.map((sectionId) => renderSection(sectionId))}</div>
+      {/* Dynamic Sections */}
+      {sectionOrder.map((sectionId) => {
+        switch (sectionId) {
+          case "summary":
+            if (!resumeData.summary) return null;
+            return (
+              <section key="summary" style={{ marginBottom: styles.sectionMarginBottom }}>
+                {renderSectionHeader("Overview", "Summary & Core Focus")}
+                <p
+                  style={{
+                    fontSize: styles.bodySize,
+                    lineHeight: styles.lineHeight,
+                    color: selectedTheme.textLight,
+                    margin: 0,
+                    textAlign: "justify",
+                  }}
+                >
+                  {highlightMetrics(resumeData.summary, selectedTheme.primary)}
+                </p>
+              </section>
+            );
+
+          case "skills":
+            if (!resumeData.skills || resumeData.skills.length === 0) return null;
+            return (
+              <section key="skills" style={{ marginBottom: styles.sectionMarginBottom }}>
+                {renderSectionHeader("TechnicalSkills", "Stack & Tooling")}
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(2, 1fr)",
+                    gap: "6px 12px",
+                  }}
+                >
+                  {resumeData.skills.map((group, index) => (
+                    <div
+                      key={index}
+                      style={{
+                        backgroundColor: selectedTheme.badgeBg,
+                        border: `1px solid ${selectedTheme.badgeBorder}`,
+                        borderRadius: "5px",
+                        padding: styles.skillPadding,
+                      }}
+                    >
+                      <div
+                        style={{
+                          fontFamily: '"JetBrains Mono", monospace',
+                          fontSize: styles.metaSize,
+                          fontWeight: 700,
+                          color: selectedTheme.primary,
+                          marginBottom: "2px",
+                        }}
+                      >
+                        {group.category || "Skill Domain"}:
+                      </div>
+                      <div
+                        style={{
+                          fontSize: styles.bodySize,
+                          color: selectedTheme.text,
+                          lineHeight: 1.35,
+                        }}
+                      >
+                        {Array.isArray(group.items) ? group.items.join(" • ") : group.items}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            );
+
+          case "experience":
+            if (!resumeData.experience?.length) return null;
+            return (
+              <section key="experience" style={{ marginBottom: styles.sectionMarginBottom }}>
+                {renderSectionHeader("Experience", "Professional Engineering")}
+                <div style={{ display: "flex", flexDirection: "column", gap: styles.itemMarginBottom }}>
+                  {resumeData.experience.map((exp, index) => (
+                    <div
+                      key={index}
+                      style={{
+                        borderLeft: `2px solid ${selectedTheme.primary}40`,
+                        paddingLeft: "10px",
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "baseline",
+                          marginBottom: "2px",
+                        }}
+                      >
+                        <div>
+                          <span
+                            style={{
+                              fontWeight: 700,
+                              fontSize: styles.bodySize,
+                              color: selectedTheme.text,
+                            }}
+                          >
+                            {exp.position || "Software Engineer"}
+                          </span>
+                          <span
+                            style={{
+                              color: selectedTheme.primary,
+                              fontWeight: 600,
+                              fontSize: styles.bodySize,
+                              marginLeft: "5px",
+                            }}
+                          >
+                            @ {exp.company}
+                          </span>
+                          {exp.location && (
+                            <span
+                              style={{
+                                fontSize: styles.metaSize,
+                                color: selectedTheme.textMuted,
+                                marginLeft: "6px",
+                              }}
+                            >
+                              ({exp.location})
+                            </span>
+                          )}
+                        </div>
+                        <span
+                          style={{
+                            fontFamily: '"JetBrains Mono", monospace',
+                            fontSize: styles.metaSize,
+                            fontWeight: 600,
+                            color: selectedTheme.textMuted,
+                            flexShrink: 0,
+                          }}
+                        >
+                          {exp.startDate} – {exp.endDate || "Present"}
+                        </span>
+                      </div>
+
+                      {exp.description &&
+                        (!exp.bullets?.length ||
+                          !isDescriptionDuplicatedInBullets(exp.description, exp.bullets)) && (
+                          <p
+                            style={{
+                              fontSize: styles.bodySize,
+                              lineHeight: styles.lineHeight,
+                              color: selectedTheme.textLight,
+                              margin: "2px 0 4px 0",
+                            }}
+                          >
+                            {highlightMetrics(exp.description, selectedTheme.primary)}
+                          </p>
+                        )}
+
+                      {exp.bullets && exp.bullets.length > 0 && (
+                        <ul
+                          style={{
+                            margin: 0,
+                            paddingLeft: 0,
+                            listStyle: "none",
+                          }}
+                        >
+                          {exp.bullets.map((bullet, bIdx) => {
+                            const cleaned = cleanBulletText(bullet);
+                            if (!cleaned) return null;
+                            return (
+                              <li
+                                key={bIdx}
+                                style={{
+                                  display: "flex",
+                                  alignItems: "flex-start",
+                                  gap: "6px",
+                                  fontSize: styles.bodySize,
+                                  lineHeight: styles.lineHeight,
+                                  color: selectedTheme.text,
+                                  marginBottom: styles.bulletMarginBottom,
+                                }}
+                              >
+                                <span
+                                  style={{
+                                    color: selectedTheme.primary,
+                                    fontFamily: '"JetBrains Mono", monospace',
+                                    fontWeight: 700,
+                                    fontSize: "1.05em",
+                                    lineHeight: 1,
+                                    marginTop: "2px",
+                                    flexShrink: 0,
+                                    userSelect: "none",
+                                  }}
+                                >
+                                  ▹
+                                </span>
+                                <span style={{ flex: 1 }}>
+                                  {highlightMetrics(cleaned, selectedTheme.primary)}
+                                </span>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </section>
+            );
+
+          case "projects":
+            if (!resumeData.projects?.length) return null;
+            return (
+              <section key="projects" style={{ marginBottom: styles.sectionMarginBottom }}>
+                {renderSectionHeader("Projects", "Systems & Architecture")}
+                <div style={{ display: "flex", flexDirection: "column", gap: styles.itemMarginBottom }}>
+                  {resumeData.projects.map((proj, index) => (
+                    <div
+                      key={index}
+                      style={{
+                        backgroundColor: selectedTheme.badgeBg,
+                        border: `1px solid ${selectedTheme.badgeBorder}`,
+                        borderRadius: "5px",
+                        padding: "8px 10px",
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "baseline",
+                          marginBottom: "2px",
+                        }}
+                      >
+                        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                          <span
+                            style={{
+                              fontFamily: '"JetBrains Mono", monospace',
+                              fontWeight: 700,
+                              fontSize: styles.bodySize,
+                              color: selectedTheme.text,
+                            }}
+                          >
+                            {proj.name}
+                          </span>
+                          {proj.link && (
+                            <a
+                              href={proj.link.startsWith("http") ? proj.link : `https://${proj.link}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "2px",
+                                fontSize: styles.metaSize,
+                                color: selectedTheme.primary,
+                                textDecoration: "none",
+                              }}
+                            >
+                              <ExternalLink size={10} />
+                              <span style={{ borderBottom: `1px dotted ${selectedTheme.primary}` }}>
+                                {proj.link.replace(/^https?:\/\/(www\.)?/i, "")}
+                              </span>
+                            </a>
+                          )}
+                        </div>
+
+                        {proj.date && (
+                          <span
+                            style={{
+                              fontFamily: '"JetBrains Mono", monospace',
+                              fontSize: styles.metaSize,
+                              color: selectedTheme.textMuted,
+                              flexShrink: 0,
+                            }}
+                          >
+                            {proj.date}
+                          </span>
+                        )}
+                      </div>
+
+                      {proj.technologies && (
+                        <div
+                          style={{
+                            fontFamily: '"JetBrains Mono", monospace',
+                            fontSize: "7.8pt",
+                            color: selectedTheme.tagText,
+                            backgroundColor: selectedTheme.tagBg,
+                            border: `1px solid ${selectedTheme.tagBorder}`,
+                            padding: "1px 6px",
+                            borderRadius: "3px",
+                            display: "inline-block",
+                            marginBottom: "4px",
+                          }}
+                        >
+                          Stack: {proj.technologies}
+                        </div>
+                      )}
+
+                      {proj.description &&
+                        (!proj.bullets?.length ||
+                          !isDescriptionDuplicatedInBullets(proj.description, proj.bullets)) && (
+                          <p
+                            style={{
+                              fontSize: styles.bodySize,
+                              lineHeight: styles.lineHeight,
+                              color: selectedTheme.textLight,
+                              margin: "2px 0",
+                            }}
+                          >
+                            {highlightMetrics(proj.description, selectedTheme.primary)}
+                          </p>
+                        )}
+
+                      {proj.bullets && proj.bullets.length > 0 && (
+                        <ul
+                          style={{
+                            margin: 0,
+                            paddingLeft: 0,
+                            listStyle: "none",
+                          }}
+                        >
+                          {proj.bullets.map((bullet, bIdx) => {
+                            const cleaned = cleanBulletText(bullet);
+                            if (!cleaned) return null;
+                            return (
+                              <li
+                                key={bIdx}
+                                style={{
+                                  display: "flex",
+                                  alignItems: "flex-start",
+                                  gap: "6px",
+                                  fontSize: styles.bodySize,
+                                  lineHeight: styles.lineHeight,
+                                  color: selectedTheme.text,
+                                  marginBottom: styles.bulletMarginBottom,
+                                }}
+                              >
+                                <span
+                                  style={{
+                                    color: selectedTheme.primary,
+                                    fontFamily: '"JetBrains Mono", monospace',
+                                    fontWeight: 700,
+                                    fontSize: "1.05em",
+                                    lineHeight: 1,
+                                    marginTop: "2px",
+                                    flexShrink: 0,
+                                    userSelect: "none",
+                                  }}
+                                >
+                                  ▹
+                                </span>
+                                <span style={{ flex: 1 }}>
+                                  {highlightMetrics(cleaned, selectedTheme.primary)}
+                                </span>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </section>
+            );
+
+          case "education":
+            if (!resumeData.education?.length) return null;
+            return (
+              <section key="education" style={{ marginBottom: styles.sectionMarginBottom }}>
+                {renderSectionHeader("Education", "Academic Foundations")}
+                <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                  {resumeData.education.map((edu, index) => (
+                    <div
+                      key={index}
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "baseline",
+                      }}
+                    >
+                      <div>
+                        <span
+                          style={{
+                            fontWeight: 700,
+                            fontSize: styles.bodySize,
+                            color: selectedTheme.text,
+                          }}
+                        >
+                          {edu.degree}
+                          {edu.field ? ` in ${edu.field}` : ""}
+                        </span>
+                        <span
+                          style={{
+                            color: selectedTheme.textLight,
+                            fontSize: styles.bodySize,
+                            marginLeft: "6px",
+                          }}
+                        >
+                          — {edu.institution}
+                          {edu.location ? `, ${edu.location}` : ""}
+                        </span>
+                        {edu.gpa && (
+                          <span
+                            style={{
+                              fontFamily: '"JetBrains Mono", monospace',
+                              fontSize: styles.metaSize,
+                              color: selectedTheme.primary,
+                              marginLeft: "6px",
+                            }}
+                          >
+                            [GPA: {edu.gpa}]
+                          </span>
+                        )}
+                      </div>
+                      <span
+                        style={{
+                          fontFamily: '"JetBrains Mono", monospace',
+                          fontSize: styles.metaSize,
+                          color: selectedTheme.textMuted,
+                          flexShrink: 0,
+                        }}
+                      >
+                        {edu.graduationDate || edu.endDate || edu.year}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            );
+
+          case "certifications":
+            if (!resumeData.certifications?.length) return null;
+            return (
+              <section key="certifications" style={{ marginBottom: styles.sectionMarginBottom }}>
+                {renderSectionHeader("Certifications", "Verified Credentials")}
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(2, 1fr)",
+                    gap: "4px 10px",
+                  }}
+                >
+                  {resumeData.certifications.map((cert, index) => (
+                    <div
+                      key={index}
+                      style={{
+                        fontSize: styles.bodySize,
+                        display: "flex",
+                        alignItems: "baseline",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <div>
+                        <span style={{ fontWeight: 600, color: selectedTheme.text }}>
+                          {cert.name || cert}
+                        </span>
+                        {cert.issuer && (
+                          <span style={{ color: selectedTheme.textMuted, fontSize: styles.metaSize, marginLeft: "4px" }}>
+                            ({cert.issuer})
+                          </span>
+                        )}
+                      </div>
+                      {cert.date && (
+                        <span
+                          style={{
+                            fontFamily: '"JetBrains Mono", monospace',
+                            fontSize: styles.metaSize,
+                            color: selectedTheme.textMuted,
+                          }}
+                        >
+                          {cert.date}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </section>
+            );
+
+          case "achievements":
+            if (!resumeData.achievements?.length) return null;
+            return (
+              <section key="achievements" style={{ marginBottom: styles.sectionMarginBottom }}>
+                {renderSectionHeader("Achievements", "Key Milestones & Awards")}
+                <ul style={{ margin: 0, paddingLeft: 0, listStyle: "none" }}>
+                  {resumeData.achievements.map((ach, index) => {
+                    const cleaned = cleanBulletText(ach);
+                    if (!cleaned) return null;
+                    return (
+                      <li
+                        key={index}
+                        style={{
+                          display: "flex",
+                          alignItems: "flex-start",
+                          gap: "6px",
+                          fontSize: styles.bodySize,
+                          lineHeight: styles.lineHeight,
+                          color: selectedTheme.text,
+                          marginBottom: styles.bulletMarginBottom,
+                        }}
+                      >
+                        <span
+                          style={{
+                            color: selectedTheme.primary,
+                            fontFamily: '"JetBrains Mono", monospace',
+                            fontWeight: 700,
+                            fontSize: "1.05em",
+                            lineHeight: 1,
+                            marginTop: "2px",
+                            flexShrink: 0,
+                            userSelect: "none",
+                          }}
+                        >
+                          ⚡
+                        </span>
+                        <span style={{ flex: 1 }}>
+                          {highlightMetrics(cleaned, selectedTheme.primary)}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </section>
+            );
+
+          case "customSections":
+            if (!resumeData.customSections?.length) return null;
+            return (
+              <>
+                {resumeData.customSections.map((section, index) => {
+                  if (!section.title || !section.items?.length) return null;
+                  return (
+                    <section key={`custom-${index}`} style={{ marginBottom: styles.sectionMarginBottom }}>
+                      {renderSectionHeader(
+                        section.title.replace(/\s+/g, ""),
+                        section.title
+                      )}
+                      <ul style={{ margin: 0, paddingLeft: 0, listStyle: "none" }}>
+                        {section.items.map((item, itemIdx) => {
+                          const cleaned = cleanBulletText(item);
+                          if (!cleaned) return null;
+                          return (
+                            <li
+                              key={itemIdx}
+                              style={{
+                                display: "flex",
+                                alignItems: "flex-start",
+                                gap: "6px",
+                                fontSize: styles.bodySize,
+                                lineHeight: styles.lineHeight,
+                                color: selectedTheme.text,
+                                marginBottom: styles.bulletMarginBottom,
+                              }}
+                            >
+                              <span
+                                style={{
+                                  color: selectedTheme.primary,
+                                  fontFamily: '"JetBrains Mono", monospace',
+                                  fontWeight: 700,
+                                  fontSize: "1.05em",
+                                  lineHeight: 1,
+                                  marginTop: "2px",
+                                  flexShrink: 0,
+                                  userSelect: "none",
+                                }}
+                              >
+                                ▹
+                              </span>
+                              <span style={{ flex: 1 }}>
+                                {highlightMetrics(cleaned, selectedTheme.primary)}
+                              </span>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </section>
+                  );
+                })}
+              </>
+            );
+
+          default:
+            return null;
+        }
+      })}
     </div>
   );
 });

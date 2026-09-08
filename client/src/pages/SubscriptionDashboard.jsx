@@ -22,6 +22,7 @@ import {
 } from "@/api/subscription.api";
 import toast from "react-hot-toast";
 import {useToggle} from "@/hooks";
+import {useAuth} from "@/context/AuthContext";
 
 /**
  * Subscription Dashboard Component
@@ -29,6 +30,7 @@ import {useToggle} from "@/hooks";
  * @param {boolean} embedded - Whether the component is embedded in another page (removes outer container)
  */
 const SubscriptionDashboard = ({embedded = false}) => {
+  const {user: authUser} = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [loading, setLoading] = useState(true);
@@ -74,21 +76,48 @@ const SubscriptionDashboard = ({embedded = false}) => {
       console.log("📊 Dashboard - History data:", historyData);
 
       // Extract subscription from response (API returns {success: true, subscription: {...}})
-      setSubscription(subData?.subscription || subData);
+      const fetchedSub = subData?.subscription || subData;
+      setSubscription(fetchedSub);
+
+      const isProOrAdmin =
+        authUser?.role === "admin" ||
+        fetchedSub?.tier === "pro" ||
+        fetchedSub?.isAdmin ||
+        usageData?.stats?.tier === "pro" ||
+        usageData?.stats?.isAdmin;
+
+      const resolveLimit = (itemKey, fallbackLimit) => {
+        const item = usageData?.stats?.usage?.[itemKey];
+        if (isProOrAdmin) {
+          if (["resumes", "aiGenerations", "atsScans", "coverLetters"].includes(itemKey)) {
+            return Infinity;
+          }
+        }
+        if (!item) return fallbackLimit ?? 0;
+        if (
+          item.unlimited === true ||
+          item.limit === null ||
+          item.limit === "unlimited" ||
+          item.limit === Infinity
+        ) {
+          return Infinity;
+        }
+        return typeof item.limit === "number" ? item.limit : (fallbackLimit ?? 0);
+      };
 
       // Transform usage data from nested structure to flat structure
       const transformedUsage = usageData?.stats?.usage
         ? {
             resumesUsed: usageData.stats.usage.resumes?.used || 0,
-            resumesLimit: usageData.stats.usage.resumes?.limit || 0,
+            resumesLimit: resolveLimit("resumes", usageData.stats.usage.resumes?.limit),
             aiGenerationsUsed: usageData.stats.usage.aiGenerations?.used || 0,
-            aiGenerationsLimit: usageData.stats.usage.aiGenerations?.limit || 0,
+            aiGenerationsLimit: resolveLimit("aiGenerations", usageData.stats.usage.aiGenerations?.limit),
             atsScansUsed: usageData.stats.usage.atsScans?.used || 0,
-            atsScansLimit: usageData.stats.usage.atsScans?.limit || 0,
+            atsScansLimit: resolveLimit("atsScans", usageData.stats.usage.atsScans?.limit),
             jobMatchesUsed: usageData.stats.usage.jobMatches?.used || 0,
-            jobMatchesLimit: usageData.stats.usage.jobMatches?.limit || 0,
+            jobMatchesLimit: resolveLimit("jobMatches", usageData.stats.usage.jobMatches?.limit),
             coverLettersUsed: usageData.stats.usage.coverLetters?.used || 0,
-            coverLettersLimit: usageData.stats.usage.coverLetters?.limit || 0,
+            coverLettersLimit: resolveLimit("coverLetters", usageData.stats.usage.coverLetters?.limit),
             resetDate: usageData.stats.resetDate || null,
           }
         : usageData;
@@ -163,20 +192,20 @@ const SubscriptionDashboard = ({embedded = false}) => {
     const colors = {
       free: "text-gray-600 dark:text-gray-300",
       "one-time": "text-blue-600",
-      pro: "text-purple-600",
+      pro: "text-amber-500 dark:text-amber-400",
     };
     return colors[tier] || "text-gray-600 dark:text-gray-300";
   };
 
   const getTierBadge = (tier) => {
     const badges = {
-      free: {bg: "bg-gray-100", text: "text-gray-800", icon: <FaStar />},
+      free: {bg: "bg-gray-100 dark:bg-zinc-800", text: "text-gray-800 dark:text-zinc-200", icon: <FaStar />},
       "one-time": {
-        bg: "bg-blue-100",
-        text: "text-blue-800",
+        bg: "bg-blue-100 dark:bg-blue-950/40",
+        text: "text-blue-800 dark:text-blue-300",
         icon: <FaRocket />,
       },
-      pro: {bg: "bg-purple-100", text: "text-purple-800", icon: <FaCrown />},
+      pro: {bg: "bg-amber-100 dark:bg-amber-950/40", text: "text-amber-800 dark:text-amber-300", icon: <FaCrown className="text-amber-500" />},
     };
     return badges[tier] || badges.free;
   };
@@ -252,7 +281,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
         }
       >
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto"></div>
           <p className="mt-4 text-gray-600 dark:text-gray-300">
             Loading dashboard...
           </p>
@@ -303,10 +332,47 @@ const SubscriptionDashboard = ({embedded = false}) => {
             </div>
             <button
               onClick={() => navigate("/pricing")}
-              className="bg-purple-600 text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-purple-700 transition-all shadow-md hover:shadow-lg text-sm"
+              className="bg-blue-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-blue-700 transition-all shadow-md hover:shadow-lg text-sm"
             >
               Upgrade Now
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Admin / Direct Pro Plan Card */}
+      {(authUser?.role === "admin" || subscription?.isAdmin || (subscription?.tier === "pro" && getActiveProPlans().length === 0)) && (
+        <div className="bg-gradient-to-br from-amber-500/10 via-white/80 to-blue-500/10 dark:from-amber-500/10 dark:via-zinc-900/90 dark:to-blue-500/10 backdrop-blur-xl rounded-2xl shadow-lg dark:shadow-2xl border border-amber-500/30 p-6 mb-6">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div className="flex items-center gap-4">
+              <div className="p-3.5 rounded-2xl bg-amber-500/20 text-amber-500 border border-amber-500/30 shadow-inner">
+                <FaCrown className="text-2xl" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                    {authUser?.role === "admin" || subscription?.isAdmin
+                      ? "Administrator Pro Access"
+                      : "Active Pro Plan"}
+                  </h2>
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                    Active • Unlimited
+                  </span>
+                </div>
+                <p className="text-sm text-gray-600 dark:text-zinc-300 mt-0.5">
+                  {authUser?.role === "admin" || subscription?.isAdmin
+                    ? "Your administrator account has unrestricted access to all features, AI models, and resume tools."
+                    : "You have full access to all Pro features with unlimited generations."}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs px-3 py-1.5 rounded-xl font-semibold bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 border border-gray-200 dark:border-zinc-700">
+                {authUser?.role === "admin" || subscription?.isAdmin
+                  ? "Admin Lifetime Access"
+                  : "Unlimited Plan"}
+              </span>
+            </div>
           </div>
         </div>
       )}
@@ -319,7 +385,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
         return (
           <div className="mb-6 mt-6">
             <div className="flex items-center mb-4">
-              <FaCrown className="text-2xl text-purple-600 mr-2" />
+              <FaCrown className="text-2xl text-amber-500 mr-2" />
               <div>
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                   Active Pro Plans
@@ -351,7 +417,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
                     key={plan._id || index}
                     className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl shadow-lg dark:shadow-2xl border border-gray-200/50 dark:border-white/10 overflow-hidden"
                   >
-                    <div className="bg-purple-50/50 dark:bg-purple-900/10 p-4 border-b border-purple-200/50 dark:border-purple-800/30">
+                    <div className="bg-blue-50/50 dark:bg-blue-950/20 p-4 border-b border-blue-200/50 dark:border-blue-800/30">
                       <div className="flex justify-between items-start mb-3">
                         <div>
                           <h3 className="text-base font-bold text-gray-900 dark:text-white">
@@ -383,7 +449,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
                           <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">
                             Days Until Renewal
                           </p>
-                          <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                          <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                             {daysRemaining}
                           </p>
                         </div>
@@ -397,7 +463,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
                         </div>
                         <div className="w-full bg-gray-200/50 dark:bg-white/10 rounded-full h-2">
                           <div
-                            className="h-2 rounded-full bg-purple-600 transition-all"
+                            className="h-2 rounded-full bg-blue-600 transition-all"
                             style={{width: `${progressPercentage}%`}}
                           ></div>
                         </div>
@@ -437,7 +503,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
                     <div className="p-3 bg-gray-50/50 dark:bg-white/5 flex flex-wrap gap-2 border-t border-gray-200/50 dark:border-white/10">
                       <button
                         onClick={() => navigate("/pricing")}
-                        className="flex-1 bg-purple-600 text-white px-3 py-1.5 rounded-lg font-semibold hover:bg-purple-700 transition-all text-xs"
+                        className="flex-1 bg-blue-600 text-white px-3 py-1.5 rounded-lg font-semibold hover:bg-blue-700 transition-all text-xs"
                       >
                         Change Plan
                       </button>
@@ -457,13 +523,6 @@ const SubscriptionDashboard = ({embedded = false}) => {
                   </div>
                 );
               })}
-            </div>
-
-            <div className="mt-4 bg-purple-50 dark:bg-purple-900/10 border-l-4 border-purple-600 p-3 rounded-r-lg">
-              <p className="text-xs text-purple-800 dark:text-purple-300">
-                🎉 <strong>Pro Member:</strong> Enjoy unlimited resumes, premium
-                AI models, and priority support!
-              </p>
             </div>
           </div>
         );
@@ -585,7 +644,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
                     <div className="p-3 bg-gray-50/50 dark:bg-white/5 flex flex-wrap gap-2 border-t border-gray-200/50 dark:border-white/10">
                       <button
                         onClick={() => navigate("/pricing")}
-                        className="flex-1 bg-purple-600 text-white px-3 py-1.5 rounded-lg font-semibold hover:bg-purple-700 transition-all text-xs"
+                        className="flex-1 bg-blue-600 text-white px-3 py-1.5 rounded-lg font-semibold hover:bg-blue-700 transition-all text-xs"
                       >
                         Upgrade to Pro
                       </button>
@@ -618,9 +677,9 @@ const SubscriptionDashboard = ({embedded = false}) => {
         if (!stats || stats.total === 0) return null;
 
         return (
-          <div className="bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-800 dark:to-gray-700 rounded-xl shadow-lg p-6 mb-6">
+          <div className="bg-gradient-to-br from-blue-50/50 to-indigo-50/30 dark:from-gray-800 dark:to-gray-700 rounded-xl shadow-lg p-6 mb-6">
             <div className="flex items-center mb-4">
-              <FaChartLine className="text-2xl text-purple-600 mr-3" />
+              <FaChartLine className="text-2xl text-blue-600 mr-3" />
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                 Purchase Statistics
               </h2>
@@ -659,8 +718,8 @@ const SubscriptionDashboard = ({embedded = false}) => {
               {stats.proPlans > 0 && (
                 <div className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl p-3 shadow-lg dark:shadow-2xl border border-gray-200/50 dark:border-white/10">
                   <div className="flex items-center justify-between mb-1.5">
-                    <FaCrown className="text-xl text-purple-500" />
-                    <span className="text-2xl font-bold text-purple-600">
+                    <FaCrown className="text-xl text-amber-500" />
+                    <span className="text-2xl font-bold text-amber-600 dark:text-amber-400">
                       {stats.proPlans}
                     </span>
                   </div>
@@ -683,105 +742,34 @@ const SubscriptionDashboard = ({embedded = false}) => {
                 </p>
               </div>
             </div>
-
-            {/* Active Pro Status */}
-            {stats.hasActivePro && (
-              <div className="mt-3 bg-purple-100 dark:bg-purple-900 border-l-4 border-purple-600 p-3 rounded-r-lg">
-                <div className="flex items-center">
-                  <FaCrown className="text-purple-600 mr-2" />
-                  <p className="text-xs text-purple-800 dark:text-purple-200 font-medium">
-                    🎉 You're on our best plan! Enjoy unlimited features.
-                  </p>
-                </div>
-              </div>
-            )}
           </div>
         );
       })()}
 
-      {/* AI Configuration (PRO only) */}
-      {subscription?.tier === "pro" && (
-        <div className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl shadow-lg dark:shadow-2xl p-6 mb-6 border border-gray-200/50 dark:border-white/10">
-          <div className="flex justify-between items-center mb-4">
-            <div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1.5">
-                AI Settings
+      {/* AI Engine Status */}
+      <div className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl shadow-lg dark:shadow-2xl p-6 mb-6 border border-gray-200/50 dark:border-white/10">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <div className="flex items-center gap-2 mb-1.5">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                AI Engine
               </h2>
-              <p className="text-sm text-gray-600 dark:text-gray-300">
-                Current AI Model:{" "}
-                <span className="font-semibold">
-                  {(
-                    aiConfig?.config?.aiModel ||
-                    aiConfig?.aiModel ||
-                    "hybrid"
-                  ).toUpperCase()}
-                </span>
-              </p>
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                Active
+              </span>
             </div>
-            <button
-              onClick={toggleAISettings}
-              className="bg-gray-200/50 dark:bg-white/10 text-gray-700 dark:text-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-300/50 dark:hover:bg-white/20 transition-all flex items-center text-xs"
-            >
-              <FaCog className="mr-1.5" /> Configure
-            </button>
+            <p className="text-sm text-gray-600 dark:text-gray-300">
+              Powered by <span className="font-bold text-gray-900 dark:text-white">OpenAI GPT-4o</span> — Enterprise-grade reasoning, recruiter-calibrated STAR achievements, and deep ATS analysis.
+            </p>
           </div>
-
-          {showAISettings && (
-            <div className="bg-gray-50/50 dark:bg-white/5 p-4 rounded-lg border border-gray-200/50 dark:border-white/10">
-              <p className="text-sm text-gray-700 dark:text-gray-200 mb-3">
-                Choose your preferred AI model for resume generation:
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <button
-                  onClick={() => handleUpdateAIPreference("auto")}
-                  className={`p-3 rounded-lg border-2 transition-all ${
-                    selectedAI === "auto"
-                      ? "border-purple-600 bg-purple-50 dark:bg-purple-900"
-                      : "border-gray-200 dark:border-gray-600 hover:border-purple-300"
-                  }`}
-                >
-                  <h3 className="font-semibold mb-1.5 text-sm text-gray-900 dark:text-white">
-                    Auto (Hybrid)
-                  </h3>
-                  <p className="text-xs text-gray-600 dark:text-gray-300">
-                    70% Gemini + 30% GPT-4o
-                  </p>
-                </button>
-                <button
-                  onClick={() => handleUpdateAIPreference("gemini")}
-                  className={`p-3 rounded-lg border-2 transition-all ${
-                    selectedAI === "gemini"
-                      ? "border-purple-600 bg-purple-50 dark:bg-purple-900"
-                      : "border-gray-200 dark:border-gray-600 hover:border-purple-300"
-                  }`}
-                >
-                  <h3 className="font-semibold mb-1.5 text-sm text-gray-900 dark:text-white">
-                    Gemini
-                  </h3>
-                  <p className="text-xs text-gray-600 dark:text-gray-300">
-                    Fast & Cost-effective
-                  </p>
-                </button>
-                <button
-                  onClick={() => handleUpdateAIPreference("gpt4o")}
-                  className={`p-3 rounded-lg border-2 transition-all ${
-                    selectedAI === "gpt4o"
-                      ? "border-purple-600 bg-purple-50 dark:bg-purple-900"
-                      : "border-gray-200 dark:border-gray-600 hover:border-purple-300"
-                  }`}
-                >
-                  <h3 className="font-semibold mb-1.5 text-sm text-gray-900 dark:text-white">
-                    GPT-4o
-                  </h3>
-                  <p className="text-xs text-gray-600 dark:text-gray-300">
-                    Highest Quality
-                  </p>
-                </button>
-              </div>
-            </div>
-          )}
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+              <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+              OpenAI GPT-4o
+            </span>
+          </div>
         </div>
-      )}
+      </div>
 
       {/* Usage Statistics */}
       <div className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl shadow-lg dark:shadow-2xl p-6 mb-6 border border-gray-200/50 dark:border-white/10">
@@ -794,16 +782,25 @@ const SubscriptionDashboard = ({embedded = false}) => {
             {/* Resumes */}
             {usage.resumesLimit !== undefined && (
               <div>
-                <div className="flex justify-between mb-1.5">
+                <div className="flex justify-between items-center mb-1.5">
                   <span className="font-semibold text-sm text-gray-700 dark:text-gray-200">
                     Resumes Generated
                   </span>
-                  <span className="text-sm text-gray-600 dark:text-gray-300">
-                    {usage.resumesUsed} /{" "}
-                    {usage.resumesLimit === Infinity ? "∞" : usage.resumesLimit}
+                  <span className="text-sm text-gray-600 dark:text-gray-300 flex items-center gap-1.5">
+                    <span className="font-semibold text-gray-900 dark:text-white">
+                      {usage.resumesUsed}
+                    </span>
+                    <span>/</span>
+                    {usage.resumesLimit === Infinity ? (
+                      <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                        Unlimited
+                      </span>
+                    ) : (
+                      <span>{usage.resumesLimit}</span>
+                    )}
                   </span>
                 </div>
-                {usage.resumesLimit !== Infinity && (
+                {usage.resumesLimit !== Infinity && usage.resumesLimit > 0 && (
                   <div className="w-full bg-gray-200/50 dark:bg-white/10 rounded-full h-2 shadow-inner">
                     <div
                       className={`h-2 rounded-full transition-all ${getProgressColor(
@@ -824,21 +821,28 @@ const SubscriptionDashboard = ({embedded = false}) => {
             {/* AI Requests */}
             {usage.aiGenerationsLimit !== undefined && (
               <div>
-                <div className="flex justify-between mb-1.5">
+                <div className="flex justify-between items-center mb-1.5">
                   <span className="font-semibold text-sm text-gray-700 dark:text-gray-200">
                     AI Requests{" "}
                     {subscription?.tier === "one-time"
                       ? "(21-day period)"
                       : "(This Month)"}
                   </span>
-                  <span className="text-sm text-gray-600 dark:text-gray-300">
-                    {usage.aiGenerationsUsed} /{" "}
-                    {usage.aiGenerationsLimit === Infinity
-                      ? "∞"
-                      : usage.aiGenerationsLimit}
+                  <span className="text-sm text-gray-600 dark:text-gray-300 flex items-center gap-1.5">
+                    <span className="font-semibold text-gray-900 dark:text-white">
+                      {usage.aiGenerationsUsed}
+                    </span>
+                    <span>/</span>
+                    {usage.aiGenerationsLimit === Infinity ? (
+                      <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                        Unlimited
+                      </span>
+                    ) : (
+                      <span>{usage.aiGenerationsLimit}</span>
+                    )}
                   </span>
                 </div>
-                {usage.aiGenerationsLimit !== Infinity && (
+                {usage.aiGenerationsLimit !== Infinity && usage.aiGenerationsLimit > 0 && (
                   <div className="w-full bg-gray-200/50 dark:bg-white/10 rounded-full h-2 shadow-inner">
                     <div
                       className={`h-2 rounded-full transition-all ${getProgressColor(
@@ -867,62 +871,36 @@ const SubscriptionDashboard = ({embedded = false}) => {
             )}
 
             {/* ATS Scans */}
-            {usage.atsScansLimit !== undefined && usage.atsScansLimit > 0 && (
-              <div>
-                <div className="flex justify-between mb-1.5">
-                  <span className="font-semibold text-sm text-gray-700 dark:text-gray-200">
-                    ATS Scans
-                  </span>
-                  <span className="text-sm text-gray-600 dark:text-gray-300">
-                    {usage.atsScansUsed} /{" "}
-                    {usage.atsScansLimit === Infinity
-                      ? "∞"
-                      : usage.atsScansLimit}
-                  </span>
-                </div>
-                {usage.atsScansLimit !== Infinity && (
-                  <div className="w-full bg-gray-200/50 dark:bg-white/10 rounded-full h-2 shadow-inner">
-                    <div
-                      className={`h-2 rounded-full transition-all ${getProgressColor(
-                        (usage.atsScansUsed / usage.atsScansLimit) * 100
-                      )}`}
-                      style={{
-                        width: `${Math.min(
-                          (usage.atsScansUsed / usage.atsScansLimit) * 100,
-                          100
-                        )}%`,
-                      }}
-                    ></div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* TEMPORARILY HIDDEN FOR RAZORPAY COMPLIANCE - Job Matches */}
-            {/* {usage.jobMatchesLimit !== undefined &&
-              usage.jobMatchesLimit > 0 && (
+            {usage.atsScansLimit !== undefined &&
+              (usage.atsScansLimit > 0 || usage.atsScansLimit === Infinity) && (
                 <div>
-                  <div className="flex justify-between mb-1.5">
+                  <div className="flex justify-between items-center mb-1.5">
                     <span className="font-semibold text-sm text-gray-700 dark:text-gray-200">
-                      Job Matches (Today)
+                      ATS Scans
                     </span>
-                    <span className="text-sm text-gray-600 dark:text-gray-300">
-                      {usage.jobMatchesUsed} /{" "}
-                      {usage.jobMatchesLimit === Infinity
-                        ? "∞"
-                        : usage.jobMatchesLimit}
+                    <span className="text-sm text-gray-600 dark:text-gray-300 flex items-center gap-1.5">
+                      <span className="font-semibold text-gray-900 dark:text-white">
+                        {usage.atsScansUsed || 0}
+                      </span>
+                      <span>/</span>
+                      {usage.atsScansLimit === Infinity ? (
+                        <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                          Unlimited
+                        </span>
+                      ) : (
+                        <span>{usage.atsScansLimit}</span>
+                      )}
                     </span>
                   </div>
-                  {usage.jobMatchesLimit !== Infinity && (
+                  {usage.atsScansLimit !== Infinity && usage.atsScansLimit > 0 && (
                     <div className="w-full bg-gray-200/50 dark:bg-white/10 rounded-full h-2 shadow-inner">
                       <div
                         className={`h-2 rounded-full transition-all ${getProgressColor(
-                          (usage.jobMatchesUsed / usage.jobMatchesLimit) * 100
+                          (usage.atsScansUsed / usage.atsScansLimit) * 100
                         )}`}
                         style={{
                           width: `${Math.min(
-                            (usage.jobMatchesUsed / usage.jobMatchesLimit) *
-                              100,
+                            (usage.atsScansUsed / usage.atsScansLimit) * 100,
                             100
                           )}%`,
                         }}
@@ -930,24 +908,33 @@ const SubscriptionDashboard = ({embedded = false}) => {
                     </div>
                   )}
                 </div>
-              )} */}
+              )}
+
+            {/* TEMPORARILY HIDDEN FOR RAZORPAY COMPLIANCE - Job Matches */}
 
             {/* Cover Letters */}
             {usage.coverLettersLimit !== undefined &&
-              usage.coverLettersLimit > 0 && (
+              (usage.coverLettersLimit > 0 || usage.coverLettersLimit === Infinity) && (
                 <div>
-                  <div className="flex justify-between mb-1.5">
+                  <div className="flex justify-between items-center mb-1.5">
                     <span className="font-semibold text-sm text-gray-700 dark:text-gray-200">
                       Cover Letters
                     </span>
-                    <span className="text-sm text-gray-600 dark:text-gray-300">
-                      {usage.coverLettersUsed} /{" "}
-                      {usage.coverLettersLimit === Infinity
-                        ? "∞"
-                        : usage.coverLettersLimit}
+                    <span className="text-sm text-gray-600 dark:text-gray-300 flex items-center gap-1.5">
+                      <span className="font-semibold text-gray-900 dark:text-white">
+                        {usage.coverLettersUsed || 0}
+                      </span>
+                      <span>/</span>
+                      {usage.coverLettersLimit === Infinity ? (
+                        <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                          Unlimited
+                        </span>
+                      ) : (
+                        <span>{usage.coverLettersLimit}</span>
+                      )}
                     </span>
                   </div>
-                  {usage.coverLettersLimit !== Infinity && (
+                  {usage.coverLettersLimit !== Infinity && usage.coverLettersLimit > 0 && (
                     <div className="w-full bg-gray-200/50 dark:bg-white/10 rounded-full h-2 shadow-inner">
                       <div
                         className={`h-2 rounded-full transition-all ${getProgressColor(
@@ -1067,15 +1054,19 @@ const SubscriptionDashboard = ({embedded = false}) => {
           </div>
         ) : (
           <div className="text-center py-6">
-            <p className="text-sm text-gray-600 dark:text-gray-700 dark:text-gray-300 mb-3">
-              No payment history yet
+            <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
+              {authUser?.role === "admin" || subscription?.isAdmin
+                ? "Administrator Account — Unlimited access active (No billing required)"
+                : "No payment history yet"}
             </p>
-            <button
-              onClick={() => navigate("/pricing")}
-              className="text-sm text-purple-600 hover:text-purple-700 font-semibold"
-            >
-              View Plans →
-            </button>
+            {!(authUser?.role === "admin" || subscription?.isAdmin) && (
+              <button
+                onClick={() => navigate("/pricing")}
+                className="text-sm text-blue-600 hover:text-blue-700 font-semibold mt-2"
+              >
+                View Plans →
+              </button>
+            )}
           </div>
         )}
       </div>
@@ -1095,7 +1086,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
               placeholder="Tell us why you're cancelling (optional)"
               value={cancelReason}
               onChange={(e) => setCancelReason(e.target.value)}
-              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-900 dark:text-white rounded-lg p-2.5 mb-3 focus:ring-2 focus:ring-purple-600 focus:border-transparent text-sm"
+              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-900 dark:text-white rounded-lg p-2.5 mb-3 focus:ring-2 focus:ring-blue-600 focus:border-transparent text-sm"
               rows="3"
             />
             <div className="flex gap-3">
@@ -1124,7 +1115,7 @@ const SubscriptionDashboard = ({embedded = false}) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-8 px-4">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950 py-8 px-4">
       <div className="max-w-7xl mx-auto">
         <DashboardContent />
       </div>

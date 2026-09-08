@@ -123,7 +123,7 @@ export const services = [
     description:
       "REST APIs, authentication, databases and scalable architecture for your applications.",
     icon: "database",
-    color: "from-purple-500 to-pink-500",
+    color: "from-indigo-500 to-blue-500",
   },
   {
     title: "DevOps & Deployment",

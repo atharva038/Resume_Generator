@@ -148,7 +148,7 @@ const AIInterview = () => {
     return (
       <div className="min-h-screen bg-[#FAFAFA] dark:bg-[#121212] text-gray-900 dark:text-white flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-purple-500/20 border-t-purple-500 rounded-full animate-spin" />
+          <div className="w-12 h-12 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
           <p className="text-gray-500 dark:text-gray-400">Loading AI Interview...</p>
         </div>
       </div>

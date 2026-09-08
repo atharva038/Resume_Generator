@@ -118,7 +118,7 @@ const PaymentModal = ({
           userId: user._id || user.id,
         },
         theme: {
-          color: "#9333EA", // Purple
+          color: "#2563EB", // Blue
         },
         modal: {
           ondismiss: () => {
@@ -309,7 +309,7 @@ const PaymentModal = ({
             <FaTimes size={18} />
           </button>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
               <FaCreditCard className="text-white text-xl" />
             </div>
             <div>
@@ -327,7 +327,7 @@ const PaymentModal = ({
         <div className="p-5">
           <div className="bg-gradient-to-br from-gray-50 to-gray-100/50 dark:from-zinc-800/50 dark:to-zinc-800/30 dark:backdrop-blur-xl rounded-xl p-4 mb-5 border border-gray-200 dark:border-white/10 shadow-sm">
             <h3 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2 text-sm">
-              <div className="w-1 h-4 bg-gradient-to-b from-purple-500 to-pink-500 rounded-full"></div>
+              <div className="w-1 h-4 bg-gradient-to-b from-blue-500 to-indigo-600 rounded-full"></div>
               Order Summary
             </h3>
             <div className="space-y-2.5">
@@ -395,7 +395,7 @@ const PaymentModal = ({
           {pricing?.features && (
             <div className="mb-4">
               <h3 className="font-semibold text-gray-900 dark:text-white mb-2.5 flex items-center gap-2 text-sm">
-                <div className="w-1 h-4 bg-gradient-to-b from-purple-500 to-pink-500 rounded-full"></div>
+                <div className="w-1 h-4 bg-gradient-to-b from-blue-500 to-indigo-600 rounded-full"></div>
                 What you'll get:
               </h3>
               <ul className="space-y-2">
@@ -440,7 +440,7 @@ const PaymentModal = ({
             className={`w-full py-3 rounded-xl font-semibold text-white transition-all transform shadow-lg text-sm ${
               loading
                 ? "bg-gray-400 dark:bg-gray-600 cursor-not-allowed"
-                : "bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 dark:from-purple-500 dark:via-pink-500 dark:to-purple-500 hover:from-purple-700 hover:via-pink-700 hover:to-purple-700 dark:hover:from-purple-600 dark:hover:via-pink-600 dark:hover:to-purple-600 hover:scale-[1.02] active:scale-[0.98] hover:shadow-xl dark:hover:shadow-purple-500/30"
+                : "bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-600 dark:from-blue-500 dark:via-indigo-500 dark:to-blue-500 hover:from-blue-700 hover:via-indigo-700 hover:to-blue-700 dark:hover:from-blue-600 dark:hover:via-indigo-600 dark:hover:to-blue-600 hover:scale-[1.02] active:scale-[0.98] hover:shadow-xl dark:hover:shadow-blue-500/30"
             }`}
           >
             {loading ? (
@@ -472,14 +472,14 @@ const PaymentModal = ({
             By completing this payment, you agree to our{" "}
             <a
               href="/terms"
-              className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 hover:underline font-medium transition-colors"
+              className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline font-medium transition-colors"
             >
               Terms of Service
             </a>{" "}
             and{" "}
             <a
               href="/privacy"
-              className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 hover:underline font-medium transition-colors"
+              className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline font-medium transition-colors"
             >
               Privacy Policy
             </a>

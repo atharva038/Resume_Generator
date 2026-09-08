@@ -73,7 +73,7 @@ export default function ProjectsSection({ profile, setProfile, onOpenAIModal }) 
         <div className="flex items-center gap-2.5">
           <button
             onClick={() => onOpenAIModal("projects")}
-            className="text-xs flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 font-semibold transition-all hover:bg-purple-100 cursor-pointer"
+            className="text-xs flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 font-semibold transition-all hover:bg-blue-100 dark:hover:bg-blue-900/50 cursor-pointer"
           >
             <Sparkles className="w-3.5 h-3.5" />
             <span>Paste & Structure</span>

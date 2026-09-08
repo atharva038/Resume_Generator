@@ -204,6 +204,33 @@ export const resumeAPI = {
   },
 
   /**
+   * Generate 3 tailored variations of a bullet point or summary (Quantified, Executive, ATS Keyword-Enriched)
+   * @param {string} content - Original text
+   * @param {string} sectionType - Type of section (experience, projects, summary, etc.)
+   * @param {Object} context - Extra role/company info
+   * @param {Object} resumeData - Full resume context
+   * @param {string} customInstruction - Optional custom prompt
+   * @returns {Promise} Axios response with { quantified, concise, keywordEnriched }
+   */
+  getBulletRewrites: (
+    content,
+    sectionType = "experience",
+    context = {},
+    resumeData = null,
+    customInstruction = ""
+  ) => {
+    return api.post("/resume/bullet-rewrites", {
+      content,
+      sectionType,
+      context,
+      resumeData,
+      customInstruction,
+      resumeId: resumeData?._id,
+    });
+  },
+
+
+  /**
    * Generate professional summary from resume data using AI
    * @param {Object} resumeData - Complete resume data object
    * @returns {Promise} Axios response with generated summary text

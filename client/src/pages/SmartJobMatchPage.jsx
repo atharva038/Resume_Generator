@@ -118,9 +118,9 @@ const SmartJobMatchPage = () => {
   if (loading) {
     console.log("⏳ Still loading...");
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950 flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-16 h-16 animate-spin text-purple-600 mx-auto mb-4" />
+          <Loader2 className="w-16 h-16 animate-spin text-blue-600 mx-auto mb-4" />
           <p className="text-gray-600 dark:text-gray-600 dark:text-gray-400 text-lg">
             Loading your resumes...
           </p>
@@ -132,7 +132,7 @@ const SmartJobMatchPage = () => {
   if (resumes.length === 0) {
     console.log("📭 No resumes found, showing empty state");
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950">
         <div className="container mx-auto px-4 py-20">
           <div className="max-w-2xl mx-auto text-center">
             <AlertCircle className="w-20 h-20 text-gray-600 dark:text-gray-400 mx-auto mb-6" />
@@ -146,7 +146,7 @@ const SmartJobMatchPage = () => {
             <div className="flex gap-4 justify-center">
               <button
                 onClick={() => navigate("/my-resumes")}
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-gray-900 dark:text-white font-bold py-3 px-8 rounded-lg transition-all duration-200 flex items-center gap-2"
+                className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold py-3 px-8 rounded-lg transition-all duration-200 flex items-center gap-2"
               >
                 <Plus className="w-5 h-5" />
                 Create Resume
@@ -192,7 +192,7 @@ const SmartJobMatchPage = () => {
                     loadResumeDetails(e.target.value);
                   }
                 }}
-                className="flex-1 max-w-md px-4 py-2.5 border-2 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:text-gray-900 dark:text-white font-medium transition-all hover:border-purple-400 cursor-pointer"
+                className="flex-1 max-w-md px-4 py-2.5 border-2 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-900 dark:text-white font-medium transition-all hover:border-blue-400 cursor-pointer"
                 style={{
                   backgroundPosition: "right 0.5rem center",
                   paddingBottom: "0.625rem",
@@ -206,7 +206,7 @@ const SmartJobMatchPage = () => {
                 ))}
                 <option
                   value="create-new"
-                  className="font-semibold text-purple-600"
+                  className="font-semibold text-blue-600"
                 >
                   ➕ Create New Resume
                 </option>
@@ -215,7 +215,7 @@ const SmartJobMatchPage = () => {
             <div className="flex gap-2">
               <button
                 onClick={() => navigate("/my-resumes")}
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-gray-900 dark:text-white font-semibold py-2 px-6 rounded-lg transition-all shadow-md hover:shadow-lg flex items-center gap-2"
+                className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold py-2 px-6 rounded-lg transition-all shadow-md hover:shadow-lg flex items-center gap-2"
               >
                 {resumes.length === 1 ? (
                   <>

@@ -482,7 +482,7 @@ export default function GlassmorphismTheme({
                       <span className="text-[10px] text-slate-400 font-sans font-bold">engineer.config.ts</span>
                     </div>
                     <div className="space-y-1.5 text-slate-700 dark:text-slate-300">
-                      <p><span className="text-purple-600 dark:text-purple-400">const</span> developer = &#123;</p>
+                      <p><span className="text-indigo-600 dark:text-indigo-400">const</span> developer = &#123;</p>
                       <p className="pl-4">name: <span className="text-emerald-600 dark:text-emerald-400">"{profile.name || "Developer"}"</span>,</p>
                       {profile.title && <p className="pl-4">role: <span className="text-cyan-600 dark:text-cyan-400">"{profile.title}"</span>,</p>}
                       {profile.location && <p className="pl-4">location: <span className="text-amber-600 dark:text-amber-400">"{profile.location}"</span>,</p>}

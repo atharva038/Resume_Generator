@@ -71,7 +71,7 @@ export default function QASidebar({
           placeholder="Search questions or keywords..."
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50/70 dark:bg-zinc-900/60 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-zinc-500"
+          className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50/70 dark:bg-zinc-900/60 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-zinc-500"
         />
       </div>
 
@@ -95,7 +95,7 @@ export default function QASidebar({
             const hasAnyAnswer = hasSaved || hasDraft;
             const categoryStyle =
               categoryBadgeStyles[item.category] ||
-              "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20";
+              "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20";
             const itemKey = item._id || item.question;
 
             return (
@@ -104,13 +104,13 @@ export default function QASidebar({
                 onClick={() => onSelectQuestion(item)}
                 className={`p-4 sm:p-4.5 rounded-2xl border cursor-pointer transition-all flex items-start justify-between gap-3.5 text-left relative overflow-hidden group ${
                   isSelected
-                    ? "bg-purple-50/90 dark:bg-purple-950/35 border-purple-400 dark:border-purple-600/70 shadow-sm"
+                    ? "bg-blue-50/90 dark:bg-blue-950/35 border-blue-400 dark:border-blue-600/70 shadow-sm"
                     : "bg-gray-50/70 dark:bg-zinc-900/40 border-gray-200/70 dark:border-white/[0.05] hover:bg-gray-100/90 dark:hover:bg-zinc-900/90"
                 }`}
               >
                 {/* Active Indicator Bar on Left */}
                 {isSelected && (
-                  <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-purple-600" />
+                  <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-blue-600" />
                 )}
 
                 <div className="space-y-2.5 flex-1 min-w-0">
@@ -142,7 +142,7 @@ export default function QASidebar({
                       className={`p-2 rounded-xl transition-all cursor-pointer ${
                         copiedId === itemKey
                           ? "bg-emerald-500 text-white"
-                          : "hover:bg-gray-200 dark:hover:bg-zinc-800 text-gray-400 hover:text-purple-600 dark:hover:text-purple-400"
+                          : "hover:bg-gray-200 dark:hover:bg-zinc-800 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                       }`}
                       title="1-Click Copy Answer"
                     >

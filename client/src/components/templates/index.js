@@ -14,3 +14,6 @@ export {default as StrategicLeadershipTemplate} from "./StrategicLeadershipTempl
 export {default as ImpactProTemplate} from "./ImpactProTemplate";
 export {default as GitHubStyleTemplate} from "./GitHubStyleTemplate";
 export {default as FresherResumeTemplate} from "./GitHubStyleTemplate";
+export {default as SiliconValleyTemplate} from "./SiliconValleyTemplate";
+export {default as LatexAcademicTemplate} from "./LatexAcademicTemplate";
+export {default as NordicSplitTemplate} from "./NordicSplitTemplate";

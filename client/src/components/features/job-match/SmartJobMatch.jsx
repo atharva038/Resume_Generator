@@ -313,16 +313,16 @@ const SmartJobMatch = ({resumeData}) => {
   }, [resumeData?._id]); // Only trigger when resume ID changes
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-3">
-            <Sparkles className="w-10 h-10 text-purple-600 animate-pulse" />
+            <Sparkles className="w-10 h-10 text-blue-600 animate-pulse" />
             <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
               Smart Job Match
             </h1>
-            <Sparkles className="w-10 h-10 text-pink-600 animate-pulse" />
+            <Sparkles className="w-10 h-10 text-indigo-600 animate-pulse" />
           </div>
           <p className="text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
             AI-powered job recommendations tailored to your resume. Get
@@ -341,7 +341,7 @@ const SmartJobMatch = ({resumeData}) => {
               {searchKeywords.map((keyword, index) => (
                 <span
                   key={index}
-                  className="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-sm font-medium"
+                  className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium"
                 >
                   {keyword}
                 </span>
@@ -358,7 +358,7 @@ const SmartJobMatch = ({resumeData}) => {
                 onClick={() => setViewMode("matches")}
                 className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all ${
                   viewMode === "matches"
-                    ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white"
+                    ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white"
                     : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
                 }`}
               >
@@ -369,7 +369,7 @@ const SmartJobMatch = ({resumeData}) => {
                 onClick={() => setViewMode("saved")}
                 className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all ${
                   viewMode === "saved"
-                    ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white"
+                    ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white"
                     : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
                 }`}
               >
@@ -398,7 +398,7 @@ const SmartJobMatch = ({resumeData}) => {
                   }}
                   className={`px-4 py-2 rounded-lg font-medium transition-all ${
                     jobTypeFilter === "all"
-                      ? "bg-purple-600 text-white"
+                      ? "bg-blue-600 text-white"
                       : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                   }`}
                 >
@@ -413,7 +413,7 @@ const SmartJobMatch = ({resumeData}) => {
                   }}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
                     jobTypeFilter === "jobs"
-                      ? "bg-purple-600 text-white"
+                      ? "bg-blue-600 text-white"
                       : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                   }`}
                 >
@@ -427,7 +427,7 @@ const SmartJobMatch = ({resumeData}) => {
                   }}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
                     jobTypeFilter === "internships"
-                      ? "bg-purple-600 text-white"
+                      ? "bg-blue-600 text-white"
                       : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                   }`}
                 >
@@ -447,7 +447,7 @@ const SmartJobMatch = ({resumeData}) => {
                   onClick={() => setWorkModeFilter("all")}
                   className={`px-4 py-2 rounded-lg font-medium transition-all ${
                     workModeFilter === "all"
-                      ? "bg-purple-600 text-white"
+                      ? "bg-blue-600 text-white"
                       : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                   }`}
                 >
@@ -457,7 +457,7 @@ const SmartJobMatch = ({resumeData}) => {
                   onClick={() => setWorkModeFilter("remote")}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
                     workModeFilter === "remote"
-                      ? "bg-purple-600 text-white"
+                      ? "bg-blue-600 text-white"
                       : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                   }`}
                 >
@@ -468,7 +468,7 @@ const SmartJobMatch = ({resumeData}) => {
                   onClick={() => setWorkModeFilter("hybrid")}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
                     workModeFilter === "hybrid"
-                      ? "bg-purple-600 text-white"
+                      ? "bg-blue-600 text-white"
                       : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                   }`}
                 >
@@ -479,7 +479,7 @@ const SmartJobMatch = ({resumeData}) => {
                   onClick={() => setWorkModeFilter("onsite")}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
                     workModeFilter === "onsite"
-                      ? "bg-purple-600 text-white"
+                      ? "bg-blue-600 text-white"
                       : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                   }`}
                 >
@@ -497,7 +497,7 @@ const SmartJobMatch = ({resumeData}) => {
             <button
               onClick={() => fetchSmartMatches()}
               disabled={loading}
-              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-4 px-8 rounded-lg transition-all duration-200 flex items-center gap-3 mx-auto shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-4 px-8 rounded-lg transition-all duration-200 flex items-center gap-3 mx-auto shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <>
@@ -518,7 +518,7 @@ const SmartJobMatch = ({resumeData}) => {
         {/* Loading State */}
         {loading && (
           <div className="flex flex-col items-center justify-center py-20">
-            <Loader2 className="w-16 h-16 animate-spin text-purple-600 mb-4" />
+            <Loader2 className="w-16 h-16 animate-spin text-blue-600 mb-4" />
             <p className="text-gray-600 dark:text-gray-400 text-lg">
               Analyzing your resume and finding perfect matches...
             </p>
@@ -529,7 +529,7 @@ const SmartJobMatch = ({resumeData}) => {
         {!loading && matchedJobs.length > 0 && (
           <div className="max-w-5xl mx-auto">
             {/* Stats */}
-            <div className="mb-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg shadow-lg p-6">
+            <div className="mb-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg shadow-lg p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-2xl font-bold mb-1">
@@ -538,7 +538,7 @@ const SmartJobMatch = ({resumeData}) => {
                       ? "Saved Jobs"
                       : "Personalized Recommendations"}
                   </h2>
-                  <p className="text-purple-100">
+                  <p className="text-blue-100">
                     {viewMode === "saved"
                       ? "Your saved job listings"
                       : "Ranked by relevance to your resume"}
@@ -567,7 +567,7 @@ const SmartJobMatch = ({resumeData}) => {
                 </p>
                 <button
                   onClick={() => setViewMode("matches")}
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all"
+                  className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all"
                 >
                   Browse All Matches
                 </button>
@@ -590,7 +590,7 @@ const SmartJobMatch = ({resumeData}) => {
                       setJobTypeFilter("all");
                       setWorkModeFilter("all");
                     }}
-                    className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all"
+                    className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all"
                   >
                     Clear All Filters
                   </button>
@@ -604,7 +604,7 @@ const SmartJobMatch = ({resumeData}) => {
                   {getPaginatedJobs().map((job, index) => (
                     <div
                       key={job.id || index}
-                      className="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-2xl transition-all duration-200 p-6 border-l-4 border-purple-600"
+                      className="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-2xl transition-all duration-200 p-6 border-l-4 border-blue-600"
                     >
                       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
                         {/* Left Side - Job Info */}
@@ -650,8 +650,8 @@ const SmartJobMatch = ({resumeData}) => {
                           </div>
 
                           {/* Why This Fits */}
-                          <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4 mb-3">
-                            <h4 className="text-sm font-semibold text-purple-700 dark:text-purple-300 mb-2 flex items-center gap-2">
+                          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 mb-3">
+                            <h4 className="text-sm font-semibold text-blue-700 dark:text-blue-300 mb-2 flex items-center gap-2">
                               <CheckCircle className="w-4 h-4" />
                               Why this job fits you:
                             </h4>
@@ -661,7 +661,7 @@ const SmartJobMatch = ({resumeData}) => {
                                   key={idx}
                                   className="text-sm text-gray-700 dark:text-gray-300 flex items-start gap-2"
                                 >
-                                  <span className="text-purple-600 dark:text-purple-400">
+                                  <span className="text-blue-600 dark:text-blue-400">
                                     •
                                   </span>
                                   {insight}
@@ -747,7 +747,7 @@ const SmartJobMatch = ({resumeData}) => {
                               href={job.redirect_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
+                              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
                             >
                               Apply Now
                               <ExternalLink className="w-4 h-4" />
@@ -788,7 +788,7 @@ const SmartJobMatch = ({resumeData}) => {
                               onClick={() => setCurrentPage(pageNum)}
                               className={`px-4 py-2 rounded-lg font-semibold transition-all ${
                                 currentPage === pageNum
-                                  ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white"
+                                  ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white"
                                   : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
                               }`}
                             >
@@ -840,7 +840,7 @@ const SmartJobMatch = ({resumeData}) => {
             </p>
             <button
               onClick={() => fetchSmartMatches()}
-              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-2 px-6 rounded-lg transition-all"
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-2 px-6 rounded-lg transition-all"
             >
               Try Again
             </button>
@@ -858,7 +858,7 @@ const SmartJobMatch = ({resumeData}) => {
               onClick={(e) => e.stopPropagation()}
             >
               {/* Modal Header */}
-              <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-6 flex justify-between items-start flex-shrink-0">
+              <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 flex justify-between items-start flex-shrink-0">
                 <div className="flex-1 pr-4">
                   <div className="flex items-center gap-3 mb-2">
                     <span className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-bold">
@@ -898,10 +898,10 @@ const SmartJobMatch = ({resumeData}) => {
                 {/* Match Insights */}
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-purple-600" />
+                    <Sparkles className="w-5 h-5 text-blue-600" />
                     Why This Job Is Perfect For You
                   </h3>
-                  <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4">
+                  <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
                     <ul className="space-y-2">
                       {selectedJob.matchInsights.map((insight, idx) => (
                         <li
@@ -971,7 +971,7 @@ const SmartJobMatch = ({resumeData}) => {
                     href={selectedJob.redirect_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-4 px-6 rounded-lg transition-all duration-200 flex items-center justify-center text-lg shadow-lg hover:shadow-xl"
+                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-4 px-6 rounded-lg transition-all duration-200 flex items-center justify-center text-lg shadow-lg hover:shadow-xl"
                   >
                     <ExternalLink className="w-6 h-6 mr-3" />
                     View Complete Details & Apply on Adzuna

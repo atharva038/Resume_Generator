@@ -305,13 +305,13 @@ const HeroSection = () => {
       id: 2,
       name: "Modern",
       component: ModernTemplate,
-      color: "from-purple-500 to-pink-600",
+      color: "from-blue-600 to-indigo-600",
     },
     {
       id: 3,
       name: "Creative Designer Pro",
       component: Creative2Template,
-      color: "from-purple-500 to-pink-600",
+      color: "from-blue-600 to-indigo-600",
     },
     {
       id: 4,
@@ -361,7 +361,7 @@ const HeroSection = () => {
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 -left-20 w-96 h-96 bg-blue-400/20 dark:bg-blue-500/20 rounded-full blur-3xl animate-pulse"></div>
         <div
-          className="absolute bottom-1/4 -right-20 w-96 h-96 bg-purple-400/20 dark:bg-purple-500/20 rounded-full blur-3xl animate-pulse"
+          className="absolute bottom-1/4 -right-20 w-96 h-96 bg-cyan-400/20 dark:bg-cyan-500/20 rounded-full blur-3xl animate-pulse"
           style={{animationDelay: "700ms"}}
         ></div>
         <div
@@ -486,7 +486,7 @@ const HeroSection = () => {
               }}
             >
               <Zap className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-              <span className="text-xs sm:text-sm font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="text-xs sm:text-sm font-semibold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
                 AI-Powered Resume Builder
               </span>
             </div>
@@ -499,7 +499,7 @@ const HeroSection = () => {
               }}
             >
               <span className="text-gray-900 dark:text-white">Build a </span>
-              <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent">
                 Smart
               </span>
               <span className="text-gray-900 dark:text-white">, </span>
@@ -535,14 +535,14 @@ const HeroSection = () => {
             >
               <button
                 onClick={handleBuildResumeClick}
-                className="group relative inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-gray-900 dark:text-white font-semibold rounded-xl shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/50 transition-all duration-300 overflow-hidden transform hover:scale-105 hover:-translate-y-1 cursor-pointer text-sm sm:text-base"
+                className="group relative inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 text-gray-900 dark:text-white font-semibold rounded-xl shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/50 transition-all duration-300 overflow-hidden transform hover:scale-105 hover:-translate-y-1 cursor-pointer text-sm sm:text-base"
               >
                 <span className="relative z-10 flex items-center gap-2">
                   <Sparkles className="w-5 h-5" />
                   Build My Resume Now — Free
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 via-cyan-500 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
                 {/* Animated gradient background */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"></div>
@@ -608,7 +608,7 @@ const HeroSection = () => {
               }}
             >
               <Zap className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-              <span className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
                 AI-Powered Resume Builder
               </span>
             </div>
@@ -621,7 +621,7 @@ const HeroSection = () => {
               }}
             >
               <span className="text-gray-900 dark:text-white">Build a </span>
-              <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent">
                 Smart
               </span>
               <span className="text-gray-900 dark:text-white">, </span>
@@ -657,14 +657,14 @@ const HeroSection = () => {
             >
               <button
                 onClick={handleBuildResumeClick}
-                className="group relative inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-gray-900 dark:text-white font-semibold rounded-xl shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/50 transition-all duration-300 overflow-hidden transform hover:scale-105 hover:-translate-y-1 cursor-pointer"
+                className="group relative inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 text-gray-900 dark:text-white font-semibold rounded-xl shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/50 transition-all duration-300 overflow-hidden transform hover:scale-105 hover:-translate-y-1 cursor-pointer"
               >
                 <span className="relative z-10 flex items-center gap-2">
                   <Sparkles className="w-5 h-5" />
                   Build My Resume Now — Free
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 via-cyan-500 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
                 {/* Animated gradient background */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"></div>
@@ -860,7 +860,7 @@ const HeroSection = () => {
                           {/* Template Name */}
                           <div className="p-3 sm:p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 transition-all duration-300 group-hover:bg-gradient-to-r group-hover:from-blue-50 group-hover:to-indigo-50 dark:group-hover:from-blue-900/20 dark:group-hover:to-indigo-900/20">
                             <div className="flex items-center justify-between">
-                              <span className="text-sm sm:text-base font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent transition-all duration-300 group-hover:from-indigo-600 group-hover:to-purple-600">
+                              <span className="text-sm sm:text-base font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent transition-all duration-300 group-hover:from-indigo-600 group-hover:to-cyan-600">
                                 {template.name}
                               </span>
                               <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600 dark:text-blue-400 opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:rotate-12 group-hover:scale-110" />

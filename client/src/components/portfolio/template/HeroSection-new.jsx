@@ -43,7 +43,7 @@ const HeroSection = ({ portfolioContext }) => {
       {/* Gradient blobs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 right-10 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 left-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-20 left-10 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" />
       </div>
 
       <div className="max-w-7xl mx-auto relative z-10 w-full">
@@ -77,12 +77,12 @@ const HeroSection = ({ portfolioContext }) => {
               transition={{ delay: 0.3, duration: 0.8 }}
               className="space-y-4"
             >
-              <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight">
                 <motion.span
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4, duration: 0.6 }}
-                  className="block bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent"
+                  className="block bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent"
                 >
                   {name}
                 </motion.span>
@@ -91,12 +91,12 @@ const HeroSection = ({ portfolioContext }) => {
                   I Build
                 </span>
                 <br />
-                <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-cyan-400 bg-clip-text text-transparent">
                   Scalable Digital Experiences
                 </span>
                 <br />
                 That{" "}
-                <span className="bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
                   Make Impact.
                 </span>
               </h1>
@@ -331,7 +331,7 @@ const HeroSection = ({ portfolioContext }) => {
                         }}
                         className="pointer-events-auto"
                       >
-                        <div className="px-3 py-1.5 rounded-full bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold whitespace-nowrap">
+                        <div className="px-3 py-1.5 rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold whitespace-nowrap">
                           {tech}
                         </div>
                       </motion.div>

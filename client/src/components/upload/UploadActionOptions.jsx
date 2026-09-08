@@ -46,13 +46,13 @@ export default function UploadActionOptions({
         {/* Option 2: Build with Career Profile */}
         <Link
           to="/career-profile"
-          className="group text-left p-6 rounded-3xl bg-white dark:bg-zinc-900/90 border border-gray-200/90 dark:border-white/[0.08] hover:border-purple-500 dark:hover:border-purple-500/60 transition-all duration-200 shadow-sm hover:shadow-md cursor-pointer flex flex-col justify-between gap-4"
+          className="group text-left p-6 rounded-3xl bg-white dark:bg-zinc-900/90 border border-gray-200/90 dark:border-white/[0.08] hover:border-cyan-500 dark:hover:border-cyan-500/60 transition-all duration-200 shadow-sm hover:shadow-md cursor-pointer flex flex-col justify-between gap-4"
         >
           <div className="flex items-center justify-between">
-            <div className="w-12 h-12 rounded-2xl bg-purple-500/10 dark:bg-purple-500/20 border border-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400">
+            <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 dark:bg-cyan-500/20 border border-cyan-500/20 flex items-center justify-center text-cyan-600 dark:text-cyan-400">
               <Sparkles className="w-6 h-6" />
             </div>
-            <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-purple-500 group-hover:translate-x-1 transition-all" />
+            <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-cyan-500 group-hover:translate-x-1 transition-all" />
           </div>
 
           <div>
@@ -60,7 +60,7 @@ export default function UploadActionOptions({
               <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
                 Use Career Profile
               </h3>
-              <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
+              <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">
                 Hub
               </span>
             </div>

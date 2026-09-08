@@ -23,6 +23,7 @@ import portfolioRoutes from "./routes/portfolio.routes.js";
 import careerRoutes from "./routes/career.routes.js";
 import superAdminRoutes from "./routes/superAdmin.routes.js";
 import Template from "./models/Template.model.js";
+import Portfolio from "./models/Portfolio.model.js";
 import {apiLimiter} from "./middleware/rateLimiter.middleware.js";
 import {
   securityHeaders,
@@ -40,7 +41,6 @@ dotenv.config();
 // =========================================
 
 // Validate critical environment variables
-// NOTE: GEMINI_API_KEY is optional. The app can run with OpenAI only.
 const requiredEnvVars = ["MONGODB_URI", "JWT_SECRET"];
 const missingEnvVars = requiredEnvVars.filter((envVar) => !process.env[envVar]);
 
@@ -53,27 +53,21 @@ if (missingEnvVars.length > 0) {
   process.exit(1);
 }
 
-// Validate GEMINI_API_KEY format
-if (process.env.GEMINI_API_KEY) {
-  const apiKey = process.env.GEMINI_API_KEY.trim();
-  if (apiKey.length < 20 || !apiKey.startsWith("AIzaSy")) {
-    console.error("❌ GEMINI_API_KEY appears to be invalid");
-    console.error(
-      `   Current key: ${apiKey.substring(0, 10)}...${apiKey.substring(
-        apiKey.length - 4
-      )}`
-    );
-    console.error(
-      "💡 Please get a valid API key from: https://aistudio.google.com/app/apikey"
-    );
+// Validate OPENAI_API_KEY format
+if (process.env.OPENAI_API_KEY) {
+  const apiKey = process.env.OPENAI_API_KEY.trim();
+  if (apiKey.length < 20) {
+    console.error("❌ OPENAI_API_KEY appears to be invalid (too short)");
   } else {
     console.log(
-      `✅ GEMINI_API_KEY is present (${apiKey.substring(
+      `✅ OPENAI_API_KEY is present (${apiKey.substring(
         0,
-        10
+        7
       )}...${apiKey.substring(apiKey.length - 4)})`
     );
   }
+} else {
+  console.warn("⚠️  OPENAI_API_KEY not configured - set OPENAI_API_KEY in .env");
 }
 
 // Warn about optional OAuth variables
@@ -92,10 +86,10 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // ==========================================
-// TRUST PROXY (Must be set first for Render/Vercel/etc.)
+// TRUST PROXY (Must be set first for reverse proxies)
 // ==========================================
 
-// Enable trust proxy for apps behind reverse proxies (Render, Vercel, Nginx, etc.)
+// Enable trust proxy for apps behind reverse proxies (Nginx, Vercel, Cloudflare, etc.)
 // This allows Express to correctly read X-Forwarded-* headers
 app.set("trust proxy", 1); // Trust first proxy
 
@@ -221,6 +215,199 @@ app.use("/api/interview", interviewRoutes); // AI Interview routes
 app.use("/api/portfolio", portfolioRoutes); // Portfolio builder routes
 app.use("/api/career", careerRoutes); // Career profile & personalized Q&A routes
 app.use("/api/super-admin", superAdminRoutes); // Super Admin panel & environment management routes
+
+// Helper to escape HTML attributes safely
+function escapeHtml(str) {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+// Server-side OpenGraph & SEO handler for WhatsApp & Social Media scrapers
+app.get(["/u/:slug", "/portfolio/:slug"], async (req, res, next) => {
+  try {
+    const { slug } = req.params;
+    if (!slug) return next();
+
+    // Check if user-agent is a crawler or social scraper
+    const userAgent = (req.headers["user-agent"] || "").toLowerCase();
+    const isCrawler =
+      /bot|crawl|slurp|spider|whatsapp|facebookexternalhit|meta-externalagent|twitterbot|telegrambot|linkedinbot|discordbot|slackbot|skypeuripreview|pinterest|redditbot/i.test(
+        userAgent
+      );
+
+    const portfolio = await Portfolio.findOne({
+      slug: slug.toLowerCase(),
+      status: "published",
+    })
+      .populate("userId", "name email profileImage")
+      .populate("resumeId", "name contact summary personalInfo")
+      .lean();
+
+    if (!portfolio) {
+      if (isCrawler) {
+        return res
+          .status(404)
+          .send(
+            `<!DOCTYPE html><html><head><title>Portfolio Not Found | SmartNShine</title><meta name="description" content="Portfolio not found or is currently private."></head><body><h1>Portfolio Not Found</h1></body></html>`
+          );
+      }
+      return next();
+    }
+
+    const name =
+      portfolio.userId?.name ||
+      portfolio.resumeId?.name ||
+      portfolio.title ||
+      "Professional Portfolio";
+    const rawTitle =
+      portfolio.seo?.title || `${name} | Interactive Portfolio`;
+    const title = escapeHtml(rawTitle);
+
+    const rawDescription =
+      portfolio.seo?.description ||
+      portfolio.tagline ||
+      portfolio.about ||
+      portfolio.resumeId?.summary ||
+      `Explore ${name}'s verified projects, technical skills, and professional experience on SmartNShine.`;
+    const description = escapeHtml(rawDescription.substring(0, 300));
+
+    // Determine Base URL
+    const host = req.get("host") || "www.smartnshine.app";
+    const protocol =
+      req.protocol === "https" ||
+      req.headers["x-forwarded-proto"] === "https"
+        ? "https"
+        : "http";
+    const baseUrl = `${protocol}://${host}`;
+    const canonicalUrl = `${baseUrl}/u/${encodeURIComponent(portfolio.slug)}`;
+
+    // Resolve OG Image
+    let rawOgImage =
+      portfolio.seo?.ogImage ||
+      portfolio.profileImage ||
+      portfolio.heroImage ||
+      portfolio.userId?.profileImage ||
+      portfolio.resumeId?.personalInfo?.photo ||
+      "";
+
+    let ogImageUrl = `${baseUrl}/social-preview.png`;
+    if (rawOgImage) {
+      if (
+        rawOgImage.startsWith("http://") ||
+        rawOgImage.startsWith("https://")
+      ) {
+        ogImageUrl = rawOgImage;
+      } else {
+        ogImageUrl = `${baseUrl}${
+          rawOgImage.startsWith("/") ? "" : "/"
+        }${rawOgImage}`;
+      }
+    }
+    const escapedOgImage = escapeHtml(ogImageUrl);
+
+    // Resolve Favicon (with fallback to custom favicon -> profile photo -> og image -> default)
+    let rawFavicon =
+      portfolio.seo?.favicon ||
+      portfolio.favicon ||
+      portfolio.seo?.ogImage ||
+      portfolio.profileImage ||
+      portfolio.heroImage ||
+      portfolio.userId?.profileImage ||
+      portfolio.resumeId?.personalInfo?.photo ||
+      "";
+    let faviconUrl = "";
+    if (rawFavicon) {
+      if (
+        rawFavicon.startsWith("http://") ||
+        rawFavicon.startsWith("https://")
+      ) {
+        faviconUrl = rawFavicon;
+      } else {
+        faviconUrl = `${baseUrl}${
+          rawFavicon.startsWith("/") ? "" : "/"
+        }${rawFavicon}`;
+      }
+    }
+    const escapedFavicon = faviconUrl
+      ? escapeHtml(faviconUrl)
+      : `${baseUrl}/favicon.ico`;
+
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${title}</title>
+  <meta name="description" content="${description}">
+  <link rel="canonical" href="${canonicalUrl}">
+  <link rel="icon" href="${escapedFavicon}">
+  <link rel="shortcut icon" href="${escapedFavicon}">
+  <link rel="apple-touch-icon" href="${escapedFavicon}">
+  
+  <!-- Open Graph / Facebook / WhatsApp (Crucial for WhatsApp Card previews) -->
+  <meta property="og:type" content="profile">
+  <meta property="og:site_name" content="SmartNShine">
+  <meta property="og:url" content="${canonicalUrl}">
+  <meta property="og:title" content="${title}">
+  <meta property="og:description" content="${description}">
+  <meta property="og:image" content="${escapedOgImage}">
+  <meta property="og:image:secure_url" content="${escapedOgImage}">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="${title}">
+  <meta property="og:locale" content="en_US">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="${canonicalUrl}">
+  <meta name="twitter:title" content="${title}">
+  <meta name="twitter:description" content="${description}">
+  <meta name="twitter:image" content="${escapedOgImage}">
+
+  ${
+    portfolio.settings?.allowIndexing === false
+      ? '<meta name="robots" content="noindex,nofollow">'
+      : '<meta name="robots" content="index,follow,max-image-preview:large">'
+  }
+
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0b0f19; color: #f8fafc; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+    .card { background: #111827; border-radius: 20px; padding: 36px; max-width: 520px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.08); }
+    .avatar { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; margin: 0 auto 16px; border: 3px solid #6366f1; box-shadow: 0 0 20px rgba(99,102,241,0.3); }
+    h1 { font-size: 22px; font-weight: 700; margin: 0 0 10px; color: #fff; }
+    p { color: #94a3b8; font-size: 14px; line-height: 1.6; margin: 0 0 24px; }
+    .btn { display: inline-block; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: #fff; text-decoration: none; padding: 12px 28px; border-radius: 9999px; font-weight: 600; font-size: 14px; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 14px rgba(79,70,229,0.4); }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(79,70,229,0.6); }
+  </style>
+</head>
+<body>
+  <div class="card">
+    ${
+      escapedOgImage
+        ? `<img class="avatar" src="${escapedOgImage}" alt="${title}" />`
+        : ""
+    }
+    <h1>${title}</h1>
+    <p>${description}</p>
+    <a class="btn" href="/u/${encodeURIComponent(portfolio.slug)}">Open Interactive Portfolio</a>
+  </div>
+</body>
+</html>`;
+
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    res.setHeader("Cache-Control", "public, max-age=60, s-maxage=300");
+    return res.send(html);
+  } catch (error) {
+    console.error("Error serving public portfolio SEO page:", error);
+    next();
+  }
+});
 
 // Dynamic Real-time XML Sitemap for Search Crawlers
 app.get(["/sitemap.xml", "/api/sitemap.xml"], async (req, res) => {

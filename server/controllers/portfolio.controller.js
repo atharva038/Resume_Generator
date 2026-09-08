@@ -10,6 +10,7 @@ import {
   deletePdfExportSession,
 } from "../services/pdfExportSession.service.js";
 import {renderResumePdf} from "../services/pdfExport.service.js";
+import {cloudinaryService} from "../services/cloudinary.service.js";
 
 const DEFAULT_SECTION_ORDER = [
   "about",
@@ -607,6 +608,23 @@ export const updatePortfolio = async (req, res) => {
       portfolio.slug = await createUniqueSlug(slug, portfolio._id);
     }
 
+    // Clean up old Cloudinary images if replaced or removed
+    if (profileImage !== undefined && portfolio.profileImage && portfolio.profileImage !== profileImage) {
+      if (portfolio.profileImage.includes("cloudinary.com")) {
+        cloudinaryService.deleteImage(portfolio.profileImage).catch((err) =>
+          console.warn("Could not delete old profileImage:", err.message)
+        );
+      }
+    }
+
+    if (heroImage !== undefined && portfolio.heroImage && portfolio.heroImage !== heroImage) {
+      if (portfolio.heroImage.includes("cloudinary.com")) {
+        cloudinaryService.deleteImage(portfolio.heroImage).catch((err) =>
+          console.warn("Could not delete old heroImage:", err.message)
+        );
+      }
+    }
+
     const scalarUpdates = {
       title,
       tagline,
@@ -707,6 +725,14 @@ export const deletePortfolio = async (req, res) => {
 
     if (!portfolio) {
       return res.status(404).json({error: "Portfolio not found"});
+    }
+
+    // Delete any associated Cloudinary images
+    if (portfolio.profileImage && portfolio.profileImage.includes("cloudinary.com")) {
+      cloudinaryService.deleteImage(portfolio.profileImage).catch(() => {});
+    }
+    if (portfolio.heroImage && portfolio.heroImage.includes("cloudinary.com")) {
+      cloudinaryService.deleteImage(portfolio.heroImage).catch(() => {});
     }
 
     await PortfolioProject.deleteMany({portfolioId: portfolio._id, userId});
@@ -1385,6 +1411,65 @@ Rules:
     });
     res.status(500).json({
       error: error.message || "Failed to generate portfolio SEO",
+    });
+  }
+};
+
+export const uploadPortfolioImage = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "No image file provided" });
+    }
+
+    const userId = getUserId(req);
+    const { oldImageUrl } = req.body || {};
+
+    const result = await cloudinaryService.uploadImageBuffer(req.file.buffer, {
+      folder: "smartnshine/portfolios",
+      originalname: req.file.originalname,
+      mimetype: req.file.mimetype,
+      publicId: `user_${userId || "anon"}_${Date.now()}`,
+    });
+
+    // If an old Cloudinary image was replaced, remove it from storage
+    if (oldImageUrl && oldImageUrl.includes("cloudinary.com")) {
+      cloudinaryService.deleteImage(oldImageUrl).catch((err) => {
+        console.warn("Could not delete replaced Cloudinary image:", err.message);
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Image uploaded successfully",
+      url: result.secure_url,
+      publicId: result.public_id,
+      format: result.format,
+      bytes: result.bytes,
+    });
+  } catch (error) {
+    console.error("Upload portfolio image error:", error);
+    res.status(500).json({
+      error: error.message || "Failed to upload image to cloud storage",
+    });
+  }
+};
+
+export const deletePortfolioImage = async (req, res) => {
+  try {
+    const { imageUrl } = req.body || {};
+    if (!imageUrl) {
+      return res.status(400).json({ error: "Image URL is required" });
+    }
+
+    const result = await cloudinaryService.deleteImage(imageUrl);
+    res.json({
+      success: result.success,
+      message: result.success ? "Image deleted from Cloud CDN" : (result.message || "Could not delete image"),
+    });
+  } catch (error) {
+    console.error("Delete portfolio image error:", error);
+    res.status(500).json({
+      error: error.message || "Failed to delete image",
     });
   }
 };
