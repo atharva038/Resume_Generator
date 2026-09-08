@@ -116,15 +116,19 @@ const PortfolioThemeRenderer = ({
           }
         `}</style>
 
-        {/* The Tech Portfolio and SmartNShine supply their own bespoke navigation */}
-        {theme.id !== "techPortfolio" && theme.id !== "smartnshine" && (
-          <PortfolioNavbar
-            data={data}
-            isDarkMode={isDarkMode}
-            toggleDarkMode={toggleDarkMode}
-            accentColor={portfolio?.themeAccent}
-          />
-        )}
+        {/* Bespoke navigation themes */}
+        {theme.id !== "techPortfolio" &&
+          theme.id !== "smartnshine" &&
+          theme.id !== "neomorphic" &&
+          theme.id !== "liquidGlass" &&
+          theme.id !== "retroFuturistic" && (
+            <PortfolioNavbar
+              data={data}
+              isDarkMode={isDarkMode}
+              toggleDarkMode={toggleDarkMode}
+              accentColor={portfolio?.themeAccent}
+            />
+          )}
 
         {/* Theme Content */}
         <ThemeComponent

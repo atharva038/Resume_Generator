@@ -6,8 +6,47 @@ import CreativeTheme from "./CreativeTheme";
 import TechPortfolioTheme from "./TechPortfolioTheme";
 import GlassmorphismTheme from "./GlassmorphismTheme";
 import SmartNShineTheme from "./SmartNShineTheme";
+import NeomorphicTheme from "./NeomorphicTheme";
+import LiquidGlassTheme from "./LiquidGlassTheme";
+import RetroFuturisticTheme from "./RetroFuturisticTheme";
 
 export const portfolioThemes = {
+  retroFuturistic: {
+    id: "retroFuturistic",
+    name: "Retro-Futuristic OS",
+    category: "Retro-Futurism",
+    badge: "New Flagship",
+    subtitle: "80s/90s Computing × CRT HUD × Modern Editorial Architecture.",
+    description: "What someone in 1995 imagined the internet of 2035 would look like. Phosphor CRT monitor frames, diagnostic telemetry, interactive command prompt, and system logs.",
+    tags: ["Retro-Futuristic", "CRT Display", "System HUD", "Monospace", "Dark & Light"],
+    component: RetroFuturisticTheme,
+    allowedTiers: ["free", "one-time", "pro"],
+    accentPresets: ["#00ff66", "#ffb000", "#00f0ff", "#ff6b35", "#d4af37", "#a855f7"],
+  },
+  liquidGlass: {
+    id: "liquidGlass",
+    name: "Liquid Glass Spatial",
+    category: "Spatial Glass",
+    badge: "Spatial 3D",
+    subtitle: "Liquid Glass × Spatial UI × Editorial Typography × Subtle Luxury.",
+    description: "Layered translucent glass surfaces floating above slow ambient fluid light. Refraction highlights, floating stats, and spatial gallery layouts.",
+    tags: ["Liquid Glass", "Spatial UI", "Subtle Luxury", "Translucent", "Dark & Light"],
+    component: LiquidGlassTheme,
+    allowedTiers: ["free", "one-time", "pro"],
+    accentPresets: ["#b89047", "#e6be58", "#38bdf8", "#818cf8", "#34d399", "#f43f5e"],
+  },
+  neomorphic: {
+    id: "neomorphic",
+    name: "Tactile Neomorphic",
+    category: "Neumorphic",
+    badge: "New Flagship",
+    subtitle: "Modern Neumorphism × Soft 3D Surfaces × Editorial Typography.",
+    description: "Physical hardware precision translated into digital software. Soft tactile raised/inset surfaces, control-board capabilities, and champagne gold accents.",
+    tags: ["Neumorphism", "Soft 3D", "Tactile", "Editorial", "Dark & Light"],
+    component: NeomorphicTheme,
+    allowedTiers: ["free", "one-time", "pro"],
+    accentPresets: ["#b89047", "#d4af37", "#10b981", "#3b82f6", "#f43f5e", "#06b6d4"],
+  },
   smartnshine: {
     id: "smartnshine",
     name: "SmartNShine Editorial",
