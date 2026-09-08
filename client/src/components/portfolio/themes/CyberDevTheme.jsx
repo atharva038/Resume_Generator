@@ -177,23 +177,23 @@ const CyberSectionHeading = ({eyebrow, title, description}) => (
 );
 
 /* ─── Main Theme ─── */
-const CyberDevTheme = ({data}) => {
+const CyberDevTheme = ({data = {}}) => {
   const {
-    profile,
-    settings,
-    actions,
-    sections,
-    sectionOrder,
-    links,
-    skills,
-    projects,
-    featuredProjects,
-    experience,
-    education,
-    certifications,
-    achievements,
-    customSections,
-  } = data;
+    profile = {},
+    settings = {},
+    actions = {},
+    sections = {},
+    sectionOrder = [],
+    links = [],
+    skills = [],
+    projects = [],
+    featuredProjects = [],
+    experience = [],
+    education = [],
+    certifications = [],
+    achievements = [],
+    customSections = [],
+  } = data || {};
 
   const sectionBlocks = {
     projects:

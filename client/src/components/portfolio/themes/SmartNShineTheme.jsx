@@ -72,7 +72,7 @@ export default function SmartNShineTheme({
     links: rawLinks = [],
     actions = {},
     themeAccent,
-  } = data;
+  } = data || {};
 
   // 2. Profile resolution (Pure User Data)
   const name = profile?.name || "Portfolio";

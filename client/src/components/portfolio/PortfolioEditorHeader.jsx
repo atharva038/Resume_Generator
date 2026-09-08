@@ -6,6 +6,7 @@ import {
   Globe2,
   Send,
   RefreshCw,
+  LayoutTemplate,
 } from "lucide-react";
 import { DarkModeToggle } from "@/components/common";
 import Logo from "@/components/common/Logo";
@@ -16,6 +17,7 @@ export default function PortfolioEditorHeader({
   saving,
   onSave,
   onPreview,
+  onShowTemplateSelector,
   onPublishToggle,
   isPublished,
   publicUrl,
@@ -60,6 +62,17 @@ export default function PortfolioEditorHeader({
       {/* Right action controls */}
       <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
         <DarkModeToggle />
+
+        {/* Template Selector Button */}
+        <button
+          type="button"
+          onClick={onShowTemplateSelector}
+          className="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900 text-gray-800 dark:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-800 text-xs font-semibold transition-all active:scale-95 cursor-pointer shadow-2xs"
+          title="Change portfolio template design"
+        >
+          <LayoutTemplate className="w-3.5 h-3.5 text-emerald-500" />
+          <span className="hidden sm:inline">Templates</span>
+        </button>
 
         <button
           type="button"

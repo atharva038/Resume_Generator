@@ -10,22 +10,22 @@ import {
   hasItems,
 } from "./themeElements";
 
-const ModernFresherTheme = ({ data }) => {
+const ModernFresherTheme = ({ data = {} }) => {
   const {
-    profile,
-    settings,
-    actions,
-    sections,
-    sectionOrder,
-    links,
-    skills,
-    projects,
-    experience,
-    education,
-    certifications,
-    achievements,
-    customSections,
-  } = data;
+    profile = {},
+    settings = {},
+    actions = {},
+    sections = {},
+    sectionOrder = [],
+    links = [],
+    skills = [],
+    projects = [],
+    experience = [],
+    education = [],
+    certifications = [],
+    achievements = [],
+    customSections = [],
+  } = data || {};
 
   const sectionBlocks = {
     education:

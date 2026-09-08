@@ -226,23 +226,23 @@ const CreativeProjectCard = ({project, onProjectClick}) => {
 };
 
 /* ─── Main Theme ─── */
-const CreativeTheme = ({data}) => {
+const CreativeTheme = ({data = {}}) => {
   const {
-    profile,
-    settings,
-    actions,
-    sections,
-    sectionOrder,
-    links,
-    skills,
-    projects,
-    featuredProjects,
-    experience,
-    education,
-    certifications,
-    achievements,
-    customSections,
-  } = data;
+    profile = {},
+    settings = {},
+    actions = {},
+    sections = {},
+    sectionOrder = [],
+    links = [],
+    skills = [],
+    projects = [],
+    featuredProjects = [],
+    experience = [],
+    education = [],
+    certifications = [],
+    achievements = [],
+    customSections = [],
+  } = data || {};
 
   const sectionBlocks = {
     about:

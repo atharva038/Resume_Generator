@@ -33,6 +33,8 @@ import {
   Loader2,
   RotateCcw,
   Image as ImageIcon,
+  X,
+  LayoutTemplate,
 } from "lucide-react";
 import { portfolioAPI } from "@/api/portfolio.api";
 import { portfolioThemeList } from "@/components/portfolio/themes/themeRegistry";
@@ -40,6 +42,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useNavigationBlocker } from "@/context/NavigationBlockerContext";
 import PortfolioEditorHeader from "@/components/portfolio/PortfolioEditorHeader";
 import PortfolioPanel from "@/components/portfolio/PortfolioPanel";
+import PortfolioTemplateSelectorModal from "@/components/portfolio/PortfolioTemplateSelectorModal";
 import { resolveImageUrl } from "@/utils/imageUrlResolver";
 
 const blankProject = {
@@ -201,6 +204,65 @@ const normalizeSectionOrder = (sectionOrder) =>
     ]),
   ].filter((section) => DEFAULT_SECTION_ORDER.includes(section));
 
+const resizeImageToFavicon = (file, size = 64) => {
+  return new Promise((resolve, reject) => {
+    if (file.type === "image/svg+xml" || file.name.endsWith(".ico")) {
+      resolve(file);
+      return;
+    }
+    const reader = new FileReader();
+    reader.onerror = (err) => reject(err);
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onerror = (err) => reject(err);
+      img.onload = () => {
+        try {
+          const canvas = document.createElement("canvas");
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) {
+            resolve(file);
+            return;
+          }
+
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = "high";
+
+          // Center crop to 1:1 aspect ratio
+          const minDim = Math.min(img.width, img.height);
+          const sx = (img.width - minDim) / 2;
+          const sy = (img.height - minDim) / 2;
+
+          ctx.clearRect(0, 0, size, size);
+          ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, size, size);
+
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                const resizedFile = new File([blob], "favicon.png", {
+                  type: "image/png",
+                  lastModified: Date.now(),
+                });
+                resolve(resizedFile);
+              } else {
+                resolve(file);
+              }
+            },
+            "image/png",
+            1.0
+          );
+        } catch (err) {
+          console.warn("Canvas resize failed, fallback to original file:", err);
+          resolve(file);
+        }
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+};
+
 export default function PortfolioEditor() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -221,6 +283,9 @@ export default function PortfolioEditor() {
   const [uploadingHero, setUploadingHero] = useState(false);
   const [uploadingOgImage, setUploadingOgImage] = useState(false);
   const [showOgUrlInput, setShowOgUrlInput] = useState(false);
+  const [uploadingFavicon, setUploadingFavicon] = useState(false);
+  const [showFaviconUrlInput, setShowFaviconUrlInput] = useState(false);
+  const [showTemplateSelector, setShowTemplateSelector] = useState(false);
   const [panelControl, setPanelControl] = useState({
     version: 0,
     open: null,
@@ -801,6 +866,50 @@ export default function PortfolioEditor() {
     toast.success("Reset to Profile Photo as default social share preview!");
   };
 
+  const handleUploadFavicon = async (file) => {
+    if (!file) return;
+    if (file.size > 8 * 1024 * 1024) {
+      toast.error("Image must be under 8MB");
+      return;
+    }
+    const oldUrl = form.seo?.favicon;
+    setUploadingFavicon(true);
+    const toastId = toast.loading("Processing & converting favicon to 64x64 PNG...");
+    try {
+      const faviconFile = await resizeImageToFavicon(file, 64);
+      toast.loading("Uploading favicon to Cloud CDN...", { id: toastId });
+
+      const res = await portfolioAPI.uploadImage(faviconFile, oldUrl);
+      if (res.data?.url) {
+        updateNestedField("seo", "favicon", res.data.url);
+        toast.success("Favicon converted to 64x64 PNG and saved!", { id: toastId });
+        return;
+      }
+      throw new Error("No upload URL returned");
+    } catch (err) {
+      console.warn("Favicon upload fallback:", err);
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        if (ev.target?.result) {
+          updateNestedField("seo", "favicon", ev.target.result);
+          toast.success("Favicon loaded!", { id: toastId });
+        }
+      };
+      reader.readAsDataURL(file);
+    } finally {
+      setUploadingFavicon(false);
+    }
+  };
+
+  const handleRemoveFavicon = async () => {
+    const oldUrl = form.seo?.favicon;
+    updateNestedField("seo", "favicon", "");
+    if (oldUrl && oldUrl.includes("cloudinary.com")) {
+      portfolioAPI.deleteImage(oldUrl).catch(() => {});
+    }
+    toast.success("Favicon removed");
+  };
+
   const handleCopyPublicLink = () => {
     if (!publicUrl) return;
     navigator.clipboard.writeText(publicUrl);
@@ -842,6 +951,7 @@ export default function PortfolioEditor() {
         saving={saving}
         onSave={() => handleSave()}
         onPreview={handlePreview}
+        onShowTemplateSelector={() => setShowTemplateSelector(true)}
         onPublishToggle={handlePublishToggle}
         isPublished={isPublished}
         publicUrl={publicUrl}
@@ -1959,67 +2069,80 @@ export default function PortfolioEditor() {
               forceState={panelControl.open}
               forceVersion={panelControl.version}
             >
-              <div className="space-y-3.5">
-                {portfolioThemeList.map((theme) => {
-                  const allowed = isThemeAllowed(theme);
-                  const isSelected = form.themeId === theme.id;
-
-                  return (
-                    <button
-                      key={theme.id}
-                      type="button"
-                      onClick={() => allowed && updateField("themeId", theme.id)}
-                      disabled={!allowed}
-                      className={`w-full rounded-2xl border p-4 text-left transition-all cursor-pointer ${
-                        isSelected
-                          ? "border-emerald-500 bg-emerald-500/10 text-emerald-950 dark:text-emerald-100 ring-2 ring-emerald-500/30"
-                          : "border-gray-200 dark:border-white/[0.08] hover:bg-gray-50 dark:hover:bg-zinc-900"
-                      } ${!allowed ? "opacity-50 cursor-not-allowed" : ""}`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-sm sm:text-base">{theme.name}</span>
-                        {!allowed && (
-                          <span className="rounded-full bg-amber-500/15 px-2.5 py-0.5 text-xs font-bold text-amber-600 dark:text-amber-400">
-                            Upgrade
-                          </span>
-                        )}
-                      </div>
-                      <p className="mt-1 text-xs sm:text-sm text-gray-500 dark:text-zinc-400 leading-relaxed">
-                        {theme.description}
-                      </p>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Accent Colour Customizer */}
               {(() => {
                 const activeTheme = portfolioThemeList.find(
-                  (t) => t.id === (form.themeId || "minimalDeveloper")
-                );
+                  (t) => t.id === (form.themeId || "smartnshine")
+                ) || portfolioThemeList[0];
                 const presets = activeTheme?.accentPresets || [];
-                const currentAccent = form.themeAccent || "";
+                const currentAccent = form.themeAccent || presets[0] || "";
 
                 return (
-                  <div className="pt-5 border-t border-gray-100 dark:border-white/[0.08] space-y-2.5">
-                    <p className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200">
-                      Theme Accent Color
-                    </p>
-                    <div className="flex flex-wrap items-center gap-2.5">
-                      {presets.map((hex) => (
-                        <button
-                          key={hex}
-                          type="button"
-                          title={hex}
-                          onClick={() => updateField("themeAccent", hex)}
-                          style={{ background: hex }}
-                          className={`h-8 w-8 rounded-full border-2 transition-transform hover:scale-110 cursor-pointer ${
-                            currentAccent === hex
-                              ? "border-gray-900 dark:border-white scale-110 ring-2 ring-offset-1 ring-emerald-500"
-                              : "border-transparent"
-                          }`}
-                        />
-                      ))}
+                  <div className="space-y-4">
+                    {/* Active Selected Theme Card */}
+                    <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 dark:bg-emerald-500/10 p-4 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                          Active Template
+                        </span>
+                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20">
+                          {activeTheme.category}
+                        </span>
+                      </div>
+
+                      <div>
+                        <h4 className="font-extrabold text-base text-gray-900 dark:text-white flex items-center gap-2">
+                          <span>{activeTheme.name}</span>
+                          {activeTheme.badge && (
+                            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-gray-900 text-white dark:bg-white dark:text-gray-950 font-bold">
+                              {activeTheme.badge}
+                            </span>
+                          )}
+                        </h4>
+                        <p className="mt-1 text-xs text-gray-600 dark:text-zinc-400 line-clamp-2 leading-relaxed">
+                          {activeTheme.subtitle || activeTheme.description}
+                        </p>
+                      </div>
+
+                      {/* Browse All Templates Button */}
+                      <button
+                        type="button"
+                        onClick={() => setShowTemplateSelector(true)}
+                        className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gray-950 dark:bg-white text-white dark:text-gray-950 hover:bg-gray-800 dark:hover:bg-gray-100 text-xs font-bold transition-all shadow-md active:scale-98 cursor-pointer group"
+                      >
+                        <LayoutTemplate className="w-4 h-4 text-emerald-400 dark:text-emerald-600 group-hover:rotate-12 transition-transform" />
+                        <span>Browse & Switch Templates</span>
+                        <span className="ml-auto text-[10px] px-2 py-0.5 rounded-md bg-white/10 dark:bg-black/10 font-normal">
+                          {portfolioThemeList.length} Styles
+                        </span>
+                      </button>
+                    </div>
+
+                    {/* Accent Colour Customizer */}
+                    <div className="pt-3 border-t border-gray-100 dark:border-white/[0.08] space-y-2.5">
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200">
+                          Theme Accent Color
+                        </p>
+                        <span className="text-[10px] font-mono text-gray-400">
+                          {currentAccent}
+                        </span>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2.5">
+                        {presets.map((hex) => (
+                          <button
+                            key={hex}
+                            type="button"
+                            title={hex}
+                            onClick={() => updateField("themeAccent", hex)}
+                            style={{ background: hex }}
+                            className={`h-8 w-8 rounded-full border-2 transition-transform hover:scale-110 cursor-pointer ${
+                              currentAccent === hex
+                                ? "border-gray-900 dark:border-white scale-110 ring-2 ring-offset-1 ring-emerald-500"
+                                : "border-transparent"
+                            }`}
+                          />
+                        ))}
+                      </div>
                     </div>
                   </div>
                 );
@@ -2236,31 +2359,109 @@ export default function PortfolioEditor() {
                     Displayed automatically as the visual card when your portfolio link is shared on WhatsApp, LinkedIn, X/Twitter, Discord, etc.
                   </p>
                 </div>
-                <div>
-                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
-                    Custom Favicon Icon URL
-                  </label>
-                  <div className="flex items-center gap-3">
-                    {form.seo?.favicon && (
-                      <img
-                        src={form.seo.favicon}
-                        alt="Favicon Preview"
-                        className="w-7 h-7 rounded-md object-contain border border-gray-200 dark:border-white/10 shrink-0 p-0.5"
-                        onError={(e) => {
-                          e.target.style.display = "none";
+                {/* Favicon Upload & Browser Tab Preview Card */}
+                <div className="rounded-2xl border border-gray-200/90 dark:border-white/[0.08] bg-gray-50/50 dark:bg-zinc-900/40 p-4 sm:p-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <label className="text-xs sm:text-sm font-bold text-gray-900 dark:text-zinc-100 flex items-center gap-2">
+                        <span>Browser Tab Favicon</span>
+                        {form.seo?.favicon ? (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                            ✓ Custom 64×64 Favicon
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-gray-200/60 dark:bg-zinc-800 text-gray-600 dark:text-zinc-400 border border-gray-300/40 dark:border-white/5">
+                            Default Icon
+                          </span>
+                        )}
+                      </label>
+                      <p className="text-[11px] text-gray-500 dark:text-zinc-400 mt-0.5">
+                        Uploaded image is auto-cropped and resized to a crisp 64×64 PNG for browser tabs & bookmarks.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowFaviconUrlInput(!showFaviconUrlInput)}
+                      className="text-[11px] text-gray-500 dark:text-zinc-400 hover:text-amber-600 dark:hover:text-amber-400 underline font-medium transition-colors cursor-pointer"
+                    >
+                      {showFaviconUrlInput ? "Hide URL" : "Edit URL"}
+                    </button>
+                  </div>
+
+                  {/* Browser Tab Live Mockup Preview */}
+                  <div className="mb-3.5 p-3 rounded-2xl bg-white dark:bg-zinc-900 border border-gray-200 dark:border-white/10 shadow-sm">
+                    <span className="text-[10px] font-mono font-bold text-gray-400 dark:text-zinc-500 block mb-2 uppercase tracking-wider">
+                      Browser Tab Preview
+                    </span>
+                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-t-lg bg-gray-100 dark:bg-zinc-800/90 border-t border-x border-gray-200 dark:border-white/10 shadow-xs max-w-full">
+                      <div className="w-4 h-4 rounded-sm flex items-center justify-center shrink-0 overflow-hidden bg-white/60 dark:bg-zinc-950/60">
+                        {form.seo?.favicon ? (
+                          <img
+                            src={form.seo.favicon}
+                            alt="Favicon"
+                            className="w-full h-full object-contain"
+                            onError={(e) => {
+                              e.target.style.display = "none";
+                            }}
+                          />
+                        ) : (
+                          <Globe2 className="w-3.5 h-3.5 text-gray-500 dark:text-zinc-400" />
+                        )}
+                      </div>
+                      <span className="text-xs font-medium text-gray-800 dark:text-zinc-200 truncate max-w-[180px] sm:max-w-[240px]">
+                        {form.seo?.title || form.title || "My Portfolio"}
+                      </span>
+                      <X className="w-3 h-3 text-gray-400 hover:text-gray-600 dark:hover:text-zinc-200 ml-1 shrink-0 opacity-60" />
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex flex-wrap items-center gap-2">
+                    <label className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white text-xs font-bold cursor-pointer transition-all shadow-sm shadow-amber-500/20 active:scale-95">
+                      {uploadingFavicon ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      ) : (
+                        <Upload className="w-3.5 h-3.5" />
+                      )}
+                      <span>{uploadingFavicon ? "Converting & Uploading..." : form.seo?.favicon ? "Replace Favicon" : "Upload Favicon (Auto 64×64)"}</span>
+                      <input
+                        type="file"
+                        accept="image/*,.ico,.svg"
+                        className="hidden"
+                        disabled={uploadingFavicon}
+                        onChange={(e) => {
+                          if (e.target.files?.[0]) {
+                            handleUploadFavicon(e.target.files[0]);
+                            e.target.value = "";
+                          }
                         }}
                       />
+                    </label>
+
+                    {form.seo?.favicon && (
+                      <button
+                        type="button"
+                        onClick={handleRemoveFavicon}
+                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/20 text-xs font-bold transition-colors cursor-pointer"
+                        title="Remove custom favicon"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>Remove</span>
+                      </button>
                     )}
-                    <input
-                      value={form.seo?.favicon || ""}
-                      onChange={(e) => updateNestedField("seo", "favicon", e.target.value)}
-                      placeholder="https://example.com/favicon.ico or .png"
-                      className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs sm:text-sm font-mono"
-                    />
                   </div>
-                  <p className="mt-1 text-[11px] text-gray-500 dark:text-zinc-400">
-                    Browser tab icon for your custom portfolio domain/page.
-                  </p>
+
+                  {/* Optional Direct URL Input Field */}
+                  {showFaviconUrlInput && (
+                    <div className="mt-3">
+                      <input
+                        value={form.seo?.favicon || ""}
+                        onChange={(e) => updateNestedField("seo", "favicon", e.target.value)}
+                        placeholder="https://example.com/favicon.png or .ico"
+                        className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs sm:text-sm font-mono"
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             </PortfolioPanel>
@@ -2306,6 +2507,18 @@ export default function PortfolioEditor() {
           </aside>
         </div>
       </main>
+
+      {/* Portfolio Template Selector Modal */}
+      <PortfolioTemplateSelectorModal
+        isOpen={showTemplateSelector}
+        onClose={() => setShowTemplateSelector(false)}
+        selectedThemeId={form.themeId || "smartnshine"}
+        onApplyTheme={(themeId) => updateField("themeId", themeId)}
+        form={form}
+        resume={portfolio?.resumeSnapshot}
+        projects={projects}
+        userTier={userTier}
+      />
     </div>
   );
 }
