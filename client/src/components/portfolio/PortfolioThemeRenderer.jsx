@@ -116,8 +116,8 @@ const PortfolioThemeRenderer = ({
           }
         `}</style>
 
-        {/* The Tech Portfolio supplies its own premium navigation. */}
-        {theme.id !== "techPortfolio" && (
+        {/* The Tech Portfolio and SmartNShine supply their own bespoke navigation */}
+        {theme.id !== "techPortfolio" && theme.id !== "smartnshine" && (
           <PortfolioNavbar
             data={data}
             isDarkMode={isDarkMode}

@@ -78,6 +78,7 @@ const SuperAdminEnvPanel = lazy(
   () => import("./pages/superAdmin/SuperAdminEnvPanel")
 );
 const TechPortfolioTemplate = lazy(() => import("./pages/TechPortfolioTemplate"));
+const SmartNShinePortfolioTemplate = lazy(() => import("./pages/SmartNShinePortfolioTemplate"));
 
 import {DarkModeProvider} from "./context/DarkModeContext";
 import {NavigationBlockerProvider} from "./context/NavigationBlockerContext";
@@ -138,6 +139,8 @@ function App() {
             <Route path="/landing-v2" element={<Navigate to="/" replace />} />
             <Route path="/pdf-render/:token" element={<PdfRender />} />
             <Route path="/tech-portfolio" element={<TechPortfolioTemplate />} />
+            <Route path="/smartnshine-portfolio" element={<SmartNShinePortfolioTemplate />} />
+            <Route path="/smartnshine" element={<SmartNShinePortfolioTemplate />} />
             <Route path="/u/:slug" element={<PublicPortfolio />} />
             <Route
               path="/portfolio/:id/edit"

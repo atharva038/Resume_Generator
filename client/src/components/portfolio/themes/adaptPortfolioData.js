@@ -1,3 +1,5 @@
+import { resolveImageUrl } from "@/utils/imageUrlResolver";
+
 const hasItems = (items) => Array.isArray(items) && items.length > 0;
 
 const DEFAULT_SECTION_ORDER = [
@@ -51,7 +53,11 @@ const normalizeProject = (project = {}) => ({
   highlights: project.highlights || [],
   featured: Boolean(project.featured),
   links: project.links || {},
-  images: project.images || [],
+  images: (project.images || []).map((img) =>
+    typeof img === "string"
+      ? { url: resolveImageUrl(img), alt: "" }
+      : { ...img, url: resolveImageUrl(img.url) }
+  ),
 });
 
 export const adaptPortfolioData = ({
@@ -96,8 +102,8 @@ export const adaptPortfolioData = ({
       phone: portfolio.contact?.phone || "",
       showEmail: portfolio.contact?.showEmail !== false,
       showPhone: Boolean(portfolio.contact?.showPhone),
-      profileImage: portfolio.profileImage || "",
-      heroImage: portfolio.heroImage || "",
+      profileImage: resolveImageUrl(portfolio.profileImage || resume?.photo || ""),
+      heroImage: resolveImageUrl(portfolio.heroImage || ""),
     },
     links: (portfolio.socialLinks || []).filter((link) => link?.url),
     skills: pickArray(portfolio.skills, resume?.skills),

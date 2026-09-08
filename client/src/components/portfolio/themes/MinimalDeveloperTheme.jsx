@@ -1,281 +1,619 @@
-import { Code2, MapPin, Terminal, Sparkles } from "lucide-react";
-import { motion } from "framer-motion";
+import { useState } from "react";
 import {
-  ContactActions,
-  CustomSections,
-  ProjectLinks,
-  SectionHeading,
-  SkillPills,
-  SocialLinks,
-  hasItems,
-} from "./themeElements";
+  Code2,
+  MapPin,
+  Terminal,
+  ExternalLink,
+  Github,
+  Mail,
+  Phone,
+  Download,
+  Copy,
+  Check,
+  Briefcase,
+  GraduationCap,
+  Award,
+  Sparkles,
+  ArrowUpRight,
+  X,
+  ChevronRight,
+  Layers,
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import toast from "react-hot-toast";
+import { resolveImageUrl } from "@/utils/imageUrlResolver";
 
-const MinimalDeveloperTheme = ({ data }) => {
+const hasItems = (arr) => Array.isArray(arr) && arr.length > 0;
+
+export default function MinimalDeveloperTheme({ data = {}, isDarkMode = false, accentColor }) {
   const {
-    profile,
-    settings,
-    actions,
-    sections,
-    sectionOrder,
-    links,
-    skills,
-    projects,
-    featuredProjects,
-    experience,
-    education,
-    certifications,
-    achievements,
-    customSections,
-  } = data;
+    profile = {},
+    settings = {},
+    actions = {},
+    sections = {},
+    sectionOrder = [],
+    links = [],
+    skills = [],
+    projects = [],
+    featuredProjects = [],
+    experience = [],
+    education = [],
+    certifications = [],
+    achievements = [],
+    customSections = [],
+  } = data || {};
+
+  const [copiedEmail, setCopiedEmail] = useState(false);
+  const [copiedPhone, setCopiedPhone] = useState(false);
+  const [selectedProject, setSelectedProject] = useState(null);
+
+  const handleCopyEmail = () => {
+    if (profile.email) {
+      navigator.clipboard.writeText(profile.email);
+      setCopiedEmail(true);
+      toast.success("Email copied to clipboard!");
+      setTimeout(() => setCopiedEmail(false), 2000);
+    }
+  };
+
+  const handleCopyPhone = () => {
+    if (profile.phone) {
+      navigator.clipboard.writeText(profile.phone);
+      setCopiedPhone(true);
+      toast.success("Phone copied to clipboard!");
+      setTimeout(() => setCopiedPhone(false), 2000);
+    }
+  };
+
+  const profileImg = resolveImageUrl(profile.profileImage || profile.heroImage || "");
+  const allProjects = hasItems(featuredProjects) ? featuredProjects : projects;
 
   const sectionBlocks = {
-    projects:
-      sections.showProjects && hasItems(projects) ? (
-        <section key="projects" id="projects" className="scroll-mt-24 space-y-6">
-          <SectionHeading
-            eyebrow="Selected Builds"
-            title="Projects"
-            description="Featured work with practical links, stacks, and outcomes."
-          />
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {featuredProjects.map((project) => (
-              <motion.article
-                key={project.id}
-                whileHover={{ y: -4 }}
-                transition={{ duration: 0.2 }}
-                className="min-w-0 rounded-2xl border border-gray-200/90 dark:border-white/10 bg-white dark:bg-zinc-900/90 p-6 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
-              >
-                <div className="space-y-3">
-                  <h3 className="break-words text-xl font-black text-gray-900 dark:text-white">
-                    {project.title}
+    about: sections.showAbout && profile.about ? (
+      <section key="about" id="about" className="scroll-mt-24 py-12 sm:py-16 border-t border-gray-200/80 dark:border-zinc-800/80">
+        <div className="grid lg:grid-cols-[280px_1fr] gap-8 items-start">
+          <div>
+            <span className="text-[11px] font-mono uppercase tracking-widest text-[var(--pt-accent,#10b981)] font-bold block mb-1">
+              01 // Overview
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white tracking-tight">
+              About Me
+            </h2>
+          </div>
+          <div className="space-y-4">
+            <p className="text-base sm:text-lg leading-relaxed text-gray-700 dark:text-zinc-300 font-normal">
+              {profile.about}
+            </p>
+            {profile.tagline && profile.tagline !== profile.about && (
+              <p className="text-sm font-mono text-gray-500 dark:text-zinc-400">
+                &gt; {profile.tagline}
+              </p>
+            )}
+          </div>
+        </div>
+      </section>
+    ) : null,
+
+    skills: sections.showSkills && hasItems(skills) ? (
+      <section key="skills" id="skills" className="scroll-mt-24 py-12 sm:py-16 border-t border-gray-200/80 dark:border-zinc-800/80">
+        <div className="mb-10">
+          <span className="text-[11px] font-mono uppercase tracking-widest text-[var(--pt-accent,#10b981)] font-bold block mb-1">
+            02 // Capabilities
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white tracking-tight">
+            Technical Stack & Skills
+          </h2>
+        </div>
+
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {skills.map((group, index) => (
+            <motion.div
+              key={`${group.category}-${index}`}
+              whileHover={{ y: -3 }}
+              transition={{ duration: 0.15 }}
+              className="rounded-2xl border border-gray-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 p-6 shadow-sm hover:border-gray-400 dark:hover:border-zinc-600 transition-all flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-center gap-2 mb-4 pb-3 border-b border-gray-100 dark:border-zinc-800">
+                  <Terminal className="w-4 h-4 text-[var(--pt-accent,#10b981)]" />
+                  <h3 className="font-bold text-sm sm:text-base text-gray-900 dark:text-white font-mono">
+                    {group.category || "General"}
                   </h3>
-                  {project.description && (
-                    <p className="break-words text-sm leading-relaxed text-gray-600 dark:text-zinc-300">
-                      {project.description}
-                    </p>
-                  )}
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {(group.items || []).map((skill) => (
+                    <span
+                      key={skill}
+                      className="px-3 py-1.5 rounded-lg text-xs font-mono font-semibold bg-gray-100 dark:bg-zinc-800/80 text-gray-800 dark:text-zinc-200 border border-gray-200/60 dark:border-white/5"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+    ) : null,
+
+    projects: sections.showProjects && hasItems(allProjects) ? (
+      <section key="projects" id="projects" className="scroll-mt-24 py-12 sm:py-16 border-t border-gray-200/80 dark:border-zinc-800/80">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
+          <div>
+            <span className="text-[11px] font-mono uppercase tracking-widest text-[var(--pt-accent,#10b981)] font-bold block mb-1">
+              03 // Work
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white tracking-tight">
+              Featured Projects
+            </h2>
+          </div>
+          <span className="text-xs font-mono text-gray-500 dark:text-zinc-400">
+            {allProjects.length} {allProjects.length === 1 ? "Build" : "Builds"} Shipped
+          </span>
+        </div>
+
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {allProjects.map((project) => (
+            <motion.article
+              key={project.id || project.title}
+              whileHover={{ y: -4 }}
+              transition={{ duration: 0.15 }}
+              onClick={() => setSelectedProject(project)}
+              className="group rounded-2xl border border-gray-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 p-6 shadow-sm hover:border-[var(--pt-accent,#10b981)] dark:hover:border-[var(--pt-accent,#10b981)] hover:shadow-lg transition-all flex flex-col justify-between cursor-pointer"
+            >
+              <div>
+                <div className="flex items-center justify-between gap-2 mb-3">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-red-400/80" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-amber-400/80" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400/80" />
+                  </div>
+                  <ArrowUpRight className="w-4 h-4 text-gray-400 group-hover:text-[var(--pt-accent,#10b981)] transition-colors" />
                 </div>
 
-                <div className="pt-4 space-y-4">
-                  {hasItems(project.technologies) && (
-                    <div className="flex flex-wrap gap-1.5">
-                      {project.technologies.map((tech) => (
-                        <span
-                          key={tech}
-                          className="pt-accent-surface pt-accent-text rounded-full bg-[var(--pt-accent-dim)] px-2.5 py-1 text-xs font-bold text-[var(--pt-accent)] border border-[var(--pt-accent)]"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                  <ProjectLinks
-                    project={project}
-                    onClick={actions.onProjectClick}
-                    className="text-gray-950 dark:text-white pt-2 border-t border-gray-100 dark:border-white/5"
-                  />
-                </div>
-              </motion.article>
-            ))}
-          </div>
-        </section>
-      ) : null,
-    skills:
-      sections.showSkills && hasItems(skills) ? (
-        <section key="skills" id="skills" className="scroll-mt-24 space-y-6">
-          <SectionHeading title="Skills & Capabilities" />
-          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {skills.map((group, index) => (
-              <motion.article
-                key={`${group.category}-${index}`}
-                whileHover={{ y: -2 }}
-                className="min-w-0 rounded-2xl border border-gray-200/90 dark:border-white/10 bg-white dark:bg-zinc-900/90 p-6 shadow-sm"
-              >
-                <h3 className="break-words font-black text-base text-gray-900 dark:text-white">
-                  {group.category || "Skills"}
+                <h3 className="text-lg sm:text-xl font-black text-gray-900 dark:text-white group-hover:text-[var(--pt-accent,#10b981)] transition-colors leading-tight mb-2">
+                  {project.title}
                 </h3>
-                <SkillPills
-                  skills={[group]}
-                  className="mt-4"
-                  pillClassName="rounded-full bg-gray-100 dark:bg-zinc-800 px-3 py-1 text-xs font-bold text-gray-800 dark:text-zinc-200 border border-gray-200/50 dark:border-white/5"
-                />
-              </motion.article>
-            ))}
-          </div>
-        </section>
-      ) : null,
-    about:
-      sections.showAbout && profile.about ? (
-        <section key="about" id="about" className="scroll-mt-24 grid gap-6 lg:grid-cols-[240px_1fr] p-8 rounded-3xl bg-white dark:bg-zinc-900/90 border border-gray-200/90 dark:border-white/10 shadow-sm">
-          <SectionHeading title="About" />
-          <p className="max-w-3xl break-words text-base leading-relaxed text-gray-700 dark:text-zinc-300 font-normal">
-            {profile.about}
-          </p>
-        </section>
-      ) : null,
-    experience:
-      sections.showExperience && hasItems(experience) ? (
-        <section key="experience" id="experience" className="scroll-mt-24 space-y-6">
-          <SectionHeading title="Experience" />
-          <div className="space-y-4">
-            {experience.map((item, index) => (
-              <motion.article
-                key={`${item.company}-${index}`}
-                whileHover={{ y: -2 }}
-                className="min-w-0 rounded-2xl border border-gray-200/90 dark:border-white/10 bg-white dark:bg-zinc-900/90 p-6 sm:p-7 shadow-sm space-y-3"
-              >
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-zinc-400 line-clamp-3 leading-relaxed mb-4">
+                  {project.description || project.shortDescription || project.impact}
+                </p>
+              </div>
+
+              <div>
+                {hasItems(project.technologies) && (
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                    {project.technologies.slice(0, 4).map((tech) => (
+                      <span
+                        key={tech}
+                        className="px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                    {project.technologies.length > 4 && (
+                      <span className="px-1.5 py-0.5 text-[10px] font-mono text-gray-400">
+                        +{project.technologies.length - 4}
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                <div className="flex items-center gap-3 pt-3 border-t border-gray-100 dark:border-zinc-800/80 text-xs font-mono font-bold text-[var(--pt-accent,#10b981)]">
+                  <span>View Breakdown →</span>
+                </div>
+              </div>
+            </motion.article>
+          ))}
+        </div>
+      </section>
+    ) : null,
+
+    experience: sections.showExperience && hasItems(experience) ? (
+      <section key="experience" id="experience" className="scroll-mt-24 py-12 sm:py-16 border-t border-gray-200/80 dark:border-zinc-800/80">
+        <div className="mb-10">
+          <span className="text-[11px] font-mono uppercase tracking-widest text-[var(--pt-accent,#10b981)] font-bold block mb-1">
+            04 // Track Record
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white tracking-tight">
+            Work Experience
+          </h2>
+        </div>
+
+        <div className="space-y-6">
+          {experience.map((item, index) => (
+            <motion.div
+              key={`${item.company}-${index}`}
+              whileHover={{ x: 4 }}
+              transition={{ duration: 0.15 }}
+              className="relative pl-6 sm:pl-8 border-l-2 border-gray-200 dark:border-zinc-800 hover:border-[var(--pt-accent,#10b981)] transition-colors group"
+            >
+              <div className="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-white dark:bg-zinc-950 border-2 border-gray-400 dark:border-zinc-600 group-hover:border-[var(--pt-accent,#10b981)] transition-colors" />
+
+              <div className="rounded-2xl border border-gray-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 p-6 shadow-sm">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
                   <div>
-                    <h3 className="break-words text-lg font-black text-gray-900 dark:text-white">
+                    <h3 className="text-lg font-black text-gray-900 dark:text-white leading-tight">
                       {item.title}
                     </h3>
-                    <p className="pt-accent-text break-words text-sm font-semibold text-[var(--pt-accent)]">
+                    <p className="text-sm font-mono font-semibold text-[var(--pt-accent,#10b981)] mt-0.5">
                       {item.company}
                     </p>
                   </div>
                   {item.dateRange && (
-                    <span className="inline-flex items-center px-3 py-1 rounded-full bg-gray-100 dark:bg-zinc-800 text-xs font-bold text-gray-600 dark:text-zinc-400 w-fit">
+                    <span className="px-3 py-1 rounded-full bg-gray-100 dark:bg-zinc-800 text-xs font-mono text-gray-600 dark:text-zinc-400 w-fit">
                       {item.dateRange}
                     </span>
                   )}
                 </div>
+
                 {hasItems(item.bullets) && (
-                  <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-gray-600 dark:text-zinc-300">
-                    {item.bullets.map((bullet) => (
-                      <li key={bullet}>{bullet}</li>
+                  <ul className="mt-3 space-y-2 text-xs sm:text-sm text-gray-600 dark:text-zinc-300">
+                    {item.bullets.map((bullet, idx) => (
+                      <li key={idx} className="flex items-start gap-2">
+                        <span className="text-[var(--pt-accent,#10b981)] mt-1 shrink-0 font-mono text-xs">▹</span>
+                        <span className="leading-relaxed">{bullet}</span>
+                      </li>
                     ))}
                   </ul>
                 )}
-              </motion.article>
-            ))}
-          </div>
-        </section>
-      ) : null,
-    education:
-      sections.showEducation && hasItems(education) ? (
-        <section key="education" id="education" className="scroll-mt-24 space-y-6">
-          <SectionHeading title="Education" />
-          <div className="grid gap-4 md:grid-cols-2">
-            {education.map((item, index) => (
-              <motion.article
-                key={`${item.institution}-${index}`}
-                whileHover={{ y: -2 }}
-                className="min-w-0 rounded-2xl border border-gray-200/90 dark:border-white/10 bg-white dark:bg-zinc-900/90 p-6 shadow-sm"
-              >
-                <h3 className="break-words font-black text-base text-gray-900 dark:text-white">
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+    ) : null,
+
+    education: sections.showEducation && hasItems(education) ? (
+      <section key="education" id="education" className="scroll-mt-24 py-12 sm:py-16 border-t border-gray-200/80 dark:border-zinc-800/80">
+        <div className="mb-10">
+          <span className="text-[11px] font-mono uppercase tracking-widest text-[var(--pt-accent,#10b981)] font-bold block mb-1">
+            05 // Education
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white tracking-tight">
+            Academic Background
+          </h2>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          {education.map((item, index) => (
+            <div
+              key={`${item.institution}-${index}`}
+              className="rounded-2xl border border-gray-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 p-6 shadow-sm flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-center gap-2 text-gray-400 mb-2">
+                  <GraduationCap className="w-4 h-4 text-[var(--pt-accent,#10b981)]" />
+                  <span className="text-xs font-mono">{item.dateRange || "Completed"}</span>
+                </div>
+                <h3 className="font-black text-base text-gray-900 dark:text-white">
                   {item.institution}
                 </h3>
                 <p className="mt-1 text-sm text-gray-600 dark:text-zinc-300 font-medium">
                   {[item.degree, item.field].filter(Boolean).join(", ")}
                 </p>
-                {item.dateRange && (
-                  <p className="mt-3 text-xs font-bold text-gray-400 dark:text-zinc-500">
-                    {item.dateRange}
-                  </p>
-                )}
-              </motion.article>
-            ))}
-          </div>
-        </section>
-      ) : null,
-    certifications:
-      sections.showCertifications && hasItems(certifications) ? (
-        <section key="certifications" id="certifications" className="scroll-mt-24 space-y-6">
-          <SectionHeading title="Certifications" />
-          <div className="grid gap-4 md:grid-cols-2">
-            {certifications.map((item, index) => (
-              <motion.article
-                key={`${item.name}-${index}`}
-                whileHover={{ y: -2 }}
-                className="min-w-0 rounded-2xl border border-gray-200/90 dark:border-white/10 bg-white dark:bg-zinc-900/90 p-6 shadow-sm"
-              >
-                <h3 className="break-words font-black text-base text-gray-900 dark:text-white">
-                  {item.name}
-                </h3>
-                <p className="mt-1 break-words text-sm text-gray-600 dark:text-zinc-400">
-                  {item.issuer}
-                </p>
-              </motion.article>
-            ))}
-          </div>
-        </section>
-      ) : null,
-    achievements:
-      sections.showAchievements && hasItems(achievements) ? (
-        <section key="achievements" id="achievements" className="scroll-mt-24 space-y-6">
-          <SectionHeading title="Achievements & Honors" />
-          <div className="grid gap-3 md:grid-cols-2">
-            {achievements.map((achievement) => (
-              <div
-                key={achievement}
-                className="min-w-0 rounded-2xl border border-gray-200/90 dark:border-white/10 bg-white dark:bg-zinc-900/90 p-5 break-words text-sm text-gray-700 dark:text-zinc-300 shadow-xs"
-              >
-                {achievement}
               </div>
-            ))}
-          </div>
-        </section>
-      ) : null,
-    customSections:
-      sections.showCustomSections && hasItems(customSections) ? (
-        <CustomSections key="customSections" sections={customSections} />
-      ) : null,
+            </div>
+          ))}
+        </div>
+      </section>
+    ) : null,
+
+    certifications: sections.showCertifications && hasItems(certifications) ? (
+      <section key="certifications" id="certifications" className="scroll-mt-24 py-12 sm:py-16 border-t border-gray-200/80 dark:border-zinc-800/80">
+        <div className="mb-10">
+          <span className="text-[11px] font-mono uppercase tracking-widest text-[var(--pt-accent,#10b981)] font-bold block mb-1">
+            06 // Verified
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white tracking-tight">
+            Certifications
+          </h2>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {certifications.map((item, index) => (
+            <div
+              key={`${item.name}-${index}`}
+              className="rounded-2xl border border-gray-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 p-5 shadow-sm"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <Award className="w-4 h-4 text-[var(--pt-accent,#10b981)]" />
+                <span className="text-xs font-mono text-gray-500">{item.issuer || "Verified"}</span>
+              </div>
+              <h3 className="font-bold text-sm sm:text-base text-gray-900 dark:text-white">
+                {item.name}
+              </h3>
+            </div>
+          ))}
+        </div>
+      </section>
+    ) : null,
+
+    achievements: sections.showAchievements && hasItems(achievements) ? (
+      <section key="achievements" id="achievements" className="scroll-mt-24 py-12 sm:py-16 border-t border-gray-200/80 dark:border-zinc-800/80">
+        <div className="mb-10">
+          <span className="text-[11px] font-mono uppercase tracking-widest text-[var(--pt-accent,#10b981)] font-bold block mb-1">
+            07 // Honors
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white tracking-tight">
+            Key Achievements
+          </h2>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2">
+          {achievements.map((ach, idx) => (
+            <div
+              key={idx}
+              className="rounded-2xl border border-gray-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 p-5 text-sm text-gray-700 dark:text-zinc-300 font-medium flex items-start gap-3"
+            >
+              <Sparkles className="w-4 h-4 text-[var(--pt-accent,#10b981)] shrink-0 mt-0.5" />
+              <span>{ach}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+    ) : null,
+
     contact: sections.showContact ? (
-      <section key="contact" id="contact" className="scroll-mt-24 border-t border-gray-200/80 dark:border-white/10 pt-12 space-y-6">
-        <SectionHeading title="Connect & Collaborate" description="Let's discuss opportunities, projects, or questions." />
-        <SocialLinks links={links} onClick={actions.onContactClick} />
+      <section key="contact" id="contact" className="scroll-mt-24 py-16 sm:py-24 border-t border-gray-200/80 dark:border-zinc-800/80">
+        <div className="rounded-3xl border border-gray-200/90 dark:border-zinc-800 bg-gradient-to-b from-white to-gray-50 dark:from-zinc-900 dark:to-zinc-950 p-8 sm:p-12 shadow-sm">
+          <span className="text-[11px] font-mono uppercase tracking-widest text-[var(--pt-accent,#10b981)] font-bold block mb-2">
+            08 // Connect
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white tracking-tight mb-4">
+            Let's build something impactful.
+          </h2>
+          <p className="text-sm sm:text-base text-gray-600 dark:text-zinc-400 max-w-xl mb-8">
+            Interested in collaboration, engineering roles, or consulting? Reach out directly.
+          </p>
+
+          <div className="flex flex-wrap items-center gap-3">
+            {profile.email && (
+              <button
+                type="button"
+                onClick={handleCopyEmail}
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-gray-950 dark:bg-white text-white dark:text-gray-950 hover:bg-gray-800 dark:hover:bg-gray-100 text-xs sm:text-sm font-mono font-bold transition-all active:scale-95 cursor-pointer shadow-md"
+              >
+                {copiedEmail ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                <span>{profile.email}</span>
+              </button>
+            )}
+
+            {profile.phone && (
+              <button
+                type="button"
+                onClick={handleCopyPhone}
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-gray-800 dark:text-zinc-200 hover:bg-gray-50 dark:hover:bg-zinc-800 text-xs sm:text-sm font-mono font-semibold transition-all active:scale-95 cursor-pointer"
+              >
+                {copiedPhone ? <Check className="w-4 h-4 text-emerald-400" /> : <Phone className="w-4 h-4" />}
+                <span>{profile.phone}</span>
+              </button>
+            )}
+
+            {actions.resumeDownloadUrl && (
+              <a
+                href={actions.resumeDownloadUrl}
+                download
+                target="_blank"
+                rel="noreferrer"
+                onClick={actions.onResumeClick}
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-gray-800 dark:text-zinc-200 hover:bg-gray-50 dark:hover:bg-zinc-800 text-xs sm:text-sm font-mono font-semibold transition-all active:scale-95 cursor-pointer"
+              >
+                <Download className="w-4 h-4" />
+                <span>Resume</span>
+              </a>
+            )}
+          </div>
+        </div>
       </section>
     ) : null,
   };
 
   return (
-    <main className="min-h-screen bg-gray-50/50 dark:bg-zinc-950 text-gray-950 dark:text-zinc-100 transition-colors duration-200">
+    <main className="min-h-screen bg-gray-50/60 dark:bg-zinc-950 text-gray-950 dark:text-zinc-100 transition-colors duration-200 font-sans selection:bg-[var(--pt-accent,#10b981)] selection:text-white">
       {/* Hero Section */}
-      <section id="hero" className="border-b border-gray-200/80 dark:border-white/10 bg-white dark:bg-zinc-900/70 py-12 sm:py-16">
-        <div className="mx-auto grid max-w-6xl gap-8 px-5 sm:px-8 lg:grid-cols-[1fr_320px] lg:items-center">
-          <div className="space-y-6">
-            <div className="pt-accent-surface pt-accent-text inline-flex items-center gap-2 rounded-full bg-[var(--pt-accent-dim)] border border-[var(--pt-accent)] px-3.5 py-1.5 text-xs font-bold text-[var(--pt-accent)] shadow-xs">
-              <Terminal className="h-3.5 w-3.5" />
-              <span>{profile.title || "Software Engineer"}</span>
-            </div>
-            <h1 className="max-w-3xl break-words text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-gray-900 dark:text-white">
-              {profile.name}
-            </h1>
-            {profile.tagline && (
-              <p className="max-w-2xl text-base sm:text-lg leading-relaxed text-gray-600 dark:text-zinc-300">
-                {profile.tagline}
-              </p>
-            )}
-            <div className="pt-2">
-              <ContactActions profile={profile} settings={settings} actions={actions} />
-            </div>
-          </div>
+      <section id="hero" className="border-b border-gray-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 pt-16 pb-20 sm:pt-24 sm:pb-28">
+        <div className="mx-auto max-w-6xl px-5 sm:px-8">
+          <div className="grid lg:grid-cols-[1fr_auto] gap-10 items-center">
+            <div className="space-y-6">
+              {/* Status Badge */}
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-xs font-mono font-bold">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span>Available for high-signal opportunities</span>
+              </div>
 
-          <aside className="rounded-3xl border border-gray-200/90 dark:border-white/10 bg-gray-900 dark:bg-black p-6 text-white shadow-xl space-y-4">
-            <div className="pt-accent-text flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[var(--pt-accent)]">
-              <Code2 className="h-4 w-4" />
-              <span>Stack Snapshot</span>
+              <div>
+                <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-gray-950 dark:text-white tracking-tight leading-[1.08]">
+                  {profile.name || "Developer"}
+                </h1>
+                <p className="mt-3 text-lg sm:text-2xl font-mono text-[var(--pt-accent,#10b981)] font-bold">
+                  {profile.title || "Full Stack Software Engineer"}
+                </p>
+              </div>
+
+              {profile.tagline && (
+                <p className="max-w-2xl text-base sm:text-lg text-gray-600 dark:text-zinc-300 leading-relaxed font-normal">
+                  {profile.tagline}
+                </p>
+              )}
+
+              {/* Quick Actions */}
+              <div className="flex flex-wrap items-center gap-3 pt-2">
+                {profile.email && (
+                  <a
+                    href={`mailto:${profile.email}`}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gray-950 dark:bg-white text-white dark:text-gray-950 hover:bg-gray-800 dark:hover:bg-gray-100 text-xs font-mono font-bold transition-all active:scale-95 shadow-sm"
+                  >
+                    <Mail className="w-4 h-4" />
+                    <span>Get in Touch</span>
+                  </a>
+                )}
+
+                {actions.resumeDownloadUrl && (
+                  <a
+                    href={actions.resumeDownloadUrl}
+                    download
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={actions.onResumeClick}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-gray-800 dark:text-zinc-200 hover:bg-gray-50 dark:hover:bg-zinc-800 text-xs font-mono font-bold transition-all active:scale-95"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>Resume</span>
+                  </a>
+                )}
+
+                {profile.location && (
+                  <span className="inline-flex items-center gap-1.5 text-xs font-mono text-gray-500 dark:text-zinc-400 pl-2">
+                    <MapPin className="w-3.5 h-3.5 text-rose-500" />
+                    <span>{profile.location}</span>
+                  </span>
+                )}
+              </div>
             </div>
-            <SkillPills
-              skills={skills.slice(0, 3)}
-              pillClassName="rounded-full bg-white/10 px-3 py-1 text-xs font-bold text-white border border-white/10"
-            />
-            {profile.location && (
-              <p className="pt-2 border-t border-white/10 inline-flex items-center gap-2 text-xs font-medium text-gray-400">
-                <MapPin className="h-3.5 w-3.5 text-rose-400" />
-                <span>{profile.location}</span>
-              </p>
+
+            {/* Profile Avatar Frame if available */}
+            {profileImg && (
+              <div className="w-40 h-40 sm:w-56 sm:h-56 rounded-3xl overflow-hidden border-2 border-gray-200 dark:border-zinc-700 shadow-2xl bg-gray-100 dark:bg-zinc-900 shrink-0">
+                <img
+                  src={profileImg}
+                  alt={profile.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
             )}
-          </aside>
+          </div>
         </div>
       </section>
 
-      {/* Main Content Sections */}
-      <div className="mx-auto max-w-6xl space-y-16 px-5 py-14 sm:px-8">
-        {sectionOrder.map((section) => sectionBlocks[section])}
+      {/* Main Stream of Sections */}
+      <div className="mx-auto max-w-6xl px-5 sm:px-8 space-y-4">
+        {sectionOrder.map((sec) => sectionBlocks[sec])}
       </div>
+
+      {/* Deep Project Inspection Drawer */}
+      <AnimatePresence>
+        {selectedProject && (
+          <div
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[90] flex items-center justify-center p-4 sm:p-6"
+            onClick={() => setSelectedProject(null)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white dark:bg-zinc-900 rounded-3xl max-w-2xl w-full max-h-[85vh] overflow-y-auto border border-gray-200 dark:border-zinc-700 shadow-2xl p-6 sm:p-8 space-y-6"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <span className="text-xs font-mono text-[var(--pt-accent,#10b981)] font-bold uppercase tracking-wider block mb-1">
+                    Project Detail
+                  </span>
+                  <h3 className="text-2xl font-black text-gray-900 dark:text-white">
+                    {selectedProject.title}
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setSelectedProject(null)}
+                  className="p-2 rounded-xl text-gray-400 hover:text-gray-700 dark:hover:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {selectedProject.description && (
+                <div>
+                  <h4 className="text-xs font-mono uppercase text-gray-400 font-bold mb-1">
+                    Description
+                  </h4>
+                  <p className="text-sm leading-relaxed text-gray-700 dark:text-zinc-300">
+                    {selectedProject.description}
+                  </p>
+                </div>
+              )}
+
+              {selectedProject.problem && (
+                <div>
+                  <h4 className="text-xs font-mono uppercase text-gray-400 font-bold mb-1">
+                    Problem & Challenge
+                  </h4>
+                  <p className="text-sm leading-relaxed text-gray-700 dark:text-zinc-300">
+                    {selectedProject.problem}
+                  </p>
+                </div>
+              )}
+
+              {selectedProject.solution && (
+                <div>
+                  <h4 className="text-xs font-mono uppercase text-gray-400 font-bold mb-1">
+                    Engineering Solution
+                  </h4>
+                  <p className="text-sm leading-relaxed text-gray-700 dark:text-zinc-300">
+                    {selectedProject.solution}
+                  </p>
+                </div>
+              )}
+
+              {selectedProject.impact && (
+                <div>
+                  <h4 className="text-xs font-mono uppercase text-gray-400 font-bold mb-1">
+                    Measurable Impact
+                  </h4>
+                  <p className="text-sm leading-relaxed text-gray-700 dark:text-zinc-300">
+                    {selectedProject.impact}
+                  </p>
+                </div>
+              )}
+
+              {hasItems(selectedProject.technologies) && (
+                <div>
+                  <h4 className="text-xs font-mono uppercase text-gray-400 font-bold mb-2">
+                    Technologies Used
+                  </h4>
+                  <div className="flex flex-wrap gap-1.5">
+                    {selectedProject.technologies.map((t) => (
+                      <span
+                        key={t}
+                        className="px-2.5 py-1 rounded-lg text-xs font-mono font-semibold bg-gray-100 dark:bg-zinc-800 text-gray-800 dark:text-zinc-200"
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Action Links */}
+              <div className="pt-4 border-t border-gray-100 dark:border-zinc-800 flex flex-wrap items-center gap-3">
+                {selectedProject.links?.live && (
+                  <a
+                    href={selectedProject.links.live}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gray-950 dark:bg-white text-white dark:text-gray-950 text-xs font-mono font-bold shadow-sm"
+                  >
+                    <span>Live App</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                )}
+                {selectedProject.links?.github && (
+                  <a
+                    href={selectedProject.links.github}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-gray-800 dark:text-zinc-200 text-xs font-mono font-bold"
+                  >
+                    <Github className="w-3.5 h-3.5" />
+                    <span>Source Code</span>
+                  </a>
+                )}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </main>
   );
-};
-
-export default MinimalDeveloperTheme;
+}

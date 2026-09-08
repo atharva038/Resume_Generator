@@ -3,6 +3,7 @@ import {useParams} from "react-router-dom";
 import {Helmet} from "react-helmet-async";
 import {portfolioAPI} from "@/api/portfolio.api";
 import PortfolioThemeRenderer from "@/components/portfolio/PortfolioThemeRenderer";
+import {resolveImageUrl} from "@/utils/imageUrlResolver";
 
 const PublicPortfolio = () => {
   const {slug} = useParams();
@@ -143,11 +144,14 @@ const PublicPortfolio = () => {
   const keywords = Array.isArray(portfolio.seo?.keywords)
     ? portfolio.seo.keywords.filter(Boolean).join(", ")
     : "";
-  const ogImage =
+  const ogImage = resolveImageUrl(
     portfolio.seo?.ogImage ||
-    portfolio.heroImage ||
     portfolio.profileImage ||
-    "";
+    portfolio.heroImage ||
+    portfolio.profile?.profileImage ||
+    resume?.photo ||
+    ""
+  );
   const favicon =
     portfolio.seo?.favicon ||
     portfolio.favicon ||
@@ -171,6 +175,8 @@ const PublicPortfolio = () => {
         <meta property="og:type" content="profile" />
         {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
         {ogImage && <meta property="og:image" content={ogImage} />}
+        {ogImage && <meta property="og:image:secure_url" content={ogImage} />}
+        {ogImage && <meta property="og:image:alt" content={`${pageTitle} Preview`} />}
         <meta
           name="twitter:card"
           content={ogImage ? "summary_large_image" : "summary"}

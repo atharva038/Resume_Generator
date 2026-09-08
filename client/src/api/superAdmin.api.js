@@ -106,12 +106,13 @@ export const updateRawEnv = async (rawContent) => {
 };
 
 // 1-Click Key Testing
-export const testApiKey = async (service, apiKey, secondaryKey) => {
+export const testApiKey = async (service, apiKey, secondaryKey, extraKey) => {
   return (
     await superAdminAPI.post("/env/test-key", {
       service,
       apiKey,
       secondaryKey,
+      extraKey,
     })
   ).data;
 };
