@@ -141,10 +141,7 @@ const PublicPortfolio = () => {
     "Professional portfolio";
   const canonicalUrl =
     typeof window !== "undefined" ? window.location.href.split("?")[0] : "";
-  const keywords = Array.isArray(portfolio.seo?.keywords)
-    ? portfolio.seo.keywords.filter(Boolean).join(", ")
-    : "";
-  const ogImage = resolveImageUrl(
+  const rawOgImage = resolveImageUrl(
     portfolio.seo?.ogImage ||
     portfolio.profileImage ||
     portfolio.heroImage ||
@@ -152,10 +149,38 @@ const PublicPortfolio = () => {
     resume?.photo ||
     ""
   );
-  const favicon =
-    portfolio.seo?.favicon ||
-    portfolio.favicon ||
-    "";
+
+  const origin = typeof window !== "undefined" ? window.location.origin : "https://www.smartnshine.app";
+
+  const ogImage = useMemo(() => {
+    if (!rawOgImage) return `${origin}/social-preview.png?v=4`;
+    if (rawOgImage.startsWith("http://") || rawOgImage.startsWith("https://")) {
+      return rawOgImage;
+    }
+    return `${origin}${rawOgImage.startsWith("/") ? "" : "/"}${rawOgImage}`;
+  }, [rawOgImage, origin]);
+
+  const rawFavicon = portfolio.seo?.favicon || portfolio.favicon || "";
+  const favicon = useMemo(() => {
+    if (!rawFavicon) return "";
+    if (rawFavicon.startsWith("http://") || rawFavicon.startsWith("https://")) {
+      return rawFavicon;
+    }
+    return `${origin}${rawFavicon.startsWith("/") ? "" : "/"}${rawFavicon}`;
+  }, [rawFavicon, origin]);
+
+  // Dynamically update browser tab favicon in DOM
+  useEffect(() => {
+    if (favicon) {
+      let link = document.querySelector("link[rel~='icon']");
+      if (!link) {
+        link = document.createElement("link");
+        link.rel = "icon";
+        document.head.appendChild(link);
+      }
+      link.href = favicon;
+    }
+  }, [favicon]);
 
   return (
     <>
@@ -167,23 +192,29 @@ const PublicPortfolio = () => {
         {favicon && <link rel="icon" href={favicon} />}
         {favicon && <link rel="shortcut icon" href={favicon} />}
         {favicon && <link rel="apple-touch-icon" href={favicon} />}
-        {portfolio.settings?.allowIndexing === false && (
+        {portfolio.settings?.allowIndexing === false ? (
           <meta name="robots" content="noindex,nofollow" />
+        ) : (
+          <meta name="robots" content="index,follow,max-image-preview:large" />
         )}
+        <meta property="og:type" content="profile" />
+        <meta property="og:site_name" content="SmartNShine" />
+        <meta property="og:url" content={canonicalUrl || `${origin}/u/${portfolio.slug}`} />
         <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={description} />
-        <meta property="og:type" content="profile" />
-        {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
-        {ogImage && <meta property="og:image" content={ogImage} />}
-        {ogImage && <meta property="og:image:secure_url" content={ogImage} />}
-        {ogImage && <meta property="og:image:alt" content={`${pageTitle} Preview`} />}
-        <meta
-          name="twitter:card"
-          content={ogImage ? "summary_large_image" : "summary"}
-        />
+        <meta property="og:image" content={ogImage} />
+        <meta property="og:image:secure_url" content={ogImage} />
+        <meta property="og:image:type" content="image/png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content={`${pageTitle} Preview`} />
+        <meta property="og:locale" content="en_US" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={canonicalUrl || `${origin}/u/${portfolio.slug}`} />
         <meta name="twitter:title" content={pageTitle} />
         <meta name="twitter:description" content={description} />
-        {ogImage && <meta name="twitter:image" content={ogImage} />}
+        <meta name="twitter:image" content={ogImage} />
+        <meta name="twitter:image:alt" content={`${pageTitle} Preview`} />
       </Helmet>
       <div ref={pageRef}>
         <PortfolioThemeRenderer
