@@ -124,7 +124,6 @@ export default function AIBulletPolishModal({
     setAppliedKey(key);
     onApply(text);
     toast.success("Applied AI variation!", {
-      icon: "✨",
       duration: 2500,
     });
     setTimeout(() => {

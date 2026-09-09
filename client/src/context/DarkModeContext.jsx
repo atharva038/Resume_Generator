@@ -11,12 +11,29 @@ export const useDarkMode = () => {
   return context;
 };
 
+/**
+ * Determine the initial dark-mode state from localStorage ONLY.
+ * We never follow the OS preference — the mode only changes when the
+ * user explicitly clicks the toggle.
+ *
+ * Storage values:
+ *   "true"  / true  → user has chosen dark
+ *   "false" / false → user has chosen light  (stored after first explicit toggle)
+ *   null / missing  → first visit → default to dark, save it
+ */
 const getInitialDarkMode = () => {
-  const savedMode = themeStorage.getDarkMode();
-  if (savedMode !== null && savedMode !== false) {
-    return savedMode;
+  try {
+    const raw = localStorage.getItem("darkMode");
+    if (raw === null) {
+      // First visit — default to dark and persist so we never read OS again
+      localStorage.setItem("darkMode", "true");
+      return true;
+    }
+    // Treat any saved truthy string as dark, otherwise light
+    return raw === "true" || raw === true;
+  } catch {
+    return true; // safe default if localStorage is unavailable
   }
-  return window.matchMedia("(prefers-color-scheme: dark)").matches;
 };
 
 export const DarkModeProvider = ({children}) => {
@@ -31,7 +48,10 @@ export const DarkModeProvider = ({children}) => {
       root.classList.remove("dark");
     }
 
-    themeStorage.setDarkMode(isDarkMode);
+    // Persist the explicit user choice (never use matchMedia again)
+    try {
+      localStorage.setItem("darkMode", String(isDarkMode));
+    } catch {}
   }, [isDarkMode]);
 
   const toggleDarkMode = () => {

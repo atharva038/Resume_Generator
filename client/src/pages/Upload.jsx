@@ -63,6 +63,13 @@ export default function Upload() {
 
   // Create blank resume and navigate to editor
   const createBlankResume = () => {
+    const preSelectedTemplate =
+      sessionStorage.getItem("templatePreSelected") ||
+      localStorage.getItem("selectedTemplate");
+    const hasPreSelected = Boolean(
+      sessionStorage.getItem("templatePreSelected")
+    );
+
     const blankResumeData = {
       name: "",
       contact: {
@@ -84,7 +91,12 @@ export default function Upload() {
     };
 
     navigate("/editor", {
-      state: { resumeData: blankResumeData, isNewResume: true },
+      state: {
+        resumeData: blankResumeData,
+        isNewResume: true,
+        templateSelected: hasPreSelected,
+        selectedTemplate: preSelectedTemplate || undefined,
+      },
     });
   };
 

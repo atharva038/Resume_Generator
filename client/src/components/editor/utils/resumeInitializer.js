@@ -52,12 +52,37 @@ export function normalizeResumeData(rawData) {
     };
   }
 
-  if (!Array.isArray(data.skills)) data.skills = [];
+  if (!Array.isArray(data.skills)) {
+    data.skills = [];
+  } else {
+    data.skills = data.skills
+      .map((s) => (typeof s === "string" ? s : s?.name || s?.title || s?.label || ""))
+      .filter(Boolean);
+  }
+
   if (!Array.isArray(data.experience)) data.experience = [];
   if (!Array.isArray(data.education)) data.education = [];
   if (!Array.isArray(data.projects)) data.projects = [];
   if (!Array.isArray(data.certifications)) data.certifications = [];
-  if (!Array.isArray(data.achievements)) data.achievements = [];
+
+  if (!Array.isArray(data.achievements)) {
+    data.achievements = [];
+  } else {
+    data.achievements = data.achievements
+      .map((a) => {
+        if (typeof a === "string") return a;
+        if (a && typeof a === "object") {
+          return a.title
+            ? a.description
+              ? `${a.title}: ${a.description}`
+              : a.title
+            : a.description || "";
+        }
+        return "";
+      })
+      .filter(Boolean);
+  }
+
   if (!Array.isArray(data.customSections)) data.customSections = [];
   if (!data.summary) data.summary = "";
 

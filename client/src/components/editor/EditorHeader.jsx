@@ -36,11 +36,11 @@ export default function EditorHeader({
       <div className="flex min-w-0 items-center gap-2 sm:gap-3 shrink-0">
         <button
           onClick={onGoBack}
-          className="inline-flex items-center gap-1.5 p-2 sm:px-3 sm:py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900 text-gray-700 dark:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-800 text-xs sm:text-sm font-semibold transition-all shadow-2xs active:scale-95 cursor-pointer"
-          title="Back to resumes"
+          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900 text-gray-700 dark:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-800 text-xs sm:text-sm font-semibold transition-all shadow-2xs active:scale-95 cursor-pointer"
+          title="Go back"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span className="hidden sm:inline">Resumes</span>
+          <span>Back</span>
         </button>
 
         <div className="h-4 sm:h-5 w-[1px] bg-gray-200 dark:bg-white/10 hidden xs:block" />

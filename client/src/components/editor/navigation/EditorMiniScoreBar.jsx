@@ -11,7 +11,7 @@ export default function EditorMiniScoreBar({ atsScore, onOpenAnalysis }) {
   const dotColor = isHigh ? "#16a34a" : isMid ? "#ca8a04" : "#dc2626";
 
   return (
-    <div className="sticky top-0 z-20 mb-5 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-sm border border-gray-200/90 dark:border-zinc-800 rounded-xl shadow-xs">
+    <div className="relative z-20 mb-3 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-sm border border-gray-200/90 dark:border-zinc-800 rounded-xl shadow-xs">
       <div className="flex items-center justify-between px-3.5 py-2.5 gap-3">
         {/* Left: Score pills */}
         <div className="flex items-center gap-3 min-w-0">
