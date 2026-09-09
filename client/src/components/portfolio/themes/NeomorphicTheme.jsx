@@ -992,6 +992,13 @@ export default function NeomorphicTheme({
                         <p className="text-sm font-semibold neo-accent-gold mt-1">
                           {edu?.institution || edu?.school || "University"}
                         </p>
+                        {(edu?.gpa || edu?.grade || edu?.cgpa) && (
+                          <div className="mt-2">
+                            <span className="inline-block px-2.5 py-0.5 rounded-full text-xs neo-mono font-bold bg-[var(--neo-accent-gold)]/10 text-[var(--neo-accent-gold)] border border-[var(--neo-accent-gold)]/30">
+                              CGPA / Grade: {edu?.gpa || edu?.grade || edu?.cgpa}
+                            </span>
+                          </div>
+                        )}
                         {(edu?.period || edu?.year || edu?.startDate) && (
                           <p className="text-xs text-[var(--neo-text-muted)] neo-mono mt-2">
                             {edu?.period || edu?.year || (edu?.startDate ? `${edu.startDate || ""} - ${edu.endDate || "Completed"}` : "")}
@@ -1177,11 +1184,15 @@ export default function NeomorphicTheme({
           ========================================================================= */}
       <AnimatePresence>
         {selectedProject && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div
+            className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+            onClick={() => setSelectedProject(null)}
+          >
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
+              onClick={(e) => e.stopPropagation()}
               className="neo-raised p-6 sm:p-10 rounded-[2.5rem] max-w-2xl w-full max-h-[90vh] overflow-y-auto relative"
             >
               <button

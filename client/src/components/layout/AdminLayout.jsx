@@ -30,6 +30,7 @@ import {
   ShieldCheck,
   Bot,
   Sliders,
+  Globe,
 } from "lucide-react";
 import Logo from "@/components/common/Logo";
 import {useAuth} from "@/context/AuthContext";
@@ -158,6 +159,12 @@ const AdminLayout = () => {
       icon: FileBox,
       label: "Templates",
       color: "text-fuchsia-500",
+    },
+    {
+      path: "/admin/portfolios",
+      icon: Globe,
+      label: "Portfolios",
+      color: "text-emerald-500",
     },
     {
       path: "/admin/feedback",

@@ -1286,9 +1286,25 @@ export default function RetroFuturisticTheme({
                       </p>
 
                       {/* Accomplishments Bullets */}
-                      {Array.isArray(exp.accomplishments) && exp.accomplishments.length > 0 && (
+                      {(Array.isArray(exp.accomplishments) && exp.accomplishments.length > 0
+                        ? exp.accomplishments
+                        : Array.isArray(exp.bullets) && exp.bullets.length > 0
+                        ? exp.bullets
+                        : Array.isArray(exp.highlights) && exp.highlights.length > 0
+                        ? exp.highlights
+                        : Array.isArray(exp.contributions) && exp.contributions.length > 0
+                        ? exp.contributions
+                        : []
+                      ).length > 0 && (
                         <ul className="space-y-1.5 pt-2 text-xs font-mono text-[var(--rf-text-secondary)]">
-                          {exp.accomplishments.map((acc, aIdx) => (
+                          {(Array.isArray(exp.accomplishments) && exp.accomplishments.length > 0
+                            ? exp.accomplishments
+                            : Array.isArray(exp.bullets) && exp.bullets.length > 0
+                            ? exp.bullets
+                            : Array.isArray(exp.highlights) && exp.highlights.length > 0
+                            ? exp.highlights
+                            : exp.contributions || []
+                          ).map((acc, aIdx) => (
                             <li key={aIdx} className="flex items-start gap-2">
                               <span className="text-[var(--rf-accent-primary)] font-bold">&gt;</span>
                               <span>{acc}</span>
@@ -1497,6 +1513,11 @@ export default function RetroFuturisticTheme({
                   <div className="text-xs font-mono text-[var(--rf-text-secondary)]">
                     {edu.institution || edu.school}
                   </div>
+                  {(edu.gpa || edu.grade || edu.cgpa) && (
+                    <div className="text-[10px] font-mono text-[var(--rf-accent-primary)] font-bold">
+                      SCORE / CGPA: {edu.gpa || edu.grade || edu.cgpa}
+                    </div>
+                  )}
                   <div className="text-[10px] font-mono text-[var(--rf-text-muted)]">
                     YEAR: {edu.year || edu.period || "VERIFIED"}
                   </div>
@@ -1720,11 +1741,15 @@ export default function RetroFuturisticTheme({
          ========================================================================== */}
       <AnimatePresence>
         {selectedProject && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-sm">
+          <div
+            className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-sm"
+            onClick={() => setSelectedProject(null)}
+          >
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
               className="rf-panel rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 space-y-6 shadow-2xl relative border-[var(--rf-border-primary)]"
             >
               <div className="rf-rivet-tl">+</div>

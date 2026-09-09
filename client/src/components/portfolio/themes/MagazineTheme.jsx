@@ -41,6 +41,7 @@ export default function MagazineTheme({
     skills: rawSkills = [],
     projects: rawProjects = [],
     experience: rawExperience = [],
+    education: rawEducation = [],
     links: rawLinks = [],
     actions = {},
     themeAccent,
@@ -160,17 +161,45 @@ export default function MagazineTheme({
         company: exp.company || exp.organization || "Independent Studio",
         location: exp.location || location,
         description: exp.description || exp.summary || "Led architecture and development for digital platforms.",
-        contributions: Array.isArray(exp.contributions)
+        contributions: Array.isArray(exp.contributions) && exp.contributions.length > 0
           ? exp.contributions
-          : Array.isArray(exp.highlights)
+          : Array.isArray(exp.bullets) && exp.bullets.length > 0
+          ? exp.bullets
+          : Array.isArray(exp.highlights) && exp.highlights.length > 0
           ? exp.highlights
-          : typeof exp.description === "string" && exp.description.includes("•")
-          ? exp.description.split("•").filter(Boolean).map((s) => s.trim())
+          : Array.isArray(exp.responsibilities) && exp.responsibilities.length > 0
+          ? exp.responsibilities
+          : typeof exp.description === "string" && (exp.description.includes("•") || exp.description.includes("\n"))
+          ? exp.description.split(/[\n•]/).filter(Boolean).map((s) => s.replace(/^[-*]\s*/, "").trim()).filter(Boolean)
           : [],
       }));
     }
     return defaultData.experience;
   }, [rawExperience, location]);
+
+  // 4.5. Normalization for Education
+  const educationList = useMemo(() => {
+    if (Array.isArray(rawEducation) && rawEducation.length > 0) {
+      return rawEducation.map((edu, idx) => ({
+        id: idx,
+        degree: edu.degree || edu.fieldOfStudy || edu.major || edu.field || "",
+        institution: edu.institution || edu.school || edu.university || "",
+        gpa: edu.gpa || edu.cgpa || edu.grade || edu.percentage || edu.score || "",
+        location: edu.location || "",
+        period: edu.dateRange || `${edu.startDate || ""} ${edu.startDate && edu.endDate ? "—" : ""} ${edu.endDate || ""}`.trim() || edu.year || "",
+      }));
+    }
+    return [
+      {
+        id: 0,
+        degree: "B.S. in Computer Science & Media Studies",
+        institution: "University Institute of Art & Technology",
+        gpa: "3.9 / 4.0",
+        location: "New York, NY",
+        period: "2018 — 2022",
+      },
+    ];
+  }, [rawEducation]);
 
   // 5. Normalization for Skills
   const categorizedSkills = useMemo(() => {
@@ -252,6 +281,7 @@ export default function MagazineTheme({
             <a href="#about" className="mag-nav-tab">ABOUT</a>
             <a href="#skills" className="mag-nav-tab">SKILLS</a>
             <a href="#experience" className="mag-nav-tab">EXPERIENCE</a>
+            <a href="#education" className="mag-nav-tab">EDUCATION</a>
             <a href="#journal" className="mag-nav-tab">JOURNAL</a>
             <a href="#contact" className="mag-nav-tab">CONTACT</a>
           </nav>
@@ -558,6 +588,54 @@ export default function MagazineTheme({
         </section>
 
         {/* ==========================================================================
+           7.5. ACADEMIC QUALIFICATIONS / EDUCATION
+           ========================================================================== */}
+        {educationList.length > 0 && (
+          <section id="education" className="space-y-6">
+            <div className="flex items-baseline justify-between border-b border-[var(--mag-border)] pb-2">
+              <h2 className="mag-section-script-title">
+                academic background &amp; qualifications
+              </h2>
+              <span className="font-mono text-xs text-[var(--mag-text-muted)]">
+                {educationList.length} {educationList.length === 1 ? "DEGREE" : "DEGREES"}
+              </span>
+            </div>
+
+            <div className="border border-[var(--mag-border)] bg-[var(--mag-bg-card)] divide-y divide-[var(--mag-border)]">
+              {educationList.map((edu, idx) => (
+                <div key={idx} className="p-6 grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                  <div className="md:col-span-4">
+                    <span className="font-mono text-xs text-[var(--mag-accent-pink)] font-semibold block">
+                      {edu.period}
+                    </span>
+                    {edu.location && (
+                      <span className="text-[11px] text-[var(--mag-text-muted)] block mt-0.5 font-sans">
+                        {edu.location}
+                      </span>
+                    )}
+                  </div>
+                  <div className="md:col-span-8 space-y-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <div className="font-serif text-xl font-bold text-[var(--mag-text-primary)]">
+                        {edu.degree}
+                      </div>
+                      {edu.gpa && (
+                        <span className="font-mono text-[11px] px-2 py-0.5 rounded border border-[var(--mag-accent-pink)]/40 bg-[var(--mag-accent-pink)]/10 text-[var(--mag-accent-pink)] font-bold">
+                          CGPA / GRADE: {edu.gpa}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs sm:text-sm text-[var(--mag-text-secondary)] font-sans">
+                      {edu.institution}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ==========================================================================
            8. EDITORIAL JOURNAL / ARTICLES
            ========================================================================== */}
         <section id="journal" className="space-y-6">
@@ -680,11 +758,15 @@ export default function MagazineTheme({
          ========================================================================== */}
       <AnimatePresence>
         {selectedProject && (
-          <div className="mag-modal-overlay">
+          <div
+            className="mag-modal-overlay"
+            onClick={() => setSelectedProject(null)}
+          >
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
               className="mag-modal-box p-6 sm:p-8 space-y-5"
             >
               <div className="flex items-center justify-between pb-3 border-b border-[var(--mag-border)] font-mono text-xs">
@@ -698,37 +780,47 @@ export default function MagazineTheme({
                 </button>
               </div>
 
-              <div className="aspect-video w-full overflow-hidden border border-[var(--mag-border)] bg-gray-100">
-                <img
-                  src={selectedProject.image}
-                  alt={selectedProject.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
+              {selectedProject.image && (
+                <div className="aspect-video w-full overflow-hidden border border-[var(--mag-border)] bg-gray-100">
+                  <img
+                    src={selectedProject.image}
+                    alt={selectedProject.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
 
               <div className="space-y-2">
                 <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[var(--mag-text-primary)]">
                   {selectedProject.title}
                 </h3>
                 <p className="text-sm text-[var(--mag-text-secondary)] font-sans leading-relaxed">
-                  {selectedProject.subtitle}
+                  {selectedProject.longDescription || selectedProject.description || selectedProject.subtitle}
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-3 border-t border-[var(--mag-border)] text-xs font-mono">
-                <div>
-                  <div className="font-bold text-[var(--mag-accent-pink)] uppercase">01. THE IDEA</div>
-                  <p className="text-[var(--mag-text-secondary)] font-sans mt-1">{selectedProject.idea}</p>
+              {(selectedProject.idea || selectedProject.build || selectedProject.result) && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-3 border-t border-[var(--mag-border)] text-xs font-mono">
+                  {selectedProject.idea && (
+                    <div>
+                      <div className="font-bold text-[var(--mag-accent-pink)] uppercase">01. THE IDEA</div>
+                      <p className="text-[var(--mag-text-secondary)] font-sans mt-1">{selectedProject.idea}</p>
+                    </div>
+                  )}
+                  {selectedProject.build && (
+                    <div>
+                      <div className="font-bold text-[var(--mag-accent-pink)] uppercase">02. THE BUILD</div>
+                      <p className="text-[var(--mag-text-secondary)] font-sans mt-1">{selectedProject.build}</p>
+                    </div>
+                  )}
+                  {selectedProject.result && (
+                    <div>
+                      <div className="font-bold text-[var(--mag-accent-pink)] uppercase">03. THE RESULT</div>
+                      <p className="text-[var(--mag-text-secondary)] font-sans mt-1">{selectedProject.result}</p>
+                    </div>
+                  )}
                 </div>
-                <div>
-                  <div className="font-bold text-[var(--mag-accent-pink)] uppercase">02. THE BUILD</div>
-                  <p className="text-[var(--mag-text-secondary)] font-sans mt-1">{selectedProject.build}</p>
-                </div>
-                <div>
-                  <div className="font-bold text-[var(--mag-accent-pink)] uppercase">03. THE RESULT</div>
-                  <p className="text-[var(--mag-text-secondary)] font-sans mt-1">{selectedProject.result}</p>
-                </div>
-              </div>
+              )}
 
               <div className="pt-3 border-t border-[var(--mag-border)] flex flex-wrap gap-3 font-mono text-xs">
                 {selectedProject.liveUrl && (
@@ -764,11 +856,15 @@ export default function MagazineTheme({
          ========================================================================== */}
       <AnimatePresence>
         {selectedArticle && (
-          <div className="mag-modal-overlay">
+          <div
+            className="mag-modal-overlay"
+            onClick={() => setSelectedArticle(null)}
+          >
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
               className="mag-modal-box p-6 sm:p-8 space-y-5"
             >
               <div className="flex items-center justify-between pb-3 border-b border-[var(--mag-border)] font-mono text-xs">

@@ -1,0 +1,329 @@
+/* ==========================================================================
+   SmartNShine Minimal II — Swiss Architectural Theme
+   Design Direction: Architectural Minimalism × Contemporary Swiss Design × Condensed Typography × Editorial Grid × Digital Precision
+   Philosophy: "Sharp. Quiet. Confident. Intelligent. Contemporary."
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700&family=JetBrains+Mono:wght@300;400;500;600&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Syne:wght@700;800&family=Oswald:wght@500;600;700&display=swap');
+
+/* --- Root Variables: Architectural Monochrome + Cobalt Blue Accent --- */
+.swiss-architectural-theme {
+  --sw-condensed: 'Barlow Condensed', 'Oswald', 'Syne', -apple-system, sans-serif;
+  --sw-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --sw-mono: 'JetBrains Mono', 'Space Mono', Menlo, Consolas, monospace;
+
+  /* Default Light Mode: Architectural Paper & Ink */
+  --sw-bg: #f8f8f6;
+  --sw-bg-subtle: #f0f0ec;
+  --sw-bg-surface: #e6e6e0;
+  --sw-bg-surface-elevated: #deded6;
+  --sw-text-primary: #0a0a0c;
+  --sw-text-secondary: #4a4a52;
+  --sw-text-muted: #7e7e88;
+  --sw-border: rgba(10, 10, 12, 0.12);
+  --sw-border-strong: rgba(10, 10, 12, 0.28);
+  --sw-border-heavy: #0a0a0c;
+  --sw-grid-line: rgba(10, 10, 12, 0.05);
+  
+  /* Primary Accent: Muted Cobalt Blue */
+  --sw-cobalt: #2251ff;
+  --sw-cobalt-dim: rgba(34, 81, 255, 0.09);
+  --sw-cobalt-border: rgba(34, 81, 255, 0.35);
+  --sw-cobalt-glow: rgba(34, 81, 255, 0.18);
+  --sw-hover-row: rgba(10, 10, 12, 0.025);
+
+  font-family: var(--sw-sans);
+  background-color: var(--sw-bg);
+  color: var(--sw-text-primary);
+  min-height: 100vh;
+  letter-spacing: -0.015em;
+  transition: background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Dark Mode: Deep Graphite & Architectural Contrast */
+.swiss-architectural-theme.dark-mode,
+.dark .swiss-architectural-theme,
+[data-theme="dark"] .swiss-architectural-theme {
+  --sw-bg: #0c0c0e;
+  --sw-bg-subtle: #141418;
+  --sw-bg-surface: #1b1b22;
+  --sw-bg-surface-elevated: #24242d;
+  --sw-text-primary: #f6f6f8;
+  --sw-text-secondary: #9ea3b0;
+  --sw-text-muted: #626775;
+  --sw-border: rgba(246, 246, 248, 0.10);
+  --sw-border-strong: rgba(246, 246, 248, 0.22);
+  --sw-border-heavy: #f6f6f8;
+  --sw-grid-line: rgba(246, 246, 248, 0.04);
+  
+  --sw-cobalt: #3b82f6;
+  --sw-cobalt-dim: rgba(59, 130, 246, 0.12);
+  --sw-cobalt-border: rgba(59, 130, 246, 0.40);
+  --sw-cobalt-glow: rgba(59, 130, 246, 0.22);
+  --sw-hover-row: rgba(246, 246, 248, 0.03);
+}
+
+/* --- Typography Classes --- */
+.sw-condensed {
+  font-family: var(--sw-condensed);
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  line-height: 0.92;
+  font-weight: 700;
+}
+
+.sw-mono {
+  font-family: var(--sw-mono);
+}
+
+.sw-sans {
+  font-family: var(--sw-sans);
+}
+
+.sw-display-title {
+  font-family: var(--sw-condensed);
+  text-transform: uppercase;
+  font-weight: 800;
+  line-height: 0.88;
+  letter-spacing: -0.04em;
+}
+
+.sw-meta-tag {
+  font-family: var(--sw-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--sw-text-muted);
+}
+
+.sw-cobalt-text {
+  color: var(--sw-cobalt);
+}
+
+/* --- Rigid Container & Grid Rules --- */
+.sw-container {
+  max-width: 1360px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: clamp(1.25rem, 4.5vw, 4rem);
+  padding-right: clamp(1.25rem, 4.5vw, 4rem);
+  position: relative;
+}
+
+.sw-section-pad {
+  padding-top: clamp(4.5rem, 9vw, 8.5rem);
+  padding-bottom: clamp(4.5rem, 9vw, 8.5rem);
+}
+
+/* --- Architectural Grid Overlay Lines --- */
+.sw-grid-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 0;
+  border-left: 1px solid var(--sw-grid-line);
+  border-right: 1px solid var(--sw-grid-line);
+}
+
+.sw-grid-col {
+  border-right: 1px solid var(--sw-grid-line);
+  height: 100%;
+}
+
+/* --- Crosshair Coordinate Marker --- */
+.sw-coordinate {
+  font-family: var(--sw-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--sw-text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.sw-crosshair {
+  width: 7px;
+  height: 7px;
+  position: relative;
+}
+
+.sw-crosshair::before,
+.sw-crosshair::after {
+  content: '';
+  position: absolute;
+  background-color: var(--sw-cobalt);
+}
+
+.sw-crosshair::before {
+  top: 3px;
+  left: 0;
+  right: 0;
+  height: 1px;
+}
+
+.sw-crosshair::after {
+  left: 3px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+}
+
+/* --- Architectural Project Rows --- */
+.sw-project-row {
+  position: relative;
+  border-bottom: 1px solid var(--sw-border);
+  transition: background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.25s ease;
+}
+
+.sw-project-row:hover {
+  background-color: var(--sw-hover-row);
+  border-color: var(--sw-cobalt);
+}
+
+.sw-project-row::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 0%;
+  height: 2px;
+  background-color: var(--sw-cobalt);
+  transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sw-project-row:hover::after {
+  width: 100%;
+}
+
+.sw-project-row:hover .sw-row-title {
+  color: var(--sw-cobalt);
+  transform: translateX(8px);
+}
+
+.sw-project-row:hover .sw-row-arrow {
+  transform: translate(4px, -4px);
+  color: var(--sw-cobalt);
+}
+
+.sw-row-title {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.25s ease;
+}
+
+.sw-row-arrow {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.25s ease;
+}
+
+/* --- Hover Floating Blueprint Preview --- */
+.sw-floating-preview {
+  pointer-events: none;
+  position: fixed;
+  z-index: 45;
+  width: 340px;
+  height: 215px;
+  overflow: hidden;
+  border: 1px solid var(--sw-cobalt);
+  background-color: var(--sw-bg-surface);
+  box-shadow: 0 20px 40px -6px rgba(0, 0, 0, 0.35);
+  transform: translate(-50%, -50%);
+  transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --- Architectural Button --- */
+.sw-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-family: var(--sw-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+  border: 1px solid var(--sw-border-strong);
+  background-color: transparent;
+  color: var(--sw-text-primary);
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, transform 0.25s ease;
+  cursor: pointer;
+}
+
+.sw-btn:hover {
+  background-color: var(--sw-cobalt);
+  border-color: var(--sw-cobalt);
+  color: #ffffff;
+}
+
+.sw-btn-primary {
+  background-color: var(--sw-text-primary);
+  border-color: var(--sw-text-primary);
+  color: var(--sw-bg);
+}
+
+.sw-btn-primary:hover {
+  background-color: var(--sw-cobalt);
+  border-color: var(--sw-cobalt);
+  color: #ffffff;
+}
+
+/* --- Theme Toggle Switch --- */
+.sw-theme-toggle {
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--sw-mono);
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid var(--sw-border);
+  background-color: transparent;
+  color: var(--sw-text-secondary);
+  transition: border-color 0.2s ease, color 0.2s ease;
+  cursor: pointer;
+}
+
+.sw-theme-toggle:hover {
+  border-color: var(--sw-cobalt);
+  color: var(--sw-cobalt);
+}
+
+/* --- Hero Large Monogram Split --- */
+.sw-hero-block {
+  border: 1px solid var(--sw-border);
+  background-color: var(--sw-bg);
+  position: relative;
+}
+
+/* --- Section Number Tag --- */
+.sw-section-num {
+  font-family: var(--sw-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--sw-cobalt);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.sw-section-num::after {
+  content: '';
+  width: 14px;
+  height: 1px;
+  background-color: var(--sw-cobalt);
+}
+
+/* --- Focus Outline Accessibility --- */
+.swiss-architectural-theme button:focus-visible,
+.swiss-architectural-theme a:focus-visible {
+  outline: 2px solid var(--sw-cobalt);
+  outline-offset: 2px;
+}

@@ -117,7 +117,7 @@ export default function ProfessionalCorporateTheme({ data = {}, isDarkMode = fal
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
                 <div>
                   <h3 className="text-xl sm:text-2xl font-black text-gray-950 dark:text-white">
-                    {item.title}
+                    {item.title || item.role}
                   </h3>
                   <p className="text-sm sm:text-base font-bold text-stone-700 dark:text-stone-300 mt-0.5">
                     {item.company}
@@ -278,6 +278,13 @@ export default function ProfessionalCorporateTheme({ data = {}, isDarkMode = fal
                 <p className="mt-1 text-sm sm:text-base font-semibold text-stone-600 dark:text-stone-400">
                   {[item.degree, item.field].filter(Boolean).join(", ")}
                 </p>
+                {(item.gpa || item.grade || item.cgpa) && (
+                  <div className="mt-2.5">
+                    <span className="inline-block px-2.5 py-0.5 rounded text-xs font-semibold bg-stone-100 dark:bg-zinc-800 text-stone-800 dark:text-stone-200 border border-stone-300 dark:border-zinc-700">
+                      Grade / CGPA: {item.gpa || item.grade || item.cgpa}
+                    </span>
+                  </div>
+                )}
               </div>
 
               {item.dateRange && (

@@ -60,6 +60,9 @@ const AdminNotifications = lazy(
 const TemplateManagement = lazy(
   () => import("./pages/admin/TemplateManagement")
 );
+const PortfolioManagement = lazy(
+  () => import("./pages/admin/PortfolioManagement")
+);
 const AdminQuestionManagement = lazy(
   () => import("./pages/admin/AdminQuestionManagement")
 );
@@ -347,6 +350,7 @@ function App() {
               <Route path="users" element={<UserManagement />} />
               <Route path="users/:userId" element={<UserDetails />} />
               <Route path="templates" element={<TemplateManagement />} />
+              <Route path="portfolios" element={<PortfolioManagement />} />
               <Route path="questions" element={<AdminQuestionManagement />} />
               <Route path="interviews" element={<AIInterviewManagement />} />
               <Route path="ai-analytics" element={<AIAnalytics />} />

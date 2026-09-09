@@ -124,6 +124,13 @@ export default function ModernFresherTheme({ data = {}, isDarkMode = false, acce
                 <p className="mt-1 text-sm sm:text-base font-semibold text-sky-600 dark:text-sky-400">
                   {[item.degree, item.field].filter(Boolean).join(", ")}
                 </p>
+                {(item.gpa || item.grade || item.cgpa) && (
+                  <div className="mt-2.5">
+                    <span className="inline-block px-3 py-0.5 rounded-full text-xs font-bold bg-sky-100 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 border border-sky-500/30">
+                      CGPA / Grade: {item.gpa || item.grade || item.cgpa}
+                    </span>
+                  </div>
+                )}
               </div>
 
               {item.dateRange && (
@@ -262,7 +269,7 @@ export default function ModernFresherTheme({ data = {}, isDarkMode = false, acce
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
                 <div>
                   <h3 className="text-lg sm:text-xl font-black text-gray-950 dark:text-white">
-                    {item.title}
+                    {item.title || item.role}
                   </h3>
                   <p className="text-sm font-bold text-sky-600 dark:text-sky-400">
                     {item.company}

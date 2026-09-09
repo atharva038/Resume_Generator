@@ -8,6 +8,9 @@ import {
   Eye,
   Crown,
   LayoutTemplate,
+  Sun,
+  Moon,
+  Compass,
 } from "lucide-react";
 import { useBodyScrollLock } from "@/hooks";
 import { portfolioThemeList } from "./themes/themeRegistry";
@@ -35,10 +38,14 @@ class ThumbnailErrorBoundary extends Component {
   }
 }
 
-const PortfolioTemplateThumbnail = ({ theme, form, resume, projects }) => {
+const PortfolioTemplateThumbnail = ({ theme, form, resume, projects, isDarkMode }) => {
   const wrapperRef = useRef(null);
   const [scale, setScale] = useState(0.25);
   const ThemeComponent = theme.component;
+  const shouldBeDark =
+    isDarkMode !== undefined
+      ? isDarkMode
+      : theme.defaultMode === "dark";
 
   useEffect(() => {
     if (!wrapperRef.current) return;
@@ -80,10 +87,14 @@ const PortfolioTemplateThumbnail = ({ theme, form, resume, projects }) => {
   }, [previewPortfolio, resume, projects]);
 
   const fallbackUI = (
-    <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-zinc-900 to-zinc-950 text-white p-4 text-center">
-      <Palette className="w-8 h-8 text-emerald-400 mb-2 opacity-80" />
+    <div className={`w-full h-full flex flex-col items-center justify-center p-4 text-center ${
+      shouldBeDark
+        ? "bg-gradient-to-br from-zinc-900 to-zinc-950 text-white"
+        : "bg-gradient-to-br from-stone-100 to-stone-200 text-stone-900"
+    }`}>
+      <Palette className="w-8 h-8 text-emerald-500 mb-2 opacity-80" />
       <span className="font-bold text-sm">{theme.name}</span>
-      <span className="text-xs text-zinc-400 mt-1">{theme.category}</span>
+      <span className="text-xs opacity-70 mt-1">{theme.category}</span>
     </div>
   );
 
@@ -93,7 +104,9 @@ const PortfolioTemplateThumbnail = ({ theme, form, resume, projects }) => {
 
   return (
     <ThumbnailErrorBoundary fallback={fallbackUI}>
-      <div className="relative w-full h-full overflow-hidden bg-white dark:bg-zinc-950 select-none pointer-events-none">
+      <div className={`relative w-full h-full overflow-hidden select-none pointer-events-none ${
+        shouldBeDark ? "bg-zinc-950" : "bg-stone-50"
+      }`}>
         <div ref={wrapperRef} className="w-full h-full relative">
           <div
             style={{
@@ -102,7 +115,9 @@ const PortfolioTemplateThumbnail = ({ theme, form, resume, projects }) => {
               width: "1280px",
               height: "820px",
             }}
-            className="absolute top-0 left-0 bg-white dark:bg-zinc-950 overflow-hidden pointer-events-none"
+            className={`absolute top-0 left-0 overflow-hidden pointer-events-none ${
+              shouldBeDark ? "bg-zinc-950" : "bg-stone-50"
+            }`}
           >
             <ThemeComponent
               data={previewData}
@@ -110,7 +125,7 @@ const PortfolioTemplateThumbnail = ({ theme, form, resume, projects }) => {
               resume={resume}
               projects={projects}
               mode="preview"
-              isDarkMode={true}
+              isDarkMode={shouldBeDark}
               accentColor={previewPortfolio.themeAccent}
             />
           </div>
@@ -133,6 +148,8 @@ export default function PortfolioTemplateSelectorModal({
   useBodyScrollLock(isOpen);
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
+  const [modeFilter, setModeFilter] = useState("signature"); // "signature", "light", "dark"
+  const [cardModes, setCardModes] = useState({});
   const [draftSelection, setDraftSelection] = useState(selectedThemeId || "smartnshine");
 
   useEffect(() => {
@@ -140,6 +157,8 @@ export default function PortfolioTemplateSelectorModal({
     setDraftSelection(selectedThemeId || "smartnshine");
     setSearchQuery("");
     setCategoryFilter("All");
+    setModeFilter("signature");
+    setCardModes({});
   }, [isOpen, selectedThemeId]);
 
   useEffect(() => {
@@ -154,17 +173,41 @@ export default function PortfolioTemplateSelectorModal({
 
   const categories = useMemo(() => {
     const cats = new Set(portfolioThemeList.map((t) => t.category).filter(Boolean));
-    return ["All", ...Array.from(cats)];
+    return ["All", "☀️ Light Edition", "🌙 Dark Edition", ...Array.from(cats)];
   }, []);
 
   const isThemeAllowed = (theme) => {
     return userTier === "admin" || theme.allowedTiers?.includes(userTier);
   };
 
+  const getCardIsDark = (theme) => {
+    if (cardModes[theme.id] !== undefined) {
+      return cardModes[theme.id];
+    }
+    if (modeFilter === "light") return false;
+    if (modeFilter === "dark") return true;
+    return theme.defaultMode === "dark";
+  };
+
+  const toggleCardMode = (themeId, currentDark) => {
+    setCardModes((prev) => ({
+      ...prev,
+      [themeId]: !currentDark,
+    }));
+  };
+
   const filteredThemes = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     return portfolioThemeList.filter((theme) => {
-      const matchCat = categoryFilter === "All" || theme.category === categoryFilter;
+      let matchCat = true;
+      if (categoryFilter === "☀️ Light Edition") {
+        matchCat = theme.defaultMode === "light";
+      } else if (categoryFilter === "🌙 Dark Edition") {
+        matchCat = theme.defaultMode === "dark";
+      } else if (categoryFilter !== "All") {
+        matchCat = theme.category === categoryFilter;
+      }
+
       const matchSearch =
         !q ||
         theme.name?.toLowerCase().includes(q) ||
@@ -190,27 +233,27 @@ export default function PortfolioTemplateSelectorModal({
 
   return (
     <div
-      className="fixed inset-0 bg-black/85 backdrop-blur-md z-[100] flex items-center justify-center p-2 sm:p-4 md:p-6 no-print animate-in fade-in duration-200"
+      className="fixed inset-0 bg-black/85 backdrop-blur-md z-[100] flex items-center justify-center p-0 sm:p-4 md:p-6 no-print animate-in fade-in duration-200"
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-zinc-950 rounded-2xl w-full max-w-7xl h-[95vh] max-h-[920px] overflow-hidden border border-gray-200/90 dark:border-white/[0.08] shadow-2xl flex flex-col"
+        className="bg-white dark:bg-zinc-950 rounded-none sm:rounded-2xl w-full max-w-7xl h-full sm:h-[95vh] max-h-none sm:max-h-[920px] overflow-hidden border-0 sm:border border-gray-200/90 dark:border-white/[0.08] shadow-2xl flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="bg-white dark:bg-zinc-950 p-4 sm:p-6 border-b border-gray-200 dark:border-zinc-800 shrink-0">
-          <div className="flex justify-between items-start gap-4">
-            <div>
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/15 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                  <LayoutTemplate className="w-4 h-4" />
+        <div className="bg-white dark:bg-zinc-950 p-3.5 sm:p-6 border-b border-gray-200 dark:border-zinc-800 shrink-0">
+          <div className="flex justify-between items-start gap-3">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 xs:gap-2.5 min-w-0">
+                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/15 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
+                  <LayoutTemplate className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </div>
-                <div>
-                  <h2 className="text-xl sm:text-2xl font-black tracking-tight text-gray-950 dark:text-white">
+                <div className="min-w-0">
+                  <h2 className="text-base xs:text-lg sm:text-2xl font-black tracking-tight text-gray-950 dark:text-white truncate">
                     Choose Portfolio Template
                   </h2>
-                  <p className="text-xs sm:text-sm text-gray-500 dark:text-zinc-400 mt-0.5">
-                    Live layout preview tailored with your projects, bio & photos. Instant switch with zero data loss.
+                  <p className="text-[11px] sm:text-sm text-gray-500 dark:text-zinc-400 mt-0.5 line-clamp-1 sm:line-clamp-none">
+                    Preview both Light and Dark mode portfolios live with your actual content. Zero data loss.
                   </p>
                 </div>
               </div>
@@ -218,31 +261,83 @@ export default function PortfolioTemplateSelectorModal({
 
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-700 dark:hover:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-900 p-2 rounded-xl transition-colors cursor-pointer"
+              className="text-gray-400 hover:text-gray-700 dark:hover:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-900 p-1.5 sm:p-2 rounded-xl transition-colors cursor-pointer shrink-0"
               title="Close modal"
             >
               <X className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
           </div>
 
-          {/* Search and Category Filters */}
-          <div className="mt-5 space-y-3">
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-              <div className="relative flex-1 max-w-md">
+          {/* Search, Global Mode Switcher, and Category Filters */}
+          <div className="mt-3 sm:mt-5 space-y-2.5 sm:space-y-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3">
+              <div className="relative flex-1 max-w-none sm:max-w-md">
                 <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search by theme name, role, or style..."
+                  placeholder="Search themes by name, role, style..."
                   className="w-full pl-9 pr-4 py-2 rounded-xl border border-gray-200 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-900/80 text-xs sm:text-sm text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white dark:focus:bg-zinc-900"
                 />
               </div>
 
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-gray-500 dark:text-zinc-400 hidden sm:inline">
+              {/* Global Preview Mode Segmented Control */}
+              <div className="flex items-center gap-1.5 p-1 bg-gray-100 dark:bg-zinc-900 rounded-xl border border-gray-200/80 dark:border-white/5 shrink-0 self-start sm:self-auto">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setModeFilter("signature");
+                    setCardModes({});
+                  }}
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    modeFilter === "signature"
+                      ? "bg-white dark:bg-zinc-800 text-gray-950 dark:text-white shadow-xs"
+                      : "text-gray-600 dark:text-zinc-400 hover:text-gray-950 dark:hover:text-white"
+                  }`}
+                  title="Show each theme's signature light or dark design"
+                >
+                  <Compass className="w-3.5 h-3.5 text-emerald-500" />
+                  <span className="hidden xs:inline">Signature</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setModeFilter("light");
+                    setCardModes({});
+                  }}
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    modeFilter === "light"
+                      ? "bg-white dark:bg-zinc-800 text-amber-600 dark:text-amber-400 shadow-xs"
+                      : "text-gray-600 dark:text-zinc-400 hover:text-gray-950 dark:hover:text-white"
+                  }`}
+                  title="Force all themes to Light Mode"
+                >
+                  <Sun className="w-3.5 h-3.5 text-amber-500" />
+                  <span>Light</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setModeFilter("dark");
+                    setCardModes({});
+                  }}
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    modeFilter === "dark"
+                      ? "bg-white dark:bg-zinc-800 text-sky-600 dark:text-sky-400 shadow-xs"
+                      : "text-gray-600 dark:text-zinc-400 hover:text-gray-950 dark:hover:text-white"
+                  }`}
+                  title="Force all themes to Dark Mode"
+                >
+                  <Moon className="w-3.5 h-3.5 text-sky-400" />
+                  <span>Dark</span>
+                </button>
+              </div>
+
+              <div className="hidden lg:flex items-center gap-2 shrink-0">
+                <span className="text-xs text-gray-500 dark:text-zinc-400">
                   Current:
                 </span>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-xs font-bold text-emerald-700 dark:text-emerald-300">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-[11px] sm:text-xs font-bold text-emerald-700 dark:text-emerald-300">
                   <Check className="w-3.5 h-3.5" />
                   {portfolioThemeList.find((t) => t.id === selectedThemeId)?.name || "SmartNShine Editorial"}
                 </span>
@@ -250,12 +345,12 @@ export default function PortfolioTemplateSelectorModal({
             </div>
 
             {/* Category Filter Pills */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+            <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 scrollbar-none">
               {categories.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setCategoryFilter(cat)}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                  className={`px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer shrink-0 ${
                     categoryFilter === cat
                       ? "bg-gray-950 dark:bg-white text-white dark:text-gray-950 shadow-sm"
                       : "bg-gray-100 hover:bg-gray-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-gray-600 dark:text-zinc-400 border border-gray-200/60 dark:border-white/5"
@@ -269,18 +364,22 @@ export default function PortfolioTemplateSelectorModal({
         </div>
 
         {/* Template Cards Grid */}
-        <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 bg-gray-50/50 dark:bg-zinc-950/50">
-          <div className="flex items-center justify-between mb-4">
+        <div className="flex-1 min-h-0 overflow-y-auto p-3.5 sm:p-6 bg-gray-50/50 dark:bg-zinc-950/50">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
             <p className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-zinc-500">
               {filteredThemes.length} {filteredThemes.length === 1 ? "Template Available" : "Templates Available"}
             </p>
+            <span className="text-[11px] text-gray-500 dark:text-zinc-400 hidden xs:inline">
+              Tip: Click the ☀️/🌙 toggle on any card to flip its preview
+            </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {filteredThemes.map((theme) => {
               const isCurrent = selectedThemeId === theme.id;
               const isDraft = draftSelection === theme.id;
               const allowed = isThemeAllowed(theme);
+              const cardIsDark = getCardIsDark(theme);
 
               return (
                 <div
@@ -306,8 +405,34 @@ export default function PortfolioTemplateSelectorModal({
                       <div className="w-2.5 h-2.5 rounded-full bg-emerald-400/80" />
                     </div>
 
-                    <div className="px-2 py-0.5 rounded-md bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 text-[10px] font-mono text-gray-500 dark:text-zinc-400 truncate max-w-[140px]">
-                      yoursite.com/u/{form?.slug || "portfolio"}
+                    {/* Mode Tag + Quick Switcher */}
+                    <div className="flex items-center gap-1.5">
+                      <span
+                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold ${
+                          cardIsDark
+                            ? "bg-zinc-800 text-zinc-300 border border-zinc-700"
+                            : "bg-amber-100/80 text-amber-800 border border-amber-300/60"
+                        }`}
+                      >
+                        {cardIsDark ? "🌙 Dark" : "☀️ Light"}
+                      </span>
+
+                      {/* Flip Mode Button */}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleCardMode(theme.id, cardIsDark);
+                        }}
+                        className="p-1 rounded-md bg-white dark:bg-zinc-800 hover:bg-gray-200 dark:hover:bg-zinc-700 text-gray-700 dark:text-zinc-200 border border-gray-200 dark:border-zinc-700 transition-colors cursor-pointer"
+                        title={`Switch ${theme.name} to ${cardIsDark ? "Light Mode" : "Dark Mode"}`}
+                      >
+                        {cardIsDark ? (
+                          <Sun className="w-3 h-3 text-amber-500" />
+                        ) : (
+                          <Moon className="w-3 h-3 text-sky-500" />
+                        )}
+                      </button>
                     </div>
 
                     <div className="flex items-center gap-1">
@@ -325,12 +450,15 @@ export default function PortfolioTemplateSelectorModal({
                   </div>
 
                   {/* Scaled Live Preview Thumbnail Viewport */}
-                  <div className="relative h-56 w-full overflow-hidden bg-gray-950">
+                  <div className={`relative h-48 xs:h-52 sm:h-56 w-full overflow-hidden ${
+                    cardIsDark ? "bg-gray-950" : "bg-stone-100"
+                  }`}>
                     <PortfolioTemplateThumbnail
                       theme={theme}
                       form={form}
                       resume={resume}
                       projects={projects}
+                      isDarkMode={cardIsDark}
                     />
 
                     {/* Hover Selection Overlay */}
@@ -354,7 +482,7 @@ export default function PortfolioTemplateSelectorModal({
                   </div>
 
                   {/* Template Meta Info Footer */}
-                  <div className="p-4 flex-1 flex flex-col justify-between bg-white dark:bg-zinc-900">
+                  <div className="p-3.5 sm:p-4 flex-1 flex flex-col justify-between bg-white dark:bg-zinc-900">
                     <div>
                       <div className="flex items-center justify-between gap-2 mb-1">
                         <h3 className="font-black text-sm sm:text-base text-gray-950 dark:text-white leading-tight">
@@ -404,11 +532,11 @@ export default function PortfolioTemplateSelectorModal({
         </div>
 
         {/* Modal Bottom Action Footer */}
-        <div className="p-4 sm:p-5 bg-white dark:bg-zinc-950 border-t border-gray-200 dark:border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
-          <div className="text-xs text-gray-500 dark:text-zinc-400 text-center sm:text-left flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-emerald-500 shrink-0" />
+        <div className="p-3.5 sm:p-5 bg-white dark:bg-zinc-950 border-t border-gray-200 dark:border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
+          <div className="text-[11px] sm:text-xs text-gray-500 dark:text-zinc-400 text-center sm:text-left flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-emerald-500 shrink-0 hidden xs:inline-block" />
             <span>
-              Applying a new template immediately updates your live preview. All content, links & uploaded images remain completely intact.
+              Applying a template updates your live preview immediately with zero data loss.
             </span>
           </div>
 
@@ -424,7 +552,7 @@ export default function PortfolioTemplateSelectorModal({
               type="button"
               onClick={handleApply}
               disabled={!draftSelection}
-              className="flex-1 sm:flex-none px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold shadow-md shadow-emerald-500/20 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
+              className="flex-1 sm:flex-none px-5 sm:px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold shadow-md shadow-emerald-500/20 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
             >
               Apply "{selectedThemeObj?.name || "Template"}"
             </button>
