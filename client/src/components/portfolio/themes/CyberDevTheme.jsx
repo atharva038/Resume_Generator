@@ -239,7 +239,7 @@ export default function CyberDevTheme({ data = {}, isDarkMode = true, accentColo
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
                   <div>
                     <h3 className="text-lg font-black text-white font-mono leading-tight">
-                      {item.title}
+                      {item.title || item.role}
                     </h3>
                     <p className="text-sm font-mono font-bold text-emerald-400 mt-0.5">
                       @ {item.company}
@@ -297,6 +297,13 @@ export default function CyberDevTheme({ data = {}, isDarkMode = true, accentColo
                 <p className="mt-1 text-sm text-zinc-300 font-sans">
                   {[item.degree, item.field].filter(Boolean).join(", ")}
                 </p>
+                {(item.gpa || item.grade || item.cgpa) && (
+                  <div className="mt-2.5">
+                    <span className="inline-block px-2 py-0.5 rounded text-[10px] font-mono border border-emerald-500/40 bg-emerald-500/10 text-emerald-400 font-bold">
+                      CGPA / SCORE: {item.gpa || item.grade || item.cgpa}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           ))}

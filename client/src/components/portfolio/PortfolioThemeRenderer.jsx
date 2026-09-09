@@ -119,6 +119,7 @@ const PortfolioThemeRenderer = ({
         {/* Bespoke navigation themes */}
         {theme.id !== "techPortfolio" &&
           theme.id !== "smartnshine" &&
+          theme.id !== "swissArchitectural" &&
           theme.id !== "neomorphic" &&
           theme.id !== "liquidGlass" &&
           theme.id !== "retroFuturistic" &&
