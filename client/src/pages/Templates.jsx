@@ -409,10 +409,40 @@ export default function Templates() {
 
   const handleUseTemplate = (templateId) => {
     localStorage.setItem("selectedTemplate", templateId);
+    sessionStorage.setItem("templatePreSelected", templateId);
     if (selectedColorTheme) {
       localStorage.setItem("selectedColorTheme", selectedColorTheme);
     }
-    navigate("/editor");
+    const blankResumeData = {
+      name: "",
+      selectedTheme: selectedColorTheme || undefined,
+      colorTheme: selectedColorTheme || undefined,
+      contact: {
+        email: "",
+        phone: "",
+        location: "",
+        linkedin: "",
+        github: "",
+        portfolio: "",
+      },
+      summary: "",
+      skills: [],
+      experience: [],
+      education: [],
+      projects: [],
+      certifications: [],
+      achievements: [],
+      customSections: [],
+    };
+    navigate("/editor", {
+      state: {
+        resumeData: blankResumeData,
+        isNewResume: true,
+        templateSelected: true,
+        selectedTemplate: templateId,
+        fromTemplates: true,
+      },
+    });
   };
 
   // Check if a specific template is currently previewed or requested via URL

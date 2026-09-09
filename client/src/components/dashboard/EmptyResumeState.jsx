@@ -27,7 +27,29 @@ export default function EmptyResumeState() {
         </Link>
         <Link
           to="/editor"
-          className="inline-flex items-center gap-2 px-6 py-3.5 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-white/10 hover:bg-gray-100 dark:hover:bg-zinc-800 text-gray-800 dark:text-zinc-200 font-bold rounded-2xl transition-all duration-200 text-xs sm:text-sm active:scale-95"
+          state={{
+            resumeData: {
+              name: "",
+              contact: {
+                email: "",
+                phone: "",
+                location: "",
+                linkedin: "",
+                github: "",
+                portfolio: "",
+              },
+              summary: "",
+              skills: [],
+              experience: [],
+              education: [],
+              projects: [],
+              certifications: [],
+              achievements: [],
+              customSections: [],
+            },
+            isNewResume: true,
+          }}
+          className="inline-flex items-center gap-2 px-6 py-3.5 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-white/10 hover:bg-gray-100 dark:hover:bg-zinc-800 text-gray-800 dark:text-zinc-200 font-bold rounded-2xl transition-all duration-200 text-xs sm:text-sm active:scale-95 cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>Build from Scratch</span>

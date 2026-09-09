@@ -4,6 +4,7 @@ import {
   CheckCircle2,
   ChevronDown,
   ChevronUp,
+  PencilLine,
 } from "lucide-react";
 
 export default function ATSResultsBreakdown({
@@ -12,6 +13,10 @@ export default function ATSResultsBreakdown({
   toggleSection,
   showAllImprovements,
   setShowAllImprovements,
+  onEditResume,
+  showRecommendations = true,
+  showKeywords = true,
+  showStrengths = true,
 }) {
   const improvements = analysisResult.improvements || [];
   const strengths = analysisResult.strengths || [];
@@ -23,7 +28,7 @@ export default function ATSResultsBreakdown({
   return (
     <div className="space-y-4">
       {/* 1. Top Recommendations */}
-      <div className="bg-white dark:bg-zinc-900/90 rounded-3xl p-5 sm:p-6 border border-gray-200/90 dark:border-white/[0.08] shadow-sm">
+      {showRecommendations && <div className="bg-white dark:bg-zinc-900/90 rounded-3xl p-5 sm:p-6 border border-gray-200/90 dark:border-white/[0.08] shadow-sm">
         <button
           type="button"
           onClick={() => toggleSection("recommendations")}
@@ -55,7 +60,7 @@ export default function ATSResultsBreakdown({
               visibleImprovements.map((tip, index) => (
                 <div
                   key={index}
-                  className="flex items-start gap-3 rounded-2xl border border-gray-200/70 dark:border-white/5 bg-gray-50/60 dark:bg-zinc-950/60 p-3.5"
+                  className="flex flex-col items-stretch gap-3 rounded-2xl border border-gray-200/70 bg-gray-50/60 p-3.5 dark:border-white/5 dark:bg-zinc-950/60 sm:flex-row sm:items-start"
                 >
                   <span className="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-amber-500/15 text-amber-700 dark:text-amber-400 text-xs font-black shrink-0">
                     {index + 1}
@@ -63,6 +68,14 @@ export default function ATSResultsBreakdown({
                   <p className="text-xs sm:text-sm font-medium text-gray-800 dark:text-zinc-200 leading-relaxed">
                     {tip}
                   </p>
+                  <button
+                    type="button"
+                    onClick={() => onEditResume?.(tip)}
+                    className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg border border-blue-500/25 bg-blue-500/10 px-2.5 py-2 text-[11px] font-bold text-blue-700 transition-colors hover:bg-blue-500/20 dark:text-blue-300 sm:ml-auto"
+                  >
+                    <PencilLine className="h-3.5 w-3.5" />
+                    Edit this improvement
+                  </button>
                 </div>
               ))
             ) : (
@@ -86,10 +99,10 @@ export default function ATSResultsBreakdown({
             )}
           </div>
         )}
-      </div>
+      </div>}
 
       {/* 2. Missing Keywords */}
-      <div className="bg-white dark:bg-zinc-900/90 rounded-3xl p-5 sm:p-6 border border-gray-200/90 dark:border-white/[0.08] shadow-sm">
+      {showKeywords && <div className="bg-white dark:bg-zinc-900/90 rounded-3xl p-5 sm:p-6 border border-gray-200/90 dark:border-white/[0.08] shadow-sm">
         <button
           type="button"
           onClick={() => toggleSection("keywords")}
@@ -118,16 +131,26 @@ export default function ATSResultsBreakdown({
         {expandedSections.keywords && (
           <div className="mt-4 pt-2 border-t border-gray-100 dark:border-white/5">
             {missingKeywords.length > 0 ? (
-              <div className="flex flex-wrap gap-2">
-                {missingKeywords.map((keyword, index) => (
-                  <span
-                    key={index}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-700 dark:text-rose-300 text-xs sm:text-sm font-bold"
-                  >
-                    <span>+</span>
-                    <span>{keyword}</span>
-                  </span>
-                ))}
+              <div className="space-y-3">
+                <div className="flex flex-wrap gap-2">
+                  {missingKeywords.map((keyword, index) => (
+                    <span
+                      key={index}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-700 dark:text-rose-300 text-xs sm:text-sm font-bold"
+                    >
+                      <span>+</span>
+                      <span>{keyword}</span>
+                    </span>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => onEditResume?.(`Add these missing keywords: ${missingKeywords.join(", ")}`)}
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-rose-600 px-4 py-3 text-xs font-extrabold text-white shadow-lg shadow-rose-500/20 transition-colors hover:bg-rose-700"
+                >
+                  <PencilLine className="h-4 w-4" />
+                  Edit Resume to Add Missing Keywords
+                </button>
               </div>
             ) : (
               <p className="text-xs sm:text-sm text-gray-500 dark:text-zinc-400 py-2">
@@ -136,10 +159,10 @@ export default function ATSResultsBreakdown({
             )}
           </div>
         )}
-      </div>
+      </div>}
 
       {/* 3. Strengths & Verified Signals */}
-      <div className="bg-white dark:bg-zinc-900/90 rounded-3xl p-5 sm:p-6 border border-gray-200/90 dark:border-white/[0.08] shadow-sm">
+      {showStrengths && <div className="bg-white dark:bg-zinc-900/90 rounded-3xl p-5 sm:p-6 border border-gray-200/90 dark:border-white/[0.08] shadow-sm">
         <button
           type="button"
           onClick={() => toggleSection("strengths")}
@@ -186,7 +209,7 @@ export default function ATSResultsBreakdown({
             )}
           </div>
         )}
-      </div>
+      </div>}
     </div>
   );
 }

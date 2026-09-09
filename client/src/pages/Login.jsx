@@ -52,8 +52,9 @@ const Login = () => {
 
     try {
       await login(email, password);
-      const from = location.state?.from?.pathname || "/dashboard";
-      navigate(from, {replace: true});
+      const fromPath = location.state?.from?.pathname || "/dashboard";
+      const fromState = location.state?.from?.state;
+      navigate(fromPath, {replace: true, state: fromState});
     } catch (err) {
       if (
         err.response?.status === 429 ||

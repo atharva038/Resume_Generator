@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import SEO from "@/components/common/SEO";
 import { resumeAPI } from "@/api/api";
@@ -15,6 +16,7 @@ import {
 } from "@/components/atsAnalyzer";
 
 export default function ATSAnalyzer() {
+  const navigate = useNavigate();
   const [jobDescription, setJobDescription] = useState("");
   const [selectedResume, setSelectedResume] = useState(null);
   const [useCareerProfile, setUseCareerProfile] = useState(false);
@@ -123,6 +125,16 @@ export default function ATSAnalyzer() {
     }));
   };
 
+  const handleEditRecommendation = (recommendation) => {
+    if (!selectedResume) {
+      toast.error("Select a saved resume first to edit these recommendations.");
+      return;
+    }
+
+    localStorage.setItem("currentResumeId", selectedResume);
+    navigate("/editor", { state: { atsRecommendation: recommendation } });
+  };
+
   return (
     <div className="min-h-screen bg-gray-50/50 dark:bg-[#09090b] text-gray-900 dark:text-zinc-100 transition-colors duration-200">
       <SEO
@@ -138,7 +150,7 @@ export default function ATSAnalyzer() {
 
         {/* 2-Column Responsive Workspace */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-          {/* Left Column: Inputs (Job description + Resume source) */}
+          {/* Left Column: Inputs and focused improvement actions */}
           <div className="lg:col-span-6 space-y-6">
             <ATSJobDescriptionInput
               jobDescription={jobDescription}
@@ -159,6 +171,33 @@ export default function ATSAnalyzer() {
               handleAnalyze={handleAnalyze}
               jobDescription={jobDescription}
             />
+
+            {analysisResult && (
+              <section className="space-y-4" aria-labelledby="resume-improvements-title">
+                <div className="flex items-center justify-between rounded-2xl border border-blue-500/20 bg-blue-500/5 px-4 py-3">
+                  <div>
+                    <h2 id="resume-improvements-title" className="text-sm font-extrabold text-gray-900 dark:text-white">
+                      Resume Improvements
+                    </h2>
+                    <p className="mt-0.5 text-xs text-gray-500 dark:text-zinc-400">
+                      Choose a specific action to update your resume faster.
+                    </p>
+                  </div>
+                  <span className="rounded-full bg-blue-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-blue-700 dark:text-blue-300">
+                    Next steps
+                  </span>
+                </div>
+                <ATSResultsBreakdown
+                  analysisResult={analysisResult}
+                  expandedSections={expandedSections}
+                  toggleSection={toggleSection}
+                  showAllImprovements={showAllImprovements}
+                  setShowAllImprovements={setShowAllImprovements}
+                  onEditResume={handleEditRecommendation}
+                  showStrengths={false}
+                />
+              </section>
+            )}
           </div>
 
           {/* Right Column: Dynamic Results & Diagnostics */}
@@ -169,6 +208,10 @@ export default function ATSAnalyzer() {
 
             {analysisResult && (
               <div className="space-y-6 animate-in fade-in duration-300">
+                <div>
+                  <h2 className="text-lg font-extrabold text-gray-900 dark:text-white">Full Analysis</h2>
+                  <p className="mt-1 text-xs text-gray-500 dark:text-zinc-400">Your overall ATS score and verified resume strengths.</p>
+                </div>
                 <ATSScoreHero analysisResult={analysisResult} />
 
                 <ATSResultsBreakdown
@@ -177,6 +220,9 @@ export default function ATSAnalyzer() {
                   toggleSection={toggleSection}
                   showAllImprovements={showAllImprovements}
                   setShowAllImprovements={setShowAllImprovements}
+                  onEditResume={handleEditRecommendation}
+                  showRecommendations={false}
+                  showKeywords={false}
                 />
               </div>
             )}

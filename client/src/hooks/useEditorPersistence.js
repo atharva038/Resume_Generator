@@ -11,6 +11,7 @@ export const useEditorPersistence = ({
   setOriginalResumeData,
   user,
   saving,
+  locationState,
 }) => {
   const {blockNavigation, unblockNavigation} = useNavigationBlocker();
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -41,6 +42,7 @@ export const useEditorPersistence = ({
       unblockNavigation();
     };
   }, [hasUnsavedChanges, blockNavigation, unblockNavigation]);
+
 
   useEffect(() => {
     if (!hasUnsavedChanges || !resumeData?._id || saving || autoSaving || !user) {
@@ -100,53 +102,35 @@ export const useEditorPersistence = ({
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [hasUnsavedChanges]);
 
-  useEffect(() => {
-    if (!hasUnsavedChanges) return;
-
-    const handlePopState = () => {
-      if (!hasUnsavedChanges) return;
-
-      const currentPath = window.location.pathname;
-      setShowUnsavedModal(true);
-      setPendingNavigation("back");
-
-      window.history.pushState(
-        {preventNav: true, originalPath: currentPath},
-        "",
-        currentPath
-      );
-    };
-
-    if (!window.history.state?.preventNav) {
-      window.history.pushState({preventNav: false}, "", window.location.pathname);
-    }
-
-    window.addEventListener("popstate", handlePopState);
-
-    return () => {
-      window.removeEventListener("popstate", handlePopState);
-    };
-  }, [hasUnsavedChanges]);
-
   const markChangesSaved = useCallback(() => {
     setHasUnsavedChanges(false);
   }, []);
 
   const commitPendingNavigation = useCallback(
-    (navigate) => {
+    (navigateFn) => {
       unblockNavigation();
       setHasUnsavedChanges(false);
 
       if (pendingNavigation === "back") {
-        window.history.back();
+        if (locationState?.fromTemplates) {
+          navigateFn("/templates");
+        } else if (locationState?.fromDashboard) {
+          navigateFn("/dashboard");
+        } else if (locationState?.fromUpload) {
+          navigateFn("/upload");
+        } else if (window.history.state && window.history.state.idx > 0) {
+          navigateFn(-1);
+        } else {
+          navigateFn("/templates");
+        }
       } else if (pendingNavigation) {
-        navigate(pendingNavigation);
+        navigateFn(pendingNavigation);
       }
 
       setShowUnsavedModal(false);
       setPendingNavigation(null);
     },
-    [pendingNavigation, unblockNavigation]
+    [pendingNavigation, unblockNavigation, locationState]
   );
 
   const cancelPendingNavigation = useCallback(() => {
@@ -158,8 +142,12 @@ export const useEditorPersistence = ({
     hasUnsavedChanges,
     autoSaving,
     showUnsavedModal,
+    setShowUnsavedModal,
+    pendingNavigation,
+    setPendingNavigation,
     markChangesSaved,
     commitPendingNavigation,
     cancelPendingNavigation,
   };
 };
+

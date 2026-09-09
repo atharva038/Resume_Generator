@@ -16,7 +16,14 @@ import { careerAPI } from "@/api";
 import { parseValidationErrors } from "@/utils/errorHandler";
 import logger from "@/utils/logger";
 import toast from "react-hot-toast";
-import { CheckCircle2, Lock, PencilLine, Eye } from "lucide-react";
+import {
+  CheckCircle2,
+  Lock,
+  PencilLine,
+  Eye,
+  ArrowLeft,
+  X,
+} from "lucide-react";
 import {
   ResumePreview,
   ResumeWizard,
@@ -42,11 +49,13 @@ import EditorSectionRenderer from "@/components/editor/sections/EditorSectionRen
 import useResumeDataOperations from "@/components/editor/hooks/useResumeDataOperations";
 import { mergeGitHubImportData } from "@/components/editor/utils/githubResumeImporter";
 import { normalizeResumeData } from "@/components/editor/utils/resumeInitializer";
+import { useNavigationBlocker } from "@/context/NavigationBlockerContext";
 
 const Editor = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { unblockNavigation } = useNavigationBlocker();
   const resumePreviewRef = useRef(null);
   const previewSectionRef = useRef(null);
   const sectionElementRefs = useRef({});
@@ -67,7 +76,7 @@ const Editor = () => {
   const [aiSuggestions, setAiSuggestions] = useState([]);
   const [originalResumeData, setOriginalResumeData] = useState(null);
   const [showPreview, togglePreview, setShowPreviewTrue, setShowPreviewFalse] =
-    useToggle(false);
+    useToggle(true);
   const isMobile = useMediaQuery("(max-width: 1023px)");
   const [selectedTemplate, setSelectedTemplate] = useLocalStorage(
     "selectedTemplate",
@@ -144,6 +153,75 @@ const Editor = () => {
   ] = useToggle(false);
   const [upgradeMessage, setUpgradeMessage] = useState("");
 
+  // Resizable split layout between the two sections (Telegram Web style)
+  const [splitRatio, setSplitRatio] = useState(() => {
+    try {
+      const saved = localStorage.getItem("resume_editor_split_ratio");
+      if (saved) {
+        const val = parseFloat(saved);
+        if (val >= 20 && val <= 80) return val;
+      }
+    } catch {}
+    return 40; // Default 40% editor, 60% resume preview
+  });
+
+  const [isDraggingSplitter, setIsDraggingSplitter] = useState(false);
+  const containerRef = useRef(null);
+
+  const startResizing = useCallback((startClientX) => {
+    setIsDraggingSplitter(true);
+    document.body.style.cursor = "col-resize";
+    document.body.style.userSelect = "none";
+
+    const onMove = (e) => {
+      if (!containerRef.current) return;
+      const clientX = e.clientX !== undefined ? e.clientX : e.touches?.[0]?.clientX;
+      if (clientX == null) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      // percentage of pointer position within the container
+      const pct = ((clientX - rect.left) / rect.width) * 100;
+      // clamp: editor min 20%, max 78% — preview always has room
+      setSplitRatio(Math.min(78, Math.max(20, pct)));
+    };
+
+    const onEnd = () => {
+      setIsDraggingSplitter(false);
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onEnd);
+      window.removeEventListener("touchmove", onMove);
+      window.removeEventListener("touchend", onEnd);
+      setSplitRatio((prev) => {
+        try { localStorage.setItem("resume_editor_split_ratio", String(Math.round(prev))); } catch {}
+        return prev;
+      });
+    };
+
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onEnd);
+    window.addEventListener("touchmove", onMove, { passive: false });
+    window.addEventListener("touchend", onEnd);
+  }, []);
+
+  const handleSplitterMouseDown = useCallback((e) => {
+    e.preventDefault();
+    startResizing(e.clientX);
+  }, [startResizing]);
+
+  const handleSplitterTouchStart = useCallback((e) => {
+    if (e.touches && e.touches[0]) {
+      startResizing(e.touches[0].clientX);
+    }
+  }, [startResizing]);
+
+  const handleResetSplitRatio = useCallback(() => {
+    setSplitRatio(50);
+    try {
+      localStorage.setItem("resume_editor_split_ratio", "50");
+    } catch {}
+  }, []);
+
   const {
     saving,
     saveResume: saveResumeAction,
@@ -162,6 +240,8 @@ const Editor = () => {
     hasUnsavedChanges,
     autoSaving,
     showUnsavedModal,
+    setShowUnsavedModal,
+    setPendingNavigation,
     commitPendingNavigation,
     cancelPendingNavigation,
   } = useEditorPersistence({
@@ -171,6 +251,7 @@ const Editor = () => {
     setOriginalResumeData,
     user,
     saving,
+    locationState: location.state,
   });
 
   useEffect(() => {
@@ -179,15 +260,41 @@ const Editor = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const handleMobileTogglePreview = useCallback(() => {
+    const previewEl = previewSectionRef.current;
+    if (previewEl) {
+      const rect = previewEl.getBoundingClientRect();
+      if (rect.top <= window.innerHeight * 0.5) {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        previewEl.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  }, []);
+
   // Load resume data on mount
   useEffect(() => {
     const loadResumeData = async () => {
       const stateData = location.state?.resumeData;
       const isNewResume = location.state?.isNewResume || false;
+      const templateSelected =
+        location.state?.templateSelected ||
+        Boolean(location.state?.selectedTemplate) ||
+        Boolean(sessionStorage.getItem("templatePreSelected"));
+
+      if (location.state?.selectedTemplate) {
+        setSelectedTemplate(location.state.selectedTemplate);
+        localStorage.setItem("selectedTemplate", location.state.selectedTemplate);
+      }
+      sessionStorage.removeItem("templatePreSelected");
 
       if (stateData) {
         if (isNewResume) {
           setIsWizardModeTrue();
+          // Only show template selector modal if a template was not already chosen
+          if (!templateSelected) {
+            showTemplateSelectorTrue();
+          }
         } else {
           setIsWizardModeFalse();
         }
@@ -656,8 +763,22 @@ const Editor = () => {
   };
 
   const handleGoBack = () => {
-    if (!hasUnsavedChanges || window.confirm("You have unsaved resume changes. Leave anyway?")) {
-      navigate("/my-resumes");
+    if (hasUnsavedChanges) {
+      setShowUnsavedModal(true);
+      setPendingNavigation("back");
+      return;
+    }
+    unblockNavigation();
+    if (location.state?.fromTemplates) {
+      navigate("/templates");
+    } else if (location.state?.fromDashboard) {
+      navigate("/dashboard");
+    } else if (location.state?.fromUpload) {
+      navigate("/upload");
+    } else if (window.history.state && window.history.state.idx > 0) {
+      navigate(-1);
+    } else {
+      navigate("/templates");
     }
   };
 
@@ -676,7 +797,7 @@ const Editor = () => {
   }
 
   return (
-    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-gray-50/50 dark:bg-[#09090b] text-gray-900 dark:zinc-100 flex flex-col font-sans transition-colors duration-200 xl:h-screen xl:overflow-hidden">
+    <div className="min-h-screen lg:h-screen w-full max-w-full overflow-x-hidden lg:overflow-hidden bg-gray-50/50 dark:bg-[#09090b] text-gray-900 dark:text-zinc-100 flex flex-col font-sans transition-colors duration-200">
       <SEO
         title={`Editing: ${resumeData.resumeTitle || resumeData.name || "Resume"} | SmartNShine`}
         description="Craft, tailor, and design your ATS-optimized resume with AI assistance and live preview."
@@ -698,15 +819,16 @@ const Editor = () => {
         onExport={handleDownloadPDF}
         isExportLocked={isExportLocked}
         showPreview={showPreview}
-        onTogglePreview={togglePreview}
+        onTogglePreview={isMobile ? handleMobileTogglePreview : togglePreview}
       />
 
-      <div className="flex-1 w-full min-w-0 max-w-full px-3 sm:px-6 lg:px-8 py-4 sm:py-6 max-w-[1700px] mx-auto xl:min-h-0 xl:overflow-hidden">
+      {/* ── Main content area ── */}
+      <div className="flex-1 min-h-0 w-full max-w-full px-2 sm:px-4 lg:px-8 py-2 sm:py-3 max-w-[1800px] mx-auto overflow-y-auto lg:overflow-hidden">
         <MobileActionBar
           showFloatingNav={showFloatingNav}
           onToggleSections={toggleFloatingNav}
           showPreview={showPreview}
-          onTogglePreview={togglePreview}
+          onTogglePreview={handleMobileTogglePreview}
           onSave={guardedHandleSave}
           saving={saving}
           autoSaving={autoSaving}
@@ -766,48 +888,37 @@ const Editor = () => {
           </div>
         )}
 
-        {/* Divider with Label */}
-        <div className="relative mb-5 sm:mb-6">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t-2 border-gray-200 dark:border-zinc-800"></div>
-          </div>
-          <div className="relative flex justify-center">
-            <span className="bg-gray-50 dark:bg-zinc-900 px-4 py-1.5 text-xs font-semibold text-gray-700 dark:text-gray-300 rounded-full border border-gray-200 dark:border-zinc-700 shadow-xs">
-              <span className="inline-flex items-center gap-1.5">
-                <PencilLine className="w-3.5 h-3.5 text-blue-600" /> Resume Content Editor
-              </span>
-            </span>
-          </div>
-        </div>
-
-        {/* Floating Section Navigation - Desktop */}
-        {!isWizardMode && (
-          <DesktopFloatingSectionNav
-            floatingNavContainerRef={floatingNavContainerRef}
-            floatingNavOffset={floatingNavOffset}
-            showFloatingNav={showFloatingNav}
-            onDragStart={handleFloatingNavDragStart}
-            onToggleFloatingNav={toggleFloatingNav}
-            completionPercentage={completionPercentage}
-            onJumpToFirstIncomplete={jumpToFirstIncompleteSection}
-            onExpandAll={expandAllSections}
-            onCollapseAll={collapseAllSections}
-            trackableSectionIds={trackableSectionIds}
-            activeSectionId={activeSectionId}
-            sectionCompletionMap={sectionCompletionMap}
-            onSelectSection={scrollToSection}
-            onMoveSection={handleMoveSection}
-          />
-        )}
-
         {/* Conditional: Wizard vs Normal Editor */}
         {isWizardMode ? (
           <div
-            className={`grid ${
-              showPreview ? "grid-cols-1 xl:grid-cols-12" : "grid-cols-1"
-            } min-w-0 max-w-full gap-4 sm:gap-6 xl:h-[calc(100vh-15rem)]`}
+            ref={containerRef}
+            className={`flex flex-col lg:flex-row min-w-0 max-w-full gap-0 lg:h-[calc(100vh-8.5rem)] min-h-[300px] overflow-hidden relative ${
+              isDraggingSplitter ? "select-none cursor-col-resize" : ""
+            }`}
           >
-            <div className={`min-w-0 max-w-full order-2 xl:order-1 ${showPreview ? "xl:col-span-5" : ""} xl:h-full xl:overflow-y-auto xl:overscroll-contain xl:pr-2`}>
+            {/* Left Panel: Guided Resume Wizard
+                Mobile: full width, scrollable; hidden when preview is open
+                Desktop: percentage width set by splitter
+            */}
+            <div
+              className="min-w-0 w-full lg:h-full lg:overflow-y-auto lg:overscroll-contain lg:pr-1 scrollbar-hide pb-6 lg:pb-0"
+              style={typeof window !== "undefined" && window.innerWidth >= 1024 && showPreview
+                ? { width: `${splitRatio}%`, flexShrink: 0, flexGrow: 0 }
+                : { width: "100%" }}
+              ref={(el) => {
+                // Apply desktop split width only on lg+
+                if (!el) return;
+                const applyWidth = () => {
+                  if (window.innerWidth >= 1024 && showPreview) {
+                    el.style.width = `${splitRatio}%`;
+                  } else {
+                    el.style.width = "100%";
+                  }
+                };
+                applyWidth();
+                window.addEventListener("resize", applyWidth);
+              }}
+            >
               <ResumeWizard
                 resumeData={resumeData}
                 updateField={updateField}
@@ -817,41 +928,129 @@ const Editor = () => {
                 removeArrayItem={removeArrayItem}
                 moveItem={moveItem}
                 onComplete={handleWizardComplete}
+                onSwitchToFullEditor={handleWizardComplete}
+                onGoBack={handleGoBack}
               />
             </div>
 
+            {/* Resizable divider — desktop only */}
+            {showPreview && (
+              <div
+                onMouseDown={handleSplitterMouseDown}
+                onTouchStart={handleSplitterTouchStart}
+                onDoubleClick={handleResetSplitRatio}
+                role="separator"
+                aria-orientation="vertical"
+                aria-label="Resize sections"
+                title="Drag to resize · Double-click to reset 50/50"
+                className="hidden lg:flex items-center justify-center w-4 relative z-30 cursor-col-resize select-none shrink-0 group touch-none"
+              >
+                <div className="absolute inset-y-0 -left-3 -right-3 cursor-col-resize" />
+                <div
+                  className={`w-[2px] h-full absolute left-1/2 -translate-x-1/2 transition-colors duration-150 ${
+                    isDraggingSplitter
+                      ? "bg-blue-500 dark:bg-blue-400"
+                      : "bg-gray-200/80 dark:bg-zinc-700/80 group-hover:bg-blue-400/70 dark:group-hover:bg-blue-500/70"
+                  }`}
+                />
+                <div
+                  className={`relative z-10 flex flex-col items-center justify-center gap-[3px] px-1 py-2.5 rounded-lg transition-all duration-150 ${
+                    isDraggingSplitter
+                      ? "bg-blue-500 shadow-md shadow-blue-500/30 scale-105"
+                      : "bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-600 shadow-sm group-hover:border-blue-400 dark:group-hover:border-blue-500 group-hover:shadow-md group-hover:scale-105"
+                  }`}
+                >
+                  {[0, 1, 2].map((row) => (
+                    <div key={row} className="flex gap-[3px]">
+                      {[0, 1].map((col) => (
+                        <div
+                          key={col}
+                          className={`w-[3px] h-[3px] rounded-full transition-colors ${
+                            isDraggingSplitter
+                              ? "bg-white"
+                              : "bg-gray-400 dark:bg-zinc-400 group-hover:bg-blue-500 dark:group-hover:bg-blue-400"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Right Panel: Resume Preview
+                Mobile: rendered directly inline at the ending below wizard
+                Desktop: percentage width column side-by-side with splitter
+            */}
             {showPreview && (
               <div
                 ref={previewSectionRef}
-                className="order-1 min-w-0 max-w-full xl:order-2 xl:col-span-7 xl:h-full xl:flex xl:flex-col xl:overflow-hidden"
+                id="resume-preview-section"
+                className="
+                  /* Mobile: inline preview at the ending with bottom spacing */
+                  w-full mt-8 pb-32 lg:mt-0 lg:pb-0
+                  /* Desktop: side-by-side column */
+                  lg:static lg:z-auto lg:bg-transparent lg:flex-none lg:min-w-0
+                  lg:h-full lg:overflow-y-auto lg:overscroll-contain lg:pl-1 scrollbar-hide
+                "
+                style={{ ...(typeof window !== "undefined" && window.innerWidth >= 1024 ? { width: `${100 - splitRatio}%` } : { width: "100%" }) }}
               >
-                <div className="bg-white dark:bg-zinc-950 rounded-xl border border-gray-200 dark:border-zinc-800 p-3.5 sm:p-5 xl:h-full xl:flex xl:flex-col xl:overflow-hidden shadow-xs">
-                  <div className="xl:flex-1 xl:min-h-0 xl:overflow-hidden flex flex-col h-full">
-                    <ResumePreview
-                      ref={resumePreviewRef}
-                      resumeData={resumeData}
-                      template={selectedTemplate}
-                      onDownload={handleDownloadPDF}
-                      onUpdateField={updateField}
-                    />
+                {/* Mobile section header banner for preview at ending */}
+                <div className="lg:hidden mb-3 p-3.5 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-white/10 rounded-2xl flex items-center justify-between shadow-xs">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200/60 dark:border-blue-800/60 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
+                      <Eye className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h3 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white flex items-center gap-1.5">
+                        <span>Live Resume Preview</span>
+                        <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-1.5 py-0.5 rounded-md border border-emerald-200/60 dark:border-emerald-800/60">
+                          Live
+                        </span>
+                      </h3>
+                      <p className="text-[10px] sm:text-xs text-gray-500 dark:text-zinc-400">
+                        Updates in real-time · Directly edit styling below
+                      </p>
+                    </div>
                   </div>
+                  <button
+                    onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-800 text-[11px] font-semibold text-gray-700 dark:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors cursor-pointer active:scale-95"
+                  >
+                    <span>↑ Top</span>
+                  </button>
+                </div>
+
+                <div className="w-full bg-white dark:bg-zinc-950 rounded-2xl border border-gray-200 dark:border-zinc-800 p-2 sm:p-3.5 shadow-xs flex flex-col">
+                  <ResumePreview
+                    ref={resumePreviewRef}
+                    resumeData={resumeData}
+                    template={selectedTemplate}
+                    onDownload={handleDownloadPDF}
+                    onUpdateField={updateField}
+                  />
                 </div>
               </div>
             )}
           </div>
         ) : (
           <div
-            className={`grid ${
-              showPreview ? "grid-cols-1 xl:grid-cols-12" : "grid-cols-1"
-            } min-w-0 max-w-full gap-4 sm:gap-6 xl:h-[calc(100vh-15rem)]`}
+            ref={containerRef}
+            className={`flex flex-col lg:flex-row min-w-0 max-w-full gap-0 lg:h-[calc(100vh-8.5rem)] min-h-[300px] overflow-hidden relative ${
+              isDraggingSplitter ? "select-none cursor-col-resize" : ""
+            }`}
           >
-            {/* Editor Panel - Dynamic Sections */}
+            {/* Editor Panel — full width on mobile, % width on desktop */}
             <div
-              className={`min-w-0 max-w-full space-y-3 order-2 xl:order-1 ${
-                showPreview ? "xl:col-span-5" : ""
-              } xl:h-full xl:overflow-y-auto xl:overscroll-contain xl:pr-2 scrollbar-thin ${
-                isReadOnlyResume ? "pointer-events-none opacity-75" : ""
-              }`}
+              className={`
+                min-w-0 space-y-3
+                w-full pb-6 lg:pb-0
+                lg:h-full lg:overflow-y-auto lg:overscroll-contain lg:pr-1 scrollbar-hide
+                ${isReadOnlyResume ? "pointer-events-none opacity-75" : ""}
+              `}
+              style={typeof window !== "undefined" && window.innerWidth >= 1024 && showPreview
+                ? { width: `${splitRatio}%`, flexShrink: 0, flexGrow: 0 }
+                : { width: "100%" }}
             >
               {sectionOrder.map((sectionId) => (
                 <div
@@ -894,37 +1093,105 @@ const Editor = () => {
               ))}
             </div>
 
-            {/* Preview Panel */}
+            {/* Resizable divider — desktop only */}
             {showPreview && (
               <div
-                ref={previewSectionRef}
-                className="order-1 min-w-0 max-w-full xl:order-2 xl:col-span-7 xl:h-full xl:flex xl:flex-col xl:overflow-hidden"
+                onMouseDown={handleSplitterMouseDown}
+                onTouchStart={handleSplitterTouchStart}
+                onDoubleClick={handleResetSplitRatio}
+                role="separator"
+                aria-orientation="vertical"
+                aria-label="Resize sections"
+                title="Drag to resize · Double-click to reset 50/50"
+                className="hidden lg:flex items-center justify-center w-4 relative z-30 cursor-col-resize select-none shrink-0 group touch-none"
               >
-                <div className="bg-white dark:bg-zinc-950 rounded-xl border border-gray-200 dark:border-zinc-800 p-3.5 sm:p-5 xl:h-full xl:flex xl:flex-col xl:overflow-hidden shadow-xs">
-                  {/* Mobile Preview Header */}
-                  <div className="flex justify-between items-center mb-3 xl:hidden">
-                    <h3 className="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                      <Eye className="w-4 h-4" />
-                      <span>Resume Preview</span>
-                    </h3>
-                    <button
-                      onClick={setShowPreviewFalse}
-                      className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-900 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors cursor-pointer"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
+                <div className="absolute inset-y-0 -left-3 -right-3 cursor-col-resize" />
+                <div
+                  className={`w-[2px] h-full absolute left-1/2 -translate-x-1/2 transition-colors duration-150 ${
+                    isDraggingSplitter
+                      ? "bg-blue-500 dark:bg-blue-400"
+                      : "bg-gray-200/80 dark:bg-zinc-700/80 group-hover:bg-blue-400/70 dark:group-hover:bg-blue-500/70"
+                  }`}
+                />
+                <div
+                  className={`relative z-10 flex flex-col items-center justify-center gap-[3px] px-1 py-2.5 rounded-lg transition-all duration-150 ${
+                    isDraggingSplitter
+                      ? "bg-blue-500 shadow-md shadow-blue-500/30 scale-105"
+                      : "bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-600 shadow-sm group-hover:border-blue-400 dark:group-hover:border-blue-500 group-hover:shadow-md group-hover:scale-105"
+                  }`}
+                >
+                  {[0, 1, 2].map((row) => (
+                    <div key={row} className="flex gap-[3px]">
+                      {[0, 1].map((col) => (
+                        <div
+                          key={col}
+                          className={`w-[3px] h-[3px] rounded-full transition-colors ${
+                            isDraggingSplitter
+                              ? "bg-white"
+                              : "bg-gray-400 dark:bg-zinc-400 group-hover:bg-blue-500 dark:group-hover:bg-blue-400"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Preview Panel
+                Mobile  : inline preview at ending below sections
+                Desktop : side-by-side % column
+            */}
+            {showPreview && (
+              <div
+                ref={isWizardMode ? undefined : previewSectionRef}
+                id="resume-preview-section-full"
+                className="
+                  /* Mobile: inline preview at the ending with bottom spacing */
+                  w-full mt-8 pb-32 lg:mt-0 lg:pb-0
+                  /* Desktop: column layout */
+                  lg:static lg:z-auto lg:bg-transparent lg:flex-none lg:min-w-0
+                  lg:h-full lg:overflow-y-auto lg:overscroll-contain lg:pl-1 scrollbar-hide
+                "
+                style={typeof window !== "undefined" && window.innerWidth >= 1024
+                  ? { width: `${100 - splitRatio}%`, flexShrink: 0, flexGrow: 0 }
+                  : { width: "100%" }}
+              >
+                {/* Mobile preview top bar */}
+                <div className="lg:hidden mb-3 p-3.5 bg-white dark:bg-zinc-950 border border-gray-200 dark:border-zinc-800 rounded-2xl flex items-center justify-between shadow-xs">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200/60 dark:border-blue-800/60 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
+                      <Eye className="w-4 h-4 text-blue-500" />
+                    </div>
+                    <div>
+                      <h3 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white flex items-center gap-1.5">
+                        <span>Live Resume Preview</span>
+                        <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-1.5 py-0.5 rounded-md border border-emerald-200/60 dark:border-emerald-800/60">
+                          Live
+                        </span>
+                      </h3>
+                      <p className="text-[10px] sm:text-xs text-gray-500 dark:text-zinc-400">
+                        Updates in real-time · Directly edit styling below
+                      </p>
+                    </div>
                   </div>
-                  <div className="xl:flex-1 xl:min-h-0 xl:overflow-hidden flex flex-col h-full">
-                    <ResumePreview
-                      ref={resumePreviewRef}
-                      resumeData={resumeData}
-                      template={selectedTemplate}
-                      onDownload={handleDownloadPDF}
-                      onUpdateField={updateField}
-                    />
-                  </div>
+                  <button
+                    onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-800 text-[11px] font-semibold text-gray-700 dark:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors cursor-pointer active:scale-95"
+                  >
+                    <span>↑ Top</span>
+                  </button>
+                </div>
+
+                {/* Preview content */}
+                <div className="w-full bg-white dark:bg-zinc-950 rounded-2xl border border-gray-200 dark:border-zinc-800 p-2 sm:p-3.5 shadow-xs flex flex-col">
+                  <ResumePreview
+                    ref={resumePreviewRef}
+                    resumeData={resumeData}
+                    template={selectedTemplate}
+                    onDownload={handleDownloadPDF}
+                    onUpdateField={updateField}
+                  />
                 </div>
               </div>
             )}

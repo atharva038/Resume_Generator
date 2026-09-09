@@ -18,12 +18,12 @@ export default function ResumeWatermark({ isMobile = false }) {
       <div
         className="absolute inset-0"
         style={{
-          backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='120' viewBox='0 0 220 120'><line x1='0' y1='120' x2='220' y2='0' stroke='%230f172a' stroke-opacity='0.035' stroke-width='1'/><text x='15' y='65' fill='%230f172a' fill-opacity='0.06' font-size='10' font-family='sans-serif' font-weight='700' letter-spacing='1.5' transform='rotate(-28 15 65)'>SmartNShine • PREVIEW</text></svg>")`,
+          backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='120' viewBox='0 0 220 120'><line x1='0' y1='120' x2='220' y2='0' stroke='%230f172a' stroke-opacity='0.02' stroke-width='0.75'/><text x='15' y='65' fill='%230f172a' fill-opacity='0.035' font-size='9' font-family='sans-serif' font-weight='700' letter-spacing='1.5' transform='rotate(-28 15 65)'>SmartNShine • PREVIEW</text></svg>")`,
           backgroundSize: "220px 120px",
         }}
       />
 
-      {/* 2. Top-Third Large Diagonal Watermark */}
+      {/* 2. Top-Third Subtle Diagonal Watermark */}
       <div
         className="absolute left-1/2 flex flex-col items-center justify-center pointer-events-none"
         style={{
@@ -35,11 +35,10 @@ export default function ResumeWatermark({ isMobile = false }) {
         <span
           className="font-black uppercase tracking-widest text-[#0f172a]"
           style={{
-            fontSize: isMobile ? "34px" : "58px",
+            fontSize: isMobile ? "32px" : "56px",
             letterSpacing: "0.22em",
-            opacity: 0.11,
+            opacity: 0.038,
             whiteSpace: "nowrap",
-            textShadow: "0 0 1px rgba(15,23,42,0.15)",
           }}
         >
           SmartNShine
@@ -47,8 +46,8 @@ export default function ResumeWatermark({ isMobile = false }) {
         <span
           className="font-bold tracking-[0.3em] text-[#0f172a] uppercase text-center"
           style={{
-            fontSize: isMobile ? "8px" : "11px",
-            opacity: 0.08,
+            fontSize: isMobile ? "8px" : "10px",
+            opacity: 0.03,
             marginTop: "1px",
           }}
         >
@@ -56,7 +55,7 @@ export default function ResumeWatermark({ isMobile = false }) {
         </span>
       </div>
 
-      {/* 3. Center Large Diagonal Watermark */}
+      {/* 3. Center Subtle Diagonal Watermark */}
       <div
         className="absolute left-1/2 flex flex-col items-center justify-center pointer-events-none"
         style={{
@@ -68,11 +67,10 @@ export default function ResumeWatermark({ isMobile = false }) {
         <span
           className="font-black uppercase tracking-widest text-[#0f172a]"
           style={{
-            fontSize: isMobile ? "38px" : "66px",
+            fontSize: isMobile ? "36px" : "64px",
             letterSpacing: "0.22em",
-            opacity: 0.12,
+            opacity: 0.042,
             whiteSpace: "nowrap",
-            textShadow: "0 0 1px rgba(15,23,42,0.18)",
           }}
         >
           SmartNShine
@@ -80,8 +78,8 @@ export default function ResumeWatermark({ isMobile = false }) {
         <span
           className="font-bold tracking-[0.3em] text-[#0f172a] uppercase text-center"
           style={{
-            fontSize: isMobile ? "8px" : "11px",
-            opacity: 0.08,
+            fontSize: isMobile ? "8px" : "10px",
+            opacity: 0.03,
             marginTop: "1px",
           }}
         >
@@ -89,7 +87,7 @@ export default function ResumeWatermark({ isMobile = false }) {
         </span>
       </div>
 
-      {/* 4. Bottom-Third Large Diagonal Watermark */}
+      {/* 4. Bottom-Third Subtle Diagonal Watermark */}
       <div
         className="absolute left-1/2 flex flex-col items-center justify-center pointer-events-none"
         style={{
@@ -101,11 +99,10 @@ export default function ResumeWatermark({ isMobile = false }) {
         <span
           className="font-black uppercase tracking-widest text-[#0f172a]"
           style={{
-            fontSize: isMobile ? "34px" : "58px",
+            fontSize: isMobile ? "32px" : "56px",
             letterSpacing: "0.22em",
-            opacity: 0.11,
+            opacity: 0.038,
             whiteSpace: "nowrap",
-            textShadow: "0 0 1px rgba(15,23,42,0.15)",
           }}
         >
           SmartNShine
@@ -113,8 +110,8 @@ export default function ResumeWatermark({ isMobile = false }) {
         <span
           className="font-bold tracking-[0.3em] text-[#0f172a] uppercase text-center"
           style={{
-            fontSize: isMobile ? "8px" : "11px",
-            opacity: 0.08,
+            fontSize: isMobile ? "8px" : "10px",
+            opacity: 0.03,
             marginTop: "1px",
           }}
         >
