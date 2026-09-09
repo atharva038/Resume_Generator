@@ -4,6 +4,8 @@ import Contact from "../models/Contact.js";
 import AIUsage from "../models/AIUsage.model.js";
 import AdminLog from "../models/AdminLog.model.js";
 import Template from "../models/Template.model.js";
+import Portfolio from "../models/Portfolio.model.js";
+import PortfolioProject from "../models/PortfolioProject.model.js";
 import Feedback from "../models/Feedback.model.js";
 import Settings from "../models/Settings.model.js";
 import Subscription from "../models/Subscription.model.js";
@@ -3795,6 +3797,297 @@ export const adminGlobalSearch = async (req, res) => {
       success: false,
       message: "Failed to perform global search",
       error: error.message,
+    });
+  }
+};
+
+// ==========================================
+// PORTFOLIO MANAGEMENT ADMIN CONTROLLERS
+// ==========================================
+
+// Get Portfolio Admin Stats
+export const getPortfolioAdminStats = async (req, res) => {
+  try {
+    const [
+      totalPortfolios,
+      publishedPortfolios,
+      draftPortfolios,
+      totalViewsAgg,
+      themeDistribution,
+      recentPortfolios,
+    ] = await Promise.all([
+      Portfolio.countDocuments(),
+      Portfolio.countDocuments({status: "published"}),
+      Portfolio.countDocuments({status: "draft"}),
+      Portfolio.aggregate([
+        {$group: {_id: null, totalViews: {$sum: "$views"}}},
+      ]),
+      Portfolio.aggregate([
+        {$group: {_id: "$themeId", count: {$sum: 1}}},
+        {$sort: {count: -1}},
+      ]),
+      Portfolio.find()
+        .sort({createdAt: -1})
+        .limit(5)
+        .populate("userId", "name email profileImage subscription")
+        .select("title slug themeId status views createdAt publishedAt")
+        .lean(),
+    ]);
+
+    const totalViews = totalViewsAgg[0]?.totalViews || 0;
+
+    // Last 7 days created portfolios
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const last7DaysCount = await Portfolio.countDocuments({
+      createdAt: {$gte: sevenDaysAgo},
+    });
+
+    res.json({
+      success: true,
+      data: {
+        totalPortfolios,
+        publishedPortfolios,
+        draftPortfolios,
+        totalViews,
+        last7DaysCount,
+        themeDistribution,
+        recentPortfolios,
+      },
+    });
+  } catch (error) {
+    console.error("Get portfolio admin stats error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch portfolio stats",
+      error: error.message,
+    });
+  }
+};
+
+// Get All Portfolios (Admin table with filters & pagination)
+export const getAllAdminPortfolios = async (req, res) => {
+  try {
+    const {
+      page = 1,
+      limit = 20,
+      search = "",
+      status = "",
+      themeId = "",
+      sortBy = "createdAt",
+      order = "desc",
+    } = req.query;
+
+    const filter = {};
+    if (status && status !== "all") {
+      filter.status = status;
+    }
+    if (themeId && themeId !== "all") {
+      filter.themeId = themeId;
+    }
+
+    if (search) {
+      const userMatches = await User.find({
+        $or: [
+          {name: {$regex: search, $options: "i"}},
+          {email: {$regex: search, $options: "i"}},
+        ],
+      }).select("_id");
+
+      const userIds = userMatches.map((u) => u._id);
+
+      filter.$or = [
+        {title: {$regex: search, $options: "i"}},
+        {slug: {$regex: search, $options: "i"}},
+        {professionalTitle: {$regex: search, $options: "i"}},
+        {userId: {$in: userIds}},
+      ];
+    }
+
+    const sortOption = {};
+    sortOption[sortBy] = order === "asc" ? 1 : -1;
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    const [portfolios, total] = await Promise.all([
+      Portfolio.find(filter)
+        .sort(sortOption)
+        .skip(skip)
+        .limit(parseInt(limit))
+        .populate("userId", "name email profileImage subscription role")
+        .select(
+          "title slug professionalTitle themeId themeAccent status views createdAt updatedAt publishedAt location profileImage heroImage"
+        )
+        .lean(),
+      Portfolio.countDocuments(filter),
+    ]);
+
+    res.json({
+      success: true,
+      data: {
+        portfolios,
+        pagination: {
+          total,
+          page: parseInt(page),
+          limit: parseInt(limit),
+          totalPages: Math.ceil(total / parseInt(limit)),
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Get all admin portfolios error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch admin portfolios",
+      error: error.message,
+    });
+  }
+};
+
+// Update Portfolio Status (Admin)
+export const updateAdminPortfolioStatus = async (req, res) => {
+  try {
+    const {portfolioId} = req.params;
+    const {status} = req.body;
+
+    if (!["published", "draft", "unpublished"].includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid status. Must be 'published', 'draft', or 'unpublished'.",
+      });
+    }
+
+    const portfolio = await Portfolio.findById(portfolioId);
+    if (!portfolio) {
+      return res.status(404).json({
+        success: false,
+        message: "Portfolio not found",
+      });
+    }
+
+    const previousStatus = portfolio.status;
+    portfolio.status = status;
+    if (status === "published" && !portfolio.publishedAt) {
+      portfolio.publishedAt = new Date();
+    }
+    await portfolio.save();
+
+    // Log admin action
+    await AdminLog.create({
+      adminId: req.user._id,
+      action: "UPDATE_PORTFOLIO_STATUS",
+      resourceType: "Portfolio",
+      resourceId: portfolio._id,
+      details: {
+        slug: portfolio.slug,
+        previousStatus,
+        newStatus: status,
+      },
+    });
+
+    res.json({
+      success: true,
+      message: `Portfolio status updated to ${status}`,
+      data: portfolio,
+    });
+  } catch (error) {
+    console.error("Update admin portfolio status error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update portfolio status",
+      error: error.message,
+    });
+  }
+};
+
+// Delete Portfolio (Admin)
+export const deleteAdminPortfolio = async (req, res) => {
+  try {
+    const {portfolioId} = req.params;
+
+    const portfolio = await Portfolio.findById(portfolioId);
+    if (!portfolio) {
+      return res.status(404).json({
+        success: false,
+        message: "Portfolio not found",
+      });
+    }
+
+    // Delete associated projects
+    await PortfolioProject.deleteMany({portfolioId: portfolio._id});
+    await Portfolio.findByIdAndDelete(portfolioId);
+
+    // Log admin action
+    await AdminLog.create({
+      adminId: req.user._id,
+      action: "DELETE_PORTFOLIO",
+      resourceType: "Portfolio",
+      resourceId: portfolioId,
+      details: {
+        slug: portfolio.slug,
+        title: portfolio.title,
+        userId: portfolio.userId,
+      },
+    });
+
+    res.json({
+      success: true,
+      message: "Portfolio and related assets deleted successfully",
+    });
+  } catch (error) {
+    console.error("Delete admin portfolio error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete portfolio",
+      error: error.message,
+    });
+  }
+};
+
+// Generate Portfolio SEO with AI
+export const generatePortfolioSeoWithAI = async (req, res) => {
+  try {
+    const {title, role, skills, themeName, bio} = req.body;
+
+    const prompt = `Generate high-ranking SEO metadata for a developer/creator portfolio:
+Title: ${title || "Portfolio"}
+Role: ${role || "Software Engineer"}
+Theme: ${themeName || "Minimalist"}
+Skills: ${Array.isArray(skills) ? skills.join(", ") : skills || "Web Development"}
+Bio: ${bio || ""}
+
+Return a valid JSON object strictly matching this schema:
+{
+  "metaTitle": "Title tag (50-60 chars, e.g. Alex Vance | Senior Full Stack Engineer & Product Designer)",
+  "metaDescription": "Meta description (140-160 chars, compelling and keyword rich)",
+  "keywords": ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5", "keyword6", "keyword7", "keyword8"],
+  "ogTitle": "OpenGraph title",
+  "ogDescription": "OpenGraph description",
+  "searchSummary": "1-line crisp search engine snippet"
+}`;
+
+    const rawResponse = await openaiService.generateJsonWithFallback({
+      prompt,
+      systemInstruction: "You are an expert technical SEO strategist. Output strictly valid JSON without markdown fences.",
+    });
+
+    res.json({
+      success: true,
+      data: rawResponse,
+    });
+  } catch (error) {
+    console.error("Generate portfolio SEO error:", error);
+    // Fallback if AI service times out
+    res.json({
+      success: true,
+      data: {
+        metaTitle: `${req.body.title || "Developer"} | Full Stack Engineer & Creative Portfolio`,
+        metaDescription: `Explore the personal portfolio, engineering projects, and technical case studies of ${req.body.title || "Developer"}.`,
+        keywords: ["portfolio", "software engineer", "developer", "full stack", "react", "clean code"],
+        ogTitle: `${req.body.title || "Developer"} — Portfolio`,
+        ogDescription: `Crafting high-performance digital products and software architecture.`,
+        searchSummary: `Personal developer portfolio of ${req.body.title || "Developer"}.`,
+      },
     });
   }
 };

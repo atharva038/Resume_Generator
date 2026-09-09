@@ -55,6 +55,11 @@ import {
   updatePromotionSettings,
   togglePromotion,
   adminGlobalSearch,
+  getPortfolioAdminStats,
+  getAllAdminPortfolios,
+  updateAdminPortfolioStatus,
+  deleteAdminPortfolio,
+  generatePortfolioSeoWithAI,
 } from "../controllers/admin.controller.js";
 import {
   archiveNotification,
@@ -144,6 +149,16 @@ router.patch(
   updateTemplateStatus
 );
 router.delete("/templates/:templateId", validateTemplateId, deleteTemplate);
+
+// Portfolio Management
+router.get("/portfolios/stats", getPortfolioAdminStats);
+router.post("/portfolios/generate-seo", generatePortfolioSeoWithAI);
+router.get("/portfolios", getAllAdminPortfolios);
+router.patch(
+  "/portfolios/:portfolioId/status",
+  updateAdminPortfolioStatus
+);
+router.delete("/portfolios/:portfolioId", deleteAdminPortfolio);
 
 // Feedback Management
 router.get("/feedback", getAllFeedback);

@@ -2222,6 +2222,49 @@ const EDITOR_NAV_ITEMS = [
                         ))}
                       </div>
                     </div>
+
+                    {/* Kinetic Marquee Ribbon Customizer */}
+                    {activeTheme.id === "kinetic" && (
+                      <div className="pt-3 border-t border-gray-100 dark:border-white/[0.08] space-y-3">
+                        <div className="flex items-center justify-between">
+                          <p className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200">
+                            Kinetic Marquee Ribbons
+                          </p>
+                          <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400">
+                            Editable
+                          </span>
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="block text-[11px] font-mono text-gray-500 dark:text-zinc-400">
+                            Top Marquee Ribbon (Separated by ×)
+                          </label>
+                          <input
+                            type="text"
+                            value={form.settings?.marqueeText1 || ""}
+                            onChange={(e) => updateNestedField("settings", "marqueeText1", e.target.value)}
+                            placeholder="e.g. FULL STACK × REACT × NODE.JS × ARCHITECTURE"
+                            className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs font-mono"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="block text-[11px] font-mono text-gray-500 dark:text-zinc-400">
+                            Bottom Marquee Ribbon (Separated by ×)
+                          </label>
+                          <input
+                            type="text"
+                            value={form.settings?.marqueeText2 || ""}
+                            onChange={(e) => updateNestedField("settings", "marqueeText2", e.target.value)}
+                            placeholder="e.g. PRODUCT DESIGN × PERFORMANCE × SCALABLE CODE"
+                            className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs font-mono"
+                          />
+                        </div>
+                        <p className="text-[10px] text-gray-400 dark:text-zinc-500">
+                          Leave blank to automatically generate dynamic marquee text from your real skills & role.
+                        </p>
+                      </div>
+                    )}
                   </div>
                 );
               })()}

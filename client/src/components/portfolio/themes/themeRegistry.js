@@ -11,8 +11,22 @@ import LiquidGlassTheme from "./LiquidGlassTheme";
 import RetroFuturisticTheme from "./RetroFuturisticTheme";
 import MagazineTheme from "./MagazineTheme";
 import SwissArchitecturalTheme from "./SwissArchitecturalTheme";
+import SmartNShineKineticTheme from "./SmartNShineKineticTheme";
 
 export const portfolioThemes = {
+  kinetic: {
+    id: "kinetic",
+    name: "SmartNShine Kinetic",
+    category: "Interactive Motion",
+    badge: "New Flagship",
+    defaultMode: "light",
+    subtitle: "Scroll × Transformation × Spatial Motion × Generative Atmosphere.",
+    description: "6-phase scroll-driven 3D kinetic object transformation, dual atmospheric generative canvas shaders, continuous visual project gallery, and ultra-thin kinetic lines.",
+    tags: ["Interactive Motion", "Scroll Transformation", "Generative Shaders", "Spatial 3D", "Kinetic"],
+    component: SmartNShineKineticTheme,
+    allowedTiers: ["free", "one-time", "pro"],
+    accentPresets: ["#2563eb", "#38bdf8", "#6366f1", "#06b6d4", "#10b981", "#f43f5e"],
+  },
   swissArchitectural: {
     id: "swissArchitectural",
     name: "Swiss Architectural",

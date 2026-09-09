@@ -135,6 +135,18 @@ export const generateTemplateSeoWithAI = (data) =>
 export const deleteTemplate = (templateId) =>
   adminAPI.delete(`/templates/${templateId}`);
 
+// Portfolio Management
+export const getPortfolioAdminStats = () =>
+  adminAPI.get("/portfolios/stats");
+export const getAllAdminPortfolios = (params) =>
+  adminAPI.get("/portfolios", {params});
+export const updateAdminPortfolioStatus = (portfolioId, status) =>
+  adminAPI.patch(`/portfolios/${portfolioId}/status`, {status});
+export const deleteAdminPortfolio = (portfolioId) =>
+  adminAPI.delete(`/portfolios/${portfolioId}`);
+export const generatePortfolioSeoWithAI = (data) =>
+  adminAPI.post("/portfolios/generate-seo", data);
+
 // Feedback Management
 export const getAllFeedback = (params) => adminAPI.get("/feedback", {params});
 export const getFeedbackStatistics = () => adminAPI.get("/feedback/statistics");

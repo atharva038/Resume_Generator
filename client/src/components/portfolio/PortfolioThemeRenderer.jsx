@@ -123,7 +123,8 @@ const PortfolioThemeRenderer = ({
           theme.id !== "neomorphic" &&
           theme.id !== "liquidGlass" &&
           theme.id !== "retroFuturistic" &&
-          theme.id !== "magazine" && (
+          theme.id !== "magazine" &&
+          theme.id !== "kinetic" && (
             <PortfolioNavbar
               data={data}
               isDarkMode={isDarkMode}
