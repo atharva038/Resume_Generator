@@ -742,7 +742,7 @@ export default function PortfolioEditor() {
     }
     const oldUrl = form.profileImage;
     setUploadingProfile(true);
-    const toastId = toast.loading("Uploading profile photo to Cloud CDN...");
+    const toastId = toast.loading("Uploading profile photo to Cloudinary...");
     try {
       const res = await portfolioAPI.uploadImage(file, oldUrl);
       if (res.data?.url) {
@@ -750,23 +750,16 @@ export default function PortfolioEditor() {
         if (!form.seo?.ogImage || form.seo.ogImage === oldUrl) {
           updateNestedField("seo", "ogImage", res.data.url);
         }
-        toast.success("Profile photo uploaded and linked to social share preview (OG Image)!", { id: toastId });
+        toast.success("Profile photo uploaded to Cloudinary!", { id: toastId });
         return;
       }
-      throw new Error("No upload URL returned");
+      throw new Error("No upload URL returned from cloud storage");
     } catch (err) {
-      console.warn("Cloud upload fallback:", err);
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        if (ev.target?.result) {
-          updateField("profileImage", ev.target.result);
-          if (!form.seo?.ogImage || form.seo.ogImage === oldUrl) {
-            updateNestedField("seo", "ogImage", ev.target.result);
-          }
-          toast.success("Photo loaded!", { id: toastId });
-        }
-      };
-      reader.readAsDataURL(file);
+      console.error("Cloudinary upload failed:", err);
+      toast.error(
+        err.response?.data?.error || err.message || "Failed to upload to Cloudinary. Please check credentials in Super Admin.",
+        { id: toastId }
+      );
     } finally {
       setUploadingProfile(false);
     }
@@ -792,25 +785,21 @@ export default function PortfolioEditor() {
     }
     const oldUrl = form.heroImage;
     setUploadingHero(true);
-    const toastId = toast.loading("Uploading hero banner / cutout to Cloud CDN...");
+    const toastId = toast.loading("Uploading hero banner to Cloudinary...");
     try {
       const res = await portfolioAPI.uploadImage(file, oldUrl);
       if (res.data?.url) {
         updateField("heroImage", res.data.url);
-        toast.success("Hero image uploaded to Cloud CDN!", { id: toastId });
+        toast.success("Hero image uploaded to Cloudinary!", { id: toastId });
         return;
       }
-      throw new Error("No upload URL returned");
+      throw new Error("No upload URL returned from cloud storage");
     } catch (err) {
-      console.warn("Cloud upload fallback:", err);
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        if (ev.target?.result) {
-          updateField("heroImage", ev.target.result);
-          toast.success("Hero image loaded!", { id: toastId });
-        }
-      };
-      reader.readAsDataURL(file);
+      console.error("Cloudinary upload failed:", err);
+      toast.error(
+        err.response?.data?.error || err.message || "Failed to upload to Cloudinary. Please check credentials in Super Admin.",
+        { id: toastId }
+      );
     } finally {
       setUploadingHero(false);
     }
@@ -833,25 +822,21 @@ export default function PortfolioEditor() {
     }
     const oldUrl = form.seo?.ogImage;
     setUploadingOgImage(true);
-    const toastId = toast.loading("Uploading social share banner to Cloud CDN...");
+    const toastId = toast.loading("Uploading social share banner to Cloudinary...");
     try {
       const res = await portfolioAPI.uploadImage(file, oldUrl);
       if (res.data?.url) {
         updateNestedField("seo", "ogImage", res.data.url);
-        toast.success("Custom social sharing banner uploaded!", { id: toastId });
+        toast.success("Social sharing banner uploaded to Cloudinary!", { id: toastId });
         return;
       }
-      throw new Error("No upload URL returned");
+      throw new Error("No upload URL returned from cloud storage");
     } catch (err) {
-      console.warn("Cloud upload fallback:", err);
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        if (ev.target?.result) {
-          updateNestedField("seo", "ogImage", ev.target.result);
-          toast.success("Banner loaded!", { id: toastId });
-        }
-      };
-      reader.readAsDataURL(file);
+      console.error("Cloudinary upload failed:", err);
+      toast.error(
+        err.response?.data?.error || err.message || "Failed to upload to Cloudinary. Please check credentials in Super Admin.",
+        { id: toastId }
+      );
     } finally {
       setUploadingOgImage(false);
     }
@@ -874,28 +859,24 @@ export default function PortfolioEditor() {
     }
     const oldUrl = form.seo?.favicon;
     setUploadingFavicon(true);
-    const toastId = toast.loading("Processing & converting favicon to 64x64 PNG...");
+    const toastId = toast.loading("Processing favicon to 64x64 PNG...");
     try {
       const faviconFile = await resizeImageToFavicon(file, 64);
-      toast.loading("Uploading favicon to Cloud CDN...", { id: toastId });
+      toast.loading("Uploading favicon to Cloudinary...", { id: toastId });
 
       const res = await portfolioAPI.uploadImage(faviconFile, oldUrl);
       if (res.data?.url) {
         updateNestedField("seo", "favicon", res.data.url);
-        toast.success("Favicon converted to 64x64 PNG and saved!", { id: toastId });
+        toast.success("Favicon uploaded to Cloudinary!", { id: toastId });
         return;
       }
-      throw new Error("No upload URL returned");
+      throw new Error("No upload URL returned from cloud storage");
     } catch (err) {
-      console.warn("Favicon upload fallback:", err);
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        if (ev.target?.result) {
-          updateNestedField("seo", "favicon", ev.target.result);
-          toast.success("Favicon loaded!", { id: toastId });
-        }
-      };
-      reader.readAsDataURL(file);
+      console.error("Cloudinary upload failed:", err);
+      toast.error(
+        err.response?.data?.error || err.message || "Failed to upload favicon to Cloudinary. Please check credentials in Super Admin.",
+        { id: toastId }
+      );
     } finally {
       setUploadingFavicon(false);
     }
@@ -918,15 +899,37 @@ export default function PortfolioEditor() {
     setTimeout(() => setCopiedLink(false), 2000);
   };
 
+const EDITOR_NAV_ITEMS = [
+  { id: "section-profile", label: "Profile", icon: User },
+  { id: "section-contact", label: "Contact", icon: Phone },
+  { id: "section-projects", label: "Projects", icon: Rocket },
+  { id: "section-experience", label: "Experience", icon: Briefcase },
+  { id: "section-education", label: "Education", icon: GraduationCap },
+  { id: "section-skills", label: "Skills", icon: Sparkles },
+  { id: "section-achievements", label: "Honors", icon: Trophy },
+  { id: "section-custom", label: "Custom", icon: Layers },
+  { id: "section-theme", label: "Theme", icon: Palette },
+  { id: "section-order", label: "Ordering", icon: Sliders },
+  { id: "section-seo", label: "SEO", icon: Search },
+  { id: "section-publish", label: "Publish", icon: Globe2 },
+];
+
+  const scrollToSection = (sectionId) => {
+    const el = document.getElementById(sectionId);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   if (loading || !form) {
     return (
-      <div className="min-h-screen bg-gray-50/50 dark:bg-[#09090b] flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50/50 dark:bg-[#09090b] flex items-center justify-center p-4">
         <div className="text-center space-y-4">
-          <div className="relative w-16 h-16 mx-auto">
+          <div className="relative w-14 h-14 sm:w-16 sm:h-16 mx-auto">
             <div className="absolute inset-0 border-3 border-gray-200 dark:border-zinc-800 border-t-emerald-600 dark:border-t-emerald-500 rounded-full animate-spin"></div>
-            <Globe2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+            <Globe2 className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600 dark:text-emerald-400 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
           </div>
-          <p className="text-sm text-gray-600 dark:text-zinc-300 font-semibold tracking-wide uppercase">
+          <p className="text-xs sm:text-sm text-gray-600 dark:text-zinc-300 font-semibold tracking-wide uppercase">
             Loading Portfolio Editor...
           </p>
         </div>
@@ -937,7 +940,7 @@ export default function PortfolioEditor() {
   const isPublished = portfolio.status === "published";
 
   return (
-    <div className="min-h-screen bg-gray-50/50 dark:bg-[#09090b] text-gray-900 dark:text-zinc-100 flex flex-col font-sans transition-colors duration-200">
+    <div className="min-h-screen bg-gray-50/50 dark:bg-[#09090b] text-gray-900 dark:text-zinc-100 flex flex-col font-sans transition-colors duration-200 overflow-x-hidden">
       <SEO
         title={`Editing: ${form.title || "Portfolio"} | SmartNShine`}
         description="Edit, design, and configure your live developer portfolio website."
@@ -959,51 +962,69 @@ export default function PortfolioEditor() {
       />
 
       {/* Main Workspace Body */}
-      <main className="flex-1 px-4 sm:px-8 lg:px-12 py-8 max-w-[1600px] w-full mx-auto space-y-8">
+      <main className="flex-1 px-3 xs:px-4 sm:px-6 lg:px-10 py-4 sm:py-8 max-w-[1600px] w-full mx-auto space-y-5 sm:space-y-8">
+        {/* Quick Jump Section Navigation Bar (Mobile & Desktop Friendly) */}
+        <div className="sticky top-[49px] xs:top-[53px] sm:top-[57px] z-30 -mx-3 xs:-mx-4 sm:mx-0 px-3 xs:px-4 sm:px-0 py-2 bg-gray-50/90 dark:bg-[#09090b]/90 backdrop-blur-md overflow-x-auto scrollbar-none flex items-center gap-1.5 sm:gap-2 border-b sm:border-b-0 border-gray-200/80 dark:border-white/[0.06]">
+          {EDITOR_NAV_ITEMS.map((item) => {
+            const Icon = item.icon;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => scrollToSection(item.id)}
+                className="inline-flex items-center gap-1.5 px-2.5 xs:px-3 py-1.5 rounded-xl border border-gray-200/80 dark:border-white/10 bg-white/90 dark:bg-zinc-900/90 hover:bg-gray-100 dark:hover:bg-zinc-800 text-gray-700 dark:text-zinc-200 text-xs font-semibold whitespace-nowrap shadow-2xs transition-all active:scale-95 cursor-pointer shrink-0"
+              >
+                <Icon className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                <span>{item.label}</span>
+              </button>
+            );
+          })}
+        </div>
+
         {/* Hero Section Banner */}
-        <div className="relative overflow-hidden rounded-3xl border border-gray-200/90 dark:border-white/[0.1] bg-white dark:bg-gradient-to-b dark:from-zinc-900/95 dark:to-zinc-950/95 p-6 sm:p-8 shadow-sm dark:shadow-2xl">
+        <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl border border-gray-200/90 dark:border-white/[0.1] bg-white dark:bg-gradient-to-b dark:from-zinc-900/95 dark:to-zinc-950/95 p-4 xs:p-5 sm:p-7 md:p-8 shadow-sm dark:shadow-2xl">
           <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-emerald-500/10 blur-3xl" />
 
-          <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-            <div className="space-y-2.5">
-              <div className="flex items-center gap-3">
+          <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 sm:gap-6">
+            <div className="space-y-2 sm:space-y-2.5 min-w-0">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                 <span
-                  className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-bold ${
+                  className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-bold ${
                     isPublished
                       ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
                       : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
                   }`}
                 >
-                  <span className={`w-2.5 h-2.5 rounded-full ${isPublished ? "bg-emerald-500 animate-pulse" : "bg-amber-500"}`} />
+                  <span className={`w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full ${isPublished ? "bg-emerald-500 animate-pulse" : "bg-amber-500"}`} />
                   <span>{isPublished ? "Published & Live" : "Draft (Unpublished)"}</span>
                 </span>
                 {form.themeId && (
-                  <span className="text-xs sm:text-sm font-bold px-3 py-1.5 rounded-full bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 border border-gray-200 dark:border-white/[0.08] capitalize">
+                  <span className="text-xs sm:text-sm font-bold px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 border border-gray-200 dark:border-white/[0.08] capitalize">
                     Theme: {form.themeId}
                   </span>
                 )}
               </div>
 
-              <h1 className="text-2xl sm:text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+              <h1 className="text-xl xs:text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight break-words">
                 {form.title || "Untitled Portfolio"}
               </h1>
-              <p className="text-sm sm:text-base text-gray-600 dark:text-zinc-300 max-w-2xl leading-relaxed">
+              <p className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-zinc-300 max-w-2xl leading-relaxed">
                 {form.professionalTitle || "Configure details, proof links, theme colors, and SEO."}
               </p>
             </div>
 
             {/* Public Link Pill Card */}
             {isPublished && (
-              <div className="flex flex-wrap items-center gap-3 p-4 rounded-2xl bg-emerald-50/90 dark:bg-emerald-950/40 border border-emerald-500/30 shadow-xs">
-                <div className="flex items-center gap-2.5 text-sm font-medium text-emerald-950 dark:text-emerald-200">
-                  <Globe2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                  <span className="font-mono text-xs sm:text-sm truncate max-w-xs sm:max-w-md">{publicUrl}</span>
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3 p-3 sm:p-4 rounded-2xl bg-emerald-50/90 dark:bg-emerald-950/40 border border-emerald-500/30 shadow-xs max-w-full">
+                <div className="flex items-center gap-2.5 text-sm font-medium text-emerald-950 dark:text-emerald-200 min-w-0">
+                  <Globe2 className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                  <span className="font-mono text-xs sm:text-sm truncate max-w-[200px] xs:max-w-[280px] sm:max-w-md">{publicUrl}</span>
                 </div>
-                <div className="flex items-center gap-2 ml-auto">
+                <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
                   <button
                     type="button"
                     onClick={handleCopyPublicLink}
-                    className="p-2 rounded-xl bg-white dark:bg-zinc-900 text-gray-700 dark:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-800 border border-gray-200 dark:border-white/10 transition-all cursor-pointer shadow-2xs"
+                    className="p-1.5 sm:p-2 rounded-xl bg-white dark:bg-zinc-900 text-gray-700 dark:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-800 border border-gray-200 dark:border-white/10 transition-all cursor-pointer shadow-2xs"
                     title="Copy live link"
                   >
                     {copiedLink ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
@@ -1012,7 +1033,7 @@ export default function PortfolioEditor() {
                     href={publicUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="p-2 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 transition-all cursor-pointer shadow-2xs"
+                    className="p-1.5 sm:p-2 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 transition-all cursor-pointer shadow-2xs"
                     title="Open live website in new tab"
                   >
                     <ExternalLink className="w-4 h-4" />
@@ -1024,34 +1045,34 @@ export default function PortfolioEditor() {
         </div>
 
         {/* Global Toolbar & Panel Grid */}
-        <div className="grid gap-8 lg:grid-cols-12 items-start">
+        <div className="grid gap-6 lg:gap-8 lg:grid-cols-12 items-start">
           {/* Left Column: Content Panels (8 cols) */}
-          <div className="lg:col-span-8 space-y-6">
+          <div className="lg:col-span-8 space-y-5 sm:space-y-6">
             {/* Quick Expand / Collapse Bar */}
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-gray-200/90 dark:border-white/[0.1] bg-white dark:bg-zinc-950 px-6 py-4 shadow-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-gray-200/90 dark:border-white/[0.1] bg-white dark:bg-zinc-950 px-4 sm:px-6 py-3.5 sm:py-4 shadow-xs">
               <div>
                 <h2 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-gray-600 dark:text-zinc-300">
                   Content Sections
                 </h2>
-                <p className="text-xs sm:text-sm text-gray-500 dark:text-zinc-400 mt-0.5">
+                <p className="text-[11px] sm:text-xs md:text-sm text-gray-500 dark:text-zinc-400 mt-0.5">
                   Click any card to expand or edit fields.
                 </p>
               </div>
-              <div className="flex flex-wrap gap-2.5">
+              <div className="flex items-center gap-2 w-full sm:w-auto">
                 <button
                   type="button"
                   onClick={() => setAllPanelsOpen(true)}
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 px-3.5 py-2 text-xs sm:text-sm font-semibold text-gray-800 dark:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-all cursor-pointer"
+                  className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 px-3 sm:px-3.5 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-gray-800 dark:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-all cursor-pointer"
                 >
-                  <ArrowDown className="h-4 w-4" />
+                  <ArrowDown className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   <span>Expand All</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setAllPanelsOpen(false)}
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 px-3.5 py-2 text-xs sm:text-sm font-semibold text-gray-800 dark:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-all cursor-pointer"
+                  className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 px-3 sm:px-3.5 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-gray-800 dark:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-all cursor-pointer"
                 >
-                  <ArrowUp className="h-4 w-4" />
+                  <ArrowUp className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   <span>Collapse All</span>
                 </button>
               </div>
@@ -1059,6 +1080,7 @@ export default function PortfolioEditor() {
 
             {/* Profile Panel */}
             <PortfolioPanel
+              id="section-profile"
               title="Profile & Bio"
               description="Portfolio title, role headline, slug, and bio narrative."
               icon={User}
@@ -1066,52 +1088,53 @@ export default function PortfolioEditor() {
               forceState={panelControl.open}
               forceVersion={panelControl.version}
             >
-              <div className="grid gap-5 md:grid-cols-2">
+              <div className="grid gap-4 sm:gap-5 grid-cols-1 md:grid-cols-2">
                 <div>
-                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-2 block">
+                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 sm:mb-2 block">
                     Portfolio Title
                   </label>
                   <input
                     value={form.title || ""}
                     onChange={(e) => updateField("title", e.target.value)}
-                    className="w-full px-4 py-3.5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm sm:text-base font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                    className="w-full px-3.5 sm:px-4 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm sm:text-base font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-2 block">
+                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 sm:mb-2 block">
                     Professional Title / Headline
                   </label>
                   <input
                     value={form.professionalTitle || ""}
                     onChange={(e) => updateField("professionalTitle", e.target.value)}
-                    className="w-full px-4 py-3.5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm sm:text-base font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                    className="w-full px-3.5 sm:px-4 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm sm:text-base font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-2 block">
+                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 sm:mb-2 block">
                     Custom URL Slug
                   </label>
                   <input
                     value={form.slug || ""}
                     onChange={(e) => updateField("slug", e.target.value)}
-                    className="w-full px-4 py-3.5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm font-mono focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                    className="w-full px-3.5 sm:px-4 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-xs sm:text-sm font-mono focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-2 block">
+                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 sm:mb-2 block">
                     Location
                   </label>
                   <input
                     value={form.location || ""}
                     onChange={(e) => updateField("location", e.target.value)}
-                    className="w-full px-4 py-3.5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm sm:text-base font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                    className="w-full px-3.5 sm:px-4 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm sm:text-base font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
                 </div>
+
                 {/* Profile Photo (Visual Preview Box) */}
-                <div className="rounded-2xl border border-gray-200/90 dark:border-white/[0.08] bg-gray-50/50 dark:bg-zinc-900/40 p-4 sm:p-5">
-                  <div className="flex items-center justify-between mb-3">
+                <div className="rounded-2xl border border-gray-200/90 dark:border-white/[0.08] bg-gray-50/50 dark:bg-zinc-900/40 p-3.5 sm:p-5">
+                  <div className="flex items-center justify-between mb-2.5 sm:mb-3">
                     <div>
-                      <label className="text-xs sm:text-sm font-bold text-gray-900 dark:text-zinc-100 flex items-center gap-2">
+                      <label className="text-xs sm:text-sm font-bold text-gray-900 dark:text-zinc-100 flex items-center gap-1.5 sm:gap-2">
                         <span>Profile Photo / Headshot</span>
                         {form.profileImage && (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
@@ -1126,14 +1149,14 @@ export default function PortfolioEditor() {
                     <button
                       type="button"
                       onClick={() => setShowProfileUrlInput(!showProfileUrlInput)}
-                      className="text-[11px] text-gray-500 dark:text-zinc-400 hover:text-emerald-600 dark:hover:text-emerald-400 underline font-medium transition-colors"
+                      className="text-[11px] text-gray-500 dark:text-zinc-400 hover:text-emerald-600 dark:hover:text-emerald-400 underline font-medium transition-colors cursor-pointer shrink-0"
                     >
                       {showProfileUrlInput ? "Hide URL" : "Edit URL"}
                     </button>
                   </div>
 
                   {form.profileImage ? (
-                    <div className="flex flex-col sm:flex-row items-center gap-4 p-3 rounded-2xl bg-white dark:bg-zinc-900/90 border border-gray-200 dark:border-white/10 shadow-sm">
+                    <div className="flex flex-col sm:flex-row items-center gap-3.5 sm:gap-4 p-3 rounded-2xl bg-white dark:bg-zinc-900/90 border border-gray-200 dark:border-white/10 shadow-sm">
                       {/* Large Image Preview Box */}
                       <div className="relative group w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden bg-gray-100 dark:bg-zinc-950 border-2 border-emerald-500/40 shrink-0 shadow-inner flex items-center justify-center">
                         <img
@@ -1183,9 +1206,9 @@ export default function PortfolioEditor() {
                     </div>
                   ) : (
                     /* Upload Dropzone Box */
-                    <div className="relative rounded-2xl border-2 border-dashed border-gray-300 dark:border-zinc-700/80 bg-white dark:bg-zinc-900/60 hover:border-emerald-500 dark:hover:border-emerald-500/70 transition-all p-5 text-center flex flex-col items-center justify-center gap-2">
-                      <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 dark:bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                        <Camera className="w-6 h-6" />
+                    <div className="relative rounded-2xl border-2 border-dashed border-gray-300 dark:border-zinc-700/80 bg-white dark:bg-zinc-900/60 hover:border-emerald-500 dark:hover:border-emerald-500/70 transition-all p-4 sm:p-5 text-center flex flex-col items-center justify-center gap-2">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-emerald-500/10 dark:bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                        <Camera className="w-5 h-5 sm:w-6 sm:h-6" />
                       </div>
                       <div>
                         <span className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 block">
@@ -1195,7 +1218,7 @@ export default function PortfolioEditor() {
                           PNG cutouts, JPG, WEBP up to 8MB
                         </span>
                       </div>
-                      <label className="mt-1 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold cursor-pointer transition-all shadow-md shadow-emerald-500/20 active:scale-95">
+                      <label className="mt-1 inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold cursor-pointer transition-all shadow-md shadow-emerald-500/20 active:scale-95">
                         {uploadingProfile ? (
                           <Loader2 className="w-3.5 h-3.5 animate-spin" />
                         ) : (
@@ -1230,11 +1253,11 @@ export default function PortfolioEditor() {
                 </div>
 
                 {/* Hero Banner / Cutout Image (Visual Preview Box) */}
-                <div className="rounded-2xl border border-gray-200/90 dark:border-white/[0.08] bg-gray-50/50 dark:bg-zinc-900/40 p-4 sm:p-5">
-                  <div className="flex items-center justify-between mb-3">
+                <div className="rounded-2xl border border-gray-200/90 dark:border-white/[0.08] bg-gray-50/50 dark:bg-zinc-900/40 p-3.5 sm:p-5">
+                  <div className="flex items-center justify-between mb-2.5 sm:mb-3">
                     <div>
-                      <label className="text-xs sm:text-sm font-bold text-gray-900 dark:text-zinc-100 flex items-center gap-2">
-                        <span>Hero Right-Side Cutout / Banner Image</span>
+                      <label className="text-xs sm:text-sm font-bold text-gray-900 dark:text-zinc-100 flex items-center gap-1.5 sm:gap-2">
+                        <span>Hero Cutout / Banner Image</span>
                         {form.heroImage && (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20">
                             ✓ Active
@@ -1242,22 +1265,22 @@ export default function PortfolioEditor() {
                         )}
                       </label>
                       <p className="text-[11px] text-gray-500 dark:text-zinc-400 mt-0.5">
-                        Displays prominently on templates like SmartNShine Editorial & modern split hero styles.
+                        Prominently featured on split-hero templates.
                       </p>
                     </div>
                     <button
                       type="button"
                       onClick={() => setShowHeroUrlInput(!showHeroUrlInput)}
-                      className="text-[11px] text-gray-500 dark:text-zinc-400 hover:text-sky-600 dark:hover:text-sky-400 underline font-medium transition-colors"
+                      className="text-[11px] text-gray-500 dark:text-zinc-400 hover:text-sky-600 dark:hover:text-sky-400 underline font-medium transition-colors cursor-pointer shrink-0"
                     >
                       {showHeroUrlInput ? "Hide URL" : "Edit URL"}
                     </button>
                   </div>
 
                   {form.heroImage ? (
-                    <div className="flex flex-col sm:flex-row items-center gap-4 p-3 rounded-2xl bg-white dark:bg-zinc-900/90 border border-gray-200 dark:border-white/10 shadow-sm">
+                    <div className="flex flex-col sm:flex-row items-center gap-3.5 sm:gap-4 p-3 rounded-2xl bg-white dark:bg-zinc-900/90 border border-gray-200 dark:border-white/10 shadow-sm">
                       {/* Large Banner Preview Box */}
-                      <div className="relative group w-full sm:w-36 h-24 rounded-2xl overflow-hidden bg-gray-100 dark:bg-zinc-950 border-2 border-sky-500/40 shrink-0 shadow-inner flex items-center justify-center">
+                      <div className="relative group w-full sm:w-36 h-28 sm:h-24 rounded-2xl overflow-hidden bg-gray-100 dark:bg-zinc-950 border-2 border-sky-500/40 shrink-0 shadow-inner flex items-center justify-center">
                         <img
                           src={resolveImageUrl(form.heroImage)}
                           alt="Hero banner preview"
@@ -1302,15 +1325,15 @@ export default function PortfolioEditor() {
                           </button>
                         </div>
                         <p className="text-[11px] text-gray-500 dark:text-zinc-400">
-                          ✓ High resolution cloud CDN hosting with automatic WebP conversion.
+                          ✓ High resolution CDN hosting with auto WebP conversion.
                         </p>
                       </div>
                     </div>
                   ) : (
                     /* Upload Dropzone Box */
-                    <div className="relative rounded-2xl border-2 border-dashed border-gray-300 dark:border-zinc-700/80 bg-white dark:bg-zinc-900/60 hover:border-sky-500 dark:hover:border-sky-500/70 transition-all p-5 text-center flex flex-col items-center justify-center gap-2">
-                      <div className="w-12 h-12 rounded-2xl bg-sky-500/10 dark:bg-sky-500/10 flex items-center justify-center text-sky-600 dark:text-sky-400">
-                        <ImageIcon className="w-6 h-6" />
+                    <div className="relative rounded-2xl border-2 border-dashed border-gray-300 dark:border-zinc-700/80 bg-white dark:bg-zinc-900/60 hover:border-sky-500 dark:hover:border-sky-500/70 transition-all p-4 sm:p-5 text-center flex flex-col items-center justify-center gap-2">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-sky-500/10 dark:bg-sky-500/10 flex items-center justify-center text-sky-600 dark:text-sky-400">
+                        <ImageIcon className="w-5 h-5 sm:w-6 sm:h-6" />
                       </div>
                       <div>
                         <span className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 block">
@@ -1320,7 +1343,7 @@ export default function PortfolioEditor() {
                           Upload transparent PNG cutout or landscape banner
                         </span>
                       </div>
-                      <label className="mt-1 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white text-xs font-bold cursor-pointer transition-all shadow-md shadow-sky-500/20 active:scale-95">
+                      <label className="mt-1 inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white text-xs font-bold cursor-pointer transition-all shadow-md shadow-sky-500/20 active:scale-95">
                         {uploadingHero ? (
                           <Loader2 className="w-3.5 h-3.5 animate-spin" />
                         ) : (
@@ -1356,19 +1379,19 @@ export default function PortfolioEditor() {
               </div>
 
               <div>
-                <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-2 block">
+                <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 sm:mb-2 block">
                   Tagline / Elevator Pitch
                 </label>
                 <textarea
                   value={form.tagline || ""}
                   onChange={(e) => updateField("tagline", e.target.value)}
                   rows={2}
-                  className="w-full p-4 sm:p-5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm sm:text-base leading-relaxed focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                  className="w-full p-3.5 sm:p-5 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm sm:text-base leading-relaxed focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                 />
               </div>
 
               <div>
-                <div className="flex items-center justify-between mb-2">
+                <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                   <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200">
                     About / Executive Summary
                   </label>
@@ -1376,9 +1399,9 @@ export default function PortfolioEditor() {
                     type="button"
                     onClick={handleGenerateAbout}
                     disabled={Boolean(aiAction)}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-xs sm:text-sm font-bold hover:bg-blue-100 transition-all cursor-pointer disabled:opacity-50"
+                    className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-xs sm:text-sm font-bold hover:bg-blue-100 transition-all cursor-pointer disabled:opacity-50"
                   >
-                    <Sparkles className="w-4 h-4" />
+                    <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     <span>{aiAction === "about" ? "Generating..." : "Generate with AI"}</span>
                   </button>
                 </div>
@@ -1386,44 +1409,45 @@ export default function PortfolioEditor() {
                   value={form.about || ""}
                   onChange={(e) => updateField("about", e.target.value)}
                   rows={6}
-                  className="w-full p-4 sm:p-5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm sm:text-base leading-relaxed focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                  className="w-full p-3.5 sm:p-5 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm sm:text-base leading-relaxed focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                 />
               </div>
             </PortfolioPanel>
 
             {/* Contact Panel */}
             <PortfolioPanel
+              id="section-contact"
               title="Contact & Social Links"
               description="Public contact details and social media profiles."
               icon={Phone}
               forceState={panelControl.open}
               forceVersion={panelControl.version}
             >
-              <div className="grid gap-5 md:grid-cols-2">
+              <div className="grid gap-4 sm:gap-5 grid-cols-1 md:grid-cols-2">
                 <div>
-                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-2 block">
+                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 sm:mb-2 block">
                     Public Email
                   </label>
                   <input
                     value={form.contact?.email || ""}
                     onChange={(e) => updateNestedField("contact", "email", e.target.value)}
-                    className="w-full px-4 py-3.5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm sm:text-base focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                    className="w-full px-3.5 sm:px-4 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm sm:text-base focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-2 block">
+                  <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 sm:mb-2 block">
                     Public Phone
                   </label>
                   <input
                     value={form.contact?.phone || ""}
                     onChange={(e) => updateNestedField("contact", "phone", e.target.value)}
-                    className="w-full px-4 py-3.5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm sm:text-base focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                    className="w-full px-3.5 sm:px-4 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm sm:text-base focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
                 </div>
               </div>
 
-              <div className="grid gap-4 md:grid-cols-2">
-                <label className="flex items-center gap-3 p-4 rounded-2xl bg-white dark:bg-zinc-950 border border-gray-200/90 dark:border-white/[0.1] text-xs sm:text-sm font-bold cursor-pointer">
+              <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2">
+                <label className="flex items-center gap-3 p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-zinc-950 border border-gray-200/90 dark:border-white/[0.1] text-xs sm:text-sm font-bold cursor-pointer">
                   <input
                     type="checkbox"
                     checked={form.contact?.showEmail !== false}
@@ -1432,7 +1456,7 @@ export default function PortfolioEditor() {
                   />
                   <span>Show email publicly</span>
                 </label>
-                <label className="flex items-center gap-3 p-4 rounded-2xl bg-white dark:bg-zinc-950 border border-gray-200/90 dark:border-white/[0.1] text-xs sm:text-sm font-bold cursor-pointer">
+                <label className="flex items-center gap-3 p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-zinc-950 border border-gray-200/90 dark:border-white/[0.1] text-xs sm:text-sm font-bold cursor-pointer">
                   <input
                     type="checkbox"
                     checked={Boolean(form.contact?.showPhone)}
@@ -1443,7 +1467,7 @@ export default function PortfolioEditor() {
                 </label>
               </div>
 
-              <div className="pt-5 border-t border-gray-100 dark:border-white/[0.08] space-y-4">
+              <div className="pt-4 sm:pt-5 border-t border-gray-100 dark:border-white/[0.08] space-y-3.5 sm:space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-gray-600 dark:text-zinc-300">
                     Social & Portfolio Links
@@ -1451,7 +1475,7 @@ export default function PortfolioEditor() {
                   <button
                     type="button"
                     onClick={addSocialLink}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold shadow-xs transition-all cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold shadow-xs transition-all cursor-pointer"
                   >
                     <Plus className="h-4 w-4" />
                     <span>Add Link</span>
@@ -1462,12 +1486,12 @@ export default function PortfolioEditor() {
                   {(form.socialLinks || []).map((link, index) => (
                     <div
                       key={`social-${index}`}
-                      className="grid gap-3 rounded-2xl border border-gray-200/90 dark:border-white/[0.1] p-4 bg-white dark:bg-zinc-950 md:grid-cols-[160px_1fr_1.5fr_auto] items-center shadow-2xs"
+                      className="grid gap-2.5 sm:gap-3 rounded-2xl border border-gray-200/90 dark:border-white/[0.1] p-3.5 sm:p-4 bg-white dark:bg-zinc-950 grid-cols-1 sm:grid-cols-2 md:grid-cols-[140px_1fr_1.5fr_auto] items-center shadow-2xs"
                     >
                       <select
                         value={link.type || "other"}
                         onChange={(e) => updateSocialLink(index, "type", e.target.value)}
-                        className="rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 px-3.5 py-3 text-xs sm:text-sm font-semibold capitalize"
+                        className="rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 px-3 py-2.5 sm:px-3.5 sm:py-3 text-xs sm:text-sm font-semibold capitalize"
                       >
                         {socialLinkTypes.map((type) => (
                           <option key={type} value={type}>
@@ -1479,21 +1503,21 @@ export default function PortfolioEditor() {
                         value={link.label || ""}
                         onChange={(e) => updateSocialLink(index, "label", e.target.value)}
                         placeholder="Label (e.g. GitHub)"
-                        className="rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 px-3.5 py-3 text-xs sm:text-sm font-medium"
+                        className="rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 px-3 py-2.5 sm:px-3.5 sm:py-3 text-xs sm:text-sm font-medium"
                       />
                       <input
                         value={link.url || ""}
                         onChange={(e) => updateSocialLink(index, "url", e.target.value)}
                         placeholder="https://..."
-                        className="rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 px-3.5 py-3 text-xs sm:text-sm font-mono"
+                        className="rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 px-3 py-2.5 sm:px-3.5 sm:py-3 text-xs sm:text-sm font-mono sm:col-span-2 md:col-span-1"
                       />
                       <button
                         type="button"
                         onClick={() => removeSocialLink(index)}
-                        className="p-2.5 rounded-xl text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors cursor-pointer"
+                        className="p-2 sm:p-2.5 rounded-xl text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors cursor-pointer self-center justify-self-end md:justify-self-center"
                         title="Remove social link"
                       >
-                        <Trash2 className="h-5 w-5" />
+                        <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
                       </button>
                     </div>
                   ))}
@@ -1503,6 +1527,7 @@ export default function PortfolioEditor() {
 
             {/* Projects Panel */}
             <PortfolioPanel
+              id="section-projects"
               title="Projects"
               description="Detailed project cards, live demos, and case studies."
               icon={Rocket}
@@ -1510,48 +1535,48 @@ export default function PortfolioEditor() {
               forceState={panelControl.open}
               forceVersion={panelControl.version}
             >
-              <div className="space-y-6">
+              <div className="space-y-5 sm:space-y-6">
                 {projects.map((project) => (
                   <div
                     key={project._id}
-                    className="rounded-3xl border border-gray-200/90 dark:border-white/[0.1] p-6 bg-white dark:bg-zinc-950 space-y-5 shadow-xs"
+                    className="rounded-2xl sm:rounded-3xl border border-gray-200/90 dark:border-white/[0.1] p-4 sm:p-6 bg-white dark:bg-zinc-950 space-y-4 sm:space-y-5 shadow-xs"
                   >
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                       <input
                         value={project.title || ""}
                         onChange={(e) => updateProjectDraft(project._id, { title: e.target.value })}
-                        className="flex-1 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 px-4 py-3 text-sm sm:text-base font-bold text-gray-900 dark:text-white"
+                        className="w-full sm:flex-1 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 px-3.5 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base font-bold text-gray-900 dark:text-white"
                         placeholder="Project title"
                       />
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 justify-end">
                         <button
                           type="button"
                           onClick={() => handleImproveProject(project)}
                           disabled={Boolean(aiAction)}
-                          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-xs sm:text-sm font-bold hover:bg-blue-100 transition-all cursor-pointer disabled:opacity-50"
+                          className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-xs sm:text-sm font-bold hover:bg-blue-100 transition-all cursor-pointer disabled:opacity-50"
                         >
-                          <Sparkles className="w-4 h-4" />
+                          <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                           <span>{aiAction === `project:${project._id}` ? "Improving..." : "AI Improve"}</span>
                         </button>
                         <button
                           type="button"
                           onClick={() => handleSaveProject(project)}
-                          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gray-900 text-white dark:bg-white dark:text-black text-xs sm:text-sm font-bold shadow-xs cursor-pointer"
+                          className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-gray-900 text-white dark:bg-white dark:text-black text-xs sm:text-sm font-bold shadow-xs cursor-pointer"
                         >
-                          <Save className="w-4 h-4" />
+                          <Save className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                           <span>Save</span>
                         </button>
                         <button
                           type="button"
                           onClick={() => handleDeleteProject(project._id)}
-                          className="p-2 rounded-xl text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 cursor-pointer"
+                          className="p-1.5 sm:p-2 rounded-xl text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 cursor-pointer"
                         >
-                          <Trash2 className="w-5 h-5" />
+                          <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
                         </button>
                       </div>
                     </div>
 
-                    <div className="grid gap-4 md:grid-cols-2">
+                    <div className="grid gap-3.5 sm:gap-4 grid-cols-1 md:grid-cols-2">
                       <div className="md:col-span-2">
                         <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
                           Short Overview
@@ -1560,7 +1585,7 @@ export default function PortfolioEditor() {
                           value={project.shortDescription || ""}
                           onChange={(e) => updateProjectDraft(project._id, { shortDescription: e.target.value })}
                           rows={2}
-                          className="w-full p-4 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base leading-relaxed focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                          className="w-full p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base leading-relaxed focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                         />
                       </div>
 
@@ -1572,7 +1597,7 @@ export default function PortfolioEditor() {
                           value={project.longDescription || ""}
                           onChange={(e) => updateProjectDraft(project._id, { longDescription: e.target.value })}
                           rows={4}
-                          className="w-full p-4 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base leading-relaxed focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                          className="w-full p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base leading-relaxed focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                         />
                       </div>
 
@@ -1584,7 +1609,7 @@ export default function PortfolioEditor() {
                           value={project.role || ""}
                           onChange={(e) => updateProjectDraft(project._id, { role: e.target.value })}
                           placeholder="e.g. Lead Architect"
-                          className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-medium"
+                          className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-medium"
                         />
                       </div>
 
@@ -1596,7 +1621,7 @@ export default function PortfolioEditor() {
                           value={project.duration || ""}
                           onChange={(e) => updateProjectDraft(project._id, { duration: e.target.value })}
                           placeholder="e.g. Jan 2026 - Mar 2026"
-                          className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-medium"
+                          className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-medium"
                         />
                       </div>
 
@@ -1608,7 +1633,7 @@ export default function PortfolioEditor() {
                           value={getProjectTechnologiesText(project)}
                           onChange={(e) => updateProjectDraft(project._id, { technologiesText: e.target.value })}
                           placeholder="React, Node.js, MongoDB"
-                          className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-medium"
+                          className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-medium"
                         />
                       </div>
 
@@ -1623,7 +1648,7 @@ export default function PortfolioEditor() {
                               links: { ...(cur.links || {}), live: e.target.value },
                             }))
                           }
-                          className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs sm:text-sm font-mono"
+                          className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs sm:text-sm font-mono"
                         />
                       </div>
 
@@ -1638,7 +1663,7 @@ export default function PortfolioEditor() {
                               links: { ...(cur.links || {}), github: e.target.value },
                             }))
                           }
-                          className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs sm:text-sm font-mono"
+                          className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs sm:text-sm font-mono"
                         />
                       </div>
 
@@ -1653,12 +1678,12 @@ export default function PortfolioEditor() {
                               links: { ...(cur.links || {}), caseStudy: e.target.value },
                             }))
                           }
-                          className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs sm:text-sm font-mono"
+                          className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs sm:text-sm font-mono"
                         />
                       </div>
 
-                      <div className="md:col-span-2 flex items-center gap-6 pt-3">
-                        <label className="flex items-center gap-2.5 text-xs sm:text-sm font-bold cursor-pointer">
+                      <div className="md:col-span-2 flex flex-wrap items-center gap-4 sm:gap-6 pt-2">
+                        <label className="flex items-center gap-2 text-xs sm:text-sm font-bold cursor-pointer">
                           <input
                             type="checkbox"
                             checked={project.visible !== false}
@@ -1669,7 +1694,7 @@ export default function PortfolioEditor() {
                           />
                           <span>Visible in Portfolio</span>
                         </label>
-                        <label className="flex items-center gap-2.5 text-xs sm:text-sm font-bold cursor-pointer">
+                        <label className="flex items-center gap-2 text-xs sm:text-sm font-bold cursor-pointer">
                           <input
                             type="checkbox"
                             checked={Boolean(project.featured)}
@@ -1687,22 +1712,22 @@ export default function PortfolioEditor() {
               </div>
 
               {/* Add New Project Box */}
-              <div className="p-6 rounded-3xl bg-gray-50/90 dark:bg-zinc-900/60 border border-gray-200/90 dark:border-white/[0.1] space-y-4">
+              <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-gray-50/90 dark:bg-zinc-900/60 border border-gray-200/90 dark:border-white/[0.1] space-y-3.5 sm:space-y-4">
                 <h3 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-gray-600 dark:text-zinc-300">
                   Add New Project
                 </h3>
-                <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid gap-3 sm:gap-4 grid-cols-1 md:grid-cols-2">
                   <input
                     placeholder="Project title *"
                     value={newProject.title}
                     onChange={(e) => setNewProject((cur) => ({ ...cur, title: e.target.value }))}
-                    className="px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-sm sm:text-base font-bold"
+                    className="px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-sm sm:text-base font-bold"
                   />
                   <input
                     placeholder="Technologies (e.g. React, Node.js)"
                     value={newProject.technologiesText || ""}
                     onChange={(e) => setNewProject((cur) => ({ ...cur, technologiesText: e.target.value }))}
-                    className="px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-sm font-medium"
+                    className="px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-sm font-medium"
                   />
                   <input
                     placeholder="Live URL"
@@ -1710,7 +1735,7 @@ export default function PortfolioEditor() {
                     onChange={(e) =>
                       setNewProject((cur) => ({ ...cur, links: { ...cur.links, live: e.target.value } }))
                     }
-                    className="px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs sm:text-sm font-mono"
+                    className="px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs sm:text-sm font-mono"
                   />
                   <input
                     placeholder="GitHub URL"
@@ -1718,7 +1743,7 @@ export default function PortfolioEditor() {
                     onChange={(e) =>
                       setNewProject((cur) => ({ ...cur, links: { ...cur.links, github: e.target.value } }))
                     }
-                    className="px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs sm:text-sm font-mono"
+                    className="px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs sm:text-sm font-mono"
                   />
                 </div>
                 <textarea
@@ -1726,12 +1751,12 @@ export default function PortfolioEditor() {
                   value={newProject.shortDescription}
                   onChange={(e) => setNewProject((cur) => ({ ...cur, shortDescription: e.target.value }))}
                   rows={2}
-                  className="w-full p-4 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-sm sm:text-base leading-relaxed"
+                  className="w-full p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-sm sm:text-base leading-relaxed"
                 />
                 <button
                   type="button"
                   onClick={handleCreateProject}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow-md shadow-emerald-500/20 transition-all active:scale-95 cursor-pointer"
+                  className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow-md shadow-emerald-500/20 transition-all active:scale-95 cursor-pointer"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Create Project</span>
@@ -1741,6 +1766,7 @@ export default function PortfolioEditor() {
 
             {/* Experience Panel */}
             <PortfolioPanel
+              id="section-experience"
               title="Experience"
               description="Portfolio copy of your career work experience."
               icon={Briefcase}
@@ -1761,20 +1787,20 @@ export default function PortfolioEditor() {
                       bullets: [],
                     })
                   }
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 text-white text-xs sm:text-sm font-bold cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-blue-600 text-white text-xs sm:text-sm font-bold cursor-pointer shrink-0"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Add Role</span>
                 </button>
               }
             >
-              <div className="space-y-5">
+              <div className="space-y-4 sm:space-y-5">
                 {(form.experience || []).map((item, index) => (
                   <div
                     key={`exp-${index}`}
-                    className="rounded-3xl border border-gray-200/90 dark:border-white/[0.1] p-6 bg-white dark:bg-zinc-950 space-y-4 shadow-xs"
+                    className="rounded-2xl sm:rounded-3xl border border-gray-200/90 dark:border-white/[0.1] p-4 sm:p-6 bg-white dark:bg-zinc-950 space-y-3.5 sm:space-y-4 shadow-xs"
                   >
-                    <div className="grid gap-4 md:grid-cols-2">
+                    <div className="grid gap-3.5 sm:gap-4 grid-cols-1 md:grid-cols-2">
                       <div>
                         <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
                           Role Title
@@ -1783,7 +1809,7 @@ export default function PortfolioEditor() {
                           value={item.title || ""}
                           onChange={(e) => updatePortfolioArrayItem("experience", index, { title: e.target.value })}
                           placeholder="e.g. Full Stack Intern"
-                          className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-bold text-gray-900 dark:text-white"
+                          className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-bold text-gray-900 dark:text-white"
                         />
                       </div>
                       <div>
@@ -1794,7 +1820,7 @@ export default function PortfolioEditor() {
                           value={item.company || ""}
                           onChange={(e) => updatePortfolioArrayItem("experience", index, { company: e.target.value })}
                           placeholder="e.g. Acme Technologies"
-                          className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-medium text-gray-900 dark:text-white"
+                          className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-medium text-gray-900 dark:text-white"
                         />
                       </div>
                       <div>
@@ -1805,10 +1831,10 @@ export default function PortfolioEditor() {
                           value={item.location || ""}
                           onChange={(e) => updatePortfolioArrayItem("experience", index, { location: e.target.value })}
                           placeholder="e.g. Remote / San Francisco, CA"
-                          className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-medium"
+                          className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-medium"
                         />
                       </div>
-                      <div className="grid grid-cols-2 gap-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
                           <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
                             Start Date
@@ -1817,7 +1843,7 @@ export default function PortfolioEditor() {
                             value={item.startDate || ""}
                             onChange={(e) => updatePortfolioArrayItem("experience", index, { startDate: e.target.value })}
                             placeholder="e.g. Apr 2025"
-                            className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm font-medium"
+                            className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs sm:text-sm font-medium"
                           />
                         </div>
                         <div>
@@ -1828,7 +1854,7 @@ export default function PortfolioEditor() {
                             value={item.endDate || ""}
                             onChange={(e) => updatePortfolioArrayItem("experience", index, { endDate: e.target.value })}
                             placeholder="e.g. Jun 2025"
-                            className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm font-medium"
+                            className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs sm:text-sm font-medium"
                           />
                         </div>
                       </div>
@@ -1841,7 +1867,7 @@ export default function PortfolioEditor() {
                         value={(item.bullets || []).join("\n")}
                         onChange={(e) => updatePortfolioArrayItem("experience", index, { bullets: linesToArray(e.target.value) })}
                         rows={4}
-                        className="w-full p-4 sm:p-5 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base leading-relaxed text-gray-900 dark:text-zinc-100 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                        className="w-full p-3.5 sm:p-5 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base leading-relaxed text-gray-900 dark:text-zinc-100 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                       />
                     </div>
                     <button
@@ -1859,6 +1885,7 @@ export default function PortfolioEditor() {
 
             {/* Education Panel */}
             <PortfolioPanel
+              id="section-education"
               title="Education"
               description="Degrees, universities, and graduation credentials."
               icon={GraduationCap}
@@ -1880,20 +1907,20 @@ export default function PortfolioEditor() {
                       bullets: [],
                     })
                   }
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 text-white text-xs sm:text-sm font-bold cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-blue-600 text-white text-xs sm:text-sm font-bold cursor-pointer shrink-0"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Add Education</span>
                 </button>
               }
             >
-              <div className="space-y-5">
+              <div className="space-y-4 sm:space-y-5">
                 {(form.education || []).map((item, index) => (
                   <div
                     key={`edu-${index}`}
-                    className="rounded-3xl border border-gray-200/90 dark:border-white/[0.1] p-6 bg-white dark:bg-zinc-950 space-y-4 shadow-xs"
+                    className="rounded-2xl sm:rounded-3xl border border-gray-200/90 dark:border-white/[0.1] p-4 sm:p-6 bg-white dark:bg-zinc-950 space-y-3.5 sm:space-y-4 shadow-xs"
                   >
-                    <div className="grid gap-4 md:grid-cols-2">
+                    <div className="grid gap-3.5 sm:gap-4 grid-cols-1 md:grid-cols-2">
                       <div>
                         <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
                           Institution / University
@@ -1902,7 +1929,7 @@ export default function PortfolioEditor() {
                           value={item.institution || ""}
                           onChange={(e) => updatePortfolioArrayItem("education", index, { institution: e.target.value })}
                           placeholder="e.g. Stanford University"
-                          className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-bold"
+                          className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-bold"
                         />
                       </div>
                       <div>
@@ -1912,8 +1939,54 @@ export default function PortfolioEditor() {
                         <input
                           value={item.degree || ""}
                           onChange={(e) => updatePortfolioArrayItem("education", index, { degree: e.target.value })}
-                          placeholder="e.g. B.S. in Computer Science"
-                          className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-medium"
+                          placeholder="e.g. B.Tech in Computer Science"
+                          className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-medium"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
+                          CGPA / Grade / Score / Percentage
+                        </label>
+                        <input
+                          value={item.gpa || item.cgpa || item.grade || item.percentage || ""}
+                          onChange={(e) => updatePortfolioArrayItem("education", index, { gpa: e.target.value, grade: e.target.value, cgpa: e.target.value })}
+                          placeholder="e.g. 8.85 CGPA or 3.9/4.0 or 85%"
+                          className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-medium"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
+                          Location
+                        </label>
+                        <input
+                          value={item.location || ""}
+                          onChange={(e) => updatePortfolioArrayItem("education", index, { location: e.target.value })}
+                          placeholder="e.g. Nanded, India / Cambridge, MA"
+                          className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-medium"
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
+                          Start Date / Year
+                        </label>
+                        <input
+                          value={item.startDate || ""}
+                          onChange={(e) => updatePortfolioArrayItem("education", index, { startDate: e.target.value })}
+                          placeholder="e.g. 2021"
+                          className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs sm:text-sm font-medium"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
+                          End Date / Graduation Year
+                        </label>
+                        <input
+                          value={item.endDate || ""}
+                          onChange={(e) => updatePortfolioArrayItem("education", index, { endDate: e.target.value })}
+                          placeholder="e.g. 2025"
+                          className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-xs sm:text-sm font-medium"
                         />
                       </div>
                     </div>
@@ -1932,6 +2005,7 @@ export default function PortfolioEditor() {
 
             {/* Skills Panel */}
             <PortfolioPanel
+              id="section-skills"
               title="Skills"
               description="Categorized skills groups shown on your portfolio."
               icon={Sparkles}
@@ -1942,37 +2016,38 @@ export default function PortfolioEditor() {
                 <button
                   type="button"
                   onClick={() => addPortfolioArrayItem("skills", { category: "", items: [] })}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 text-white text-xs sm:text-sm font-bold cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-blue-600 text-white text-xs sm:text-sm font-bold cursor-pointer shrink-0"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Add Group</span>
                 </button>
               }
             >
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {(form.skills || []).map((group, index) => (
                   <div
                     key={`skills-${index}`}
-                    className="grid gap-4 rounded-2xl border border-gray-200/90 dark:border-white/[0.1] p-5 bg-white dark:bg-zinc-950 md:grid-cols-[220px_1fr_auto] items-center"
+                    className="grid gap-3 sm:gap-4 rounded-2xl border border-gray-200/90 dark:border-white/[0.1] p-3.5 sm:p-5 bg-white dark:bg-zinc-950 grid-cols-1 md:grid-cols-[200px_1fr_auto] items-center"
                   >
                     <input
                       value={group.category || ""}
                       onChange={(e) => updatePortfolioArrayItem("skills", index, { category: e.target.value })}
                       placeholder="Category (e.g. Frontend)"
-                      className="px-4 py-3 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-bold"
+                      className="px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-bold"
                     />
                     <input
                       value={(group.items || []).join(", ")}
                       onChange={(e) => updatePortfolioArrayItem("skills", index, { items: commaToArray(e.target.value) })}
                       placeholder="React, TypeScript, Next.js, Tailwind CSS"
-                      className="px-4 py-3 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-medium"
+                      className="px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-medium"
                     />
                     <button
                       type="button"
                       onClick={() => removePortfolioArrayItem("skills", index)}
-                      className="p-2.5 rounded-xl text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 cursor-pointer"
+                      className="p-2 sm:p-2.5 rounded-xl text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 cursor-pointer self-center justify-self-end md:justify-self-center"
+                      title="Remove skill category"
                     >
-                      <Trash2 className="w-5 h-5" />
+                      <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
                     </button>
                   </div>
                 ))}
@@ -1981,6 +2056,7 @@ export default function PortfolioEditor() {
 
             {/* Achievements Panel */}
             <PortfolioPanel
+              id="section-achievements"
               title="Achievements & Honors"
               description="Competition wins, rankings, and awards (1 per line)."
               icon={Trophy}
@@ -1991,13 +2067,14 @@ export default function PortfolioEditor() {
                 value={(form.achievements || []).join("\n")}
                 onChange={(e) => updateField("achievements", linesToArray(e.target.value))}
                 rows={5}
-                className="w-full p-4 sm:p-5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm sm:text-base leading-relaxed focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                className="w-full p-3.5 sm:p-5 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900/90 text-sm sm:text-base leading-relaxed focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                 placeholder="• Winner - Smart India Hackathon 2025&#10;• AWS Certified Solutions Architect"
               />
             </PortfolioPanel>
 
             {/* Custom Sections */}
             <PortfolioPanel
+              id="section-custom"
               title="Custom Sections"
               description="Unique custom sections for open-source, hackathons, publications."
               icon={Layers}
@@ -2014,24 +2091,24 @@ export default function PortfolioEditor() {
                       items: [],
                     })
                   }
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 text-white text-xs sm:text-sm font-bold cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-blue-600 text-white text-xs sm:text-sm font-bold cursor-pointer shrink-0"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Add Section</span>
                 </button>
               }
             >
-              <div className="space-y-5">
+              <div className="space-y-4 sm:space-y-5">
                 {(form.customSections || []).map((item, index) => (
                   <div
                     key={item.id || `custom-section-${index}`}
-                    className="rounded-3xl border border-gray-200/90 dark:border-white/[0.1] p-6 bg-white dark:bg-zinc-950 space-y-4 shadow-xs"
+                    className="rounded-2xl sm:rounded-3xl border border-gray-200/90 dark:border-white/[0.1] p-4 sm:p-6 bg-white dark:bg-zinc-950 space-y-3.5 sm:space-y-4 shadow-xs"
                   >
                     <input
                       value={item.title || ""}
                       onChange={(e) => updatePortfolioArrayItem("customSections", index, { title: e.target.value })}
                       placeholder="Section Title (e.g. Open Source Contributions)"
-                      className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-bold"
+                      className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base font-bold"
                     />
                     <div>
                       <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
@@ -2041,7 +2118,7 @@ export default function PortfolioEditor() {
                         value={(item.items || []).join("\n")}
                         onChange={(e) => updatePortfolioArrayItem("customSections", index, { items: linesToArray(e.target.value) })}
                         rows={4}
-                        className="w-full p-4 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base leading-relaxed"
+                        className="w-full p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base leading-relaxed"
                       />
                     </div>
                     <button
@@ -2059,9 +2136,10 @@ export default function PortfolioEditor() {
           </div>
 
           {/* Right Column: Settings & Customization Sidebar (4 cols) */}
-          <aside className="lg:col-span-4 space-y-6 sticky top-20">
+          <aside className="lg:col-span-4 space-y-5 sm:space-y-6 lg:sticky lg:top-20">
             {/* Theme Customizer Panel */}
             <PortfolioPanel
+              id="section-theme"
               title="Theme Design"
               description="Choose aesthetic style & accent colors."
               icon={Palette}
@@ -2077,9 +2155,9 @@ export default function PortfolioEditor() {
                 const currentAccent = form.themeAccent || presets[0] || "";
 
                 return (
-                  <div className="space-y-4">
+                  <div className="space-y-3.5 sm:space-y-4">
                     {/* Active Selected Theme Card */}
-                    <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 dark:bg-emerald-500/10 p-4 space-y-3">
+                    <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 dark:bg-emerald-500/10 p-3.5 sm:p-4 space-y-2.5 sm:space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
                           Active Template
@@ -2090,7 +2168,7 @@ export default function PortfolioEditor() {
                       </div>
 
                       <div>
-                        <h4 className="font-extrabold text-base text-gray-900 dark:text-white flex items-center gap-2">
+                        <h4 className="font-extrabold text-sm sm:text-base text-gray-900 dark:text-white flex items-center gap-2">
                           <span>{activeTheme.name}</span>
                           {activeTheme.badge && (
                             <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-gray-900 text-white dark:bg-white dark:text-gray-950 font-bold">
@@ -2107,7 +2185,7 @@ export default function PortfolioEditor() {
                       <button
                         type="button"
                         onClick={() => setShowTemplateSelector(true)}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gray-950 dark:bg-white text-white dark:text-gray-950 hover:bg-gray-800 dark:hover:bg-gray-100 text-xs font-bold transition-all shadow-md active:scale-98 cursor-pointer group"
+                        className="w-full flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl bg-gray-950 dark:bg-white text-white dark:text-gray-950 hover:bg-gray-800 dark:hover:bg-gray-100 text-xs font-bold transition-all shadow-md active:scale-98 cursor-pointer group"
                       >
                         <LayoutTemplate className="w-4 h-4 text-emerald-400 dark:text-emerald-600 group-hover:rotate-12 transition-transform" />
                         <span>Browse & Switch Templates</span>
@@ -2127,7 +2205,7 @@ export default function PortfolioEditor() {
                           {currentAccent}
                         </span>
                       </div>
-                      <div className="flex flex-wrap items-center gap-2.5">
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
                         {presets.map((hex) => (
                           <button
                             key={hex}
@@ -2135,7 +2213,7 @@ export default function PortfolioEditor() {
                             title={hex}
                             onClick={() => updateField("themeAccent", hex)}
                             style={{ background: hex }}
-                            className={`h-8 w-8 rounded-full border-2 transition-transform hover:scale-110 cursor-pointer ${
+                            className={`h-7 w-7 sm:h-8 sm:w-8 rounded-full border-2 transition-transform hover:scale-110 cursor-pointer ${
                               currentAccent === hex
                                 ? "border-gray-900 dark:border-white scale-110 ring-2 ring-offset-1 ring-emerald-500"
                                 : "border-transparent"
@@ -2144,6 +2222,49 @@ export default function PortfolioEditor() {
                         ))}
                       </div>
                     </div>
+
+                    {/* Kinetic Marquee Ribbon Customizer */}
+                    {activeTheme.id === "kinetic" && (
+                      <div className="pt-3 border-t border-gray-100 dark:border-white/[0.08] space-y-3">
+                        <div className="flex items-center justify-between">
+                          <p className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200">
+                            Kinetic Marquee Ribbons
+                          </p>
+                          <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400">
+                            Editable
+                          </span>
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="block text-[11px] font-mono text-gray-500 dark:text-zinc-400">
+                            Top Marquee Ribbon (Separated by ×)
+                          </label>
+                          <input
+                            type="text"
+                            value={form.settings?.marqueeText1 || ""}
+                            onChange={(e) => updateNestedField("settings", "marqueeText1", e.target.value)}
+                            placeholder="e.g. FULL STACK × REACT × NODE.JS × ARCHITECTURE"
+                            className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs font-mono"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="block text-[11px] font-mono text-gray-500 dark:text-zinc-400">
+                            Bottom Marquee Ribbon (Separated by ×)
+                          </label>
+                          <input
+                            type="text"
+                            value={form.settings?.marqueeText2 || ""}
+                            onChange={(e) => updateNestedField("settings", "marqueeText2", e.target.value)}
+                            placeholder="e.g. PRODUCT DESIGN × PERFORMANCE × SCALABLE CODE"
+                            className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs font-mono"
+                          />
+                        </div>
+                        <p className="text-[10px] text-gray-400 dark:text-zinc-500">
+                          Leave blank to automatically generate dynamic marquee text from your real skills & role.
+                        </p>
+                      </div>
+                    )}
                   </div>
                 );
               })()}
@@ -2151,36 +2272,37 @@ export default function PortfolioEditor() {
 
             {/* Sections Visibility & Ordering Panel */}
             <PortfolioPanel
+              id="section-order"
               title="Sections Ordering"
               description="Toggle visibility and rearrange sections."
               icon={Sliders}
               forceState={panelControl.open}
               forceVersion={panelControl.version}
             >
-              <div className="space-y-2.5">
+              <div className="space-y-2 sm:space-y-2.5">
                 {normalizeSectionOrder(form.sectionOrder).map((section, index) => {
                   const visibilityKey = `show${section.charAt(0).toUpperCase() + section.slice(1)}`;
 
                   return (
                     <div
                       key={section}
-                      className="flex items-center justify-between gap-3 rounded-2xl border border-gray-200/90 dark:border-white/[0.1] p-3.5 bg-white dark:bg-zinc-950"
+                      className="flex items-center justify-between gap-2.5 sm:gap-3 rounded-2xl border border-gray-200/90 dark:border-white/[0.1] p-3 sm:p-3.5 bg-white dark:bg-zinc-950"
                     >
-                      <label className="flex items-center gap-3 text-xs sm:text-sm font-bold cursor-pointer">
+                      <label className="flex items-center gap-2.5 sm:gap-3 text-xs sm:text-sm font-bold cursor-pointer min-w-0">
                         <input
                           type="checkbox"
                           checked={form.sections?.[visibilityKey] !== false}
                           onChange={(e) => updateSection(visibilityKey, e.target.checked)}
-                          className="w-4 h-4 rounded text-emerald-600"
+                          className="w-4 h-4 rounded text-emerald-600 shrink-0"
                         />
-                        <span>{sectionLabels[section] || section}</span>
+                        <span className="truncate">{sectionLabels[section] || section}</span>
                       </label>
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-1 shrink-0">
                         <button
                           type="button"
                           onClick={() => moveSection(section, -1)}
                           disabled={index === 0}
-                          className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 disabled:opacity-30 cursor-pointer"
+                          className="rounded-lg p-1.5 sm:p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 disabled:opacity-30 cursor-pointer"
                         >
                           <ArrowUp className="h-4 w-4" />
                         </button>
@@ -2188,7 +2310,7 @@ export default function PortfolioEditor() {
                           type="button"
                           onClick={() => moveSection(section, 1)}
                           disabled={index === normalizeSectionOrder(form.sectionOrder).length - 1}
-                          className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 disabled:opacity-30 cursor-pointer"
+                          className="rounded-lg p-1.5 sm:p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 disabled:opacity-30 cursor-pointer"
                         >
                           <ArrowDown className="h-4 w-4" />
                         </button>
@@ -2201,6 +2323,7 @@ export default function PortfolioEditor() {
 
             {/* SEO Panel */}
             <PortfolioPanel
+              id="section-seo"
               title="SEO Metadata"
               description="Search engine and social preview tags."
               icon={Search}
@@ -2211,14 +2334,14 @@ export default function PortfolioEditor() {
                   type="button"
                   onClick={handleGenerateSeo}
                   disabled={Boolean(aiAction)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-xs sm:text-sm font-bold hover:bg-blue-100 transition-all cursor-pointer disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-xs sm:text-sm font-bold hover:bg-blue-100 transition-all cursor-pointer disabled:opacity-50 shrink-0"
                 >
-                  <Sparkles className="w-4 h-4" />
+                  <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   <span>{aiAction === "seo" ? "Generating..." : "AI SEO"}</span>
                 </button>
               }
             >
-              <div className="space-y-4">
+              <div className="space-y-3.5 sm:space-y-4">
                 <div>
                   <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 mb-1.5 block">
                     Meta Title
@@ -2226,7 +2349,7 @@ export default function PortfolioEditor() {
                   <input
                     value={form.seo?.title || ""}
                     onChange={(e) => updateNestedField("seo", "title", e.target.value)}
-                    className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-sm sm:text-base"
+                    className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-sm sm:text-base"
                   />
                 </div>
                 <div>
@@ -2237,14 +2360,14 @@ export default function PortfolioEditor() {
                     value={form.seo?.description || ""}
                     onChange={(e) => updateNestedField("seo", "description", e.target.value)}
                     rows={3}
-                    className="w-full p-4 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-sm leading-relaxed"
+                    className="w-full p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-sm leading-relaxed"
                   />
                 </div>
                 <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center justify-between gap-1.5 mb-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <label className="text-xs sm:text-sm font-bold text-gray-800 dark:text-zinc-200 block">
-                        Social Sharing Card Image (Open Graph / Twitter Preview)
+                        Social Sharing Card Image (OG / Twitter Preview)
                       </label>
                       {form.seo?.ogImage ? (
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
@@ -2259,26 +2382,26 @@ export default function PortfolioEditor() {
                     <button
                       type="button"
                       onClick={() => setShowOgUrlInput(!showOgUrlInput)}
-                      className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer"
+                      className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer shrink-0"
                     >
                       {showOgUrlInput ? "Hide URL Field" : "Edit URL Directly"}
                     </button>
                   </div>
 
                   {/* Visual Preview + Action Controls Card */}
-                  <div className="p-4 rounded-2xl border border-gray-200 dark:border-white/10 bg-white/50 dark:bg-zinc-950/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                    <div className="flex items-center gap-3.5 min-w-0">
+                  <div className="p-3.5 sm:p-4 rounded-2xl border border-gray-200 dark:border-white/10 bg-white/50 dark:bg-zinc-950/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+                    <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">
                       {(form.seo?.ogImage || form.profileImage) ? (
                         <img
                           src={resolveImageUrl(form.seo?.ogImage || form.profileImage)}
                           alt="Social Card Preview"
-                          className="w-16 h-12 rounded-xl object-cover border border-gray-200 dark:border-white/10 shrink-0 shadow-sm"
+                          className="w-14 h-11 sm:w-16 sm:h-12 rounded-xl object-cover border border-gray-200 dark:border-white/10 shrink-0 shadow-sm"
                           onError={(e) => {
                             e.target.style.display = "none";
                           }}
                         />
                       ) : (
-                        <div className="w-16 h-12 rounded-xl bg-gray-100 dark:bg-zinc-900 border border-gray-200 dark:border-white/10 flex items-center justify-center text-gray-400 shrink-0">
+                        <div className="w-14 h-11 sm:w-16 sm:h-12 rounded-xl bg-gray-100 dark:bg-zinc-900 border border-gray-200 dark:border-white/10 flex items-center justify-center text-gray-400 shrink-0">
                           <ImageIcon className="w-5 h-5" />
                         </div>
                       )}
@@ -2294,15 +2417,15 @@ export default function PortfolioEditor() {
                           {form.seo?.ogImage
                             ? "Overriding default profile photo for social previews."
                             : form.profileImage
-                            ? "Shared automatically on LinkedIn, WhatsApp, Twitter, etc."
+                            ? "Shared automatically on LinkedIn, WhatsApp, etc."
                             : "Upload a photo or custom card banner."}
                         </span>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2 shrink-0">
+                    <div className="flex flex-wrap items-center gap-2 shrink-0 w-full sm:w-auto">
                       {/* Upload Custom OG Button */}
-                      <label className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-500 text-white hover:bg-emerald-600 text-xs font-bold transition-all shadow-sm cursor-pointer">
+                      <label className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-xl bg-emerald-500 text-white hover:bg-emerald-600 text-xs font-bold transition-all shadow-sm cursor-pointer">
                         {uploadingOgImage ? (
                           <>
                             <RefreshCw className="w-3.5 h-3.5 animate-spin" />
@@ -2311,7 +2434,7 @@ export default function PortfolioEditor() {
                         ) : (
                           <>
                             <Upload className="w-3.5 h-3.5" />
-                            <span>{form.seo?.ogImage ? "Replace Banner" : "Upload Custom Banner"}</span>
+                            <span>{form.seo?.ogImage ? "Replace Banner" : "Upload Banner"}</span>
                           </>
                         )}
                         <input
@@ -2333,11 +2456,11 @@ export default function PortfolioEditor() {
                         <button
                           type="button"
                           onClick={handleResetOgImage}
-                          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-gray-700 dark:text-zinc-300 text-xs font-bold transition-colors cursor-pointer"
+                          className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-gray-700 dark:text-zinc-300 text-xs font-bold transition-colors cursor-pointer"
                           title="Reset to default Profile Photo"
                         >
                           <RotateCcw className="w-3.5 h-3.5" />
-                          <span>Use Profile Photo</span>
+                          <span>Use Photo</span>
                         </button>
                       )}
                     </div>
@@ -2350,7 +2473,7 @@ export default function PortfolioEditor() {
                         value={form.seo?.ogImage || ""}
                         onChange={(e) => updateNestedField("seo", "ogImage", e.target.value)}
                         placeholder={form.profileImage ? "Leave empty to use Profile Photo, or enter custom URL" : "https://example.com/og-banner.png"}
-                        className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs sm:text-sm font-mono"
+                        className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs sm:text-sm font-mono"
                       />
                     </div>
                   )}
@@ -2359,11 +2482,12 @@ export default function PortfolioEditor() {
                     Displayed automatically as the visual card when your portfolio link is shared on WhatsApp, LinkedIn, X/Twitter, Discord, etc.
                   </p>
                 </div>
+
                 {/* Favicon Upload & Browser Tab Preview Card */}
-                <div className="rounded-2xl border border-gray-200/90 dark:border-white/[0.08] bg-gray-50/50 dark:bg-zinc-900/40 p-4 sm:p-5">
-                  <div className="flex items-center justify-between mb-3">
+                <div className="rounded-2xl border border-gray-200/90 dark:border-white/[0.08] bg-gray-50/50 dark:bg-zinc-900/40 p-3.5 sm:p-5">
+                  <div className="flex items-center justify-between mb-2.5 sm:mb-3">
                     <div>
-                      <label className="text-xs sm:text-sm font-bold text-gray-900 dark:text-zinc-100 flex items-center gap-2">
+                      <label className="text-xs sm:text-sm font-bold text-gray-900 dark:text-zinc-100 flex items-center gap-1.5 sm:gap-2">
                         <span>Browser Tab Favicon</span>
                         {form.seo?.favicon ? (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
@@ -2376,24 +2500,24 @@ export default function PortfolioEditor() {
                         )}
                       </label>
                       <p className="text-[11px] text-gray-500 dark:text-zinc-400 mt-0.5">
-                        Uploaded image is auto-cropped and resized to a crisp 64×64 PNG for browser tabs & bookmarks.
+                        Uploaded image is auto-cropped and resized to a crisp 64×64 PNG.
                       </p>
                     </div>
                     <button
                       type="button"
                       onClick={() => setShowFaviconUrlInput(!showFaviconUrlInput)}
-                      className="text-[11px] text-gray-500 dark:text-zinc-400 hover:text-amber-600 dark:hover:text-amber-400 underline font-medium transition-colors cursor-pointer"
+                      className="text-[11px] text-gray-500 dark:text-zinc-400 hover:text-amber-600 dark:hover:text-amber-400 underline font-medium transition-colors cursor-pointer shrink-0"
                     >
                       {showFaviconUrlInput ? "Hide URL" : "Edit URL"}
                     </button>
                   </div>
 
                   {/* Browser Tab Live Mockup Preview */}
-                  <div className="mb-3.5 p-3 rounded-2xl bg-white dark:bg-zinc-900 border border-gray-200 dark:border-white/10 shadow-sm">
-                    <span className="text-[10px] font-mono font-bold text-gray-400 dark:text-zinc-500 block mb-2 uppercase tracking-wider">
+                  <div className="mb-3 p-2.5 sm:p-3 rounded-2xl bg-white dark:bg-zinc-900 border border-gray-200 dark:border-white/10 shadow-sm overflow-hidden">
+                    <span className="text-[10px] font-mono font-bold text-gray-400 dark:text-zinc-500 block mb-1.5 uppercase tracking-wider">
                       Browser Tab Preview
                     </span>
-                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-t-lg bg-gray-100 dark:bg-zinc-800/90 border-t border-x border-gray-200 dark:border-white/10 shadow-xs max-w-full">
+                    <div className="inline-flex items-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-t-lg bg-gray-100 dark:bg-zinc-800/90 border-t border-x border-gray-200 dark:border-white/10 shadow-xs max-w-full">
                       <div className="w-4 h-4 rounded-sm flex items-center justify-center shrink-0 overflow-hidden bg-white/60 dark:bg-zinc-950/60">
                         {form.seo?.favicon ? (
                           <img
@@ -2408,7 +2532,7 @@ export default function PortfolioEditor() {
                           <Globe2 className="w-3.5 h-3.5 text-gray-500 dark:text-zinc-400" />
                         )}
                       </div>
-                      <span className="text-xs font-medium text-gray-800 dark:text-zinc-200 truncate max-w-[180px] sm:max-w-[240px]">
+                      <span className="text-xs font-medium text-gray-800 dark:text-zinc-200 truncate max-w-[140px] xs:max-w-[180px] sm:max-w-[240px]">
                         {form.seo?.title || form.title || "My Portfolio"}
                       </span>
                       <X className="w-3 h-3 text-gray-400 hover:text-gray-600 dark:hover:text-zinc-200 ml-1 shrink-0 opacity-60" />
@@ -2417,7 +2541,7 @@ export default function PortfolioEditor() {
 
                   {/* Action Buttons */}
                   <div className="flex flex-wrap items-center gap-2">
-                    <label className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white text-xs font-bold cursor-pointer transition-all shadow-sm shadow-amber-500/20 active:scale-95">
+                    <label className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white text-xs font-bold cursor-pointer transition-all shadow-sm shadow-amber-500/20 active:scale-95">
                       {uploadingFavicon ? (
                         <Loader2 className="w-3.5 h-3.5 animate-spin" />
                       ) : (
@@ -2442,7 +2566,7 @@ export default function PortfolioEditor() {
                       <button
                         type="button"
                         onClick={handleRemoveFavicon}
-                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/20 text-xs font-bold transition-colors cursor-pointer"
+                        className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/20 text-xs font-bold transition-colors cursor-pointer"
                         title="Remove custom favicon"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -2458,7 +2582,7 @@ export default function PortfolioEditor() {
                         value={form.seo?.favicon || ""}
                         onChange={(e) => updateNestedField("seo", "favicon", e.target.value)}
                         placeholder="https://example.com/favicon.png or .ico"
-                        className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs sm:text-sm font-mono"
+                        className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 text-xs sm:text-sm font-mono"
                       />
                     </div>
                   )}
@@ -2468,19 +2592,20 @@ export default function PortfolioEditor() {
 
             {/* Publish Settings Panel */}
             <PortfolioPanel
+              id="section-publish"
               title="Publish Settings"
               description="Control recruiter downloads and indexing."
               icon={Globe2}
               forceState={panelControl.open}
               forceVersion={panelControl.version}
             >
-              <div className="space-y-3.5">
+              <div className="space-y-3 sm:space-y-3.5">
                 <label className="flex items-start gap-3 text-xs sm:text-sm font-bold cursor-pointer">
                   <input
                     type="checkbox"
                     checked={form.settings?.showResumeDownload !== false}
                     onChange={(e) => updateNestedField("settings", "showResumeDownload", e.target.checked)}
-                    className="w-4 h-4 rounded text-emerald-600 mt-0.5"
+                    className="w-4 h-4 rounded text-emerald-600 mt-0.5 shrink-0"
                   />
                   <span>Show "Download Resume" button</span>
                 </label>
@@ -2489,7 +2614,7 @@ export default function PortfolioEditor() {
                     type="checkbox"
                     checked={form.settings?.allowIndexing !== false}
                     onChange={(e) => updateNestedField("settings", "allowIndexing", e.target.checked)}
-                    className="w-4 h-4 rounded text-emerald-600 mt-0.5"
+                    className="w-4 h-4 rounded text-emerald-600 mt-0.5 shrink-0"
                   />
                   <span>Allow Google & search engine indexing</span>
                 </label>
@@ -2498,7 +2623,7 @@ export default function PortfolioEditor() {
                     type="checkbox"
                     checked={form.settings?.showSmartNShineBranding !== false}
                     onChange={(e) => updateNestedField("settings", "showSmartNShineBranding", e.target.checked)}
-                    className="w-4 h-4 rounded text-emerald-600 mt-0.5"
+                    className="w-4 h-4 rounded text-emerald-600 mt-0.5 shrink-0"
                   />
                   <span>Show SmartNShine badge</span>
                 </label>

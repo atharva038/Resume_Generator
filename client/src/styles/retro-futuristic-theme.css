@@ -34,6 +34,9 @@
   --rf-accent-secondary: #ffb000;
   --rf-accent-secondary-dim: rgba(255, 176, 0, 0.15);
   --rf-accent-gold: #d4af37;
+  --rf-accent-gold-glow: rgba(212, 175, 55, 0.45);
+  --rf-accent-gold-dim: rgba(212, 175, 55, 0.14);
+  --rf-border-gold: rgba(212, 175, 55, 0.35);
 
   --rf-scanline-opacity: 0.12;
   --rf-grid-opacity: 0.08;
@@ -73,6 +76,9 @@
   --rf-accent-secondary: #c26900;
   --rf-accent-secondary-dim: rgba(194, 105, 0, 0.12);
   --rf-accent-gold: #b8860b;
+  --rf-accent-gold-glow: rgba(184, 134, 11, 0.3);
+  --rf-accent-gold-dim: rgba(184, 134, 11, 0.12);
+  --rf-border-gold: rgba(184, 134, 11, 0.35);
 
   --rf-scanline-opacity: 0.04;
   --rf-grid-opacity: 0.06;
@@ -310,6 +316,84 @@
 .rf-led-red {
   background-color: #ff3344;
   box-shadow: 0 0 8px #ff3344;
+}
+.rf-led-gold {
+  background-color: var(--rf-accent-gold);
+  box-shadow: 0 0 8px var(--rf-accent-gold-glow);
+}
+
+/* SmartNShine Micro System Badges */
+.rf-badge-gold {
+  font-family: var(--rf-font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--rf-accent-gold);
+  background: var(--rf-accent-gold-dim);
+  border: 1px solid var(--rf-border-gold);
+  padding: 0.15rem 0.45rem;
+  border-radius: 3px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.rf-brandmark-symbol {
+  color: var(--rf-accent-gold);
+  filter: drop-shadow(0 0 4px var(--rf-accent-gold-glow));
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.rf-brandmark-symbol:hover {
+  transform: scale(1.15) rotate(45deg);
+  filter: drop-shadow(0 0 8px var(--rf-accent-gold));
+}
+
+/* ==========================================================================
+   SMARTNSHINE BOOT INITIALIZATION OVERLAY
+   ========================================================================== */
+.rf-boot-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background-color: var(--rf-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--rf-font-mono);
+  color: var(--rf-text-primary);
+  user-select: none;
+}
+
+.rf-boot-box {
+  background: var(--rf-bg-panel);
+  border: 1px solid var(--rf-border-primary);
+  box-shadow: 0 0 35px var(--rf-accent-dim), inset 0 0 20px rgba(0, 0, 0, 0.6);
+  padding: 2rem 2.5rem;
+  border-radius: 6px;
+  max-width: 480px;
+  width: 90%;
+  position: relative;
+}
+
+.rf-boot-progress-track {
+  width: 100%;
+  height: 12px;
+  background: var(--rf-bg-inset);
+  border: 1px solid var(--rf-border-secondary);
+  border-radius: 2px;
+  overflow: hidden;
+  margin: 1.25rem 0 0.75rem;
+  position: relative;
+}
+
+.rf-boot-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--rf-accent-primary) 0%, var(--rf-accent-gold) 100%);
+  box-shadow: 0 0 10px var(--rf-accent-glow);
+  transition: width 0.12s linear;
 }
 
 /* ==========================================================================

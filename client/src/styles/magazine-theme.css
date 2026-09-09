@@ -1,0 +1,309 @@
+/* ==========================================================================
+   SmartNShine Editorial Lifestyle & Fashion Magazine Theme
+   Art Direction: The Style Spy × Contemporary Fashion Journal × Editorial Portfolio
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Alex+Brush&family=Caveat:wght@500;600;700&family=Kalam:wght@400;700&family=Reenie+Beanie&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+.magazine-theme {
+  --mag-font-script: 'Caveat', 'Alex Brush', cursive;
+  --mag-font-hand: 'Kalam', 'Caveat', cursive;
+  --mag-font-serif: 'Playfair Display', Georgia, serif;
+  --mag-font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --mag-font-mono: 'JetBrains Mono', monospace;
+
+  /* --- LIGHT EDITORIAL (DAY) --- */
+  --mag-bg: #f7f7f7;
+  --mag-bg-card: #ffffff;
+  --mag-bg-dark-box: #0a0a0a;
+
+  --mag-text-primary: #111111;
+  --mag-text-secondary: #555555;
+  --mag-text-muted: #888888;
+  --mag-text-white: #ffffff;
+
+  --mag-border: #e2e2e2;
+  --mag-border-dark: #111111;
+
+  /* Signature Reference Colors */
+  --mag-accent-pink: #ff007f;      /* Iconic Hot Pink / Magenta */
+  --mag-accent-pink-hover: #e00070;
+  --mag-accent-gold: #b8943f;
+
+  font-family: var(--mag-font-sans);
+  background-color: var(--mag-bg);
+  color: var(--mag-text-primary);
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- DARK EDITORIAL (NIGHT) --- */
+.magazine-theme.dark-mode,
+.magazine-theme[data-mag-mode="dark"] {
+  --mag-bg: #121214;
+  --mag-bg-card: #1c1c1f;
+  --mag-bg-dark-box: #08080a;
+
+  --mag-text-primary: #f5f5f7;
+  --mag-text-secondary: #b0b0b8;
+  --mag-text-muted: #75757f;
+  --mag-text-white: #ffffff;
+
+  --mag-border: #2e2e34;
+  --mag-border-dark: #f5f5f7;
+
+  --mag-accent-pink: #ff2d8d;
+  --mag-accent-pink-hover: #ff55a3;
+  --mag-accent-gold: #e5b94c;
+}
+
+/* ==========================================================================
+   TOP BOXED TAB NAVIGATION
+   ========================================================================== */
+
+.mag-top-bar {
+  background-color: var(--mag-bg-card);
+  border-bottom: 1px solid var(--mag-border);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.mag-nav-tab {
+  font-family: var(--mag-font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.6rem 1rem;
+  border-right: 1px solid var(--mag-border);
+  color: var(--mag-text-primary);
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  text-decoration: none;
+}
+
+.mag-nav-tab:first-child {
+  border-left: 1px solid var(--mag-border);
+}
+
+.mag-nav-tab:hover {
+  background-color: var(--mag-accent-pink);
+  color: #ffffff !important;
+}
+
+/* ==========================================================================
+   EXPRESSIVE SCRIPT MASTHEAD & HEADINGS
+   ========================================================================== */
+
+.mag-masthead-script {
+  font-family: var(--mag-font-script);
+  font-size: clamp(2.8rem, 6.5vw, 5rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--mag-text-primary);
+  letter-spacing: -0.01em;
+  text-align: center;
+  padding: 0.25rem 0;
+  display: inline-block;
+}
+
+.mag-section-script-title {
+  font-family: var(--mag-font-script);
+  font-size: clamp(1.85rem, 3.8vw, 2.75rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--mag-text-primary);
+  letter-spacing: -0.01em;
+  padding: 0.15rem 0;
+}
+
+.mag-script-accent {
+  font-family: var(--mag-font-script);
+  font-size: 1.3rem;
+  color: var(--mag-accent-pink);
+  font-weight: 700;
+  display: inline-block;
+}
+
+/* ==========================================================================
+   HOT PINK RIBBON BADGE
+   ========================================================================== */
+
+.mag-ribbon-hot {
+  background-color: var(--mag-accent-pink);
+  color: #ffffff !important;
+  font-family: var(--mag-font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.45rem 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  box-shadow: 0 2px 6px rgba(255, 0, 127, 0.25);
+  z-index: 10;
+}
+
+.mag-ribbon-hot::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 12px;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid var(--mag-accent-pink);
+}
+
+/* ==========================================================================
+   HERO DARK CALLOUT BOX & PHOTO SPREAD
+   ========================================================================== */
+
+.mag-hero-dark-box {
+  background-color: var(--mag-bg-dark-box);
+  color: var(--mag-text-white);
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+@media (min-width: 640px) {
+  .mag-hero-dark-box {
+    padding: 2.5rem 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .mag-hero-dark-box {
+    padding: 3rem 2.5rem;
+  }
+}
+
+.mag-hero-headline {
+  font-family: var(--mag-font-serif);
+  font-size: clamp(1.35rem, 2.4vw, 2rem);
+  font-weight: 700;
+  line-height: 1.25;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--mag-text-white);
+  word-break: break-word;
+}
+
+.mag-view-link {
+  color: var(--mag-text-white);
+  font-family: var(--mag-font-serif);
+  font-style: italic;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: color 0.2s ease, transform 0.2s ease;
+  text-decoration: none;
+}
+
+.mag-view-link:hover {
+  color: var(--mag-accent-pink);
+  transform: translateX(3px);
+}
+
+/* ==========================================================================
+   3-COLUMN SUB-FEATURE MAGAZINE CARDS
+   ========================================================================== */
+
+.mag-sub-card {
+  background-color: var(--mag-bg-card);
+  border: 1px solid var(--mag-border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  height: 100%;
+}
+
+.mag-sub-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.mag-sub-headline {
+  font-family: var(--mag-font-serif);
+  font-style: italic;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--mag-accent-pink);
+  transition: color 0.2s ease;
+}
+
+.mag-sub-card:hover .mag-sub-headline {
+  color: var(--mag-text-primary);
+}
+
+.mag-sub-card:hover .mag-sub-headline {
+  color: var(--mag-text-primary);
+}
+
+/* ==========================================================================
+   BUTTONS & INPUTS
+   ========================================================================== */
+
+.mag-search-btn {
+  background-color: var(--mag-accent-pink);
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.9rem;
+  transition: background-color 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.mag-search-btn:hover {
+  background-color: var(--mag-accent-pink-hover);
+}
+
+/* ==========================================================================
+   MODAL
+   ========================================================================== */
+
+.mag-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background-color: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+}
+
+.mag-modal-box {
+  background-color: var(--mag-bg-card);
+  border: 1px solid var(--mag-border);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  max-width: 820px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .magazine-theme * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

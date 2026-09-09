@@ -968,6 +968,13 @@ export default function LiquidGlassTheme({
                         <p className="text-sm font-semibold text-[var(--lg-accent-primary)] mt-1 font-tech">
                           {edu?.institution || edu?.school || "Institution"}
                         </p>
+                        {(edu?.gpa || edu?.grade || edu?.cgpa) && (
+                          <div className="mt-2">
+                            <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-tech font-bold bg-[var(--lg-accent-primary)]/10 text-[var(--lg-accent-primary)] border border-[var(--lg-accent-primary)]/30">
+                              CGPA / Grade: {edu?.gpa || edu?.grade || edu?.cgpa}
+                            </span>
+                          </div>
+                        )}
                         {(edu?.period || edu?.year || edu?.startDate) && (
                           <p className="text-xs text-[var(--lg-text-muted)] font-tech mt-2">
                             {edu?.period || edu?.year || (edu?.startDate ? `${edu.startDate} - ${edu.endDate || "Completed"}` : "")}
@@ -1145,11 +1152,15 @@ export default function LiquidGlassTheme({
           ========================================================================= */}
       <AnimatePresence>
         {selectedProject && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
+          <div
+            className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md"
+            onClick={() => setSelectedProject(null)}
+          >
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
+              onClick={(e) => e.stopPropagation()}
               className="spatial-glass-panel p-6 sm:p-10 rounded-[2.5rem] max-w-2xl w-full max-h-[90vh] overflow-y-auto relative shadow-2xl"
             >
               <button

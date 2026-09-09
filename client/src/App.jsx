@@ -60,6 +60,9 @@ const AdminNotifications = lazy(
 const TemplateManagement = lazy(
   () => import("./pages/admin/TemplateManagement")
 );
+const PortfolioManagement = lazy(
+  () => import("./pages/admin/PortfolioManagement")
+);
 const AdminQuestionManagement = lazy(
   () => import("./pages/admin/AdminQuestionManagement")
 );
@@ -79,6 +82,7 @@ const SuperAdminEnvPanel = lazy(
 );
 const TechPortfolioTemplate = lazy(() => import("./pages/TechPortfolioTemplate"));
 const SmartNShinePortfolioTemplate = lazy(() => import("./pages/SmartNShinePortfolioTemplate"));
+const MagazinePortfolioTemplate = lazy(() => import("./pages/MagazinePortfolioTemplate"));
 
 import {DarkModeProvider} from "./context/DarkModeContext";
 import {NavigationBlockerProvider} from "./context/NavigationBlockerContext";
@@ -141,6 +145,8 @@ function App() {
             <Route path="/tech-portfolio" element={<TechPortfolioTemplate />} />
             <Route path="/smartnshine-portfolio" element={<SmartNShinePortfolioTemplate />} />
             <Route path="/smartnshine" element={<SmartNShinePortfolioTemplate />} />
+            <Route path="/magazine-portfolio" element={<MagazinePortfolioTemplate />} />
+            <Route path="/magazine" element={<MagazinePortfolioTemplate />} />
             <Route path="/u/:slug" element={<PublicPortfolio />} />
             <Route
               path="/portfolio/:id/edit"
@@ -344,6 +350,7 @@ function App() {
               <Route path="users" element={<UserManagement />} />
               <Route path="users/:userId" element={<UserDetails />} />
               <Route path="templates" element={<TemplateManagement />} />
+              <Route path="portfolios" element={<PortfolioManagement />} />
               <Route path="questions" element={<AdminQuestionManagement />} />
               <Route path="interviews" element={<AIInterviewManagement />} />
               <Route path="ai-analytics" element={<AIAnalytics />} />

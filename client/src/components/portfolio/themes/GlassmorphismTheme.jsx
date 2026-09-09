@@ -669,7 +669,7 @@ export default function GlassmorphismTheme({
                     glowAccent={true}
                     onClick={() => {
                       if (actions.onProjectClick) actions.onProjectClick(project);
-                      if (hasDetails) setSelectedProject(project);
+                      setSelectedProject(project);
                     }}
                   >
                     <div className="space-y-4">
@@ -874,6 +874,13 @@ export default function GlassmorphismTheme({
                       <p className="text-sm font-semibold text-[var(--pt-accent)]">
                         {edu.institution || edu.school}
                       </p>
+                      {(edu.gpa || edu.grade || edu.cgpa) && (
+                        <div className="pt-1">
+                          <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-white/10 dark:bg-white/5 border border-white/20 text-[var(--pt-accent)]">
+                            CGPA / Grade: {edu.gpa || edu.grade || edu.cgpa}
+                          </span>
+                        </div>
+                      )}
                       {edu.description && (
                         <p className="text-xs text-slate-600 dark:text-slate-400">
                           {edu.description}
@@ -1053,7 +1060,7 @@ export default function GlassmorphismTheme({
           ========================================================================= */}
       <AnimatePresence>
         {selectedProject && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
             {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}

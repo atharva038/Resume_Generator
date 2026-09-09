@@ -279,6 +279,13 @@ export default function CreativeTheme({ data = {}, isDarkMode = false, accentCol
                 <p className="mt-1 text-base font-semibold text-purple-600 dark:text-purple-400">
                   {[item.degree, item.field].filter(Boolean).join(", ")}
                 </p>
+                {(item.gpa || item.grade || item.cgpa) && (
+                  <div className="mt-2.5">
+                    <span className="inline-block px-3 py-0.5 rounded-full text-xs font-bold bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-500/30">
+                      CGPA / Grade: {item.gpa || item.grade || item.cgpa}
+                    </span>
+                  </div>
+                )}
               </div>
 
               {item.dateRange && (

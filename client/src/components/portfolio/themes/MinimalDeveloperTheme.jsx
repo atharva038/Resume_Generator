@@ -235,7 +235,7 @@ export default function MinimalDeveloperTheme({ data = {}, isDarkMode = false, a
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
                   <div>
                     <h3 className="text-lg font-black text-gray-900 dark:text-white leading-tight">
-                      {item.title}
+                      {item.title || item.role}
                     </h3>
                     <p className="text-sm font-mono font-semibold text-[var(--pt-accent,#10b981)] mt-0.5">
                       {item.company}
@@ -293,6 +293,13 @@ export default function MinimalDeveloperTheme({ data = {}, isDarkMode = false, a
                 <p className="mt-1 text-sm text-gray-600 dark:text-zinc-300 font-medium">
                   {[item.degree, item.field].filter(Boolean).join(", ")}
                 </p>
+                {(item.gpa || item.grade || item.cgpa) && (
+                  <div className="mt-2.5">
+                    <span className="inline-block px-2 py-0.5 rounded text-[11px] font-mono border border-[var(--pt-accent,#10b981)]/40 bg-[var(--pt-accent,#10b981)]/10 text-[var(--pt-accent,#10b981)] font-bold">
+                      CGPA: {item.gpa || item.grade || item.cgpa}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           ))}

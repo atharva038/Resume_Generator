@@ -1,46 +1,35 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Terminal,
   Cpu,
   Radio,
-  Wifi,
   ExternalLink,
   Github,
   Linkedin,
   Twitter,
   Mail,
-  Phone,
   MapPin,
-  Briefcase,
-  GraduationCap,
-  Award,
-  Sparkles,
   Download,
   Copy,
   Check,
   ChevronRight,
   Sun,
   Moon,
-  Volume2,
-  VolumeX,
   Eye,
   EyeOff,
   CornerDownRight,
   Maximize2,
   X,
   Send,
-  Sliders,
-  Layers,
   Code2,
-  Database,
   Activity,
-  Shield,
-  Clock,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import "@/styles/retro-futuristic-theme.css";
 import { resolveImageUrl } from "@/utils/imageUrlResolver";
+import SmartNShineBrandMark from "./SmartNShineBrandMark";
+import SmartNShineBootLoader from "./SmartNShineBootLoader";
 
 /* Web Audio Synthesizer for Retro UI Sound FX (Always Active) */
 class RetroSoundFX {
@@ -125,10 +114,25 @@ export default function RetroFuturisticTheme({
   const [activeProjectCategory, setActiveProjectCategory] = useState("all");
   const [activeSkillCategory, setActiveSkillCategory] = useState("all");
 
+  // SmartNShine Boot Initialization Sequence State (Persisted in sessionStorage)
+  const [isBooting, setIsBooting] = useState(() => {
+    if (typeof window !== "undefined") {
+      return !sessionStorage.getItem("sn_rf_boot_seen");
+    }
+    return false;
+  });
+
+  const handleBootComplete = () => {
+    setIsBooting(false);
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("sn_rf_boot_seen", "1");
+    }
+  };
+
   // Terminal interactive state
   const [terminalInput, setTerminalInput] = useState("");
   const [terminalLogs, setTerminalLogs] = useState([
-    { type: "system", text: "SYSTEM_INITIALIZED: Kernel v2.026_PROD loaded." },
+    { type: "system", text: "SMARTNSHINE_OS // RETRO-FUTURISTIC ENGINE v01.0 (BUILD 2026.09) READY." },
     { type: "prompt", cmd: "whoami", res: "Loading operator identity credentials..." },
   ]);
 
@@ -287,13 +291,33 @@ export default function RetroFuturisticTheme({
       case "contact":
         response = `COMM_LINK: ${email || "channel ready"} // Location: ${location}`;
         break;
+      case "smartnshine":
+      case "brand":
+      case "studio":
+        response = "SMARTNSHINE DESIGN SYSTEM: Build smart. Design thoughtfully. Ship beautifully. [v01.0 // 2026]";
+        break;
+      case "engine":
+      case "system":
+      case "sysinfo":
+        response = "SMARTNSHINE OS // RETRO-FUTURISTIC ENGINE v01.0 • BUILD 2026.09 [KERNEL: QUIC/HTTP3 READY]";
+        break;
+      case "version":
+      case "build":
+        response = "SMARTNSHINE / RETRO-FUTURE VERSION 01.0 • BUILD 2026";
+        break;
+      case "reboot":
+      case "boot":
+      case "reload":
+        response = "DISPATCHING SMARTNSHINE SYSTEM INITIALIZATION SEQUENCE...";
+        setTimeout(() => setIsBooting(true), 400);
+        break;
       case "clear":
       case "cls":
         setTerminalLogs([]);
         setTerminalInput("");
         return;
       case "help":
-        response = "AVAILABLE COMMANDS: whoami, status, stack, projects, contact, resume, clear, ping";
+        response = "AVAILABLE COMMANDS: whoami, status, stack, projects, contact, resume, smartnshine, engine, reboot, clear, ping";
         break;
       case "ping":
         response = "PONG! Latency: 12ms // Protocol: HTTP/3 QUIC SECURE";
@@ -386,6 +410,14 @@ export default function RetroFuturisticTheme({
         </>
       )}
 
+      {/* SmartNShine Branded Initialization Sequence */}
+      {isBooting && (
+        <SmartNShineBootLoader
+          onComplete={handleBootComplete}
+          sfx={sfx}
+        />
+      )}
+
       {/* ==========================================================================
          1. TOP SYSTEM HUD / NAVIGATION BAR
          ========================================================================== */}
@@ -393,17 +425,17 @@ export default function RetroFuturisticTheme({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           {/* Brand / System Identity */}
           <div className="flex items-center gap-3 shrink-0">
-            <span className="rf-led rf-led-green animate-pulse" />
+            <span className="rf-led rf-led-gold animate-pulse" />
             <a
               href="#hero"
               onClick={() => sfx.click()}
-              className="text-sm font-mono font-bold tracking-tight hover:text-[var(--rf-accent-primary)] transition-colors flex items-center gap-2"
+              className="transition-opacity hover:opacity-85"
             >
-              <span>SMARTNSHINE</span>
-              <span className="text-xs text-[var(--rf-text-muted)] font-medium tracking-wider uppercase hidden sm:inline">
-                PORTFOLIO
-              </span>
+              <SmartNShineBrandMark variant="hud" subtext="PORTFOLIO ENGINE" />
             </a>
+            <span className="rf-badge-gold hidden sm:inline-flex">
+              <span>SN // 026</span>
+            </span>
             <span className="text-[10px] font-mono px-2 py-0.5 border border-[var(--rf-border-primary)] bg-[var(--rf-bg-inset)] rounded text-[var(--rf-accent-primary)] font-bold hidden md:inline">
               ONLINE
             </span>
@@ -542,10 +574,11 @@ export default function RetroFuturisticTheme({
           {/* Top Status Header */}
           <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-mono text-[var(--rf-text-muted)] mb-6 pb-2 border-b border-[var(--rf-border-subtle)]">
             <div className="flex items-center gap-2">
-              <span className="rf-led rf-led-green animate-ping" />
-              <span>SYSTEM INITIALIZED • PORTFOLIO v2.026</span>
+              <span className="rf-led rf-led-gold animate-ping" />
+              <span>SMARTNSHINE // PORTFOLIO ENGINE • BUILD 026.09</span>
             </div>
             <div className="flex items-center gap-4">
+              <span className="text-[var(--rf-accent-gold)]">SN // 026</span>
               <span>OPERATOR: [{name.toUpperCase()}]</span>
               <span className="hidden sm:inline">LOC: [{location.toUpperCase()}]</span>
             </div>
@@ -1104,7 +1137,7 @@ export default function RetroFuturisticTheme({
                   {bio}
                 </p>
                 <div className="p-4 bg-[var(--rf-bg-inset)] border border-[var(--rf-border-secondary)] rounded font-mono text-xs text-[var(--rf-text-secondary)] space-y-1">
-                  <div>// ENGINEERING_PHILOSOPHY:</div>
+                  <div>{"//"} ENGINEERING_PHILOSOPHY:</div>
                   <div className="text-[var(--rf-accent-primary)]">
                     &gt; Zero-fluff architectures • Sub-millisecond latency • Intentional ergonomics
                   </div>
@@ -1253,9 +1286,25 @@ export default function RetroFuturisticTheme({
                       </p>
 
                       {/* Accomplishments Bullets */}
-                      {Array.isArray(exp.accomplishments) && exp.accomplishments.length > 0 && (
+                      {(Array.isArray(exp.accomplishments) && exp.accomplishments.length > 0
+                        ? exp.accomplishments
+                        : Array.isArray(exp.bullets) && exp.bullets.length > 0
+                        ? exp.bullets
+                        : Array.isArray(exp.highlights) && exp.highlights.length > 0
+                        ? exp.highlights
+                        : Array.isArray(exp.contributions) && exp.contributions.length > 0
+                        ? exp.contributions
+                        : []
+                      ).length > 0 && (
                         <ul className="space-y-1.5 pt-2 text-xs font-mono text-[var(--rf-text-secondary)]">
-                          {exp.accomplishments.map((acc, aIdx) => (
+                          {(Array.isArray(exp.accomplishments) && exp.accomplishments.length > 0
+                            ? exp.accomplishments
+                            : Array.isArray(exp.bullets) && exp.bullets.length > 0
+                            ? exp.bullets
+                            : Array.isArray(exp.highlights) && exp.highlights.length > 0
+                            ? exp.highlights
+                            : exp.contributions || []
+                          ).map((acc, aIdx) => (
                             <li key={aIdx} className="flex items-start gap-2">
                               <span className="text-[var(--rf-accent-primary)] font-bold">&gt;</span>
                               <span>{acc}</span>
@@ -1464,6 +1513,11 @@ export default function RetroFuturisticTheme({
                   <div className="text-xs font-mono text-[var(--rf-text-secondary)]">
                     {edu.institution || edu.school}
                   </div>
+                  {(edu.gpa || edu.grade || edu.cgpa) && (
+                    <div className="text-[10px] font-mono text-[var(--rf-accent-primary)] font-bold">
+                      SCORE / CGPA: {edu.gpa || edu.grade || edu.cgpa}
+                    </div>
+                  )}
                   <div className="text-[10px] font-mono text-[var(--rf-text-muted)]">
                     YEAR: {edu.year || edu.period || "VERIFIED"}
                   </div>
@@ -1668,13 +1722,16 @@ export default function RetroFuturisticTheme({
         </section>
 
         {/* System Footer */}
-        <footer className="pt-8 border-t border-[var(--rf-border-subtle)] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-[var(--rf-text-muted)] pb-12">
+        <footer className="pt-8 border-t border-[var(--rf-border-subtle)] flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-mono text-[var(--rf-text-muted)] pb-12">
           <div className="flex items-center gap-2">
-            <span className="rf-led rf-led-green" />
-            <span>SMARTNSHINE_OS // RETRO-FUTURISTIC ENGINE v2.026</span>
+            <span className="rf-led rf-led-gold" />
+            <span>SMARTNSHINE / RETRO-FUTURE • VERSION 01.0 • BUILD 2026</span>
           </div>
-          <div>
-            OPERATED BY [{name.toUpperCase()}] • ALL RIGHTS SECURED
+          <div className="text-center">
+            <span className="tracking-wider">DESIGNED WITH <strong className="text-[var(--rf-text-secondary)] font-semibold">SMARTNSHINE</strong> • A SMARTNSHINE PORTFOLIO TEMPLATE</span>
+          </div>
+          <div className="text-right">
+            OPERATED BY [{name.toUpperCase()}] • &copy; 2026 SMARTNSHINE
           </div>
         </footer>
       </main>
@@ -1684,11 +1741,15 @@ export default function RetroFuturisticTheme({
          ========================================================================== */}
       <AnimatePresence>
         {selectedProject && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-sm">
+          <div
+            className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-sm"
+            onClick={() => setSelectedProject(null)}
+          >
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
               className="rf-panel rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 space-y-6 shadow-2xl relative border-[var(--rf-border-primary)]"
             >
               <div className="rf-rivet-tl">+</div>

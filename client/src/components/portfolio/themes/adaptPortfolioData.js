@@ -156,15 +156,38 @@ export const adaptPortfolioData = ({
       ? featuredProjects
       : visibleProjects.slice(0, 3),
     experience: pickArray(portfolio.experience, resume?.experience).map(
-      (item) => ({
-        ...item,
-        dateRange: getDateRange(item),
-      })
+      (item) => {
+        const rawBullets = Array.isArray(item.bullets) && item.bullets.length > 0
+          ? item.bullets
+          : Array.isArray(item.highlights) && item.highlights.length > 0
+          ? item.highlights
+          : Array.isArray(item.responsibilities) && item.responsibilities.length > 0
+          ? item.responsibilities
+          : Array.isArray(item.contributions) && item.contributions.length > 0
+          ? item.contributions
+          : typeof item.description === "string" && item.description.includes("\n")
+          ? item.description.split("\n").map((s) => s.replace(/^[-•*]\s*/, "").trim()).filter(Boolean)
+          : [];
+
+        return {
+          ...item,
+          bullets: rawBullets,
+          highlights: rawBullets,
+          contributions: rawBullets,
+          dateRange: getDateRange(item),
+        };
+      }
     ),
     education: pickArray(portfolio.education, resume?.education).map(
       (item) => ({
         ...item,
-        dateRange: getDateRange(item),
+        institution: item.institution || item.school || item.university || "",
+        degree: item.degree || item.fieldOfStudy || item.major || item.field || "",
+        gpa: item.gpa || item.cgpa || item.grade || item.percentage || item.score || "",
+        grade: item.grade || item.gpa || item.cgpa || item.percentage || item.score || "",
+        cgpa: item.cgpa || item.gpa || item.grade || item.percentage || item.score || "",
+        location: item.location || "",
+        dateRange: getDateRange(item) || item.year || item.dateRange || "",
       })
     ),
     certifications: pickArray(portfolio.certifications, resume?.certifications),
