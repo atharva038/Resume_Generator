@@ -375,9 +375,44 @@ export const saveResume = async (req, res) => {
       }
     }
 
+const normalizeSkillsHelper = (skills) => {
+  if (!Array.isArray(skills)) return [];
+  return skills
+    .map((group) => {
+      if (typeof group === "string") {
+        return { category: "Technical Skills", items: [group.trim()].filter(Boolean) };
+      }
+      if (group && typeof group === "object") {
+        const category = (group.category || group.name || "Technical Skills").trim();
+        let items = group.items || group.skills || [];
+        if (typeof items === "string") {
+          items = items
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean);
+        } else if (Array.isArray(items)) {
+          items = items
+            .flatMap((it) => (typeof it === "string" ? it.split(",") : String(it)))
+            .map((s) => s.trim())
+            .filter(Boolean);
+        } else {
+          items = [];
+        }
+        return { category, items };
+      }
+      return null;
+    })
+    .filter((g) => g && (g.items.length > 0 || g.category));
+};
+
     // Create new resume document with subscription info
+    const cleanResumeData = { ...resumeData };
+    if (cleanResumeData.skills !== undefined) {
+      cleanResumeData.skills = normalizeSkillsHelper(cleanResumeData.skills);
+    }
+
     const resume = new Resume({
-      ...resumeData,
+      ...cleanResumeData,
       userId,
       subscriptionInfo,
     });
@@ -435,9 +470,15 @@ export const updateResume = async (req, res) => {
       resume.markModified("contact");
     }
 
+    // Update skills with explicit normalization and markModified
+    if (resumeData.skills !== undefined) {
+      resume.skills = normalizeSkillsHelper(resumeData.skills);
+      resume.markModified("skills");
+    }
+
     // Update other fields
     Object.keys(resumeData).forEach((key) => {
-      if (key !== "contact") {
+      if (key !== "contact" && key !== "skills") {
         resume[key] = resumeData[key];
       }
     });

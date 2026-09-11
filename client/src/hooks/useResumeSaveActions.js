@@ -42,10 +42,41 @@ export const useResumeSaveActions = ({
       setSaving(true);
 
       try {
-        const isUpdate = Boolean(targetResume._id);
+        // Sanitize skills to ensure valid format
+        const cleanResume = { ...targetResume };
+        if (Array.isArray(cleanResume.skills)) {
+          cleanResume.skills = cleanResume.skills
+            .map((group) => {
+              if (typeof group === "string") {
+                return { category: "Technical Skills", items: [group] };
+              }
+              if (group && typeof group === "object") {
+                const category = (group.category || group.name || "Technical Skills").trim();
+                let items = group.items || group.skills || [];
+                if (typeof items === "string") {
+                  items = items
+                    .split(",")
+                    .map((s) => s.trim())
+                    .filter(Boolean);
+                } else if (Array.isArray(items)) {
+                  items = items
+                    .flatMap((it) => (typeof it === "string" ? it.split(",") : String(it)))
+                    .map((s) => s.trim())
+                    .filter(Boolean);
+                } else {
+                  items = [];
+                }
+                return { category, items };
+              }
+              return null;
+            })
+            .filter((g) => g && (g.items.length > 0 || g.category));
+        }
+
+        const isUpdate = Boolean(cleanResume._id);
         const response = isUpdate
-          ? await resumeAPI.update(targetResume._id, targetResume)
-          : await resumeAPI.save(targetResume);
+          ? await resumeAPI.update(cleanResume._id, cleanResume)
+          : await resumeAPI.save(cleanResume);
 
         const savedResume = response.data;
 

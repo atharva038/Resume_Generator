@@ -52,7 +52,31 @@ export function normalizeResumeData(rawData) {
     };
   }
 
-  if (!Array.isArray(data.skills)) data.skills = [];
+  if (!Array.isArray(data.skills)) {
+    data.skills = [];
+  } else {
+    data.skills = data.skills
+      .map((group) => {
+        if (typeof group === "string") {
+          return { category: "Technical Skills", items: [group] };
+        }
+        if (group && typeof group === "object") {
+          const category = group.category || group.name || "Technical Skills";
+          let items = group.items || group.skills || [];
+          if (typeof items === "string") {
+            items = items
+              .split(",")
+              .map((s) => s.trim())
+              .filter(Boolean);
+          } else if (!Array.isArray(items)) {
+            items = [];
+          }
+          return { category, items };
+        }
+        return null;
+      })
+      .filter(Boolean);
+  }
   if (!Array.isArray(data.experience)) data.experience = [];
   if (!Array.isArray(data.education)) data.education = [];
   if (!Array.isArray(data.projects)) data.projects = [];
