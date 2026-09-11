@@ -1018,29 +1018,54 @@ const Creative2Template = forwardRef(({ resumeData = {}, onPageUsageChange }, re
                           </span>
                         </div>
 
-                        {proj.url && (
-                          <a
-                            href={proj.url.startsWith("http") ? proj.url : `https://${proj.url}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{
-                              display: "inline-flex",
-                              alignItems: "center",
-                              gap: "3px",
-                              fontSize: "7.5pt",
-                              fontWeight: 700,
-                              padding: "1.5px 7px",
-                              borderRadius: "4px",
-                              backgroundColor: theme.tagBg,
-                              color: theme.primary,
-                              border: `1px solid ${theme.tagBorder}`,
-                              textDecoration: "none",
-                            }}
-                          >
-                            <span>Live Demo</span>
-                            <ExternalLink size={9} strokeWidth={2.5} />
-                          </a>
-                        )}
+                        <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                          {(proj.url || proj.link || proj.liveUrl) && (
+                            <a
+                              href={(proj.url || proj.link || proj.liveUrl).startsWith("http") ? (proj.url || proj.link || proj.liveUrl) : `https://${proj.url || proj.link || proj.liveUrl}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "3px",
+                                fontSize: "7.5pt",
+                                fontWeight: 700,
+                                padding: "1.5px 7px",
+                                borderRadius: "4px",
+                                backgroundColor: theme.tagBg,
+                                color: theme.primary,
+                                border: `1px solid ${theme.tagBorder}`,
+                                textDecoration: "none",
+                              }}
+                            >
+                              <span>Live Demo</span>
+                              <ExternalLink size={9} strokeWidth={2.5} />
+                            </a>
+                          )}
+                          {(proj.github || proj.githubUrl) && (
+                            <a
+                              href={(proj.github || proj.githubUrl).startsWith("http") ? (proj.github || proj.githubUrl) : `https://${proj.github || proj.githubUrl}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "3px",
+                                fontSize: "7.5pt",
+                                fontWeight: 700,
+                                padding: "1.5px 7px",
+                                borderRadius: "4px",
+                                backgroundColor: theme.tagBg,
+                                color: theme.primary,
+                                border: `1px solid ${theme.tagBorder}`,
+                                textDecoration: "none",
+                              }}
+                            >
+                              <span>GitHub</span>
+                              <Github size={9} strokeWidth={2.5} />
+                            </a>
+                          )}
+                        </div>
                       </div>
 
                       {/* Technology / Discipline Tags */}

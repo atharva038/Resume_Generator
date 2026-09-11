@@ -372,9 +372,36 @@ const StrategicLeadershipTemplate = forwardRef(
                   fontWeight: "700",
                   color: "#111827",
                   marginBottom: "2px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  flexWrap: "wrap",
+                  gap: "6px",
                 }}
               >
-                {project.name}
+                <span>{project.name}</span>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", fontWeight: "normal", fontSize: stylePack.tinyFont }}>
+                  {(project.link || project.liveUrl) && (
+                    <a
+                      href={(project.link || project.liveUrl).startsWith("http") ? (project.link || project.liveUrl) : `https://${project.link || project.liveUrl}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: selectedTheme.primary, textDecoration: "none" }}
+                    >
+                      ↗ Live Demo
+                    </a>
+                  )}
+                  {(project.github || project.githubUrl) && (
+                    <a
+                      href={(project.github || project.githubUrl).startsWith("http") ? (project.github || project.githubUrl) : `https://${project.github || project.githubUrl}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: selectedTheme.primary, textDecoration: "none" }}
+                    >
+                      ↗ GitHub
+                    </a>
+                  )}
+                </div>
               </div>
 
               {project?.bullets?.length > 0 && (

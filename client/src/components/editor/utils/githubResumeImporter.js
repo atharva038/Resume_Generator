@@ -28,7 +28,10 @@ export function mergeGitHubImportData(prev, importedData) {
       title: repo.name,
       description: repo.description || "No description provided",
       technologies: [repo.language, ...(repo.topics || [])].filter(Boolean),
-      link: repo.url,
+      link: repo.homepage || repo.link || "",
+      liveUrl: repo.homepage || repo.link || "",
+      github: repo.url || repo.github || "",
+      githubUrl: repo.url || repo.github || "",
       bullets: [`${repo.stars} stars`, `${repo.forks} forks`],
       highlights: [`${repo.stars} stars`, `${repo.forks} forks`],
     }));

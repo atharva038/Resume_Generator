@@ -542,16 +542,28 @@ const ProfessionalV2Template = forwardRef(
                         </span>
                       )}
                     </h3>
-                    {project.link && (
-                      <a
-                        href={project.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="project-link"
-                      >
-                        View Project →
-                      </a>
-                    )}
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      {(project.link || project.liveUrl) && (
+                        <a
+                          href={(project.link || project.liveUrl).startsWith("http") ? (project.link || project.liveUrl) : `https://${project.link || project.liveUrl}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="project-link"
+                        >
+                          Live Demo →
+                        </a>
+                      )}
+                      {(project.github || project.githubUrl) && (
+                        <a
+                          href={(project.github || project.githubUrl).startsWith("http") ? (project.github || project.githubUrl) : `https://${project.github || project.githubUrl}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="project-link"
+                        >
+                          GitHub →
+                        </a>
+                      )}
+                    </div>
                   </div>
                   {project.descriptionText &&
                     (!project.bulletItems?.length ||

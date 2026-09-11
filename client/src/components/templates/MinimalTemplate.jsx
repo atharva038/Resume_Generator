@@ -587,9 +587,9 @@ const MinimalTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }, ref)
                         >
                           {proj.name || "Project Name"}
                         </span>
-                        {proj.link && (
+                        {(proj.link || proj.liveUrl) && (
                           <a
-                            href={proj.link}
+                            href={(proj.link || proj.liveUrl).startsWith("http") ? (proj.link || proj.liveUrl) : `https://${proj.link || proj.liveUrl}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             style={{
@@ -602,7 +602,25 @@ const MinimalTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }, ref)
                             }}
                           >
                             <ExternalLink size={10} />
-                            <span>Link</span>
+                            <span>Live</span>
+                          </a>
+                        )}
+                        {(proj.github || proj.githubUrl) && (
+                          <a
+                            href={(proj.github || proj.githubUrl).startsWith("http") ? (proj.github || proj.githubUrl) : `https://${proj.github || proj.githubUrl}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              fontSize: styles.metaSize,
+                              color: selectedTheme.primary,
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "2px",
+                              textDecoration: "none",
+                            }}
+                          >
+                            <Github size={10} />
+                            <span>GitHub</span>
                           </a>
                         )}
                       </div>

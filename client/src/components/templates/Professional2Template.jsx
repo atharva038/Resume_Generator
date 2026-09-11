@@ -676,20 +676,36 @@ const Professional2Template = forwardRef((props, ref) => {
                 >
                   {project.name}
                 </div>
-                {project.link && (
-                  <a
-                    href={project.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      fontSize: dynamicStyles.projectLinkSize,
-                      color: selectedTheme.linkColor,
-                      textDecoration: "underline",
-                    }}
-                  >
-                    🔗 View Project
-                  </a>
-                )}
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  {(project.link || project.liveUrl) && (
+                    <a
+                      href={(project.link || project.liveUrl).startsWith("http") ? (project.link || project.liveUrl) : `https://${project.link || project.liveUrl}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        fontSize: dynamicStyles.projectLinkSize,
+                        color: selectedTheme.linkColor,
+                        textDecoration: "underline",
+                      }}
+                    >
+                      🔗 Live Demo
+                    </a>
+                  )}
+                  {(project.github || project.githubUrl) && (
+                    <a
+                      href={(project.github || project.githubUrl).startsWith("http") ? (project.github || project.githubUrl) : `https://${project.github || project.githubUrl}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        fontSize: dynamicStyles.projectLinkSize,
+                        color: selectedTheme.linkColor,
+                        textDecoration: "underline",
+                      }}
+                    >
+                      💻 GitHub
+                    </a>
+                  )}
+                </div>
               </div>
 
               {/* Technologies */}

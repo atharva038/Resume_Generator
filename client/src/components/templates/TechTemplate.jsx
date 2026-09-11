@@ -947,9 +947,9 @@ const TechTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }, ref) =>
                           >
                             {proj.name}
                           </span>
-                          {proj.link && (
+                          {(proj.link || proj.liveUrl) && (
                             <a
-                              href={proj.link.startsWith("http") ? proj.link : `https://${proj.link}`}
+                              href={(proj.link || proj.liveUrl).startsWith("http") ? (proj.link || proj.liveUrl) : `https://${proj.link || proj.liveUrl}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               style={{
@@ -963,7 +963,27 @@ const TechTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }, ref) =>
                             >
                               <ExternalLink size={10} />
                               <span style={{ borderBottom: `1px dotted ${selectedTheme.primary}` }}>
-                                {proj.link.replace(/^https?:\/\/(www\.)?/i, "")}
+                                {(proj.link || proj.liveUrl).replace(/^https?:\/\/(www\.)?/i, "")}
+                              </span>
+                            </a>
+                          )}
+                          {(proj.github || proj.githubUrl) && (
+                            <a
+                              href={(proj.github || proj.githubUrl).startsWith("http") ? (proj.github || proj.githubUrl) : `https://${proj.github || proj.githubUrl}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "2px",
+                                fontSize: styles.metaSize,
+                                color: selectedTheme.primary,
+                                textDecoration: "none",
+                              }}
+                            >
+                              <Github size={10} />
+                              <span style={{ borderBottom: `1px dotted ${selectedTheme.primary}` }}>
+                                {(proj.github || proj.githubUrl).replace(/^https?:\/\/(www\.)?github\.com\//i, "gh/").replace(/^https?:\/\/(www\.)?/i, "")}
                               </span>
                             </a>
                           )}

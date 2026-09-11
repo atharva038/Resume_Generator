@@ -1019,9 +1019,9 @@ export const importFromResumeData = async ({ userId, sourceResumeId, selectedSec
       results: [],
       metrics: [],
       achievements: [],
-      githubUrl: p.link || "",
-      liveUrl: "",
-      demoUrl: "",
+      githubUrl: p.github || p.githubUrl || (p.link && p.link.includes("github.com") ? p.link : ""),
+      liveUrl: p.liveUrl || (p.link && !p.link.includes("github.com") ? p.link : ""),
+      demoUrl: p.demoUrl || "",
       images: [],
     }));
 

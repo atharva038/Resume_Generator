@@ -5,6 +5,7 @@ import {
   MapPin,
   Globe,
   Linkedin,
+  Github,
   Instagram,
   ExternalLink,
 } from "lucide-react";
@@ -280,24 +281,44 @@ const StructuredPhotoTemplate = forwardRef(({resumeData, onPageUsageChange}, ref
             >
               {project.name || "Project"}
             </div>
-            {(project.link || project.url) && (
-              <a
-                href={project.link || project.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  color: theme.accent,
-                  fontSize: "11px",
-                  textDecoration: "underline",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "4px",
-                }}
-              >
-                {(project.link || project.url).replace(/^https?:\/\//, "")}
-                <ExternalLink size={12} />
-              </a>
-            )}
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap", marginTop: "2px" }}>
+              {(project.link || project.url || project.liveUrl) && (
+                <a
+                  href={(project.link || project.url || project.liveUrl).startsWith("http") ? (project.link || project.url || project.liveUrl) : `https://${project.link || project.url || project.liveUrl}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    color: theme.accent,
+                    fontSize: "11px",
+                    textDecoration: "underline",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "4px",
+                  }}
+                >
+                  {(project.link || project.url || project.liveUrl).replace(/^https?:\/\//, "")}
+                  <ExternalLink size={12} />
+                </a>
+              )}
+              {(project.github || project.githubUrl) && (
+                <a
+                  href={(project.github || project.githubUrl).startsWith("http") ? (project.github || project.githubUrl) : `https://${project.github || project.githubUrl}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    color: theme.accent,
+                    fontSize: "11px",
+                    textDecoration: "underline",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "4px",
+                  }}
+                >
+                  {(project.github || project.githubUrl).replace(/^https?:\/\/(www\.)?github\.com\//i, "gh/").replace(/^https?:\/\//, "")}
+                  <Github size={12} />
+                </a>
+              )}
+            </div>
             {project.technologies && (
               <div style={{fontSize: "11px", color: theme.textMuted, marginTop: "1px"}}>
                 {Array.isArray(project.technologies)
