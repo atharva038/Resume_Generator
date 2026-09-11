@@ -398,14 +398,30 @@ const EditableSection = ({
             className="input-field text-xs sm:text-sm"
             autoComplete="off"
           />
-          <input
-            type="url"
-            value={projectData.link || ""}
-            onChange={(e) => onUpdateProject("link", e.target.value)}
-            placeholder="Project Link (optional)"
-            className="input-field text-xs sm:text-sm"
-            autoComplete="off"
-          />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <input
+              type="url"
+              value={projectData.link || projectData.liveUrl || ""}
+              onChange={(e) => {
+                onUpdateProject("link", e.target.value);
+                onUpdateProject("liveUrl", e.target.value);
+              }}
+              placeholder="Live Demo / Website URL (optional)"
+              className="input-field text-xs sm:text-sm"
+              autoComplete="off"
+            />
+            <input
+              type="url"
+              value={projectData.github || projectData.githubUrl || ""}
+              onChange={(e) => {
+                onUpdateProject("github", e.target.value);
+                onUpdateProject("githubUrl", e.target.value);
+              }}
+              placeholder="GitHub Repo URL (optional)"
+              className="input-field text-xs sm:text-sm"
+              autoComplete="off"
+            />
+          </div>
         </div>
       )}
 

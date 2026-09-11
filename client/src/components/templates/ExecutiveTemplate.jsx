@@ -777,9 +777,26 @@ const ExecutiveTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }, re
                             >
                               {proj.title || proj.name}
                             </span>
-                            {proj.link && (
+                            {(proj.link || proj.liveUrl) && (
                               <a
-                                href={proj.link.startsWith("http") ? proj.link : `https://${proj.link}`}
+                                href={(proj.link || proj.liveUrl).startsWith("http") ? (proj.link || proj.liveUrl) : `https://${proj.link || proj.liveUrl}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                  fontSize: styles.dateSize,
+                                  color: selectedTheme.primary,
+                                  textDecoration: "none",
+                                  fontStyle: "normal",
+                                  fontFamily: '"Inter", sans-serif',
+                                  marginRight: "6px",
+                                }}
+                              >
+                                ↗ Live
+                              </a>
+                            )}
+                            {(proj.github || proj.githubUrl) && (
+                              <a
+                                href={(proj.github || proj.githubUrl).startsWith("http") ? (proj.github || proj.githubUrl) : `https://${proj.github || proj.githubUrl}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 style={{
@@ -790,7 +807,7 @@ const ExecutiveTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }, re
                                   fontFamily: '"Inter", sans-serif',
                                 }}
                               >
-                                ↗ View
+                                ↗ GitHub
                               </a>
                             )}
                           </div>

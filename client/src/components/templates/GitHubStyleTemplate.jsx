@@ -422,20 +422,44 @@ const GitHubStyleTemplate = forwardRef(
               >
                 {project.name || "Project"}
               </span>
-              {project.link && (
-                <a
-                  href={project.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    color: selectedTheme.accent,
-                    fontSize: compact.smallText,
-                    textDecoration: "none",
-                  }}
-                >
-                  Project Link
-                </a>
-              )}
+              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                {(project.link || project.liveUrl) && (
+                  <a
+                    href={(project.link || project.liveUrl).startsWith("http") ? (project.link || project.liveUrl) : `https://${project.link || project.liveUrl}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      color: selectedTheme.accent,
+                      fontSize: compact.smallText,
+                      textDecoration: "none",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "2px",
+                    }}
+                  >
+                    <ExternalLink size={10} />
+                    <span>Live Demo</span>
+                  </a>
+                )}
+                {(project.github || project.githubUrl) && (
+                  <a
+                    href={(project.github || project.githubUrl).startsWith("http") ? (project.github || project.githubUrl) : `https://${project.github || project.githubUrl}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      color: selectedTheme.accent,
+                      fontSize: compact.smallText,
+                      textDecoration: "none",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "2px",
+                    }}
+                  >
+                    <Github size={10} />
+                    <span>GitHub</span>
+                  </a>
+                )}
+              </div>
             </div>
             {project.technologies && (
               <div

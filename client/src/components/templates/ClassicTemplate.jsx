@@ -759,9 +759,9 @@ const ClassicTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }, ref)
                             >
                               {proj.title || proj.name}
                             </span>
-                            {proj.link && (
+                            {(proj.link || proj.liveUrl) && (
                               <a
-                                href={proj.link.startsWith("http") ? proj.link : `https://${proj.link}`}
+                                href={(proj.link || proj.liveUrl).startsWith("http") ? (proj.link || proj.liveUrl) : `https://${proj.link || proj.liveUrl}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 style={{
@@ -774,7 +774,25 @@ const ClassicTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }, ref)
                                 }}
                               >
                                 <ExternalLink size={9} />
-                                <span>link</span>
+                                <span>live</span>
+                              </a>
+                            )}
+                            {(proj.github || proj.githubUrl) && (
+                              <a
+                                href={(proj.github || proj.githubUrl).startsWith("http") ? (proj.github || proj.githubUrl) : `https://${proj.github || proj.githubUrl}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  gap: "2px",
+                                  fontSize: styles.metaSize,
+                                  color: selectedTheme.textMuted,
+                                  textDecoration: "none",
+                                }}
+                              >
+                                <Github size={9} />
+                                <span>github</span>
                               </a>
                             )}
                           </div>

@@ -66,6 +66,7 @@ export const getGitHubProfile = async (req, res) => {
         stars: repo.stargazers_count,
         forks: repo.forks_count,
         url: repo.html_url,
+        homepage: repo.homepage || "",
         topics: repo.topics || [],
       }));
 

@@ -538,6 +538,9 @@ export const ProjectsSection = ({
             description: "",
             technologies: [],
             link: "",
+            liveUrl: "",
+            github: "",
+            githubUrl: "",
             bullets: [""],
           })
         }

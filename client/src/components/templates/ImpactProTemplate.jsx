@@ -703,7 +703,7 @@ const ImpactProTemplate = forwardRef((props, ref) => {
                       }}
                     >
                       {project.name}
-                      {project.url && (
+                      {(project.link || project.url || project.liveUrl) && (
                         <span
                           style={{
                             fontSize: dynamicStyles.projectLinkSize,
@@ -712,7 +712,19 @@ const ImpactProTemplate = forwardRef((props, ref) => {
                             fontWeight: "normal",
                           }}
                         >
-                          ({project.url})
+                          [Live: {project.link || project.url || project.liveUrl}]
+                        </span>
+                      )}
+                      {(project.github || project.githubUrl) && (
+                        <span
+                          style={{
+                            fontSize: dynamicStyles.projectLinkSize,
+                            color: selectedTheme.linkColor,
+                            marginLeft: "8px",
+                            fontWeight: "normal",
+                          }}
+                        >
+                          [GitHub: {project.github || project.githubUrl}]
                         </span>
                       )}
                     </div>

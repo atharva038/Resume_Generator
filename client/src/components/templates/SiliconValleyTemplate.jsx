@@ -720,9 +720,9 @@ const SiliconValleyTemplate = forwardRef(
                       >
                         {proj.name}
                       </h3>
-                      {proj.link && (
+                      {(proj.link || proj.liveUrl) && (
                         <a
-                          href={proj.link.startsWith("http") ? proj.link : `https://${proj.link}`}
+                          href={(proj.link || proj.liveUrl).startsWith("http") ? (proj.link || proj.liveUrl) : `https://${proj.link || proj.liveUrl}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           style={{
@@ -736,7 +736,27 @@ const SiliconValleyTemplate = forwardRef(
                             fontWeight: 600,
                           }}
                         >
-                          <span>repo / demo</span>
+                          <span>demo</span>
+                          <span>↗</span>
+                        </a>
+                      )}
+                      {(proj.github || proj.githubUrl) && (
+                        <a
+                          href={(proj.github || proj.githubUrl).startsWith("http") ? (proj.github || proj.githubUrl) : `https://${proj.github || proj.githubUrl}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            fontFamily: fontMono,
+                            fontSize: "7.4pt",
+                            color: selectedTheme.primary,
+                            textDecoration: "none",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "1.5px",
+                            fontWeight: 600,
+                          }}
+                        >
+                          <span>github</span>
                           <span>↗</span>
                         </a>
                       )}
