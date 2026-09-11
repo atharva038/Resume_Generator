@@ -56,10 +56,32 @@ export function normalizeResumeData(rawData) {
     data.skills = [];
   } else {
     data.skills = data.skills
-      .map((s) => (typeof s === "string" ? s : s?.name || s?.title || s?.label || ""))
-      .filter(Boolean);
+      .map((group) => {
+        if (typeof group === "string") {
+          return { category: "Technical Skills", items: [group.trim()].filter(Boolean) };
+        }
+        if (group && typeof group === "object") {
+          const category = (group.category || group.name || group.title || "Technical Skills").trim();
+          let items = group.items || group.skills || [];
+          if (typeof items === "string") {
+            items = items
+              .split(",")
+              .map((s) => s.trim())
+              .filter(Boolean);
+          } else if (Array.isArray(items)) {
+            items = items
+              .flatMap((it) => (typeof it === "string" ? it.split(",") : [it?.name || it?.title || String(it)]))
+              .map((s) => s.trim())
+              .filter(Boolean);
+          } else {
+            items = [];
+          }
+          return { category, items };
+        }
+        return null;
+      })
+      .filter((g) => g && (g.items.length > 0 || g.category));
   }
-
   if (!Array.isArray(data.experience)) data.experience = [];
   if (!Array.isArray(data.education)) data.education = [];
   if (!Array.isArray(data.projects)) data.projects = [];

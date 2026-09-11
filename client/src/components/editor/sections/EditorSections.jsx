@@ -93,27 +93,77 @@ export const PersonalInfoSection = ({
   </div>
 );
 
-export const SkillsSection = ({resumeData, updateField}) => {
+export const SkillsSection = ({ resumeData, updateField }) => {
   const [skillsInput, setSkillsInput] = useState("");
   const [isLoading, toggleLoading, setIsLoadingTrue, setIsLoadingFalse] =
     useToggle(false);
   const [error, setError] = useState("");
-  const [initialized, setInitialized] = useState(false);
+  const [newSkillInputs, setNewSkillInputs] = useState({});
 
+  // Extract all skills string from resumeData.skills
+  const getSkillsString = (skills) => {
+    if (!Array.isArray(skills)) return "";
+    return skills
+      .flatMap((group) => {
+        if (typeof group === "string") return [group];
+        return Array.isArray(group?.items) ? group.items : [];
+      })
+      .filter(Boolean)
+      .join(", ");
+  };
+
+  // Sync skillsInput when resumeData.skills changes
   useEffect(() => {
-    if (resumeData.skills && resumeData.skills.length > 0 && !initialized) {
-      const allSkills = resumeData.skills
-        .flatMap((group) => group.items || [])
-        .join(", ");
+    if (resumeData?.skills && Array.isArray(resumeData.skills)) {
+      const allSkills = getSkillsString(resumeData.skills);
       setSkillsInput(allSkills);
-      setInitialized(true);
     }
-  }, [resumeData.skills, initialized]);
+  }, [resumeData?.skills]);
 
   const handleSkillsInputChange = (e) => {
     const value = e.target.value;
     setSkillsInput(value);
     if (error) setError("");
+  };
+
+  // Parse raw text into array of clean skill strings
+  const parseSkillsText = (text) => {
+    if (!text || typeof text !== "string") return [];
+    return text
+      .split(/[,\n]/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+  };
+
+  // Apply raw skills input directly to resumeData
+  const handleApplyRawSkills = (inputText = skillsInput) => {
+    const parsed = parseSkillsText(inputText);
+    if (parsed.length === 0) {
+      updateField("skills", []);
+      return;
+    }
+
+    const currentSkills = Array.isArray(resumeData?.skills) ? resumeData.skills : [];
+    if (currentSkills.length <= 1) {
+      const categoryName = currentSkills[0]?.category?.trim() || "Technical Skills";
+      updateField("skills", [{ category: categoryName, items: parsed }]);
+    } else {
+      const firstCat = currentSkills[0]?.category || "Technical Skills";
+      updateField("skills", [{ category: firstCat, items: parsed }]);
+    }
+    if (error) setError("");
+  };
+
+  // Auto-sync on blur if user typed skills and resumeData.skills is empty
+  const handleInputBlur = () => {
+    if (skillsInput.trim()) {
+      const parsed = parseSkillsText(skillsInput);
+      const currentSkills = Array.isArray(resumeData?.skills) ? resumeData.skills : [];
+      const currentCount = currentSkills.flatMap((g) => (Array.isArray(g.items) ? g.items : [])).length;
+      if (currentCount === 0 && parsed.length > 0) {
+        handleApplyRawSkills(skillsInput);
+      }
+    }
   };
 
   const handleCategorize = async () => {
@@ -126,15 +176,24 @@ export const SkillsSection = ({resumeData, updateField}) => {
     setError("");
 
     try {
-      // ResumeId is optional - works for both new and existing resumes
       const response = await resumeAPI.categorizeSkills(
         skillsInput,
-        resumeData._id // Pass if available, undefined if new resume
+        resumeData?._id
       );
 
       if (response.data && response.data.skills) {
-        // Update the skills in resumeData
-        updateField("skills", response.data.skills);
+        const categorized = Array.isArray(response.data.skills)
+          ? response.data.skills
+          : [];
+        const cleanCategorized = categorized.map((g) => ({
+          category: g.category || "Technical Skills",
+          items: Array.isArray(g.items)
+            ? g.items
+            : typeof g.items === "string"
+              ? g.items.split(",").map((s) => s.trim()).filter(Boolean)
+              : [],
+        }));
+        updateField("skills", cleanCategorized);
         setError("");
       } else {
         setError("Failed to categorize skills");
@@ -151,84 +210,181 @@ export const SkillsSection = ({resumeData, updateField}) => {
   };
 
   // Handle manual edit of categorized skills
-  const updateSkillCategory = (index, field, value) => {
-    const updatedSkills = [...(resumeData.skills || [])];
+  const updateSkillCategoryName = (index, newCategory) => {
+    const updatedSkills = [...(resumeData?.skills || [])];
     updatedSkills[index] = {
-      ...updatedSkills[index],
-      [field]: value,
+      ...(updatedSkills[index] || {}),
+      category: newCategory,
+      items: Array.isArray(updatedSkills[index]?.items)
+        ? updatedSkills[index].items
+        : [],
     };
     updateField("skills", updatedSkills);
   };
 
+  const updateSkillCategoryItems = (index, itemsValue) => {
+    const updatedSkills = [...(resumeData?.skills || [])];
+    const itemsArray =
+      typeof itemsValue === "string"
+        ? itemsValue
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : Array.isArray(itemsValue)
+          ? itemsValue
+          : [];
+    updatedSkills[index] = {
+      ...(updatedSkills[index] || {}),
+      category: updatedSkills[index]?.category || "Technical Skills",
+      items: itemsArray,
+    };
+    updateField("skills", updatedSkills);
+  };
+
+  const addSkillToCategory = (index) => {
+    const skillToAdd = (newSkillInputs[index] || "").trim();
+    if (!skillToAdd) return;
+
+    const updatedSkills = [...(resumeData?.skills || [])];
+    const currentItems = Array.isArray(updatedSkills[index]?.items)
+      ? updatedSkills[index].items
+      : [];
+
+    if (!currentItems.some((s) => s.toLowerCase() === skillToAdd.toLowerCase())) {
+      updatedSkills[index] = {
+        ...updatedSkills[index],
+        category: updatedSkills[index]?.category || "Technical Skills",
+        items: [...currentItems, skillToAdd],
+      };
+      updateField("skills", updatedSkills);
+    }
+
+    setNewSkillInputs((prev) => ({ ...prev, [index]: "" }));
+  };
+
+  const removeSkillFromCategory = (categoryIndex, skillIndex) => {
+    const updatedSkills = [...(resumeData?.skills || [])];
+    const currentItems = Array.isArray(updatedSkills[categoryIndex]?.items)
+      ? updatedSkills[categoryIndex].items
+      : [];
+    const newItems = currentItems.filter((_, i) => i !== skillIndex);
+    updatedSkills[categoryIndex] = {
+      ...updatedSkills[categoryIndex],
+      items: newItems,
+    };
+    updateField("skills", updatedSkills);
+  };
+
+  const addCategory = () => {
+    const updatedSkills = [...(resumeData?.skills || [])];
+    updatedSkills.push({
+      category: "Technical Skills",
+      items: [],
+    });
+    updateField("skills", updatedSkills);
+  };
+
   const removeSkillCategory = (index) => {
-    const updatedSkills = (resumeData.skills || []).filter(
+    const updatedSkills = (resumeData?.skills || []).filter(
       (_, i) => i !== index
     );
     updateField("skills", updatedSkills);
   };
+
+  const totalSkillCount = (resumeData?.skills || []).reduce(
+    (acc, g) => acc + (Array.isArray(g?.items) ? g.items.length : 0),
+    0
+  );
 
   return (
     <>
       <div className="mb-4">
         <div className="flex justify-between items-center mb-2">
           <h2 className="section-title mb-0">Skills</h2>
-          <div className="text-sm text-gray-500 dark:text-gray-400 inline-flex items-center gap-1.5">
-            <Sparkles className="w-4 h-4" />
-            AI-Powered Categorization
+          <div className="text-xs text-gray-500 dark:text-gray-400 inline-flex items-center gap-1.5 font-medium">
+            <Sparkles className="w-3.5 h-3.5 text-blue-500" />
+            AI-Powered &amp; Instant Save
           </div>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-4">
           {/* Single input box for all skills */}
-          <div>
-            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+          <div className="p-3.5 bg-gray-50 dark:bg-zinc-900/60 rounded-xl border border-gray-200 dark:border-zinc-800/80">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
               Enter all your skills (comma-separated or line-separated)
             </label>
             <textarea
               value={skillsInput}
               onChange={handleSkillsInputChange}
+              onBlur={handleInputBlur}
               placeholder="e.g., JavaScript, React, Node.js, Python, Docker, AWS, MongoDB, Git, Problem Solving, Team Leadership"
-              className="input-field min-h-[120px] resize-y"
-              rows={5}
+              className="input-field min-h-[100px] resize-y bg-white dark:bg-zinc-950 text-sm"
+              rows={4}
               autoComplete="off"
               spellCheck="false"
             />
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 inline-flex items-center gap-1.5">
-              <Lightbulb className="w-3.5 h-3.5" />
-              Tip: Just list all your skills and AI will automatically organize
-              them into categories
-            </p>
-            {skillsInput && (
-              <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                {skillsInput.length} characters |{" "}
-                {skillsInput.split(/[,\n]/).filter((s) => s.trim()).length}{" "}
-                skills detected
+            <div className="flex flex-wrap items-center justify-between gap-2 mt-2">
+              <p className="text-xs text-gray-500 dark:text-gray-400 inline-flex items-center gap-1.5">
+                <Lightbulb className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" />
+                List skills and click &quot;Apply Skills&quot; or &quot;Categorize with AI&quot;
               </p>
-            )}
-          </div>
+              {skillsInput && (
+                <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                  {skillsInput.split(/[,\n]/).filter((s) => s.trim()).length}{" "}
+                  skills detected
+                </p>
+              )}
+            </div>
 
-          {/* Categorize button */}
-          <button
-            onClick={handleCategorize}
-            disabled={isLoading || !skillsInput.trim()}
-            className={`w-full sm:w-auto py-2.5 px-5 rounded-lg text-sm font-semibold transition-all border inline-flex items-center justify-center gap-2 cursor-pointer ${
-              isLoading || !skillsInput.trim()
-                ? "bg-gray-200 dark:bg-zinc-800 border-gray-300 dark:border-zinc-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
-                : "bg-zinc-900 hover:bg-black text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 border-zinc-800 dark:border-zinc-200 shadow-sm hover:shadow"
-            }`}
-          >
-            {isLoading ? (
-              <span className="flex items-center justify-center gap-2">
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Categorizing with AI...
-              </span>
-            ) : (
-              <>
-                <Sparkles className="w-4 h-4" />
-                Categorize Skills with AI
-              </>
-            )}
-          </button>
+            {/* Action buttons */}
+            <div className="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-gray-200 dark:border-zinc-800">
+              <button
+                type="button"
+                onClick={() => handleApplyRawSkills(skillsInput)}
+                disabled={!skillsInput.trim()}
+                className={`py-2 px-4 rounded-lg text-xs font-semibold transition-all border inline-flex items-center justify-center gap-1.5 cursor-pointer ${
+                  !skillsInput.trim()
+                    ? "bg-gray-100 dark:bg-zinc-800 text-gray-400 dark:text-gray-500 border-gray-200 dark:border-zinc-700 cursor-not-allowed"
+                    : "bg-blue-600 hover:bg-blue-700 text-white border-blue-600 shadow-xs"
+                }`}
+              >
+                <Plus className="w-3.5 h-3.5" />
+                Apply Skills
+              </button>
+
+              <button
+                type="button"
+                onClick={handleCategorize}
+                disabled={isLoading || !skillsInput.trim()}
+                className={`py-2 px-4 rounded-lg text-xs font-semibold transition-all border inline-flex items-center justify-center gap-1.5 cursor-pointer ${
+                  isLoading || !skillsInput.trim()
+                    ? "bg-gray-100 dark:bg-zinc-800 text-gray-400 dark:text-gray-500 border-gray-200 dark:border-zinc-700 cursor-not-allowed"
+                    : "bg-zinc-900 hover:bg-black text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 border-zinc-800 dark:border-zinc-200 shadow-xs"
+                }`}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    Categorizing with AI...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                    Categorize Skills with AI
+                  </>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={addCategory}
+                className="py-2 px-3.5 rounded-lg text-xs font-semibold transition-all border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-gray-700 dark:text-zinc-200 hover:bg-gray-50 dark:hover:bg-zinc-700 inline-flex items-center gap-1.5 cursor-pointer ml-auto"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                Add Category
+              </button>
+            </div>
+          </div>
 
           {/* Error message */}
           {error && (
@@ -239,72 +395,128 @@ export const SkillsSection = ({resumeData, updateField}) => {
           )}
 
           {/* Display categorized skills */}
-          {resumeData.skills && resumeData.skills.length > 0 && (
-            <div className="mt-4 space-y-3">
-              <div className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                <Sparkles className="w-4 h-4" />
-                <span>Categorized Skills</span>
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  ({resumeData.skills.length} categories)
-                </span>
+          {resumeData?.skills && resumeData.skills.length > 0 && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-300">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-3.5 h-3.5 text-blue-500" />
+                  <span>Categorized Skills ({resumeData.skills.length} categories, {totalSkillCount} skills)</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={addCategory}
+                  className="text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1 lowercase font-normal"
+                >
+                  <Plus className="w-3 h-3" />
+                  add another category
+                </button>
               </div>
 
-              {resumeData.skills.map((skillGroup, index) => (
-                <div
-                  key={index}
-                  className="p-4 border border-gray-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-black"
-                >
-                  <div className="flex gap-2 mb-2">
-                    <input
-                      type="text"
-                      value={skillGroup.category || ""}
-                      onChange={(e) =>
-                        updateSkillCategory(index, "category", e.target.value)
-                      }
-                      placeholder="Category Name"
-                      className="input-field flex-1 font-semibold"
-                      autoComplete="off"
-                    />
-                    <button
-                      onClick={() => removeSkillCategory(index)}
-                      className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 px-3 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
-                      title="Remove category"
-                    >
-                      ✕
-                    </button>
+              {resumeData.skills.map((skillGroup, index) => {
+                const itemsList = Array.isArray(skillGroup.items)
+                  ? skillGroup.items
+                  : typeof skillGroup.items === "string"
+                    ? skillGroup.items.split(",").map((s) => s.trim()).filter(Boolean)
+                    : [];
+
+                return (
+                  <div
+                    key={index}
+                    className="p-3.5 border border-gray-200 dark:border-zinc-800 rounded-xl bg-white dark:bg-zinc-950 shadow-xs space-y-3"
+                  >
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={skillGroup.category || ""}
+                        onChange={(e) =>
+                          updateSkillCategoryName(index, e.target.value)
+                        }
+                        placeholder="Category Name (e.g., Languages, Frameworks, Cloud)"
+                        className="input-field flex-1 font-semibold text-sm py-1.5"
+                        autoComplete="off"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeSkillCategory(index)}
+                        className="text-gray-400 hover:text-red-600 dark:hover:text-red-400 p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors cursor-pointer"
+                        title="Remove category"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    {/* Skill chips */}
+                    {itemsList.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5">
+                        {itemsList.map((skill, sIdx) => (
+                          <span
+                            key={sIdx}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/40"
+                          >
+                            <span>{skill}</span>
+                            <button
+                              type="button"
+                              onClick={() => removeSkillFromCategory(index, sIdx)}
+                              className="text-blue-400 hover:text-red-600 dark:hover:text-red-400 ml-0.5"
+                              title={`Remove ${skill}`}
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Inline Quick Add for this category */}
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={newSkillInputs[index] || ""}
+                        onChange={(e) =>
+                          setNewSkillInputs((prev) => ({
+                            ...prev,
+                            [index]: e.target.value,
+                          }))
+                        }
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            addSkillToCategory(index);
+                          }
+                        }}
+                        placeholder="Add a skill and press Enter (or comma-separated)..."
+                        className="input-field flex-1 text-xs py-1.5"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const val = (newSkillInputs[index] || "").trim();
+                          if (val.includes(",")) {
+                            const newSkills = val
+                              .split(",")
+                              .map((s) => s.trim())
+                              .filter(Boolean);
+                            const merged = [
+                              ...itemsList,
+                              ...newSkills.filter(
+                                (s) => !itemsList.some((ex) => ex.toLowerCase() === s.toLowerCase())
+                              ),
+                            ];
+                            updateSkillCategoryItems(index, merged);
+                            setNewSkillInputs((prev) => ({ ...prev, [index]: "" }));
+                          } else {
+                            addSkillToCategory(index);
+                          }
+                        }}
+                        disabled={!(newSkillInputs[index] || "").trim()}
+                        className="py-1.5 px-3 rounded-lg text-xs font-semibold bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-gray-700 dark:text-zinc-200 disabled:opacity-50 transition-colors cursor-pointer"
+                      >
+                        + Add
+                      </button>
+                    </div>
                   </div>
-                  <textarea
-                    value={
-                      Array.isArray(skillGroup.items)
-                        ? skillGroup.items.join(", ")
-                        : typeof skillGroup.items === "string"
-                          ? skillGroup.items
-                          : ""
-                    }
-                    onChange={(e) => {
-                      // Allow free-form editing, store as string temporarily
-                      const value = e.target.value;
-                      updateSkillCategory(index, "items", value);
-                    }}
-                    onBlur={(e) => {
-                      // Convert to array when user finishes editing
-                      const value = e.target.value;
-                      if (typeof value === "string") {
-                        const itemsArray = value
-                          .split(",")
-                          .map((s) => s.trim())
-                          .filter(Boolean);
-                        updateSkillCategory(index, "items", itemsArray);
-                      }
-                    }}
-                    placeholder="Skills (comma-separated)"
-                    className="input-field min-h-[60px] resize-y"
-                    rows={2}
-                    autoComplete="off"
-                    spellCheck="false"
-                  />
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
