@@ -206,7 +206,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
           </div>
 
           {/* Navigation Links */}
-          <nav className="flex-1 overflow-y-auto py-4 px-3 flex flex-col">
+          <nav className="flex-1 overflow-y-auto scrollbar-hide py-4 px-3 flex flex-col">
             <div className="space-y-1 flex-1">
               {/* Admin Panel Link */}
               {isAdmin && (

@@ -1,5 +1,20 @@
-import {useState} from "react";
-import {ChevronLeft, ChevronRight, Check} from "lucide-react";
+import { useState } from "react";
+import {
+  User,
+  FileText,
+  Sparkles,
+  Briefcase,
+  GraduationCap,
+  FolderGit2,
+  Award,
+  Trophy,
+  ChevronLeft,
+  ChevronRight,
+  Check,
+  AlertCircle,
+  Info,
+  Sliders,
+} from "lucide-react";
 import {
   PersonalInfoSection,
   SkillsSection,
@@ -9,9 +24,28 @@ import {
   CertificationsSection,
   AchievementsSection,
 } from "./sections/EditorSections";
-import {EditableSection} from "./sections";
+import { EditableSection } from "./sections";
 
-const ResumeWizard = ({
+const STEP_TIPS = {
+  personal:
+    "Include an active professional email and your LinkedIn or GitHub profile URL to make it easy for recruiters to reach out.",
+  summary:
+    "Write 2-3 concise sentences summarizing your expertise, key strengths, and what you bring to target roles.",
+  experience:
+    "Lead bullet points with strong action verbs (e.g., Developed, Optimized, Spearheaded) and quantify achievements where possible. Freshers or students can skip this step.",
+  education:
+    "List your highest or current degree, institution name, graduation year, and any honors or relevant coursework.",
+  skills:
+    "Include 6 to 12 relevant hard skills and technical tools that match the keywords in job descriptions you are targeting.",
+  projects:
+    "Highlight 1 to 3 projects demonstrating hands-on problem solving, your primary tech stack, and verifiable outcomes.",
+  certifications:
+    "List industry-recognized credentials, licenses, or certifications along with issuing bodies.",
+  achievements:
+    "Mention scholarships, hackathon rankings, publications, or competitive recognitions that set you apart.",
+};
+
+export default function ResumeWizard({
   resumeData,
   updateField,
   updateContact,
@@ -20,120 +54,58 @@ const ResumeWizard = ({
   removeArrayItem,
   moveItem,
   onComplete,
-}) => {
+  onSwitchToFullEditor,
+  onGoBack,
+}) {
   const [currentStep, setCurrentStep] = useState(0);
-  const [highestReachedStep, setHighestReachedStep] = useState(0);
-  const [validationError, setValidationError] = useState("");
+  const [validationNotice, setValidationNotice] = useState("");
 
-  // Validation function for each step
-  const validateStep = (stepIndex) => {
-    const step = steps[stepIndex];
-
-    // Skip validation for optional steps
-    if (step.optional) {
-      return true;
-    }
-
-    switch (step.id) {
+  const isStepComplete = (id) => {
+    switch (id) {
       case "personal":
-        // Check if name and at least email or phone is filled
-        if (!resumeData.name || resumeData.name.trim() === "") {
-          setValidationError("Please enter your full name");
-          return false;
-        }
-        if (
-          (!resumeData.contact?.email ||
-            resumeData.contact.email.trim() === "") &&
-          (!resumeData.contact?.phone || resumeData.contact.phone.trim() === "")
-        ) {
-          setValidationError("Please enter at least email or phone number");
-          return false;
-        }
-        break;
-
+        return Boolean(
+          resumeData.name?.trim() &&
+            (resumeData.contact?.email?.trim() || resumeData.contact?.phone?.trim())
+        );
       case "summary": {
-        // Check if summary has content
-        if (
-          !resumeData.summary ||
-          resumeData.summary.trim() === "" ||
-          resumeData.summary === "<p></p>" ||
-          resumeData.summary === "<p><br></p>"
-        ) {
-          setValidationError("Please add a professional summary");
-          return false;
-        }
-        // Remove HTML tags to check actual text content
-        const summaryText = resumeData.summary.replace(/<[^>]*>/g, "").trim();
-        if (summaryText.length === 0) {
-          setValidationError("Please add a professional summary");
-          return false;
-        }
-        break;
+        const text = (resumeData.summary || "").replace(/<[^>]*>/g, "").trim();
+        return text.length > 0;
       }
-
+      case "experience":
+        return Boolean(
+          resumeData.experience?.length > 0 &&
+            resumeData.experience.some(
+              (exp) => exp.company?.trim() || exp.title?.trim()
+            )
+        );
+      case "education":
+        return Boolean(
+          resumeData.education?.length > 0 &&
+            resumeData.education.some(
+              (edu) => edu.institution?.trim() || edu.degree?.trim()
+            )
+        );
       case "skills":
-        // No validation for skills - allow proceeding regardless
-        break;
-
-      case "experience": {
-        // Check if at least one experience is added
-        if (!resumeData.experience || resumeData.experience.length === 0) {
-          setValidationError("Please add at least one work experience");
-          return false;
-        }
-        // Check if experience has required fields
-        const hasValidExperience = resumeData.experience.some(
-          (exp) =>
-            exp.company &&
-            exp.company.trim() !== "" &&
-            exp.title &&
-            exp.title.trim() !== ""
-        );
-        if (!hasValidExperience) {
-          setValidationError(
-            "Please fill in company name and job title for at least one experience"
-          );
-          return false;
-        }
-        break;
-      }
-
-      case "education": {
-        // Check if at least one education entry is added
-        if (!resumeData.education || resumeData.education.length === 0) {
-          setValidationError("Please add at least one education entry");
-          return false;
-        }
-        // Check if education has required fields
-        const hasValidEducation = resumeData.education.some(
-          (edu) =>
-            edu.institution &&
-            edu.institution.trim() !== "" &&
-            edu.degree &&
-            edu.degree.trim() !== ""
-        );
-        if (!hasValidEducation) {
-          setValidationError(
-            "Please fill in institution and degree for at least one education entry"
-          );
-          return false;
-        }
-        break;
-      }
-
+        return Boolean(resumeData.skills?.length > 0);
+      case "projects":
+        return Boolean(resumeData.projects?.length > 0);
+      case "certifications":
+        return Boolean(resumeData.certifications?.length > 0);
+      case "achievements":
+        return Boolean(resumeData.achievements?.length > 0);
       default:
-        return true;
+        return false;
     }
-
-    return true;
   };
 
   const steps = [
     {
       id: "personal",
-      title: "Personal Information",
-      icon: "👤",
-      description: "Your basic contact details",
+      title: "Contact Info",
+      shortTitle: "Contact",
+      icon: User,
+      description: "Basic contact details and professional links",
+      optional: false,
       component: (
         <PersonalInfoSection
           resumeData={resumeData}
@@ -145,8 +117,10 @@ const ResumeWizard = ({
     {
       id: "summary",
       title: "Professional Summary",
-      icon: "📝",
-      description: "Brief overview of your professional profile",
+      shortTitle: "Summary",
+      icon: FileText,
+      description: "Brief overview of your professional profile and strengths",
+      optional: true,
       component: (
         <EditableSection
           title=""
@@ -158,19 +132,12 @@ const ResumeWizard = ({
       ),
     },
     {
-      id: "skills",
-      title: "Skills",
-      icon: "🎯",
-      description: "Your technical and professional skills",
-      component: (
-        <SkillsSection resumeData={resumeData} updateField={updateField} />
-      ),
-    },
-    {
       id: "experience",
       title: "Work Experience",
-      icon: "💼",
-      description: "Your professional work history",
+      shortTitle: "Experience",
+      icon: Briefcase,
+      description: "Work history and roles (skippable for students and freshers)",
+      optional: true,
       component: (
         <ExperienceSection
           resumeData={resumeData}
@@ -184,8 +151,10 @@ const ResumeWizard = ({
     {
       id: "education",
       title: "Education",
-      icon: "🎓",
-      description: "Your academic background",
+      shortTitle: "Education",
+      icon: GraduationCap,
+      description: "Degrees, institutions, and academic achievements",
+      optional: false,
       component: (
         <EducationSection
           resumeData={resumeData}
@@ -197,10 +166,23 @@ const ResumeWizard = ({
       ),
     },
     {
+      id: "skills",
+      title: "Skills & Proficiencies",
+      shortTitle: "Skills",
+      icon: Sparkles,
+      description: "Key technical abilities, software, and domain expertise",
+      optional: false,
+      component: (
+        <SkillsSection resumeData={resumeData} updateField={updateField} />
+      ),
+    },
+    {
       id: "projects",
       title: "Projects",
-      icon: "🚀",
-      description: "Your notable projects (optional)",
+      shortTitle: "Projects",
+      icon: FolderGit2,
+      description: "Notable personal, academic, or professional projects",
+      optional: true,
       component: (
         <ProjectsSection
           resumeData={resumeData}
@@ -210,13 +192,14 @@ const ResumeWizard = ({
           moveItem={moveItem}
         />
       ),
-      optional: true,
     },
     {
       id: "certifications",
       title: "Certifications",
-      icon: "📜",
-      description: "Your professional certifications (optional)",
+      shortTitle: "Certs",
+      icon: Award,
+      description: "Professional licenses, certifications, and credentials",
+      optional: true,
       component: (
         <CertificationsSection
           resumeData={resumeData}
@@ -226,13 +209,14 @@ const ResumeWizard = ({
           moveItem={moveItem}
         />
       ),
-      optional: true,
     },
     {
       id: "achievements",
-      title: "Achievements",
-      icon: "🏆",
-      description: "Your notable achievements (optional)",
+      title: "Achievements & Honors",
+      shortTitle: "Honors",
+      icon: Trophy,
+      description: "Awards, recognitions, and competitive milestones",
+      optional: true,
       component: (
         <AchievementsSection
           resumeData={resumeData}
@@ -242,293 +226,253 @@ const ResumeWizard = ({
           moveItem={moveItem}
         />
       ),
-      optional: true,
     },
   ];
 
-  const handleNext = () => {
-    // Clear any previous validation errors
-    setValidationError("");
+  const currentStepData = steps[currentStep];
+  const StepIcon = currentStepData.icon;
+  const isFirstStep = currentStep === 0;
+  const isLastStep = currentStep === steps.length - 1;
+  const completedCount = steps.filter((s) => isStepComplete(s.id)).length;
+  const progressPercent = Math.round(((currentStep + 1) / steps.length) * 100);
 
-    // Validate current step before proceeding
-    if (!validateStep(currentStep)) {
-      return; // Don't proceed if validation fails
+  const handleNext = () => {
+    setValidationNotice("");
+
+    // Gentle advisory if personal info name is empty on step 0
+    if (currentStep === 0 && !resumeData.name?.trim()) {
+      setValidationNotice("Please enter your full name so your resume is properly labeled.");
+      return;
     }
 
     if (currentStep < steps.length - 1) {
-      const nextStep = currentStep + 1;
-      setCurrentStep(nextStep);
-      // Update highest reached step
-      if (nextStep > highestReachedStep) {
-        setHighestReachedStep(nextStep);
-      }
+      setCurrentStep(currentStep + 1);
     } else {
-      // Wizard completed
-      onComplete();
+      onComplete?.();
     }
   };
 
   const handlePrevious = () => {
-    setValidationError(""); // Clear validation error
+    setValidationNotice("");
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
+    } else if (onGoBack) {
+      onGoBack();
     }
   };
 
-  const handleStepClick = (index) => {
-    // Only allow clicking on steps that have been reached
-    if (index <= highestReachedStep) {
-      setValidationError(""); // Clear validation error
-      setCurrentStep(index);
-    }
+  const handleSelectStep = (index) => {
+    setValidationNotice("");
+    setCurrentStep(index);
   };
-
-  const currentStepData = steps[currentStep];
-  const isFirstStep = currentStep === 0;
-  const isLastStep = currentStep === steps.length - 1;
 
   return (
-    <div className="space-y-6">
-      {/* Step Progress Indicator */}
-      <div className="bg-white dark:bg-zinc-950 rounded-xl border border-gray-200 dark:border-zinc-800 p-6">
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-3">
-              <div className="bg-gray-900 dark:bg-white rounded-xl p-3">
-                <span className="text-2xl">🚀</span>
-              </div>
-              <div>
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                  Create Your Resume
-                </h2>
-                <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
-                  Step-by-step guide to building your professional resume
-                </p>
-              </div>
+    <div className="space-y-4">
+      {/* Header & Progress Card */}
+      <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-gray-200/90 dark:border-white/10 p-4 sm:p-5 shadow-xs">
+        <div className="flex items-center justify-between gap-3 mb-4">
+          <div>
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60 mb-1.5">
+              <span>Guided Setup</span>
             </div>
-            <div className="flex flex-col items-end">
-              <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                Step {currentStep + 1}/{steps.length}
-              </span>
-              <span className="text-xs text-gray-500 dark:text-gray-400">
-                {Math.round(((currentStep + 1) / steps.length) * 100)}% Complete
-              </span>
-            </div>
+            <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white tracking-tight">
+              Build Your Resume
+            </h2>
+            <p className="text-xs text-gray-500 dark:text-zinc-400 mt-0.5">
+              Step-by-step assistant. You can jump between sections or switch to the full editor anytime.
+            </p>
           </div>
-          <div className="w-full bg-gray-200 dark:bg-zinc-800 rounded-full h-3">
+
+          <div className="flex items-center gap-1.5 shrink-0">
+            {onSwitchToFullEditor && (
+              <button
+                type="button"
+                onClick={onSwitchToFullEditor}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-800 text-gray-700 dark:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-700 text-xs font-semibold transition-all shrink-0 cursor-pointer shadow-2xs"
+                title="Switch to full editor mode"
+              >
+                <Sliders className="w-3.5 h-3.5 text-gray-500 dark:text-zinc-400" />
+                <span className="hidden sm:inline">Full Editor</span>
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Linear Progress Indicator */}
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between text-xs font-medium text-gray-600 dark:text-zinc-400">
+            <span>
+              Step {currentStep + 1} of {steps.length}:{" "}
+              <strong className="text-gray-900 dark:text-zinc-200 font-semibold">
+                {currentStepData.title}
+              </strong>
+            </span>
+            <span className="text-[11px] text-gray-500 dark:text-zinc-500">
+              {completedCount} of {steps.length} sections populated ({progressPercent}%)
+            </span>
+          </div>
+          <div className="w-full bg-gray-100 dark:bg-zinc-800 rounded-full h-2 overflow-hidden">
             <div
-              className="bg-gray-900 dark:bg-white h-3 rounded-full transition-all duration-500 ease-out"
-              style={{
-                width: `${((currentStep + 1) / steps.length) * 100}%`,
-              }}
+              className="bg-blue-600 dark:bg-blue-500 h-2 rounded-full transition-all duration-300 ease-out"
+              style={{ width: `${progressPercent}%` }}
             />
           </div>
         </div>
 
-        {/* Step Navigator */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+        {/* Step Navigation Tabs */}
+        <div className="grid grid-cols-4 sm:grid-cols-8 gap-1.5 sm:gap-2 mt-4 pt-3 border-t border-gray-100 dark:border-white/[0.06]">
           {steps.map((step, index) => {
-            const isAccessible = index <= highestReachedStep;
-            const isCompleted = index < currentStep;
+            const Icon = step.icon;
             const isCurrent = index === currentStep;
-            const isLocked = index > highestReachedStep;
+            const completed = isStepComplete(step.id);
 
             return (
               <button
                 key={step.id}
-                onClick={() => handleStepClick(index)}
-                disabled={isLocked}
-                className={`relative flex flex-col items-center p-4 rounded-xl border-2 transition-all duration-200 min-h-[110px] ${
+                onClick={() => handleSelectStep(index)}
+                className={`relative flex flex-col items-center justify-center p-2 rounded-xl text-center transition-all cursor-pointer border ${
                   isCurrent
-                    ? "border-gray-900 dark:border-white bg-gray-50 dark:bg-zinc-900"
-                    : isCompleted
-                      ? "border-green-500 bg-green-50 dark:bg-green-900/20 cursor-pointer hover:border-green-600"
-                      : isLocked
-                        ? "border-gray-300 dark:border-zinc-700 bg-gray-100 dark:bg-zinc-900 cursor-not-allowed opacity-60"
-                        : "border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 cursor-pointer hover:bg-gray-50 dark:hover:bg-zinc-900 hover:border-gray-400 dark:hover:border-zinc-600"
+                    ? "bg-blue-50/80 dark:bg-blue-950/40 border-blue-500/60 dark:border-blue-500/50 text-blue-700 dark:text-blue-300 shadow-2xs"
+                    : completed
+                      ? "bg-gray-50/80 dark:bg-zinc-800/50 border-gray-200/70 dark:border-white/[0.06] text-gray-700 dark:text-zinc-300 hover:border-gray-300 dark:hover:border-white/20"
+                      : "bg-transparent border-transparent text-gray-400 dark:text-zinc-500 hover:bg-gray-50 dark:hover:bg-zinc-800/40"
                 }`}
-                title={isLocked ? `Complete previous steps first` : step.title}
+                title={step.title}
               >
-                {isCompleted && (
-                  <div className="absolute -top-2 -right-2 bg-green-500 rounded-full p-1">
-                    <Check className="w-3 h-3 text-white" />
-                  </div>
-                )}
-                {isLocked && (
-                  <div className="absolute -top-2 -right-2 bg-gray-400 dark:bg-gray-600 rounded-full p-1 shadow-md">
-                    <svg
-                      className="w-3 h-3 text-white"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </div>
-                )}
-                <span className="text-3xl mb-2">{step.icon}</span>
-                <span className="text-xs font-semibold text-center leading-tight px-1 text-gray-700 dark:text-gray-300">
-                  {step.title}
+                <div className="relative mb-1">
+                  <Icon
+                    className={`w-4 h-4 ${
+                      isCurrent
+                        ? "text-blue-600 dark:text-blue-400"
+                        : completed
+                          ? "text-emerald-600 dark:text-emerald-400"
+                          : "text-gray-400 dark:text-zinc-500"
+                    }`}
+                  />
+                  {completed && !isCurrent && (
+                    <span className="absolute -top-1 -right-1.5 w-2 h-2 rounded-full bg-emerald-500" />
+                  )}
+                </div>
+                <span className="text-[11px] font-medium leading-tight truncate w-full">
+                  {step.shortTitle}
                 </span>
-                {step.optional && (
-                  <span className="text-[10px] text-gray-500 dark:text-gray-400 mt-1 font-medium">
-                    (Optional)
-                  </span>
-                )}
               </button>
             );
           })}
         </div>
       </div>
 
-      {/* Current Step Content */}
-      <div className="bg-gradient-to-br from-white via-gray-50/50 to-blue-50/30 dark:from-gray-800 dark:via-gray-800/80 dark:to-indigo-900/20 rounded-xl shadow-lg border-2 border-gray-200/50 dark:border-gray-700/50 p-6">
-        <div className="mb-6">
-          <div className="flex items-center gap-3 mb-3 pb-3 border-b-2 border-gray-200 dark:border-gray-700">
-            <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl p-3 shadow-md">
-              <span className="text-3xl">{currentStepData.icon}</span>
+      {/* Main Section Content Card */}
+      <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-gray-200/90 dark:border-white/10 p-5 sm:p-6 shadow-xs">
+        {/* Section Header */}
+        <div className="flex items-start justify-between gap-3 pb-4 mb-5 border-b border-gray-100 dark:border-white/[0.06]">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200/60 dark:border-blue-800/60 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
+              <StepIcon className="w-5 h-5" />
             </div>
-            <div className="flex-1">
-              <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 bg-clip-text text-transparent">
-                {currentStepData.title}
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
+                  {currentStepData.title}
+                </h3>
+                {currentStepData.optional && (
+                  <span className="text-[10px] uppercase font-semibold px-2 py-0.5 rounded-md bg-gray-100 dark:bg-zinc-800 text-gray-500 dark:text-zinc-400">
+                    Optional
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-gray-500 dark:text-zinc-400 mt-0.5">
                 {currentStepData.description}
               </p>
             </div>
-            {currentStepData.optional && (
-              <span className="px-3 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-xs font-semibold rounded-full border border-amber-300 dark:border-amber-700">
-                Optional
-              </span>
-            )}
           </div>
         </div>
 
-        {/* Step Component */}
-        <div className="min-h-[300px]">{currentStepData.component}</div>
+        {/* Section Form Component */}
+        <div className="min-h-[260px]">{currentStepData.component}</div>
 
-        {/* Validation Error Message */}
-        {validationError && (
-          <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border-2 border-red-300 dark:border-red-700 rounded-xl flex items-start gap-3 animate-shake">
-            <div className="flex-shrink-0 mt-0.5">
-              <svg
-                className="w-5 h-5 text-red-600 dark:text-red-400"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </div>
-            <div className="flex-1">
-              <p className="text-sm font-semibold text-red-800 dark:text-red-200">
-                ⚠️ {validationError}
+        {/* Validation Notice Alert */}
+        {validationNotice && (
+          <div className="mt-4 p-3.5 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50 rounded-xl flex items-start gap-2.5">
+            <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+            <div className="flex-1 text-xs">
+              <p className="font-semibold text-amber-900 dark:text-amber-200">
+                {validationNotice}
               </p>
-              <p className="text-xs text-red-700 dark:text-red-300 mt-1">
-                Please fill in the required information to continue.
-              </p>
+              <div className="mt-1 flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    setValidationNotice("");
+                    if (currentStep < steps.length - 1) {
+                      setCurrentStep(currentStep + 1);
+                    } else {
+                      onComplete?.();
+                    }
+                  }}
+                  className="text-amber-800 dark:text-amber-300 underline font-semibold cursor-pointer hover:text-amber-950"
+                >
+                  Continue anyway
+                </button>
+              </div>
             </div>
           </div>
         )}
       </div>
 
-      {/* Navigation Buttons */}
-      <div className="flex justify-between items-center gap-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 p-5">
+      {/* Action Footer Navigation */}
+      <div className="flex items-center justify-between gap-3 bg-white dark:bg-zinc-900 rounded-2xl border border-gray-200/90 dark:border-white/10 p-3.5 sm:p-4 shadow-xs">
         <button
           onClick={handlePrevious}
-          disabled={isFirstStep}
-          className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform ${
-            isFirstStep
-              ? "bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed opacity-50"
-              : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 shadow-md hover:shadow-lg hover:scale-105 border border-gray-300 dark:border-gray-600"
-          }`}
+          className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-800 text-gray-700 dark:text-zinc-200 hover:bg-gray-50 dark:hover:bg-zinc-700 cursor-pointer shadow-2xs active:scale-95"
         >
-          <ChevronLeft className="w-5 h-5" />
-          <span>Previous</span>
+          <ChevronLeft className="w-4 h-4" />
+          <span>{isFirstStep ? "Back" : "Previous"}</span>
         </button>
 
-        <div className="flex items-center gap-3">
-          {currentStepData.optional && (
+        <div className="flex items-center gap-2">
+          {currentStepData.optional && !isLastStep && (
             <button
-              onClick={handleNext}
-              className="px-6 py-3 rounded-xl font-semibold bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 border border-gray-300 dark:border-gray-600"
+              onClick={() => {
+                setValidationNotice("");
+                setCurrentStep(currentStep + 1);
+              }}
+              className="px-3.5 py-2 rounded-xl text-xs font-semibold text-gray-500 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white transition-colors cursor-pointer"
             >
               Skip
             </button>
           )}
+
           <button
             onClick={handleNext}
-            className="flex items-center gap-2 px-8 py-3 rounded-xl font-bold bg-zinc-900 hover:bg-black text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 transition-all duration-300 shadow-md hover:shadow-lg cursor-pointer"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-blue-600 hover:bg-blue-700 text-white transition-all duration-200 shadow-sm shadow-blue-500/20 active:scale-95 cursor-pointer"
           >
             {isLastStep ? (
               <>
-                <Check className="w-5 h-5" />
-                <span>Complete</span>
+                <Check className="w-4 h-4" />
+                <span>Finish & Open Editor</span>
               </>
             ) : (
               <>
-                <span>Next</span>
-                <ChevronRight className="w-5 h-5" />
+                <span>Next Step</span>
+                <ChevronRight className="w-4 h-4" />
               </>
             )}
           </button>
         </div>
       </div>
 
-      {/* Help Text */}
-      <div className="bg-gradient-to-r from-blue-50 via-indigo-50/50 to-cyan-50 dark:from-blue-900/20 dark:via-indigo-900/20 dark:to-cyan-900/20 border-2 border-blue-300 dark:border-blue-700 rounded-xl p-5 shadow-md">
-        <div className="flex items-start gap-4">
-          <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl p-2 shadow-md flex-shrink-0">
-            <span className="text-2xl">💡</span>
-          </div>
-          <div className="flex-1">
-            <p className="text-sm text-blue-900 dark:text-blue-100 font-bold mb-1.5">
-              💪 Pro Tip: Fill in required information!
-            </p>
-            <p className="text-xs text-blue-800 dark:text-blue-200 leading-relaxed mb-2">
-              Fill in the required details to unlock the next step. Required
-              steps must have at least basic information filled. You can always
-              go back to edit any completed step by clicking on it above.
-            </p>
-            <div className="flex items-center gap-2 text-xs text-blue-700 dark:text-blue-300 flex-wrap">
-              <span className="inline-flex items-center gap-1">
-                <span className="w-4 h-4 rounded border-2 border-green-500 bg-green-50 dark:bg-green-900/20 flex items-center justify-center">
-                  <Check className="w-2.5 h-2.5 text-green-600" />
-                </span>
-                Completed
-              </span>
-              <span className="inline-flex items-center gap-1">
-                <span className="w-4 h-4 rounded border-2 border-blue-500 bg-blue-50 dark:bg-blue-900/20"></span>
-                Current
-              </span>
-              <span className="inline-flex items-center gap-1">
-                <span className="w-4 h-4 rounded border-2 border-gray-400 bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                  <svg
-                    className="w-2.5 h-2.5 text-gray-500"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </span>
-                Locked
-              </span>
-            </div>
+      {/* Pro Tip Box */}
+      {STEP_TIPS[currentStepData.id] && (
+        <div className="bg-blue-50/50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/30 rounded-xl p-3.5 sm:p-4 flex items-start gap-3">
+          <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
+          <div className="text-xs text-blue-900 dark:text-blue-200 leading-relaxed">
+            <span className="font-semibold text-blue-950 dark:text-blue-100">
+              Pro Tip:{" "}
+            </span>
+            {STEP_TIPS[currentStepData.id]}
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
-};
-
-export default ResumeWizard;
+}

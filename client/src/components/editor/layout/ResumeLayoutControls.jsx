@@ -11,7 +11,7 @@ import {
 import { LAYOUT_DEFAULTS } from "../constants/editorConstants";
 
 const PREVIEW_DENSITIES = [
-  { id: "compact", label: "⚡ Smart 1-Page" },
+  { id: "compact", label: "Smart 1-Page" },
   { id: "medium", label: "Balanced" },
   { id: "spacious", label: "Spacious" },
 ];

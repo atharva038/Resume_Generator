@@ -1303,8 +1303,9 @@ const CustomSectionItem = ({section, index, onUpdate, onRemove}) => {
       {/* Content */}
       {isExpanded && (
         <div className="space-y-3 ml-7">
-          <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-            <span>✨ AI-Powered Formatting</span>
+          <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
+            <Sparkles className="w-3.5 h-3.5 text-blue-500" />
+            <span>AI-Powered Formatting</span>
           </div>
 
           {/* Input textarea */}
@@ -1319,9 +1320,9 @@ const CustomSectionItem = ({section, index, onUpdate, onRemove}) => {
               className="input-field min-h-[100px] resize-y"
               rows={4}
             />
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              💡 Tip: Write naturally and AI will format into professional
-              bullet points
+            <p className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 mt-1">
+              <Lightbulb className="w-3.5 h-3.5 text-blue-500 inline shrink-0" />
+              <span>Write naturally and AI will format into professional bullet points</span>
             </p>
           </div>
 
@@ -1358,14 +1359,18 @@ const CustomSectionItem = ({section, index, onUpdate, onRemove}) => {
                 Formatting...
               </span>
             ) : (
-              "🤖 Format with AI"
+              <span className="flex items-center justify-center gap-2">
+                <Sparkles className="w-4 h-4" />
+                <span>Format with AI</span>
+              </span>
             )}
           </button>
 
           {/* Error message */}
           {error && (
-            <div className="p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded text-red-600 dark:text-red-400 text-xs">
-              ⚠️ {error}
+            <div className="p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded text-red-600 dark:text-red-400 text-xs flex items-center gap-1.5">
+              <AlertTriangle className="w-3.5 h-3.5 text-red-500 shrink-0" />
+              <span>{error}</span>
             </div>
           )}
 
@@ -1374,7 +1379,7 @@ const CustomSectionItem = ({section, index, onUpdate, onRemove}) => {
             <div className="mt-3 space-y-2">
               <div className="flex justify-between items-center">
                 <div className="text-xs font-medium text-gray-700 dark:text-gray-300">
-                  📝 Formatted Items ({section.items.length})
+                  Formatted Items ({section.items.length})
                 </div>
                 <button
                   onClick={addItem}

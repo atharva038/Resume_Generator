@@ -39,7 +39,7 @@ const MobileActionBar = memo(
     onMoveSection,
   }) => (
     <div
-      className="xl:hidden fixed bottom-3 left-3 right-3 z-50 rounded-2xl border border-gray-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md p-2 shadow-xl no-print"
+      className="lg:hidden fixed bottom-3 left-3 right-3 z-[60] rounded-2xl border border-gray-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md p-2 shadow-xl no-print"
       style={{ paddingBottom: "max(0.5rem, env(safe-area-inset-bottom))" }}
     >
       <div className="grid grid-cols-4 gap-1.5">
@@ -57,14 +57,11 @@ const MobileActionBar = memo(
 
         <button
           onClick={onTogglePreview}
-          className={`h-11 rounded-xl border transition-colors flex flex-col items-center justify-center gap-0.5 cursor-pointer ${
-            showPreview
-              ? "bg-violet-50 dark:bg-violet-900/30 border-violet-200 dark:border-violet-800 text-violet-700 dark:text-violet-300"
-              : "bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800"
-          }`}
+          className="h-11 rounded-xl border transition-colors flex flex-col items-center justify-center gap-0.5 cursor-pointer bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-700 text-gray-600 dark:text-gray-300 hover:bg-blue-50/50 dark:hover:bg-zinc-800 active:scale-95 shadow-2xs"
+          title="Jump to live preview"
         >
-          {showPreview ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-          <span className="text-[10px] font-semibold">{showPreview ? "Editor" : "Preview"}</span>
+          <Eye className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+          <span className="text-[10px] font-semibold">Preview</span>
         </button>
 
         <button

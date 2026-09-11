@@ -1069,34 +1069,45 @@ const Creative2Template = forwardRef(({ resumeData = {}, onPageUsageChange }, re
                       </div>
 
                       {/* Technology / Discipline Tags */}
-                      {proj.technologies && proj.technologies.length > 0 && (
-                        <div
-                          style={{
-                            display: "flex",
-                            flexWrap: "wrap",
-                            gap: "3.5px",
-                            marginBottom: "5px",
-                          }}
-                        >
-                          {proj.technologies.map((t, tIdx) => (
-                            <span
-                              key={tIdx}
-                              style={{
-                                fontSize: "6.8pt",
-                                fontWeight: 600,
-                                fontFamily: '"JetBrains Mono", monospace',
-                                padding: "1px 5px",
-                                borderRadius: "3px",
-                                backgroundColor: theme.sidebarBg,
-                                color: theme.textSecondary,
-                                border: `1px solid ${theme.divider}`,
-                              }}
-                            >
-                              {t}
-                            </span>
-                          ))}
-                        </div>
-                      )}
+                      {(() => {
+                        const techList = Array.isArray(proj.technologies)
+                          ? proj.technologies
+                          : typeof proj.technologies === "string"
+                          ? proj.technologies
+                              .split(/[,•|]/)
+                              .map((t) => t.trim())
+                              .filter(Boolean)
+                          : [];
+                        if (techList.length === 0) return null;
+                        return (
+                          <div
+                            style={{
+                              display: "flex",
+                              flexWrap: "wrap",
+                              gap: "3.5px",
+                              marginBottom: "5px",
+                            }}
+                          >
+                            {techList.map((t, tIdx) => (
+                              <span
+                                key={tIdx}
+                                style={{
+                                  fontSize: "6.8pt",
+                                  fontWeight: 600,
+                                  fontFamily: '"JetBrains Mono", monospace',
+                                  padding: "1px 5px",
+                                  borderRadius: "3px",
+                                  backgroundColor: theme.sidebarBg,
+                                  color: theme.textSecondary,
+                                  border: `1px solid ${theme.divider}`,
+                                }}
+                              >
+                                {t}
+                              </span>
+                            ))}
+                          </div>
+                        );
+                      })()}
 
                       {showDesc && (
                         <p

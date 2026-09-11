@@ -1,4 +1,5 @@
-import { X, ArrowRight, Target, CheckCircle2, Palette } from "lucide-react";
+import { useState, useEffect } from "react";
+import { X, ArrowRight, ArrowLeft, Target, CheckCircle2, Palette, FileText, Info } from "lucide-react";
 import { useBodyScrollLock } from "@/hooks";
 
 export default function TemplatePreviewModal({
@@ -12,154 +13,273 @@ export default function TemplatePreviewModal({
 }) {
   useBodyScrollLock(Boolean(template));
 
+  // Mobile tab state: "preview" | "info"
+  const [mobileTab, setMobileTab] = useState("preview");
+
+  // Handle Escape key to close modal
+  useEffect(() => {
+    if (!template) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        onClose?.();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [template, onClose]);
+
   if (!template) return null;
 
   const TemplateComponent = template.component;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 overflow-hidden animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-end lg:items-center justify-center overflow-hidden animate-in fade-in duration-200">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/80 backdrop-blur-md transition-opacity"
+        className="fixed inset-0 bg-black/75 backdrop-blur-sm transition-opacity"
         onClick={onClose}
       />
 
-      {/* Modal Container */}
-      <div className="relative w-full max-w-6xl max-h-[92vh] flex flex-col bg-white dark:bg-zinc-950 rounded-3xl border border-gray-200 dark:border-white/10 shadow-2xl overflow-hidden z-10">
-        {/* Modal Header */}
-        <div className="shrink-0 px-6 py-4 border-b border-gray-100 dark:border-white/10 flex items-center justify-between bg-gray-50/70 dark:bg-zinc-900/50">
-          <div className="flex items-center gap-3">
-            <span className="px-3 py-1 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-bold border border-blue-500/20">
+      {/*
+        Modal shell
+        Mobile  : bottom-sheet, rounded top corners only, 96vh
+        Desktop : centered card, fully rounded, 92vh, max-w-6xl
+      */}
+      <div className="
+        relative z-10 w-full flex flex-col overflow-hidden
+        bg-white dark:bg-zinc-950
+        border border-gray-200 dark:border-white/10
+        shadow-2xl
+        rounded-t-3xl h-[96svh]
+        lg:rounded-3xl lg:max-w-6xl lg:h-[92vh] lg:mx-4
+      ">
+
+        {/* Drag handle pill (mobile only) */}
+        <div className="absolute top-2 left-1/2 -translate-x-1/2 w-10 h-1 bg-gray-300 dark:bg-zinc-700 rounded-full lg:hidden pointer-events-none" />
+
+        {/* ── Header (always pinned) ── */}
+        <div className="shrink-0 px-3 sm:px-4 lg:px-5 pt-5 pb-3 lg:py-3.5 border-b border-gray-100 dark:border-white/10 flex items-center justify-between bg-white/95 dark:bg-zinc-950/95 backdrop-blur-sm gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <button
+              onClick={onClose}
+              aria-label="Back to templates"
+              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-gray-700 dark:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-800 text-xs font-semibold transition-all shrink-0 cursor-pointer active:scale-95"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Back</span>
+            </button>
+            <span className="shrink-0 px-2 py-0.5 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[10px] sm:text-xs font-bold border border-blue-500/20 uppercase tracking-wide">
               {template.category}
             </span>
-            <h2 className="text-base sm:text-lg font-black text-gray-900 dark:text-white">
+            <h2 className="text-sm lg:text-base font-black text-gray-900 dark:text-white truncate">
               {template.name}
             </h2>
           </div>
-
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-700 dark:hover:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-xl transition-colors cursor-pointer"
+            aria-label="Close preview"
+            className="shrink-0 ml-2 p-1.5 lg:p-2 text-gray-400 hover:text-gray-700 dark:hover:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-xl transition-colors cursor-pointer"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4 lg:w-5 lg:h-5" />
           </button>
         </div>
 
-        {/* Modal Body: Left Preview, Right Controls */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Resume PDF Paper View */}
-          <div className="lg:col-span-8 bg-gray-100 dark:bg-zinc-900 rounded-2xl p-4 sm:p-6 flex items-center justify-center overflow-auto max-h-[65vh]">
-            <div className="bg-white shadow-2xl rounded-sm w-[210mm] min-h-[297mm] p-6 text-black origin-top transform scale-[0.6] sm:scale-[0.75] md:scale-[0.85] lg:scale-[0.9] relative overflow-hidden">
-              {/* SmartNShine watermark directly ON the page */}
-              <div
-                className="pointer-events-none select-none absolute inset-0 z-20 flex items-center justify-center overflow-hidden"
-                aria-hidden="true"
-              >
-                <span
-                  className="font-black uppercase tracking-widest select-none"
-                  style={{
-                    fontSize: "64px",
-                    letterSpacing: "0.22em",
-                    color: "#0f172a",
-                    opacity: 0.05,
-                    transform: "rotate(-25deg)",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  SmartNShine
-                </span>
-              </div>
+        {/* ── Mobile tab bar (hidden on lg+) ── */}
+        <div className="shrink-0 flex lg:hidden border-b border-gray-100 dark:border-white/10 bg-gray-50/80 dark:bg-zinc-900/60">
+          <button
+            onClick={() => setMobileTab("preview")}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-bold transition-colors cursor-pointer border-b-2 ${
+              mobileTab === "preview"
+                ? "border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 bg-white dark:bg-zinc-950"
+                : "border-transparent text-gray-500 dark:text-zinc-500"
+            }`}
+          >
+            <FileText className="w-3.5 h-3.5" />
+            Preview
+          </button>
+          <button
+            onClick={() => setMobileTab("info")}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-bold transition-colors cursor-pointer border-b-2 ${
+              mobileTab === "info"
+                ? "border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 bg-white dark:bg-zinc-950"
+                : "border-transparent text-gray-500 dark:text-zinc-500"
+            }`}
+          >
+            <Info className="w-3.5 h-3.5" />
+            Details
+          </button>
+        </div>
 
-              {/* Repeating watermark pattern ON the page */}
+        {/* ── Body ── */}
+        <div className="flex-1 min-h-0 flex flex-col lg:grid lg:grid-cols-12 overflow-hidden">
+
+          {/*
+            LEFT panel — resume paper preview
+            • Mobile: visible only when mobileTab === "preview"
+            • Desktop (lg+): always shown
+          */}
+          <div className={`
+            lg:col-span-8 overflow-y-auto overflow-x-hidden
+            bg-zinc-100 dark:bg-zinc-900/70
+            p-3 sm:p-5
+            flex-col items-center gap-4
+            ${mobileTab === "preview" ? "flex flex-1" : "hidden"} lg:flex lg:flex-none
+          `}>
+            {/* Wrapper scales the A4 page proportionally to whatever width it has */}
+            <div className="w-full" style={{ aspectRatio: "1 / 1.414", position: "relative" }}>
               <div
-                className="pointer-events-none select-none absolute inset-0 z-10"
                 style={{
-                  backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='90' viewBox='0 0 160 90'><text x='20' y='50' fill='%230f172a' fill-opacity='0.025' font-size='12' font-family='sans-serif' font-weight='800' letter-spacing='1.5' transform='rotate(-20 20 50)'>SmartNShine</text></svg>")`,
-                  backgroundSize: "160px 90px",
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "794px",      /* 210mm @ 96dpi */
+                  minHeight: "1123px", /* 297mm @ 96dpi */
+                  transformOrigin: "top left",
+                  background: "white",
+                  boxShadow: "0 8px 40px rgba(0,0,0,0.18)",
                 }}
-                aria-hidden="true"
-              />
-
-              <TemplateComponent
-                resumeData={{
-                  ...sampleResumeData,
-                  colorTheme: selectedColorTheme,
+                ref={(el) => {
+                  if (!el) return;
+                  const scale = () => {
+                    const w = el.parentElement?.offsetWidth ?? 300;
+                    el.style.transform = `scale(${(w / 794).toFixed(4)})`;
+                  };
+                  scale();
+                  if (el._ro) el._ro.disconnect();
+                  const ro = new ResizeObserver(scale);
+                  ro.observe(el.parentElement);
+                  el._ro = ro;
                 }}
-              />
-            </div>
-          </div>
-
-          {/* Right Info & Color Themes */}
-          <div className="lg:col-span-4 space-y-6">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Target className="w-4 h-4 text-blue-500" />
-                <span className="text-xs font-bold text-gray-500 dark:text-zinc-400 uppercase tracking-wider">
-                  ATS Score Rating
-                </span>
-              </div>
-              <p className="text-3xl font-black text-emerald-600 dark:text-emerald-400">
-                {template.atsScore}% Pass Rate
-              </p>
-              <p className="text-xs text-gray-500 dark:text-zinc-400 leading-relaxed">
-                {template.description}
-              </p>
-            </div>
-
-            {/* Color Swatch Picker */}
-            {colorThemes && colorThemes.length > 0 && (
-              <div className="space-y-3 p-4 rounded-2xl bg-gray-50 dark:bg-zinc-900 border border-gray-200/80 dark:border-white/5">
-                <div className="flex items-center gap-2">
-                  <Palette className="w-4 h-4 text-blue-500" />
-                  <span className="text-xs font-bold text-gray-800 dark:text-zinc-200">
-                    Select Color Palette
+                className="relative text-black"
+              >
+                {/* Centre watermark */}
+                <div
+                  className="pointer-events-none select-none absolute inset-0 z-20 flex items-center justify-center overflow-hidden"
+                  aria-hidden="true"
+                >
+                  <span
+                    className="font-black uppercase tracking-widest"
+                    style={{
+                      fontSize: "64px",
+                      letterSpacing: "0.22em",
+                      color: "#0f172a",
+                      opacity: 0.05,
+                      transform: "rotate(-25deg)",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    SmartNShine
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
-                  {colorThemes.map((theme) => (
-                    <button
-                      key={theme.id}
-                      onClick={() => setSelectedColorTheme(theme.id)}
-                      className={`flex items-center gap-2 p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
-                        selectedColorTheme === theme.id
-                          ? "bg-blue-50 dark:bg-blue-950/40 border-blue-500 text-blue-900 dark:text-blue-200 font-bold"
-                          : "bg-white dark:bg-zinc-950 border-gray-200 dark:border-white/5 text-gray-700 dark:text-zinc-300 font-medium"
-                      }`}
-                    >
-                      <span
-                        className="w-4 h-4 rounded-full border border-gray-300 dark:border-zinc-700 shrink-0"
-                        style={{ backgroundColor: theme.primary }}
-                      />
-                      <span className="text-xs truncate">{theme.name}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
+                {/* Tiled watermark */}
+                <div
+                  className="pointer-events-none select-none absolute inset-0 z-10"
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='90' viewBox='0 0 160 90'><text x='20' y='50' fill='%230f172a' fill-opacity='0.025' font-size='12' font-family='sans-serif' font-weight='800' letter-spacing='1.5' transform='rotate(-20 20 50)'>SmartNShine</text></svg>")`,
+                    backgroundSize: "160px 90px",
+                  }}
+                  aria-hidden="true"
+                />
 
-            {/* Feature Checklist */}
-            {template.features && template.features.length > 0 && (
-              <div className="space-y-2">
-                <p className="text-xs font-bold text-gray-800 dark:text-zinc-200 uppercase tracking-wider">
-                  Layout Highlights
+                <TemplateComponent
+                  resumeData={{
+                    ...sampleResumeData,
+                    colorTheme: selectedColorTheme,
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/*
+            RIGHT panel — info + palette + CTA
+            • Mobile: visible only when mobileTab === "info"
+            • Desktop (lg+): always shown
+          */}
+          <div className={`
+            lg:col-span-4 flex-col
+            border-t lg:border-t-0 lg:border-l border-gray-100 dark:border-white/10
+            ${mobileTab === "info" ? "flex flex-1" : "hidden"} lg:flex lg:flex-none
+            lg:h-full
+          `}>
+
+            {/* Scrollable content */}
+            <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-5 space-y-4 sm:space-y-5">
+
+              {/* ATS Score */}
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <Target className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                  <span className="text-[10px] font-bold text-gray-400 dark:text-zinc-500 uppercase tracking-widest">
+                    ATS Score Rating
+                  </span>
+                </div>
+                <p className="text-2xl lg:text-3xl font-black text-emerald-500 dark:text-emerald-400 leading-none">
+                  {template.atsScore}% Pass Rate
                 </p>
-                <div className="space-y-1.5">
-                  {template.features.map((feat, idx) => (
-                    <div key={idx} className="flex items-center gap-2 text-xs text-gray-600 dark:text-zinc-300">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                      <span>{feat}</span>
-                    </div>
-                  ))}
-                </div>
+                <p className="text-xs text-gray-500 dark:text-zinc-400 leading-relaxed">
+                  {template.description}
+                </p>
               </div>
-            )}
 
-            {/* Apply & Use Button */}
-            <div className="pt-2">
+              <div className="h-px bg-gray-100 dark:bg-white/8" />
+
+              {/* Color Palette Picker */}
+              {colorThemes && colorThemes.length > 0 && (
+                <div className="space-y-3 p-3 sm:p-4 rounded-2xl bg-gray-50 dark:bg-zinc-900 border border-gray-200/60 dark:border-white/6">
+                  <div className="flex items-center gap-2">
+                    <Palette className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                    <span className="text-xs font-bold text-gray-800 dark:text-zinc-200">
+                      Select Color Palette
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {colorThemes.map((theme) => (
+                      <button
+                        key={theme.id}
+                        onClick={() => setSelectedColorTheme(theme.id)}
+                        className={`flex items-center gap-2 p-2 sm:p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                          selectedColorTheme === theme.id
+                            ? "bg-blue-50 dark:bg-blue-950/50 border-blue-500 text-blue-900 dark:text-blue-200 font-bold ring-1 ring-blue-500/30"
+                            : "bg-white dark:bg-zinc-950 border-gray-200 dark:border-white/5 text-gray-700 dark:text-zinc-300 font-medium hover:border-gray-300 dark:hover:border-white/15"
+                        }`}
+                      >
+                        <span
+                          className="w-3.5 h-3.5 rounded-full border border-gray-300/50 dark:border-zinc-600 shrink-0"
+                          style={{ backgroundColor: theme.primary }}
+                        />
+                        <span className="text-[10px] sm:text-xs truncate">{theme.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Feature Checklist */}
+              {template.features && template.features.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-[10px] font-bold text-gray-400 dark:text-zinc-500 uppercase tracking-widest">
+                    Layout Highlights
+                  </p>
+                  <div className="grid grid-cols-2 lg:grid-cols-1 gap-1.5">
+                    {template.features.map((feat, idx) => (
+                      <div key={idx} className="flex items-center gap-2 text-xs text-gray-600 dark:text-zinc-300">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                        <span>{feat}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* ── Sticky CTA ── */}
+            <div className="shrink-0 p-3 sm:p-4 border-t border-gray-100 dark:border-white/10 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-sm">
               <button
                 onClick={() => onApply(template.id)}
-                className="w-full py-4 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold text-sm sm:text-base rounded-2xl shadow-lg shadow-blue-500/25 transition-all flex items-center justify-center gap-2 active:scale-98 cursor-pointer"
+                className="w-full py-3 sm:py-3.5 px-5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-[0.98] text-white font-extrabold text-sm rounded-2xl shadow-lg shadow-blue-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 <span>Use This Template</span>
                 <ArrowRight className="w-4 h-4" />

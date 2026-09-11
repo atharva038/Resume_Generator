@@ -1,6 +1,7 @@
 import {useEffect, useMemo, useRef, useState} from "react";
-import {Check} from "lucide-react";
+import {Check, Sparkles} from "lucide-react";
 import {useBodyScrollLock} from "@/hooks";
+import {getTemplatePreviewData, isResumeDataEmpty} from "./constants/demoResumeData";
 
 const THUMBNAIL_BASE_WIDTH_PX = 793.7; // 210mm at 96dpi
 
@@ -62,6 +63,12 @@ const TemplateSelectorModal = ({
   const [templateDraftSelection, setTemplateDraftSelection] =
     useState(selectedTemplate);
 
+  const isScratchMode = useMemo(() => isResumeDataEmpty(resumeData), [resumeData]);
+  const previewResumeData = useMemo(
+    () => getTemplatePreviewData(resumeData),
+    [resumeData]
+  );
+
   useEffect(() => {
     if (!isOpen) return;
     setTemplateDraftSelection(selectedTemplate);
@@ -119,11 +126,20 @@ const TemplateSelectorModal = ({
         <div className="bg-white dark:bg-zinc-950 p-4 sm:p-6 border-b border-gray-200 dark:border-zinc-800 shrink-0">
           <div className="flex justify-between items-start gap-4">
             <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1">
-                Change Resume Template
-              </h2>
+              <div className="flex items-center gap-2 flex-wrap mb-1">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+                  Change Resume Template
+                </h2>
+                {isScratchMode && (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-50 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                    <Sparkles className="w-3 h-3" /> Live Demo Preview
+                  </span>
+                )}
+              </div>
               <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                Pick a style, compare quickly, and apply when ready.
+                {isScratchMode
+                  ? "Showing realistic demo content so you can compare typography, layout and badges before editing."
+                  : "Pick a style, compare quickly, and apply when ready."}
               </p>
             </div>
             <button
@@ -202,6 +218,10 @@ const TemplateSelectorModal = ({
                 <div
                   key={template.id}
                   onClick={() => setTemplateDraftSelection(template.id)}
+                  onDoubleClick={() => {
+                    onApplyTemplate(template.id);
+                    onClose();
+                  }}
                   className={`group relative bg-white dark:bg-zinc-900 rounded-xl transition-all duration-200 overflow-hidden cursor-pointer border-2 ${
                     isDraft
                       ? "border-gray-900 dark:border-white shadow-[0_0_0_3px_rgba(17,24,39,0.15)] dark:shadow-[0_0_0_3px_rgba(255,255,255,0.15)]"
@@ -233,7 +253,7 @@ const TemplateSelectorModal = ({
                   <div className="relative h-56 overflow-hidden bg-gradient-to-b from-slate-100 to-slate-200 dark:from-zinc-800 dark:to-zinc-900">
                     <TemplateThumbnail
                       TemplateComponent={TemplateComponent}
-                      resumeData={resumeData}
+                      resumeData={previewResumeData}
                     />
 
                     <div className="absolute inset-0 bg-black/45 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end justify-center pb-4">

@@ -9,6 +9,38 @@ html {
 }
 
 /* Accent is supplied by the portfolio customization panel. */
+.tech-portfolio-theme {
+  --hero-laptop-border: #3b4252;
+  --hero-laptop-bezel: #11151d;
+  --hero-laptop-screen: #171d27;
+  --hero-laptop-shell-light: #657080;
+  --hero-laptop-shell-dark: #293241;
+  --hero-laptop-base-start: #303a4a;
+  --hero-laptop-base-end: #171d27;
+  --hero-laptop-key: #1b222d;
+  --hero-laptop-key-stroke: #485366;
+  --hero-laptop-trackpad: #3c4758;
+  --hero-code-keyword: #7dd3fc;
+  --hero-code-string: #fbbf24;
+  --hero-code-punctuation: #cbd5e1;
+}
+
+.tech-portfolio-theme #hero {
+  background:
+    radial-gradient(circle at 18% 18%, color-mix(in srgb, var(--tech-accent) 22%, transparent), transparent 32%),
+    radial-gradient(circle at 80% 10%, rgba(168, 85, 247, 0.18), transparent 28%),
+    linear-gradient(180deg, #020617 0%, #020817 100%);
+}
+
+@keyframes hero-laptop-float {
+  from { transform: translateY(0); }
+  to { transform: translateY(-6px); }
+}
+
+.hero-laptop-idle {
+  animation: hero-laptop-float 5s ease-in-out infinite alternate;
+}
+
 .tech-portfolio-theme .tech-form-control {
   transition: border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
 }

@@ -144,7 +144,6 @@ const EditableSection = ({
     try {
       if (!authStorage.hasToken()) {
         toast.error("Please log in to use AI enhancement", {
-          icon: "🔒",
           duration: 3000,
         });
         setEnhancingFalse();
@@ -155,7 +154,6 @@ const EditableSection = ({
         toast.error(
           "Please save your resume first before using AI enhancement",
           {
-            icon: "💾",
             duration: 4000,
           }
         );
@@ -210,16 +208,15 @@ const EditableSection = ({
       }
 
       toast.success("Section enhanced successfully!", {
-        icon: "✨",
         duration: 2000,
       });
     } catch (err) {
       if (err.response?.status === 401) {
-        toast.error("Authentication required. Please log in.", { icon: "🔒" });
+        toast.error("Authentication required. Please log in.");
       } else if (err.response?.status === 403) {
-        toast.error("You've reached your AI generation limit. Please upgrade.", { icon: "⚠️" });
+        toast.error("You've reached your AI generation limit. Please upgrade.");
       } else {
-        toast.error("Failed to enhance content: " + parseValidationErrors(err), { icon: "❌" });
+        toast.error("Failed to enhance content: " + parseValidationErrors(err));
       }
     } finally {
       setEnhancingFalse();
@@ -608,7 +605,7 @@ const EditableSection = ({
       <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-2.5 flex items-center gap-1.5">
         <Lightbulb className="w-3.5 h-3.5 text-amber-500 shrink-0" />
         <span>
-          Hover over any bullet to trigger <strong>⚡ AI Rewrite</strong> for Quantified, Executive, or ATS Keyword variations.
+          Hover over any bullet to trigger <strong>AI Rewrite</strong> for Quantified, Executive, or ATS Keyword variations.
         </span>
       </p>
     </div>

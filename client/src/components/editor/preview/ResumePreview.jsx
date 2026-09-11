@@ -8,7 +8,7 @@ import {
   useMemo,
 } from "react";
 import { useReactToPrint } from "react-to-print";
-import { Download, Palette, Sliders, Type, Check, Maximize2 } from "lucide-react";
+import { Download, Palette, Sliders, Type, Check, Maximize2, ZoomIn, ZoomOut, Sparkles } from "lucide-react";
 import { useToggle, useMediaQuery } from "@/hooks";
 import ClassicTemplate from "@/components/templates/ClassicTemplate";
 import ModernTemplate from "@/components/templates/ModernTemplate";
@@ -31,7 +31,7 @@ import ResumeWatermark from "./ResumeWatermark";
 import { TEMPLATE_COLOR_THEMES } from "../templateConfig";
 
 const PREVIEW_DENSITIES = [
-  { id: "compact", label: "⚡ Smart 1-Page" },
+  { id: "compact", label: "Smart 1-Page" },
   { id: "medium", label: "Balanced" },
   { id: "spacious", label: "Spacious" },
 ];
@@ -69,7 +69,16 @@ const CREATIVE2_CANVAS_MAP = {
 };
 
 const ResumePreview = forwardRef(
-  ({ resumeData, template = "classic", onPageUsageChange, onDownload, onUpdateField }, ref) => {
+  (
+    {
+      resumeData,
+      template = "classic",
+      onPageUsageChange,
+      onDownload,
+      onUpdateField,
+    },
+    ref
+  ) => {
     const printTemplateRef = useRef();
     const templateRef = useRef(); // page-0 template wrapper — used for DOM section measurement
     const [showFullPreview, , setShowFullPreviewTrue, setShowFullPreviewFalse] =
@@ -79,6 +88,7 @@ const ResumePreview = forwardRef(
     const [measuredHeight, setMeasuredHeight] = useState(1056);
     // pageBreaks[i] = template-coordinate y where page i starts (template px, pre-scale)
     const [pageBreaks, setPageBreaks] = useState([0]);
+    const [zoomFactor, setZoomFactor] = useState(0.75);
 
     const templateThemes = useMemo(() => {
       const list = TEMPLATE_COLOR_THEMES[template] || [];
@@ -126,7 +136,7 @@ const ResumePreview = forwardRef(
     }, [isCompact, measuredHeight]);
 
     const mergedResumeData = useMemo(() => ({
-      ...resumeData,
+      ...(resumeData || {}),
       selectedTheme: activeTheme,
       colorTheme: activeTheme,
       density: activeDensity,
@@ -548,34 +558,33 @@ const ResumePreview = forwardRef(
 
     if (!resumeData) return null;
 
-    const scaleFactor = isMobile ? 0.38 : 0.65;
+    const scaleFactor = isMobile ? 0.38 : zoomFactor;
     const scaledPageHeightPx = Math.ceil(PAGE_HEIGHT_PX * scaleFactor);
     const scaledWidthMm = `${(210 * scaleFactor).toFixed(2)}mm`;
 
     return (
       <>
-        <div className="flex min-w-0 max-w-full flex-col resume-preview items-center xl:h-full xl:flex-1 xl:overflow-hidden w-full">
-          {/* Controls & Download Toolbar */}
+        <div className="flex min-w-0 max-w-full flex-col resume-preview items-center w-full min-h-0">
+          {/* Sleek Professional Studio Toolbar */}
           <div
-            className="mb-2.5 flex flex-shrink-0 flex-col gap-2 no-print w-full"
-            style={{ width: scaledWidthMm, maxWidth: "100%" }}
+            className="mb-2.5 flex flex-shrink-0 flex-col sm:flex-row sm:items-center justify-between gap-2 no-print w-full sticky top-0 z-30 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md py-1.5 px-2 rounded-xl border border-gray-200/80 dark:border-zinc-800 shadow-xs"
+            style={{ width: "100%", maxWidth: "100%" }}
           >
-            {/* Quick Live Customizer Bar */}
-            <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-gray-200/90 bg-white/95 px-3 py-2 shadow-xs backdrop-blur-xs dark:border-zinc-800 dark:bg-zinc-950/90">
+            {/* Left: Styling Controls (Palette, Density, Font) */}
+            <div className="flex items-center gap-2 overflow-x-auto py-0.5 no-scrollbar">
               {/* Color Themes */}
-              <div className="flex items-center gap-1.5">
-                <span className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                  <Palette className="w-3.5 h-3.5 text-gray-600 dark:text-gray-300" />
-                  <span className="hidden sm:inline">Color:</span>
+              <div className="flex items-center gap-1.5 pr-2 border-r border-gray-200 dark:border-zinc-800 shrink-0">
+                <span className="text-[10.5px] font-semibold text-gray-500 dark:text-gray-400 hidden lg:inline">
+                  Theme:
                 </span>
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1">
                   {templateThemes.map((t) => (
                     <button
                       key={t.id}
                       onClick={() => handleThemeChange(t.id)}
                       title={t.name}
                       type="button"
-                      className={`relative flex h-5 w-5 items-center justify-center rounded-full transition-all duration-150 cursor-pointer ${
+                      className={`relative flex h-4.5 w-4.5 items-center justify-center rounded-full transition-all duration-150 cursor-pointer ${
                         activeTheme === t.id
                           ? "ring-2 ring-blue-500 ring-offset-1 scale-110 shadow-xs"
                           : "opacity-75 hover:opacity-100 hover:scale-105"
@@ -590,9 +599,8 @@ const ResumePreview = forwardRef(
                 </div>
               </div>
 
-              {/* Density Toggle */}
-              <div className="flex items-center gap-0.5 bg-gray-100/90 dark:bg-zinc-900 p-0.5 rounded-lg border border-gray-200/60 dark:border-zinc-800/80">
-                <Sliders className="w-3 h-3 text-gray-400 ml-1 mr-0.5" />
+              {/* Density Toggle (Segmented Mini Pills) */}
+              <div className="flex items-center bg-gray-100/90 dark:bg-zinc-900 p-0.5 rounded-lg border border-gray-200/60 dark:border-zinc-800/80 shrink-0">
                 {PREVIEW_DENSITIES.map((d) => {
                   const isSelected = activeDensity === d.id;
                   const isOnePage = d.id === "compact";
@@ -601,12 +609,13 @@ const ResumePreview = forwardRef(
                       key={d.id}
                       onClick={() => handleDensityChange(d.id)}
                       type="button"
-                      className={`px-2 py-0.5 text-[10.5px] font-semibold rounded-md transition-all flex items-center gap-1 ${isSelected
+                      className={`px-2 py-0.5 text-[10.5px] font-semibold rounded-md transition-all flex items-center gap-1 cursor-pointer ${
+                        isSelected
                           ? isOnePage
                             ? "bg-emerald-600 text-white shadow-xs dark:bg-emerald-600 dark:text-white"
                             : "bg-white text-gray-900 shadow-xs dark:bg-zinc-800 dark:text-white"
                           : "text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
-                        }`}
+                      }`}
                     >
                       {d.label}
                     </button>
@@ -614,8 +623,8 @@ const ResumePreview = forwardRef(
                 })}
               </div>
 
-              {/* Font Pairing Dropdown */}
-              <div className="flex items-center gap-1">
+              {/* Font Dropdown */}
+              <div className="flex items-center gap-1 shrink-0">
                 <Type className="w-3 h-3 text-gray-400" />
                 <select
                   value={activeFont}
@@ -631,76 +640,96 @@ const ResumePreview = forwardRef(
               </div>
             </div>
 
-            {/* Live Page Capacity Gauge */}
-            {(() => {
-              const pageFillPct = Math.min(200, Math.round((measuredHeight / 1056) * 100));
-              const isOnePage = numberOfPages === 1;
-              return (
-                <div className="flex items-center justify-between px-2.5 py-1 rounded-lg bg-gray-100/70 dark:bg-zinc-900 border border-gray-200/60 dark:border-zinc-800/80 text-[11px]">
-                  <span className="text-gray-600 dark:text-gray-300 font-medium flex items-center gap-1.5">
-                    <span
-                      className={`w-2 h-2 rounded-full ${isOnePage ? "bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.6)]" : "bg-amber-500 animate-pulse"
-                        }`}
-                    />
-                    Page Fill:{" "}
-                    <strong className={isOnePage ? "text-emerald-700 dark:text-emerald-400 font-bold" : "text-amber-700 dark:text-amber-400 font-bold"}>
-                      {pageFillPct}%
-                    </strong>
-                    <span className="text-gray-400 dark:text-gray-500">({numberOfPages} {numberOfPages === 1 ? "page" : "pages"})</span>
-                  </span>
+            {/* Right: Page Count, Zoom, Fullscreen, Compact Download Button */}
+            <div className="flex items-center justify-between sm:justify-end gap-1.5 shrink-0">
+              {/* Page Status Indicator */}
+              <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-gray-100/70 dark:bg-zinc-900 border border-gray-200/60 dark:border-zinc-800 text-[10.5px] font-medium">
+                <span
+                  className={`w-1.5 h-1.5 rounded-full ${
+                    numberOfPages === 1 ? "bg-emerald-500" : "bg-amber-500"
+                  }`}
+                />
+                <span className="text-gray-600 dark:text-gray-300 font-semibold">
+                  {numberOfPages} {numberOfPages === 1 ? "Page" : "Pages"}
+                </span>
+                {numberOfPages > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => handleDensityChange("compact")}
+                    className="text-emerald-600 dark:text-emerald-400 hover:underline text-[10px] font-bold ml-0.5 cursor-pointer"
+                    title="Fit into 1 page"
+                  >
+                    Fit 1P
+                  </button>
+                )}
+              </div>
 
-                  {!isOnePage && (
-                    <button
-                      type="button"
-                      onClick={() => handleDensityChange("compact")}
-                      className="inline-flex items-center gap-0.5 text-[10.5px] font-bold text-emerald-700 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-300 transition-colors cursor-pointer"
-                      title="Reset margins and text scale to fit 1 page"
-                    >
-                      ⚡ Auto-Fit 1 Page
-                    </button>
-                  )}
-                  {isOnePage && isCompact && (
-                    <span className="text-[10px] font-semibold text-emerald-700 dark:text-emerald-400 flex items-center gap-1">
-                      ✓ Smart Fit Active
-                    </span>
-                  )}
+              {/* Zoom Controls (Desktop) */}
+              {!isMobile && (
+                <div className="hidden sm:inline-flex items-center rounded-lg border border-gray-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 px-1 py-0.5 text-xs shadow-xs gap-0.5">
+                  <button
+                    onClick={() =>
+                      setZoomFactor((z) =>
+                        Math.max(0.4, Number((z - 0.05).toFixed(2)))
+                      )
+                    }
+                    type="button"
+                    title="Zoom out"
+                    className="p-1 rounded hover:bg-gray-100 dark:hover:bg-zinc-900 text-gray-600 dark:text-gray-300 cursor-pointer transition-colors"
+                  >
+                    <ZoomOut className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={() => setZoomFactor(0.75)}
+                    type="button"
+                    title="Reset zoom (75%)"
+                    className="px-1.5 py-0.5 font-semibold text-[11px] text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer transition-colors"
+                  >
+                    {Math.round(zoomFactor * 100)}%
+                  </button>
+                  <button
+                    onClick={() =>
+                      setZoomFactor((z) =>
+                        Math.min(1.1, Number((z + 0.05).toFixed(2)))
+                      )
+                    }
+                    type="button"
+                    title="Zoom in"
+                    className="p-1 rounded hover:bg-gray-100 dark:hover:bg-zinc-900 text-gray-600 dark:text-gray-300 cursor-pointer transition-colors"
+                  >
+                    <ZoomIn className="w-3.5 h-3.5" />
+                  </button>
                 </div>
-              );
-            })()}
+              )}
 
-            {/* Action Row: Download PDF & Fullscreen Preview */}
-            <div className="flex items-center gap-2">
+              {/* Fullscreen Button */}
+              <button
+                onClick={setShowFullPreviewTrue}
+                title="Fullscreen Preview Modal"
+                type="button"
+                className="p-1.5 rounded-lg border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 dark:border-zinc-800 dark:bg-zinc-950 dark:text-gray-300 dark:hover:bg-zinc-900 cursor-pointer shadow-xs transition-colors"
+              >
+                <Maximize2 className="h-3.5 w-3.5" />
+              </button>
+
+              {/* Compact Professional Download Button */}
               <button
                 onClick={onDownload || downloadPDF}
                 type="button"
-                className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl border border-blue-700 bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white shadow-xs transition-all hover:bg-blue-800 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-blue-500 dark:bg-blue-600 dark:hover:bg-blue-500 dark:focus:ring-offset-zinc-950"
+                className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 text-xs font-semibold shadow-xs hover:shadow transition-all cursor-pointer"
+                title="Download ATS-Friendly PDF"
               >
-                <Download className="h-4 w-4" aria-hidden="true" />
+                <Download className="h-3.5 w-3.5" />
                 <span>Download PDF</span>
               </button>
-
-              <button
-                onClick={setShowFullPreviewTrue}
-                title="Fullscreen Preview"
-                type="button"
-                className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-xs font-semibold text-gray-700 shadow-xs hover:bg-gray-50 dark:border-zinc-800 dark:bg-zinc-950 dark:text-gray-300 dark:hover:bg-zinc-900"
-              >
-                <Maximize2 className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Fullscreen</span>
-              </button>
             </div>
-            <p className="text-center text-[11px] text-gray-500 dark:text-gray-400">
-              Generated PDF is 100% text-based and ATS-friendly
-            </p>
           </div>
 
-          {/* Scrollable preview */}
+          {/* Full document view (Entire screen scrollable) */}
           <div
-            className="min-w-0 max-w-full rounded-xl bg-zinc-100/90 dark:bg-zinc-900/90 overflow-x-hidden overflow-y-auto scrollbar-thin relative flex-1 w-full flex flex-col items-center"
+            className="min-w-0 max-w-full rounded-xl bg-zinc-100/90 dark:bg-zinc-900/90 overflow-x-auto overflow-y-visible w-full flex flex-col items-center"
             style={{
-              maxHeight: isMobile ? "520px" : "100%",
-              height: isMobile ? "auto" : "100%",
-              padding: isMobile ? "0.75rem" : "1rem",
+              padding: isMobile ? "0.75rem 0.5rem 3rem" : "1rem 1rem 5rem",
             }}
           >
             {/* Pages stack */}
@@ -737,7 +766,7 @@ const ResumePreview = forwardRef(
                       backgroundImage: isCreative2 ? `url("${WOOD_TEXTURE_DATA_URI}")` : undefined,
                       backgroundRepeat: "repeat",
                     }}
-                    className={`${isCreative2 ? "" : "bg-white dark:bg-gray-50"} shadow-[0_4px_24px_rgba(0,0,0,0.18)] rounded-sm overflow-hidden ${isMobile ? "cursor-pointer" : ""
+                    className={`${isCreative2 ? "" : "bg-white dark:bg-gray-50"} shadow-[0_12px_36px_rgba(0,0,0,0.14),0_2px_8px_rgba(0,0,0,0.06)] ring-1 ring-black/10 dark:ring-white/10 rounded-sm overflow-hidden ${isMobile ? "cursor-pointer" : ""
                       }`}
                   >
                     {/* Anti-AI 3-tier SmartNShine security watermark overlay */}

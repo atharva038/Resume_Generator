@@ -2,6 +2,14 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import dns from "node:dns";
+
+// Fix for Windows querySrv ECONNREFUSED with MongoDB Atlas SRV records
+try {
+  dns.setServers(["8.8.8.8", "8.8.4.4"]);
+} catch {
+  // fallback if custom DNS setting is restricted
+}
 import session from "express-session";
 import MongoStore from "connect-mongo";
 import mongoSanitize from "express-mongo-sanitize";
