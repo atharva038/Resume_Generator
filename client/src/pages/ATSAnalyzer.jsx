@@ -28,8 +28,8 @@ export default function ATSAnalyzer() {
   const [showAllImprovements, setShowAllImprovements] = useState(false);
   const [expandedSections, setExpandedSections] = useState({
     recommendations: true,
-    strengths: false,
-    keywords: false,
+    strengths: true,
+    keywords: true,
   });
 
   // Load user's resumes on mount
@@ -135,6 +135,8 @@ export default function ATSAnalyzer() {
     navigate("/editor", { state: { atsRecommendation: recommendation } });
   };
 
+  const [showInputs, setShowInputs] = useState(false);
+
   return (
     <div className="min-h-screen bg-gray-50/50 dark:bg-[#09090b] text-gray-900 dark:text-zinc-100 transition-colors duration-200">
       <SEO
@@ -148,70 +150,106 @@ export default function ATSAnalyzer() {
         {/* Ambient Top Hero Banner */}
         <ATSAnalyzerBanner />
 
-        {/* 2-Column Responsive Workspace */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-          {/* Left Column: Inputs and focused improvement actions */}
-          <div className="lg:col-span-6 space-y-6">
-            <ATSJobDescriptionInput
-              jobDescription={jobDescription}
-              setJobDescription={setJobDescription}
-            />
+        {/* If no analysis result, show the initial input & empty/loading state */}
+        {!analysisResult ? (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+            {/* Left Column: Inputs */}
+            <div className="lg:col-span-6 space-y-6">
+              <ATSJobDescriptionInput
+                jobDescription={jobDescription}
+                setJobDescription={setJobDescription}
+              />
 
-            <ATSResumeSelector
-              useCareerProfile={useCareerProfile}
-              setUseCareerProfile={setUseCareerProfile}
-              userResumes={userResumes}
-              loadingResumes={loadingResumes}
-              selectedResume={selectedResume}
-              setSelectedResume={setSelectedResume}
-              uploadedFile={uploadedFile}
-              setUploadedFile={setUploadedFile}
-              handleFileUpload={handleFileUpload}
-              analyzing={analyzing}
-              handleAnalyze={handleAnalyze}
-              jobDescription={jobDescription}
-            />
+              <ATSResumeSelector
+                useCareerProfile={useCareerProfile}
+                setUseCareerProfile={setUseCareerProfile}
+                userResumes={userResumes}
+                loadingResumes={loadingResumes}
+                selectedResume={selectedResume}
+                setSelectedResume={setSelectedResume}
+                uploadedFile={uploadedFile}
+                setUploadedFile={setUploadedFile}
+                handleFileUpload={handleFileUpload}
+                analyzing={analyzing}
+                handleAnalyze={handleAnalyze}
+                jobDescription={jobDescription}
+              />
+            </div>
 
-            {analysisResult && (
-              <section className="space-y-4" aria-labelledby="resume-improvements-title">
-                <div className="flex items-center justify-between rounded-2xl border border-blue-500/20 bg-blue-500/5 px-4 py-3">
-                  <div>
-                    <h2 id="resume-improvements-title" className="text-sm font-extrabold text-gray-900 dark:text-white">
-                      Resume Improvements
-                    </h2>
-                    <p className="mt-0.5 text-xs text-gray-500 dark:text-zinc-400">
-                      Choose a specific action to update your resume faster.
-                    </p>
-                  </div>
-                  <span className="rounded-full bg-blue-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-blue-700 dark:text-blue-300">
-                    Next steps
-                  </span>
-                </div>
-                <ATSResultsBreakdown
-                  analysisResult={analysisResult}
-                  expandedSections={expandedSections}
-                  toggleSection={toggleSection}
-                  showAllImprovements={showAllImprovements}
-                  setShowAllImprovements={setShowAllImprovements}
-                  onEditResume={handleEditRecommendation}
-                  showStrengths={false}
-                />
-              </section>
-            )}
+            {/* Right Column: Empty or Loading State */}
+            <div className="lg:col-span-6 lg:sticky lg:top-24 space-y-6">
+              {analyzing ? <ATSLoadingState /> : <ATSEmptyState />}
+            </div>
           </div>
+        ) : (
+          /* Output View: Full-width 2-column layout */
+          <div className="space-y-6 animate-in fade-in duration-300">
+            {/* Top Toolbar / Action Controls */}
+            <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-white dark:bg-zinc-900/90 border border-gray-200/80 dark:border-white/10 shadow-sm">
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowInputs(!showInputs)}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-gray-700 dark:text-zinc-200 transition-colors cursor-pointer"
+                >
+                  {showInputs ? "Hide Input Settings" : "Modify Job Description / Resume"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAnalysisResult(null)}
+                  className="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-gray-500 hover:text-gray-900 dark:text-zinc-400 dark:hover:text-white transition-colors cursor-pointer"
+                >
+                  Start New Analysis
+                </button>
+              </div>
 
-          {/* Right Column: Dynamic Results & Diagnostics */}
-          <div className="lg:col-span-6 lg:sticky lg:top-24 space-y-6">
-            {!analysisResult && !analyzing && <ATSEmptyState />}
+              <button
+                type="button"
+                onClick={handleAnalyze}
+                disabled={analyzing}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-sm shadow-blue-500/20 transition-all cursor-pointer disabled:opacity-50"
+              >
+                {analyzing ? "Re-analyzing..." : "Re-run Deep ATS Analysis"}
+              </button>
+            </div>
 
-            {analyzing && <ATSLoadingState />}
+            {/* Collapsible Inputs in Output View */}
+            {showInputs && (
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 p-6 rounded-3xl bg-gray-50 dark:bg-zinc-950/60 border border-gray-200 dark:border-white/10 animate-in fade-in duration-200">
+                <div className="lg:col-span-6">
+                  <ATSJobDescriptionInput
+                    jobDescription={jobDescription}
+                    setJobDescription={setJobDescription}
+                  />
+                </div>
+                <div className="lg:col-span-6">
+                  <ATSResumeSelector
+                    useCareerProfile={useCareerProfile}
+                    setUseCareerProfile={setUseCareerProfile}
+                    userResumes={userResumes}
+                    loadingResumes={loadingResumes}
+                    selectedResume={selectedResume}
+                    setSelectedResume={setSelectedResume}
+                    uploadedFile={uploadedFile}
+                    setUploadedFile={setUploadedFile}
+                    handleFileUpload={handleFileUpload}
+                    analyzing={analyzing}
+                    handleAnalyze={handleAnalyze}
+                    jobDescription={jobDescription}
+                  />
+                </div>
+              </div>
+            )}
 
-            {analysisResult && (
-              <div className="space-y-6 animate-in fade-in duration-300">
+            {/* 2-Column Output Workspace */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+              {/* Left Column: Full Analysis Score & Strength Signals */}
+              <div className="lg:col-span-6 space-y-6">
                 <div>
                   <h2 className="text-lg font-extrabold text-gray-900 dark:text-white">Full Analysis</h2>
                   <p className="mt-1 text-xs text-gray-500 dark:text-zinc-400">Your overall ATS score and verified resume strengths.</p>
                 </div>
+
                 <ATSScoreHero analysisResult={analysisResult} />
 
                 <ATSResultsBreakdown
@@ -223,11 +261,41 @@ export default function ATSAnalyzer() {
                   onEditResume={handleEditRecommendation}
                   showRecommendations={false}
                   showKeywords={false}
+                  showStrengths={true}
                 />
               </div>
-            )}
+
+              {/* Right Column: Resume Improvements & Actionable Recommendations & Missing Keywords */}
+              <div className="lg:col-span-6 space-y-6">
+                <div className="flex items-center justify-between rounded-2xl border border-blue-500/20 bg-blue-500/5 px-4 py-3">
+                  <div>
+                    <h2 className="text-sm font-extrabold text-gray-900 dark:text-white">
+                      Resume Improvements
+                    </h2>
+                    <p className="mt-0.5 text-xs text-gray-500 dark:text-zinc-400">
+                      Choose a specific action to update your resume faster.
+                    </p>
+                  </div>
+                  <span className="rounded-full bg-blue-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-blue-700 dark:text-blue-300">
+                    Next steps
+                  </span>
+                </div>
+
+                <ATSResultsBreakdown
+                  analysisResult={analysisResult}
+                  expandedSections={expandedSections}
+                  toggleSection={toggleSection}
+                  showAllImprovements={showAllImprovements}
+                  setShowAllImprovements={setShowAllImprovements}
+                  onEditResume={handleEditRecommendation}
+                  showRecommendations={true}
+                  showKeywords={true}
+                  showStrengths={false}
+                />
+              </div>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
