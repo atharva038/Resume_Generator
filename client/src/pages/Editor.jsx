@@ -786,16 +786,6 @@ const Editor = () => {
   const expandAllSections = () => setForceSectionExpand(true);
   const collapseAllSections = () => setForceSectionExpand(false);
 
-  if (!resumeData) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-100 dark:from-zinc-950 dark:via-zinc-950 dark:to-zinc-900">
-        <div className="container mx-auto px-4 py-16 text-center">
-          <p>Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
   const availableColorThemes = useMemo(() => {
     return TEMPLATE_COLOR_THEMES[selectedTemplate] || [];
   }, [selectedTemplate]);
@@ -828,6 +818,16 @@ const Editor = () => {
     },
     [availableColorThemes]
   );
+
+  if (!resumeData) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-100 dark:from-zinc-950 dark:via-zinc-950 dark:to-zinc-900">
+        <div className="container mx-auto px-4 py-16 text-center">
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen lg:h-screen w-full max-w-full overflow-x-hidden lg:overflow-hidden bg-gray-50/50 dark:bg-[#09090b] text-gray-900 dark:text-zinc-100 flex flex-col font-sans transition-colors duration-200">
