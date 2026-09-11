@@ -862,6 +862,26 @@ const Editor = () => {
           showScrollTop={showScrollTop}
         />
 
+        {/* Floating Section Navigation - Desktop */}
+        {!isWizardMode && (
+          <DesktopFloatingSectionNav
+            floatingNavContainerRef={floatingNavContainerRef}
+            floatingNavOffset={floatingNavOffset}
+            showFloatingNav={showFloatingNav}
+            onDragStart={handleFloatingNavDragStart}
+            onToggleFloatingNav={toggleFloatingNav}
+            completionPercentage={completionPercentage}
+            onJumpToFirstIncomplete={jumpToFirstIncompleteSection}
+            onExpandAll={expandAllSections}
+            onCollapseAll={collapseAllSections}
+            trackableSectionIds={trackableSectionIds}
+            activeSectionId={activeSectionId}
+            sectionCompletionMap={sectionCompletionMap}
+            onSelectSection={scrollToSection}
+            onMoveSection={handleMoveSection}
+          />
+        )}
+
         {/* Sticky Mini Score Bar */}
         <EditorMiniScoreBar
           atsScore={atsScore}
