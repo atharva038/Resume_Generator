@@ -796,6 +796,39 @@ const Editor = () => {
     );
   }
 
+  const availableColorThemes = useMemo(() => {
+    return TEMPLATE_COLOR_THEMES[selectedTemplate] || [];
+  }, [selectedTemplate]);
+
+  const activeColorTheme = useMemo(() => {
+    if (!availableColorThemes.length) return null;
+    return (
+      availableColorThemes.find(
+        (t) =>
+          t.id === resumeData?.colorTheme ||
+          t.id === resumeData?.selectedTheme
+      ) || availableColorThemes[0]
+    );
+  }, [availableColorThemes, resumeData?.colorTheme, resumeData?.selectedTheme]);
+
+  const handleSelectColorTheme = useCallback(
+    (themeId) => {
+      setResumeData((prev) => ({
+        ...prev,
+        colorTheme: themeId,
+        selectedTheme: themeId,
+      }));
+      const themeObj = availableColorThemes.find((t) => t.id === themeId);
+      if (themeObj) {
+        toast.success(`${themeObj.name} theme applied!`, {
+          duration: 2000,
+          position: "bottom-right",
+        });
+      }
+    },
+    [availableColorThemes]
+  );
+
   return (
     <div className="min-h-screen lg:h-screen w-full max-w-full overflow-x-hidden lg:overflow-hidden bg-gray-50/50 dark:bg-[#09090b] text-gray-900 dark:text-zinc-100 flex flex-col font-sans transition-colors duration-200">
       <SEO
@@ -815,6 +848,9 @@ const Editor = () => {
         onImportCareerProfile={handleImportFromCareerProfile}
         onResetOrder={handleResetOrder}
         onShowTemplateSelector={showTemplateSelectorTrue}
+        availableColorThemes={availableColorThemes}
+        activeColorTheme={activeColorTheme}
+        onSelectColorTheme={handleSelectColorTheme}
         onSave={guardedHandleSave}
         onExport={handleDownloadPDF}
         isExportLocked={isExportLocked}

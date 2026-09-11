@@ -4,11 +4,13 @@ import {
   RotateCcw,
   Sliders,
   Type,
+  Palette,
   Check,
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
 import { LAYOUT_DEFAULTS } from "../constants/editorConstants";
+import { TEMPLATE_COLOR_THEMES } from "../templateConfig";
 
 const PREVIEW_DENSITIES = [
   { id: "compact", label: "Smart 1-Page" },
@@ -40,12 +42,23 @@ const FONT_MAP = {
   techMono: '"JetBrains Mono", "SF Mono", Consolas, "Liberation Mono", Menlo, monospace',
 };
 
-const ResumeLayoutControls = ({ resumeData = {}, updateField, onChange }) => {
+const ResumeLayoutControls = ({ resumeData = {}, template = "classic", updateField, onChange }) => {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const settings = { ...LAYOUT_DEFAULTS, ...(resumeData.layoutSettings || {}) };
 
   const activeDensity = resumeData.density || "medium";
   const activeFont = resumeData.fontPairing || "modernSans";
+
+  const availableThemes = TEMPLATE_COLOR_THEMES[template] || [];
+  const activeColorThemeId = resumeData?.colorTheme || resumeData?.selectedTheme || availableThemes[0]?.id;
+  const activeColorThemeObj = availableThemes.find((t) => t.id === activeColorThemeId) || availableThemes[0];
+
+  const handleColorThemeChange = (themeId) => {
+    if (updateField) {
+      updateField("colorTheme", themeId);
+      updateField("selectedTheme", themeId);
+    }
+  };
 
   const update = (field, value) => {
     const updated = { ...settings, [field]: value };
@@ -119,7 +132,7 @@ const ResumeLayoutControls = ({ resumeData = {}, updateField, onChange }) => {
               Resume Styling & Layout
             </h3>
             <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
-              Fine-tune margins, spacing & density
+              Fine-tune colors, margins, spacing & density
             </p>
           </div>
         </div>
@@ -132,6 +145,45 @@ const ResumeLayoutControls = ({ resumeData = {}, updateField, onChange }) => {
           Reset
         </button>
       </div>
+
+      {/* 0. Color Theme & Palette */}
+      {availableThemes.length > 0 && (
+        <div className="mt-3.5">
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="text-xs font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
+              <Palette className="w-3.5 h-3.5 text-gray-400" />
+              Color Theme &amp; Palette
+            </label>
+            <span className="text-[11px] font-semibold text-blue-600 dark:text-blue-400">
+              {activeColorThemeObj?.name || ""}
+            </span>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 p-2 bg-gray-100/90 dark:bg-zinc-900 rounded-lg border border-gray-200/60 dark:border-zinc-800/80">
+            {availableThemes.map((t) => {
+              const isSelected = activeColorThemeId === t.id;
+              const themeBg = t.primary || t.color;
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => handleColorThemeChange(t.id)}
+                  title={`${t.name} (${themeBg})`}
+                  className={`relative flex items-center justify-center w-6 h-6 rounded-full transition-all cursor-pointer ${
+                    isSelected
+                      ? "ring-2 ring-blue-500 ring-offset-2 scale-110 shadow-xs"
+                      : "opacity-75 hover:opacity-100 hover:scale-105"
+                  }`}
+                  style={{ backgroundColor: themeBg }}
+                >
+                  {isSelected && (
+                    <Check className="w-3 h-3 text-white drop-shadow-xs" strokeWidth={3} />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* 1. Page Density & 1-Page Fit */}
       <div className="mt-3.5">
