@@ -786,6 +786,39 @@ const Editor = () => {
   const expandAllSections = () => setForceSectionExpand(true);
   const collapseAllSections = () => setForceSectionExpand(false);
 
+  const availableColorThemes = useMemo(() => {
+    return TEMPLATE_COLOR_THEMES[selectedTemplate] || [];
+  }, [selectedTemplate]);
+
+  const activeColorTheme = useMemo(() => {
+    if (!availableColorThemes.length) return null;
+    return (
+      availableColorThemes.find(
+        (t) =>
+          t.id === resumeData?.colorTheme ||
+          t.id === resumeData?.selectedTheme
+      ) || availableColorThemes[0]
+    );
+  }, [availableColorThemes, resumeData?.colorTheme, resumeData?.selectedTheme]);
+
+  const handleSelectColorTheme = useCallback(
+    (themeId) => {
+      setResumeData((prev) => ({
+        ...prev,
+        colorTheme: themeId,
+        selectedTheme: themeId,
+      }));
+      const themeObj = availableColorThemes.find((t) => t.id === themeId);
+      if (themeObj) {
+        toast.success(`${themeObj.name} theme applied!`, {
+          duration: 2000,
+          position: "bottom-right",
+        });
+      }
+    },
+    [availableColorThemes]
+  );
+
   if (!resumeData) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-100 dark:from-zinc-950 dark:via-zinc-950 dark:to-zinc-900">
@@ -815,6 +848,9 @@ const Editor = () => {
         onImportCareerProfile={handleImportFromCareerProfile}
         onResetOrder={handleResetOrder}
         onShowTemplateSelector={showTemplateSelectorTrue}
+        availableColorThemes={availableColorThemes}
+        activeColorTheme={activeColorTheme}
+        onSelectColorTheme={handleSelectColorTheme}
         onSave={guardedHandleSave}
         onExport={handleDownloadPDF}
         isExportLocked={isExportLocked}
@@ -861,6 +897,26 @@ const Editor = () => {
           isSubscriptionExpired={isExportLocked}
           showScrollTop={showScrollTop}
         />
+
+        {/* Floating Section Navigation - Desktop */}
+        {!isWizardMode && (
+          <DesktopFloatingSectionNav
+            floatingNavContainerRef={floatingNavContainerRef}
+            floatingNavOffset={floatingNavOffset}
+            showFloatingNav={showFloatingNav}
+            onDragStart={handleFloatingNavDragStart}
+            onToggleFloatingNav={toggleFloatingNav}
+            completionPercentage={completionPercentage}
+            onJumpToFirstIncomplete={jumpToFirstIncompleteSection}
+            onExpandAll={expandAllSections}
+            onCollapseAll={collapseAllSections}
+            trackableSectionIds={trackableSectionIds}
+            activeSectionId={activeSectionId}
+            sectionCompletionMap={sectionCompletionMap}
+            onSelectSection={scrollToSection}
+            onMoveSection={handleMoveSection}
+          />
+        )}
 
         {/* Sticky Mini Score Bar */}
         <EditorMiniScoreBar

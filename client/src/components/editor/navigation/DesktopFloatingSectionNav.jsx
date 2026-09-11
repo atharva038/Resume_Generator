@@ -22,7 +22,7 @@ const DesktopFloatingSectionNav = memo(
   }) => (
     <div
       ref={floatingNavContainerRef}
-      className="hidden xl:block fixed right-6 bottom-20 z-50 no-print"
+      className="hidden lg:block fixed right-6 bottom-20 z-50 no-print"
       style={{
         transform: `translate(${floatingNavOffset?.x || 0}px, ${floatingNavOffset?.y || 0}px)`,
       }}
