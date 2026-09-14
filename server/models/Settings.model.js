@@ -196,6 +196,18 @@ const settingsSchema = new mongoose.Schema(
       },
     },
 
+    // AI API Keys stored in MongoDB for seamless synchronization across all environments
+    aiApiKeys: {
+      openaiApiKey: {
+        type: String,
+        default: "",
+      },
+      openaiAdminKey: {
+        type: String,
+        default: "",
+      },
+    },
+
     // OpenAI Credit & Account Balance Tracking Settings
     openaiCredits: {
       allocatedBudgetUsd: {

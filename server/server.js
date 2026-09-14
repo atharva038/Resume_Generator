@@ -1,6 +1,15 @@
+import dotenv from "dotenv";
+import path from "path";
+import {fileURLToPath} from "url";
+
+// Load environment variables immediately before any other module evaluation
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({path: path.join(__dirname, ".env")});
+dotenv.config(); // fallback to root .env if present
+
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import mongoose from "mongoose";
 import dns from "node:dns";
 
@@ -32,6 +41,7 @@ import careerRoutes from "./routes/career.routes.js";
 import superAdminRoutes from "./routes/superAdmin.routes.js";
 import Template from "./models/Template.model.js";
 import Portfolio from "./models/Portfolio.model.js";
+import Settings from "./models/Settings.model.js";
 import {apiLimiter} from "./middleware/rateLimiter.middleware.js";
 import {
   securityHeaders,
@@ -40,9 +50,6 @@ import {
   securityLogger,
 } from "./middleware/security.middleware.js";
 import {notifySystemError} from "./services/adminNotification.service.js";
-
-// Load environment variables
-dotenv.config();
 
 // =========================================
 // ENVIRONMENT VALIDATION
@@ -185,9 +192,40 @@ mongoose
     socketTimeoutMS: 45000,
     family: 4, // Use IPv4, skip trying IPv6
   })
-  .then(() => {
+  .then(async () => {
     console.log("✅ MongoDB connected successfully");
     console.log("📊 Connected to database:", mongoose.connection.name);
+
+    // Synchronize API keys with MongoDB Settings so all dev/prod devices share working keys
+    try {
+      const settings = await Settings.getSettings();
+      const envKey = process.env.OPENAI_API_KEY?.trim();
+      const dbKey = settings?.aiApiKeys?.openaiApiKey?.trim();
+
+      if (envKey && envKey.startsWith("sk-") && !envKey.includes("YOUR_")) {
+        // Local/server has a valid key -> seed/update DB if different
+        if (dbKey !== envKey) {
+          if (!settings.aiApiKeys) settings.aiApiKeys = {};
+          settings.aiApiKeys.openaiApiKey = envKey;
+          if (process.env.OPENAI_ADMIN_KEY?.trim()) {
+            settings.aiApiKeys.openaiAdminKey = process.env.OPENAI_ADMIN_KEY.trim();
+          }
+          await settings.save();
+          console.log("🔑 [CONFIG] Seeded shared MongoDB Settings with active OpenAI API Key");
+        }
+      } else if (dbKey && dbKey.startsWith("sk-")) {
+        // Local/server is missing key or has invalid key -> load from shared DB!
+        process.env.OPENAI_API_KEY = dbKey;
+        if (settings?.aiApiKeys?.openaiAdminKey && !process.env.OPENAI_ADMIN_KEY) {
+          process.env.OPENAI_ADMIN_KEY = settings.aiApiKeys.openaiAdminKey;
+        }
+        console.log(
+          `🔑 [CONFIG] Loaded active OPENAI_API_KEY from shared MongoDB (${dbKey.substring(0, 7)}...${dbKey.substring(dbKey.length - 4)})`
+        );
+      }
+    } catch (syncErr) {
+      console.warn("⚠️  Settings key synchronization notice:", syncErr.message);
+    }
   })
   .catch((err) => {
     console.error("❌ MongoDB connection error:", err.message);

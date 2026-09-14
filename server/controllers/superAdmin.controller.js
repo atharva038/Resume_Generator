@@ -6,6 +6,7 @@ import nodemailer from "nodemailer";
 import Razorpay from "razorpay";
 import OpenAI from "openai";
 import axios from "axios";
+import Settings from "../models/Settings.model.js";
 
 // Helper: Determine .env file location
 export const getEnvPath = () => {
@@ -642,6 +643,28 @@ export const updateEnvVariables = async (req, res) => {
     Object.keys(variables).forEach((key) => {
       process.env[key] = variables[key];
     });
+
+    // 4. Synchronize critical AI API keys into shared MongoDB Settings so all dev/prod environments share them
+    try {
+      const settings = await Settings.getSettings();
+      let changed = false;
+      if (variables.OPENAI_API_KEY && variables.OPENAI_API_KEY.trim().startsWith("sk-")) {
+        if (!settings.aiApiKeys) settings.aiApiKeys = {};
+        settings.aiApiKeys.openaiApiKey = variables.OPENAI_API_KEY.trim();
+        changed = true;
+      }
+      if (variables.OPENAI_ADMIN_KEY && variables.OPENAI_ADMIN_KEY.trim().startsWith("sk-")) {
+        if (!settings.aiApiKeys) settings.aiApiKeys = {};
+        settings.aiApiKeys.openaiAdminKey = variables.OPENAI_ADMIN_KEY.trim();
+        changed = true;
+      }
+      if (changed) {
+        await settings.save();
+        console.log("✅ [SUPER ADMIN] Synchronized AI API Keys to shared MongoDB Settings");
+      }
+    } catch (dbErr) {
+      console.warn("⚠️ [SUPER ADMIN] Could not sync keys to MongoDB Settings:", dbErr.message);
+    }
 
     console.log(
       `✅ [SUPER ADMIN] Successfully updated ${
