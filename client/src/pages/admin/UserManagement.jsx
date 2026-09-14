@@ -10,7 +10,9 @@ import {
   User as UserIcon,
   ChevronLeft,
   ChevronRight,
+  Mail,
 } from "lucide-react";
+import AdminEmailModal from "./components/AdminEmailModal";
 import {
   getAllUsers,
   updateUserStatus,
@@ -42,6 +44,11 @@ const UserManagement = () => {
     userId: null,
     userName: null,
     loading: false,
+  });
+  const [emailModal, setEmailModal] = useState({
+    isOpen: false,
+    email: "",
+    name: "",
   });
 
   const fetchUsers = useCallback(async () => {
@@ -406,6 +413,19 @@ const UserManagement = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex items-center justify-end gap-2">
                           <button
+                            onClick={() =>
+                              setEmailModal({
+                                isOpen: true,
+                                email: user.email,
+                                name: user.name,
+                              })
+                            }
+                            className="p-2 text-emerald-400 hover:bg-emerald-500/10 border border-transparent hover:border-emerald-500/20 rounded-lg transition-all"
+                            title="Send email to user"
+                          >
+                            <Mail className="w-4 h-4" />
+                          </button>
+                          <button
                             onClick={() => navigate(`/admin/users/${user._id}`)}
                             className="p-2 text-cyan-500 hover:bg-cyan-500/10 border border-transparent hover:border-cyan-500/20 rounded-lg transition-all"
                             title="Inspect user"
@@ -519,6 +539,13 @@ const UserManagement = () => {
         type="danger"
         icon={Trash2}
         loading={deleteModal.loading}
+      />
+
+      <AdminEmailModal
+        isOpen={emailModal.isOpen}
+        onClose={() => setEmailModal({isOpen: false, email: "", name: ""})}
+        initialEmail={emailModal.email}
+        initialName={emailModal.name}
       />
     </div>
   );

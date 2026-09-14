@@ -133,3 +133,33 @@ export const notifySystemError = ({source, error, path, method}) =>
       status: error?.status,
     },
   });
+
+export const notifyOpenAICreditLow = ({remainingUsd, remainingInr, alertThresholdUsd}) =>
+  createAdminNotification({
+    type: "ai",
+    severity: "warning",
+    title: "Low OpenAI Credits Warning",
+    message: `OpenAI credit balance is low: $${remainingUsd.toFixed(2)} (₹${remainingInr.toFixed(2)}), below the $${alertThresholdUsd.toFixed(2)} threshold.`,
+    targetType: "ai_usage",
+    actionUrl: "/admin/ai-analytics",
+    metadata: {
+      remainingUsd,
+      remainingInr,
+      alertThresholdUsd,
+    },
+  });
+
+export const notifyOpenAICreditExhausted = ({spentUsd, allocatedUsd}) =>
+  createAdminNotification({
+    type: "ai",
+    severity: "error",
+    title: "OpenAI Credits Exhausted",
+    message: `OpenAI account credit balance is depleted ($0.00 remaining out of $${allocatedUsd.toFixed(2)} budget). Please top up immediately to prevent service outages.`,
+    targetType: "ai_usage",
+    actionUrl: "/admin/ai-analytics",
+    metadata: {
+      spentUsd,
+      allocatedUsd,
+    },
+  });
+

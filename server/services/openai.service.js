@@ -1,11 +1,39 @@
 import OpenAI, {toFile} from "openai";
 
-// Initialize OpenAI client (with fallback for missing API key)
-const openai = process.env.OPENAI_API_KEY
-  ? new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    })
-  : null;
+// Dynamic OpenAI client getter (ensures key updates at runtime are immediately reflected)
+let cachedClient = null;
+let cachedKey = null;
+
+export const getOpenAIClient = () => {
+  const currentKey = process.env.OPENAI_API_KEY;
+  if (!currentKey) return null;
+  if (cachedClient && cachedKey === currentKey) {
+    return cachedClient;
+  }
+  cachedKey = currentKey;
+  cachedClient = new OpenAI({
+    apiKey: currentKey,
+  });
+  return cachedClient;
+};
+
+// Proxy to allow seamless openai.chat... calls while always using fresh client
+const openai = new Proxy(
+  {},
+  {
+    get(target, prop) {
+      const client = getOpenAIClient();
+      if (!client) {
+        throw new Error("OpenAI API key is not configured");
+      }
+      const val = client[prop];
+      if (typeof val === "function") {
+        return val.bind(client);
+      }
+      return val;
+    },
+  }
+);
 
 // Model configuration
 const MODEL = "gpt-4o"; // GPT-4o for premium users

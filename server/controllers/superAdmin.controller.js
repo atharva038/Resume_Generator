@@ -62,6 +62,20 @@ const VARIABLE_METADATA = {
     testable: "openai",
     icon: "openai",
   },
+  OPENAI_ADMIN_KEY: {
+    category: "AI & Intelligence",
+    label: "OpenAI Admin API Key",
+    description: "Admin key (sk-admin-...) for automated real-time Organization Usage & Costs sync",
+    isSensitive: true,
+    icon: "openai",
+  },
+  OPENAI_TOTAL_CREDITS: {
+    category: "AI & Intelligence",
+    label: "OpenAI Total Credit Pool (USD)",
+    description: "Configured total credit balance in USD for real-time burn-rate tracking",
+    isSensitive: false,
+    icon: "database",
+  },
   SARVAM_API_KEY: {
     category: "AI & Intelligence",
     label: "Sarvam AI API Key",
