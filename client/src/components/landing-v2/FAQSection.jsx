@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Pause, Play } from "lucide-react";
+import { motion } from "framer-motion";
 import { useDarkMode } from "../../context/DarkModeContext";
 
 export const row1Faqs = [
@@ -108,28 +109,28 @@ function FAQCard({ item, isDarkMode }) {
   const { id, q, a, tag, takeaway, tagColor, indicatorColor } = item;
   return (
     <div
-      className={`w-[350px] sm:w-[410px] min-h-[255px] shrink-0 p-6 rounded-3xl backdrop-blur-xl border transition-all duration-300 flex flex-col justify-between select-none ${
+      className={`w-[390px] sm:w-[470px] min-h-[275px] shrink-0 p-7 sm:p-8 rounded-3xl backdrop-blur-xl border transition-all duration-300 flex flex-col justify-between select-none ${
         isDarkMode
           ? "bg-zinc-900/60 border-white/10 hover:border-white/25 shadow-lg hover:shadow-2xl"
           : "bg-white/85 border-slate-200/80 hover:border-slate-300 shadow-xs hover:shadow-xl"
       }`}
     >
-      <div className="space-y-2.5">
+      <div className="space-y-3">
         {/* Category Pill & Dot */}
         <div className="flex items-center justify-between">
           <div
-            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[10px] font-mono font-bold tracking-wider uppercase backdrop-blur-md ${tagColor}`}
+            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-mono font-medium tracking-wider uppercase backdrop-blur-md ${tagColor}`}
           >
             <span className="opacity-80 font-mono">{id}</span>
             <span className="opacity-40 font-mono">/</span>
             <span>{tag}</span>
           </div>
-          <span className={`w-1.5 h-1.5 rounded-full ${indicatorColor}`} />
+          <span className={`w-2 h-2 rounded-full ${indicatorColor}`} />
         </div>
 
         {/* Question */}
         <h3
-          className={`text-[15px] font-semibold tracking-tight leading-snug ${
+          className={`text-lg sm:text-xl font-normal tracking-tight leading-snug ${
             isDarkMode ? "text-white" : "text-slate-900"
           }`}
         >
@@ -138,15 +139,15 @@ function FAQCard({ item, isDarkMode }) {
       </div>
 
       {/* Answer & Takeaway */}
-      <div className="pt-2.5 border-t border-slate-100 dark:border-white/5 space-y-2">
+      <div className="pt-3.5 border-t border-slate-100 dark:border-white/5 space-y-2.5">
         <p
-          className={`text-xs sm:text-[13px] font-normal leading-relaxed ${
+          className={`text-sm sm:text-[15px] font-light leading-relaxed ${
             isDarkMode ? "text-zinc-400" : "text-slate-600"
           }`}
         >
           {a}
         </p>
-        <div className="text-[11px] font-mono font-semibold text-indigo-600 dark:text-indigo-400 pt-0.5">
+        <div className="text-xs sm:text-sm font-mono font-medium text-indigo-600 dark:text-indigo-400 pt-0.5">
           {takeaway}
         </div>
       </div>
@@ -214,28 +215,34 @@ export default function FAQSection() {
 
       <div className="max-w-7xl mx-auto relative z-10 space-y-12">
         {/* Section Header */}
-        <div className="text-center max-w-2xl mx-auto space-y-3">
+        <motion.div
+          initial={{ opacity: 0, y: 45, scale: 0.95, filter: "blur(10px)" }}
+          whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          className="text-center max-w-3xl mx-auto space-y-4"
+        >
           <div
-            className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-[11px] font-mono font-semibold tracking-wider uppercase backdrop-blur-md ${
+            className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border text-xs font-mono font-medium tracking-wider uppercase backdrop-blur-md ${
               isDarkMode
                 ? "bg-zinc-800/60 border-zinc-700/60 text-zinc-300"
                 : "bg-white/80 border-slate-200/80 text-slate-700 shadow-xs"
             }`}
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
             <span>Frequently Asked Questions</span>
           </div>
 
           <h2
-            className={`text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight leading-tight ${
+            className={`text-3xl sm:text-4xl lg:text-5xl font-normal tracking-tight leading-tight ${
               isDarkMode ? "text-white" : "text-slate-900"
             }`}
           >
-            Everything you need to know.
+            Everything you need to <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500">know</span>.
           </h2>
 
           <p
-            className={`text-xs sm:text-sm font-normal leading-relaxed ${
+            className={`text-base sm:text-lg font-light leading-relaxed ${
               isDarkMode ? "text-zinc-400" : "text-slate-600"
             }`}
           >
@@ -246,7 +253,7 @@ export default function FAQSection() {
           <div className="pt-2">
             <button
               onClick={() => setIsPaused((prev) => !prev)}
-              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border text-xs font-semibold backdrop-blur-md transition-all active:scale-95 cursor-pointer ${
+              className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full border text-xs font-medium backdrop-blur-md transition-all active:scale-95 cursor-pointer ${
                 isPaused
                   ? "bg-indigo-600 text-white border-indigo-500 shadow-sm"
                   : isDarkMode
@@ -256,21 +263,27 @@ export default function FAQSection() {
             >
               {isPaused ? (
                 <>
-                  <Play className="w-3 h-3 fill-current" />
+                  <Play className="w-3.5 h-3.5 fill-current" />
                   <span>Resume Slider</span>
                 </>
               ) : (
                 <>
-                  <Pause className="w-3 h-3 fill-current" />
+                  <Pause className="w-3.5 h-3.5 fill-current" />
                   <span>Pause Motion</span>
                 </>
               )}
             </button>
           </div>
-        </div>
+        </motion.div>
 
         {/* Dual Marquee Track with Edge Gradient Fade */}
-        <div className="relative overflow-hidden faq-marquee-container py-2 space-y-6">
+        <motion.div
+          initial={{ opacity: 0, y: 40, scale: 0.96, filter: "blur(10px)" }}
+          whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+          viewport={{ once: true, amount: 0.15 }}
+          transition={{ duration: 0.7, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+          className="relative overflow-hidden faq-marquee-container py-2 space-y-6"
+        >
           {/* Left Gradient Edge Mask */}
           <div
             className={`pointer-events-none absolute inset-y-0 left-0 w-16 sm:w-32 z-20 bg-gradient-to-r ${
@@ -312,7 +325,7 @@ export default function FAQSection() {
               <FAQCard key={`r2-${idx}`} item={item} isDarkMode={isDarkMode} />
             ))}
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Sparkles, CheckCircle2, Rocket, Globe } from "lucide-react";
+import { motion } from "framer-motion";
 import { useDarkMode } from "../../context/DarkModeContext";
 
 export default function FinalCTABanner() {
@@ -29,7 +30,11 @@ export default function FinalCTABanner() {
 
       <div className="max-w-4xl mx-auto relative z-10">
         {/* Luxury Obsidian Gold Hero Showcase Card */}
-        <div
+        <motion.div
+          initial={{ opacity: 0, y: 55, scale: 0.94, filter: "blur(10px)" }}
+          whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className={`relative overflow-hidden rounded-3xl sm:rounded-[36px] p-8 sm:p-14 lg:p-16 backdrop-blur-2xl border transition-all duration-300 text-center space-y-8 sm:space-y-10 ${
             isDarkMode
               ? "bg-gradient-to-b from-zinc-950/95 via-[#09090c]/95 to-black/95 border-amber-500/25 shadow-[0_20px_80px_-15px_rgba(245,158,11,0.18)] ring-1 ring-amber-500/10"
@@ -41,26 +46,26 @@ export default function FinalCTABanner() {
           <div className="pointer-events-none absolute -bottom-24 -right-24 w-80 h-80 rounded-full bg-yellow-500/10 blur-3xl" />
 
           {/* Brand Eyebrow Pill */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold bg-amber-500/10 border border-amber-500/25 text-amber-300">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-mono font-medium bg-amber-500/10 border border-amber-500/25 text-amber-300">
             <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-            <span>SmartNShine · AI Resume Builder</span>
+            <span>SmartNShine · AI Career Platform</span>
           </div>
 
           {/* Headline & Subtitle */}
           <div className="space-y-4 max-w-2xl mx-auto">
             <h2
-              className={`text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] ${
+              className={`text-3xl sm:text-5xl lg:text-6xl font-normal tracking-tight leading-[1.12] ${
                 isDarkMode ? "text-white" : "text-slate-900"
               }`}
             >
               The AI Career Platform. <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500">
+              <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500">
                 Built to win offers.
               </span>
             </h2>
 
             <p
-              className={`text-sm sm:text-base md:text-lg font-normal leading-relaxed ${
+              className={`text-base sm:text-lg md:text-xl font-light leading-relaxed ${
                 isDarkMode ? "text-zinc-400" : "text-slate-600"
               }`}
             >
@@ -68,8 +73,8 @@ export default function FinalCTABanner() {
               <span
                 className={
                   isDarkMode
-                    ? "text-amber-400 font-semibold"
-                    : "text-amber-600 font-semibold"
+                    ? "text-amber-400 font-medium"
+                    : "text-amber-600 font-medium"
                 }
               >
                 AI
@@ -79,91 +84,112 @@ export default function FinalCTABanner() {
           </div>
 
           {/* 3 Iconic Circular Pillars */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-4 max-w-3xl mx-auto pt-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto pt-2">
             {/* 1. AI-Powered */}
-            <div
-              className={`p-4 rounded-2xl border text-center transition-all ${
+            <motion.div
+              initial={{ opacity: 0, y: 35, filter: "blur(8px)" }}
+              whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              whileHover={{ y: -4, transition: { duration: 0.2 } }}
+              className={`p-5 rounded-2xl border text-center transition-all ${
                 isDarkMode
                   ? "bg-white/[0.03] border-white/[0.08] hover:border-amber-500/30"
                   : "bg-amber-50/50 border-amber-200/60 hover:border-amber-300"
               }`}
             >
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-amber-500/15 text-amber-400 border border-amber-500/25 mx-auto mb-3">
+              <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-amber-500/15 text-amber-400 border border-amber-500/25 mx-auto mb-3">
                 <Sparkles className="w-5 h-5 text-amber-400" />
               </div>
               <h3
-                className={`text-sm font-bold ${
+                className={`text-base font-normal ${
                   isDarkMode ? "text-white" : "text-slate-900"
                 }`}
               >
                 AI-Powered
               </h3>
               <p
-                className={`text-xs leading-relaxed mt-1 ${
+                className={`text-sm font-light leading-relaxed mt-1.5 ${
                   isDarkMode ? "text-zinc-400" : "text-slate-600"
                 }`}
               >
                 Smart suggestions that make an impact.
               </p>
-            </div>
+            </motion.div>
 
             {/* 2. ATS Optimized */}
-            <div
-              className={`p-4 rounded-2xl border text-center transition-all ${
+            <motion.div
+              initial={{ opacity: 0, y: 35, filter: "blur(8px)" }}
+              whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.6, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              whileHover={{ y: -4, transition: { duration: 0.2 } }}
+              className={`p-5 rounded-2xl border text-center transition-all ${
                 isDarkMode
                   ? "bg-white/[0.03] border-white/[0.08] hover:border-amber-500/30"
                   : "bg-amber-50/50 border-amber-200/60 hover:border-amber-300"
               }`}
             >
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-amber-500/15 text-amber-400 border border-amber-500/25 mx-auto mb-3">
+              <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-amber-500/15 text-amber-400 border border-amber-500/25 mx-auto mb-3">
                 <CheckCircle2 className="w-5 h-5 text-amber-400" />
               </div>
               <h3
-                className={`text-sm font-bold ${
+                className={`text-base font-normal ${
                   isDarkMode ? "text-white" : "text-slate-900"
                 }`}
               >
                 ATS Optimized
               </h3>
               <p
-                className={`text-xs leading-relaxed mt-1 ${
+                className={`text-sm font-light leading-relaxed mt-1.5 ${
                   isDarkMode ? "text-zinc-400" : "text-slate-600"
                 }`}
               >
                 Resumes that pass filters with ease.
               </p>
-            </div>
+            </motion.div>
 
             {/* 3. Career Driven */}
-            <div
-              className={`p-4 rounded-2xl border text-center transition-all ${
+            <motion.div
+              initial={{ opacity: 0, y: 35, filter: "blur(8px)" }}
+              whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.6, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              whileHover={{ y: -4, transition: { duration: 0.2 } }}
+              className={`p-5 rounded-2xl border text-center transition-all ${
                 isDarkMode
                   ? "bg-white/[0.03] border-white/[0.08] hover:border-amber-500/30"
                   : "bg-amber-50/50 border-amber-200/60 hover:border-amber-300"
               }`}
             >
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-amber-500/15 text-amber-400 border border-amber-500/25 mx-auto mb-3">
+              <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-amber-500/15 text-amber-400 border border-amber-500/25 mx-auto mb-3">
                 <Rocket className="w-5 h-5 text-amber-400" />
               </div>
               <h3
-                className={`text-sm font-bold ${
+                className={`text-base font-normal ${
                   isDarkMode ? "text-white" : "text-slate-900"
                 }`}
               >
                 Career Driven
               </h3>
               <p
-                className={`text-xs leading-relaxed mt-1 ${
+                className={`text-sm font-light leading-relaxed mt-1.5 ${
                   isDarkMode ? "text-zinc-400" : "text-slate-600"
                 }`}
               >
                 Designed to open more opportunities.
               </p>
-            </div>
+            </motion.div>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 pt-2 w-full max-w-sm sm:max-w-none mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.5, delay: 0.45 }}
+            className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 pt-2 w-full max-w-sm sm:max-w-none mx-auto"
+          >
             <Link
               to="/templates"
               className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 hover:from-amber-300 hover:to-yellow-400 text-black text-sm font-extrabold shadow-xl shadow-amber-500/25 hover:shadow-amber-500/35 transition-all active:scale-95 cursor-pointer"
@@ -182,7 +208,7 @@ export default function FinalCTABanner() {
             >
               <span>View Pricing Plans</span>
             </Link>
-          </div>
+          </motion.div>
 
           {/* Brand Footer Line with smartnshine.app */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-white/[0.08] dark:border-white/[0.08]">
@@ -198,7 +224,7 @@ export default function FinalCTABanner() {
               Free forever · No credit card required · Instant download
             </span>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

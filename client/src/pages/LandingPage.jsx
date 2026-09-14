@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
+import Lenis from "lenis";
+import "lenis/dist/lenis.css";
 import SEO from "../components/common/SEO";
 import LandingNavbar from "../components/landing-v2/LandingNavbar";
 import EvilChartsLandingMatrix from "../components/landing-v2/EvilChartsLandingMatrix";
@@ -12,6 +14,34 @@ import FinalCTABanner from "../components/landing-v2/FinalCTABanner";
 import Footer from "../components/layout/Footer";
 
 export default function LandingPage() {
+  // Lenis Smooth Scroll initialized exclusively for the Landing Page
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: "vertical",
+      gestureOrientation: "vertical",
+      smoothWheel: true,
+      wheelMultiplier: 1.0,
+      touchMultiplier: 1.5,
+      infinite: false,
+    });
+
+    let animationFrameId;
+
+    function raf(time) {
+      lenis.raf(time);
+      animationFrameId = requestAnimationFrame(raf);
+    }
+
+    animationFrameId = requestAnimationFrame(raf);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      lenis.destroy();
+    };
+  }, []);
+
   return (
     <>
       <SEO
@@ -29,34 +59,22 @@ export default function LandingPage() {
       <EvilChartsLandingMatrix />
 
       {/* 2. Colorful Bento Grid — Platform Capabilities */}
-      <div style={{ contentVisibility: "auto", containIntrinsicSize: "1px 900px" }}>
-        <PlayfulColorfulBento />
-      </div>
+      <PlayfulColorfulBento />
 
       {/* 3. How It Works — 3-step visual flow */}
-      <div style={{ contentVisibility: "auto", containIntrinsicSize: "1px 650px" }}>
-        <HowItWorksSection />
-      </div>
+      <HowItWorksSection />
 
       {/* 4. Testimonials — Real Social Proof */}
-      <div style={{ contentVisibility: "auto", containIntrinsicSize: "1px 600px" }}>
-        <TestimonialsHomeSection />
-      </div>
+      <TestimonialsHomeSection />
 
       {/* 5. Pricing — Real Tiers with Live Data */}
-      <div style={{ contentVisibility: "auto", containIntrinsicSize: "1px 800px" }}>
-        <PricingSection />
-      </div>
+      <PricingSection />
 
       {/* 6. FAQ Accordion */}
-      <div style={{ contentVisibility: "auto", containIntrinsicSize: "1px 750px" }}>
-        <FAQSection />
-      </div>
+      <FAQSection />
 
       {/* 7. Final CTA Banner */}
-      <div style={{ contentVisibility: "auto", containIntrinsicSize: "1px 450px" }}>
-        <FinalCTABanner />
-      </div>
+      <FinalCTABanner />
 
       {/* 8. Global Footer */}
       <Footer />
