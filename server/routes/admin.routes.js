@@ -60,6 +60,12 @@ import {
   updateAdminPortfolioStatus,
   deleteAdminPortfolio,
   generatePortfolioSeoWithAI,
+  getOpenAICreditStatus,
+  refillOpenAICredits,
+  setExactOpenAIBalance,
+  updateOpenAICreditSettings,
+  checkOpenAIQuotaHealth,
+  sendCustomAdminEmail,
 } from "../controllers/admin.controller.js";
 import {
   archiveNotification,
@@ -120,8 +126,17 @@ router.patch("/users/:userId/status", validateUserId, updateUserStatus);
 router.patch("/users/:userId/role", validateUserRoleUpdate, updateUserRole);
 router.delete("/users/:userId", validateUserId, deleteUser);
 
-// AI Analytics
+// AI Analytics & OpenAI Credit Tracking
 router.get("/ai-analytics", getAIAnalytics);
+router.get("/openai-credits", getOpenAICreditStatus);
+router.post("/openai-credits/refill", refillOpenAICredits);
+router.post("/openai-credits/set-balance", setExactOpenAIBalance);
+router.post("/openai-credits/settings", updateOpenAICreditSettings);
+router.post("/openai-credits/check", checkOpenAIQuotaHealth);
+
+// Custom Email Dispatcher
+router.post("/send-email", sendCustomAdminEmail);
+
 
 // Contact Messages
 router.get("/contacts", getContactMessages);

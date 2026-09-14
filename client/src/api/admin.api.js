@@ -92,9 +92,24 @@ export const updateUserRole = (userId, role) =>
   adminAPI.patch(`/users/${userId}/role`, {role});
 export const deleteUser = (userId) => adminAPI.delete(`/users/${userId}`);
 
-// AI Analytics
+// AI Analytics & OpenAI Credit Tracking
 export const getAIAnalytics = (params) =>
   adminAPI.get("/ai-analytics", {params});
+export const getOpenAICreditStatus = () =>
+  adminAPI.get("/openai-credits");
+export const refillOpenAICredits = (data) =>
+  adminAPI.post("/openai-credits/refill", data);
+export const setExactOpenAIBalance = (data) =>
+  adminAPI.post("/openai-credits/set-balance", data);
+export const updateOpenAICreditSettings = (data) =>
+  adminAPI.post("/openai-credits/settings", data);
+export const checkOpenAIQuotaHealth = () =>
+  adminAPI.post("/openai-credits/check");
+export const sendCustomAdminEmail = (data) =>
+  adminAPI.post("/send-email", data);
+
+
+
 
 // Contact Messages
 export const getContactMessages = (params) =>

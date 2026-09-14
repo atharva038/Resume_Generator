@@ -12,6 +12,8 @@ import Subscription from "../models/Subscription.model.js";
 import InterviewSession from "../models/InterviewSession.model.js";
 import {getPlanAmount, PLAN_DURATIONS} from "../services/payment.service.js";
 import * as openaiService from "../services/openai.service.js";
+import * as openaiCreditService from "../services/openaiCredit.service.js";
+import {sendCustomAdminTemplateEmail} from "../services/email.service.js";
 
 const ACTIVE_SUBSCRIPTION_TIERS = ["free", "one-time", "pro"];
 const MANAGEABLE_SUBSCRIPTION_TIERS = ["one-time", "pro"];
@@ -4091,4 +4093,223 @@ Return a valid JSON object strictly matching this schema:
     });
   }
 };
+
+// ============================================
+// OPENAI CREDIT & ACCOUNT BALANCE CONTROLLERS
+// ============================================
+
+/**
+ * @route   GET /api/admin/openai-credits
+ * @desc    Get real-time OpenAI credits, spent amounts, remaining balance & forecasts
+ * @access  Admin only
+ */
+export const getOpenAICreditStatus = async (req, res) => {
+  try {
+    const summary = await openaiCreditService.getOpenAICreditSummary();
+    res.json({
+      success: true,
+      data: summary,
+    });
+  } catch (error) {
+    console.error("Get OpenAI credit status error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to retrieve OpenAI credit status",
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * @route   POST /api/admin/openai-credits/refill
+ * @desc    Top up or reset allocated OpenAI credits budget
+ * @access  Admin only
+ */
+export const refillOpenAICredits = async (req, res) => {
+  try {
+    const {amountUsd, isReset, notes} = req.body;
+    const summary = await openaiCreditService.refillOpenAICredits({
+      amountUsd,
+      isReset,
+      notes,
+      userId: req.user?._id,
+    });
+
+    res.json({
+      success: true,
+      message: isReset
+        ? `OpenAI budget reset to $${amountUsd}`
+        : `Successfully added $${amountUsd} to OpenAI budget`,
+      data: summary,
+    });
+  } catch (error) {
+    console.error("Refill OpenAI credits error:", error);
+    res.status(400).json({
+      success: false,
+      message: error.message || "Failed to refill OpenAI credits",
+    });
+  }
+};
+
+/**
+ * @route   POST /api/admin/openai-credits/set-balance
+ * @desc    Set exact current balance from OpenAI account
+ * @access  Admin only
+ */
+export const setExactOpenAIBalance = async (req, res) => {
+  try {
+    const {exactBalanceUsd, notes} = req.body;
+    const summary = await openaiCreditService.setExactOpenAIBalance({
+      exactBalanceUsd,
+      notes,
+      userId: req.user?._id,
+    });
+
+    res.json({
+      success: true,
+      message: `OpenAI account balance updated to $${Number(exactBalanceUsd).toFixed(2)}`,
+      data: summary,
+    });
+  } catch (error) {
+    console.error("Set exact OpenAI balance error:", error);
+    res.status(400).json({
+      success: false,
+      message: error.message || "Failed to set exact OpenAI balance",
+    });
+  }
+};
+
+/**
+ * @route   POST /api/admin/openai-credits/settings
+ * @desc    Update OpenAI credit alert thresholds and notification settings
+ * @access  Admin only
+ */
+export const updateOpenAICreditSettings = async (req, res) => {
+  try {
+    const {alertThresholdUsd, autoAlertEnabled, notes} = req.body;
+    const summary = await openaiCreditService.updateCreditSettings({
+      alertThresholdUsd,
+      autoAlertEnabled,
+      notes,
+      userId: req.user?._id,
+    });
+
+    res.json({
+      success: true,
+      message: "OpenAI credit settings updated successfully",
+      data: summary,
+    });
+  } catch (error) {
+    console.error("Update OpenAI credit settings error:", error);
+    res.status(400).json({
+      success: false,
+      message: error.message || "Failed to update OpenAI credit settings",
+    });
+  }
+};
+
+/**
+ * @route   POST /api/admin/openai-credits/check
+ * @desc    Test live OpenAI API connection, authorization and quota health
+ * @access  Admin only
+ */
+export const checkOpenAIQuotaHealth = async (req, res) => {
+  try {
+    const health = await openaiCreditService.testOpenAIQuotaHealth();
+    res.json({
+      success: true,
+      data: health,
+    });
+  } catch (error) {
+    console.error("Check OpenAI quota health error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to perform OpenAI quota health check",
+      error: error.message,
+    });
+  }
+};
+
+// ============================================
+// ADMIN CUSTOM EMAIL DISPATCHER CONTROLLER
+// ============================================
+
+/**
+ * @route   POST /api/admin/send-email
+ * @desc    Send customized branded template email to a user with 1 click
+ * @access  Admin only
+ */
+export const sendCustomAdminEmail = async (req, res) => {
+  try {
+    const {
+      toEmail,
+      userName,
+      subject,
+      badgeText,
+      heading,
+      bodyMessage,
+      cardTitle,
+      cardMessage,
+      buttonText,
+      buttonUrl,
+      noteBox,
+      sendCopyAdmin = true,
+    } = req.body;
+
+    if (!toEmail || !toEmail.includes("@")) {
+      return res.status(400).json({
+        success: false,
+        message: "A valid recipient email address is required.",
+      });
+    }
+
+    if (!subject || !bodyMessage) {
+      return res.status(400).json({
+        success: false,
+        message: "Email subject and message body cannot be empty.",
+      });
+    }
+
+    const result = await sendCustomAdminTemplateEmail({
+      toEmail,
+      userName,
+      subject,
+      badgeText,
+      heading,
+      bodyMessage,
+      cardTitle,
+      cardMessage,
+      buttonText,
+      buttonUrl,
+      noteBox,
+      sendCopyAdmin,
+    });
+
+    // Log admin action
+    await AdminLog.create({
+      adminId: req.user?._id,
+      action: "send_custom_email",
+      description: `Sent custom email "${subject}" to ${toEmail}`,
+      details: {
+        toEmail,
+        subject,
+        messageId: result.messageId,
+      },
+    });
+
+    res.json({
+      success: true,
+      message: `Email successfully delivered to ${toEmail}`,
+      data: result,
+    });
+  } catch (error) {
+    console.error("Send custom admin email error:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message || "Failed to send email",
+    });
+  }
+};
+
+
 

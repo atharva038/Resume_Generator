@@ -196,6 +196,34 @@ const settingsSchema = new mongoose.Schema(
       },
     },
 
+    // OpenAI Credit & Account Balance Tracking Settings
+    openaiCredits: {
+      allocatedBudgetUsd: {
+        type: Number,
+        default: 10.00, // Default configured OpenAI credit pool ($10.00)
+      },
+      alertThresholdUsd: {
+        type: Number,
+        default: 2.00, // Trigger low balance alert when < $2.00
+      },
+      lastRefillDate: {
+        type: Date,
+        default: Date.now,
+      },
+      totalRefilledHistoricalUsd: {
+        type: Number,
+        default: 10.00,
+      },
+      autoAlertEnabled: {
+        type: Boolean,
+        default: true,
+      },
+      notes: {
+        type: String,
+        default: "Initial OpenAI credit allocation",
+      },
+    },
+
     // Last Updated By
     lastUpdatedBy: {
       type: mongoose.Schema.Types.ObjectId,

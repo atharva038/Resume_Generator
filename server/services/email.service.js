@@ -488,3 +488,222 @@ export const sendPaymentConfirmationEmail = async (
     return false;
   }
 };
+
+/**
+ * Send service apology and resolution notification email
+ */
+export const sendServiceResolutionEmail = async ({
+  email,
+  userName = "User",
+  feature = "AI Resume Scanner",
+}) => {
+  try {
+    const transporter = createTransporter();
+    const mailOptions = {
+      from: `"SmartNShine Support" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: `Update: ${feature} is Fully Operational - SmartNShine`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #1e293b; margin: 0; padding: 0; background-color: #f8fafc; }
+            .container { max-width: 600px; margin: 20px auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; }
+            .header { background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%); color: #ffffff; padding: 36px 30px; text-align: center; }
+            .header h1 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
+            .badge { display: inline-block; padding: 4px 12px; background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; color: #34d399; border-radius: 999px; font-size: 12px; font-weight: 700; margin-bottom: 12px; }
+            .content { padding: 32px 30px; }
+            .greeting { font-size: 17px; font-weight: 600; color: #0f172a; margin-bottom: 16px; }
+            .card { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 18px; margin: 20px 0; }
+            .card h3 { margin: 0 0 8px 0; color: #15803d; font-size: 16px; display: flex; align-items: center; gap: 8px; }
+            .card p { margin: 0; color: #166534; font-size: 14px; }
+            .btn-container { text-align: center; margin: 28px 0; }
+            .button { display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff !important; text-decoration: none; border-radius: 10px; font-weight: 700; font-size: 15px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
+            .note-box { background: #f8fafc; border-left: 4px solid #6366f1; padding: 14px; border-radius: 6px; font-size: 13px; color: #475569; margin: 20px 0; }
+            .footer { text-align: center; padding: 24px; background: #f8fafc; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <div class="badge">SERVICE UPDATE & RESOLUTION</div>
+              <h1>AI Services Upgraded & Ready</h1>
+            </div>
+            <div class="content">
+              <p class="greeting">Hello ${userName},</p>
+              <p>We noticed you experienced a temporary issue while running an AI ATS Resume scan on SmartNShine recently. We sincerely apologize for any inconvenience this caused.</p>
+              
+              <div class="card">
+                <h3>✅ Issue Resolved & Upgraded to GPT-4o</h3>
+                <p>Our engineering team has resolved the underlying model routing issue and fully upgraded our core AI engine to OpenAI GPT-4o. The ATS Resume Scanner, Bullet Point Enhancer, and AI Mock Interviewer are now running at full capacity with enhanced speed and accuracy.</p>
+              </div>
+
+              <p>You can now log back into your account and run your resume scans and enhancements seamlessly.</p>
+
+              <div class="btn-container">
+                <a href="${process.env.CLIENT_URL || "https://smartnshine.app"}/ats-analyzer" class="button">Scan Your Resume Now &rarr;</a>
+              </div>
+
+              <div class="note-box">
+                <strong>📩 Need Assistance?</strong><br>
+                Our support team is always here for you. You can reach out directly via our Contact page or reply to this email, and our team will assist you right away.
+              </div>
+
+              <p style="margin-top: 24px;">Thank you for being part of SmartNShine.<br><strong>The SmartNShine Team</strong></p>
+            </div>
+            <div class="footer">
+              <p>&copy; ${new Date().getFullYear()} SmartNShine. All rights reserved.</p>
+              <p>Empowering professionals with AI-optimized ATS resumes & portfolios.</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log("✅ Service resolution email sent to:", email);
+    return true;
+  } catch (error) {
+    console.error("❌ Error sending service resolution email:", error);
+    return false;
+  }
+};
+
+/**
+ * Send customized branded template email from Admin panel
+ */
+export const sendCustomAdminTemplateEmail = async ({
+  toEmail,
+  userName = "Valued User",
+  subject,
+  badgeText = "SMARTNSHINE UPDATE",
+  heading = "Important Update Regarding Your Account",
+  bodyMessage = "",
+  cardTitle = "",
+  cardMessage = "",
+  buttonText = "",
+  buttonUrl = "",
+  noteBox = "",
+  sendCopyAdmin = true,
+}) => {
+  try {
+    const transporter = createTransporter();
+    const clientUrl = process.env.CLIENT_URL || "https://smartnshine.app";
+
+    // Dynamic variable replacements
+    const formatVars = (str) =>
+      (str || "")
+        .replace(/{name}/g, userName || "User")
+        .replace(/{email}/g, toEmail)
+        .replace(/{app_url}/g, clientUrl);
+
+    const formattedHeading = formatVars(heading);
+    const formattedBadge = formatVars(badgeText);
+    const formattedBody = formatVars(bodyMessage);
+    const formattedCardTitle = formatVars(cardTitle);
+    const formattedCardMessage = formatVars(cardMessage);
+    const formattedNote = formatVars(noteBox);
+    const formattedBtnText = formatVars(buttonText);
+    const formattedBtnUrl = formatVars(buttonUrl);
+
+    const mailOptions = {
+      from: `"SmartNShine Support" <${process.env.EMAIL_USER}>`,
+      to: toEmail,
+      bcc: sendCopyAdmin && process.env.EMAIL_USER !== toEmail ? process.env.EMAIL_USER : undefined,
+      subject: formatVars(subject) || "Update from SmartNShine",
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #1e293b; margin: 0; padding: 0; background-color: #f8fafc; }
+            .container { max-width: 600px; margin: 20px auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; }
+            .header { background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%); color: #ffffff; padding: 36px 30px; text-align: center; }
+            .header h1 { margin: 0; font-size: 23px; font-weight: 800; letter-spacing: -0.5px; line-height: 1.3; }
+            .badge { display: inline-block; padding: 4px 12px; background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; color: #34d399; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 12px; }
+            .content { padding: 32px 30px; }
+            .greeting { font-size: 16px; font-weight: 600; color: #0f172a; margin-bottom: 16px; }
+            .body-text { font-size: 15px; color: #334155; line-height: 1.7; white-space: pre-line; }
+            .card { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 18px; margin: 20px 0; }
+            .card h3 { margin: 0 0 8px 0; color: #15803d; font-size: 15px; font-weight: 700; }
+            .card p { margin: 0; color: #166534; font-size: 14px; line-height: 1.5; white-space: pre-line; }
+            .btn-container { text-align: center; margin: 28px 0; }
+            .button { display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff !important; text-decoration: none; border-radius: 10px; font-weight: 700; font-size: 15px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
+            .note-box { background: #f8fafc; border-left: 4px solid #6366f1; padding: 14px; border-radius: 6px; font-size: 13px; color: #475569; margin: 20px 0; line-height: 1.5; }
+            .footer { text-align: center; padding: 24px; background: #f8fafc; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              ${formattedBadge ? `<div class="badge">${formattedBadge}</div>` : ""}
+              <h1>${formattedHeading}</h1>
+            </div>
+            <div class="content">
+              <p class="greeting">Hello ${userName || "Valued User"},</p>
+              
+              <div class="body-text">${formattedBody}</div>
+
+              ${
+                formattedCardTitle || formattedCardMessage
+                  ? `
+                <div class="card">
+                  ${formattedCardTitle ? `<h3>${formattedCardTitle}</h3>` : ""}
+                  ${formattedCardMessage ? `<p>${formattedCardMessage}</p>` : ""}
+                </div>
+              `
+                  : ""
+              }
+
+              ${
+                formattedBtnText && formattedBtnUrl
+                  ? `
+                <div class="btn-container">
+                  <a href="${formattedBtnUrl}" class="button">${formattedBtnText} &rarr;</a>
+                </div>
+              `
+                  : ""
+              }
+
+              ${
+                formattedNote
+                  ? `
+                <div class="note-box">
+                  ${formattedNote}
+                </div>
+              `
+                  : ""
+              }
+
+              <p style="margin-top: 24px; font-size: 14px; color: #475569;">
+                Best regards,<br>
+                <strong style="color: #0f172a;">The SmartNShine Team</strong>
+              </p>
+            </div>
+            <div class="footer">
+              <p><strong>SmartNShine - AI-Powered Resume & Career Platform</strong></p>
+              <p>&copy; ${new Date().getFullYear()} SmartNShine. All rights reserved.</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`✅ Admin email successfully sent to ${toEmail}. MessageId:`, info.messageId);
+    return {
+      success: true,
+      messageId: info.messageId,
+    };
+  } catch (error) {
+    console.error("❌ Failed to send custom admin email:", error);
+    throw new Error(error.message || "Failed to send email");
+  }
+};
+
+

@@ -41,6 +41,7 @@ import {
 } from "@/api/admin.api";
 import {ConfirmationModal} from "@/components/common/modals";
 import {parseValidationErrors} from "@/utils/errorHandler";
+import AdminEmailModal from "./components/AdminEmailModal";
 
 const tabs = [
   {id: "overview", label: "Overview", icon: User},
@@ -242,6 +243,7 @@ const UserDetails = () => {
   const [subscriptionForm, setSubscriptionForm] = useState({});
   const [subscriptionSubmitting, setSubscriptionSubmitting] = useState(false);
   const [selectedReceipt, setSelectedReceipt] = useState(null);
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
 
   const fetchDetails = useCallback(async () => {
     try {
@@ -498,6 +500,13 @@ const UserDetails = () => {
             </div>
 
             <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => setEmailModalOpen(true)}
+                className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 px-3.5 py-2 text-sm font-bold text-slate-950 transition hover:from-emerald-400 hover:to-teal-400 shadow-md shadow-emerald-500/20"
+              >
+                <Mail className="h-4 w-4" />
+                Send Email
+              </button>
               <button
                 onClick={() =>
                   setPendingAction({
@@ -1162,6 +1171,13 @@ const UserDetails = () => {
       <ReceiptDetailsModal
         receipt={selectedReceipt}
         onClose={() => setSelectedReceipt(null)}
+      />
+
+      <AdminEmailModal
+        isOpen={emailModalOpen}
+        onClose={() => setEmailModalOpen(false)}
+        initialEmail={user.email}
+        initialName={user.name}
       />
 
       <ConfirmationModal

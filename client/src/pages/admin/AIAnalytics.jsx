@@ -1,5 +1,5 @@
 import {useState, useEffect} from "react";
-import {TrendingUp, DollarSign, Clock, Activity, Filter, Sparkles, Shield, BarChart3} from "lucide-react";
+import {TrendingUp, DollarSign, Clock, Activity, Filter, Sparkles, Shield, BarChart3, CreditCard} from "lucide-react";
 import {
   LineChart,
   Line,
@@ -18,6 +18,7 @@ import {
 import {getAIAnalytics} from "@/api/admin.api";
 import AIQuotaManagement from "./AIQuotaManagement";
 import AIExtractionManagement from "./AIExtractionManagement";
+import OpenAICreditTracker from "./components/OpenAICreditTracker";
 
 const AIAnalytics = () => {
   const [activeTab, setActiveTab] = useState("overview"); // 'overview' | 'quotas' | 'extraction'
@@ -76,6 +77,9 @@ const AIAnalytics = () => {
           </p>
         </div>
       </div>
+
+      {/* OpenAI Credits & Account Balance Tracker Widget */}
+      <OpenAICreditTracker onRefreshNeeded={fetchAnalytics} />
 
       {/* Tabs */}
       <div className="flex border-b border-gray-200 dark:border-white/10 gap-2">
