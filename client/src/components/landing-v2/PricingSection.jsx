@@ -7,6 +7,7 @@ import {
   Zap,
   RefreshCw,
 } from "lucide-react";
+import { motion } from "framer-motion";
 import { getPricing, getSubscriptionStatus } from "@/api/subscription.api";
 import { resumeAPI } from "@/api/api";
 import PaymentModal from "@/components/common/PaymentModal";
@@ -212,34 +213,40 @@ export default function PricingSection() {
 
       <div className="max-w-6xl mx-auto relative z-10 space-y-14">
         {/* Section Header */}
-        <div className="text-center max-w-2xl mx-auto space-y-3">
+        <motion.div
+          initial={{ opacity: 0, y: 45, scale: 0.95, filter: "blur(10px)" }}
+          whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          className="text-center max-w-3xl mx-auto space-y-4"
+        >
           <div
-            className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-[11px] font-mono font-semibold tracking-wider uppercase backdrop-blur-md ${
+            className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border text-xs font-mono font-medium tracking-wider uppercase backdrop-blur-md ${
               isDarkMode
                 ? "bg-zinc-800/60 border-zinc-700/60 text-zinc-300"
                 : "bg-slate-100/80 border-slate-200/80 text-slate-700"
             }`}
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
             Pricing Plans
           </div>
 
           <h2
-            className={`text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight leading-tight ${
+            className={`text-3xl sm:text-4xl lg:text-5xl font-normal tracking-tight leading-tight ${
               isDarkMode ? "text-white" : "text-slate-900"
             }`}
           >
-            Simple, predictable pricing.
+            Simple, predictable <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500">pricing</span>.
           </h2>
 
           <p
-            className={`text-xs sm:text-sm font-normal leading-relaxed ${
+            className={`text-base sm:text-lg font-light leading-relaxed ${
               isDarkMode ? "text-zinc-400" : "text-slate-600"
             }`}
           >
-            Choose the plan that fits your career needs.
+            Transparent plans designed for every stage of your career. Upgrade, downgrade, or cancel anytime.
           </p>
-        </div>
+        </motion.div>
 
         {/* Loading Spinner */}
         {loading ? (
@@ -253,8 +260,8 @@ export default function PricingSection() {
           </div>
         ) : (
           /* Glassy Simple Pricing Cards Grid */
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-7 items-stretch">
-            {tiersConfig.map((tier) => {
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
+            {tiersConfig.map((tier, idx) => {
               const { key, name, subtitle, data, isPopular } = tier;
               const isCurrentPlan = currentSubscription?.tier === key;
               const isActivePlan =
@@ -277,11 +284,16 @@ export default function PricingSection() {
                 data?.isPromo || oneTimeAmount < oneTimeOriginalAmount;
 
               return (
-                <div
+                <motion.div
                   key={key}
-                  className={`relative flex flex-col justify-between rounded-3xl p-6 sm:p-7 backdrop-blur-xl border transition-all duration-300 ${
+                  initial={{ opacity: 0, y: 55, scale: 0.94, filter: "blur(10px)" }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+                  viewport={{ once: true, amount: 0.15 }}
+                  transition={{ duration: 0.7, delay: idx * 0.12, ease: [0.16, 1, 0.3, 1] }}
+                  whileHover={{ y: -6, transition: { duration: 0.25 } }}
+                  className={`relative flex flex-col justify-between rounded-3xl p-7 sm:p-8 backdrop-blur-xl border transition-all duration-300 ${
                     isPro
-                      ? "bg-white/85 dark:bg-zinc-900/60 border-indigo-500/50 dark:border-indigo-400/40 shadow-xl shadow-indigo-500/10 dark:shadow-indigo-950/30 md:-translate-y-2 ring-1 ring-indigo-500/20"
+                      ? "bg-white/85 dark:bg-zinc-900/70 border-indigo-500/50 dark:border-indigo-400/40 shadow-xl shadow-indigo-500/10 dark:shadow-indigo-950/30 md:-translate-y-2 ring-1 ring-indigo-500/20"
                       : isOneTime
                       ? "bg-white/75 dark:bg-zinc-900/40 border-amber-500/30 dark:border-amber-500/20 shadow-sm hover:shadow-lg"
                       : "bg-white/65 dark:bg-zinc-900/40 border-slate-200/80 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 shadow-sm hover:shadow-lg"
@@ -289,15 +301,15 @@ export default function PricingSection() {
                 >
                   {/* Pro Ambient Light */}
                   {isPro && (
-                    <div className="pointer-events-none absolute -top-14 -right-14 w-44 h-44 rounded-full bg-indigo-500/15 dark:bg-indigo-500/20 blur-3xl" />
+                    <div className="pointer-events-none absolute -top-14 -right-14 w-48 h-48 rounded-full bg-indigo-500/15 dark:bg-indigo-500/20 blur-3xl" />
                   )}
 
-                  <div className="space-y-5 relative z-10">
+                  <div className="space-y-6 relative z-10">
                     {/* Header */}
-                    <div className="space-y-1.5 pt-1">
+                    <div className="space-y-2 pt-1">
                       <div className="flex items-center justify-between gap-2">
                         <h3
-                          className={`text-xl sm:text-2xl font-bold tracking-tight ${
+                          className={`text-2xl sm:text-3xl font-normal tracking-tight ${
                             isDarkMode ? "text-white" : "text-slate-900"
                           }`}
                         >
@@ -305,18 +317,18 @@ export default function PricingSection() {
                         </h3>
 
                         {isActivePlan ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold uppercase tracking-wider border border-emerald-500/20">
-                            <Check className="w-3 h-3 stroke-[3]" /> Active Plan
+                          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-medium uppercase tracking-wider border border-emerald-500/20">
+                            <Check className="w-3.5 h-3.5 stroke-[2.5]" /> Active Plan
                           </span>
                         ) : isPopular ? (
-                          <span className="inline-flex items-center gap-1 px-3 py-0.5 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-[10px] font-bold uppercase tracking-wider border border-indigo-500/25 shadow-xs">
-                            <Sparkles className="w-3 h-3 fill-current" /> Most Popular
+                          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-xs font-medium uppercase tracking-wider border border-indigo-500/25 shadow-xs">
+                            <Sparkles className="w-3.5 h-3.5 fill-current" /> Most Popular
                           </span>
                         ) : null}
                       </div>
 
                       <p
-                        className={`text-xs font-normal leading-relaxed ${
+                        className={`text-sm sm:text-[15px] font-light leading-relaxed ${
                           isDarkMode ? "text-zinc-400" : "text-slate-500"
                         }`}
                       >
@@ -325,19 +337,19 @@ export default function PricingSection() {
                     </div>
 
                     {/* Price Tag */}
-                    <div className="py-3 border-y border-slate-100 dark:border-white/5 space-y-1.5">
+                    <div className="py-4 border-y border-slate-100 dark:border-white/5 space-y-2">
                       {isFree && (
-                        <div className="flex items-baseline gap-1.5">
+                        <div className="flex items-baseline gap-2">
                           <span
-                            className={`text-3xl sm:text-4xl font-bold tracking-tight ${
+                            className={`text-4xl sm:text-5xl font-light tracking-tight ${
                               isDarkMode ? "text-white" : "text-slate-900"
                             }`}
                           >
                             ₹0
                           </span>
                           <span
-                            className={`text-xs font-medium ${
-                              isDarkMode ? "text-zinc-500" : "text-slate-400"
+                            className={`text-sm font-light ${
+                              isDarkMode ? "text-zinc-400" : "text-slate-500"
                             }`}
                           >
                             / forever free
@@ -346,19 +358,19 @@ export default function PricingSection() {
                       )}
 
                       {isOneTime && (
-                        <div className="space-y-1">
-                          <div className="flex items-baseline gap-2">
-                            <span className="text-3xl sm:text-4xl font-bold tracking-tight text-amber-600 dark:text-amber-400">
+                        <div className="space-y-1.5">
+                          <div className="flex items-baseline gap-2.5">
+                            <span className="text-4xl sm:text-5xl font-light tracking-tight text-amber-600 dark:text-amber-400">
                               {formatPrice(oneTimeAmount)}
                             </span>
                             {isOneTimeDiscounted && (
-                              <span className="text-sm font-semibold text-slate-400 dark:text-zinc-500 line-through">
+                              <span className="text-base font-light text-slate-400 dark:text-zinc-500 line-through">
                                 {formatPrice(oneTimeOriginalAmount)}
                               </span>
                             )}
                             <span
-                              className={`text-xs font-medium ${
-                                isDarkMode ? "text-zinc-500" : "text-slate-400"
+                              className={`text-sm font-light ${
+                                isDarkMode ? "text-zinc-400" : "text-slate-500"
                               }`}
                             >
                               / 21 days
@@ -366,7 +378,7 @@ export default function PricingSection() {
                           </div>
 
                           {isOneTimeDiscounted && (
-                            <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                            <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-medium uppercase tracking-wider bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
                               {data.promoBadge || "SPECIAL"} • Flat{" "}
                               {Math.round(
                                 (1 - oneTimeAmount / oneTimeOriginalAmount) * 100
@@ -378,19 +390,19 @@ export default function PricingSection() {
                       )}
 
                       {isPro && (
-                        <div className="space-y-1">
-                          <div className="flex items-baseline gap-2">
-                            <span className="text-3xl sm:text-4xl font-bold tracking-tight text-indigo-600 dark:text-indigo-400">
+                        <div className="space-y-1.5">
+                          <div className="flex items-baseline gap-2.5">
+                            <span className="text-4xl sm:text-5xl font-light tracking-tight text-indigo-600 dark:text-indigo-400">
                               {formatPrice(proAmount)}
                             </span>
                             {isProDiscounted && (
-                              <span className="text-sm font-semibold text-slate-400 dark:text-zinc-500 line-through">
+                              <span className="text-base font-light text-slate-400 dark:text-zinc-500 line-through">
                                 {formatPrice(proOriginalAmount)}
                               </span>
                             )}
                             <span
-                              className={`text-xs font-medium ${
-                                isDarkMode ? "text-zinc-500" : "text-slate-400"
+                              className={`text-sm font-light ${
+                                isDarkMode ? "text-zinc-400" : "text-slate-500"
                               }`}
                             >
                               / month
@@ -398,8 +410,8 @@ export default function PricingSection() {
                           </div>
 
                           {isProDiscounted && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
-                              <Zap className="w-2.5 h-2.5 fill-current" />
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium uppercase tracking-wider bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
+                              <Zap className="w-3 h-3 fill-current" />
                               PRO DEAL • Flat{" "}
                               {Math.round((1 - proAmount / proOriginalAmount) * 100)}%
                               OFF
@@ -410,22 +422,22 @@ export default function PricingSection() {
                     </div>
 
                     {/* Features list */}
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       <p
-                        className={`text-[11px] font-semibold uppercase tracking-wider ${
+                        className={`text-xs font-medium uppercase tracking-wider ${
                           isDarkMode ? "text-zinc-400" : "text-slate-600"
                         }`}
                       >
                         What's Included:
                       </p>
-                      <ul className="space-y-2">
+                      <ul className="space-y-3">
                         {data.features?.map((feat, idx) => (
                           <li
                             key={idx}
-                            className="flex items-start gap-2 text-xs sm:text-[13px] leading-snug"
+                            className="flex items-start gap-3 text-sm sm:text-[15px] font-light leading-relaxed"
                           >
                             <div
-                              className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${
+                              className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${
                                 isPro
                                   ? "bg-indigo-500/15 text-indigo-600 dark:text-indigo-400"
                                   : isOneTime
@@ -433,7 +445,7 @@ export default function PricingSection() {
                                   : "bg-slate-200/70 dark:bg-white/10 text-slate-600 dark:text-zinc-300"
                               }`}
                             >
-                              <Check className="w-2.5 h-2.5 stroke-[3]" />
+                              <Check className="w-3 h-3 stroke-[2.5]" />
                             </div>
                             <span
                               className={
@@ -454,7 +466,7 @@ export default function PricingSection() {
                       <button
                         onClick={() => handleSelectPlan("pro", "monthly")}
                         disabled={isActivePlan}
-                        className={`w-full py-3 px-4 rounded-2xl text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer ${
+                        className={`w-full py-3.5 px-5 rounded-2xl text-sm font-medium transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer ${
                           isActivePlan
                             ? "bg-zinc-200 dark:bg-zinc-800 text-zinc-500 cursor-not-allowed"
                             : "bg-gradient-to-r from-indigo-600 via-blue-600 to-violet-600 hover:from-indigo-500 hover:via-blue-500 hover:to-violet-500 text-white shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/35"
@@ -473,7 +485,7 @@ export default function PricingSection() {
                           handleSelectPlan("one-time", data.plan || "one-time")
                         }
                         disabled={isActivePlan}
-                        className={`w-full py-3 px-4 rounded-2xl text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer ${
+                        className={`w-full py-3.5 px-5 rounded-2xl text-sm font-medium transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer ${
                           isActivePlan
                             ? "bg-zinc-200 dark:bg-zinc-800 text-zinc-500 cursor-not-allowed"
                             : "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-md shadow-orange-500/20"
@@ -490,7 +502,7 @@ export default function PricingSection() {
                       <button
                         onClick={() => handleSelectPlan("free")}
                         disabled={isActivePlan}
-                        className={`w-full py-3 px-4 rounded-2xl text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer ${
+                        className={`w-full py-3.5 px-5 rounded-2xl text-sm font-medium transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer ${
                           isActivePlan
                             ? "bg-zinc-200 dark:bg-zinc-800 text-zinc-500 cursor-not-allowed"
                             : "bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-zinc-100 shadow-sm"
@@ -503,7 +515,7 @@ export default function PricingSection() {
                       </button>
                     )}
                   </div>
-                </div>
+                </motion.div>
               );
             })}
           </div>

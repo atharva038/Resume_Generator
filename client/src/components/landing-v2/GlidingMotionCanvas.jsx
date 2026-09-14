@@ -423,55 +423,70 @@ const allResumeTemplates = {
 };
 
 const colAItems = [
-  allResumeTemplates.executive,
-  allResumeTemplates.latexAcademic,
-  allResumeTemplates.siliconValley,
+  allResumeTemplates.classic,
+  allResumeTemplates.tech,
   allResumeTemplates.minimal,
+  allResumeTemplates.impactPro,
   allResumeTemplates.modern,
+  allResumeTemplates.latexAcademic,
+  allResumeTemplates.minimal,
+  allResumeTemplates.classic,
 ];
 
 const col1Items = [
-  allResumeTemplates.siliconValley,
+  allResumeTemplates.minimal,
+  allResumeTemplates.modern,
   allResumeTemplates.latexAcademic,
-  allResumeTemplates.strategicLeader,
-  allResumeTemplates.classic,
+  allResumeTemplates.latexAcademic, // c1-3 (Stanford LaTeX target 1)
+  allResumeTemplates.strategicLeader, // c1-4 (Strategic Leader target 7)
+  allResumeTemplates.classic, // c1-5 (Classic ATS target 5)
   allResumeTemplates.impactPro,
+  allResumeTemplates.tech,
 ];
 
 const col2Items = [
+  allResumeTemplates.minimal,
+  allResumeTemplates.executive,
+  allResumeTemplates.nordicSplit, // c2-2 (Nordic Split target 2)
+  allResumeTemplates.siliconValley, // c2-3 (Silicon Valley target 0)
+  allResumeTemplates.executive, // c2-4 (Executive target 4)
+  allResumeTemplates.professional2,
   allResumeTemplates.nordicSplit,
   allResumeTemplates.siliconValley,
-  allResumeTemplates.executive,
-  allResumeTemplates.professional2,
-  allResumeTemplates.minimal,
 ];
 
 const col3Items = [
-  allResumeTemplates.latexAcademic,
-  allResumeTemplates.modern,
   allResumeTemplates.classic,
   allResumeTemplates.tech,
+  allResumeTemplates.latexAcademic,
+  allResumeTemplates.modern, // c3-3 (Modern target 3)
+  allResumeTemplates.classic,
+  allResumeTemplates.tech, // c3-5 (Tech Developer target 6)
   allResumeTemplates.githubStyle,
+  allResumeTemplates.modern,
 ];
 
 const colBItems = [
+  allResumeTemplates.executive,
+  allResumeTemplates.tech,
   allResumeTemplates.minimal,
   allResumeTemplates.classic,
   allResumeTemplates.impactPro,
   allResumeTemplates.tech,
   allResumeTemplates.executive,
+  allResumeTemplates.modern,
 ];
 
-// Target 8 flagship resume templates in sequential spotlight flight
+// Target 8 flagship resume templates in sequential spotlight flight (aligned with 8-row buffer)
 const RESUME_FOCUS_TARGETS = [
-  { cardId: "c2-1", slug: "silicon-valley" },   // 0: Silicon Valley Tech Lead (Col 2, Row 1)
-  { cardId: "c1-1", slug: "latex-academic" },    // 1: Stanford LaTeX Academic (Col 1, Row 1)
-  { cardId: "c2-0", slug: "nordic-split" },     // 2: Nordic Split Architect (Col 2, Row 0)
-  { cardId: "c3-1", slug: "modern" },           // 3: Linear / Vercel Modern (Col 3, Row 1)
-  { cardId: "c2-2", slug: "executive" },        // 4: Executive Leadership (Col 2, Row 2)
-  { cardId: "c1-3", slug: "classic" },          // 5: Classic ATS Standard (Col 1, Row 3)
-  { cardId: "c3-3", slug: "tech" },             // 6: Tech Developer Pro (Col 3, Row 3)
-  { cardId: "c1-2", slug: "strategic-leader" }, // 7: Strategic Leadership (Col 1, Row 2)
+  { cardId: "c2-3", slug: "silicon-valley" },   // 0: Silicon Valley Tech Lead (Col 2, Row 1)
+  { cardId: "c1-3", slug: "latex-academic" },    // 1: Stanford LaTeX Academic (Col 1, Row 1)
+  { cardId: "c2-2", slug: "nordic-split" },     // 2: Nordic Split Architect (Col 2, Row 0)
+  { cardId: "c3-3", slug: "modern" },           // 3: Linear / Vercel Modern (Col 3, Row 1)
+  { cardId: "c2-4", slug: "executive" },        // 4: Executive Leadership (Col 2, Row 2)
+  { cardId: "c1-5", slug: "classic" },          // 5: Classic ATS Standard (Col 1, Row 3)
+  { cardId: "c3-5", slug: "tech" },             // 6: Tech Developer Pro (Col 3, Row 3)
+  { cardId: "c1-4", slug: "strategic-leader" }, // 7: Strategic Leadership (Col 1, Row 2)
 ];
 
 // ============================================================================
@@ -625,45 +640,65 @@ const portfolioThemesCatalog = {
 };
 
 const pColAItems = [
+  portfolioThemesCatalog.neomorphic,
+  portfolioThemesCatalog.smartnshine,
   portfolioThemesCatalog.creative,
   portfolioThemesCatalog.minimalDeveloper,
   portfolioThemesCatalog.neomorphic,
   portfolioThemesCatalog.smartnshine,
+  portfolioThemesCatalog.creative,
+  portfolioThemesCatalog.minimalDeveloper,
 ];
 const pCol1Items = [
-  portfolioThemesCatalog.swissArchitectural,
-  portfolioThemesCatalog.liquidGlass,
+  portfolioThemesCatalog.techPortfolio,
+  portfolioThemesCatalog.glassmorphism,
+  portfolioThemesCatalog.swissArchitectural, // pc1-2 (Swiss Arch target 1)
+  portfolioThemesCatalog.liquidGlass,        // pc1-3 (Liquid Glass target 4)
   portfolioThemesCatalog.glassmorphism,
   portfolioThemesCatalog.techPortfolio,
-];
-const pCol2Items = [
-  portfolioThemesCatalog.kinetic,
-  portfolioThemesCatalog.magazine,
-  portfolioThemesCatalog.neomorphic,
-  portfolioThemesCatalog.smartnshine,
-];
-const pCol3Items = [
-  portfolioThemesCatalog.retroFuturistic,
-  portfolioThemesCatalog.cyberDev,
   portfolioThemesCatalog.swissArchitectural,
   portfolioThemesCatalog.liquidGlass,
 ];
+const pCol2Items = [
+  portfolioThemesCatalog.smartnshine,
+  portfolioThemesCatalog.neomorphic,
+  portfolioThemesCatalog.kinetic,            // pc2-2 (Kinetic target 0)
+  portfolioThemesCatalog.magazine,           // pc2-3 (Magazine target 2)
+  portfolioThemesCatalog.neomorphic,          // pc2-4 (Neomorphic target 5)
+  portfolioThemesCatalog.smartnshine,
+  portfolioThemesCatalog.kinetic,
+  portfolioThemesCatalog.magazine,
+];
+const pCol3Items = [
+  portfolioThemesCatalog.liquidGlass,
+  portfolioThemesCatalog.swissArchitectural,
+  portfolioThemesCatalog.retroFuturistic,    // pc3-2 (Retro OS target 3)
+  portfolioThemesCatalog.cyberDev,           // pc3-3 (Cyber Dev target 6)
+  portfolioThemesCatalog.swissArchitectural,
+  portfolioThemesCatalog.liquidGlass,
+  portfolioThemesCatalog.retroFuturistic,
+  portfolioThemesCatalog.cyberDev,
+];
 const pColBItems = [
+  portfolioThemesCatalog.cyberDev,
+  portfolioThemesCatalog.retroFuturistic,
   portfolioThemesCatalog.magazine,
   portfolioThemesCatalog.kinetic,
   portfolioThemesCatalog.cyberDev,
   portfolioThemesCatalog.retroFuturistic,
+  portfolioThemesCatalog.magazine,
+  portfolioThemesCatalog.kinetic,
 ];
 
-// Target 7 flagship portfolio templates in sequential spotlight flight
+// Target 7 flagship portfolio templates in sequential spotlight flight (aligned with 8-row buffer)
 const PORTFOLIO_FOCUS_TARGETS = [
-  { cardId: "pc2-0", slug: "kinetic" },
-  { cardId: "pc1-0", slug: "swissArchitectural" },
-  { cardId: "pc2-1", slug: "magazine" },
-  { cardId: "pc3-0", slug: "retroFuturistic" },
-  { cardId: "pc1-1", slug: "liquidGlass" },
-  { cardId: "pc2-2", slug: "neomorphic" },
-  { cardId: "pc3-1", slug: "cyberDev" },
+  { cardId: "pc2-2", slug: "kinetic" },         // 0: SmartNShine Kinetic (Col 2, index 2)
+  { cardId: "pc1-2", slug: "swissArchitectural" }, // 1: Swiss Architectural (Col 1, index 2)
+  { cardId: "pc2-3", slug: "magazine" },        // 2: Magazine Editorial (Col 2, index 3)
+  { cardId: "pc3-2", slug: "retroFuturistic" }, // 3: Retro-Futuristic OS (Col 3, index 2)
+  { cardId: "pc1-3", slug: "liquidGlass" },     // 4: Liquid Glass Spatial (Col 1, index 3)
+  { cardId: "pc2-4", slug: "neomorphic" },      // 5: Tactile Neomorphic (Col 2, index 4)
+  { cardId: "pc3-3", slug: "cyberDev" },        // 6: Cyber Dev Terminal (Col 3, index 3)
 ];
 
 // ============================================================================
@@ -748,8 +783,8 @@ const ScaledResumeCard = React.memo(function ScaledResumeCard({
   const transitionConfig = shouldReduceMotion
     ? { duration: 0.1 }
     : {
-        duration: isCardHovered ? 0.3 : 1.8,
-        ease: [0.45, 0, 0.2, 1],
+        duration: 0.6,
+        ease: [0.25, 1, 0.5, 1],
       };
 
   const shadowClasses = isFocused || isCardHovered
@@ -783,22 +818,22 @@ const ScaledResumeCard = React.memo(function ScaledResumeCard({
         zIndex: isFocused ? 25 : isCardHovered ? 20 : distance === 1 ? 8 : 1,
         willChange: "transform, opacity",
       }}
-      className={`w-[275px] sm:w-[290px] xl:w-[305px] shrink-0 h-[365px] rounded-2xl border p-2.5 sm:p-3 flex flex-col justify-between overflow-hidden text-left select-none group/card cursor-pointer transition-[box-shadow,border-color,background-color] duration-300 ${
+      className={`w-[310px] sm:w-[375px] xl:w-[395px] shrink-0 h-[420px] sm:h-[480px] rounded-2xl border p-2.5 sm:p-3.5 flex flex-col justify-between overflow-hidden text-left select-none group/card cursor-pointer transition-[box-shadow,border-color,background-color] duration-300 ${
         isDarkMode
           ? "bg-[#0b1018]/95 hover:border-white/25"
           : "bg-white hover:border-zinc-400"
       } ${shadowClasses}`}
     >
       <div
-        className={`flex items-center justify-between pb-1.5 mb-1.5 border-b text-[10px] sm:text-[11px] font-mono ${
+        className={`flex items-center justify-between pb-2 mb-2 border-b text-[11px] sm:text-xs font-mono ${
           isDarkMode ? "border-white/5 text-zinc-300" : "border-zinc-100 text-zinc-800 font-semibold"
         }`}
       >
-        <span className="font-bold flex items-center gap-1.5 truncate max-w-[155px]">
+        <span className="font-bold flex items-center gap-1.5 truncate max-w-[190px]">
           <span className={dotColors[badgeColor] || "text-zinc-500"}>⸎</span> {templateTitle}
         </span>
         <span
-          className={`font-bold px-1.5 sm:px-2 py-0.5 rounded-full border text-[8px] sm:text-[9px] whitespace-nowrap ${
+          className={`font-bold px-2 py-0.5 rounded-full border text-[9px] sm:text-[10px] whitespace-nowrap ${
             badgeColors[badgeColor] || badgeColors.zinc
           }`}
         >
@@ -806,25 +841,25 @@ const ScaledResumeCard = React.memo(function ScaledResumeCard({
         </span>
       </div>
 
-      <div className="w-full flex-1 overflow-hidden rounded-lg bg-white relative shadow-2xs border border-zinc-200/80">
-        <div className="absolute top-0 left-0 w-[794px] origin-top-left transform scale-[0.33] sm:scale-[0.35] pointer-events-none select-none text-zinc-900">
+      <div className="w-full flex-1 overflow-hidden rounded-xl bg-white relative shadow-2xs border border-zinc-200/80">
+        <div className="absolute top-0 left-0 w-[794px] origin-top-left transform scale-[0.38] sm:scale-[0.45] xl:scale-[0.48] pointer-events-none select-none text-zinc-900">
           <Template resumeData={data} isDarkMode={false} />
         </div>
       </div>
 
       <div
-        className={`pt-1.5 mt-1.5 flex items-center justify-between text-[10px] border-t ${
+        className={`pt-2 mt-2 flex items-center justify-between text-xs border-t ${
           isDarkMode ? "border-white/5 text-zinc-400" : "border-zinc-100 text-zinc-500"
         }`}
       >
-        <span className="font-mono truncate max-w-[140px] text-[9px] sm:text-[10px]">{formatText}</span>
+        <span className="font-mono truncate max-w-[170px] text-[10px] sm:text-[11px]">{formatText}</span>
         <Link
           to={`/templates?template=${templateSlug}`}
           onClick={(e) => e.stopPropagation()}
-          className="font-bold flex items-center gap-1 shrink-0 text-[10px] text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white transition-colors group/link py-1 px-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/10"
+          className="font-bold flex items-center gap-1 shrink-0 text-xs text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white transition-colors group/link py-1 px-2 rounded-md hover:bg-black/5 dark:hover:bg-white/10"
         >
           <span>Use Template</span>
-          <ArrowRight className="w-3 h-3 group-hover/link:translate-x-0.5 transition-transform" />
+          <ArrowRight className="w-3.5 h-3.5 group-hover/link:translate-x-0.5 transition-transform" />
         </Link>
       </div>
     </motion.div>
@@ -896,8 +931,8 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
   const transitionConfig = shouldReduceMotion
     ? { duration: 0.1 }
     : {
-        duration: isCardHovered ? 0.3 : 1.8,
-        ease: [0.45, 0, 0.2, 1],
+        duration: 0.6,
+        ease: [0.25, 1, 0.5, 1],
       };
 
   const badgeStyles = {
@@ -940,7 +975,7 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
         zIndex: isFocused ? 25 : isCardHovered ? 20 : distance === 1 ? 8 : 1,
         willChange: "transform, opacity",
       }}
-      className={`w-[480px] sm:w-[520px] xl:w-[560px] shrink-0 h-[360px] sm:h-[385px] rounded-2xl border p-2.5 sm:p-3 flex flex-col justify-between overflow-hidden text-left select-none group/card cursor-pointer transition-[box-shadow,border-color,background-color] duration-300 ${
+      className={`w-[330px] sm:w-[520px] xl:w-[560px] shrink-0 h-[280px] sm:h-[385px] rounded-2xl border p-2 sm:p-3 flex flex-col justify-between overflow-hidden text-left select-none group/card cursor-pointer transition-[box-shadow,border-color,background-color] duration-300 ${
         isDarkMode
           ? "bg-[#080c14]/95 hover:border-white/30"
           : "bg-white hover:border-zinc-400"
@@ -982,24 +1017,26 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
       {/* 2. AUTHENTIC SCALED-DOWN FULL WEBPAGE VIEWPORT */}
       <div className="w-full flex-1 overflow-hidden rounded-xl relative border border-white/10 shadow-inner bg-[#07090f] text-white">
         {/* Virtual Desktop Canvas: 960px x 600px scaled down smoothly to fit viewport */}
-        <div className="absolute top-0 left-0 w-[960px] h-[600px] origin-top-left transform scale-[0.49] sm:scale-[0.53] xl:scale-[0.57] pointer-events-none select-none text-white">
+        <div className="absolute top-0 left-0 w-[960px] h-[600px] origin-top-left transform scale-[0.33] sm:scale-[0.53] xl:scale-[0.57] pointer-events-none select-none text-white">
           
-          {/* THEME 1: SmartNShine Kinetic */}
+          {/* THEME 1: SmartNShine Kinetic (Interactive 3D Motion) */}
           {themeType === "kinetic" && (
             <div className="w-full h-full p-6 flex flex-col justify-between bg-gradient-to-br from-[#060814] via-[#0a1024] to-[#04060c] relative overflow-hidden">
               <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl" />
               <div className="absolute bottom-0 left-0 w-96 h-96 bg-cyan-500/15 rounded-full blur-3xl" />
 
               {/* Kinetic Top Nav */}
-              <div className="relative z-10 flex items-center justify-between px-5 py-3 rounded-full bg-white/[0.08] backdrop-blur-xl border border-white/15 text-xs">
+              <div className="relative z-10 flex items-center justify-between px-5 py-2.5 rounded-full bg-white/[0.08] backdrop-blur-xl border border-white/15 text-xs">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center font-black text-sm text-white shadow-lg shadow-blue-500/30">
-                    AM
-                  </div>
+                  <img
+                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160&auto=format&fit=crop&q=80"
+                    alt="Alex Morgan"
+                    className="w-8 h-8 rounded-full object-cover border border-blue-400/50 shadow-md"
+                  />
                   <div>
                     <span className="font-bold text-white text-sm">Alex Morgan</span>
                     <span className="flex items-center gap-1.5 text-[10px] text-emerald-400 font-mono">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" /> AVAILABLE FOR CONTRACT
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" /> AVAILABLE FOR STAFF ROLES
                     </span>
                   </div>
                 </div>
@@ -1008,7 +1045,6 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
                   <span>Shader Lab</span>
                   <span>Distributed Mesh</span>
                   <span>About</span>
-                  <span>Contact</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="px-3.5 py-1 rounded-full bg-blue-600 text-white font-bold text-xs shadow-md">
@@ -1019,10 +1055,10 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
 
               {/* Hero Section with 3D Ring & Live Stats */}
               <div className="relative z-10 grid grid-cols-12 gap-6 items-center my-auto py-2">
-                <div className="col-span-8 space-y-3 text-left">
+                <div className="col-span-7 space-y-2.5 text-left">
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-400 text-xs font-mono">
                     <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-                    <span>Scroll × 3D Transformation × Generative Shaders</span>
+                    <span>Scroll × 3D Spatial Transformation × Generative Shaders</span>
                   </div>
                   <h1 className="text-3xl font-black text-white leading-tight">
                     Architecting Scalable Microservices & <br />
@@ -1031,7 +1067,7 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
                     </span>
                   </h1>
                   <p className="text-xs text-zinc-300 leading-relaxed max-w-xl">
-                    Staff Full Stack Engineer with 6+ years specializing in distributed systems, React 19 architecture, and high-throughput databases handling 10M+ daily events.
+                    Staff Full Stack Engineer with 6+ years specializing in distributed consensus, React 19 architecture, and high-throughput databases handling 10M+ daily events.
                   </p>
                   <div className="flex items-center gap-3 pt-1">
                     <span className="px-4 py-2 rounded-xl bg-blue-600 text-white font-bold text-xs">View Projects (12)</span>
@@ -1040,7 +1076,7 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
                 </div>
 
                 {/* 4 Metrics Box */}
-                <div className="col-span-4 grid grid-cols-2 gap-2.5">
+                <div className="col-span-5 grid grid-cols-2 gap-2.5">
                   <div className="p-3 rounded-2xl bg-white/[0.06] backdrop-blur-md border border-white/10 text-center">
                     <div className="text-xl font-black text-blue-400 font-mono">4.2M</div>
                     <div className="text-[10px] text-zinc-400 uppercase font-mono">Daily Events</div>
@@ -1060,24 +1096,38 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
                 </div>
               </div>
 
-              {/* 2 Featured Projects Row */}
+              {/* 2 Featured Projects Row with Rich Images */}
               <div className="relative z-10 grid grid-cols-2 gap-4">
-                <div className="p-3.5 rounded-2xl bg-white/[0.05] border border-white/10 space-y-1.5 text-left">
-                  <div className="flex items-center justify-between text-[11px] text-blue-400 font-mono">
-                    <span>01 / DISTRIBUTED RAFT ENGINE</span>
-                    <span>Go • gRPC • Docker</span>
+                <div className="p-2.5 rounded-2xl bg-white/[0.05] border border-white/10 flex gap-3 items-center text-left">
+                  <img
+                    src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&auto=format&fit=crop&q=80"
+                    alt="Spatial Engine"
+                    className="w-16 h-16 rounded-xl object-cover border border-blue-400/30 shrink-0"
+                  />
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between text-[11px] text-blue-400 font-mono">
+                      <span>01 / DISTRIBUTED RAFT</span>
+                      <span>Go • Docker</span>
+                    </div>
+                    <div className="text-xs font-bold text-white">Fault-Tolerant Key-Value Store</div>
+                    <div className="text-[10px] text-zinc-400 truncate max-w-[240px]">Sub-millisecond leader election & log replication.</div>
                   </div>
-                  <div className="text-xs font-bold text-white">Fault-Tolerant Distributed Key-Value Store</div>
-                  <div className="text-[11px] text-zinc-400">Raft consensus protocol with sub-millisecond leader election & log replication.</div>
                 </div>
 
-                <div className="p-3.5 rounded-2xl bg-white/[0.05] border border-white/10 space-y-1.5 text-left">
-                  <div className="flex items-center justify-between text-[11px] text-cyan-400 font-mono">
-                    <span>02 / SPATIAL CANVAS ENGINE</span>
-                    <span>React 19 • WebSockets • Redis</span>
+                <div className="p-2.5 rounded-2xl bg-white/[0.05] border border-white/10 flex gap-3 items-center text-left">
+                  <img
+                    src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=200&auto=format&fit=crop&q=80"
+                    alt="Spatial Canvas"
+                    className="w-16 h-16 rounded-xl object-cover border border-cyan-400/30 shrink-0"
+                  />
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between text-[11px] text-cyan-400 font-mono">
+                      <span>02 / SPATIAL CANVAS</span>
+                      <span>React 19 • Redis</span>
+                    </div>
+                    <div className="text-xs font-bold text-white">Collaborative Code Studio</div>
+                    <div className="text-[10px] text-zinc-400 truncate max-w-[240px]">Multi-user CRDT sync for 50k concurrent users.</div>
                   </div>
-                  <div className="text-xs font-bold text-white">Real-Time Collaborative Code Studio</div>
-                  <div className="text-[11px] text-zinc-400">Multi-user CRDT synchronization handling 50,000+ concurrent sessions.</div>
                 </div>
               </div>
 
@@ -1089,7 +1139,7 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
             </div>
           )}
 
-          {/* THEME 2: Swiss Architectural */}
+          {/* THEME 2: Swiss Architectural (Swiss Minimal) */}
           {themeType === "swissArchitectural" && (
             <div className="w-full h-full p-6 flex flex-col justify-between bg-[#0b0d13] text-zinc-100 font-mono relative overflow-hidden">
               <div
@@ -1109,16 +1159,26 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
                 <span className="text-[#2251ff] font-bold">01 ABOUT • 02 WORKS • 03 SPECS • 04 CONTACT</span>
               </div>
 
-              {/* Monumental Headline */}
-              <div className="relative z-10 space-y-1.5 text-left py-1">
-                <div className="text-[11px] text-[#2251ff] font-bold tracking-widest uppercase">
-                  PRECISION × ARCHITECTURE × RIGID STRUCTURE
+              {/* Monumental Headline with Portrait */}
+              <div className="relative z-10 grid grid-cols-12 gap-6 items-center py-1">
+                <div className="col-span-8 space-y-1.5 text-left">
+                  <div className="text-[11px] text-[#2251ff] font-bold tracking-widest uppercase">
+                    PRECISION × ARCHITECTURE × RIGID STRUCTURE
+                  </div>
+                  <h1 className="text-3xl font-black text-white uppercase tracking-tight font-sans">
+                    ALEX MORGAN // STAFF ARCHITECT
+                  </h1>
+                  <div className="text-xs font-sans text-zinc-300 max-w-xl leading-relaxed">
+                    Eliminating redundant abstractions. Translating distributed systems complexity into monumental, deterministic digital tools.
+                  </div>
                 </div>
-                <h1 className="text-3xl font-black text-white uppercase tracking-tight font-sans">
-                  ALEX MORGAN // STAFF ARCHITECT
-                </h1>
-                <div className="text-xs font-sans text-zinc-300 max-w-2xl leading-relaxed">
-                  Eliminating redundant abstractions. Translating distributed systems complexity into monumental, deterministic digital tools.
+
+                <div className="col-span-4 flex items-center justify-end">
+                  <img
+                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&auto=format&fit=crop&q=80"
+                    alt="Alex Morgan"
+                    className="w-20 h-20 rounded-xl object-cover border-2 border-zinc-700 filter grayscale"
+                  />
                 </div>
               </div>
 
@@ -1142,22 +1202,24 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
                 </div>
               </div>
 
-              {/* Architectural Index Table */}
-              <div className="relative z-10 space-y-2 text-left text-xs">
-                <div className="flex items-center justify-between border-b border-zinc-800 pb-1.5">
-                  <span className="text-white font-bold">01 / DISTRIBUTED RAFT CONSENSUS ENGINE</span>
-                  <span className="text-[#2251ff]">GO • GRPC • DISTRIBUTED KV</span>
-                  <span className="text-zinc-400">2026 // PRODUCTION</span>
-                </div>
-                <div className="flex items-center justify-between border-b border-zinc-800 pb-1.5">
-                  <span className="text-white font-bold">02 / KINETIC TELEMETRY MESH & SHADERS</span>
-                  <span className="text-[#2251ff]">RUST • WEBGL • 10M REQ/S</span>
-                  <span className="text-zinc-400">2025 // ACTIVE</span>
-                </div>
-                <div className="flex items-center justify-between border-b border-zinc-800 pb-1.5">
-                  <span className="text-white font-bold">03 / PAYMENT WEBHOOK CONCURRENCY PIPELINE</span>
-                  <span className="text-[#2251ff]">POSTGRESQL • REDIS • STRIPE</span>
-                  <span className="text-zinc-400">2024 // VERIFIED</span>
+              {/* Architectural Index Table with Visual */}
+              <div className="relative z-10 flex gap-4 items-center text-xs text-left">
+                <img
+                  src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=200&auto=format&fit=crop&q=80"
+                  alt="Architectural Blueprint"
+                  className="w-24 h-16 rounded object-cover border border-zinc-700 shrink-0 filter grayscale"
+                />
+                <div className="flex-1 space-y-1">
+                  <div className="flex items-center justify-between border-b border-zinc-800 pb-1">
+                    <span className="text-white font-bold">01 / DISTRIBUTED RAFT CONSENSUS</span>
+                    <span className="text-[#2251ff]">GO • GRPC</span>
+                    <span className="text-zinc-400">2026 // PROD</span>
+                  </div>
+                  <div className="flex items-center justify-between border-b border-zinc-800 pb-1">
+                    <span className="text-white font-bold">02 / KINETIC TELEMETRY MESH</span>
+                    <span className="text-[#2251ff]">RUST • 10M REQS</span>
+                    <span className="text-zinc-400">2025 // ACTIVE</span>
+                  </div>
                 </div>
               </div>
 
@@ -1169,7 +1231,7 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
             </div>
           )}
 
-          {/* THEME 3: Magazine Editorial */}
+          {/* THEME 3: Magazine Editorial (Monograph Editorial) */}
           {themeType === "magazine" && (
             <div className="w-full h-full p-6 flex flex-col justify-between bg-[#0e0f14] text-zinc-100 font-serif relative overflow-hidden">
               {/* Magazine Masthead */}
@@ -1181,7 +1243,7 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
 
               {/* Editorial Hero Spread */}
               <div className="relative z-10 grid grid-cols-12 gap-6 items-center my-auto py-2">
-                <div className="col-span-8 space-y-2.5 text-left">
+                <div className="col-span-7 space-y-2 text-left">
                   <div className="inline-block px-3 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[10px] font-sans tracking-wider uppercase">
                     FEATURED MONOGRAPH
                   </div>
@@ -1196,29 +1258,47 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
                   </p>
                 </div>
 
-                {/* Editorial Pullquote Box */}
-                <div className="col-span-4 p-4 rounded-2xl bg-amber-500/[0.06] border border-amber-500/20 text-left space-y-2">
-                  <div className="text-[10px] font-sans font-bold text-amber-400 uppercase tracking-widest">CHAPTER OVERVIEW</div>
-                  <div className="text-xs font-serif text-amber-100 italic">"Engineering tools that respect human attention."</div>
-                  <div className="text-[10px] font-sans text-zinc-400 space-y-1 pt-1 border-t border-amber-500/20">
-                    <div>• 12+ Delivered Projects</div>
-                    <div>• Distributed Microservices</div>
-                    <div>• Swiss Precision Design</div>
+                {/* Editorial Pullquote Box with Portrait */}
+                <div className="col-span-5 p-3.5 rounded-2xl bg-amber-500/[0.06] border border-amber-500/20 text-left flex gap-3 items-center">
+                  <img
+                    src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&auto=format&fit=crop&q=80"
+                    alt="Alex Vance"
+                    className="w-20 h-24 rounded-xl object-cover border border-amber-400/40 shrink-0 shadow-md"
+                  />
+                  <div className="space-y-1">
+                    <div className="text-[10px] font-sans font-bold text-amber-400 uppercase tracking-widest">CURATED BY</div>
+                    <div className="text-xs font-serif text-amber-100 italic">Alex Vance</div>
+                    <div className="text-[10px] font-sans text-zinc-400 leading-tight">12+ Delivered Systems • Swiss Precision Architecture</div>
+                    <div className="text-[10px] font-mono text-amber-300 pt-1">MONOCLE × KINFOLK</div>
                   </div>
                 </div>
               </div>
 
-              {/* 2 Monograph Cards */}
+              {/* 2 Monograph Cards with Rich Images */}
               <div className="relative z-10 grid grid-cols-2 gap-4 font-sans text-left">
-                <div className="p-3 rounded-xl bg-white/[0.04] border border-amber-500/20 space-y-1">
-                  <div className="text-[10px] text-amber-400 font-mono">ESSAY 01 / ARTIFACTS</div>
-                  <div className="text-xs font-bold text-white">Aura Intelligence: Autonomous Orchestration Graph</div>
-                  <div className="text-[10px] text-zinc-400 font-serif italic">Sub-100ms streaming responses connecting generative models.</div>
+                <div className="p-2.5 rounded-xl bg-white/[0.04] border border-amber-500/20 flex gap-3 items-center">
+                  <img
+                    src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=200&auto=format&fit=crop&q=80"
+                    alt="Aura Intelligence"
+                    className="w-14 h-14 rounded-lg object-cover border border-amber-400/30 shrink-0"
+                  />
+                  <div className="space-y-0.5">
+                    <div className="text-[10px] text-amber-400 font-mono">ESSAY 01 / ARTIFACTS</div>
+                    <div className="text-xs font-bold text-white">Aura Intelligence Graph</div>
+                    <div className="text-[10px] text-zinc-400 font-serif italic truncate max-w-[220px]">Sub-100ms streaming generative models.</div>
+                  </div>
                 </div>
-                <div className="p-3 rounded-xl bg-white/[0.04] border border-amber-500/20 space-y-1">
-                  <div className="text-[10px] text-amber-400 font-mono">ESSAY 02 / INFRASTRUCTURE</div>
-                  <div className="text-xs font-bold text-white">Distributed Raft Consensus Engine</div>
-                  <div className="text-[10px] text-zinc-400 font-serif italic">Peer-reviewed distributed fault tolerance published at IEEE 2023.</div>
+                <div className="p-2.5 rounded-xl bg-white/[0.04] border border-amber-500/20 flex gap-3 items-center">
+                  <img
+                    src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=200&auto=format&fit=crop&q=80"
+                    alt="Raft Consensus"
+                    className="w-14 h-14 rounded-lg object-cover border border-amber-400/30 shrink-0"
+                  />
+                  <div className="space-y-0.5">
+                    <div className="text-[10px] text-amber-400 font-mono">ESSAY 02 / INFRASTRUCTURE</div>
+                    <div className="text-xs font-bold text-white">Distributed Raft Consensus</div>
+                    <div className="text-[10px] text-zinc-400 font-serif italic truncate max-w-[220px]">Peer-reviewed fault tolerance at IEEE 2023.</div>
+                  </div>
                 </div>
               </div>
 
@@ -1230,7 +1310,7 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
             </div>
           )}
 
-          {/* THEME 4: Retro-Futuristic OS */}
+          {/* THEME 4: Retro-Futuristic OS (CRT Cyber HUD) */}
           {themeType === "retroFuturistic" && (
             <div className="w-full h-full p-6 flex flex-col justify-between bg-[#030804] text-[#00ff66] font-mono relative overflow-hidden">
               <div
@@ -1249,12 +1329,20 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
                 <span className="text-[#00ff66] font-bold">[ONLINE / 99.999% HEALTH]</span>
               </div>
 
-              {/* Terminal Logs & Console */}
-              <div className="relative z-10 space-y-2 text-left py-1 text-xs">
-                <div className="p-3 rounded-lg bg-[#00ff66]/10 border border-[#00ff66]/30 space-y-1">
+              {/* Terminal Logs & Console with Diagnostic Portrait */}
+              <div className="relative z-10 grid grid-cols-12 gap-4 items-center text-left py-1 text-xs">
+                <div className="col-span-9 p-3 rounded-lg bg-[#00ff66]/10 border border-[#00ff66]/30 space-y-1">
                   <div><span className="text-[#ffb000]">$</span> init-developer --operator=alex-morgan --level=staff-sre</div>
                   <div className="text-zinc-300">&gt; Loading modules: [RAFT_CONSENSUS_OK] [K8S_MESH_OK] [POSTGRES_INDEXED]</div>
                   <div className="text-zinc-300">&gt; Active deployment: 450+ microservices // 4.2M daily API transactions</div>
+                </div>
+                <div className="col-span-3 text-center">
+                  <img
+                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&auto=format&fit=crop&q=80"
+                    alt="Operator Alex"
+                    className="w-16 h-16 rounded border border-[#00ff66]/60 mx-auto object-cover filter grayscale contrast-125"
+                  />
+                  <div className="text-[9px] text-[#00ff66] pt-1">OPERATOR_ID: #4092</div>
                 </div>
               </div>
 
@@ -1300,7 +1388,7 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
             </div>
           )}
 
-          {/* THEME 5: Liquid Glass Spatial */}
+          {/* THEME 5: Liquid Glass Spatial (Spatial 3D UI) */}
           {themeType === "liquidGlass" && (
             <div className="w-full h-full p-6 flex flex-col justify-between bg-[#060814] text-white relative overflow-hidden">
               <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/25 rounded-full blur-3xl" />
@@ -1309,10 +1397,12 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
               {/* Frosted Glass Navbar */}
               <div className="relative z-10 flex items-center justify-between px-5 py-2.5 rounded-2xl bg-white/[0.08] backdrop-blur-xl border border-white/15 text-xs">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 flex items-center justify-center font-bold text-white shadow-md">
-                    AM
-                  </div>
-                  <span className="font-bold text-white text-sm">Alex Morgan</span>
+                  <img
+                    src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=160&auto=format&fit=crop&q=80"
+                    alt="Sophia Chen"
+                    className="w-7 h-7 rounded-full object-cover border border-cyan-400/50 shadow-md"
+                  />
+                  <span className="font-bold text-white text-sm">Sophia Chen</span>
                 </div>
                 <div className="flex items-center gap-6 text-zinc-300 text-xs">
                   <span className="text-cyan-300 font-bold">Spatial Works</span>
@@ -1362,15 +1452,29 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
                 </div>
               </div>
 
-              {/* 2 Spatial Project Showcase */}
+              {/* 2 Spatial Project Showcase with Images */}
               <div className="relative z-10 grid grid-cols-2 gap-4 text-left">
-                <div className="p-3.5 rounded-2xl bg-white/[0.06] backdrop-blur-md border border-white/15 space-y-1">
-                  <div className="text-xs font-bold text-white">Aura Spatial Engine</div>
-                  <div className="text-[11px] text-zinc-300">Next.js 15 • WebGL Canvas • GraphQL • Tailored Shaders</div>
+                <div className="p-2.5 rounded-2xl bg-white/[0.06] backdrop-blur-md border border-white/15 flex gap-3 items-center">
+                  <img
+                    src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&auto=format&fit=crop&q=80"
+                    alt="Aura Spatial Engine"
+                    className="w-14 h-14 rounded-xl object-cover border border-cyan-400/30 shrink-0"
+                  />
+                  <div className="space-y-0.5">
+                    <div className="text-xs font-bold text-white">Aura Spatial Engine</div>
+                    <div className="text-[10px] text-zinc-300 truncate max-w-[220px]">Next.js 15 • WebGL Canvas • Shaders</div>
+                  </div>
                 </div>
-                <div className="p-3.5 rounded-2xl bg-white/[0.06] backdrop-blur-md border border-white/15 space-y-1">
-                  <div className="text-xs font-bold text-white">CloudScale Multi-Region Mesh</div>
-                  <div className="text-[11px] text-zinc-300">Kubernetes • AWS ECS • Terraform • ArgoCD GitOps</div>
+                <div className="p-2.5 rounded-2xl bg-white/[0.06] backdrop-blur-md border border-white/15 flex gap-3 items-center">
+                  <img
+                    src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=200&auto=format&fit=crop&q=80"
+                    alt="CloudScale Mesh"
+                    className="w-14 h-14 rounded-xl object-cover border border-cyan-400/30 shrink-0"
+                  />
+                  <div className="space-y-0.5">
+                    <div className="text-xs font-bold text-white">CloudScale Multi-Region</div>
+                    <div className="text-[10px] text-zinc-300 truncate max-w-[220px]">Kubernetes • AWS ECS • ArgoCD</div>
+                  </div>
                 </div>
               </div>
 
@@ -1382,7 +1486,7 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
             </div>
           )}
 
-          {/* THEME 6: Tactile Neomorphic */}
+          {/* THEME 6: Tactile Neomorphic (Neumorphic 3D) */}
           {themeType === "neomorphic" && (
             <div className="w-full h-full p-6 flex flex-col justify-between bg-[#181c24] text-zinc-200 relative overflow-hidden">
               {/* Neomorphic Nav */}
@@ -1397,12 +1501,12 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
                 </div>
               </div>
 
-              {/* Hardware Board Hero */}
+              {/* Hardware Board Hero with Portrait */}
               <div className="relative z-10 grid grid-cols-12 gap-6 items-center my-auto py-2">
                 <div className="col-span-7 space-y-2 text-left">
                   <div className="text-xs font-bold text-amber-400 font-mono">PHYSICAL 3D PRECISION</div>
                   <h1 className="text-3xl font-black text-white leading-tight">
-                    Alex Morgan — Hardware & <br />
+                    Marcus Vance — Hardware & <br />
                     Software Engineering Craft
                   </h1>
                   <p className="text-xs text-zinc-300 leading-relaxed max-w-md">
@@ -1418,23 +1522,29 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
                   </div>
                 </div>
 
-                {/* 4 Tactile Dial Counters */}
-                <div className="col-span-5 grid grid-cols-2 gap-3">
-                  <div className="p-3 rounded-2xl bg-[#1e232d] shadow-[4px_4px_8px_#0e1014,-4px_-4px_8px_#262c38] text-center">
-                    <div className="text-xl font-black text-white font-mono">12+</div>
-                    <div className="text-[9px] text-zinc-400 uppercase">PROJECTS</div>
+                {/* 4 Tactile Dial Counters with Portrait */}
+                <div className="col-span-5 flex flex-col gap-2.5">
+                  <div className="flex items-center gap-3 p-2.5 rounded-2xl bg-[#1e232d] shadow-[4px_4px_8px_#0e1014,-4px_-4px_8px_#262c38]">
+                    <img
+                      src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&auto=format&fit=crop&q=80"
+                      alt="Marcus Vance"
+                      className="w-12 h-12 rounded-xl object-cover border border-amber-400/40 shrink-0"
+                    />
+                    <div className="text-left">
+                      <div className="text-xs font-bold text-white">Marcus Vance</div>
+                      <div className="text-[10px] text-zinc-400">Staff Hardware & SRE</div>
+                    </div>
                   </div>
-                  <div className="p-3 rounded-2xl bg-[#1e232d] shadow-[4px_4px_8px_#0e1014,-4px_-4px_8px_#262c38] text-center">
-                    <div className="text-xl font-black text-amber-400 font-mono">6+ YRS</div>
-                    <div className="text-[9px] text-zinc-400 uppercase">EXPERIENCE</div>
-                  </div>
-                  <div className="p-3 rounded-2xl bg-[#1e232d] shadow-[4px_4px_8px_#0e1014,-4px_-4px_8px_#262c38] text-center">
-                    <div className="text-xl font-black text-white font-mono">99.9%</div>
-                    <div className="text-[9px] text-zinc-400 uppercase">UPTIME</div>
-                  </div>
-                  <div className="p-3 rounded-2xl bg-[#1e232d] shadow-[4px_4px_8px_#0e1014,-4px_-4px_8px_#262c38] text-center">
-                    <div className="text-xl font-black text-amber-400 font-mono">4.2M</div>
-                    <div className="text-[9px] text-zinc-400 uppercase">DAILY CALLS</div>
+
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <div className="p-2.5 rounded-2xl bg-[#1e232d] shadow-[4px_4px_8px_#0e1014,-4px_-4px_8px_#262c38] text-center">
+                      <div className="text-lg font-black text-white font-mono">12+</div>
+                      <div className="text-[9px] text-zinc-400 uppercase">PROJECTS</div>
+                    </div>
+                    <div className="p-2.5 rounded-2xl bg-[#1e232d] shadow-[4px_4px_8px_#0e1014,-4px_-4px_8px_#262c38] text-center">
+                      <div className="text-lg font-black text-amber-400 font-mono">99.9%</div>
+                      <div className="text-[9px] text-zinc-400 uppercase">UPTIME</div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1459,7 +1569,7 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
             </div>
           )}
 
-          {/* THEME 7: Cyber Dev Terminal */}
+          {/* THEME 7: Cyber Dev Terminal (Cyberpunk Terminal) */}
           {themeType === "cyberDev" && (
             <div className="w-full h-full p-6 flex flex-col justify-between bg-[#04060a] text-[#00ff88] font-mono relative overflow-hidden">
               {/* Cyber Nav */}
@@ -1473,31 +1583,32 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
                 </span>
               </div>
 
-              {/* Code Console & Repos Grid */}
+              {/* Code Console & Repos Grid with Portrait */}
               <div className="relative z-10 grid grid-cols-12 gap-5 items-center my-auto py-2">
                 <div className="col-span-7 p-3.5 rounded-xl bg-[#090d14] border border-[#00ff88]/40 text-left space-y-1 text-xs leading-relaxed">
                   <div><span className="text-cyan-400">const</span> developer = &#123;</div>
-                  <div className="pl-4 text-zinc-300">name: <span className="text-[#00ff88]">"Alex Morgan"</span>,</div>
+                  <div className="pl-4 text-zinc-300">name: <span className="text-[#00ff88]">"Kai Sterling"</span>,</div>
                   <div className="pl-4 text-zinc-300">title: <span className="text-amber-400">"Staff Full Stack Hacker"</span>,</div>
-                  <div className="pl-4 text-zinc-300">stack: [<span className="text-cyan-400">'Go'</span>, <span className="text-cyan-400">'React 19'</span>, <span className="text-cyan-400">'K8s'</span>, <span className="text-cyan-400">'Postgres'</span>],</div>
+                  <div className="pl-4 text-zinc-300">stack: [<span className="text-cyan-400">'Go'</span>, <span className="text-cyan-400">'React 19'</span>, <span className="text-cyan-400">'K8s'</span>],</div>
                   <div className="pl-4 text-zinc-300">stats: &#123; stars: <span className="text-amber-400">"2.4k"</span>, commits: <span className="text-[#00ff88]">"1,240"</span> &#125;</div>
                   <div>&#125;;</div>
                 </div>
 
                 <div className="col-span-5 space-y-2 text-left text-xs">
-                  <div className="p-3 rounded-xl bg-[#090d14] border border-cyan-500/40 space-y-1">
-                    <div className="flex items-center justify-between text-white font-bold">
-                      <span>raft-consensus-engine</span>
-                      <span className="text-amber-400">★ 1.8k</span>
+                  <div className="p-2.5 rounded-xl bg-[#090d14] border border-cyan-500/40 flex items-center gap-3">
+                    <img
+                      src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=200&auto=format&fit=crop&q=80"
+                      alt="Kai Sterling"
+                      className="w-12 h-12 rounded-lg object-cover border border-[#00ff88]/50 shrink-0"
+                    />
+                    <div className="space-y-0.5">
+                      <div className="text-white font-bold">raft-consensus</div>
+                      <div className="text-[10px] text-amber-400">★ 1.8k GitHub Stars</div>
                     </div>
-                    <div className="text-[11px] text-zinc-400">Distributed consensus engine in Go.</div>
                   </div>
-                  <div className="p-3 rounded-xl bg-[#090d14] border border-cyan-500/40 space-y-1">
-                    <div className="flex items-center justify-between text-white font-bold">
-                      <span>collab-code-studio</span>
-                      <span className="text-amber-400">★ 640</span>
-                    </div>
-                    <div className="text-[11px] text-zinc-400">Real-time CRDT code canvas.</div>
+                  <div className="p-2.5 rounded-xl bg-[#090d14] border border-cyan-500/40 flex items-center justify-between text-white font-bold">
+                    <span>collab-code-studio</span>
+                    <span className="text-amber-400">★ 640</span>
                   </div>
                 </div>
               </div>
@@ -1517,45 +1628,262 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
             </div>
           )}
 
-          {/* FALLBACK / OTHER THEMES (SmartNShine, Aura Glass, Minimal Developer, Tech, Creative) */}
-          {!["kinetic", "swissArchitectural", "magazine", "retroFuturistic", "liquidGlass", "neomorphic", "cyberDev"].includes(themeType) && (
-            <div className="w-full h-full p-6 flex flex-col justify-between bg-gradient-to-br from-[#0a0f1d] via-[#070b14] to-[#04060b] text-white relative overflow-hidden">
-              <div className="relative z-10 flex items-center justify-between border-b border-white/10 pb-2 text-xs">
-                <span className="font-bold flex items-center gap-2 text-sm">
-                  <Globe className="w-4 h-4 text-blue-400" /> {title}
-                </span>
-                <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30 text-xs font-mono">
-                  {badgeText}
+          {/* THEME 8: SmartNShine Minimal (Quiet Luxury) */}
+          {themeType === "smartnshine" && (
+            <div className="w-full h-full p-6 flex flex-col justify-between bg-[#111319] text-stone-100 relative overflow-hidden">
+              {/* Luxury Nav */}
+              <div className="relative z-10 flex items-center justify-between border-b border-stone-800 pb-2 text-xs">
+                <div className="flex items-center gap-2.5">
+                  <span className="font-serif italic font-bold text-amber-200 text-sm tracking-wide">SmartNShine Studio</span>
+                  <span className="text-[10px] text-stone-400 font-mono tracking-widest uppercase">/ ARCHITECTURAL</span>
+                </div>
+                <span className="px-3 py-0.5 rounded-full bg-amber-500/10 border border-amber-400/30 text-amber-300 text-[10px] font-mono">
+                  QUIET LUXURY
                 </span>
               </div>
 
-              <div className="relative z-10 space-y-2 text-left my-auto py-2">
-                <div className="text-xs text-blue-400 font-mono uppercase">{category}</div>
-                <h1 className="text-3xl font-black text-white leading-tight">
-                  Alex Morgan — Staff Systems Architect
-                </h1>
-                <p className="text-xs text-zinc-300 max-w-xl leading-relaxed">
-                  {subtitle}
-                </p>
-                <div className="grid grid-cols-3 gap-3 pt-2">
-                  <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-center">
-                    <div className="text-base font-black text-white">12+</div>
-                    <div className="text-[10px] text-zinc-400">PROJECTS</div>
+              {/* Hero Spread with Engineer Portrait */}
+              <div className="relative z-10 grid grid-cols-12 gap-6 items-center my-auto py-2">
+                <div className="col-span-8 space-y-2 text-left">
+                  <div className="text-[11px] text-amber-400 font-mono tracking-wider uppercase">CURATED PORTFOLIO</div>
+                  <h1 className="text-3xl font-serif text-white leading-tight">
+                    Elena Rostova — Principal Systems Architect
+                  </h1>
+                  <p className="text-xs text-stone-300 max-w-lg leading-relaxed font-sans">
+                    Quiet Luxury aesthetic with bespoke typography, editorial case studies, and zero-distraction presentation.
+                  </p>
+                  <div className="grid grid-cols-3 gap-3 pt-2">
+                    <div className="p-2.5 rounded-xl bg-white/[0.04] border border-stone-800 text-center">
+                      <div className="text-base font-bold text-amber-200 font-mono">12+</div>
+                      <div className="text-[9px] text-stone-400">PROJECTS</div>
+                    </div>
+                    <div className="p-2.5 rounded-xl bg-white/[0.04] border border-stone-800 text-center">
+                      <div className="text-base font-bold text-stone-200 font-mono">99.99%</div>
+                      <div className="text-[9px] text-stone-400">UPTIME</div>
+                    </div>
+                    <div className="p-2.5 rounded-xl bg-white/[0.04] border border-stone-800 text-center">
+                      <div className="text-base font-bold text-amber-300 font-mono">2.4k ★</div>
+                      <div className="text-[9px] text-stone-400">GITHUB STARS</div>
+                    </div>
                   </div>
-                  <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-center">
-                    <div className="text-base font-black text-blue-400">99.9%</div>
-                    <div className="text-[10px] text-zinc-400">UPTIME</div>
+                </div>
+
+                {/* Portrait Card */}
+                <div className="col-span-4 p-3.5 rounded-2xl bg-white/[0.03] border border-stone-800 text-center space-y-2">
+                  <img
+                    src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&auto=format&fit=crop&q=80"
+                    alt="Elena Rostova"
+                    className="w-20 h-20 rounded-full mx-auto object-cover border border-amber-400/40 shadow-lg"
+                  />
+                  <div className="text-xs font-serif italic text-amber-100">Elena Rostova</div>
+                  <div className="text-[10px] text-stone-400 font-mono">San Francisco, CA</div>
+                </div>
+              </div>
+
+              {/* 2 Project Cards with Visual Thumbnail */}
+              <div className="relative z-10 grid grid-cols-2 gap-4 text-left">
+                <div className="p-2.5 rounded-xl bg-white/[0.03] border border-stone-800 flex gap-3 items-center">
+                  <img
+                    src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=200&auto=format&fit=crop&q=80"
+                    alt="Raft Cluster"
+                    className="w-12 h-12 rounded-lg object-cover border border-stone-700 shrink-0"
+                  />
+                  <div className="space-y-0.5">
+                    <div className="text-[10px] text-amber-400 font-mono">01 // DISTRIBUTED ARCHITECTURE</div>
+                    <div className="text-xs font-bold text-white">Raft Key-Value Cluster</div>
                   </div>
-                  <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-center">
-                    <div className="text-base font-black text-emerald-400">2.4k ★</div>
-                    <div className="text-[10px] text-zinc-400">GITHUB STARS</div>
+                </div>
+                <div className="p-2.5 rounded-xl bg-white/[0.03] border border-stone-800 flex gap-3 items-center">
+                  <img
+                    src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&auto=format&fit=crop&q=80"
+                    alt="Spatial Design"
+                    className="w-12 h-12 rounded-lg object-cover border border-stone-700 shrink-0"
+                  />
+                  <div className="space-y-0.5">
+                    <div className="text-[10px] text-amber-400 font-mono">02 // DESIGN SYSTEMS</div>
+                    <div className="text-xs font-bold text-white">Quiet Luxury Spatial Design</div>
                   </div>
                 </div>
               </div>
 
+              {/* Footer */}
+              <div className="relative z-10 flex items-center justify-between pt-2 border-t border-stone-800 text-[11px] text-stone-400">
+                <span>Curated Storytelling • Swiss Typography</span>
+                <span className="text-amber-300 font-serif italic">SmartNShine Studio</span>
+              </div>
+            </div>
+          )}
+
+          {/* THEME 9: Aura Glass (Glassmorphism) */}
+          {themeType === "glassmorphism" && (
+            <div className="w-full h-full p-6 flex flex-col justify-between bg-gradient-to-br from-[#0b0c1e] via-[#091224] to-[#040814] text-white relative overflow-hidden">
+              <div className="absolute -top-10 -right-10 w-96 h-96 bg-cyan-500/30 rounded-full blur-3xl" />
+              <div className="absolute -bottom-10 -left-10 w-96 h-96 bg-indigo-500/30 rounded-full blur-3xl" />
+
+              <div className="relative z-10 flex items-center justify-between px-5 py-2.5 rounded-2xl bg-white/[0.08] backdrop-blur-xl border border-white/20 text-xs">
+                <span className="font-bold flex items-center gap-2 text-sm text-cyan-300">
+                  <Layers className="w-4 h-4 text-cyan-400" /> AURA GLASSMORPHISM
+                </span>
+                <span className="text-zinc-300">TRANSLUCENT FROSTED GLASS</span>
+                <span className="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 text-xs font-mono">
+                  POPULAR
+                </span>
+              </div>
+
+              <div className="relative z-10 grid grid-cols-12 gap-6 items-center my-auto py-2">
+                <div className="col-span-8 space-y-2 text-left">
+                  <div className="text-xs text-cyan-400 font-mono">AMBIENT GLOWING AURORA</div>
+                  <h1 className="text-3xl font-black text-white leading-tight">
+                    Alex Morgan — Full Stack Experience Lead
+                  </h1>
+                  <p className="text-xs text-zinc-300 max-w-lg leading-relaxed">
+                    Ultra-modern frosted glass cards with specular highlights and vibrant backdrop filters.
+                  </p>
+                  <div className="flex items-center gap-3 pt-2">
+                    <span className="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold text-xs shadow-lg">
+                      Explore Works (14)
+                    </span>
+                  </div>
+                </div>
+
+                <div className="col-span-4 p-3 rounded-2xl bg-white/[0.08] backdrop-blur-xl border border-white/20 text-center space-y-2">
+                  <img
+                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80"
+                    alt="Alex Morgan"
+                    className="w-16 h-16 rounded-full mx-auto object-cover border-2 border-cyan-400/50 shadow-lg"
+                  />
+                  <div className="text-xs font-bold text-cyan-300">Alex Morgan</div>
+                  <div className="text-[10px] text-zinc-400">99.99% SLA Record</div>
+                </div>
+              </div>
+
               <div className="relative z-10 flex items-center justify-between pt-2 border-t border-white/10 text-[11px] text-zinc-400">
-                <span>{category} • Precision Portfolio</span>
-                <span className="text-blue-400 font-mono">Live Website</span>
+                <span>Glassmorphism • Dynamic Mesh Gradient</span>
+                <span className="text-cyan-400 font-mono">Aura Glass</span>
+              </div>
+            </div>
+          )}
+
+          {/* THEME 10: Creative Canvas (Design Studio) */}
+          {themeType === "creative" && (
+            <div className="w-full h-full p-6 flex flex-col justify-between bg-[#0e071a] text-white relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-96 h-96 bg-purple-600/30 rounded-full blur-3xl" />
+              <div className="relative z-10 flex items-center justify-between border-b border-purple-500/30 pb-2 text-xs">
+                <span className="font-bold flex items-center gap-2 text-sm text-purple-300">
+                  <Sparkles className="w-4 h-4 text-purple-400" /> CREATIVE CANVAS // DESIGN STUDIO
+                </span>
+                <span className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-400/40 text-xs font-mono">
+                  AWWWARDS SOTD
+                </span>
+              </div>
+
+              <div className="relative z-10 grid grid-cols-12 gap-6 items-center my-auto py-2">
+                <div className="col-span-8 space-y-2 text-left">
+                  <div className="text-xs text-purple-400 font-mono">ASYMMETRIC GRID & BOLD ACCENTS</div>
+                  <h1 className="text-3xl font-black text-white leading-tight">
+                    Devon Ray — Creative Developer & Art Director
+                  </h1>
+                  <p className="text-xs text-zinc-300 max-w-lg leading-relaxed">
+                    Interactive experimental WebGL canvas, bold kinetic typography, and fluid cursor transformations.
+                  </p>
+                </div>
+
+                <div className="col-span-4 p-3 rounded-2xl bg-white/5 border border-purple-500/30 text-center space-y-2">
+                  <img
+                    src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&auto=format&fit=crop&q=80"
+                    alt="Devon Ray"
+                    className="w-16 h-16 rounded-full mx-auto object-cover border-2 border-purple-400/50 shadow-lg"
+                  />
+                  <div className="text-xs font-bold text-purple-300">Devon Ray</div>
+                  <div className="text-[10px] text-zinc-400">Awwwards Judge & Lead</div>
+                </div>
+              </div>
+
+              <div className="relative z-10 flex items-center justify-between pt-2 border-t border-purple-500/20 text-[11px] text-zinc-400">
+                <span>Design Studio • Asymmetric Grid</span>
+                <span className="text-purple-400 font-mono">Creative Canvas</span>
+              </div>
+            </div>
+          )}
+
+          {/* THEME 11: Minimal Developer (High Signal) */}
+          {themeType === "minimalDeveloper" && (
+            <div className="w-full h-full p-6 flex flex-col justify-between bg-[#080c10] text-emerald-300 font-mono relative overflow-hidden">
+              <div className="relative z-10 flex items-center justify-between border-b border-emerald-500/30 pb-2 text-xs">
+                <span className="font-bold flex items-center gap-2 text-sm text-white">
+                  <Code2 className="w-4 h-4 text-emerald-400" /> MINIMAL_DEVELOPER // ZERO_FLUFF
+                </span>
+                <span className="px-3 py-1 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 text-xs">
+                  HIGH SIGNAL
+                </span>
+              </div>
+
+              <div className="relative z-10 grid grid-cols-12 gap-6 items-center my-auto py-2">
+                <div className="col-span-8 space-y-2 text-left">
+                  <div className="text-xs text-emerald-400 font-mono">HIGH-SIGNAL MONOSPACE ACCENTS</div>
+                  <h1 className="text-3xl font-black text-white leading-tight font-mono">
+                    David Kumar — Staff Systems Engineer
+                  </h1>
+                  <p className="text-xs text-zinc-300 max-w-xl leading-relaxed">
+                    Fast, accessible, and high-density developer portfolio with GitHub contribution heatmaps and zero fluff.
+                  </p>
+                </div>
+
+                <div className="col-span-4 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-center space-y-1.5">
+                  <img
+                    src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&auto=format&fit=crop&q=80"
+                    alt="David Kumar"
+                    className="w-14 h-14 rounded-full mx-auto object-cover border border-emerald-400/40"
+                  />
+                  <div className="text-xs font-bold text-white">David Kumar</div>
+                  <div className="text-[10px] text-emerald-400">1,240 Commits This Year</div>
+                </div>
+              </div>
+
+              <div className="relative z-10 flex items-center justify-between pt-2 border-t border-emerald-500/20 text-[11px] text-zinc-400">
+                <span>Zero Fluff • Monospace First</span>
+                <span className="text-emerald-400 font-mono">Minimal Developer</span>
+              </div>
+            </div>
+          )}
+
+          {/* THEME 12: Tech Portfolio (Developer Clean) */}
+          {(!themeType || themeType === "techPortfolio") && (
+            <div className="w-full h-full p-6 flex flex-col justify-between bg-gradient-to-br from-[#060a14] via-[#091122] to-[#04070e] text-white relative overflow-hidden">
+              <div className="relative z-10 flex items-center justify-between border-b border-blue-500/30 pb-2 text-xs">
+                <span className="font-bold flex items-center gap-2 text-sm text-blue-300">
+                  <Cpu className="w-4 h-4 text-blue-400" /> TECH PORTFOLIO PRO
+                </span>
+                <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30 text-xs font-mono">
+                  DEVELOPER
+                </span>
+              </div>
+
+              <div className="relative z-10 grid grid-cols-12 gap-6 items-center my-auto py-2">
+                <div className="col-span-8 space-y-2 text-left">
+                  <div className="text-xs text-blue-400 font-mono uppercase">CLOUD ARCHITECT & FULL STACK LEAD</div>
+                  <h1 className="text-3xl font-black text-white leading-tight">
+                    Alex Morgan — Distributed Systems
+                  </h1>
+                  <p className="text-xs text-zinc-300 max-w-xl leading-relaxed">
+                    Futuristic Glassmorphism with 3D Vectors, Server Telemetry, and Interactive Tech Stack Explorer.
+                  </p>
+                </div>
+
+                <div className="col-span-4 p-3 rounded-xl bg-white/5 border border-blue-500/20 text-center space-y-1.5">
+                  <img
+                    src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&auto=format&fit=crop&q=80"
+                    alt="Alex Morgan"
+                    className="w-14 h-14 rounded-full mx-auto object-cover border border-blue-400/40"
+                  />
+                  <div className="text-xs font-bold text-white">Alex Morgan</div>
+                  <div className="text-[10px] text-blue-400">99.9% Uptime • 2.4k ★</div>
+                </div>
+              </div>
+
+              <div className="relative z-10 flex items-center justify-between pt-2 border-t border-blue-500/20 text-[11px] text-zinc-400">
+                <span>Interactive Stack • Server Telemetry</span>
+                <span className="text-blue-400 font-mono">Tech Portfolio</span>
               </div>
             </div>
           )}
@@ -1600,7 +1928,7 @@ export default function GlidingMotionCanvas({ activeMode = "resumes", isDarkMode
   const [activePortfolioIndex, setActivePortfolioIndex] = useState(0);
 
   const [isHovered, setIsHovered] = useState(false);
-  const [resumeColStep, setResumeColStep] = useState(335);
+  const [resumeColStep, setResumeColStep] = useState(435);
   const [portfolioColStep, setPortfolioColStep] = useState(596);
   const [isVisible, setIsVisible] = useState(true);
 
@@ -1611,15 +1939,15 @@ export default function GlidingMotionCanvas({ activeMode = "resumes", isDarkMode
   useEffect(() => {
     const updateSteps = () => {
       if (typeof window === "undefined") return;
-      // Resumes Step
-      if (window.innerWidth >= 1280) setResumeColStep(345);
-      else if (window.innerWidth >= 640) setResumeColStep(322);
-      else setResumeColStep(299);
+      // Resumes Step (Enlarged cards: 395px + 40px gap)
+      if (window.innerWidth >= 1280) setResumeColStep(435);
+      else if (window.innerWidth >= 640) setResumeColStep(407);
+      else setResumeColStep(335);
 
       // Portfolios Step (Larger cards: 560px + 36px)
       if (window.innerWidth >= 1280) setPortfolioColStep(596);
       else if (window.innerWidth >= 640) setPortfolioColStep(548);
-      else setPortfolioColStep(500);
+      else setPortfolioColStep(355);
     };
     updateSteps();
     window.addEventListener("resize", updateSteps);
@@ -1657,32 +1985,32 @@ export default function GlidingMotionCanvas({ activeMode = "resumes", isDarkMode
     return () => clearInterval(interval);
   }, [isResumes, isHovered, isVisible]);
 
-  // 2D Camera / Stage Offsets for RESUMES
+  // 2D Camera / Stage Offsets for RESUMES (Full-density buffer, vertically centered)
   const getResumeStageOffset = (index, step) => {
     switch (index) {
-      case 0: return { x: 0, y: -200 };       // Silicon Valley (Col 2, Row 1)
-      case 1: return { x: step, y: -200 };    // Stanford LaTeX (Col 1, Row 1)
-      case 2: return { x: 0, y: 190 };        // Nordic Split (Col 2, Row 0)
-      case 3: return { x: -step, y: -200 };   // Modern (Col 3, Row 1)
-      case 4: return { x: 0, y: -590 };       // Executive (Col 2, Row 2)
-      case 5: return { x: step, y: -980 };    // Classic (Col 1, Row 3)
-      case 6: return { x: -step, y: -980 };   // Tech (Col 3, Row 3)
-      case 7: return { x: step, y: -590 };    // Strategic Leadership (Col 1, Row 2)
-      default: return { x: 0, y: -200 };
+      case 0: return { x: 0, y: -1370 };      // Silicon Valley (Col 2, index 3)
+      case 1: return { x: step, y: -1334 };   // Stanford LaTeX (Col 1, index 3)
+      case 2: return { x: 0, y: -862 };       // Nordic Split (Col 2, index 2)
+      case 3: return { x: -step, y: -1354 };  // Modern (Col 3, index 3)
+      case 4: return { x: 0, y: -1878 };      // Executive (Col 2, index 4)
+      case 5: return { x: step, y: -2350 };   // Classic (Col 1, index 5)
+      case 6: return { x: -step, y: -2370 };  // Tech (Col 3, index 5)
+      case 7: return { x: step, y: -1842 };   // Strategic Leadership (Col 1, index 4)
+      default: return { x: 0, y: -1370 };
     }
   };
 
-  // 2D Camera / Stage Offsets for PORTFOLIOS
+  // 2D Camera / Stage Offsets for PORTFOLIOS (Full-density buffer, vertically centered)
   const getPortfolioStageOffset = (index, step) => {
     switch (index) {
-      case 0: return { x: 0, y: -30 };        // SmartNShine Kinetic (Col 2, Row 0)
-      case 1: return { x: step, y: -30 };     // Swiss Architectural (Col 1, Row 0)
-      case 2: return { x: 0, y: -425 };       // Magazine Editorial (Col 2, Row 1)
-      case 3: return { x: -step, y: -30 };    // Retro-Futuristic OS (Col 3, Row 0)
-      case 4: return { x: step, y: -425 };    // Liquid Glass Spatial (Col 1, Row 1)
-      case 5: return { x: 0, y: -820 };       // Tactile Neomorphic (Col 2, Row 2)
-      case 6: return { x: -step, y: -425 };   // Cyber Dev (Col 3, Row 1)
-      default: return { x: 0, y: -30 };
+      case 0: return { x: 0, y: -625 };       // SmartNShine Kinetic (Col 2, index 2)
+      case 1: return { x: step, y: -588 };    // Swiss Architectural (Col 1, index 2)
+      case 2: return { x: 0, y: -1038 };      // Magazine Editorial (Col 2, index 3)
+      case 3: return { x: -step, y: -608 };   // Retro-Futuristic OS (Col 3, index 2)
+      case 4: return { x: step, y: -1002 };   // Liquid Glass Spatial (Col 1, index 3)
+      case 5: return { x: 0, y: -1450 };      // Tactile Neomorphic (Col 2, index 4)
+      case 6: return { x: -step, y: -1022 };  // Cyber Dev (Col 3, index 3)
+      default: return { x: 0, y: -625 };
     }
   };
 
@@ -1694,7 +2022,7 @@ export default function GlidingMotionCanvas({ activeMode = "resumes", isDarkMode
       ref={containerRef}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="relative w-full h-[760px] lg:h-[820px] overflow-hidden rounded-3xl select-none group/canvas"
+      className="relative w-full h-[460px] sm:h-[580px] lg:h-[860px] overflow-hidden rounded-2xl sm:rounded-3xl select-none group/canvas"
     >
       {/* Top & Bottom Soft Fading Masks */}
       <div
@@ -1731,11 +2059,11 @@ export default function GlidingMotionCanvas({ activeMode = "resumes", isDarkMode
               scale: { duration: shouldReduceMotion ? 0.1 : 2.2, times: [0, 0.35, 1], ease: [0.45, 0, 0.2, 1] },
             }}
             style={{ transformOrigin: "center center" }}
-            className="flex items-start justify-center gap-6 sm:gap-8 lg:gap-10 px-2 lg:px-6 pt-3 will-change-transform shrink-0"
+            className="flex items-start justify-center gap-4 sm:gap-8 lg:gap-10 px-2 lg:px-6 pt-3 will-change-transform shrink-0"
           >
             {/* Column A: Far Left Outer Buffer */}
-            <div className="overflow-visible h-full flex flex-col w-[275px] sm:w-[290px] xl:w-[305px] shrink-0 pt-4">
-              <div className="flex flex-col gap-[26px] pb-[26px]">
+            <div className="overflow-visible h-full flex flex-col w-[310px] sm:w-[375px] xl:w-[395px] shrink-0 pt-4">
+              <div className="flex flex-col gap-[28px] pb-[28px]">
                 {colAItems.map((item, idx) => (
                   <ScaledResumeCard
                     key={`cA-${idx}`}
@@ -1751,8 +2079,8 @@ export default function GlidingMotionCanvas({ activeMode = "resumes", isDarkMode
             </div>
 
             {/* Column 1: Left */}
-            <div className="overflow-visible h-full flex flex-col w-[275px] sm:w-[290px] xl:w-[305px] shrink-0 pt-0">
-              <div className="flex flex-col gap-[26px] pb-[26px]">
+            <div className="overflow-visible h-full flex flex-col w-[310px] sm:w-[375px] xl:w-[395px] shrink-0 pt-0">
+              <div className="flex flex-col gap-[28px] pb-[28px]">
                 {col1Items.map((item, idx) => (
                   <ScaledResumeCard
                     key={`c1-${idx}`}
@@ -1768,8 +2096,8 @@ export default function GlidingMotionCanvas({ activeMode = "resumes", isDarkMode
             </div>
 
             {/* Column 2: Center */}
-            <div className="overflow-visible h-full flex flex-col w-[275px] sm:w-[290px] xl:w-[305px] shrink-0 pt-8 sm:pt-10">
-              <div className="flex flex-col gap-[26px] pb-[26px]">
+            <div className="overflow-visible h-full flex flex-col w-[310px] sm:w-[375px] xl:w-[395px] shrink-0 pt-8 sm:pt-10">
+              <div className="flex flex-col gap-[28px] pb-[28px]">
                 {col2Items.map((item, idx) => (
                   <ScaledResumeCard
                     key={`c2-${idx}`}
@@ -1785,8 +2113,8 @@ export default function GlidingMotionCanvas({ activeMode = "resumes", isDarkMode
             </div>
 
             {/* Column 3: Right */}
-            <div className="overflow-visible h-full flex flex-col w-[275px] sm:w-[290px] xl:w-[305px] shrink-0 pt-4 sm:pt-6">
-              <div className="flex flex-col gap-[26px] pb-[26px]">
+            <div className="overflow-visible h-full flex flex-col w-[310px] sm:w-[375px] xl:w-[395px] shrink-0 pt-4 sm:pt-6">
+              <div className="flex flex-col gap-[28px] pb-[28px]">
                 {col3Items.map((item, idx) => (
                   <ScaledResumeCard
                     key={`c3-${idx}`}
@@ -1802,8 +2130,8 @@ export default function GlidingMotionCanvas({ activeMode = "resumes", isDarkMode
             </div>
 
             {/* Column B: Far Right Outer Buffer */}
-            <div className="overflow-visible h-full flex flex-col w-[275px] sm:w-[290px] xl:w-[305px] shrink-0 pt-10 sm:pt-12">
-              <div className="flex flex-col gap-[26px] pb-[26px]">
+            <div className="overflow-visible h-full flex flex-col w-[310px] sm:w-[375px] xl:w-[395px] shrink-0 pt-10 sm:pt-12">
+              <div className="flex flex-col gap-[28px] pb-[28px]">
                 {colBItems.map((item, idx) => (
                   <ScaledResumeCard
                     key={`cB-${idx}`}
@@ -1836,10 +2164,10 @@ export default function GlidingMotionCanvas({ activeMode = "resumes", isDarkMode
               scale: { duration: shouldReduceMotion ? 0.1 : 2.2, times: [0, 0.35, 1], ease: [0.45, 0, 0.2, 1] },
             }}
             style={{ transformOrigin: "center center" }}
-            className="flex items-start justify-center gap-7 sm:gap-9 lg:gap-11 px-2 lg:px-6 pt-3 will-change-transform shrink-0"
+            className="flex items-start justify-center gap-5 sm:gap-9 lg:gap-11 px-2 lg:px-6 pt-3 will-change-transform shrink-0"
           >
             {/* Portfolio Column A: Far Left Outer Buffer */}
-            <div className="overflow-visible h-full flex flex-col w-[480px] sm:w-[520px] xl:w-[560px] shrink-0 pt-6">
+            <div className="overflow-visible h-full flex flex-col w-[330px] sm:w-[520px] xl:w-[560px] shrink-0 pt-6">
               <div className="flex flex-col gap-[28px] pb-[28px]">
                 {pColAItems.map((item, idx) => (
                   <ScaledPortfolioCard
@@ -1856,7 +2184,7 @@ export default function GlidingMotionCanvas({ activeMode = "resumes", isDarkMode
             </div>
 
             {/* Portfolio Column 1: Left */}
-            <div className="overflow-visible h-full flex flex-col w-[480px] sm:w-[520px] xl:w-[560px] shrink-0 pt-0">
+            <div className="overflow-visible h-full flex flex-col w-[330px] sm:w-[520px] xl:w-[560px] shrink-0 pt-0">
               <div className="flex flex-col gap-[28px] pb-[28px]">
                 {pCol1Items.map((item, idx) => (
                   <ScaledPortfolioCard
@@ -1873,7 +2201,7 @@ export default function GlidingMotionCanvas({ activeMode = "resumes", isDarkMode
             </div>
 
             {/* Portfolio Column 2: Center */}
-            <div className="overflow-visible h-full flex flex-col w-[480px] sm:w-[520px] xl:w-[560px] shrink-0 pt-8 sm:pt-10">
+            <div className="overflow-visible h-full flex flex-col w-[330px] sm:w-[520px] xl:w-[560px] shrink-0 pt-8 sm:pt-10">
               <div className="flex flex-col gap-[28px] pb-[28px]">
                 {pCol2Items.map((item, idx) => (
                   <ScaledPortfolioCard
@@ -1890,7 +2218,7 @@ export default function GlidingMotionCanvas({ activeMode = "resumes", isDarkMode
             </div>
 
             {/* Portfolio Column 3: Right */}
-            <div className="overflow-visible h-full flex flex-col w-[480px] sm:w-[520px] xl:w-[560px] shrink-0 pt-4 sm:pt-6">
+            <div className="overflow-visible h-full flex flex-col w-[330px] sm:w-[520px] xl:w-[560px] shrink-0 pt-4 sm:pt-6">
               <div className="flex flex-col gap-[28px] pb-[28px]">
                 {pCol3Items.map((item, idx) => (
                   <ScaledPortfolioCard
@@ -1907,7 +2235,7 @@ export default function GlidingMotionCanvas({ activeMode = "resumes", isDarkMode
             </div>
 
             {/* Portfolio Column B: Far Right Outer Buffer */}
-            <div className="overflow-visible h-full flex flex-col w-[480px] sm:w-[520px] xl:w-[560px] shrink-0 pt-10 sm:pt-12">
+            <div className="overflow-visible h-full flex flex-col w-[330px] sm:w-[520px] xl:w-[560px] shrink-0 pt-10 sm:pt-12">
               <div className="flex flex-col gap-[28px] pb-[28px]">
                 {pColBItems.map((item, idx) => (
                   <ScaledPortfolioCard
