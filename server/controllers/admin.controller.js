@@ -4253,6 +4253,7 @@ export const sendCustomAdminEmail = async (req, res) => {
       buttonText,
       buttonUrl,
       noteBox,
+      themeAccent = "indigo",
       sendCopyAdmin = true,
     } = req.body;
 
@@ -4282,20 +4283,30 @@ export const sendCustomAdminEmail = async (req, res) => {
       buttonText,
       buttonUrl,
       noteBox,
+      themeAccent,
       sendCopyAdmin,
     });
 
-    // Log admin action
-    await AdminLog.create({
-      adminId: req.user?._id,
-      action: "send_custom_email",
-      description: `Sent custom email "${subject}" to ${toEmail}`,
-      details: {
-        toEmail,
-        subject,
-        messageId: result.messageId,
-      },
-    });
+    // Log admin action safely (non-blocking)
+    try {
+      const adminId = req.user?.userId || req.user?._id || req.user?.id;
+      if (adminId) {
+        await AdminLog.create({
+          adminId,
+          action: "send_custom_email",
+          targetType: "user",
+          description: `Sent custom email "${subject}" to ${toEmail}`,
+          metadata: {
+            toEmail,
+            subject,
+            messageId: result.messageId,
+          },
+          ipAddress: req.ip,
+        });
+      }
+    } catch (logErr) {
+      console.warn("⚠️ Failed to write AdminLog entry for sent email:", logErr.message);
+    }
 
     res.json({
       success: true,

@@ -137,7 +137,7 @@ export default function EvilChartsLandingMatrix() {
                 }`}
               >
                 <FileText className="w-3.5 h-3.5" />
-                <span>ATS Resumes (12+)</span>
+                <span>ATS Resumes (15+)</span>
               </button>
 
               <button
@@ -156,7 +156,7 @@ export default function EvilChartsLandingMatrix() {
                 }`}
               >
                 <Globe className="w-3.5 h-3.5" />
-                <span>Web Portfolios (7+)</span>
+                <span>Web Portfolios (14+)</span>
               </button>
             </div>
 
