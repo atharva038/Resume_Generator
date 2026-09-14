@@ -196,32 +196,31 @@ mongoose
     console.log("✅ MongoDB connected successfully");
     console.log("📊 Connected to database:", mongoose.connection.name);
 
-    // Synchronize API keys with MongoDB Settings so all dev/prod devices share working keys
+    // Synchronize API keys with MongoDB Settings so all dev/prod devices share the verified working key
     try {
       const settings = await Settings.getSettings();
       const envKey = process.env.OPENAI_API_KEY?.trim();
       const dbKey = settings?.aiApiKeys?.openaiApiKey?.trim();
+      const dbAdminKey = settings?.aiApiKeys?.openaiAdminKey?.trim();
 
-      if (envKey && envKey.startsWith("sk-") && !envKey.includes("YOUR_")) {
-        // Local/server has a valid key -> seed/update DB if different
-        if (dbKey !== envKey) {
-          if (!settings.aiApiKeys) settings.aiApiKeys = {};
-          settings.aiApiKeys.openaiApiKey = envKey;
-          if (process.env.OPENAI_ADMIN_KEY?.trim()) {
-            settings.aiApiKeys.openaiAdminKey = process.env.OPENAI_ADMIN_KEY.trim();
-          }
-          await settings.save();
-          console.log("🔑 [CONFIG] Seeded shared MongoDB Settings with active OpenAI API Key");
-        }
-      } else if (dbKey && dbKey.startsWith("sk-")) {
-        // Local/server is missing key or has invalid key -> load from shared DB!
+      if (dbKey && dbKey.startsWith("sk-")) {
+        // Shared database has the verified working key -> enforce it across all devices
         process.env.OPENAI_API_KEY = dbKey;
-        if (settings?.aiApiKeys?.openaiAdminKey && !process.env.OPENAI_ADMIN_KEY) {
-          process.env.OPENAI_ADMIN_KEY = settings.aiApiKeys.openaiAdminKey;
+        if (dbAdminKey) {
+          process.env.OPENAI_ADMIN_KEY = dbAdminKey;
         }
         console.log(
-          `🔑 [CONFIG] Loaded active OPENAI_API_KEY from shared MongoDB (${dbKey.substring(0, 7)}...${dbKey.substring(dbKey.length - 4)})`
+          `🔑 [CONFIG] Active OpenAI Key enforced from MongoDB Atlas (...${dbKey.slice(-6)})`
         );
+      } else if (envKey && envKey.startsWith("sk-") && !envKey.includes("YOUR_")) {
+        // First-time seeding into MongoDB if database has no key yet
+        if (!settings.aiApiKeys) settings.aiApiKeys = {};
+        settings.aiApiKeys.openaiApiKey = envKey;
+        if (process.env.OPENAI_ADMIN_KEY?.trim()) {
+          settings.aiApiKeys.openaiAdminKey = process.env.OPENAI_ADMIN_KEY.trim();
+        }
+        await settings.save();
+        console.log("🔑 [CONFIG] Seeded shared MongoDB Settings with active OpenAI API Key");
       }
     } catch (syncErr) {
       console.warn("⚠️  Settings key synchronization notice:", syncErr.message);
