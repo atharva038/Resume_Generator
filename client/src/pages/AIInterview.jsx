@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useAuth } from "@/context/AuthContext";
+import ConfirmationModal from "@/components/common/modals/ConfirmationModal";
 import {
   INTERVIEWER_VOICES,
   SetupStep,
@@ -14,6 +15,8 @@ import {
 const AIInterview = () => {
   const { user } = useAuth();
   const isProduction = import.meta.env.PROD || false;
+  const [isExitModalOpen, setIsExitModalOpen] = useState(false);
+  const [isAbandoning, setIsAbandoning] = useState(false);
 
   const [theme, setTheme] = useState(() => {
     return (
@@ -138,6 +141,46 @@ const AIInterview = () => {
     };
   }, []);
 
+  // Intercept browser back button & page unload during live interview
+  useEffect(() => {
+    if (session.step !== "interview") return;
+
+    window.history.pushState({ interviewActive: true }, "");
+
+    const handlePopState = () => {
+      window.history.pushState({ interviewActive: true }, "");
+      setIsExitModalOpen(true);
+    };
+
+    const handleBeforeUnload = (e) => {
+      e.preventDefault();
+      e.returnValue = "";
+      return "";
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [session.step]);
+
+  const handleRequestExit = () => {
+    setIsExitModalOpen(true);
+  };
+
+  const handleConfirmExit = async () => {
+    setIsAbandoning(true);
+    try {
+      await session.handleAbandonInterview(true);
+    } finally {
+      setIsAbandoning(false);
+      setIsExitModalOpen(false);
+    }
+  };
+
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -226,8 +269,8 @@ const AIInterview = () => {
             onToggleMute={session.handleToggleMute}
             onSkip={session.handleSkipQuestion}
             onSkipQuestion={session.handleSkipQuestion}
-            onAbandon={session.handleAbandonInterview}
-            onAbandonInterview={session.handleAbandonInterview}
+            onAbandon={handleRequestExit}
+            onAbandonInterview={handleRequestExit}
             onSubmitAnswer={session.handleSubmitAnswer}
             onStartRecording={() => recording.startRecording(false)}
             onStopRecording={recording.stopRecording}
@@ -246,6 +289,19 @@ const AIInterview = () => {
           />
         )}
       </div>
+
+      {/* End Interview Confirmation Modal Popup */}
+      <ConfirmationModal
+        isOpen={isExitModalOpen}
+        onClose={() => setIsExitModalOpen(false)}
+        onConfirm={handleConfirmExit}
+        title="End Interview Session?"
+        message="Are you sure you want to exit? Your active live interview will be terminated and unsaved progress will be lost."
+        confirmText="Yes, End Interview"
+        cancelText="Stay in Interview"
+        type="danger"
+        loading={isAbandoning}
+      />
     </div>
   );
 };
