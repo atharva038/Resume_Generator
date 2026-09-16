@@ -15,6 +15,7 @@ import {
   UserCircle,
   Tag,
   Mic,
+  HelpCircle,
   TrendingUp,
   FileText,
 } from "lucide-react";
@@ -60,6 +61,14 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
       description: "Check ATS compatibility",
     },
     {
+      name: "AI Interview",
+      path: "/interview",
+      icon: Mic,
+      description: "AI Mock Interview Studio",
+      requiresAuth: true,
+      badge: "NEW",
+    },
+    {
       name: "Career Profile",
       path: "/career-profile",
       icon: UserCircle,
@@ -70,7 +79,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     {
       name: "Career Q&A",
       path: "/career-qa",
-      icon: Mic,
+      icon: HelpCircle,
       description: "Personalized answer bank",
       requiresAuth: true,
       openNewTab: true,
