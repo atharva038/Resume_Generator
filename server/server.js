@@ -203,7 +203,16 @@ mongoose
       const dbKey = settings?.aiApiKeys?.openaiApiKey?.trim();
       const dbAdminKey = settings?.aiApiKeys?.openaiAdminKey?.trim();
 
-      if (dbKey && dbKey.startsWith("sk-")) {
+      if (envKey && envKey.startsWith("sk-") && !envKey.includes("YOUR_") && envKey !== dbKey) {
+        // Fresh .env key provided -> update MongoDB Atlas with the active key
+        if (!settings.aiApiKeys) settings.aiApiKeys = {};
+        settings.aiApiKeys.openaiApiKey = envKey;
+        if (process.env.OPENAI_ADMIN_KEY?.trim()) {
+          settings.aiApiKeys.openaiAdminKey = process.env.OPENAI_ADMIN_KEY.trim();
+        }
+        await settings.save();
+        console.log(`🔑 [CONFIG] Synced and updated MongoDB Atlas with active OpenAI API Key (...${envKey.slice(-6)})`);
+      } else if (dbKey && dbKey.startsWith("sk-")) {
         // Shared database has the verified working key -> enforce it across all devices
         process.env.OPENAI_API_KEY = dbKey;
         if (dbAdminKey) {
@@ -212,15 +221,6 @@ mongoose
         console.log(
           `🔑 [CONFIG] Active OpenAI Key enforced from MongoDB Atlas (...${dbKey.slice(-6)})`
         );
-      } else if (envKey && envKey.startsWith("sk-") && !envKey.includes("YOUR_")) {
-        // First-time seeding into MongoDB if database has no key yet
-        if (!settings.aiApiKeys) settings.aiApiKeys = {};
-        settings.aiApiKeys.openaiApiKey = envKey;
-        if (process.env.OPENAI_ADMIN_KEY?.trim()) {
-          settings.aiApiKeys.openaiAdminKey = process.env.OPENAI_ADMIN_KEY.trim();
-        }
-        await settings.save();
-        console.log("🔑 [CONFIG] Seeded shared MongoDB Settings with active OpenAI API Key");
       }
     } catch (syncErr) {
       console.warn("⚠️  Settings key synchronization notice:", syncErr.message);
