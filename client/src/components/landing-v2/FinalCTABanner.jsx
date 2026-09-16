@@ -45,12 +45,6 @@ export default function FinalCTABanner() {
           <div className="pointer-events-none absolute -top-24 -left-24 w-80 h-80 rounded-full bg-amber-500/10 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-24 -right-24 w-80 h-80 rounded-full bg-yellow-500/10 blur-3xl" />
 
-          {/* Brand Eyebrow Pill */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-mono font-medium bg-amber-500/10 border border-amber-500/25 text-amber-300">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-            <span>SmartNShine · AI Career Platform</span>
-          </div>
-
           {/* Headline & Subtitle */}
           <div className="space-y-4 max-w-2xl mx-auto">
             <h2

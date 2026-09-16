@@ -1514,7 +1514,7 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
                   </p>
                   <div className="flex items-center gap-3 pt-2">
                     <div className="px-4 py-2 rounded-xl bg-[#1e232d] shadow-[4px_4px_8px_#0e1014,-4px_-4px_8px_#262c38] text-xs font-bold text-white">
-                      Inspect Code [>]
+                      Inspect Code [&gt;]
                     </div>
                     <div className="px-4 py-2 rounded-xl bg-[#14171e] shadow-inner text-xs font-bold text-amber-400">
                       Download CV [↓]

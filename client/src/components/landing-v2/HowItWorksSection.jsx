@@ -56,10 +56,6 @@ export default function HowItWorksSection() {
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="text-center max-w-3xl mx-auto space-y-4"
         >
-          <div className={"inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border text-xs font-mono font-medium tracking-wider uppercase " + (isDarkMode ? "bg-zinc-800/80 border-zinc-700/80 text-zinc-300" : "bg-zinc-100 border-zinc-200 text-zinc-600")}>
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>How It Works</span>
-          </div>
           <h2 className={"text-3xl sm:text-4xl lg:text-5xl font-normal tracking-tight leading-tight " + (isDarkMode ? "text-white" : "text-slate-900")}>
             From rough draft to offer letter, <span className="font-light text-slate-400 dark:text-zinc-500">in minutes.</span>
           </h2>

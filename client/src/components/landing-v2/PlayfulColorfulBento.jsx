@@ -112,10 +112,6 @@ export default function PlayfulColorfulBento() {
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="text-center max-w-3xl mx-auto space-y-4"
         >
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-mono font-medium tracking-wider uppercase border bg-purple-500/10 border-purple-500/20 text-purple-600 dark:text-purple-400">
-            <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
-            <span>Core Capabilities</span>
-          </div>
           <h2 className={`text-3xl sm:text-4xl lg:text-5xl font-normal tracking-tight leading-tight ${isDarkMode ? "text-white" : "text-slate-900"}`}>
             Designed for clarity, <span className="font-light text-slate-400 dark:text-zinc-500">engineered for offers.</span>
           </h2>

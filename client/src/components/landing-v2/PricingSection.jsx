@@ -220,17 +220,6 @@ export default function PricingSection() {
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="text-center max-w-3xl mx-auto space-y-4"
         >
-          <div
-            className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border text-xs font-mono font-medium tracking-wider uppercase backdrop-blur-md ${
-              isDarkMode
-                ? "bg-zinc-800/60 border-zinc-700/60 text-zinc-300"
-                : "bg-slate-100/80 border-slate-200/80 text-slate-700"
-            }`}
-          >
-            <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
-            Pricing Plans
-          </div>
-
           <h2
             className={`text-3xl sm:text-4xl lg:text-5xl font-normal tracking-tight leading-tight ${
               isDarkMode ? "text-white" : "text-slate-900"
@@ -317,12 +306,12 @@ export default function PricingSection() {
                         </h3>
 
                         {isActivePlan ? (
-                          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-medium uppercase tracking-wider border border-emerald-500/20">
-                            <Check className="w-3.5 h-3.5 stroke-[2.5]" /> Active Plan
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[11px] font-mono font-medium uppercase tracking-wider border border-emerald-500/20">
+                            <Check className="w-3.5 h-3.5 stroke-[2.5]" /> Active
                           </span>
                         ) : isPopular ? (
-                          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-xs font-medium uppercase tracking-wider border border-indigo-500/25 shadow-xs">
-                            <Sparkles className="w-3.5 h-3.5 fill-current" /> Most Popular
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-[11px] font-mono font-medium uppercase tracking-wider border border-indigo-500/25 shadow-xs">
+                            <Sparkles className="w-3.5 h-3.5 fill-current" /> Popular
                           </span>
                         ) : null}
                       </div>
@@ -378,7 +367,7 @@ export default function PricingSection() {
                           </div>
 
                           {isOneTimeDiscounted && (
-                            <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-medium uppercase tracking-wider bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                            <span className="inline-block px-2 py-0.5 rounded-md text-[11px] font-mono font-medium uppercase tracking-wider bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
                               {data.promoBadge || "SPECIAL"} • Flat{" "}
                               {Math.round(
                                 (1 - oneTimeAmount / oneTimeOriginalAmount) * 100
@@ -410,7 +399,7 @@ export default function PricingSection() {
                           </div>
 
                           {isProDiscounted && (
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium uppercase tracking-wider bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
+                            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-mono font-medium uppercase tracking-wider bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
                               <Zap className="w-3 h-3 fill-current" />
                               PRO DEAL • Flat{" "}
                               {Math.round((1 - proAmount / proOriginalAmount) * 100)}%
@@ -437,7 +426,7 @@ export default function PricingSection() {
                             className="flex items-start gap-3 text-sm sm:text-[15px] font-light leading-relaxed"
                           >
                             <div
-                              className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${
+                              className={`w-5 h-5 rounded-md flex items-center justify-center shrink-0 mt-0.5 ${
                                 isPro
                                   ? "bg-indigo-500/15 text-indigo-600 dark:text-indigo-400"
                                   : isOneTime

@@ -36,107 +36,168 @@ import {
   Award,
 } from "lucide-react";
 
-// Sample resume data for preview
+import ProfessionalV2Template from "@/components/templates/ProfessionalV2Template";
+
+// Rich, comprehensive sample resume data for perfect template previews
 const sampleResumeData = {
-  name: "John Doe",
-  contact: {
-    email: "john.doe@email.com",
-    phone: "+1 (234) 567-8900",
+  name: "Alex Morgan",
+  personalInfo: {
+    fullName: "Alex Morgan",
+    email: "alex.morgan@stanford.edu",
+    phone: "+1 (415) 890-2341",
     location: "San Francisco, CA",
-    linkedin: "https://linkedin.com/in/johndoe",
-    github: "https://github.com/johndoe",
+    title: "Senior Full-Stack Architect & AI Systems Engineer",
+    website: "https://alexmorgan.dev",
+    linkedin: "https://linkedin.com/in/alexmorgan",
+    github: "https://github.com/alexmorgan",
+  },
+  contact: {
+    email: "alex.morgan@stanford.edu",
+    phone: "+1 (415) 890-2341",
+    location: "San Francisco, CA",
+    website: "https://alexmorgan.dev",
+    linkedin: "https://linkedin.com/in/alexmorgan",
+    github: "https://github.com/alexmorgan",
   },
   summary:
-    "Experienced professional with 5+ years in the field, dedicated to excellence and innovation. Proven track record of delivering high-quality solutions and leading successful teams.",
+    "Engineering leader with 7+ years of experience architecting high-scale distributed cloud systems, modern web apps, and enterprise AI workflows. Scaled platform infrastructure to 2M+ active users, reduced p99 latency by 42%, and driven $3.2M in annual cloud infrastructure efficiencies.",
   skills: [
     {
-      category: "Technical Skills",
-      items: ["JavaScript", "React", "Node.js", "Python", "AWS"],
+      category: "Languages & Frameworks",
+      items: ["TypeScript", "React", "Node.js", "Python", "Go", "Next.js", "GraphQL"],
     },
     {
-      category: "Soft Skills",
-      items: [
-        "Leadership",
-        "Communication",
-        "Problem Solving",
-        "Team Collaboration",
-      ],
+      category: "Cloud & Distributed Systems",
+      items: ["AWS (EKS, Lambda)", "Docker", "Kubernetes", "PostgreSQL", "Redis", "Kafka", "Terraform"],
+    },
+    {
+      category: "AI & ML Architecture",
+      items: ["OpenAI GPT-4o", "LangChain", "Vector Embeddings", "vLLM", "Prompt Engineering"],
     },
   ],
+  skillsList: ["TypeScript", "React", "Node.js", "Python", "AWS", "Kubernetes", "PostgreSQL", "Docker", "Redis", "Kafka"],
   experience: [
     {
-      position: "Senior Software Engineer",
-      company: "Tech Corp",
+      position: "Lead Cloud Architect",
+      company: "Apex Distributed Labs",
       location: "San Francisco, CA",
-      startDate: "Jan 2020",
+      startDate: "2021",
       endDate: "Present",
+      description: "Led core infrastructure team responsible for zero-downtime microservices and AI agent orchestration.",
       bullets: [
-        "Led team of 5 developers in building scalable web applications serving 100K+ users",
-        "Improved system performance by 40% through code optimization and architecture redesign",
-        "Mentored junior developers and conducted technical interviews",
+        "Architected multi-region Kubernetes cluster processing 140M+ daily events with 99.99% service availability",
+        "Engineered real-time semantic caching layer in Redis, slashing database read latency by 58% and saving $180K/yr",
+        "Spearheaded enterprise LLM agent deployment enabling automated code review for 120+ internal engineers",
       ],
     },
     {
-      position: "Software Engineer",
-      company: "StartupXYZ",
-      location: "Remote",
-      startDate: "Jun 2018",
-      endDate: "Dec 2019",
+      position: "Senior Systems Engineer",
+      company: "Vanguard Cloud Technologies",
+      location: "San Jose, CA",
+      startDate: "2018",
+      endDate: "2021",
       bullets: [
-        "Developed RESTful APIs and microservices using Node.js and Express",
-        "Collaborated with cross-functional teams to deliver features on time",
+        "Migrated monolithic backend to containerized Go/Node.js microservices, cutting deployment cycle times from 4 hrs to 12 mins",
+        "Implemented high-throughput event streaming with Kafka, accommodating a 300% traffic surge across Cyber Week",
+        "Mentored 8 mid-level and junior engineers through technical architecture reviews and system design workshops",
       ],
     },
   ],
   education: [
     {
-      degree: "Bachelor of Science",
+      degree: "Master of Science in Computer Science",
       field: "Computer Science",
-      institution: "University of California",
-      location: "Berkeley, CA",
+      institution: "Stanford University",
+      location: "Stanford, CA",
       graduationDate: "2018",
-      gpa: "3.8/4.0",
-      bullets: ["Dean's List", "CS Club President"],
+      gpa: "3.94 / 4.0",
+      bullets: ["Specialization in Distributed Systems & Machine Intelligence", "Graduate Research Assistant at Stanford AI Lab"],
+    },
+    {
+      degree: "Bachelor of Science in Software Engineering",
+      field: "Software Engineering",
+      institution: "UC Berkeley",
+      location: "Berkeley, CA",
+      graduationDate: "2016",
+      gpa: "3.88 / 4.0",
+      bullets: ["Dean's Honors List (All Semesters)", "President of Association for Computing Machinery (ACM)"],
     },
   ],
   projects: [
     {
-      name: "E-commerce Platform",
-      description:
-        "Built a full-stack e-commerce solution with payment integration",
-      technologies: ["React", "Node.js", "MongoDB", "Stripe"],
+      name: "HyperScale Vector Gateway",
+      technologies: ["Rust", "Python", "gRPC", "pgvector", "Docker"],
+      description: "High-performance vector search proxy delivering sub-8ms retrieval over 10M+ embedded document chunks.",
+      url: "https://github.com/alexmorgan/vector-gateway",
       date: "2023",
-      url: "https://github.com/johndoe/ecommerce",
+    },
+    {
+      name: "PulseStream Monitoring Suite",
+      technologies: ["React", "TypeScript", "ClickHouse", "WebSockets"],
+      description: "Distributed telemetry dashboard visualizing latency metrics and error budgets across 40+ microservices.",
+      url: "https://github.com/alexmorgan/pulsestream",
+      date: "2022",
     },
   ],
   certifications: [
     {
-      name: "AWS Certified Solutions Architect",
+      name: "AWS Certified Solutions Architect – Professional",
       issuer: "Amazon Web Services",
+      date: "2023",
+    },
+    {
+      name: "Certified Kubernetes Administrator (CKA)",
+      issuer: "Linux Foundation / CNCF",
       date: "2022",
     },
+  ],
+  achievements: [
+    "Published author: 'Low-Latency Sharding Strategies in Cloud-Native Databases' (IEEE Conf, 2021)",
+    "Winner of Silicon Valley Global Cloud Hackathon (1st Place out of 280 teams)",
   ],
 };
 
 const TEMPLATE_COMPONENTS = {
+  "silicon-valley": SiliconValleyTemplate,
+  siliconValley: SiliconValleyTemplate,
   "latex-academic": LatexAcademicTemplate,
+  latexAcademic: LatexAcademicTemplate,
   "nordic-split": NordicSplitTemplate,
+  nordicSplit: NordicSplitTemplate,
   executive: ExecutiveTemplate,
   classic: ClassicTemplate,
   modern: ModernTemplate,
   minimal: MinimalTemplate,
   professional: ProfessionalTemplate,
+  "professional-v2": ProfessionalV2Template,
+  professionalV2: ProfessionalV2Template,
   "professional-2": Professional2Template,
+  professional2: Professional2Template,
   tech: TechTemplate,
   "creative-2": Creative2Template,
+  creative2: Creative2Template,
   "strategic-leader": StrategicLeadershipTemplate,
+  "strategic-leadership": StrategicLeadershipTemplate,
   "impact-pro": ImpactProTemplate,
   "github-style": GitHubStyleTemplate,
+  githubstyle: GitHubStyleTemplate,
+  GitHubStyle: GitHubStyleTemplate,
   "structured-photo": StructuredPhotoTemplate,
-  "silicon-valley": SiliconValleyTemplate,
 };
 
 const BASE_TEMPLATE_LIST = [
+  {
+    id: "silicon-valley",
+    name: "Silicon Valley Tech Lead",
+    component: SiliconValleyTemplate,
+    category: "Tech",
+    atsScore: 99,
+    badge: "FLAGSHIP 2026",
+    description:
+      "Stripe & Linear-inspired high-craft developer layout with ATS-safe metric badges and domain skill capsules.",
+    features: ["Developer Typography", "Metric Highlighting", "Skill Capsules", "Commit Rail"],
+    colors: ["#4f46e5", "#059669", "#1e293b", "#18181b"],
+  },
   {
     id: "latex-academic",
     name: "Stanford / LaTeX Academic Pro",
@@ -160,18 +221,6 @@ const BASE_TEMPLATE_LIST = [
       "Asymmetric 32/68 split layout with stylish left sidebar rail for skills & credentials and spacious right body.",
     features: ["Split-Rail Layout", "Skills Pills", "Impact Metrics", "Single-Flow ATS"],
     colors: ["#1d4ed8", "#047857", "#1e293b", "#0f766e"],
-  },
-  {
-    id: "silicon-valley",
-    name: "Silicon Valley Tech Lead",
-    component: SiliconValleyTemplate,
-    category: "Tech",
-    atsScore: 99,
-    badge: "NEW FLAGSHIP",
-    description:
-      "Stripe & Linear-inspired high-craft developer resume with dynamic ATS-safe metric highlighting and domain skill capsules.",
-    features: ["Developer Typography", "Metric Highlighting", "Skill Capsules", "Commit Rail"],
-    colors: ["#4f46e5", "#059669", "#1e293b", "#18181b"],
   },
   {
     id: "executive",
@@ -215,6 +264,7 @@ const BASE_TEMPLATE_LIST = [
     component: MinimalTemplate,
     category: "Minimal",
     atsScore: 99,
+    badge: "SWISS CLEAN",
     description:
       "Ultra-clean Swiss typography, hairline dividers, space-efficient 2-line metadata, and guaranteed 1-page fit.",
     features: ["Swiss Typography", "Hairline Dividers", "Deduplicated Bullets", "1-Page Fit"],
@@ -227,9 +277,21 @@ const BASE_TEMPLATE_LIST = [
     category: "Professional",
     atsScore: 97,
     description:
-      "Balanced and structured layout ideal for corporate and enterprise roles",
+      "Balanced and structured layout ideal for corporate, consulting, and enterprise roles.",
     features: ["Corporate Standard", "Clean Sections", "Balanced Spacing"],
     colors: ["#0284c7", "#0d9488", "#4f46e5", "#be185d"],
+  },
+  {
+    id: "professional-v2",
+    name: "Professional V2",
+    component: ProfessionalV2Template,
+    category: "Professional",
+    atsScore: 96,
+    badge: "TRENDING",
+    description:
+      "Refined modern professional format with structured metric callouts, KPI highlights, and project grids.",
+    features: ["Metric Callouts", "KPI Cards", "Structured Projects", "High ATS"],
+    colors: ["#1d4ed8", "#047857", "#831843", "#1e293b"],
   },
   {
     id: "professional-2",
@@ -238,30 +300,30 @@ const BASE_TEMPLATE_LIST = [
     category: "Professional",
     atsScore: 96,
     description:
-      "Clean single-column executive design focusing on career milestones and leadership",
+      "Clean single-column executive design focusing on career milestones and leadership highlights.",
     features: ["Executive Format", "Single Column", "Timeline Highlights"],
     colors: ["#1e293b", "#0f766e", "#1d4ed8", "#991b1b"],
   },
   {
     id: "tech",
-    name: "Developer Tech",
+    name: "Developer Tech Stack",
     component: TechTemplate,
     category: "Tech",
     atsScore: 95,
     description:
-      "Terminal-inspired modern format emphasizing tech stacks, tools, and GitHub repos",
+      "Terminal-inspired modern format emphasizing tech stacks, cloud tools, and GitHub repositories.",
     features: ["Tech Stack Focus", "Developer Style", "Skills Grid"],
     colors: ["#10b981", "#06b6d4", "#6366f1", "#ec4899"],
   },
   {
-    id: "creative-2",
-    name: "Creative 2.0",
+    id: "creative2",
+    name: "Creative 2.0 Editorial",
     component: Creative2Template,
     category: "Creative",
     atsScore: 94,
     description:
-      "Vibrant modern creative template with dynamic layouts and ATS optimization",
-    features: ["Dynamic Layout", "All Sections", "Visual Appeal"],
+      "Vibrant modern creative template with dynamic layouts, aesthetic flair, and 100% ATS optimization.",
+    features: ["Dynamic Layout", "Portfolio Elements", "Visual Appeal"],
     colors: ["#8b5cf6", "#ec4899", "#ffffff"],
   },
   {
@@ -271,7 +333,7 @@ const BASE_TEMPLATE_LIST = [
     category: "Leadership",
     atsScore: 97,
     description:
-      "Leadership-focused layout emphasizing strategic impact and results",
+      "Leadership-focused layout emphasizing strategic impact, P&L ownership, and executive team scaling.",
     features: ["Impact-Driven", "Two-Column Layout", "Achievement Focus"],
     colors: ["#0d7377", "#6b46c1", "#9b2c2c", "#2c5282"],
   },
@@ -281,8 +343,9 @@ const BASE_TEMPLATE_LIST = [
     component: ImpactProTemplate,
     category: "Professional",
     atsScore: 98,
+    badge: "TOP RATED",
     description:
-      "Bold results-driven template highlighting quantifiable achievements",
+      "Bold results-driven template highlighting quantifiable revenue growth and ROI metrics.",
     features: ["Metrics-First", "Bold Design", "Results-Focused"],
     colors: ["#047857", "#1e40af", "#7e22ce", "#c2410c"],
   },
@@ -293,7 +356,7 @@ const BASE_TEMPLATE_LIST = [
     category: "Tech",
     atsScore: 92,
     description:
-      "Clean GitHub-style resume optimized for developers and tech professionals",
+      "Clean GitHub-style resume optimized for open-source contributors, tech leads, and developers.",
     features: ["GitHub Format", "Developer Friendly", "Clean Layout"],
     colors: ["#000000", "#1a237e", "#ff9933", "#1b5e20"],
   },
@@ -301,16 +364,21 @@ const BASE_TEMPLATE_LIST = [
     id: "structured-photo",
     name: "Structured Photo Pro",
     component: StructuredPhotoTemplate,
-    category: "Professional",
+    category: "Creative",
     atsScore: 90,
     description:
-      "A structured, elegant template with distinctive section layouts and modern typography.",
+      "A structured, elegant template with distinctive section layouts and international standard CV typography.",
     features: ["Dual Column", "Elegant", "Modern Typography"],
     colors: ["#2f678e", "#e05c5c", "#ffffff"],
   },
 ];
 
-const CATEGORIES = ["All", "Professional", "Leadership", "Tech", "Creative", "Modern", "Minimal"];
+const CATEGORIES = ["All", "Professional", "Tech", "Leadership", "Academic", "Creative", "Minimal"];
+
+const normalizeTplId = (id) =>
+  (id || "")
+    .toLowerCase()
+    .replace(/[-_\s]/g, "");
 
 export default function Templates() {
   const navigate = useNavigate();
@@ -334,37 +402,60 @@ export default function Templates() {
     }
   }, [categoryParam]);
 
-  // Fetch dynamic templates & SEO from backend
+  // Fetch dynamic templates & SEO from backend with safe merge
   useEffect(() => {
     const fetchTemplates = async () => {
       try {
         const res = await resumeAPI.getPublicTemplates();
         const serverTemplates = res.data?.data || [];
         if (serverTemplates.length > 0) {
-          // Merge server configs (SEO, badges, atsScore, names) with client components
-          const merged = serverTemplates.map((st) => {
-            const clientBase =
-              BASE_TEMPLATE_LIST.find(
-                (b) =>
-                  b.id === st.templateId ||
-                  b.name.toLowerCase() === st.name.toLowerCase()
-              ) || BASE_TEMPLATE_LIST[0];
+          // Merge server metadata with complete client template components
+          const merged = BASE_TEMPLATE_LIST.map((clientBase) => {
+            const serverMatch = serverTemplates.find(
+              (st) =>
+                normalizeTplId(st.templateId) === normalizeTplId(clientBase.id) ||
+                st.name?.toLowerCase().trim() === clientBase.name.toLowerCase().trim()
+            );
+
+            if (!serverMatch) return clientBase;
 
             return {
               ...clientBase,
-              id: st.templateId || clientBase.id,
-              name: st.name || clientBase.name,
-              category: st.category || clientBase.category,
-              emoji: st.emoji || "📄",
-              atsScore: st.atsScore ?? clientBase.atsScore,
-              tier: st.tier || "free",
-              badge: st.badge || "",
-              description: st.description || clientBase.description,
-              tags: st.tags || clientBase.features,
-              component:
-                TEMPLATE_COMPONENTS[st.templateId] || clientBase.component,
-              seo: st.seo || {},
+              atsScore: serverMatch.atsScore ?? clientBase.atsScore,
+              tier: serverMatch.tier || clientBase.tier || "free",
+              badge: serverMatch.badge || clientBase.badge,
+              description: serverMatch.description || clientBase.description,
+              features: serverMatch.tags || clientBase.features,
+              seo: serverMatch.seo || {},
             };
+          });
+
+          // Also include any extra unique templates from server
+          serverTemplates.forEach((st) => {
+            const alreadyPresent = merged.some(
+              (m) =>
+                normalizeTplId(m.id) === normalizeTplId(st.templateId) ||
+                m.name?.toLowerCase().trim() === st.name?.toLowerCase().trim()
+            );
+            if (alreadyPresent) return;
+            const comp =
+              TEMPLATE_COMPONENTS[st.templateId] ||
+              TEMPLATE_COMPONENTS[normalizeTplId(st.templateId)];
+            if (comp) {
+              merged.push({
+                id: st.templateId,
+                name: st.name,
+                component: comp,
+                category: st.category || "Professional",
+                atsScore: st.atsScore || 95,
+                tier: st.tier || "free",
+                badge: st.badge || "",
+                description: st.description || "",
+                features: st.tags || ["ATS-Compliant"],
+                colors: ["#1d4ed8", "#047857", "#1e293b"],
+                seo: st.seo || {},
+              });
+            }
           });
 
           setTemplatesList(merged);
@@ -373,8 +464,7 @@ export default function Templates() {
           if (templateParam) {
             const target = merged.find(
               (m) =>
-                m.id === templateParam ||
-                m.id.toLowerCase() === templateParam.toLowerCase()
+                normalizeTplId(m.id) === normalizeTplId(templateParam)
             );
             if (target) {
               setActivePreviewTemplate(target);
@@ -382,12 +472,13 @@ export default function Templates() {
           }
         }
       } catch (err) {
-        console.warn("Using fallback local templates catalog:", err.message);
+        console.warn("Using baseline template catalog:", err.message);
       }
     };
 
     fetchTemplates();
   }, [templateParam]);
+
 
   const filteredTemplates =
     selectedCategory === "All"

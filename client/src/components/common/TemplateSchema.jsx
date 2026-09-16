@@ -105,16 +105,28 @@ export default function TemplateSchema({
     description:
       "Collection of industry-standard, ATS-compliant resume formats engineered for high recruiter response rates.",
     numberOfItems: templates.length,
-    itemListElement: templates.map((tpl, index) => ({
-      "@type": "ListItem",
-      position: index + 1,
-      name: `${tpl.name} Resume Template`,
-      description:
-        tpl.description ||
-        `High-impact ATS compliant ${tpl.category || "professional"} resume template with ${tpl.atsScore || 95}% compatibility.`,
-      url: `${baseUrl}/templates?template=${tpl.templateId || tpl.id}`,
-      image: `${baseUrl}/templates/${(tpl.templateId || tpl.id).replace("-2", "2")}.webp`,
-    })),
+    itemListElement: templates.map((tpl, index) => {
+      const imgPath = `${baseUrl}/templates/${(tpl.templateId || tpl.id).replace("-2", "2")}.webp`;
+      return {
+        "@type": "ListItem",
+        position: index + 1,
+        name: `${tpl.name} ATS Resume Template`,
+        description:
+          tpl.description ||
+          `High-impact ATS compliant ${tpl.category || "professional"} resume template with ${tpl.atsScore || 98}% compatibility.`,
+        url: `${baseUrl}/templates?template=${tpl.templateId || tpl.id}`,
+        image: {
+          "@type": "ImageObject",
+          contentUrl: imgPath,
+          thumbnailUrl: imgPath,
+          name: `Free ATS-Friendly ${tpl.name} Resume Template`,
+          caption: `Free downloadable ATS-compliant ${tpl.name} resume template in PDF and Word format (${tpl.atsScore || 98}% pass score)`,
+          encodingFormat: "image/webp",
+          width: 600,
+          height: 850,
+        },
+      };
+    }),
   };
 
   // 4. Product / WebApplication Rating Schema
