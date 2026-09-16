@@ -281,3 +281,14 @@ export const TEMPLATE_COLOR_THEMES = {
     { id: "monochromePro", name: "Monochrome Pro", primary: "#18181b", emoji: "⚫" },
   ],
 };
+
+// Aliases for seamless backward & URL parameter compatibility
+TEMPLATE_COLOR_THEMES["github-style"] = TEMPLATE_COLOR_THEMES.GitHubStyle;
+TEMPLATE_COLOR_THEMES["githubstyle"] = TEMPLATE_COLOR_THEMES.GitHubStyle;
+TEMPLATE_COLOR_THEMES["creative-2"] = TEMPLATE_COLOR_THEMES.creative2;
+TEMPLATE_COLOR_THEMES["professional-2"] = TEMPLATE_COLOR_THEMES.professional2;
+TEMPLATE_COLOR_THEMES["professionalV2"] = TEMPLATE_COLOR_THEMES["professional-v2"];
+TEMPLATE_COLOR_THEMES["siliconValley"] = TEMPLATE_COLOR_THEMES["silicon-valley"];
+TEMPLATE_COLOR_THEMES["latexAcademic"] = TEMPLATE_COLOR_THEMES["latex-academic"];
+TEMPLATE_COLOR_THEMES["nordicSplit"] = TEMPLATE_COLOR_THEMES["nordic-split"];
+

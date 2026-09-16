@@ -551,58 +551,190 @@ export default function SmartNShineTheme({
         {/* ─── 6. HERO SECTION ─── */}
         <section
           id="hero"
-          className="relative min-h-[90vh] flex flex-col justify-end pt-32 pb-16 overflow-hidden"
+          className="relative min-h-[85vh] sm:min-h-[88vh] flex flex-col justify-center pt-28 sm:pt-32 pb-12 sm:pb-16 overflow-hidden"
         >
           <div className="sns-container w-full">
-            {/* Top Row: Small Metadata */}
+            {/* Top Row: Small Metadata & Live Availability Status */}
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="flex items-center gap-3 mb-8"
+              className="flex flex-wrap items-center justify-between gap-4 mb-8 sm:mb-10 pb-4 border-b border-[var(--sns-border)]"
             >
-              <span className="sns-meta text-[var(--sns-gold)]">PORTFOLIO / {currentYear}</span>
-              <span className="w-6 h-[1px] bg-[var(--sns-border-gold)]" />
-              <span className="sns-meta text-[var(--sns-text-muted)]">SN — 026</span>
+              <div className="flex items-center gap-3">
+                <span className="sns-meta text-[var(--sns-gold)]">PORTFOLIO / {currentYear}</span>
+                <span className="w-6 h-[1px] bg-[var(--sns-border-gold)]" />
+                <span className="sns-meta text-[var(--sns-text-muted)]">SN — 026</span>
+                {role && (
+                  <>
+                    <span className="w-1 h-1 rounded-full bg-[var(--sns-border-gold)] hidden sm:inline-block" />
+                    <span className="sns-meta text-[var(--sns-text-secondary)] hidden sm:inline-block">
+                      {role}
+                    </span>
+                  </>
+                )}
+              </div>
+
+              {/* Status Indicator */}
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-[11px] font-mono tracking-wider uppercase text-[var(--sns-text-secondary)]">
+                  {availabilityStatus || "Available for Opportunities"}
+                </span>
+              </div>
             </motion.div>
 
             {/* Main Hero Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-end mb-16">
-              {/* Left Column: Name & Large Statement */}
-              <div className="lg:col-span-8 space-y-6">
-                <motion.h2
-                  initial={{ opacity: 0, y: 18 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.1 }}
-                  className="text-xs sm:text-sm font-mono tracking-widest uppercase text-[var(--sns-text-muted)] font-medium"
-                >
-                  {name}
-                </motion.h2>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center mb-12">
+              {/* Left Column: Name, Large Headline, Bio, Quick Actions & Stack */}
+              <div className="lg:col-span-8 space-y-6 sm:space-y-7">
+                <div className="space-y-3">
+                  <motion.div
+                    initial={{ opacity: 0, y: 14 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.05 }}
+                    className="flex items-center gap-2"
+                  >
+                    <span className="text-xs sm:text-sm font-mono tracking-widest uppercase text-[var(--sns-gold)] font-medium">
+                      {name}
+                    </span>
+                    {location && (
+                      <>
+                        <span className="text-[var(--sns-text-muted)] text-xs font-mono">•</span>
+                        <span className="text-xs font-mono tracking-wider text-[var(--sns-text-muted)]">
+                          {location}
+                        </span>
+                      </>
+                    )}
+                  </motion.div>
 
-                <motion.h1
-                  initial={{ opacity: 0, y: 22 }}
+                  <motion.h1
+                    initial={{ opacity: 0, y: 22 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.7, delay: 0.15 }}
+                    className={`sns-headline ${
+                      headline.length > 50
+                        ? "text-3xl sm:text-5xl md:text-5xl lg:text-[3.5rem] leading-[1.1]"
+                        : "text-4xl sm:text-6xl md:text-6xl lg:text-[4.5rem] xl:text-[5rem] leading-[1.04]"
+                    } text-[var(--sns-text-primary)] max-w-3xl tracking-tight`}
+                  >
+                    {headline}
+                  </motion.h1>
+                </div>
+
+                {/* Refined Short Bio / Editorial Lead */}
+                {bio && (
+                  <motion.p
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                    className="text-sm sm:text-base md:text-lg font-light text-[var(--sns-text-secondary)] max-w-2xl leading-relaxed"
+                  >
+                    {bio}
+                  </motion.p>
+                )}
+
+                {/* Quick Interactive Actions & Socials */}
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.7, delay: 0.15 }}
-                  className={`sns-headline ${
-                    headline.length > 50
-                      ? "text-3xl sm:text-5xl md:text-5xl lg:text-[3.5rem] leading-[1.1]"
-                      : "text-4xl sm:text-6xl md:text-6xl lg:text-[4.5rem] xl:text-[5rem] leading-[1.04]"
-                  } text-[var(--sns-text-primary)] max-w-3xl tracking-tight`}
+                  transition={{ duration: 0.6, delay: 0.25 }}
+                  className="flex flex-wrap items-center gap-3 sm:gap-4 pt-1"
                 >
-                  {headline}
-                </motion.h1>
+                  {showProjects && (
+                    <button
+                      onClick={() => scrollTo("work")}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-mono tracking-widest uppercase bg-[var(--sns-text-primary)] text-[var(--sns-bg)] hover:bg-[var(--sns-gold)] hover:text-black transition-all duration-300 rounded-xs shadow-xs cursor-pointer active:scale-95"
+                    >
+                      <span>Explore Work</span>
+                      <ArrowDown className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+
+                  {resumeUrl && (
+                    <a
+                      href={resumeUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-mono tracking-widest uppercase border border-[var(--sns-border)] hover:border-[var(--sns-gold)] text-[var(--sns-text-primary)] hover:text-[var(--sns-gold)] transition-all duration-300 rounded-xs cursor-pointer active:scale-95"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>Resume</span>
+                    </a>
+                  )}
+
+                  {showContact && (
+                    <button
+                      onClick={handleContactClick}
+                      className="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-mono tracking-widest uppercase border border-[var(--sns-border)] hover:border-[var(--sns-gold)] text-[var(--sns-text-primary)] hover:text-[var(--sns-gold)] transition-all duration-300 rounded-xs cursor-pointer active:scale-95"
+                    >
+                      <span>Get In Touch</span>
+                      <ArrowUpRight className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+
+                  {/* Social Links Row */}
+                  {socialLinksList.length > 0 && (
+                    <div className="flex items-center gap-2 pl-2 border-l border-[var(--sns-border)]">
+                      {socialLinksList.slice(0, 4).map((link, idx) => {
+                        const Icon = resolveSocialIcon(link.type, link.name);
+                        return (
+                          <a
+                            key={idx}
+                            href={link.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-2 text-[var(--sns-text-muted)] hover:text-[var(--sns-gold)] transition-colors"
+                            aria-label={link.name}
+                            title={link.name}
+                          >
+                            <Icon className="w-4 h-4" />
+                          </a>
+                        );
+                      })}
+                    </div>
+                  )}
+                </motion.div>
+
+                {/* Core Stack Tags */}
+                {rawSkills && rawSkills.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 14 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.3 }}
+                    className="flex flex-wrap items-center gap-2 pt-1"
+                  >
+                    <span className="sns-meta text-[10px] text-[var(--sns-text-muted)] mr-1">
+                      CORE STACK —
+                    </span>
+                    {(Array.isArray(rawSkills) ? rawSkills : [])
+                      .slice(0, 6)
+                      .map((skill, sIdx) => {
+                        const sName = typeof skill === "string" ? skill : skill?.name || "";
+                        if (!sName) return null;
+                        return (
+                          <span
+                            key={sIdx}
+                            className="px-2.5 py-1 text-[11px] font-mono text-[var(--sns-text-secondary)] border border-[var(--sns-border)] bg-[var(--sns-bg-surface)]/60 rounded-xs"
+                          >
+                            {sName}
+                          </span>
+                        );
+                      })}
+                  </motion.div>
+                )}
               </div>
 
               {/* Right Column: 7. HERO IMAGE (Clean Natural Color Portrait or Monogram Fallback) */}
-              <div className="lg:col-span-4 flex justify-center lg:justify-end">
+              <div className="lg:col-span-4 flex justify-center lg:justify-end items-center">
                 <motion.div
                   initial={{ opacity: 0, scale: 0.96 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.8, delay: 0.3 }}
-                  className="w-full max-w-[320px] relative"
+                  className="w-full max-w-[320px] sm:max-w-[340px] relative"
                 >
                   {profileImage ? (
-                    <div className="sns-hero-portrait relative aspect-[4/5] border border-[var(--sns-border)] bg-[var(--sns-bg-surface)]">
+                    <div className="sns-hero-portrait relative aspect-[4/5] border border-[var(--sns-border)] bg-[var(--sns-bg-surface)] shadow-2xl shadow-black/20 rounded-xs overflow-hidden">
                       <img
                         src={profileImage}
                         alt={name}
@@ -613,7 +745,7 @@ export default function SmartNShineTheme({
                     </div>
                   ) : (
                     /* Minimal Typography-First Editorial Fallback */
-                    <div className="aspect-[4/5] rounded-xs border border-[var(--sns-border-gold)] bg-[var(--sns-bg-surface)] p-6 flex flex-col justify-between">
+                    <div className="aspect-[4/5] rounded-xs border border-[var(--sns-border-gold)] bg-[var(--sns-bg-surface)] p-6 flex flex-col justify-between shadow-2xl shadow-black/20">
                       <div className="flex items-center justify-between">
                         <span className="sns-meta text-[var(--sns-gold)]">SMARTNSHINE / MINIMAL</span>
                         <span className="sns-serif text-sm text-[var(--sns-gold)]">✦</span>
@@ -638,7 +770,7 @@ export default function SmartNShineTheme({
               </div>
             </div>
 
-            {/* Bottom Metadata Row: Conditionally rendered */}
+            {/* Bottom Metadata Row */}
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
@@ -646,7 +778,7 @@ export default function SmartNShineTheme({
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-6 pt-6 border-t border-[var(--sns-border)] items-center"
             >
               {location && (
-                <div className="lg:col-span-3">
+                <div className="lg:col-span-4">
                   <span className="sns-meta block text-[10px] text-[var(--sns-text-muted)] mb-1">
                     BASED IN —
                   </span>
@@ -657,7 +789,7 @@ export default function SmartNShineTheme({
               )}
 
               {role && (
-                <div className={location ? "lg:col-span-4" : "lg:col-span-7"}>
+                <div className={location ? "lg:col-span-5" : "lg:col-span-9"}>
                   <span className="sns-meta block text-[10px] text-[var(--sns-text-muted)] mb-1">
                     FOCUS —
                   </span>
@@ -667,21 +799,7 @@ export default function SmartNShineTheme({
                 </div>
               )}
 
-              {availabilityStatus && (
-                <div className="lg:col-span-3">
-                  <span className="sns-meta block text-[10px] text-[var(--sns-text-muted)] mb-1">
-                    STATUS —
-                  </span>
-                  <div className="inline-flex items-center gap-2">
-                    <span className="sns-status-pulse" />
-                    <span className="text-xs font-medium text-[var(--sns-text-primary)]">
-                      {availabilityStatus}
-                    </span>
-                  </div>
-                </div>
-              )}
-
-              <div className={`${!location && !role ? "lg:col-span-12" : "lg:col-span-2"} flex justify-start sm:justify-end ml-auto`}>
+              <div className={`${!location && !role ? "lg:col-span-12" : "lg:col-span-3"} flex justify-start sm:justify-end ml-auto`}>
                 <button
                   onClick={() => scrollTo(showProjects ? "work" : showExperience ? "experience" : showSkills ? "skills" : "contact")}
                   className="sns-meta text-[var(--sns-text-muted)] hover:text-[var(--sns-gold)] inline-flex items-center gap-1.5 transition-colors cursor-pointer"

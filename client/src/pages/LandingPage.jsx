@@ -6,6 +6,9 @@ import LandingNavbar from "../components/landing-v2/LandingNavbar";
 import EvilChartsLandingMatrix from "../components/landing-v2/EvilChartsLandingMatrix";
 import PlayfulColorfulBento from "../components/landing-v2/PlayfulColorfulBento";
 import HowItWorksSection from "../components/landing-v2/HowItWorksSection";
+import PainPointsBentoSection from "../components/landing-v2/PainPointsBentoSection";
+import ScrollablePortfoliosSection from "../components/landing-v2/ScrollablePortfoliosSection";
+import ScrollSplitCardsSection from "../components/landing-v2/ScrollSplitCardsSection";
 import { TestimonialsHomeSection } from "../components/home";
 import PricingSection from "../components/landing-v2/PricingSection";
 import FAQSection, { SYSTEM_FAQS } from "../components/landing-v2/FAQSection";
@@ -58,25 +61,34 @@ export default function LandingPage() {
       {/* 1. Hero Section Matrix with Hardware-Accelerated Gliding Reels & Specular Shader */}
       <EvilChartsLandingMatrix />
 
-      {/* 2. Colorful Bento Grid — Platform Capabilities */}
+      {/* 2. Four Roadblocks Solved (Pain-Point Bento Grid) */}
+      <PainPointsBentoSection />
+
+      {/* 3. Colorful Bento Grid — Platform Capabilities */}
       <PlayfulColorfulBento />
 
-      {/* 3. How It Works — 3-step visual flow */}
+      {/* 4. Live Scrollable Web Portfolios Showcase */}
+      <ScrollablePortfoliosSection />
+
+      {/* 5. How It Works — 3-step visual flow */}
       <HowItWorksSection />
 
-      {/* 4. Testimonials — Real Social Proof */}
+      {/* 6. Interactive Scroll-Split Cards: 1 Web Portfolio ➔ 3 ATS Resumes */}
+      <ScrollSplitCardsSection />
+
+      {/* 7. Testimonials — Real Social Proof */}
       <TestimonialsHomeSection />
 
-      {/* 5. Pricing — Real Tiers with Live Data */}
+      {/* 8. Pricing — Real Tiers with Live Data */}
       <PricingSection />
 
-      {/* 6. FAQ Accordion */}
+      {/* 9. FAQ Accordion */}
       <FAQSection />
 
-      {/* 7. Final CTA Banner */}
+      {/* 10. Final CTA Banner */}
       <FinalCTABanner />
 
-      {/* 8. Global Footer */}
+      {/* 11. Global Footer */}
       <Footer />
     </>
   );

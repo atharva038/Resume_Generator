@@ -112,10 +112,10 @@ export default function EvilChartsLandingMatrix() {
 
         {/* Center: Punchy Copy & Mode Motion Switcher */}
         <div className="pointer-events-auto mt-2 lg:my-auto py-4 sm:py-6 lg:py-8 space-y-4 sm:space-y-5 lg:space-y-6 max-w-md text-left">
-          {/* Live Status Pill & Mode Selector */}
+          {/* Live Status & Mode Selector */}
           <div className="space-y-2">
             <div
-              className={`inline-flex items-center p-1 rounded-full text-xs transition-colors ${
+              className={`inline-flex items-center p-1 rounded-xl text-xs transition-colors ${
                 isDarkMode
                   ? "bg-white/[0.06]"
                   : "bg-zinc-200/70"
@@ -126,7 +126,7 @@ export default function EvilChartsLandingMatrix() {
                   setActiveMode("resumes");
                   setIsAutoCycle(false);
                 }}
-                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 rounded-full text-xs sm:text-[13px] font-normal transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-[13px] font-normal transition-all cursor-pointer ${
                   activeMode === "resumes"
                     ? isDarkMode
                       ? "bg-zinc-800 text-white shadow-xs"
@@ -145,7 +145,7 @@ export default function EvilChartsLandingMatrix() {
                   setActiveMode("portfolios");
                   setIsAutoCycle(false);
                 }}
-                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 rounded-full text-xs sm:text-[13px] font-normal transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-[13px] font-normal transition-all cursor-pointer ${
                   activeMode === "portfolios"
                     ? isDarkMode
                       ? "bg-zinc-800 text-white shadow-xs"

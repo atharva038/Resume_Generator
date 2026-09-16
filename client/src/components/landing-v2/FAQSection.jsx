@@ -116,10 +116,10 @@ function FAQCard({ item, isDarkMode }) {
       }`}
     >
       <div className="space-y-3">
-        {/* Category Pill & Dot */}
+        {/* Category Tag & Dot */}
         <div className="flex items-center justify-between">
           <div
-            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-mono font-medium tracking-wider uppercase backdrop-blur-md ${tagColor}`}
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-xs font-mono font-medium tracking-wider uppercase backdrop-blur-md ${tagColor}`}
           >
             <span className="opacity-80 font-mono">{id}</span>
             <span className="opacity-40 font-mono">/</span>
@@ -222,17 +222,6 @@ export default function FAQSection() {
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="text-center max-w-3xl mx-auto space-y-4"
         >
-          <div
-            className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border text-xs font-mono font-medium tracking-wider uppercase backdrop-blur-md ${
-              isDarkMode
-                ? "bg-zinc-800/60 border-zinc-700/60 text-zinc-300"
-                : "bg-white/80 border-slate-200/80 text-slate-700 shadow-xs"
-            }`}
-          >
-            <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
-            <span>Frequently Asked Questions</span>
-          </div>
-
           <h2
             className={`text-3xl sm:text-4xl lg:text-5xl font-normal tracking-tight leading-tight ${
               isDarkMode ? "text-white" : "text-slate-900"
@@ -253,7 +242,7 @@ export default function FAQSection() {
           <div className="pt-2">
             <button
               onClick={() => setIsPaused((prev) => !prev)}
-              className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full border text-xs font-medium backdrop-blur-md transition-all active:scale-95 cursor-pointer ${
+              className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border text-xs font-medium backdrop-blur-md transition-all active:scale-95 cursor-pointer ${
                 isPaused
                   ? "bg-indigo-600 text-white border-indigo-500 shadow-sm"
                   : isDarkMode

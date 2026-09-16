@@ -13,10 +13,6 @@ export default function TestimonialsHomeSection() {
         transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         className="mx-auto max-w-2xl text-center space-y-4"
       >
-        <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-medium uppercase tracking-widest border border-blue-500/20">
-          <Star className="w-3.5 h-3.5 fill-current" />
-          <span>Proven Career Outcomes</span>
-        </div>
         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-normal text-gray-900 dark:text-white tracking-tight leading-tight">
           Loved by Engineers & Leaders <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500">Worldwide</span>
         </h2>
