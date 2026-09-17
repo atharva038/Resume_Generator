@@ -589,8 +589,8 @@ export function useInterviewSession({
     }
   };
 
-  const handleAbandonInterview = async () => {
-    if (!window.confirm("Are you sure you want to end this interview? Your progress will be lost.")) return;
+  const handleAbandonInterview = async (skipConfirm = false) => {
+    if (!skipConfirm && !window.confirm("Are you sure you want to end this interview? Your progress will be lost.")) return;
 
     isInterviewActiveRef.current = false;
     const currentSession = sessionRef.current;

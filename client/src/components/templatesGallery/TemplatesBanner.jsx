@@ -25,7 +25,7 @@ export default function TemplatesBanner({
             </h1>
 
             <p className="text-sm sm:text-base text-gray-600 dark:text-zinc-300 max-w-2xl leading-relaxed">
-              Choose from recruiter-approved, ATS-optimized layouts. Tailored for corporate, technical, leadership, and creative career paths with multiple dynamic color themes.
+              Recruiter-approved, ATS-optimized layouts tailored for technical, corporate, leadership, academic, and creative careers.
             </p>
           </div>
         </div>

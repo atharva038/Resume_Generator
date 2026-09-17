@@ -127,7 +127,6 @@ const templateSchema = new mongoose.Schema(
 );
 
 // Index for faster queries
-templateSchema.index({templateId: 1});
 templateSchema.index({name: 1, isActive: 1});
 templateSchema.index({category: 1, isActive: 1});
 templateSchema.index({tier: 1, isActive: 1});

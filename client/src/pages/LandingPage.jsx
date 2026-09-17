@@ -1,9 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
+import Lenis from "lenis";
+import "lenis/dist/lenis.css";
 import SEO from "../components/common/SEO";
 import LandingNavbar from "../components/landing-v2/LandingNavbar";
 import EvilChartsLandingMatrix from "../components/landing-v2/EvilChartsLandingMatrix";
 import PlayfulColorfulBento from "../components/landing-v2/PlayfulColorfulBento";
 import HowItWorksSection from "../components/landing-v2/HowItWorksSection";
+import PainPointsBentoSection from "../components/landing-v2/PainPointsBentoSection";
+import ScrollablePortfoliosSection from "../components/landing-v2/ScrollablePortfoliosSection";
+import ScrollSplitCardsSection from "../components/landing-v2/ScrollSplitCardsSection";
 import { TestimonialsHomeSection } from "../components/home";
 import PricingSection from "../components/landing-v2/PricingSection";
 import FAQSection, { SYSTEM_FAQS } from "../components/landing-v2/FAQSection";
@@ -12,6 +17,34 @@ import FinalCTABanner from "../components/landing-v2/FinalCTABanner";
 import Footer from "../components/layout/Footer";
 
 export default function LandingPage() {
+  // Lenis Smooth Scroll initialized exclusively for the Landing Page
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: "vertical",
+      gestureOrientation: "vertical",
+      smoothWheel: true,
+      wheelMultiplier: 1.0,
+      touchMultiplier: 1.5,
+      infinite: false,
+    });
+
+    let animationFrameId;
+
+    function raf(time) {
+      lenis.raf(time);
+      animationFrameId = requestAnimationFrame(raf);
+    }
+
+    animationFrameId = requestAnimationFrame(raf);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      lenis.destroy();
+    };
+  }, []);
+
   return (
     <>
       <SEO
@@ -28,37 +61,34 @@ export default function LandingPage() {
       {/* 1. Hero Section Matrix with Hardware-Accelerated Gliding Reels & Specular Shader */}
       <EvilChartsLandingMatrix />
 
-      {/* 2. Colorful Bento Grid — Platform Capabilities */}
-      <div style={{ contentVisibility: "auto", containIntrinsicSize: "1px 900px" }}>
-        <PlayfulColorfulBento />
-      </div>
+      {/* 2. Four Roadblocks Solved (Pain-Point Bento Grid) */}
+      <PainPointsBentoSection />
 
-      {/* 3. How It Works — 3-step visual flow */}
-      <div style={{ contentVisibility: "auto", containIntrinsicSize: "1px 650px" }}>
-        <HowItWorksSection />
-      </div>
+      {/* 3. Colorful Bento Grid — Platform Capabilities */}
+      <PlayfulColorfulBento />
 
-      {/* 4. Testimonials — Real Social Proof */}
-      <div style={{ contentVisibility: "auto", containIntrinsicSize: "1px 600px" }}>
-        <TestimonialsHomeSection />
-      </div>
+      {/* 4. Live Scrollable Web Portfolios Showcase */}
+      <ScrollablePortfoliosSection />
 
-      {/* 5. Pricing — Real Tiers with Live Data */}
-      <div style={{ contentVisibility: "auto", containIntrinsicSize: "1px 800px" }}>
-        <PricingSection />
-      </div>
+      {/* 5. How It Works — 3-step visual flow */}
+      <HowItWorksSection />
 
-      {/* 6. FAQ Accordion */}
-      <div style={{ contentVisibility: "auto", containIntrinsicSize: "1px 750px" }}>
-        <FAQSection />
-      </div>
+      {/* 6. Interactive Scroll-Split Cards: 1 Web Portfolio ➔ 3 ATS Resumes */}
+      <ScrollSplitCardsSection />
 
-      {/* 7. Final CTA Banner */}
-      <div style={{ contentVisibility: "auto", containIntrinsicSize: "1px 450px" }}>
-        <FinalCTABanner />
-      </div>
+      {/* 7. Testimonials — Real Social Proof */}
+      <TestimonialsHomeSection />
 
-      {/* 8. Global Footer */}
+      {/* 8. Pricing — Real Tiers with Live Data */}
+      <PricingSection />
+
+      {/* 9. FAQ Accordion */}
+      <FAQSection />
+
+      {/* 10. Final CTA Banner */}
+      <FinalCTABanner />
+
+      {/* 11. Global Footer */}
       <Footer />
     </>
   );

@@ -1954,6 +1954,58 @@ export const getTemplateStats = async (req, res) => {
 // Helper: Seed Default Standard Templates
 const DEFAULT_STANDARD_TEMPLATES = [
   {
+    templateId: "silicon-valley",
+    name: "Silicon Valley Tech Lead",
+    category: "Tech",
+    emoji: "⚡",
+    atsScore: 99,
+    tier: "free",
+    badge: "Flagship 2026",
+    description: "Stripe & Linear-inspired high-craft developer layout with ATS-safe metric badges and domain skill capsules.",
+    tags: ["Developer", "Tech Lead", "Metric Highlighting", "Modern"],
+    isFeatured: true,
+    isActive: true,
+  },
+  {
+    templateId: "latex-academic",
+    name: "Stanford / LaTeX Academic Pro",
+    category: "Academic",
+    emoji: "🎓",
+    atsScore: 100,
+    tier: "free",
+    badge: "100% ATS Grade",
+    description: "Mathematical precision with classic academic serif typography, fine hairline rules, and publication metrics.",
+    tags: ["LaTeX", "Academic", "PhD", "Research", "High-ATS"],
+    isFeatured: true,
+    isActive: true,
+  },
+  {
+    templateId: "nordic-split",
+    name: "Nordic Two-Column Architect",
+    category: "Leadership",
+    emoji: "📐",
+    atsScore: 99,
+    tier: "free",
+    badge: "New Split-Rail",
+    description: "Asymmetric 32/68 split layout with stylish left sidebar rail for skills & credentials and spacious right body.",
+    tags: ["Two-Column", "Split-Rail", "Executive", "ATS-Safe"],
+    isFeatured: true,
+    isActive: true,
+  },
+  {
+    templateId: "executive",
+    name: "The Wall Street / Ivy League",
+    category: "Leadership",
+    emoji: "🏛️",
+    atsScore: 99,
+    tier: "free",
+    badge: "Ivy League",
+    description: "Dignified Ivy League aesthetic with centered masthead, Oxford double-rules, small-caps headers, and deal metric highlighting.",
+    tags: ["Finance", "Consulting", "Wall Street", "Ivy League"],
+    isFeatured: true,
+    isActive: true,
+  },
+  {
     templateId: "classic",
     name: "Classic",
     category: "Professional",
@@ -4253,6 +4305,7 @@ export const sendCustomAdminEmail = async (req, res) => {
       buttonText,
       buttonUrl,
       noteBox,
+      themeAccent = "indigo",
       sendCopyAdmin = true,
     } = req.body;
 
@@ -4282,20 +4335,30 @@ export const sendCustomAdminEmail = async (req, res) => {
       buttonText,
       buttonUrl,
       noteBox,
+      themeAccent,
       sendCopyAdmin,
     });
 
-    // Log admin action
-    await AdminLog.create({
-      adminId: req.user?._id,
-      action: "send_custom_email",
-      description: `Sent custom email "${subject}" to ${toEmail}`,
-      details: {
-        toEmail,
-        subject,
-        messageId: result.messageId,
-      },
-    });
+    // Log admin action safely (non-blocking)
+    try {
+      const adminId = req.user?.userId || req.user?._id || req.user?.id;
+      if (adminId) {
+        await AdminLog.create({
+          adminId,
+          action: "send_custom_email",
+          targetType: "user",
+          description: `Sent custom email "${subject}" to ${toEmail}`,
+          metadata: {
+            toEmail,
+            subject,
+            messageId: result.messageId,
+          },
+          ipAddress: req.ip,
+        });
+      }
+    } catch (logErr) {
+      console.warn("⚠️ Failed to write AdminLog entry for sent email:", logErr.message);
+    }
 
     res.json({
       success: true,

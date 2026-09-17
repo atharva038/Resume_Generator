@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -14,8 +15,8 @@ export const defaultTestimonials = [
     quote:
       "The AI bullet enhancement preserved my authentic voice while making every single impact quantifiable.",
     name: "Anuj Nandgaonkar",
-    role: "Product Manager",
-    company: "FinTech",
+    role: "Full Stack Developer",
+    company: "Student",
   },
   {
     quote:
@@ -85,9 +86,14 @@ export function TestimonialCard({ testimonial, index, className, ...props }) {
   const { quote, name, role, company } = testimonial;
 
   return (
-    <figure
+    <motion.figure
+      initial={{ opacity: 0, y: 55, scale: 0.94, filter: "blur(10px)" }}
+      whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{ duration: 0.7, delay: index * 0.14, ease: [0.16, 1, 0.3, 1] }}
+      whileHover={{ y: -6, transition: { duration: 0.25 } }}
       className={cn(
-        "group relative flex flex-col justify-between gap-6 px-7 pt-8 pb-7 shadow-xs bg-white dark:bg-zinc-900/80 rounded-2xl border border-gray-200/90 dark:border-white/10 transition-all duration-300 hover:shadow-xl hover:border-blue-500/30",
+        "group relative flex flex-col justify-between gap-6 p-7 sm:p-8 shadow-xs bg-white dark:bg-zinc-900/80 rounded-3xl border border-gray-200/90 dark:border-white/10 transition-all duration-300 hover:shadow-2xl hover:border-blue-500/40",
         "md:translate-y-[calc(1.5rem*var(--t-card-index))]",
         className
       )}
@@ -102,32 +108,32 @@ export function TestimonialCard({ testimonial, index, className, ...props }) {
       <div className="absolute -right-4 -bottom-px -left-4 h-px bg-gray-200/60 dark:bg-white/10 hidden md:block" />
       <DecorIcon className="hidden md:block" />
 
-      <blockquote className="flex gap-3.5 items-start">
+      <blockquote className="flex gap-4 items-start">
         <QuoteIcon
           aria-hidden="true"
           className="size-5 shrink-0 stroke-1 text-blue-600 dark:text-blue-400 mt-1"
         />
 
-        <p className="flex-1 font-medium text-sm sm:text-[15px] text-gray-700 dark:text-zinc-300 leading-relaxed">
+        <p className="flex-1 font-light text-base sm:text-[16px] text-gray-700 dark:text-zinc-300 leading-relaxed">
           "{quote}"
         </p>
       </blockquote>
 
-      <figcaption className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-white/5">
+      <figcaption className="flex items-center justify-between pt-5 border-t border-gray-100 dark:border-white/5">
         <div className="flex flex-col text-left">
-          <cite className="font-bold text-gray-900 dark:text-white text-sm not-italic">
+          <cite className="font-normal text-gray-900 dark:text-white text-base not-italic">
             {name}
           </cite>
-          <p className="text-gray-500 dark:text-zinc-400 text-xs font-medium mt-0.5">
-            {role} <span className="text-gray-400 dark:text-zinc-500">•</span> <span className="text-gray-800 dark:text-zinc-200 font-bold">{company}</span>
+          <p className="text-gray-500 dark:text-zinc-400 text-xs sm:text-sm font-light mt-0.5">
+            {role} <span className="text-gray-400 dark:text-zinc-500">•</span> <span className="text-gray-800 dark:text-zinc-200 font-medium">{company}</span>
           </p>
         </div>
 
-        <div className="w-8 h-8 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center font-black text-xs">
+        <div className="w-9 h-9 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-sm">
           {name.charAt(0)}
         </div>
       </figcaption>
-    </figure>
+    </motion.figure>
   );
 }
 

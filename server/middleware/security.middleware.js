@@ -216,19 +216,23 @@ export const corsOptions = {
     // Allow requests with no origin (like mobile apps, Postman, curl, internal server calls)
     if (!origin) return callback(null, true);
 
-    // Check if origin matches any allowed origin (supports wildcards)
-    const isAllowed = allowedOrigins.some((allowed) => {
-      // Exact match
-      if (allowed === origin) return true;
+    // Check if origin matches any allowed origin (supports wildcards & localhost ports)
+    const isAllowed =
+      // Allow any localhost / 127.0.0.1 port in development
+      (process.env.NODE_ENV !== "production" &&
+        /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) ||
+      allowedOrigins.some((allowed) => {
+        // Exact match
+        if (allowed === origin) return true;
 
-      // Wildcard support (e.g., https://*.example.com or https://*.smartnshine.app)
-      if (allowed.includes("*")) {
-        const regex = new RegExp("^" + allowed.replace(/\./g, "\\.").replace(/\*/g, ".*") + "$");
-        return regex.test(origin);
-      }
+        // Wildcard support (e.g., https://*.example.com or https://*.smartnshine.app)
+        if (allowed.includes("*")) {
+          const regex = new RegExp("^" + allowed.replace(/\./g, "\\.").replace(/\*/g, ".*") + "$");
+          return regex.test(origin);
+        }
 
-      return false;
-    });
+        return false;
+      });
 
     if (isAllowed) {
       callback(null, true);

@@ -107,15 +107,15 @@ export default function EvilChartsLandingMatrix() {
       />
 
       {/* 4. Left Hero Content — stacked on mobile, overlaid on lg+ */}
-      <div className="relative lg:absolute lg:top-0 lg:left-0 lg:bottom-0 w-full lg:w-[470px] xl:w-[520px] z-30 flex flex-col justify-between px-5 sm:px-10 lg:px-12 pt-20 sm:pt-24 lg:pt-32 pb-8 lg:pb-0 pointer-events-none">
+      <div className="relative lg:absolute lg:top-0 lg:left-0 lg:bottom-0 w-full lg:w-[470px] xl:w-[520px] z-30 flex flex-col justify-between px-4 sm:px-10 lg:px-12 pt-28 sm:pt-32 lg:pt-32 pb-4 lg:pb-0 pointer-events-none">
         <div />
 
         {/* Center: Punchy Copy & Mode Motion Switcher */}
-        <div className="pointer-events-auto mt-2 lg:my-auto py-6 lg:py-8 space-y-5 lg:space-y-6 max-w-md text-left">
-          {/* Live Status Pill & Mode Selector */}
-          <div className="space-y-2.5">
+        <div className="pointer-events-auto mt-2 lg:my-auto py-4 sm:py-6 lg:py-8 space-y-4 sm:space-y-5 lg:space-y-6 max-w-md text-left">
+          {/* Live Status & Mode Selector */}
+          <div className="space-y-2">
             <div
-              className={`inline-flex items-center p-1 rounded-full text-xs transition-colors ${
+              className={`inline-flex items-center p-1 rounded-xl text-xs transition-colors ${
                 isDarkMode
                   ? "bg-white/[0.06]"
                   : "bg-zinc-200/70"
@@ -126,7 +126,7 @@ export default function EvilChartsLandingMatrix() {
                   setActiveMode("resumes");
                   setIsAutoCycle(false);
                 }}
-                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full font-semibold transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-[13px] font-normal transition-all cursor-pointer ${
                   activeMode === "resumes"
                     ? isDarkMode
                       ? "bg-zinc-800 text-white shadow-xs"
@@ -137,7 +137,7 @@ export default function EvilChartsLandingMatrix() {
                 }`}
               >
                 <FileText className="w-3.5 h-3.5" />
-                <span>ATS Resumes (12+)</span>
+                <span>ATS Resumes (15+)</span>
               </button>
 
               <button
@@ -145,7 +145,7 @@ export default function EvilChartsLandingMatrix() {
                   setActiveMode("portfolios");
                   setIsAutoCycle(false);
                 }}
-                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full font-semibold transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-[13px] font-normal transition-all cursor-pointer ${
                   activeMode === "portfolios"
                     ? isDarkMode
                       ? "bg-zinc-800 text-white shadow-xs"
@@ -156,7 +156,7 @@ export default function EvilChartsLandingMatrix() {
                 }`}
               >
                 <Globe className="w-3.5 h-3.5" />
-                <span>Web Portfolios (7+)</span>
+                <span>Web Portfolios (14+)</span>
               </button>
             </div>
 
@@ -175,7 +175,7 @@ export default function EvilChartsLandingMatrix() {
           {/* Interactive Specular Light Shader Headline */}
           <h1
             ref={headlineRef}
-            className={`text-3xl sm:text-4xl xl:text-[38px] font-extrabold tracking-tight leading-[1.16] ${
+            className={`text-2xl sm:text-4xl xl:text-[40px] font-normal tracking-tight leading-[1.18] ${
               isDarkMode ? "text-white" : "text-slate-900"
             }`}
           >
@@ -187,7 +187,7 @@ export default function EvilChartsLandingMatrix() {
                 WebkitTextFillColor: "transparent",
                 transition: "background-position 0.05s ease-out",
               }}
-              className="font-extrabold cursor-default transition-all duration-75 select-none"
+              className="font-semibold cursor-default transition-all duration-75 select-none"
             >
               Resumes & Portfolios built to win.
             </span>
@@ -195,18 +195,18 @@ export default function EvilChartsLandingMatrix() {
 
           {/* Value Proposition Paragraph */}
           <p
-            className={`text-sm sm:text-base leading-relaxed font-normal ${
+            className={`text-sm sm:text-lg leading-relaxed font-light ${
               isDarkMode ? "text-zinc-400" : "text-slate-600"
             }`}
           >
-            Build ATS-proof resumes, deploy live developer portfolios, and land top tech offers. Powered by <span className={isDarkMode ? "text-amber-400 font-semibold" : "text-amber-600 font-semibold"}>AI</span>. Built for you.
+            Build ATS-proof resumes, deploy live developer portfolios, and land top tech offers. Powered by <span className={isDarkMode ? "text-amber-400 font-medium" : "text-amber-600 font-medium"}>AI</span>. Built for you.
           </p>
 
           {/* Action CTAs with Luxury Black & Gold Shade Styling */}
-          <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-3 pt-1">
+          <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-2.5 sm:gap-3 pt-1">
             <Link
               to={activeMode === "resumes" ? "/templates" : "/portfolio/create"}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 hover:from-amber-300 hover:to-yellow-400 text-black text-sm font-extrabold transition-all shadow-lg shadow-amber-500/25 active:scale-95 cursor-pointer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 hover:from-amber-300 hover:to-yellow-400 text-black text-sm font-extrabold transition-all shadow-lg shadow-amber-500/25 active:scale-95 cursor-pointer"
             >
               <span>{activeMode === "resumes" ? "Build Your Resume Free" : "Launch Portfolio"}</span>
               <ArrowRight className="w-4 h-4 text-black stroke-[2.5]" />
@@ -214,7 +214,7 @@ export default function EvilChartsLandingMatrix() {
 
             <Link
               to="/ats-analyzer"
-              className={`w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-sm font-bold transition-all active:scale-95 cursor-pointer border ${
+              className={`w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4.5 sm:px-5 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl text-sm font-medium transition-all active:scale-95 cursor-pointer border ${
                 isDarkMode
                   ? "bg-zinc-900/90 border-amber-500/30 text-amber-200 hover:bg-amber-500/10 hover:text-white shadow-sm"
                   : "bg-zinc-100/90 border-zinc-200 text-zinc-900 hover:bg-zinc-200 hover:text-black shadow-sm"
@@ -226,25 +226,25 @@ export default function EvilChartsLandingMatrix() {
           </div>
 
           {/* 3 Key Pillars directly from Banner */}
-          <div className="grid grid-cols-3 gap-2 pt-3 border-t border-white/[0.08] dark:border-white/[0.08]">
-            <div className="flex items-center gap-1.5 text-xs text-zinc-400">
-              <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-              <span className="truncate font-medium">AI-Powered</span>
+          <div className="grid grid-cols-3 gap-2 pt-2.5 sm:pt-3 border-t border-white/[0.08] dark:border-white/[0.08]">
+            <div className="flex items-center gap-1 sm:gap-1.5 text-[11px] sm:text-[13px] text-zinc-400">
+              <Sparkles className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-amber-400 shrink-0" />
+              <span className="truncate font-light">AI-Powered</span>
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-zinc-400">
-              <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-              <span className="truncate font-medium">ATS Optimized</span>
+            <div className="flex items-center gap-1 sm:gap-1.5 text-[11px] sm:text-[13px] text-zinc-400">
+              <CheckCircle2 className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-amber-400 shrink-0" />
+              <span className="truncate font-light">ATS Optimized</span>
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-zinc-400">
-              <Rocket className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-              <span className="truncate font-medium">Career Driven</span>
+            <div className="flex items-center gap-1 sm:gap-1.5 text-[11px] sm:text-[13px] text-zinc-400">
+              <Rocket className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-amber-400 shrink-0" />
+              <span className="truncate font-light">Career Driven</span>
             </div>
           </div>
         </div>
 
         {/* Bottom Footer Link */}
         <div
-          className={`pointer-events-auto pt-4 text-xs flex items-center justify-between ${
+          className={`pointer-events-auto pt-3 sm:pt-4 text-xs flex items-center justify-between ${
             isDarkMode
               ? "text-zinc-500"
               : "text-slate-500"
@@ -272,7 +272,7 @@ export default function EvilChartsLandingMatrix() {
 
       {/* 5. Right Side: Physical Continuous Gliding Canvas */}
       {/* On mobile: fixed-height preview below the hero text. On lg+: fills the right half behind the text overlay */}
-      <div className="relative z-10 lg:pl-[470px] xl:pl-[520px] p-2 sm:p-4 lg:p-6 pt-0 lg:pt-20 flex items-center h-[55vh] sm:h-[60vh] lg:min-h-screen overflow-hidden">
+      <div className="relative z-10 lg:pl-[470px] xl:pl-[520px] p-1.5 sm:p-4 lg:p-6 pt-0 lg:pt-20 flex items-center h-[460px] sm:h-[560px] lg:min-h-screen overflow-hidden">
         <div className="w-full max-w-[1700px] mx-auto overflow-hidden">
           <GlidingMotionCanvas activeMode={activeMode} isDarkMode={isDarkMode} />
         </div>

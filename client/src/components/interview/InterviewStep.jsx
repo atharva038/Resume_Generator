@@ -18,6 +18,7 @@ import {
   MicOff,
   SkipForward,
   ChevronRight,
+  ArrowLeft,
 } from "lucide-react";
 import { INTERVIEWER_VOICES } from "./constants";
 import { InterviewerGraphic, CandidateGraphic } from "./InterviewerGraphic";
@@ -138,9 +139,17 @@ export const InterviewStep = ({
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#090A10] text-slate-800 dark:text-gray-100 flex flex-col font-sans select-none transition-colors duration-300">
       {/* TOP STATUS BAR */}
       <header className="flex items-center justify-between gap-4 py-4 px-6 sm:px-10 border-b border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#11131E] shadow-sm">
-        {/* Left: Meeting context */}
-        <div className="flex items-center gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shadow-sm">
+        {/* Left: Meeting context & Back Button */}
+        <div className="flex items-center gap-3 sm:gap-3.5">
+          <button
+            onClick={handleEndMeeting}
+            className="p-2 sm:p-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white transition-all shadow-sm cursor-pointer flex items-center justify-center shrink-0 active:scale-95"
+            title="Back / Exit Interview"
+            aria-label="Back to Setup"
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </button>
+          <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shadow-sm shrink-0">
             <ShieldCheck className="w-5 h-5" />
           </div>
           <div>

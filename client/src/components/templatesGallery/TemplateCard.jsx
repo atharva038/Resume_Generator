@@ -3,7 +3,11 @@ import { Target, Eye, ArrowRight, Sparkles } from "lucide-react";
 
 const THUMBNAIL_BASE_WIDTH_PX = 793.7; // 210mm at 96dpi
 
-export function UniformTemplateThumbnail({ TemplateComponent, resumeData }) {
+export function UniformTemplateThumbnail({
+  TemplateComponent,
+  resumeData,
+  primaryColor,
+}) {
   const frameRef = useRef(null);
   const [scale, setScale] = useState(0.32);
 
@@ -25,11 +29,20 @@ export function UniformTemplateThumbnail({ TemplateComponent, resumeData }) {
     return () => observer.disconnect();
   }, []);
 
+  const enrichedData = primaryColor
+    ? {
+        ...resumeData,
+        colorTheme: primaryColor,
+        selectedTheme: primaryColor,
+        themeColor: primaryColor,
+      }
+    : resumeData;
+
   return (
     <div className="absolute inset-0 p-2.5">
       <div
         ref={frameRef}
-        className="relative h-full w-full overflow-hidden rounded-xl border border-gray-200/80 dark:border-zinc-800 bg-white shadow-sm"
+        className="relative h-full w-full overflow-hidden rounded-xl border border-gray-200/80 dark:border-zinc-800 bg-white shadow-sm select-none"
       >
         <div
           className="pointer-events-none"
@@ -37,10 +50,12 @@ export function UniformTemplateThumbnail({ TemplateComponent, resumeData }) {
             transform: `scale(${scale})`,
             transformOrigin: "top left",
             width: "210mm",
-            height: "297mm",
+            minHeight: "297mm",
           }}
         >
-          <TemplateComponent resumeData={resumeData} />
+          {TemplateComponent ? (
+            <TemplateComponent resumeData={enrichedData} />
+          ) : null}
         </div>
       </div>
     </div>
@@ -48,18 +63,30 @@ export function UniformTemplateThumbnail({ TemplateComponent, resumeData }) {
 }
 
 const TEMPLATE_IMAGE_MAP = {
+  "silicon-valley": "/templates/tech.webp",
+  siliconValley: "/templates/tech.webp",
+  "latex-academic": "/templates/classic.webp",
+  latexAcademic: "/templates/classic.webp",
+  "nordic-split": "/templates/modern.webp",
+  nordicSplit: "/templates/modern.webp",
+  executive: "/templates/professional.webp",
   classic: "/templates/classic.webp",
   modern: "/templates/modern.webp",
   minimal: "/templates/minimal.webp",
   professional: "/templates/professional.webp",
+  "professional-v2": "/templates/professional2.webp",
+  professionalV2: "/templates/professional2.webp",
   "professional-2": "/templates/professional2.webp",
   professional2: "/templates/professional2.webp",
   tech: "/templates/tech.webp",
   "creative-2": "/templates/creative2.webp",
   creative2: "/templates/creative2.webp",
   "strategic-leader": "/templates/strategic-leader.webp",
+  "strategic-leadership": "/templates/strategic-leader.webp",
   "impact-pro": "/templates/impact-pro.webp",
   "github-style": "/templates/github-style.webp",
+  githubstyle: "/templates/github-style.webp",
+  GitHubStyle: "/templates/github-style.webp",
   "structured-photo": "/templates/structured-photo.webp",
 };
 
@@ -79,13 +106,21 @@ export default function TemplateCard({
     >
       {/* Thumbnail view */}
       <div className="relative h-[380px] bg-slate-50 dark:bg-zinc-950 overflow-hidden">
-        {imageSrc && !imgError ? (
+        {template.component ? (
+          <UniformTemplateThumbnail
+            TemplateComponent={template.component}
+            resumeData={sampleResumeData}
+            primaryColor={template.colors?.[0]}
+          />
+        ) : imageSrc && !imgError ? (
           <div className="absolute inset-0 p-2.5">
             <div className="relative h-full w-full overflow-hidden rounded-xl border border-gray-200/80 dark:border-zinc-800 bg-white shadow-sm">
               <img
                 src={imageSrc}
-                alt={`${template.name} - ${template.category} ATS Resume Template | SmartNShine`}
-                title={`${template.name} ATS Resume Template - SmartNShine`}
+                alt={`Free ATS-Friendly ${template.name} Resume Template (${template.category || "Professional"} Format, PDF & Word Download) | SmartNShine`}
+                title={`Free ATS Resume Template - ${template.name} (${template.atsScore || 98}% Pass Score)`}
+                width="600"
+                height="850"
                 loading="lazy"
                 onError={() => setImgError(true)}
                 className="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.02]"
@@ -93,17 +128,27 @@ export default function TemplateCard({
             </div>
           </div>
         ) : (
-          <UniformTemplateThumbnail
-            TemplateComponent={template.component}
-            resumeData={sampleResumeData}
+          <div className="flex h-full w-full items-center justify-center text-xs text-gray-400">
+            Preview Loading...
+          </div>
+        )}
+
+        {/* Hidden SEO image tag for Googlebot-Image discovery */}
+        {imageSrc && (
+          <img
+            src={imageSrc}
+            alt={`${template.name} ATS Resume Template Preview`}
+            className="sr-only"
+            aria-hidden="true"
+            loading="lazy"
           />
         )}
 
         {/* Hover overlay with Preview Button */}
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-2">
+        <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-2 z-20">
           <button
             type="button"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white text-gray-900 font-bold text-xs sm:text-sm shadow-xl"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white text-gray-900 font-bold text-xs sm:text-sm shadow-xl hover:bg-gray-100 transition-colors"
           >
             <Eye className="w-4 h-4" />
             <span>Interactive Preview</span>

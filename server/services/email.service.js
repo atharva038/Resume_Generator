@@ -586,6 +586,7 @@ export const sendCustomAdminTemplateEmail = async ({
   buttonText = "",
   buttonUrl = "",
   noteBox = "",
+  themeAccent = "indigo",
   sendCopyAdmin = true,
 }) => {
   try {
@@ -608,6 +609,98 @@ export const sendCustomAdminTemplateEmail = async ({
     const formattedBtnText = formatVars(buttonText);
     const formattedBtnUrl = formatVars(buttonUrl);
 
+    // Theme color palettes
+    const themes = {
+      indigo: {
+        headerBg: "linear-gradient(135deg, #0f172a 0%, #1e1b4b 60%, #312e81 100%)",
+        badgeBg: "rgba(99, 102, 241, 0.18)",
+        badgeBorder: "#6366f1",
+        badgeColor: "#a5b4fc",
+        cardBg: "#f5f3ff",
+        cardBorder: "#ddd6fe",
+        cardTitleColor: "#4338ca",
+        cardTextColor: "#3730a3",
+        buttonBg: "linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)",
+        buttonShadow: "0 4px 14px rgba(79, 70, 229, 0.35)",
+        noteBorder: "#6366f1",
+      },
+      emerald: {
+        headerBg: "linear-gradient(135deg, #022c22 0%, #064e3b 60%, #065f46 100%)",
+        badgeBg: "rgba(16, 185, 129, 0.18)",
+        badgeBorder: "#10b981",
+        badgeColor: "#6ee7b7",
+        cardBg: "#f0fdf4",
+        cardBorder: "#bbf7d0",
+        cardTitleColor: "#15803d",
+        cardTextColor: "#166534",
+        buttonBg: "linear-gradient(135deg, #059669 0%, #047857 100%)",
+        buttonShadow: "0 4px 14px rgba(5, 150, 105, 0.35)",
+        noteBorder: "#10b981",
+      },
+      blue: {
+        headerBg: "linear-gradient(135deg, #082f49 0%, #0c4a6e 60%, #1e3a8a 100%)",
+        badgeBg: "rgba(59, 130, 246, 0.18)",
+        badgeBorder: "#3b82f6",
+        badgeColor: "#93c5fd",
+        cardBg: "#eff6ff",
+        cardBorder: "#bfdbfe",
+        cardTitleColor: "#1d4ed8",
+        cardTextColor: "#1e40af",
+        buttonBg: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
+        buttonShadow: "0 4px 14px rgba(37, 99, 235, 0.35)",
+        noteBorder: "#3b82f6",
+      },
+      violet: {
+        headerBg: "linear-gradient(135deg, #2e1065 0%, #3b0764 60%, #581c87 100%)",
+        badgeBg: "rgba(168, 85, 247, 0.18)",
+        badgeBorder: "#a855f7",
+        badgeColor: "#d8b4fe",
+        cardBg: "#faf5ff",
+        cardBorder: "#e9d5ff",
+        cardTitleColor: "#7e22ce",
+        cardTextColor: "#6b21a8",
+        buttonBg: "linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)",
+        buttonShadow: "0 4px 14px rgba(124, 58, 237, 0.35)",
+        noteBorder: "#a855f7",
+      },
+      amber: {
+        headerBg: "linear-gradient(135deg, #1c1917 0%, #451a03 60%, #78350f 100%)",
+        badgeBg: "rgba(245, 158, 11, 0.18)",
+        badgeBorder: "#f59e0b",
+        badgeColor: "#fcd34d",
+        cardBg: "#fffbeb",
+        cardBorder: "#fde68a",
+        cardTitleColor: "#b45309",
+        cardTextColor: "#92400e",
+        buttonBg: "linear-gradient(135deg, #d97706 0%, #b45309 100%)",
+        buttonShadow: "0 4px 14px rgba(217, 119, 6, 0.35)",
+        noteBorder: "#f59e0b",
+      },
+      slate: {
+        headerBg: "linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #334155 100%)",
+        badgeBg: "rgba(148, 163, 184, 0.18)",
+        badgeBorder: "#94a3b8",
+        badgeColor: "#cbd5e1",
+        cardBg: "#f8fafc",
+        cardBorder: "#e2e8f0",
+        cardTitleColor: "#334155",
+        cardTextColor: "#475569",
+        buttonBg: "linear-gradient(135deg, #334155 0%, #1e293b 100%)",
+        buttonShadow: "0 4px 14px rgba(51, 65, 85, 0.35)",
+        noteBorder: "#64748b",
+      },
+    };
+
+    const theme = themes[themeAccent] || themes.indigo;
+
+    // Format body paragraphs
+    const bodyParagraphs = formattedBody
+      .split("\n\n")
+      .map((p) => p.trim())
+      .filter(Boolean)
+      .map((p) => `<p style="margin: 0 0 16px 0; line-height: 1.75; font-size: 15px; color: #334155;">${p.replace(/\n/g, "<br>")}</p>`)
+      .join("");
+
     const mailOptions = {
       from: `"SmartNShine Support" <${process.env.EMAIL_USER}>`,
       to: toEmail,
@@ -615,80 +708,165 @@ export const sendCustomAdminTemplateEmail = async ({
       subject: formatVars(subject) || "Update from SmartNShine",
       html: `
         <!DOCTYPE html>
-        <html>
+        <html lang="en">
         <head>
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>${formatVars(subject) || "SmartNShine Notification"}</title>
+          <!--[if mso]>
+          <style type="text/css">
+            body, table, td, a { font-family: Arial, sans-serif !important; }
+          </style>
+          <![endif]-->
           <style>
-            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #1e293b; margin: 0; padding: 0; background-color: #f8fafc; }
-            .container { max-width: 600px; margin: 20px auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; }
-            .header { background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%); color: #ffffff; padding: 36px 30px; text-align: center; }
-            .header h1 { margin: 0; font-size: 23px; font-weight: 800; letter-spacing: -0.5px; line-height: 1.3; }
-            .badge { display: inline-block; padding: 4px 12px; background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; color: #34d399; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 12px; }
-            .content { padding: 32px 30px; }
-            .greeting { font-size: 16px; font-weight: 600; color: #0f172a; margin-bottom: 16px; }
-            .body-text { font-size: 15px; color: #334155; line-height: 1.7; white-space: pre-line; }
-            .card { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 18px; margin: 20px 0; }
-            .card h3 { margin: 0 0 8px 0; color: #15803d; font-size: 15px; font-weight: 700; }
-            .card p { margin: 0; color: #166534; font-size: 14px; line-height: 1.5; white-space: pre-line; }
-            .btn-container { text-align: center; margin: 28px 0; }
-            .button { display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff !important; text-decoration: none; border-radius: 10px; font-weight: 700; font-size: 15px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
-            .note-box { background: #f8fafc; border-left: 4px solid #6366f1; padding: 14px; border-radius: 6px; font-size: 13px; color: #475569; margin: 20px 0; line-height: 1.5; }
-            .footer { text-align: center; padding: 24px; background: #f8fafc; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b; }
+            body { margin: 0; padding: 0; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+            table { border-collapse: collapse; }
+            a { text-decoration: none; }
+            @media only screen and (max-width: 620px) {
+              .wrapper { width: 100% !important; padding: 12px !important; }
+              .content-box { padding: 24px 20px !important; }
+              .header-box { padding: 30px 20px !important; }
+            }
           </style>
         </head>
-        <body>
-          <div class="container">
-            <div class="header">
-              ${formattedBadge ? `<div class="badge">${formattedBadge}</div>` : ""}
-              <h1>${formattedHeading}</h1>
-            </div>
-            <div class="content">
-              <p class="greeting">Hello ${userName || "Valued User"},</p>
-              
-              <div class="body-text">${formattedBody}</div>
+        <body style="margin: 0; padding: 30px 10px; background-color: #f1f5f9;">
+          <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+            <tr>
+              <td align="center">
+                <table class="wrapper" role="presentation" border="0" cellpadding="0" cellspacing="0" width="600" style="max-width: 600px; width: 100%; background: #ffffff; border-radius: 18px; overflow: hidden; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08); border: 1px solid #e2e8f0;">
+                  
+                  <!-- Brand Top Bar -->
+                  <tr>
+                    <td style="padding: 16px 28px; background: #090d16; border-bottom: 1px solid rgba(255,255,255,0.08);">
+                      <table role="presentation" width="100%">
+                        <tr>
+                          <td>
+                            <span style="font-size: 16px; font-weight: 800; letter-spacing: -0.5px; color: #ffffff; display: inline-flex; align-items: center;">
+                              ⚡ Smart<span style="color: #38bdf8;">N</span>Shine
+                            </span>
+                          </td>
+                          <td align="right">
+                            <span style="font-size: 11px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px;">
+                              Official Notice
+                            </span>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
 
-              ${
-                formattedCardTitle || formattedCardMessage
-                  ? `
-                <div class="card">
-                  ${formattedCardTitle ? `<h3>${formattedCardTitle}</h3>` : ""}
-                  ${formattedCardMessage ? `<p>${formattedCardMessage}</p>` : ""}
-                </div>
-              `
-                  : ""
-              }
+                  <!-- Header Banner -->
+                  <tr>
+                    <td class="header-box" style="background: ${theme.headerBg}; padding: 38px 32px; text-align: center; color: #ffffff;">
+                      ${
+                        formattedBadge
+                          ? `
+                        <div style="display: inline-block; padding: 5px 14px; background: ${theme.badgeBg}; border: 1px solid ${theme.badgeBorder}; color: ${theme.badgeColor}; border-radius: 9999px; font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 14px;">
+                          ${formattedBadge}
+                        </div>
+                      `
+                          : ""
+                      }
+                      <h1 style="margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px; line-height: 1.35; color: #ffffff;">
+                        ${formattedHeading}
+                      </h1>
+                    </td>
+                  </tr>
 
-              ${
-                formattedBtnText && formattedBtnUrl
-                  ? `
-                <div class="btn-container">
-                  <a href="${formattedBtnUrl}" class="button">${formattedBtnText} &rarr;</a>
-                </div>
-              `
-                  : ""
-              }
+                  <!-- Main Content Area -->
+                  <tr>
+                    <td class="content-box" style="padding: 36px 32px; background: #ffffff;">
+                      <p style="margin: 0 0 18px 0; font-size: 16px; font-weight: 700; color: #0f172a;">
+                        Hello ${userName || "Valued User"},
+                      </p>
 
-              ${
-                formattedNote
-                  ? `
-                <div class="note-box">
-                  ${formattedNote}
-                </div>
-              `
-                  : ""
-              }
+                      <!-- Body Text -->
+                      <div style="color: #334155; font-size: 15px; line-height: 1.75;">
+                        ${bodyParagraphs}
+                      </div>
 
-              <p style="margin-top: 24px; font-size: 14px; color: #475569;">
-                Best regards,<br>
-                <strong style="color: #0f172a;">The SmartNShine Team</strong>
-              </p>
-            </div>
-            <div class="footer">
-              <p><strong>SmartNShine - AI-Powered Resume & Career Platform</strong></p>
-              <p>&copy; ${new Date().getFullYear()} SmartNShine. All rights reserved.</p>
-            </div>
-          </div>
+                      <!-- Highlight Box (Optional) -->
+                      ${
+                        formattedCardTitle || formattedCardMessage
+                          ? `
+                        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 24px 0; background: ${theme.cardBg}; border: 1px solid ${theme.cardBorder}; border-radius: 14px;">
+                          <tr>
+                            <td style="padding: 20px 22px;">
+                              ${
+                                formattedCardTitle
+                                  ? `<h4 style="margin: 0 0 10px 0; color: ${theme.cardTitleColor}; font-size: 15px; font-weight: 700; line-height: 1.3;">${formattedCardTitle}</h4>`
+                                  : ""
+                              }
+                              ${
+                                formattedCardMessage
+                                  ? `<div style="margin: 0; color: ${theme.cardTextColor}; font-size: 13.5px; line-height: 1.65; white-space: pre-line;">${formattedCardMessage}</div>`
+                                  : ""
+                              }
+                            </td>
+                          </tr>
+                        </table>
+                      `
+                          : ""
+                      }
+
+                      <!-- Call to Action Button -->
+                      ${
+                        formattedBtnText && formattedBtnUrl
+                          ? `
+                        <div style="text-align: center; margin: 32px 0 24px 0;">
+                          <!--[if mso]>
+                          <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${formattedBtnUrl}" style="height:48px;v-text-anchor:middle;width:240px;" arcsize="18%" stroke="f" fillcolor="${theme.badgeBorder}">
+                            <w:anchorlock/>
+                            <center style="color:#ffffff;font-family:sans-serif;font-size:15px;font-weight:bold;">${formattedBtnText} &rarr;</center>
+                          </v:roundrect>
+                          <![endif]-->
+                          <a href="${formattedBtnUrl}" target="_blank" style="display: inline-block; padding: 14px 34px; background: ${theme.buttonBg}; color: #ffffff !important; font-size: 15px; font-weight: 700; border-radius: 10px; text-decoration: none; box-shadow: ${theme.buttonShadow}; mso-hide: all; letter-spacing: 0.2px;">
+                            ${formattedBtnText} &rarr;
+                          </a>
+                        </div>
+                      `
+                          : ""
+                      }
+
+                      <!-- Note Box (Optional) -->
+                      ${
+                        formattedNote
+                          ? `
+                        <div style="background: #f8fafc; border-left: 4px solid ${theme.noteBorder}; border-radius: 6px; padding: 14px 18px; margin: 24px 0 16px 0; font-size: 13px; color: #475569; line-height: 1.6;">
+                          ${formattedNote}
+                        </div>
+                      `
+                          : ""
+                      }
+
+                      <!-- Signoff -->
+                      <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #f1f5f9; font-size: 14px; color: #64748b; line-height: 1.6;">
+                        Best regards,<br>
+                        <strong style="color: #0f172a; font-size: 15px;">The SmartNShine Team</strong><br>
+                        <span style="font-size: 12px; color: #94a3b8;">Empowering careers through modern ATS intelligence</span>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <!-- Footer -->
+                  <tr>
+                    <td style="padding: 24px 32px; background: #f8fafc; border-top: 1px solid #e2e8f0; text-align: center;">
+                      <p style="margin: 0 0 8px 0; font-size: 12px; font-weight: 600; color: #475569;">
+                        SmartNShine &bull; Career Accelerator & ATS Optimization Platform
+                      </p>
+                      <p style="margin: 0 0 10px 0; font-size: 11px; color: #94a3b8;">
+                        You received this communication regarding your registered SmartNShine account (<a href="mailto:${toEmail}" style="color: #64748b; text-decoration: underline;">${toEmail}</a>).
+                      </p>
+                      <p style="margin: 0; font-size: 11px; color: #cbd5e1;">
+                        &copy; ${new Date().getFullYear()} SmartNShine. All rights reserved. &bull; <a href="${clientUrl}" style="color: #94a3b8; text-decoration: underline;">Visit Platform</a>
+                      </p>
+                    </td>
+                  </tr>
+
+                </table>
+              </td>
+            </tr>
+          </table>
         </body>
         </html>
       `,

@@ -47,6 +47,32 @@ router.post("/reset-password", authLimiter, resetPassword);
 // GOOGLE OAUTH ROUTES
 // ==========================================
 
+// Resolve target frontend client URL from OAuth state or referer (supports subdomains & preview URLs)
+const getSafeClientRedirectUrl = (req) => {
+  const defaultClientUrl = process.env.CLIENT_URL || "https://smartnshine.app";
+  try {
+    const rawOrigin = req.query.state || req.query.origin;
+    if (rawOrigin) {
+      const decodedOrigin = decodeURIComponent(rawOrigin);
+      const parsed = new URL(decodedOrigin);
+      const hostname = parsed.hostname.toLowerCase();
+      // Allowed domains: localhost, 127.0.0.1, smartnshine.app, *.smartnshine.app, *.vercel.app
+      if (
+        hostname === "localhost" ||
+        hostname === "127.0.0.1" ||
+        hostname === "smartnshine.app" ||
+        hostname.endsWith(".smartnshine.app") ||
+        hostname.endsWith(".vercel.app")
+      ) {
+        return `${parsed.protocol}//${parsed.host}`;
+      }
+    }
+  } catch (err) {
+    console.warn("⚠️  OAuth state origin parse notice:", err.message);
+  }
+  return defaultClientUrl;
+};
+
 // Check if Google OAuth is configured
 const isGoogleConfigured =
   process.env.GOOGLE_CLIENT_ID &&
@@ -62,9 +88,11 @@ router.get("/google", (req, res, next) => {
         "Please contact the administrator to enable Google authentication",
     });
   }
+  const origin = req.query.origin || req.headers.referer;
   passport.authenticate("google", {
     scope: ["profile", "email"],
     session: false,
+    state: origin ? encodeURIComponent(origin) : undefined,
   })(req, res, next);
 });
 
@@ -72,17 +100,19 @@ router.get("/google", (req, res, next) => {
 router.get(
   "/google/callback",
   (req, res, next) => {
+    const clientUrl = getSafeClientRedirectUrl(req);
     if (!isGoogleConfigured) {
       return res.redirect(
-        `${process.env.CLIENT_URL}/login?error=google_not_configured`
+        `${clientUrl}/login?error=google_not_configured`
       );
     }
     passport.authenticate("google", {
       session: false,
-      failureRedirect: `${process.env.CLIENT_URL}/login?error=google_auth_failed`,
+      failureRedirect: `${clientUrl}/login?error=google_auth_failed`,
     })(req, res, next);
   },
   (req, res) => {
+    const clientUrl = getSafeClientRedirectUrl(req);
     try {
       // Generate JWT token
       const token = jwt.sign(
@@ -97,12 +127,12 @@ router.get(
 
       // Redirect to frontend with token
       res.redirect(
-        `${process.env.CLIENT_URL}/auth/callback?token=${token}&provider=google`
+        `${clientUrl}/auth/callback?token=${token}&provider=google`
       );
     } catch (error) {
       console.error("Google callback error:", error);
       res.redirect(
-        `${process.env.CLIENT_URL}/login?error=token_generation_failed`
+        `${clientUrl}/login?error=token_generation_failed`
       );
     }
   }
@@ -127,9 +157,11 @@ router.get("/github", (req, res, next) => {
         "Please contact the administrator to enable GitHub authentication",
     });
   }
+  const origin = req.query.origin || req.headers.referer;
   passport.authenticate("github", {
     scope: ["user:email"],
     session: false,
+    state: origin ? encodeURIComponent(origin) : undefined,
   })(req, res, next);
 });
 
@@ -137,17 +169,19 @@ router.get("/github", (req, res, next) => {
 router.get(
   "/github/callback",
   (req, res, next) => {
+    const clientUrl = getSafeClientRedirectUrl(req);
     if (!isGitHubConfigured) {
       return res.redirect(
-        `${process.env.CLIENT_URL}/login?error=github_not_configured`
+        `${clientUrl}/login?error=github_not_configured`
       );
     }
     passport.authenticate("github", {
       session: false,
-      failureRedirect: `${process.env.CLIENT_URL}/login?error=github_auth_failed`,
+      failureRedirect: `${clientUrl}/login?error=github_auth_failed`,
     })(req, res, next);
   },
   (req, res) => {
+    const clientUrl = getSafeClientRedirectUrl(req);
     try {
       // Generate JWT token
       const token = jwt.sign(
@@ -162,12 +196,12 @@ router.get(
 
       // Redirect to frontend with token
       res.redirect(
-        `${process.env.CLIENT_URL}/auth/callback?token=${token}&provider=github`
+        `${clientUrl}/auth/callback?token=${token}&provider=github`
       );
     } catch (error) {
       console.error("GitHub callback error:", error);
       res.redirect(
-        `${process.env.CLIENT_URL}/login?error=token_generation_failed`
+        `${clientUrl}/login?error=token_generation_failed`
       );
     }
   }

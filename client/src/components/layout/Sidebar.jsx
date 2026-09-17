@@ -15,6 +15,7 @@ import {
   UserCircle,
   Tag,
   Mic,
+  HelpCircle,
   TrendingUp,
   FileText,
 } from "lucide-react";
@@ -60,6 +61,14 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
       description: "Check ATS compatibility",
     },
     {
+      name: "AI Interview",
+      path: "/interview",
+      icon: Mic,
+      description: "AI Mock Interview Studio",
+      requiresAuth: true,
+      badge: "NEW",
+    },
+    {
       name: "Career Profile",
       path: "/career-profile",
       icon: UserCircle,
@@ -70,7 +79,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     {
       name: "Career Q&A",
       path: "/career-qa",
-      icon: Mic,
+      icon: HelpCircle,
       description: "Personalized answer bank",
       requiresAuth: true,
       openNewTab: true,
@@ -258,18 +267,30 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
 
                 const content = (
                   <>
-                    <Icon
-                      className={`w-5 h-5 flex-shrink-0 ${
-                        !isActive &&
-                        "group-hover:scale-110 transition-transform duration-200"
-                      }`}
-                    />
+                    <div className="relative flex items-center justify-center">
+                      <Icon
+                        className={`w-5 h-5 flex-shrink-0 ${
+                          !isActive &&
+                          "group-hover:scale-110 transition-transform duration-200"
+                        }`}
+                      />
+                      {!isOpen && link.badge && (
+                        <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5 pointer-events-none">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-gradient-to-r from-amber-500 to-orange-500 ring-2 ring-white dark:ring-zinc-950"></span>
+                        </span>
+                      )}
+                    </div>
                     {isOpen && (
                       <div className="flex-1 flex items-center justify-between">
                         <span className="font-medium text-sm">{link.name}</span>
                         {link.badge && (
-                          <span className="bg-gray-100 dark:bg-zinc-900 text-gray-700 dark:text-gray-300 text-xs px-2 py-0.5 rounded-full font-semibold">
-                            {link.badge}
+                          <span className="relative inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-gradient-to-r from-amber-500/15 via-rose-500/15 to-orange-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 shadow-xs">
+                            <span className="relative flex h-1.5 w-1.5">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-80"></span>
+                              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-amber-500"></span>
+                            </span>
+                            <span>{link.badge}</span>
                           </span>
                         )}
                       </div>

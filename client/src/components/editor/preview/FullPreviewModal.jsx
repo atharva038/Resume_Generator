@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { X, ZoomIn, ZoomOut, RotateCcw, Download } from "lucide-react";
-import { useMediaQuery } from "@/hooks";
+import { useMediaQuery, useBodyScrollLock } from "@/hooks";
 
 const FullPreviewModal = ({
   isOpen,
@@ -13,6 +13,8 @@ const FullPreviewModal = ({
   const [scale, setScale] = useState(1);
   const containerRef = useRef(null);
   const contentRef = useRef(null);
+
+  useBodyScrollLock(isOpen);
 
   // Initialize optimal scale on open
   useEffect(() => {
@@ -29,12 +31,6 @@ const FullPreviewModal = ({
           setScale(1.0);
         }
       }
-      // Lock body scroll
-      const originalOverflow = document.body.style.overflow;
-      document.body.style.overflow = "hidden";
-      return () => {
-        document.body.style.overflow = originalOverflow;
-      };
     }
   }, [isOpen]);
 

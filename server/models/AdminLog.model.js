@@ -26,6 +26,8 @@ const adminLogSchema = new mongoose.Schema(
         "settings_updated",
         "reset_ai_extraction_counter",
         "reset_user_quota",
+        "send_custom_email",
+        "email_sent",
         "login",
         "other",
       ],
