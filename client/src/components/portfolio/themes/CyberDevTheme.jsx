@@ -458,8 +458,8 @@ export default function CyberDevTheme({ data = {}, isDarkMode = true, accentColo
             </div>
 
             <div className="p-6 sm:p-10 lg:p-12">
-              <div className="grid lg:grid-cols-[1fr_auto] gap-10 items-center">
-                <div className="space-y-6">
+              <div className="grid lg:grid-cols-[1fr_320px] xl:grid-cols-[1fr_360px] gap-8 lg:gap-12 items-stretch">
+                <div className="space-y-6 flex flex-col justify-center">
                   <div className="font-mono text-xs sm:text-sm text-emerald-400/90">
                     $ echo "Initializing portfolio..."
                   </div>
@@ -516,12 +516,13 @@ export default function CyberDevTheme({ data = {}, isDarkMode = true, accentColo
 
                 {/* Profile Avatar Frame */}
                 {profileImg && (
-                  <div className="w-40 h-40 sm:w-56 sm:h-56 rounded-3xl overflow-hidden border-2 border-emerald-400 shadow-[0_0_30px_rgba(0,255,136,0.2)] bg-black shrink-0 relative group">
+                  <div className="w-full max-w-xs sm:max-w-sm lg:max-w-none h-64 sm:h-80 lg:h-full min-h-[280px] rounded-3xl overflow-hidden border-2 border-emerald-400 shadow-[0_0_30px_rgba(0,255,136,0.2)] bg-black shrink-0 relative group self-stretch">
                     <img
                       src={profileImg}
                       alt={profile.name}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
                   </div>
                 )}
               </div>

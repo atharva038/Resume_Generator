@@ -422,10 +422,10 @@ export default function MinimalDeveloperTheme({ data = {}, isDarkMode = false, a
       {/* Hero Section */}
       <section id="hero" className="border-b border-gray-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 pt-16 pb-20 sm:pt-24 sm:pb-28">
         <div className="mx-auto max-w-6xl px-5 sm:px-8">
-          <div className="grid lg:grid-cols-[1fr_auto] gap-10 items-center">
-            <div className="space-y-6">
+          <div className="grid lg:grid-cols-[1fr_320px] xl:grid-cols-[1fr_360px] gap-8 lg:gap-12 items-stretch">
+            <div className="space-y-6 flex flex-col justify-center">
               {/* Status Badge */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-xs font-mono font-bold">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-xs font-mono font-bold w-fit">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                 <span>Available for high-signal opportunities</span>
               </div>
@@ -482,7 +482,7 @@ export default function MinimalDeveloperTheme({ data = {}, isDarkMode = false, a
 
             {/* Profile Avatar Frame if available */}
             {profileImg && (
-              <div className="w-40 h-40 sm:w-56 sm:h-56 rounded-3xl overflow-hidden border-2 border-gray-200 dark:border-zinc-700 shadow-2xl bg-gray-100 dark:bg-zinc-900 shrink-0">
+              <div className="w-full max-w-xs sm:max-w-sm lg:max-w-none h-64 sm:h-80 lg:h-full min-h-[280px] rounded-3xl overflow-hidden border-2 border-gray-200 dark:border-zinc-700 shadow-2xl bg-gray-100 dark:bg-zinc-900 shrink-0 self-stretch">
                 <img
                   src={profileImg}
                   alt={profile.name}

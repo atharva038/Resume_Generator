@@ -413,10 +413,10 @@ export default function ProfessionalCorporateTheme({ data = {}, isDarkMode = fal
       {/* Hero Section */}
       <section id="hero" className="border-b border-stone-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 pt-16 pb-20 sm:pt-24 sm:pb-28">
         <div className="mx-auto max-w-6xl px-5 sm:px-8">
-          <div className="grid lg:grid-cols-[1fr_auto] gap-10 items-center">
-            <div className="space-y-6">
+          <div className="grid lg:grid-cols-[1fr_320px] xl:grid-cols-[1fr_360px] gap-8 lg:gap-12 items-stretch">
+            <div className="space-y-6 flex flex-col justify-center">
               {/* Executive Tag */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-stone-300 dark:border-stone-700 bg-stone-100 dark:bg-zinc-800 text-stone-800 dark:text-stone-200 text-xs font-bold">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-stone-300 dark:border-stone-700 bg-stone-100 dark:bg-zinc-800 text-stone-800 dark:text-stone-200 text-xs font-bold w-fit">
                 <Briefcase className="w-3.5 h-3.5 text-stone-600 dark:text-stone-400" />
                 <span>Executive &amp; Professional Leadership</span>
               </div>
@@ -473,7 +473,7 @@ export default function ProfessionalCorporateTheme({ data = {}, isDarkMode = fal
 
             {/* Profile Avatar Frame */}
             {profileImg && (
-              <div className="w-40 h-40 sm:w-56 sm:h-56 rounded-3xl overflow-hidden border-2 border-stone-300 dark:border-stone-700 shadow-2xl bg-stone-100 dark:bg-zinc-900 shrink-0">
+              <div className="w-full max-w-xs sm:max-w-sm lg:max-w-none h-64 sm:h-80 lg:h-full min-h-[280px] rounded-3xl overflow-hidden border-2 border-stone-300 dark:border-stone-700 shadow-2xl bg-stone-100 dark:bg-zinc-900 shrink-0 self-stretch">
                 <img
                   src={profileImg}
                   alt={profile.name}

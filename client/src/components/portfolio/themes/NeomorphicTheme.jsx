@@ -393,9 +393,9 @@ export default function NeomorphicTheme({
           ========================================================================= */}
       <section id="hero" className="py-12 sm:py-20 lg:py-24 relative overflow-hidden">
         <div className="neo-container">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-stretch">
             {/* Left Column: Editorial Statement & Tactile Panel */}
-            <div className="lg:col-span-7 flex flex-col items-start">
+            <div className="lg:col-span-7 flex flex-col justify-center items-start">
               {/* Main Headline */}
               <h1 className="neo-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-semibold tracking-tight text-[var(--neo-text-primary)] mb-6 leading-[1.08]">
                 {headline}
@@ -489,10 +489,10 @@ export default function NeomorphicTheme({
             </div>
 
             {/* Right Column: Physical Raised Profile Module */}
-            <div className="lg:col-span-5 flex justify-center">
-              <div className="neo-raised p-5 sm:p-6 rounded-[2.5rem] w-full max-w-md relative group">
+            <div className="lg:col-span-5 flex justify-center lg:self-stretch">
+              <div className="neo-raised p-5 sm:p-6 rounded-[2.5rem] w-full max-w-md lg:h-full flex flex-col relative group">
                 {/* Sunken Inset Viewport Frame */}
-                <div className="neo-inset-deep p-3 sm:p-4 rounded-[2rem] aspect-[4/5] overflow-hidden relative">
+                <div className="neo-inset-deep p-3 sm:p-4 rounded-[2rem] w-full h-full min-h-[320px] overflow-hidden relative flex flex-col">
                   {profileImage ? (
                     <img
                       src={profileImage}
@@ -500,7 +500,7 @@ export default function NeomorphicTheme({
                       className="w-full h-full object-cover rounded-[1.5rem] transition-transform duration-500 group-hover:scale-105"
                     />
                   ) : (
-                    <div className="w-full h-full rounded-[1.5rem] bg-[var(--neo-surface)] flex flex-col items-center justify-center p-6 text-center">
+                    <div className="w-full h-full min-h-[320px] rounded-[1.5rem] bg-[var(--neo-surface)] flex flex-col items-center justify-center p-6 text-center">
                       <div className="w-20 h-20 rounded-2xl neo-inset-sm flex items-center justify-center neo-accent-gold text-2xl font-bold mb-4">
                         {initials}
                       </div>

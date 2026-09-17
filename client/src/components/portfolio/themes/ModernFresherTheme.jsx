@@ -413,10 +413,10 @@ export default function ModernFresherTheme({ data = {}, isDarkMode = false, acce
       {/* Hero Section */}
       <section id="hero" className="border-b border-gray-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 pt-16 pb-20 sm:pt-24 sm:pb-28">
         <div className="mx-auto max-w-6xl px-5 sm:px-8">
-          <div className="grid lg:grid-cols-[1fr_auto] gap-10 items-center">
-            <div className="space-y-6">
+          <div className="grid lg:grid-cols-[1fr_320px] xl:grid-cols-[1fr_360px] gap-8 lg:gap-12 items-stretch">
+            <div className="space-y-6 flex flex-col justify-center">
               {/* Ready to start badge */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-sky-500/30 bg-sky-500/10 text-sky-700 dark:text-sky-300 text-xs font-bold">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-sky-500/30 bg-sky-500/10 text-sky-700 dark:text-sky-300 text-xs font-bold w-fit">
                 <Rocket className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
                 <span>Ready for Early Career &amp; Junior Roles</span>
               </div>
@@ -473,7 +473,7 @@ export default function ModernFresherTheme({ data = {}, isDarkMode = false, acce
 
             {/* Profile Avatar Frame */}
             {profileImg && (
-              <div className="w-40 h-40 sm:w-56 sm:h-56 rounded-3xl overflow-hidden border-2 border-sky-500/30 shadow-2xl bg-gray-100 dark:bg-zinc-900 shrink-0">
+              <div className="w-full max-w-xs sm:max-w-sm lg:max-w-none h-64 sm:h-80 lg:h-full min-h-[280px] rounded-3xl overflow-hidden border-2 border-sky-500/30 shadow-2xl bg-gray-100 dark:bg-zinc-900 shrink-0 self-stretch">
                 <img
                   src={profileImg}
                   alt={profile.name}

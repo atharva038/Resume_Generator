@@ -420,10 +420,10 @@ export default function TechPortfolioTheme({ data = {}, isDarkMode = true, accen
         <div className="pointer-events-none absolute -top-40 right-0 w-[500px] h-[500px] rounded-full bg-cyan-500/10 blur-[120px]" />
 
         <div className="mx-auto max-w-6xl px-5 sm:px-8 relative z-10">
-          <div className="grid lg:grid-cols-[1fr_auto] gap-10 items-center">
-            <div className="space-y-6">
+          <div className="grid lg:grid-cols-[1fr_320px] xl:grid-cols-[1fr_360px] gap-8 lg:gap-12 items-stretch">
+            <div className="space-y-6 flex flex-col justify-center">
               {/* Status Badge */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 text-xs font-mono font-bold">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 text-xs font-mono font-bold w-fit">
                 <Activity className="w-3.5 h-3.5 animate-pulse" />
                 <span>Available for Engineering Roles &amp; Consulting</span>
               </div>
@@ -480,7 +480,7 @@ export default function TechPortfolioTheme({ data = {}, isDarkMode = true, accen
 
             {/* Profile Avatar Frame */}
             {profileImg && (
-              <div className="w-40 h-40 sm:w-56 sm:h-56 rounded-3xl overflow-hidden border-2 border-cyan-400/40 shadow-[0_0_30px_rgba(6,182,212,0.2)] bg-black shrink-0">
+              <div className="w-full max-w-xs sm:max-w-sm lg:max-w-none h-64 sm:h-80 lg:h-full min-h-[280px] rounded-3xl overflow-hidden border-2 border-cyan-400/40 shadow-[0_0_30px_rgba(6,182,212,0.2)] bg-black shrink-0 self-stretch">
                 <img
                   src={profileImg}
                   alt={profile.name}

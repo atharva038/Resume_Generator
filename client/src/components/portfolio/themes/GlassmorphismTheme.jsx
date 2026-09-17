@@ -289,13 +289,13 @@ export default function GlassmorphismTheme({
             ========================================================================= */}
         <section id="hero" className="relative pt-4">
           <GlassTiltCard className="p-6 sm:p-10 lg:p-14" glowAccent={true}>
-            <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between gap-8 lg:gap-12">
+            <div className="flex flex-col lg:flex-row items-center lg:items-stretch justify-between gap-8 lg:gap-12">
               
               {/* Profile Bio & Headline */}
-              <div className="flex-1 text-center lg:text-left space-y-5">
+              <div className="flex-1 text-center lg:text-left space-y-5 flex flex-col justify-center">
                 
                 {/* Availability status badge */}
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 backdrop-blur-md">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 backdrop-blur-md w-fit mx-auto lg:mx-0">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
                   <span>Available for high-impact opportunities</span>
                 </div>
@@ -416,11 +416,11 @@ export default function GlassmorphismTheme({
 
               {/* Profile Image (Photo Mode) OR Glass Code Terminal (No-Photo Mode) */}
               {profile.profileImage ? (
-                <div className="flex flex-col items-center gap-4">
-                  <div className="relative group">
+                <div className="w-full max-w-xs sm:max-w-sm lg:w-80 xl:w-96 flex flex-col justify-between gap-4 self-stretch shrink-0">
+                  <div className="relative group w-full flex-1 min-h-[260px] sm:min-h-[300px] rounded-3xl overflow-hidden border-2 border-white/60 dark:border-white/15 shadow-2xl backdrop-blur-md">
                     {/* Glowing halo behind avatar */}
                     <div
-                      className="absolute -inset-2 rounded-full opacity-40 blur-xl transition-all duration-500 group-hover:opacity-75"
+                      className="absolute -inset-2 rounded-3xl opacity-30 blur-xl transition-all duration-500 group-hover:opacity-60"
                       style={{
                         background: currentAccent,
                       }}
@@ -429,13 +429,13 @@ export default function GlassmorphismTheme({
                     <img
                       src={profile.profileImage}
                       alt={profile.name || "Profile"}
-                      className="relative w-36 h-36 sm:w-48 sm:h-48 rounded-full object-cover border-4 border-white/80 dark:border-slate-800/80 shadow-2xl backdrop-blur-md"
+                      className="relative w-full h-full object-cover rounded-[1.35rem] transition-transform duration-500 group-hover:scale-105"
                     />
                   </div>
 
                   {/* Quick Glass Stats Card */}
                   {(totalProjects > 0 || totalSkills > 0 || totalRoles > 0) && (
-                    <div className="grid grid-cols-3 gap-2 w-full max-w-xs p-2.5 rounded-2xl bg-white/70 dark:bg-slate-900/60 border border-white/60 dark:border-white/10 backdrop-blur-md shadow-sm text-center">
+                    <div className="grid grid-cols-3 gap-2 w-full p-2.5 rounded-2xl bg-white/70 dark:bg-slate-900/60 border border-white/60 dark:border-white/10 backdrop-blur-md shadow-sm text-center">
                       {totalProjects > 0 && (
                         <div className="p-1.5">
                           <span className="block text-lg font-black text-slate-900 dark:text-white">
@@ -467,7 +467,6 @@ export default function GlassmorphismTheme({
                         </div>
                       )}
                     </div>
-                  )}
                 </div>
               ) : (
                 /* No-Photo Mode: Frosted Code Terminal & Metric Bento */

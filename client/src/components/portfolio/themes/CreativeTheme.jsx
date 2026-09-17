@@ -417,10 +417,10 @@ export default function CreativeTheme({ data = {}, isDarkMode = false, accentCol
         <div className="pointer-events-none absolute -top-40 right-0 w-[500px] h-[500px] rounded-full bg-purple-500/10 blur-[120px]" />
 
         <div className="mx-auto max-w-6xl px-5 sm:px-8 relative z-10">
-          <div className="grid lg:grid-cols-[1fr_auto] gap-12 items-center">
-            <div className="space-y-6">
+          <div className="grid lg:grid-cols-[1fr_320px] xl:grid-cols-[1fr_360px] gap-8 lg:gap-12 items-stretch">
+            <div className="space-y-6 flex flex-col justify-center">
               {/* Creative Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-purple-500/30 bg-purple-500/10 text-purple-700 dark:text-purple-300 text-xs font-bold">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-purple-500/30 bg-purple-500/10 text-purple-700 dark:text-purple-300 text-xs font-bold w-fit">
                 <Wand2 className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
                 <span>Creative Design &amp; Digital Engineering</span>
               </div>
@@ -477,7 +477,7 @@ export default function CreativeTheme({ data = {}, isDarkMode = false, accentCol
 
             {/* Profile Avatar Frame */}
             {profileImg && (
-              <div className="w-40 h-40 sm:w-56 sm:h-56 rounded-3xl overflow-hidden border-2 border-purple-500/30 shadow-2xl bg-white dark:bg-zinc-900 shrink-0">
+              <div className="w-full max-w-xs sm:max-w-sm lg:max-w-none h-64 sm:h-80 lg:h-full min-h-[280px] rounded-3xl overflow-hidden border-2 border-purple-500/30 shadow-2xl bg-white dark:bg-zinc-900 shrink-0 self-stretch">
                 <img
                   src={profileImg}
                   alt={profile.name}
