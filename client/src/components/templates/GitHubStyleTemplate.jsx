@@ -1,5 +1,9 @@
 import {forwardRef, useRef, useEffect, useMemo} from "react";
-import {isDescriptionDuplicatedInBullets, cleanBulletText} from "./templateUtils";
+import {
+  isDescriptionDuplicatedInBullets,
+  cleanBulletText,
+  formatEducationDegreeAndField,
+} from "./templateUtils";
 import {Mail, Phone, MapPin, Linkedin, Github, Globe, ExternalLink} from "lucide-react";
 
 /**
@@ -601,8 +605,7 @@ const GitHubStyleTemplate = forwardRef(
                   fontFamily: headingFont,
                 }}
               >
-                {edu.degree || "Degree"}
-                {edu.field ? ` (${edu.field})` : ""}
+                {formatEducationDegreeAndField(edu)}
               </span>
               <span style={{fontSize: compact.smallText, color: selectedTheme.textMuted}}>
                 {edu.startDate || ""} - {edu.endDate || "Present"}

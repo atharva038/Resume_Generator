@@ -21,6 +21,7 @@ const Footer = () => {
     { name: "Career Profile Hub", path: "/career-profile" },
     { name: "Career Q&A Studio", path: "/career-qa" },
     { name: "Portfolios Builder (14+)", path: "/portfolio", pulse: true },
+    { name: "Careers (We're Hiring!)", path: "/careers", pulse: true },
     { name: "Pricing & Plans", path: "/pricing" },
   ];
 

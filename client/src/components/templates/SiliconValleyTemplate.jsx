@@ -1,5 +1,9 @@
 import { forwardRef, useRef, useEffect, useMemo } from "react";
-import { isDescriptionDuplicatedInBullets, cleanBulletText } from "./templateUtils";
+import {
+  isDescriptionDuplicatedInBullets,
+  cleanBulletText,
+  formatEducationDegreeAndField,
+} from "./templateUtils";
 import {
   Mail,
   Phone,
@@ -921,7 +925,7 @@ const SiliconValleyTemplate = forwardRef(
                       lineHeight: 1.25,
                     }}
                   >
-                    {edu.degree}
+                    {formatEducationDegreeAndField(edu)}
                   </h3>
                   <div
                     style={{

@@ -1,4 +1,5 @@
 import {forwardRef, useEffect, useMemo, useRef} from "react";
+import {formatEducationDegreeAndField} from "./templateUtils";
 import {
   Mail,
   Phone,
@@ -250,8 +251,7 @@ const StructuredPhotoTemplate = forwardRef(({resumeData, onPageUsageChange}, ref
                 <div
                   style={{fontSize: "13px", fontWeight: 700, color: theme.heading || theme.text}}
                 >
-                  {edu.degree || "Degree"}
-                  {edu.field ? ` (${edu.field})` : ""}
+                  {formatEducationDegreeAndField(edu) || "Degree"}
                 </div>
                 <div style={{fontSize: "12px", color: theme.heading || theme.text}}>
                   {edu.institution || "Institution"}

@@ -1,5 +1,5 @@
 import React, {forwardRef, useRef, useEffect, useState} from "react";
-import {isDescriptionDuplicatedInBullets} from "./templateUtils";
+import {isDescriptionDuplicatedInBullets, formatEducationDegreeAndField} from "./templateUtils";
 
 /**
  * ImpactProTemplate - Results-Driven Resume Template with Dynamic Features
@@ -853,8 +853,7 @@ const ImpactProTemplate = forwardRef((props, ref) => {
                         color: selectedTheme.text,
                       }}
                     >
-                      {edu.degree}
-                      {edu.field && ` in ${edu.field}`}
+                      {formatEducationDegreeAndField(edu)}
                     </div>
                     <div
                       style={{
