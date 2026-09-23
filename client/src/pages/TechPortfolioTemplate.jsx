@@ -73,21 +73,38 @@ const TechPortfolioTemplate = () => {
         <meta property="og:type" content="website" />
         <meta property="og:title" content={seoConfig.title} />
         <meta property="og:description" content={seoConfig.description} />
-        <meta property="og:image" content={seoConfig.ogImage} />
-        <meta property="og:url" content={window.location.href} />
+        <meta property="og:image" content={seoConfig.ogImage || "https://www.smartnshine.app/social-preview.png"} />
+        <meta property="og:url" content="https://www.smartnshine.app/tech-portfolio" />
 
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={seoConfig.title} />
         <meta name="twitter:description" content={seoConfig.description} />
-        <meta name="twitter:image" content={seoConfig.ogImage} />
-        <meta name="twitter:creator" content={seoConfig.twitterHandle} />
+        <meta name="twitter:image" content={seoConfig.ogImage || "https://www.smartnshine.app/social-preview.png"} />
+        <meta name="twitter:creator" content={seoConfig.twitterHandle || "@smartnshine"} />
 
         {/* Canonical */}
-        <link rel="canonical" href={window.location.href} />
+        <link rel="canonical" href="https://www.smartnshine.app/tech-portfolio" />
 
         {/* Theme Color */}
         <meta name="theme-color" content="#000000" />
+
+        {/* Structured Data JSON-LD */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "ProfilePage",
+            "name": seoConfig.title,
+            "description": seoConfig.description,
+            "url": "https://www.smartnshine.app/tech-portfolio",
+            "mainEntity": {
+              "@type": "Person",
+              "name": personalInfo.name,
+              "jobTitle": personalInfo.title,
+              "description": personalInfo.bio
+            }
+          })}
+        </script>
       </Helmet>
 
       <div className="bg-black text-white overflow-x-hidden">

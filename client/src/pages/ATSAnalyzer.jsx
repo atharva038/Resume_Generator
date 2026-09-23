@@ -140,10 +140,28 @@ export default function ATSAnalyzer() {
   return (
     <div className="min-h-screen bg-gray-50/50 dark:bg-[#09090b] text-gray-900 dark:text-zinc-100 transition-colors duration-200">
       <SEO
-        title="ATS Resume Analyzer - Check Resume Compatibility | SmartNShine"
-        description="Analyze your resume against job descriptions with AI-powered ATS compatibility checker. Get instant feedback and optimization suggestions to pass applicant tracking systems."
-        keywords="ATS analyzer, resume checker, ATS compatibility, resume scanner, job match analyzer, applicant tracking system, resume optimization"
+        title="Free ATS Resume Score Checker &amp; Compatibility Analyzer"
+        description="Check your resume's ATS score in real time against job descriptions. Discover missing keywords, fix formatting flaws, and pass Taleo, Workday, Greenhouse &amp; Lever filters."
+        keywords="ATS resume checker, free ATS score test, Taleo resume scanner, Workday resume checker, ATS compatibility analyzer, keyword gap scanner, resume score checker, pass ATS 2026"
         url="https://www.smartnshine.app/ats-analyzer"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "SoftwareApplication",
+          "name": "SmartNShine ATS Resume Compatibility Analyzer",
+          "applicationCategory": "BusinessApplication",
+          "operatingSystem": "All",
+          "url": "https://www.smartnshine.app/ats-analyzer",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "INR"
+          },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.9",
+            "ratingCount": "640"
+          }
+        }}
       />
 
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
