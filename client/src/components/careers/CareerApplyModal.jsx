@@ -10,7 +10,7 @@ import {
   PartyPopper,
 } from "lucide-react";
 import toast from "react-hot-toast";
-import { contactAPI } from "@/api/api";
+import { careerApplicationAPI } from "@/api";
 
 export default function CareerApplyModal({ job, isOpen, onClose }) {
   const [formData, setFormData] = useState({
@@ -87,6 +87,16 @@ export default function CareerApplyModal({ job, isOpen, onClose }) {
     }
   };
 
+  const fileToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      if (!file) return resolve("");
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -99,65 +109,84 @@ export default function CareerApplyModal({ job, isOpen, onClose }) {
 
     try {
       const roleTitle = job ? job.title : "General Founding Application";
-      const payload = {
-        name: formData.fullName,
-        email: formData.email,
-        phone: formData.phone,
-        company: `Applicant for ${roleTitle}`,
-        subject: `[Founding Team Application] ${roleTitle} - ${formData.fullName}`,
-        category: "careers",
-        message: `
-Role: ${roleTitle}
-Experience: ${formData.experience}
-Availability: ${formData.availability}
-Location: ${formData.location}
-Portfolio: ${formData.portfolioUrl || "N/A"}
-LinkedIn: ${formData.linkedinUrl || "N/A"}
-GitHub: ${formData.githubUrl || "N/A"}
-Resume Attached: ${formData.resumeFile ? formData.resumeFile.name : "None / Linked"}
+      const roleId = job?.id || "general";
+      const department = job?.department || "General";
 
-Cover Note:
-${formData.coverNote}
-        `.trim(),
-      };
-
-      try {
-        await contactAPI.send(payload);
-      } catch (err) {
-        console.warn("Contact API fallback:", err);
+      let resumeBase64 = "";
+      if (formData.resumeFile) {
+        try {
+          resumeBase64 = await fileToBase64(formData.resumeFile);
+        } catch (fErr) {
+          console.warn("Could not encode resume:", fErr);
+        }
       }
 
-      // Also persist to local storage so admin panel immediately shows this submission
+      const payload = {
+        name: formData.fullName.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        location: formData.location.trim(),
+        roleId,
+        roleTitle,
+        department,
+        experienceLevel: formData.experience,
+        availability: formData.availability,
+        portfolioUrl: formData.portfolioUrl.trim(),
+        linkedinUrl: formData.linkedinUrl.trim(),
+        githubUrl: formData.githubUrl.trim(),
+        coverNote: formData.coverNote.trim(),
+        whyJoin: formData.coverNote.trim(),
+        source: "careers_quick_modal",
+        resumeName: formData.resumeFile ? formData.resumeFile.name : "",
+        resumeSize: formData.resumeFile ? formData.resumeFile.size : 0,
+        resumeData: resumeBase64,
+      };
+
+      let appId = `app-${Date.now()}`;
+      try {
+        const res = await careerApplicationAPI.submitApplication(payload);
+        if (res.data?.success && (res.data?.applicationId || res.data?.application?._id)) {
+          appId = res.data.applicationId || res.data.application._id;
+        }
+      } catch (apiErr) {
+        console.warn("API submission error, caching locally:", apiErr);
+      }
+
+      // Also persist to local storage cache
       try {
         const localStored = localStorage.getItem("smartnshine_admin_career_apps");
         let list = localStored ? JSON.parse(localStored) : [];
         const newApp = {
-          _id: "app-" + Date.now(),
-          name: formData.fullName,
-          email: formData.email,
-          phone: formData.phone || "N/A",
+          _id: appId,
+          name: formData.fullName.trim(),
+          email: formData.email.trim(),
+          phone: formData.phone.trim() || "N/A",
           role: roleTitle,
-          department: job?.department || "General / Cross-functional",
+          roleTitle: roleTitle,
+          roleId,
+          department,
           experience: formData.experience,
           availability: formData.availability,
-          location: formData.location || "Remote",
-          portfolioUrl: formData.portfolioUrl,
-          linkedinUrl: formData.linkedinUrl,
-          githubUrl: formData.githubUrl,
+          location: formData.location.trim() || "Remote",
+          portfolioUrl: formData.portfolioUrl.trim(),
+          linkedinUrl: formData.linkedinUrl.trim(),
+          githubUrl: formData.githubUrl.trim(),
           resumeName: formData.resumeFile ? formData.resumeFile.name : "Resume_Attached.pdf",
-          coverNote: formData.coverNote,
+          resumeData: resumeBase64,
+          coverNote: formData.coverNote.trim(),
+          whyJoin: formData.coverNote.trim(),
           status: "pending",
           createdAt: new Date().toISOString(),
           notes: "",
         };
-        list.unshift(newApp);
+        list = [newApp, ...list.filter((a) => a._id !== appId)];
         localStorage.setItem("smartnshine_admin_career_apps", JSON.stringify(list));
       } catch (e) {
         console.error("Local storage sync error:", e);
       }
 
       setIsSuccess(true);
-      toast.success("Application successfully submitted!");
+      toast.success("Founding Application Received! Founders will review within 48h.");
     } catch (error) {
       console.error("Application error:", error);
       toast.error("Failed to send application. Please try again.");

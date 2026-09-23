@@ -14,6 +14,8 @@ import {
   Code2,
   FolderGit2,
   Star,
+  Github,
+  Linkedin,
 } from "lucide-react";
 
 /**
@@ -487,12 +489,12 @@ const Creative2Template = forwardRef(({ resumeData = {}, onPageUsageChange }, re
       href: null,
     },
     contact.linkedin && {
-      icon: ExternalLink,
+      icon: Linkedin,
       label: "LinkedIn",
       href: contact.linkedin.startsWith("http") ? contact.linkedin : `https://${contact.linkedin}`,
     },
     contact.github && {
-      icon: ExternalLink,
+      icon: Github,
       label: "GitHub",
       href: contact.github.startsWith("http") ? contact.github : `https://${contact.github}`,
     },

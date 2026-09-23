@@ -126,6 +126,25 @@ const careerApplicationSchema = new mongoose.Schema(
       maxlength: 4000,
       default: "",
     },
+    // Role-specific customized answer & background
+    roleSpecificAnswer: {
+      type: String,
+      trim: true,
+      maxlength: 4000,
+      default: "",
+    },
+    universityOrOrg: {
+      type: String,
+      trim: true,
+      maxlength: 200,
+      default: "",
+    },
+    customRolePitch: {
+      type: String,
+      trim: true,
+      maxlength: 200,
+      default: "",
+    },
     // Resume & attachments
     resumeName: {
       type: String,
@@ -138,6 +157,12 @@ const careerApplicationSchema = new mongoose.Schema(
     },
     resumeData: {
       type: String, // base64 or file URL
+      default: "",
+    },
+    coverNote: {
+      type: String,
+      trim: true,
+      maxlength: 4000,
       default: "",
     },
     additionalNotes: {

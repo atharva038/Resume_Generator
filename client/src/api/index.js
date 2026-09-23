@@ -70,3 +70,6 @@ export {default as interviewAPI} from "./interview.api";
 
 // Career Profile & Q&A API exports
 export {default as careerAPI} from "./career.api";
+
+// Career Application API exports
+export {default as careerApplicationAPI} from "./careerApplication.api";
