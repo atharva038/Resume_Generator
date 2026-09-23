@@ -191,6 +191,38 @@ export const OPEN_ROLES = [
       "Experience growing personal or brand accounts on TikTok, X/Twitter, or LinkedIn.",
       "Previous experience at an early-stage SaaS startup or running a university club/community.",
     ],
+    formConfig: {
+      badge: "Viral Growth & Distribution",
+      proofOfWorkTitle: "Link to your #1 best viral video, growth campaign, or marketing teardown",
+      proofOfWorkPlaceholder: "https://tiktok.com/@handle/video/... or campaign case study",
+      proofOfWorkDescPlaceholder: "e.g. Grew organic TikTok to 250k views in 60 days with $0 ad spend.",
+      questions: {
+        whyJoin: {
+          title: "1. Why SmartNShine & how will you supercharge our user acquisition engine?",
+          subtitle: "What excites you about taking our AI ATS platform to our first 100,000 active job seekers?",
+          placeholder: "Share your vision for our organic hooks, viral brand loops, and growth experiments...",
+        },
+        scrappyStory: {
+          title: "2. Tell us about your scrappiest zero-budget marketing campaign or viral hit.",
+          subtitle: "How did you capture attention, drive traffic, or build an audience with pure hustle?",
+          placeholder: "e.g. How you launched on Product Hunt, rode an algorithmic wave, or grew a social channel...",
+        },
+        first30DaysPlan: {
+          title: "3. What are the top 3 marketing experiments you will launch in your first 30 days?",
+          subtitle: "Be specific: video series, launch channels, creator co-marketing, or referral viral loops.",
+          placeholder: "1. Launch weekly 'ATS Algorithm Teardown' short-form video series\n2. Execute Product Hunt and Hacker News Show HN launch\n3. Partner with 15 LinkedIn career creators for co-marketing...",
+        },
+        roleSpecificQuestion: {
+          title: "4. What is your #1 creative concept for a short-form video to get 50k+ views?",
+          subtitle: "Walk us through the opening hook, the interactive ATS demo, and the call to action.",
+          placeholder: "Hook: 'Why your resume gets rejected in 6 seconds by Taleo...'\nBody: Show side-by-side ATS keyword scanner diagnostic\nCTA: 'Scan your resume free on SmartNShine'...",
+        },
+        marketInsight: {
+          title: "5. What are current career and resume tools doing wrong with their marketing?",
+          placeholder: "Most resume tools focus on boring visual templates instead of recruiter psychology...",
+        },
+      },
+    },
   },
   {
     id: "founding-business-operations-lead",
@@ -222,6 +254,38 @@ export const OPEN_ROLES = [
       "Network with university placement officers, bootcamp organizers, or tech recruiters.",
       "Experience with startup pitch competitions, business clubs, or accelerator programs.",
     ],
+    formConfig: {
+      badge: "B2B & Campus Partnerships",
+      proofOfWorkTitle: "Link to your best partnership deal, pitch deck, proposal, or business case study",
+      proofOfWorkPlaceholder: "https://drive.google.com/... or business deck link",
+      proofOfWorkDescPlaceholder: "e.g. Closed corporate sponsorship package with 20+ companies for college summit.",
+      questions: {
+        whyJoin: {
+          title: "1. Why SmartNShine & what is your vision for institutional partnerships?",
+          subtitle: "How do you see SmartNShine monetizing with colleges, bootcamps, and recruiters?",
+          placeholder: "Share how you would take our enterprise/B2B licensing from zero to one...",
+        },
+        scrappyStory: {
+          title: "2. Tell us about a deal, partnership, or initiative you successfully closed.",
+          subtitle: "Cold outreach, negotiating terms, or creating win-win collaborations.",
+          placeholder: "e.g. How you negotiated with college admins, closed sponsors, or pitched an early-stage product...",
+        },
+        first30DaysPlan: {
+          title: "3. What are your top 3 business development initiatives for your first 30 days?",
+          subtitle: "Target institutions, outreach cadence, and pricing validation steps.",
+          placeholder: "1. Outreach to 30 university placement officers with pilot demo\n2. Pitch bulk student licenses to 10 coding bootcamps\n3. Set up affiliate referral program for career coaches...",
+        },
+        roleSpecificQuestion: {
+          title: "4. How would you structure a bulk licensing pitch to a college placement cell?",
+          subtitle: "What is the key pain point you solve for the university placement director?",
+          placeholder: "Position SmartNShine as an automated placement audit tool that ensures 100% of graduating student resumes pass company ATS filters...",
+        },
+        marketInsight: {
+          title: "5. What is the biggest untapped monetization opportunity in the career tech space?",
+          placeholder: "Universities spend hundreds of thousands on outdated LMS systems while students need modern AI diagnostics...",
+        },
+      },
+    },
   },
   {
     id: "founding-campus-community-lead",
@@ -251,6 +315,39 @@ export const OPEN_ROLES = [
       "Experience as a campus ambassador for other tech companies (e.g. GitHub, Notion, Postman).",
       "Experience hosting Discord servers, webinars, or campus events.",
     ],
+    formConfig: {
+      badge: "Student Network & Campus Growth",
+      proofOfWorkTitle: "Link to your student club, Discord server, campus event, or community project",
+      proofOfWorkPlaceholder: "https://discord.gg/... or club website / event link",
+      proofOfWorkDescPlaceholder: "e.g. Organized nationwide virtual hackathon with 1,200+ engineering participants.",
+      showUniversityField: true,
+      questions: {
+        whyJoin: {
+          title: "1. Why SmartNShine & why are you passionate about helping fellow students win?",
+          subtitle: "How will you position SmartNShine as the #1 must-have tool on university campuses?",
+          placeholder: "Share how you plan to mobilize campus leaders and students...",
+        },
+        scrappyStory: {
+          title: "2. Tell us about a student event, club campaign, or hackathon you organized.",
+          subtitle: "How did you rally participants and create high engagement with little/no budget?",
+          placeholder: "e.g. Hosted campus-wide coding bootcamps, Discord study groups, or resume critique sessions...",
+        },
+        first30DaysPlan: {
+          title: "3. What is your 30-day campus activation game plan?",
+          subtitle: "How will you recruit initial campus ambassadors and drive placement-season adoption?",
+          placeholder: "1. Recruit 20 Campus Ambassadors across top engineering schools\n2. Host weekly live Discord 'Resume Roasting' workshops\n3. Partner with college tech clubs for exclusive student discounts...",
+        },
+        roleSpecificQuestion: {
+          title: "4. What is your university / college, major, and anticipated graduation year?",
+          subtitle: "Tell us about your campus tech clubs, placement networks, and student connections.",
+          placeholder: "e.g. Final Year CS at IIT Bombay / Purdue. Lead organizer at ACM Student Chapter and Hackathon organizer...",
+        },
+        marketInsight: {
+          title: "5. What is the #1 pain point college students face during placement/internship season?",
+          placeholder: "Students get ghosted with no feedback on why their PDF formatting failed ATS parsing...",
+        },
+      },
+    },
   },
   {
     id: "founding-fullstack-ai-partner",
@@ -280,8 +377,82 @@ export const OPEN_ROLES = [
       "Experience with Puppeteer, web scraping, or vector search embeddings.",
       "Experience building developer tools, Chrome extensions, or PDF generation tools.",
     ],
+    formConfig: {
+      badge: "Core Full-Stack & AI Engineering",
+      proofOfWorkTitle: "Link to your best GitHub repository, live web app, or technical architecture",
+      proofOfWorkPlaceholder: "https://github.com/username/project or live app URL",
+      proofOfWorkDescPlaceholder: "e.g. Built high-speed Puppeteer vector PDF generator handling 10k renders daily.",
+      questions: {
+        whyJoin: {
+          title: "1. Why SmartNShine & what exciting technical challenges do you want to tackle?",
+          subtitle: "What draws you to our tech stack (React 18, Node.js, Puppeteer, OpenAI/Claude, MongoDB)?",
+          placeholder: "Share your technical vision for scaling our AI resume and portfolio platform...",
+        },
+        scrappyStory: {
+          title: "2. Tell us about the most challenging bug, optimization, or architecture you solved.",
+          subtitle: "A complex technical challenge you diagnosed and resolved from scratch.",
+          placeholder: "e.g. How you optimized PDF render latency, reduced memory leaks, or built real-time streaming LLM hooks...",
+        },
+        first30DaysPlan: {
+          title: "3. What are the top 3 engineering initiatives you would build in your first 30 days?",
+          subtitle: "Performance upgrades, new AI features, browser extension, or CI/CD pipelines.",
+          placeholder: "1. Implement streaming LLM bullet generator hooks for real-time UI feedback\n2. Optimize vector PDF generation time to <500ms\n3. Build Automated LinkedIn Profile PDF importer...",
+        },
+        roleSpecificQuestion: {
+          title: "4. Which technical domain is your superpower?",
+          subtitle: "React state & micro-animations, Node.js async API performance, LLM prompt engineering, or Puppeteer PDF engines?",
+          placeholder: "e.g. Full-Stack with deep expertise in React 18 concurrent rendering, Framer Motion, and Node.js microservice scaling...",
+        },
+        marketInsight: {
+          title: "5. What is the biggest technical flaw in most online resume and portfolio builders?",
+          placeholder: "Most online tools generate raster canvas snapshots rather than true vector text layers, causing ATS parsers to fail...",
+        },
+      },
+    },
   },
 ];
+
+export const GENERAL_ROLE_CONFIG = {
+  id: "general",
+  title: "General Founding Application (Pitch Your Own Role)",
+  department: "General & Wildcard",
+  summary:
+    "Have a superpower in growth, community, viral video, partnership, or engineering not listed above? Pitch yourself directly to the technical founders.",
+  experience: "High Agency / Self-Starter",
+  formConfig: {
+    badge: "Wildcard Founding Pitch",
+    proofOfWorkTitle: "Link to your portfolio, past startup launch, creative work, or wildcard project",
+    proofOfWorkPlaceholder: "https://yourwebsite.com or project link",
+    proofOfWorkDescPlaceholder: "e.g. Shipped viral product, built active creator channel, or founded community.",
+    showCustomRoleField: true,
+    questions: {
+      whyJoin: {
+        title: "1. What founding role are you pitching and why does SmartNShine need it right now?",
+        subtitle: "Define your ideal title, domain, and the core value you will create for Day 0.",
+        placeholder: "I am pitching Founding Product Designer / Creator-in-Residence / Partnership Lead...",
+      },
+      scrappyStory: {
+        title: "2. What is your #1 superpower and the scrappiest thing you have ever accomplished?",
+        subtitle: "Show us your high agency and ability to solve ambiguous problems with pure hustle.",
+        placeholder: "Tell us about a project you executed from zero to one with complete ownership...",
+      },
+      first30DaysPlan: {
+        title: "3. What is your 30-day proof-of-concept sprint proposal?",
+        subtitle: "What tangible milestone will you deliver in your first month to prove the ROI of this role?",
+        placeholder: "Deliverables for Week 1 through Week 4...",
+      },
+      roleSpecificQuestion: {
+        title: "4. Why are you betting on SmartNShine at this early founding stage?",
+        subtitle: "What is your long-term vision for the product and your role within it?",
+        placeholder: "Share what drives your passion for this problem space...",
+      },
+      marketInsight: {
+        title: "5. What is an unconventional idea you have to give SmartNShine an unfair advantage?",
+        placeholder: "An overlooked acquisition channel, product feature, or distribution loop...",
+      },
+    },
+  },
+};
 
 export const CAREER_FAQS = [
   {

@@ -1,4 +1,5 @@
 import CareerApplication from "../models/CareerApplication.model.js";
+import { createAdminNotification } from "../services/adminNotification.service.js";
 
 /**
  * Submit a new career application (Public)
@@ -29,6 +30,10 @@ export const submitApplication = async (req, res) => {
       scrappyStory,
       first30DaysPlan,
       marketInsight,
+      roleSpecificAnswer,
+      universityOrOrg,
+      customRolePitch,
+      coverNote,
       resumeName,
       resumeSize,
       resumeData,
@@ -75,6 +80,10 @@ export const submitApplication = async (req, res) => {
       scrappyStory: scrappyStory?.trim() || "",
       first30DaysPlan: first30DaysPlan?.trim() || "",
       marketInsight: marketInsight?.trim() || "",
+      roleSpecificAnswer: roleSpecificAnswer?.trim() || "",
+      universityOrOrg: universityOrOrg?.trim() || "",
+      customRolePitch: customRolePitch?.trim() || "",
+      coverNote: coverNote?.trim() || "",
       resumeName: resumeName?.trim() || "",
       resumeSize: typeof resumeSize === "number" ? resumeSize : 0,
       resumeData: resumeData || "",
@@ -84,6 +93,27 @@ export const submitApplication = async (req, res) => {
     });
 
     await application.save();
+
+    // Trigger admin notification for new candidate application
+    try {
+      await createAdminNotification({
+        type: "user",
+        severity: "info",
+        title: "New Career Application",
+        message: `${application.name} applied for ${application.roleTitle} (${application.department})`,
+        targetType: "career_application",
+        targetId: application._id,
+        actionUrl: "/admin/careers",
+        metadata: {
+          name: application.name,
+          email: application.email,
+          roleTitle: application.roleTitle,
+          department: application.department,
+        },
+      });
+    } catch (notifErr) {
+      console.warn("Failed to create admin notification for career application:", notifErr);
+    }
 
     res.status(201).json({
       success: true,

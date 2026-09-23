@@ -144,6 +144,10 @@ function App() {
             <Route path="/" element={<LandingPage />} />
             <Route path="/landing-preview" element={<Navigate to="/" replace />} />
             <Route path="/landing-v2" element={<Navigate to="/" replace />} />
+            <Route path="/portfolio-builder" element={<Navigate to="/tech-portfolio" replace />} />
+            <Route path="/portfolios" element={<Navigate to="/tech-portfolio" replace />} />
+            <Route path="/ats-resume-checker" element={<Navigate to="/ats-analyzer" replace />} />
+            <Route path="/terms" element={<Navigate to="/terms-and-conditions" replace />} />
             <Route path="/careers" element={<Careers />} />
             <Route path="/careers/apply" element={<CareerApplyPage />} />
             <Route path="/careers/apply/:jobId" element={<CareerApplyPage />} />

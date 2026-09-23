@@ -29,7 +29,8 @@ import toast from "react-hot-toast";
 import SEO from "../components/common/SEO";
 import LandingNavbar from "../components/landing-v2/LandingNavbar";
 import Footer from "../components/layout/Footer";
-import { OPEN_ROLES } from "../components/careers/careersData";
+import { OPEN_ROLES, GENERAL_ROLE_CONFIG } from "../components/careers/careersData";
+import { careerApplicationAPI } from "@/api";
 
 const STORAGE_DRAFT_KEY = "smartnshine_career_application_draft";
 
@@ -41,7 +42,7 @@ export default function CareerApplyPage() {
   // Find pre-selected role if provided in URL or search params
   const targetRoleId = jobId || searchParams.get("role") || "";
 
-  // Available role choices
+  // Available role choices with their specific form configurations
   const roleOptions = useMemo(() => {
     return [
       ...OPEN_ROLES.map((r) => ({
@@ -50,15 +51,9 @@ export default function CareerApplyPage() {
         department: r.department,
         summary: r.summary,
         experience: r.experience,
+        formConfig: r.formConfig,
       })),
-      {
-        id: "general",
-        title: "General Founding Application (Pitch Your Own Role)",
-        department: "General & Wildcard",
-        summary:
-          "Have a superpower in growth, community, viral video, partnership, or engineering not listed above? Pitch yourself directly to the technical founders.",
-        experience: "High Agency / Self-Starter",
-      },
+      GENERAL_ROLE_CONFIG,
     ];
   }, []);
 
@@ -67,6 +62,10 @@ export default function CareerApplyPage() {
     const match = roleOptions.find((r) => r.id === targetRoleId);
     return match || roleOptions[0];
   }, [targetRoleId, roleOptions]);
+
+  const formConfig = useMemo(() => {
+    return selectedRoleData?.formConfig || GENERAL_ROLE_CONFIG.formConfig;
+  }, [selectedRoleData]);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -82,6 +81,8 @@ export default function CareerApplyPage() {
     availability: "Part-Time (10-20 hrs/week)",
     startDate: "Immediate",
     workingStyle: "Async-First with Weekly Sprints",
+    universityOrOrg: "",
+    customRolePitch: "",
     linkedinUrl: "",
     portfolioUrl: "",
     githubUrl: "",
@@ -91,6 +92,7 @@ export default function CareerApplyPage() {
     whyJoin: "",
     scrappyStory: "",
     first30DaysPlan: "",
+    roleSpecificAnswer: "",
     marketInsight: "",
     resumeName: "",
     resumeSize: 0,
@@ -282,17 +284,12 @@ export default function CareerApplyPage() {
         source: "careers_full_page",
       };
 
-      // 1. Submit to Backend API
+      // 1. Submit to Backend API via careerApplicationAPI
       let appId = `app-${Date.now()}`;
       try {
-        const res = await fetch("/api/career-applications/submit", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-        const data = await res.json();
-        if (data.success && data.applicationId) {
-          appId = data.applicationId;
+        const res = await careerApplicationAPI.submitApplication(payload);
+        if (res.data?.success && (res.data?.applicationId || res.data?.application?._id)) {
+          appId = res.data.applicationId || res.data.application._id;
         }
       } catch (apiErr) {
         console.warn("Backend submit fallback:", apiErr);
@@ -326,6 +323,9 @@ export default function CareerApplyPage() {
           whyJoin: formData.whyJoin,
           scrappyStory: formData.scrappyStory,
           first30DaysPlan: formData.first30DaysPlan,
+          roleSpecificAnswer: formData.roleSpecificAnswer,
+          universityOrOrg: formData.universityOrOrg,
+          customRolePitch: formData.customRolePitch,
           marketInsight: formData.marketInsight,
           resumeName: formData.resumeName || "Resume_Submitted.pdf",
           resumeData: formData.resumeData,
@@ -503,7 +503,7 @@ export default function CareerApplyPage() {
               <div className="space-y-4">
                 <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs font-semibold uppercase tracking-wider border border-zinc-200 dark:border-zinc-700">
                   <Briefcase className="w-3.5 h-3.5" />
-                  <span>Founding Team Application</span>
+                  <span>{formConfig?.badge || "Founding Team Application"}</span>
                   <span className="text-zinc-400">•</span>
                   <span className="text-zinc-500 normal-case font-normal">~4 mins to complete</span>
                 </div>
@@ -637,6 +637,38 @@ export default function CareerApplyPage() {
                         className="w-full px-4 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white transition-all"
                       />
                     </div>
+
+                    {/* Conditional: University / College Field for Campus Leads */}
+                    {formConfig?.showUniversityField && (
+                      <div className="sm:col-span-2">
+                        <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">
+                          University / College, Major & Grad Year
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Stanford University • B.S. Computer Science • Class of 2026"
+                          value={formData.universityOrOrg}
+                          onChange={(e) => handleInputChange("universityOrOrg", e.target.value)}
+                          className="w-full px-4 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white transition-all"
+                        />
+                      </div>
+                    )}
+
+                    {/* Conditional: Custom Role Title for Wildcard Pitches */}
+                    {formConfig?.showCustomRoleField && (
+                      <div className="sm:col-span-2">
+                        <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">
+                          Proposed Founding Role Title
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Founding Product Designer / Creator-in-Residence / Growth Engineer"
+                          value={formData.customRolePitch}
+                          onChange={(e) => handleInputChange("customRolePitch", e.target.value)}
+                          className="w-full px-4 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white transition-all"
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -716,15 +748,15 @@ export default function CareerApplyPage() {
                     </div>
                   </div>
 
-                  {/* Best Single Project or Campaign Showcase */}
+                  {/* Best Single Project or Campaign Showcase (Role Tailored) */}
                   <div className="p-5 rounded-2xl bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-200/80 dark:border-zinc-800 space-y-4">
                     <div>
                       <label className="block text-xs font-medium text-zinc-800 dark:text-zinc-200 mb-1">
-                        Link to your #1 best project, growth campaign, repository, or launch
+                        {formConfig?.proofOfWorkTitle || "Link to your #1 best project, growth campaign, repository, or launch"}
                       </label>
                       <input
                         type="url"
-                        placeholder="https://..."
+                        placeholder={formConfig?.proofOfWorkPlaceholder || "https://..."}
                         value={formData.bestProjectUrl}
                         onChange={(e) => handleInputChange("bestProjectUrl", e.target.value)}
                         className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white transition-all"
@@ -737,7 +769,7 @@ export default function CareerApplyPage() {
                       </label>
                       <input
                         type="text"
-                        placeholder="e.g. Scaled Discord to 2,000 active students and ran weekly resume roasts."
+                        placeholder={formConfig?.proofOfWorkDescPlaceholder || "e.g. Scaled Discord to 2,000 active students and ran weekly resume roasts."}
                         value={formData.bestProjectDesc}
                         onChange={(e) => handleInputChange("bestProjectDesc", e.target.value)}
                         className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white transition-all"
@@ -813,80 +845,112 @@ export default function CareerApplyPage() {
                   </div>
                 </div>
 
-                {/* SECTION 4: Founding Deep Dive (The Non-Generic Questions) */}
+                {/* SECTION 4: Role-Tailored Deep Dive Questions */}
                 <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-white/10 shadow-2xs space-y-7">
                   <div className="border-b border-zinc-100 dark:border-zinc-800 pb-4">
-                    <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
-                      Step 04
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                        Step 04
+                      </span>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                        {formConfig?.badge || "Tailored Role Deep Dive"}
+                      </span>
+                    </div>
                     <h2 className="text-xl font-medium text-zinc-900 dark:text-white mt-1">
-                      Founding Team Deep Dive
+                      Role-Tailored Deep Dive
                     </h2>
                     <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-                      This is what we read first. Be authentic, scrappy, and specific—bullet points are welcome.
+                      Specific questions designed for the {selectedRoleData.title} position. Be authentic and specific.
                     </p>
                   </div>
 
-                  {/* Question 1: Why SmartNShine */}
+                  {/* Dynamic Question 1 */}
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-zinc-900 dark:text-white">
-                      1. Why SmartNShine & why now? <span className="text-rose-500">*</span>
+                      {formConfig?.questions?.whyJoin?.title || "1. Why SmartNShine & why now?"} <span className="text-rose-500">*</span>
                     </label>
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400 font-light leading-relaxed">
-                      What excites you about helping job seekers beat ATS filters and build standout portfolios?
-                    </p>
+                    {formConfig?.questions?.whyJoin?.subtitle && (
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400 font-light leading-relaxed">
+                        {formConfig.questions.whyJoin.subtitle}
+                      </p>
+                    )}
                     <textarea
                       required
                       rows={4}
-                      placeholder="Share what caught your attention and why you want to co-build with us..."
+                      placeholder={formConfig?.questions?.whyJoin?.placeholder || "Share what caught your attention..."}
                       value={formData.whyJoin}
                       onChange={(e) => handleInputChange("whyJoin", e.target.value)}
                       className="w-full p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white transition-all resize-y"
                     />
                   </div>
 
-                  {/* Question 2: Scrappy 0-to-1 Story */}
+                  {/* Dynamic Question 2 */}
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-zinc-900 dark:text-white">
-                      2. Tell us about a scrappy project, growth experiment, or build you executed from scratch.
+                      {formConfig?.questions?.scrappyStory?.title || "2. Tell us about a scrappy project you executed from scratch."}
                     </label>
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400 font-light leading-relaxed">
-                      Something you created, grew, or hacked with zero budget, no playbook, and pure hustle.
-                    </p>
+                    {formConfig?.questions?.scrappyStory?.subtitle && (
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400 font-light leading-relaxed">
+                        {formConfig.questions.scrappyStory.subtitle}
+                      </p>
+                    )}
                     <textarea
                       rows={4}
-                      placeholder="e.g. How you grew an account to 50k views, negotiated a campus deal, or shipped an MVP overnight..."
+                      placeholder={formConfig?.questions?.scrappyStory?.placeholder || "Something you created with pure hustle..."}
                       value={formData.scrappyStory}
                       onChange={(e) => handleInputChange("scrappyStory", e.target.value)}
                       className="w-full p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white transition-all resize-y"
                     />
                   </div>
 
-                  {/* Question 3: First 30 Days Game Plan */}
+                  {/* Dynamic Question 3 */}
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-zinc-900 dark:text-white">
-                      3. If you joined our founding circle tomorrow, what are the top 2–3 initiatives you would execute in your first 30 days?
+                      {formConfig?.questions?.first30DaysPlan?.title || "3. What are your top initiatives for your first 30 days?"}
                     </label>
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400 font-light leading-relaxed">
-                      Be concrete: specific channels, campaigns, viral video concepts, partnership targets, or feature improvements.
-                    </p>
+                    {formConfig?.questions?.first30DaysPlan?.subtitle && (
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400 font-light leading-relaxed">
+                        {formConfig.questions.first30DaysPlan.subtitle}
+                      </p>
+                    )}
                     <textarea
                       rows={4}
-                      placeholder="1. Launch weekly viral TikTok ATS teardowns...&#10;2. Partner with 15 college coding clubs...&#10;3. Lead our Product Hunt launch sprint..."
+                      placeholder={formConfig?.questions?.first30DaysPlan?.placeholder || "1. First initiative...\n2. Second initiative..."}
                       value={formData.first30DaysPlan}
                       onChange={(e) => handleInputChange("first30DaysPlan", e.target.value)}
                       className="w-full p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white transition-all resize-y"
                     />
                   </div>
 
-                  {/* Question 4: Market Insight */}
+                  {/* Dynamic Question 4 (Specialized Role Question) */}
+                  {formConfig?.questions?.roleSpecificQuestion && (
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-zinc-900 dark:text-white">
+                        {formConfig.questions.roleSpecificQuestion.title}
+                      </label>
+                      {formConfig.questions.roleSpecificQuestion.subtitle && (
+                        <p className="text-xs text-zinc-500 dark:text-zinc-400 font-light leading-relaxed">
+                          {formConfig.questions.roleSpecificQuestion.subtitle}
+                        </p>
+                      )}
+                      <textarea
+                        rows={4}
+                        placeholder={formConfig.questions.roleSpecificQuestion.placeholder || "Your specialized answer..."}
+                        value={formData.roleSpecificAnswer}
+                        onChange={(e) => handleInputChange("roleSpecificAnswer", e.target.value)}
+                        className="w-full p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white transition-all resize-y"
+                      />
+                    </div>
+                  )}
+
+                  {/* Dynamic Question 5 */}
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-zinc-900 dark:text-white">
-                      4. What is one thing existing resume builders or career platforms get completely wrong today?
+                      {formConfig?.questions?.marketInsight?.title || "5. What is one thing existing resume builders get completely wrong today?"}
                     </label>
                     <textarea
                       rows={3}
-                      placeholder="Your perspective on what the market is missing..."
+                      placeholder={formConfig?.questions?.marketInsight?.placeholder || "Your perspective on what the market is missing..."}
                       value={formData.marketInsight}
                       onChange={(e) => handleInputChange("marketInsight", e.target.value)}
                       className="w-full p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white transition-all resize-y"

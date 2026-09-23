@@ -39,6 +39,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { OPEN_ROLES } from "@/components/careers/careersData";
+import { careerApplicationAPI } from "@/api";
 
 // Enriched initial seed mock applications if database is fresh
 const SAMPLE_APPLICATIONS = [
@@ -236,12 +237,9 @@ export default function CareerApplications() {
     try {
       let remoteApps = [];
       try {
-        const res = await fetch("/api/career-applications");
-        if (res.ok) {
-          const data = await res.json();
-          if (data.success && data.applications) {
-            remoteApps = data.applications;
-          }
+        const res = await careerApplicationAPI.getAllApplications();
+        if (res.data?.success && res.data?.applications) {
+          remoteApps = res.data.applications;
         }
       } catch (e) {
         console.warn("Could not fetch remote career applications:", e);
@@ -251,14 +249,14 @@ export default function CareerApplications() {
         localStorage.getItem("smartnshine_admin_career_apps") || "[]"
       );
 
-      // Merge remote, local saved, and default samples uniquely
+      // Merge remote and local saved cache uniquely
       const combined = [...remoteApps, ...localSaved];
       const existingIds = new Set(combined.map((a) => a._id || a.email));
 
-      const merged = [
-        ...combined,
-        ...SAMPLE_APPLICATIONS.filter((s) => !existingIds.has(s._id) && !existingIds.has(s.email)),
-      ];
+      // Include seed samples only if no other applications exist yet
+      const merged = combined.length > 0
+        ? Array.from(new Map(combined.map((item) => [item._id || item.email, item])).values())
+        : SAMPLE_APPLICATIONS;
 
       setApplications(merged);
       localStorage.setItem("smartnshine_admin_career_apps", JSON.stringify(merged));
@@ -272,13 +270,9 @@ export default function CareerApplications() {
 
   const updateApplicationStatus = async (appId, newStatus) => {
     try {
-      await fetch(`/api/career-applications/${appId}/status`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: newStatus }),
-      });
-    } catch {
-      // Ignore API failure in offline mode
+      await careerApplicationAPI.updateStatus(appId, newStatus);
+    } catch (err) {
+      console.warn("Status update server sync:", err);
     }
 
     const updated = applications.map((app) =>
@@ -294,13 +288,9 @@ export default function CareerApplications() {
 
   const updateApplicationRating = async (appId, newRating) => {
     try {
-      await fetch(`/api/career-applications/${appId}/rating`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ rating: newRating }),
-      });
-    } catch {
-      // Ignore API failure
+      await careerApplicationAPI.updateRating(appId, newRating);
+    } catch (err) {
+      console.warn("Rating update server sync:", err);
     }
 
     const updated = applications.map((app) =>
@@ -324,13 +314,12 @@ export default function CareerApplications() {
     };
 
     try {
-      await fetch(`/api/career-applications/${selectedApplication._id}/notes`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: newNoteText.trim(), author: "Founder" }),
+      await careerApplicationAPI.addFounderNote(selectedApplication._id, {
+        text: newNoteText.trim(),
+        author: "Founder",
       });
-    } catch {
-      // Ignore
+    } catch (err) {
+      console.warn("Add note server sync:", err);
     }
 
     const updatedNotes = [...(selectedApplication.founderNotes || []), newNote];
@@ -349,9 +338,9 @@ export default function CareerApplications() {
 
   const deleteApplication = async (appId) => {
     try {
-      await fetch(`/api/career-applications/${appId}`, { method: "DELETE" });
-    } catch {
-      // Ignore
+      await careerApplicationAPI.deleteApplication(appId);
+    } catch (err) {
+      console.warn("Delete application server sync:", err);
     }
 
     const updated = applications.filter((app) => app._id !== appId);
@@ -387,6 +376,8 @@ export default function CareerApplications() {
       "Phone",
       "Role",
       "Department",
+      "Pitched Role / Title",
+      "University / Campus",
       "Location",
       "Availability",
       "Start Date",
@@ -397,6 +388,7 @@ export default function CareerApplications() {
       "Why Join Answer",
       "Scrappy Story",
       "30-Day Game Plan",
+      "Role-Specific Strategy",
       "Market Insight",
       "Status",
       "Rating",
@@ -410,6 +402,8 @@ export default function CareerApplications() {
       `"${(app.phone || "").replace(/"/g, '""')}"`,
       `"${(app.role || app.roleTitle || "").replace(/"/g, '""')}"`,
       `"${(app.department || "").replace(/"/g, '""')}"`,
+      `"${(app.customRolePitch || "").replace(/"/g, '""')}"`,
+      `"${(app.universityOrOrg || "").replace(/"/g, '""')}"`,
       `"${(app.location || "").replace(/"/g, '""')}"`,
       `"${(app.availability || "").replace(/"/g, '""')}"`,
       `"${(app.startDate || "").replace(/"/g, '""')}"`,
@@ -420,6 +414,7 @@ export default function CareerApplications() {
       `"${(app.whyJoin || "").replace(/"/g, '""')}"`,
       `"${(app.scrappyStory || "").replace(/"/g, '""')}"`,
       `"${(app.first30DaysPlan || "").replace(/"/g, '""')}"`,
+      `"${(app.roleSpecificAnswer || "").replace(/"/g, '""')}"`,
       `"${(app.marketInsight || "").replace(/"/g, '""')}"`,
       `"${app.status || "pending"}"`,
       `"${app.rating || 0}"`,
@@ -1028,6 +1023,32 @@ export default function CareerApplications() {
             <div className="p-6 overflow-y-auto flex-1 space-y-6">
               {detailTab === "answers" && (
                 <div className="space-y-6">
+                  {/* Custom Role Pitch / University if present */}
+                  {(selectedApplication.customRolePitch || selectedApplication.universityOrOrg) && (
+                    <div className="p-5 rounded-2xl bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200/80 dark:border-blue-800/40 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {selectedApplication.customRolePitch && (
+                        <div>
+                          <span className="text-[11px] uppercase tracking-wider text-blue-600 dark:text-blue-400 font-semibold block">
+                            Pitched Founding Role
+                          </span>
+                          <span className="text-sm font-semibold text-zinc-900 dark:text-white mt-0.5 block">
+                            {selectedApplication.customRolePitch}
+                          </span>
+                        </div>
+                      )}
+                      {selectedApplication.universityOrOrg && (
+                        <div>
+                          <span className="text-[11px] uppercase tracking-wider text-blue-600 dark:text-blue-400 font-semibold block">
+                            University / Campus / Network
+                          </span>
+                          <span className="text-sm font-semibold text-zinc-900 dark:text-white mt-0.5 block">
+                            {selectedApplication.universityOrOrg}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   {/* 1. Why SmartNShine */}
                   <div className="p-5 rounded-2xl bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-200/80 dark:border-zinc-800 space-y-2">
                     <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400">
@@ -1067,12 +1088,25 @@ export default function CareerApplications() {
                     </div>
                   )}
 
-                  {/* 4. Market Insight */}
+                  {/* 4. Role-Specific Tailored Question Focus */}
+                  {selectedApplication.roleSpecificAnswer && (
+                    <div className="p-5 rounded-2xl bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-200/80 dark:border-zinc-800 space-y-2">
+                      <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-cyan-600 dark:text-cyan-400">
+                        <ShieldCheck className="w-3.5 h-3.5" />
+                        <span>4. Role-Specific Strategy & Execution Focus</span>
+                      </div>
+                      <p className="text-sm text-zinc-800 dark:text-zinc-200 font-light leading-relaxed whitespace-pre-line">
+                        {selectedApplication.roleSpecificAnswer}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* 5. Market Insight */}
                   {selectedApplication.marketInsight && (
                     <div className="p-5 rounded-2xl bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-200/80 dark:border-zinc-800 space-y-2">
                       <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
                         <Award className="w-3.5 h-3.5" />
-                        <span>4. Market Perspective & What's Broken in ATS</span>
+                        <span>5. Market Perspective & What's Broken in ATS</span>
                       </div>
                       <p className="text-sm text-zinc-800 dark:text-zinc-200 font-light leading-relaxed whitespace-pre-line">
                         {selectedApplication.marketInsight}
@@ -1245,14 +1279,25 @@ export default function CareerApplications() {
                     </div>
 
                     {selectedApplication.resumeData ? (
-                      <a
-                        href={selectedApplication.resumeData}
-                        download={selectedApplication.resumeName || "Resume.pdf"}
-                        className="px-4 py-2 rounded-xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 text-xs font-semibold flex items-center gap-1.5 shadow-2xs hover:opacity-90 transition-opacity"
-                      >
-                        <Download className="w-3.5 h-3.5" />
-                        <span>Download CV</span>
-                      </a>
+                      <div className="flex items-center gap-2">
+                        <a
+                          href={selectedApplication.resumeData}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="px-3 py-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                          <span>View</span>
+                        </a>
+                        <a
+                          href={selectedApplication.resumeData}
+                          download={selectedApplication.resumeName || "Resume.pdf"}
+                          className="px-3.5 py-2 rounded-xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 text-xs font-semibold flex items-center gap-1.5 shadow-2xs hover:opacity-90 transition-opacity"
+                        >
+                          <Download className="w-3.5 h-3.5" />
+                          <span>Download CV</span>
+                        </a>
+                      </div>
                     ) : (
                       <span className="text-xs text-zinc-400 font-light">
                         PDF on File
