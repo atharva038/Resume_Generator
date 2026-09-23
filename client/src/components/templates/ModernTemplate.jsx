@@ -1,5 +1,5 @@
 import { forwardRef, useRef, useEffect, useMemo } from "react";
-import { isDescriptionDuplicatedInBullets } from "./templateUtils";
+import { isDescriptionDuplicatedInBullets, formatEducationDegreeAndField } from "./templateUtils";
 import {
   Mail,
   Phone,
@@ -982,8 +982,7 @@ const ModernTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }, ref) 
                       </div>
 
                       <div style={{ fontSize: styles.bodySize, color: selectedTheme.textLight }}>
-                        <span style={{ fontWeight: 600 }}>{edu.degree}</span>
-                        {edu.field && <span> in {edu.field}</span>}
+                        <span style={{ fontWeight: 600 }}>{formatEducationDegreeAndField(edu)}</span>
                         {edu.gpa && (
                           <span
                             style={{

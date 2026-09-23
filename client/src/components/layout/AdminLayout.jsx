@@ -137,6 +137,12 @@ const AdminLayout = () => {
       color: "text-cyan-500",
     },
     {
+      path: "/admin/careers",
+      icon: UserPlus,
+      label: "Founding Applications",
+      color: "text-amber-500",
+    },
+    {
       path: "/admin/interviews",
       icon: Bot,
       label: "AI Interviews & Costs",

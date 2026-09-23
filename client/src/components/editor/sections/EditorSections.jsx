@@ -654,7 +654,7 @@ export const EducationSection = ({
               onChange={(e) =>
                 updateArrayItem("education", index, "degree", e.target.value)
               }
-              placeholder="Degree"
+              placeholder="Degree (e.g. B.Tech, B.S.)"
               className="input-field"
             />
             <input
@@ -663,8 +663,9 @@ export const EducationSection = ({
               onChange={(e) =>
                 updateArrayItem("education", index, "field", e.target.value)
               }
-              placeholder="Field of Study"
+              placeholder="Field of Study / Major / Minor"
               className="input-field"
+              title="Enter field of study, major, or minor (e.g. Computer Science or Major in CS, Minor in Cybersecurity)"
             />
           </div>
           <div className="grid grid-cols-3 gap-2">
@@ -679,10 +680,10 @@ export const EducationSection = ({
                     (value) => updateArrayItem("education", index, "startDate", value)
                   )
                 }
-                placeholder="Start (DD/MM/YYYY)"
+                placeholder="Start (e.g. Aug 2023)"
                 className={`input-field ${!isValidDate(edu.startDate) && edu.startDate ? 'border-red-500' : ''}`}
-                title="Format: DD/MM/YYYY (e.g., 15/08/2018)"
-                maxLength="10"
+                title="Format: Mon YYYY (e.g., Aug 2023) or MM/YYYY (e.g., 08/2023)"
+                maxLength="25"
               />
               {!isValidDate(edu.startDate) && edu.startDate && (
                 <p className="text-xs text-red-500 mt-1">
@@ -701,10 +702,10 @@ export const EducationSection = ({
                     (value) => updateArrayItem("education", index, "endDate", value)
                   )
                 }
-                placeholder="End (DD/MM/YYYY)"
+                placeholder="End (e.g. May 2027)"
                 className={`input-field ${!isValidDate(edu.endDate) && edu.endDate ? 'border-red-500' : ''}`}
-                title="Format: DD/MM/YYYY (e.g., 20/05/2022)"
-                maxLength="10"
+                title="Format: Mon YYYY (e.g., May 2027), MM/YYYY, or Present"
+                maxLength="25"
               />
               {!isValidDate(edu.endDate) && edu.endDate && (
                 <p className="text-xs text-red-500 mt-1">
@@ -856,11 +857,11 @@ export const CertificationsSection = ({
                     (value) => updateArrayItem("certifications", index, "date", value)
                   )
                 }
-                placeholder="Date (DD/MM/YYYY)"
+                placeholder="Date (e.g. Mar 2023 or 03/2023)"
                 className={`input-field ${!isValidDate(cert.date) && cert.date ? 'border-red-500' : ''}`}
                 autoComplete="off"
-                title="Format: DD/MM/YYYY (e.g., 10/03/2023)"
-                maxLength="10"
+                title="Format: Mon YYYY (e.g., Mar 2023) or MM/YYYY (e.g., 03/2023)"
+                maxLength="25"
               />
               {!isValidDate(cert.date) && cert.date && (
                 <p className="text-xs text-red-500 mt-1">
@@ -901,7 +902,9 @@ export const CertificationsSection = ({
 );
 
 export const AchievementsSection = ({resumeData, updateField}) => {
-  const achievements = resumeData.achievements || [];
+  const achievements = Array.isArray(resumeData?.achievements)
+    ? resumeData.achievements
+    : [];
   const [achievementsInput, setAchievementsInput] = useState("");
   const [isLoading, toggleLoading, setIsLoadingTrue, setIsLoadingFalse] =
     useToggle(false);
@@ -911,12 +914,21 @@ export const AchievementsSection = ({resumeData, updateField}) => {
   // Initialize input from existing data when achievements are loaded
   useEffect(() => {
     if (achievements && achievements.length > 0 && !initialized) {
-      setAchievementsInput(achievements.join("\n"));
+      const textLines = achievements
+        .map((a) =>
+          typeof a === "string"
+            ? a
+            : typeof a === "object" && a !== null
+            ? Object.values(a).flat().join("\n")
+            : String(a || "")
+        )
+        .filter(Boolean);
+      setAchievementsInput(textLines.join("\n"));
       setInitialized(true);
     }
   }, [achievements, initialized]);
 
-  // Handle AI segregation
+  // Handle AI segregation / formatting
   const handleSegregate = async () => {
     if (!achievementsInput.trim()) {
       setError("Please enter some achievements first");
@@ -932,18 +944,60 @@ export const AchievementsSection = ({resumeData, updateField}) => {
         resumeData._id
       );
 
-      if (response.data && response.data.achievements) {
-        updateField("achievements", response.data.achievements);
+      const raw = response.data?.achievements || response.data?.data;
+      let formattedList = [];
+
+      if (Array.isArray(raw)) {
+        raw.forEach((item) => {
+          if (typeof item === "string" && item.trim()) {
+            formattedList.push(item.trim());
+          } else if (typeof item === "object" && item !== null) {
+            Object.values(item).forEach((v) => {
+              if (Array.isArray(v)) {
+                v.forEach(
+                  (s) =>
+                    typeof s === "string" && s.trim() && formattedList.push(s.trim())
+                );
+              } else if (typeof v === "string" && v.trim()) {
+                formattedList.push(v.trim());
+              }
+            });
+          }
+        });
+      } else if (typeof raw === "object" && raw !== null) {
+        if (Array.isArray(raw.achievements)) {
+          raw.achievements.forEach(
+            (s) =>
+              typeof s === "string" && s.trim() && formattedList.push(s.trim())
+          );
+        } else {
+          Object.values(raw).forEach((v) => {
+            if (Array.isArray(v)) {
+              v.forEach(
+                (s) =>
+                  typeof s === "string" && s.trim() && formattedList.push(s.trim())
+              );
+            } else if (typeof v === "string" && v.trim()) {
+              formattedList.push(v.trim());
+            }
+          });
+        }
+      }
+
+      formattedList = formattedList.filter(Boolean);
+
+      if (formattedList.length > 0) {
+        updateField("achievements", formattedList);
         setAchievementsInput("");
         setError("");
       } else {
-        setError("Failed to segregate achievements");
+        setError("Failed to extract achievements. Please check your text and try again.");
       }
     } catch (err) {
       console.error("Segregation error:", err);
       setError(
         err.response?.data?.error ||
-          "Failed to segregate achievements. Please try again."
+          "Failed to format achievements. Please try again."
       );
     } finally {
       setIsLoadingFalse();

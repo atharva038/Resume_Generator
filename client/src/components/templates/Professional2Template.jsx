@@ -1,5 +1,5 @@
 import React, {forwardRef, useRef, useEffect, useState, useMemo} from "react";
-import {isDescriptionDuplicatedInBullets} from "./templateUtils";
+import {isDescriptionDuplicatedInBullets, formatEducationDegreeAndField} from "./templateUtils";
 
 /**
  * Professional2Template - Premium ATS-Optimized Resume Template
@@ -804,8 +804,7 @@ const Professional2Template = forwardRef((props, ref) => {
                       color: selectedTheme.primary,
                     }}
                   >
-                    {edu.degree}
-                    {edu.field && ` in ${edu.field}`}
+                    {formatEducationDegreeAndField(edu)}
                   </div>
                   <div
                     style={{

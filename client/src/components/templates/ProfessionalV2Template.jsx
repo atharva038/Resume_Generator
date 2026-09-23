@@ -1,5 +1,5 @@
 import {forwardRef, useRef, useEffect, useMemo} from "react";
-import {isDescriptionDuplicatedInBullets} from "./templateUtils";
+import {isDescriptionDuplicatedInBullets, formatEducationDegreeAndField} from "./templateUtils";
 import {Mail, Phone, MapPin, Linkedin, Github, Globe} from "lucide-react";
 
 const COLOR_THEMES = {
@@ -610,11 +610,8 @@ const ProfessionalV2Template = forwardRef(
                 >
                   <div className="education-header">
                     <div className="education-left">
-                      <h3 className="education-degree">{edu.degree}</h3>
+                      <h3 className="education-degree">{formatEducationDegreeAndField(edu)}</h3>
                       <p className="education-institution">{edu.institution}</p>
-                      {edu.field && (
-                        <p className="education-field">Major: {edu.field}</p>
-                      )}
                     </div>
                     <div className="education-right">
                       {getEducationDateRange(edu) && (

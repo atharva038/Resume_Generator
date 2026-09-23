@@ -1,6 +1,7 @@
 /**
  * Resume Template Utilities
- * Shared helpers for ATS-safe rendering, text deduplication, and bullet sanitization
+ * Shared helpers for ATS-safe rendering, text deduplication, bullet sanitization,
+ * and smart education degree/major/minor formatting.
  */
 
 /**
@@ -80,4 +81,79 @@ export const isDescriptionDuplicatedInBullets = (description, bullets) => {
       punctFreeB.includes(punctFreeDesc)
     );
   });
+};
+
+/**
+ * Formats education degree, field of study, major, and minor into a clean, ATS-compliant string.
+ * Handles inputs like:
+ * - degree: "B.Tech", field: "Computer Science" -> "B.Tech in Computer Science"
+ * - degree: "B.Tech", field: "Major Computer Science Minor Cyber Security" -> "B.Tech — Major in Computer Science, Minor in Cyber Security"
+ * - degree: "B.Tech", field: "Major in CS, Minor in Cybersecurity" -> "B.Tech — Major in CS, Minor in Cybersecurity"
+ * - degree: "Bachelor of Science", field: "in Data Science" -> "Bachelor of Science in Data Science"
+ * - degree: "B.S.", field: "" -> "B.S."
+ * - degree: "", field: "Computer Science" -> "Computer Science"
+ *
+ * @param {object} edu - The education item object
+ * @returns {string} Formatted education title string
+ */
+export const formatEducationDegreeAndField = (edu) => {
+  if (!edu) return "";
+  const degree = (edu.degree || "").trim();
+  const rawField = (
+    edu.field ||
+    edu.fieldOfStudy ||
+    edu.major ||
+    edu.specialization ||
+    ""
+  ).trim();
+  const minor = (edu.minor || "").trim();
+
+  // Combine rawField with minor if minor is stored as a separate property
+  let fullField = rawField;
+  if (minor && !fullField.toLowerCase().includes("minor")) {
+    fullField = fullField ? `${fullField}, Minor in ${minor}` : `Minor in ${minor}`;
+  }
+
+  if (!degree && !fullField) return "";
+  if (!fullField) return degree;
+  if (!degree) return fullField;
+
+  // Clean up user inputs like "Major Computer Science Minor Cyber Security"
+  let formattedField = fullField;
+
+  // If user typed "Major Computer Science Minor Cyber Security" without 'in' or commas
+  if (/^major\s+([a-z0-9\s&]+?)\s+minor\s+(.+)$/i.test(formattedField)) {
+    formattedField = formattedField.replace(
+      /^major\s+([a-z0-9\s&]+?)\s+minor\s+(.+)$/i,
+      (match, maj, min) => {
+        const cleanMaj = maj.trim().replace(/^in\s+/i, "");
+        const cleanMin = min.trim().replace(/^in\s+/i, "");
+        return `Major in ${cleanMaj}, Minor in ${cleanMin}`;
+      }
+    );
+  } else if (
+    /^major\s+([a-z0-9\s&]+)$/i.test(formattedField) &&
+    !/^major\s+in/i.test(formattedField)
+  ) {
+    formattedField = formattedField.replace(/^major\s+/i, "Major in ");
+  }
+
+  // Check if field contains Major/Minor or starts with punctuation/dash
+  if (
+    /^major/i.test(formattedField) ||
+    /minor/i.test(formattedField) ||
+    /^[-—–,:]/.test(formattedField)
+  ) {
+    if (/^[-—–,:]/.test(formattedField)) {
+      return `${degree} ${formattedField}`;
+    }
+    return `${degree} — ${formattedField}`;
+  }
+
+  // If field already starts with "in "
+  if (/^in\s+/i.test(formattedField)) {
+    return `${degree} ${formattedField}`;
+  }
+
+  return `${degree} in ${formattedField}`;
 };

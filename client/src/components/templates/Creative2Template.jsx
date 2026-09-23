@@ -1,5 +1,5 @@
 import { forwardRef, useRef, useEffect, useMemo } from "react";
-import { isDescriptionDuplicatedInBullets } from "./templateUtils";
+import { isDescriptionDuplicatedInBullets, formatEducationDegreeAndField } from "./templateUtils";
 import {
   Globe,
   Mail,
@@ -842,7 +842,7 @@ const Creative2Template = forwardRef(({ resumeData = {}, onPageUsageChange }, re
                         lineHeight: 1.2,
                       }}
                     >
-                      {edu.degree}
+                      {formatEducationDegreeAndField(edu)}
                     </div>
                     <div
                       style={{

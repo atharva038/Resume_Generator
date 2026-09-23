@@ -1,4 +1,5 @@
 import {forwardRef, useEffect, useMemo, useRef} from "react";
+import {formatEducationDegreeAndField} from "./templateUtils";
 
 /**
  * Strategic Leadership Template
@@ -702,7 +703,7 @@ const StrategicLeadershipTemplate = forwardRef(
                       lineHeight: 1.2,
                     }}
                   >
-                    {edu.degree}
+                    {formatEducationDegreeAndField(edu)}
                   </div>
                   <div
                     style={{

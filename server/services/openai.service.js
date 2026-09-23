@@ -585,16 +585,19 @@ Return as JSON object with a "skills" key containing the array:
  */
 export async function segregateAchievementsWithAI(achievementsText) {
   try {
-    const prompt = `Extract and organize achievements from the following text. Categorize them into:
+    const prompt = `Extract, rephrase, and format all achievements from the following input into crisp, professional, ATS-optimized bullet points.
+Quantify metrics and business/technical impact wherever possible.
+
+Categories to organize into:
 - Technical Achievements
 - Leadership & Management
 - Business Impact
 - Awards & Recognition
 
-Input:
+Input text:
 ${achievementsText}
 
-Return as JSON object with categories as keys and arrays of achievements as values.`;
+Return a valid JSON object with the categories above as keys and arrays of formatted bullet point strings as values. Only return valid JSON.`;
 
     console.log("🤖 Segregating achievements with GPT-4o...");
     const completion = await openai.chat.completions.create({
@@ -603,11 +606,11 @@ Return as JSON object with categories as keys and arrays of achievements as valu
         {
           role: "system",
           content:
-            "You are an expert at organizing professional achievements. Return only valid JSON.",
+            "You are an expert resume writer and ATS specialist. Extract achievements and format them as concise, high-impact bullet points with metrics. Return only valid JSON.",
         },
         {role: "user", content: prompt},
       ],
-      temperature: 0.4,
+      temperature: 0.3,
       max_tokens: 1024,
       response_format: {type: "json_object"},
     });

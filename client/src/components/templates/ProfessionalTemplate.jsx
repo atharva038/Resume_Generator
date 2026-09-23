@@ -1,5 +1,9 @@
 import { forwardRef, useRef, useEffect, useMemo } from "react";
-import { isDescriptionDuplicatedInBullets, cleanBulletText } from "./templateUtils";
+import {
+  isDescriptionDuplicatedInBullets,
+  cleanBulletText,
+  formatEducationDegreeAndField,
+} from "./templateUtils";
 import {
   Mail,
   Phone,
@@ -899,8 +903,7 @@ const ProfessionalTemplate = forwardRef(({ resumeData = {}, onPageUsageChange },
                             color: selectedTheme.text,
                           }}
                         >
-                          {edu.degree}
-                          {edu.field ? ` in ${edu.field}` : ""}
+                          {formatEducationDegreeAndField(edu)}
                         </span>
                         <span
                           style={{

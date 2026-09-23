@@ -27,6 +27,7 @@ const SmartJobMatchPage = lazy(() => import("./pages/SmartJobMatchPage"));
 const Contact = lazy(() => import("./pages/Contact"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Pricing = lazy(() => import("./pages/Pricing"));
+const Careers = lazy(() => import("./pages/Careers"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermsAndConditions = lazy(() => import("./pages/TermsAndConditions"));
 const RefundPolicy = lazy(() => import("./pages/RefundPolicy"));
@@ -37,6 +38,7 @@ const SubscriptionDashboard = lazy(
 );
 const Profile = lazy(() => import("./pages/Profile"));
 const CareerProfile = lazy(() => import("./pages/CareerProfile"));
+const CareerApplyPage = lazy(() => import("./pages/CareerApplyPage"));
 const CareerQA = lazy(() => import("./pages/CareerQA"));
 const PortfolioDashboard = lazy(() => import("./pages/PortfolioDashboard"));
 const PortfolioCreate = lazy(() => import("./pages/PortfolioCreate"));
@@ -52,6 +54,7 @@ const AIExtractionManagement = lazy(
   () => import("./pages/admin/AIExtractionManagement")
 );
 const ContactMessages = lazy(() => import("./pages/admin/ContactMessages"));
+const CareerApplications = lazy(() => import("./pages/admin/CareerApplications"));
 const AdminFeedback = lazy(() => import("./pages/admin/AdminFeedback"));
 const AdminLogs = lazy(() => import("./pages/admin/AdminLogs"));
 const AdminNotifications = lazy(
@@ -141,6 +144,9 @@ function App() {
             <Route path="/" element={<LandingPage />} />
             <Route path="/landing-preview" element={<Navigate to="/" replace />} />
             <Route path="/landing-v2" element={<Navigate to="/" replace />} />
+            <Route path="/careers" element={<Careers />} />
+            <Route path="/careers/apply" element={<CareerApplyPage />} />
+            <Route path="/careers/apply/:jobId" element={<CareerApplyPage />} />
             <Route path="/pdf-render/:token" element={<PdfRender />} />
             <Route path="/tech-portfolio" element={<TechPortfolioTemplate />} />
             <Route path="/smartnshine-portfolio" element={<SmartNShinePortfolioTemplate />} />
@@ -349,6 +355,7 @@ function App() {
               <Route path="earnings" element={<Earnings />} />
               <Route path="users" element={<UserManagement />} />
               <Route path="users/:userId" element={<UserDetails />} />
+              <Route path="careers" element={<CareerApplications />} />
               <Route path="templates" element={<TemplateManagement />} />
               <Route path="portfolios" element={<PortfolioManagement />} />
               <Route path="questions" element={<AdminQuestionManagement />} />

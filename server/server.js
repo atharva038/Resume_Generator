@@ -38,6 +38,7 @@ import {handleWebhook as handleSubscriptionWebhook} from "./controllers/subscrip
 import interviewRoutes from "./routes/interview.routes.js";
 import portfolioRoutes from "./routes/portfolio.routes.js";
 import careerRoutes from "./routes/career.routes.js";
+import careerApplicationRoutes from "./routes/careerApplication.routes.js";
 import superAdminRoutes from "./routes/superAdmin.routes.js";
 import Template from "./models/Template.model.js";
 import Portfolio from "./models/Portfolio.model.js";
@@ -259,6 +260,7 @@ app.use("/api/subscription", subscriptionRoutes); // Subscription & payment rout
 app.use("/api/interview", interviewRoutes); // AI Interview routes
 app.use("/api/portfolio", portfolioRoutes); // Portfolio builder routes
 app.use("/api/career", careerRoutes); // Career profile & personalized Q&A routes
+app.use("/api/career-applications", careerApplicationRoutes); // Founding team career application submissions & admin routes
 app.use("/api/super-admin", superAdminRoutes); // Super Admin panel & environment management routes
 
 // Helper to escape HTML attributes safely
