@@ -107,29 +107,30 @@ export default function CyberDevTheme({ data = {}, isDarkMode = true, accentColo
           </h2>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {skills.map((group, index) => (
             <motion.div
               key={`${group.category}-${index}`}
               whileHover={{ y: -3 }}
               transition={{ duration: 0.15 }}
-              className="rounded-2xl border border-emerald-500/30 bg-zinc-950/80 backdrop-blur-md p-6 shadow-[0_0_20px_rgba(0,255,136,0.03)] hover:border-emerald-400 transition-all flex flex-col justify-between"
+              className="rounded-2xl border border-emerald-500/30 bg-zinc-950/80 backdrop-blur-md p-5 shadow-[0_0_20px_rgba(0,255,136,0.03)] hover:border-emerald-400 transition-all flex flex-col justify-between"
             >
               <div>
-                <div className="flex items-center justify-between gap-2 mb-4 pb-3 border-b border-white/10">
-                  <div className="flex items-center gap-2 text-emerald-400 font-mono text-sm font-bold">
-                    <Cpu className="w-4 h-4" />
-                    <span>{group.category || "General"}</span>
+                <div className="flex items-center justify-between gap-2 mb-3 pb-2.5 border-b border-white/10">
+                  <div className="flex items-center gap-2 text-emerald-400 font-mono text-xs sm:text-sm font-bold truncate">
+                    <Cpu className="w-4 h-4 shrink-0" />
+                    <span className="truncate">{group.category || "General"}</span>
                   </div>
-                  <span className="text-[10px] font-mono text-zinc-500">[{group.items?.length || 0} PKGS]</span>
+                  <span className="text-[10px] font-mono text-zinc-500 shrink-0">[{group.items?.length || 0} PKGS]</span>
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
                   {(group.items || []).map((skill) => (
                     <span
                       key={skill}
-                      className="px-3 py-1.5 rounded-lg text-xs font-mono font-bold bg-emerald-950/40 text-emerald-300 border border-emerald-500/30 hover:border-emerald-400 transition-colors"
+                      className="px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-emerald-950/40 text-emerald-300 border border-emerald-500/30 hover:border-emerald-400 transition-colors truncate flex items-center"
+                      title={skill}
                     >
-                      {skill}
+                      <span className="truncate">{skill}</span>
                     </span>
                   ))}
                 </div>
@@ -458,8 +459,8 @@ export default function CyberDevTheme({ data = {}, isDarkMode = true, accentColo
             </div>
 
             <div className="p-6 sm:p-10 lg:p-12">
-              <div className="grid lg:grid-cols-[1fr_320px] xl:grid-cols-[1fr_360px] gap-8 lg:gap-12 items-stretch">
-                <div className="space-y-6 flex flex-col justify-center">
+              <div className="grid lg:grid-cols-[1fr_260px] xl:grid-cols-[1fr_280px] gap-8 lg:gap-10 items-stretch">
+                <div className="space-y-6 flex flex-col justify-between">
                   <div className="font-mono text-xs sm:text-sm text-emerald-400/90">
                     $ echo "Initializing portfolio..."
                   </div>
@@ -516,7 +517,7 @@ export default function CyberDevTheme({ data = {}, isDarkMode = true, accentColo
 
                 {/* Profile Avatar Frame */}
                 {profileImg && (
-                  <div className="w-full max-w-xs sm:max-w-sm lg:max-w-none h-64 sm:h-80 lg:h-full min-h-[280px] rounded-3xl overflow-hidden border-2 border-emerald-400 shadow-[0_0_30px_rgba(0,255,136,0.2)] bg-black shrink-0 relative group self-stretch">
+                  <div className="w-full max-w-[260px] sm:max-w-[280px] lg:max-w-none h-full rounded-3xl overflow-hidden border-2 border-emerald-400 shadow-[0_0_30px_rgba(0,255,136,0.2)] bg-black shrink-0 relative group self-stretch">
                     <img
                       src={profileImg}
                       alt={profile.name}

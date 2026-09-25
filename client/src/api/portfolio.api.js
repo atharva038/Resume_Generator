@@ -9,6 +9,7 @@ export const portfolioAPI = {
   delete: (id) => api.delete(`/portfolio/${id}`),
   publish: (id) => api.post(`/portfolio/${id}/publish`),
   unpublish: (id) => api.post(`/portfolio/${id}/unpublish`),
+  syncFromResume: (id) => api.post(`/portfolio/${id}/sync-resume`),
 
   createProject: (portfolioId, data) =>
     api.post(`/portfolio/${portfolioId}/projects`, data),

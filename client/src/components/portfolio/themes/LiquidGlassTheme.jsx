@@ -418,9 +418,9 @@ export default function LiquidGlassTheme({
           ========================================================================= */}
       <section id="hero" className="pt-6 pb-12 sm:pt-16 sm:pb-24 lg:pt-20 lg:pb-28 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-stretch">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start">
             {/* Left Spatial Statement */}
-            <div className="lg:col-span-7 flex flex-col justify-center items-start min-w-0">
+            <div className="lg:col-span-7 flex flex-col items-start min-w-0">
               {/* Massive Modern Headline */}
               <h1 className="font-spatial text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-[var(--lg-text-primary)] mb-5 sm:mb-6 leading-[1.08] break-words">
                 {headline}
@@ -477,18 +477,19 @@ export default function LiquidGlassTheme({
             </div>
 
             {/* Right Spatial Glass Holographic Prism Card */}
-            <div className="lg:col-span-5 flex justify-center lg:self-stretch">
-              <div className="spatial-glass-panel p-4 sm:p-6 rounded-[3rem] w-full max-w-md lg:h-full flex flex-col relative group">
+            <div className="lg:col-span-5 flex justify-center lg:justify-end lg:pt-1">
+              <div className="spatial-glass-panel p-4 sm:p-5 rounded-[2.5rem] w-full max-w-md h-fit relative group">
                 {/* Refractive Image Lens */}
-                <div className="spatial-lens w-full h-full min-h-[320px] rounded-[2.25rem] overflow-hidden relative flex flex-col">
+                <div className="spatial-lens aspect-[4/5] rounded-[2rem] overflow-hidden relative w-full">
                   {profileImage ? (
                     <img
                       src={profileImage}
                       alt={name}
-                      className="w-full h-full object-cover rounded-[2rem] transition-transform duration-700 group-hover:scale-105"
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                      className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
                     />
                   ) : (
-                    <div className="w-full h-full min-h-[320px] bg-gradient-to-b from-white/10 to-white/5 flex flex-col items-center justify-center p-6 text-center">
+                    <div className="absolute inset-0 w-full h-full bg-gradient-to-b from-white/10 to-white/5 flex flex-col items-center justify-center p-6 text-center">
                       <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-[var(--lg-accent-primary)] to-zinc-200 text-black flex items-center justify-center font-bold text-2xl mb-4 shadow-xl">
                         {initials}
                       </div>
@@ -824,14 +825,14 @@ export default function LiquidGlassTheme({
             </div>
 
             {/* Matrix of Spatial Tiles */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredSkills.map((categoryGroup, idx) => (
                 <div
                   key={categoryGroup.id || idx}
-                  className="spatial-glass-panel p-6 sm:p-8 rounded-[2rem] flex flex-col justify-between"
+                  className="spatial-glass-panel p-5 sm:p-6 rounded-[2rem] flex flex-col justify-between"
                 >
                   <div>
-                    <div className="flex items-center justify-between mb-6 pb-4 border-b border-[var(--lg-glass-border-subtle)]">
+                    <div className="flex items-center justify-between mb-4 pb-3 border-b border-[var(--lg-glass-border-subtle)]">
                       <h3 className="font-tech text-xs uppercase tracking-widest font-bold text-[var(--lg-accent-primary)] flex items-center gap-2">
                         <Terminal className="w-4 h-4" />
                         {categoryGroup.category}
@@ -841,16 +842,16 @@ export default function LiquidGlassTheme({
                       </span>
                     </div>
 
-                    {/* Skill Pills */}
-                    <div className="flex flex-wrap gap-2.5">
+                    {/* Skill Pills in 2 Columns */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       {categoryGroup.items?.map((skill, sIdx) => (
                         <div
                           key={sIdx}
-                          className="spatial-capsule px-3.5 py-2 text-xs font-semibold tracking-wide text-[var(--lg-text-primary)] hover:border-[var(--lg-accent-primary)]"
+                          className="spatial-capsule px-2.5 py-1.5 text-xs font-semibold tracking-wide text-[var(--lg-text-primary)] hover:border-[var(--lg-accent-primary)] flex items-center justify-between"
                         >
-                          <span className="flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[var(--lg-accent-primary)]" />
-                            {skill}
+                          <span className="flex items-center gap-1.5 truncate">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[var(--lg-accent-primary)] shrink-0" />
+                            <span className="truncate">{skill}</span>
                           </span>
                         </div>
                       ))}

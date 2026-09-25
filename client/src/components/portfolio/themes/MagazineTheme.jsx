@@ -514,42 +514,57 @@ export default function MagazineTheme({
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="border border-[var(--mag-border)] bg-[var(--mag-bg-card)] p-5 space-y-3">
-              <div className="font-serif font-bold text-lg text-[var(--mag-text-primary)] border-b border-[var(--mag-border)] pb-2">
-                01. ENGINEERING
+              <div className="flex items-center justify-between border-b border-[var(--mag-border)] pb-2">
+                <span className="font-serif font-bold text-lg text-[var(--mag-text-primary)]">
+                  01. ENGINEERING
+                </span>
+                <span className="font-mono text-[10px] text-[var(--mag-text-muted)]">
+                  {categorizedSkills.development.length} ITEMS
+                </span>
               </div>
-              <div className="space-y-2 text-xs font-mono">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-2 text-xs font-mono">
                 {categorizedSkills.development.map((s, i) => (
-                  <div key={i} className="flex justify-between border-b border-gray-100 dark:border-gray-800 pb-1">
-                    <span>{s.name}</span>
-                    <span className="text-[var(--mag-text-muted)]">{s.level}</span>
+                  <div key={i} className="flex justify-between border-b border-gray-100 dark:border-gray-800 pb-1 gap-1">
+                    <span className="truncate">{s.name}</span>
+                    <span className="text-[var(--mag-text-muted)] text-[10px] shrink-0">{s.level}</span>
                   </div>
                 ))}
               </div>
             </div>
 
             <div className="border border-[var(--mag-border)] bg-[var(--mag-bg-card)] p-5 space-y-3">
-              <div className="font-serif font-bold text-lg text-[var(--mag-text-primary)] border-b border-[var(--mag-border)] pb-2">
-                02. DESIGN &amp; UI
+              <div className="flex items-center justify-between border-b border-[var(--mag-border)] pb-2">
+                <span className="font-serif font-bold text-lg text-[var(--mag-text-primary)]">
+                  02. DESIGN &amp; UI
+                </span>
+                <span className="font-mono text-[10px] text-[var(--mag-text-muted)]">
+                  {categorizedSkills.design.length} ITEMS
+                </span>
               </div>
-              <div className="space-y-2 text-xs font-mono">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-2 text-xs font-mono">
                 {categorizedSkills.design.map((s, i) => (
-                  <div key={i} className="flex justify-between border-b border-gray-100 dark:border-gray-800 pb-1">
-                    <span>{s.name}</span>
-                    <span className="text-[var(--mag-text-muted)]">{s.level}</span>
+                  <div key={i} className="flex justify-between border-b border-gray-100 dark:border-gray-800 pb-1 gap-1">
+                    <span className="truncate">{s.name}</span>
+                    <span className="text-[var(--mag-text-muted)] text-[10px] shrink-0">{s.level}</span>
                   </div>
                 ))}
               </div>
             </div>
 
             <div className="border border-[var(--mag-border)] bg-[var(--mag-bg-card)] p-5 space-y-3">
-              <div className="font-serif font-bold text-lg text-[var(--mag-text-primary)] border-b border-[var(--mag-border)] pb-2">
-                03. TOOLS &amp; STACK
+              <div className="flex items-center justify-between border-b border-[var(--mag-border)] pb-2">
+                <span className="font-serif font-bold text-lg text-[var(--mag-text-primary)]">
+                  03. TOOLS &amp; STACK
+                </span>
+                <span className="font-mono text-[10px] text-[var(--mag-text-muted)]">
+                  {categorizedSkills.tools.length} ITEMS
+                </span>
               </div>
-              <div className="space-y-2 text-xs font-mono">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-2 text-xs font-mono">
                 {categorizedSkills.tools.map((s, i) => (
-                  <div key={i} className="flex justify-between border-b border-gray-100 dark:border-gray-800 pb-1">
-                    <span>{s.name}</span>
-                    <span className="text-[var(--mag-text-muted)]">{s.level}</span>
+                  <div key={i} className="flex justify-between border-b border-gray-100 dark:border-gray-800 pb-1 gap-1">
+                    <span className="truncate">{s.name}</span>
+                    <span className="text-[var(--mag-text-muted)] text-[10px] shrink-0">{s.level}</span>
                   </div>
                 ))}
               </div>

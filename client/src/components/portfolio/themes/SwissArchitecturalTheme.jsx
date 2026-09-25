@@ -233,55 +233,154 @@ export default function SwissArchitecturalTheme({
     ];
   }, [rawEducation]);
 
-  // 6. Skills Categorization
+  // 6. Skills Categorization by Specific Domain Columns
   const categorizedSkills = useMemo(() => {
     if (Array.isArray(rawSkills) && rawSkills.length > 0) {
-      if (typeof rawSkills[0] === "object" && rawSkills[0].category) {
-        return rawSkills.map((c) => ({
-          category: (c.category || "CAPABILITIES").toUpperCase(),
-          items: (c.skills || c.items || []).map((s) =>
-            typeof s === "string" ? s.toUpperCase() : s.name.toUpperCase()
-          ).filter(Boolean),
-        })).filter((c) => c.items.length > 0);
-      }
+      let allSkillStrings = [];
+      let existingCategories = [];
 
-      const flat = rawSkills
-        .map((s) => (typeof s === "string" ? s.toUpperCase() : (s.name || "").toUpperCase()))
-        .filter(Boolean);
+      rawSkills.forEach((entry) => {
+        if (typeof entry === "string" && entry.trim()) {
+          allSkillStrings.push(entry.trim().toUpperCase());
+        } else if (entry && typeof entry === "object") {
+          const cat = (entry.category || entry.name || "").trim().toUpperCase();
+          const items = Array.isArray(entry.items)
+            ? entry.items
+            : Array.isArray(entry.skills)
+            ? entry.skills
+            : typeof entry.skills === "string"
+            ? entry.skills.split(",")
+            : [];
 
-      if (flat.length === 0) return [];
+          const cleanItems = items
+            .flatMap((it) => (typeof it === "string" ? it.split(",") : [it?.name || String(it)]))
+            .map((x) => (typeof x === "string" ? x.trim().toUpperCase() : String(x).trim().toUpperCase()))
+            .filter(Boolean);
 
-      const devKeywords = ["REACT", "NEXT", "VUE", "TYPESCRIPT", "JAVASCRIPT", "NODE", "PYTHON", "GO", "GRAPHQL", "API", "TAILWIND", "HTML", "CSS", "SQL", "POSTGRES", "MONGODB", "RUST", "JAVA", "BACKEND", "FRONTEND", "FULL STACK"];
-      const designKeywords = ["FIGMA", "UI", "UX", "DESIGN", "WIREFRAMING", "PROTOTYPING", "SYSTEMS", "TYPOGRAPHY", "ANIMATION"];
-      const aiKeywords = ["AI", "LLM", "LLMS", "GPT", "RAG", "AGENTS", "LANGCHAIN", "PROMPT", "AUTOMATION", "OPENAI", "CLAUDE", "MACHINE LEARNING"];
-
-      const devItems = [];
-      const designItems = [];
-      const aiItems = [];
-      const toolItems = [];
-
-      flat.forEach((skill) => {
-        if (aiKeywords.some((k) => skill.includes(k))) {
-          aiItems.push(skill);
-        } else if (designKeywords.some((k) => skill.includes(k))) {
-          designItems.push(skill);
-        } else if (devKeywords.some((k) => skill.includes(k))) {
-          devItems.push(skill);
-        } else {
-          toolItems.push(skill);
+          if (cat && cleanItems.length > 0) {
+            existingCategories.push({ category: cat, items: cleanItems });
+          }
+          cleanItems.forEach((it) => allSkillStrings.push(it));
         }
       });
 
-      const categories = [];
-      if (devItems.length > 0) categories.push({ category: "DEVELOPMENT", items: devItems });
-      if (designItems.length > 0) categories.push({ category: "DESIGN", items: designItems });
-      if (aiItems.length > 0) categories.push({ category: "AI & INTELLIGENCE", items: aiItems });
-      if (toolItems.length > 0) categories.push({ category: "TOOLS & INFRASTRUCTURE", items: toolItems });
+      const isGenericCategory = (cat) =>
+        !cat ||
+        ["SKILLS", "TECHNICAL SKILLS", "CAPABILITIES", "CORE TECHNOLOGIES", "GENERAL", "OTHER", "KEY SKILLS"].includes(
+          cat.toUpperCase().trim()
+        );
 
-      if (categories.length === 0) {
-        categories.push({ category: "CORE CAPABILITIES", items: flat });
+      // If user already provided 2+ distinct specific categories, preserve them
+      if (
+        existingCategories.length >= 2 &&
+        existingCategories.some((c) => !isGenericCategory(c.category))
+      ) {
+        return existingCategories;
       }
-      return categories;
+
+      // Domain classification rules into specific columns
+      const rules = [
+        {
+          category: "LANGUAGES & CORE",
+          patterns: [
+            /\bJAVA\b/i, /\bJAVASCRIPT\b/i, /\bJS\b/i, /\bTYPESCRIPT\b/i, /\bTS\b/i,
+            /\bPYTHON\b/i, /\bC\+\+\b/i, /\bC#\b/i, /\bGOLANG\b/i, /\bGO\b/i,
+            /\bRUST\b/i, /\bRUBY\b/i, /\bPHP\b/i, /\bSWIFT\b/i, /\bKOTLIN\b/i,
+            /\bDART\b/i, /\bSCALA\b/i, /\bSHELL\b/i, /\bBASH\b/i
+          ],
+        },
+        {
+          category: "FRONTEND & UI ARCHITECTURE",
+          patterns: [
+            /\bREACT/i, /\bNEXT(\.JS)?\b/i, /\bVUE/i, /\bANGULAR/i, /\bSVELTE/i,
+            /\bHTML/i, /\bCSS/i, /\bTAILWIND/i, /\bBOOTSTRAP/i, /\bREDUX/i,
+            /\bMOBX/i, /\bSASS\b/i, /\bSCSS\b/i, /\bUI\b/i, /\bUX\b/i,
+            /\bRESPONSIVE DESIGN/i, /\bWEB DESIGN/i, /\bFIGMA/i, /\bMATERIAL UI/i,
+            /\bMUI\b/i, /\bCHAKRA/i, /\bVITE\b/i, /\bWEBPACK\b/i, /\bFRONTEND/i
+          ],
+        },
+        {
+          category: "BACKEND, APIS & SERVICES",
+          patterns: [
+            /\bNODE(\.JS)?\b/i, /\bEXPRESS(\.JS)?\b/i, /\bNEST(\.JS)?\b/i,
+            /\bDJANGO/i, /\bFLASK/i, /\bFASTAPI/i, /\bSPRING/i, /\bLARAVEL/i,
+            /\bREST/i, /\bAPI/i, /\bGRAPHQL/i, /\bGRPC/i,
+            /\bSOCKET\.IO/i, /\bWEBSOCKET/i, /\bJWT/i, /\bAUTH/i, /\bMICROSERVICES/i,
+            /\bBACKEND/i
+          ],
+        },
+        {
+          category: "DATABASES & CLOUD PLATFORMS",
+          patterns: [
+            /\bSQL\b/i, /\bMYSQL/i, /\bPOSTGRES/i, /\bMONGODB/i, /\bMONGO/i,
+            /\bREDIS/i, /\bSQLITE/i, /\bPRISMA/i, /\bTYPEORM/i, /\bHIBERNATE/i,
+            /\bDATABASE/i, /\bDBMS\b/i, /\bAWS\b/i, /\bAZURE\b/i, /\bGCP\b/i,
+            /\bCLOUD/i, /\bFIREBASE/i, /\bSUPABASE/i, /\bCLOUDFLARE/i
+          ],
+        },
+        {
+          category: "DEVOPS & INFRASTRUCTURE",
+          patterns: [
+            /\bDOCKER/i, /\bKUBERNETES/i, /\bK8S/i, /\bLINUX/i, /\bUBUNTU/i,
+            /\bNGINX/i, /\bAPACHE/i, /\bCI\/CD/i, /\bDEVOPS/i, /\bGITHUB ACTIONS/i,
+            /\bJENKINS/i, /\bTERRAFORM/i, /\bANSIBLE/i, /\bVPS/i, /\bDEPLOYMENT/i,
+            /\bSERVER/i, /\bKAFKA/i, /\bRABBITMQ/i
+          ],
+        },
+        {
+          category: "CS CONCEPTS & DEVELOPER TOOLS",
+          patterns: [
+            /\bDATA STRUCT/i, /\bALGORITHM/i, /\bDSA\b/i, /\bOOP\b/i,
+            /\bOBJECT-ORIENTED/i, /\bOPERATING SYS/i, /\bCOMPUTER NET/i,
+            /\bNETWORKING/i, /\bSYSTEM DESIGN/i, /\bCORE CONCEPT/i,
+            /\bGIT\b/i, /\bGITHUB\b/i, /\bGITLAB/i, /\bVS CODE\b/i, /\bVSCODE\b/i,
+            /\bPOSTMAN/i, /\bNPM\b/i, /\bYARN\b/i, /\bPNPM\b/i, /\bJIRA\b/i,
+            /\bAGILE\b/i, /\bTEST/i, /\bJEST\b/i, /\bCYPRESS\b/i
+          ],
+        },
+      ];
+
+      const categorized = {};
+      rules.forEach((r) => {
+        categorized[r.category] = [];
+      });
+      const unclassified = [];
+
+      const seen = new Set();
+      allSkillStrings.forEach((skill) => {
+        const sUpper = skill.toUpperCase().trim();
+        if (seen.has(sUpper)) return;
+        seen.add(sUpper);
+
+        let placed = false;
+        for (const rule of rules) {
+          if (rule.patterns.some((p) => p.test(sUpper))) {
+            categorized[rule.category].push(sUpper);
+            placed = true;
+            break;
+          }
+        }
+        if (!placed) {
+          unclassified.push(sUpper);
+        }
+      });
+
+      if (unclassified.length > 0) {
+        if (categorized["CS CONCEPTS & DEVELOPER TOOLS"].length > 0) {
+          categorized["CS CONCEPTS & DEVELOPER TOOLS"].push(...unclassified);
+        } else {
+          categorized["SPECIALIZED SYSTEMS & TOOLS"] = unclassified;
+        }
+      }
+
+      const result = Object.entries(categorized)
+        .filter(([_, items]) => items.length > 0)
+        .map(([category, items]) => ({
+          category,
+          items,
+        }));
+
+      return result.length > 0 ? result : [{ category: "CORE CAPABILITIES", items: allSkillStrings }];
     }
     return [];
   }, [rawSkills]);
@@ -594,14 +693,14 @@ export default function SwissArchitecturalTheme({
 
           {/* Monumental Condensed Name Typography Composition */}
           <div className="sw-container my-auto py-8">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-stretch">
               {/* Left Column: Massive Broken Name */}
-              <div className="lg:col-span-8 space-y-4">
+              <div className="lg:col-span-7 xl:col-span-8 flex flex-col justify-between space-y-6">
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6 }}
-                  className="sw-display-title text-6xl sm:text-8xl md:text-9xl lg:text-[10rem] xl:text-[11.5rem] tracking-tighter text-[var(--sw-text-primary)] select-none"
+                  className="sw-display-title text-6xl sm:text-8xl md:text-9xl lg:text-[9.5rem] xl:text-[11.5rem] tracking-tighter text-[var(--sw-text-primary)] select-none"
                 >
                   <div className="leading-[0.82]">{firstName.toUpperCase()}</div>
                   {restName && (
@@ -628,30 +727,30 @@ export default function SwissArchitecturalTheme({
                 </motion.div>
               </div>
 
-              {/* Right Column: Narrow Editorial Text & Portrait or Architecture Frame */}
-              <div className="lg:col-span-4 space-y-6 lg:border-l lg:border-[var(--sw-border)] lg:pl-8">
+              {/* Right Column: Matched-Height Portrait or Architecture Frame */}
+              <div className="lg:col-span-5 xl:col-span-4 flex flex-col lg:border-l lg:border-[var(--sw-border)] lg:pl-8 xl:pl-10">
                 {profileImage ? (
                   <motion.div
                     initial={{ opacity: 0, scale: 0.96 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.7, delay: 0.2 }}
-                    className="aspect-[4/5] max-w-[260px] border border-[var(--sw-border)] overflow-hidden bg-[var(--sw-bg-surface)]"
+                    className="w-full h-full min-h-[300px] lg:min-h-[360px] xl:min-h-[420px] border border-[var(--sw-border)] overflow-hidden bg-[var(--sw-bg-surface)] flex"
                   >
                     <img
                       src={profileImage}
                       alt={name}
                       referrerPolicy="no-referrer"
                       crossOrigin="anonymous"
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover object-top"
                     />
                   </motion.div>
                 ) : (
-                  <div className="aspect-[4/5] max-w-[260px] border border-[var(--sw-border)] p-6 flex flex-col justify-between bg-[var(--sw-bg-subtle)]">
-                    <span className="sw-mono text-[10px] text-[var(--sw-cobalt)]">SWISS / 01</span>
-                    <span className="sw-condensed text-7xl text-[var(--sw-text-primary)] font-black leading-none">
+                  <div className="w-full h-full min-h-[300px] lg:min-h-[360px] xl:min-h-[420px] border border-[var(--sw-border)] p-6 sm:p-8 flex flex-col justify-between bg-[var(--sw-bg-subtle)]">
+                    <span className="sw-mono text-[11px] text-[var(--sw-cobalt)] font-bold">SWISS / 01</span>
+                    <span className="sw-condensed text-7xl sm:text-8xl text-[var(--sw-text-primary)] font-black leading-none">
                       {initials}
                     </span>
-                    <span className="sw-mono text-[10px] text-[var(--sw-text-muted)]">
+                    <span className="sw-mono text-[10px] text-[var(--sw-text-muted)] tracking-wider">
                       {currentYear} ARCHIVE
                     </span>
                   </div>
@@ -1057,26 +1156,38 @@ export default function SwissArchitecturalTheme({
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 items-stretch">
                 {categorizedSkills.map((group, gIdx) => (
-                  <div key={gIdx} className="border-t-2 border-[var(--sw-border-strong)] pt-4 space-y-6">
-                    <span className="sw-mono text-xs font-bold text-[var(--sw-cobalt)] block">
-                      {group.category}
-                    </span>
+                  <div key={gIdx} className="border-t-2 border-[var(--sw-border-strong)] pt-4 space-y-4 bg-[var(--sw-bg)]/60 p-5 sm:p-6 border border-[var(--sw-border)] flex flex-col justify-between shadow-2xs hover:border-[var(--sw-cobalt)] transition-colors">
+                    <div>
+                      <div className="flex items-center justify-between pb-3 mb-3 border-b border-[var(--sw-border)]">
+                        <span className="sw-mono text-xs font-bold text-[var(--sw-cobalt)] tracking-wider block">
+                          {group.category}
+                        </span>
+                        <span className="sw-mono text-[9px] text-[var(--sw-text-muted)] bg-[var(--sw-bg-subtle)] px-2 py-0.5 border border-[var(--sw-border)]">
+                          {group.items?.length || 0} ITEMS
+                        </span>
+                      </div>
 
-                    <ul className="space-y-2">
-                      {group.items.map((skill, sIdx) => (
-                        <li
-                          key={sIdx}
-                          className="sw-condensed text-2xl sm:text-3xl text-[var(--sw-text-primary)] hover:text-[var(--sw-cobalt)] hover:translate-x-1 transition-all duration-150 cursor-default border-b border-[var(--sw-border)] pb-1.5 flex items-center justify-between"
-                        >
-                          <span>{skill}</span>
-                          <span className="sw-mono text-[9px] text-[var(--sw-text-muted)] font-normal">
-                            0{sIdx + 1}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
+                      <ul className="space-y-2">
+                        {group.items.map((skill, sIdx) => (
+                          <li
+                            key={sIdx}
+                            className="sw-condensed text-base sm:text-lg text-[var(--sw-text-primary)] hover:text-[var(--sw-cobalt)] hover:translate-x-1 transition-all duration-150 cursor-default border-b border-[var(--sw-border)]/60 pb-1.5 flex items-baseline justify-between gap-3"
+                          >
+                            <span className="break-words font-medium tracking-tight">{skill}</span>
+                            <span className="sw-mono text-[10px] text-[var(--sw-text-muted)] font-normal shrink-0">
+                              {sIdx + 1 < 10 ? `0${sIdx + 1}` : `${sIdx + 1}`}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="pt-3 flex items-center justify-between sw-mono text-[9px] text-[var(--sw-text-muted)] border-t border-[var(--sw-border)]/40 mt-3">
+                      <span>SEC / {gIdx + 1 < 10 ? `0${gIdx + 1}` : `${gIdx + 1}`}</span>
+                      <span>SWISS PRECISION</span>
+                    </div>
                   </div>
                 ))}
               </div>

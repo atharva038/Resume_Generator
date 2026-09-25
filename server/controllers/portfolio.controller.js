@@ -154,20 +154,128 @@ const getOwnedPortfolio = async (portfolioId, userId) => {
   return Portfolio.findOne({_id: portfolioId, userId});
 };
 
+const mapResumeProjectsToPortfolioProjects = (
+  resumeProjects = [],
+  userId,
+  portfolioId
+) => {
+  return (resumeProjects || []).map((project, index) => {
+    const liveCandidate =
+      project.liveUrl ||
+      project.link ||
+      project.projectUrl ||
+      project.websiteUrl ||
+      project.demoUrl ||
+      project.url ||
+      "";
+    const githubCandidate =
+      project.githubUrl ||
+      project.github ||
+      project.repoUrl ||
+      project.repo ||
+      project.sourceCode ||
+      "";
+    const caseStudyCandidate =
+      project.caseStudyUrl ||
+      project.caseStudy ||
+      project.links?.caseStudy ||
+      "";
+
+    const live = isValidUrl(liveCandidate) ? liveCandidate : "";
+    const github = isValidUrl(githubCandidate) ? githubCandidate : "";
+    const caseStudy = isValidUrl(caseStudyCandidate) ? caseStudyCandidate : "";
+
+    const rawBullets =
+      Array.isArray(project.bullets) && project.bullets.length > 0
+        ? project.bullets
+        : Array.isArray(project.highlights) && project.highlights.length > 0
+        ? project.highlights
+        : typeof project.description === "string" &&
+          project.description.includes("\n")
+        ? project.description
+            .split("\n")
+            .map((s) => s.replace(/^[-•*]\s*/, "").trim())
+            .filter(Boolean)
+        : [];
+
+    const rawTech = Array.isArray(project.technologies)
+      ? project.technologies
+      : typeof project.technologies === "string"
+      ? project.technologies
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean)
+      : [];
+
+    return {
+      userId,
+      portfolioId,
+      resumeProjectId: project._id?.toString() || `proj-${index}`,
+      title: project.title || project.name || `Project ${index + 1}`,
+      shortDescription:
+        project.shortDescription ||
+        project.description ||
+        rawBullets[0] ||
+        "",
+      longDescription:
+        project.longDescription ||
+        (rawBullets.length > 0 ? rawBullets.join("\n") : project.description || ""),
+      problem: project.problem || "",
+      solution: project.solution || "",
+      impact: project.impact || "",
+      technologies: rawTech,
+      links: {
+        live,
+        github,
+        caseStudy,
+      },
+      highlights: rawBullets,
+      featured: index < 3,
+      order: index,
+      visible: true,
+    };
+  });
+};
+
 const getPortfolioWithProjects = async (portfolio) => {
-  const [resume, projects] = await Promise.all([
+  const [resume, existingProjects] = await Promise.all([
     portfolio.resumeId
       ? Resume.findOne({
           _id: portfolio.resumeId,
           userId: portfolio.userId,
-        }).select(
-          "name summary skills experience education certifications achievements customSections"
-        )
+        })
       : null,
     PortfolioProject.find({
       portfolioId: portfolio._id,
     }).sort({order: 1, createdAt: 1}),
   ]);
+
+  let projects = existingProjects;
+
+  // If no PortfolioProject records exist yet, but resume has projects, auto-populate them
+  if (
+    (!projects || projects.length === 0) &&
+    resume?.projects &&
+    resume.projects.length > 0
+  ) {
+    try {
+      const projectPayloads = mapResumeProjectsToPortfolioProjects(
+        resume.projects,
+        portfolio.userId,
+        portfolio._id
+      );
+      projects = await PortfolioProject.insertMany(projectPayloads, {
+        ordered: true,
+      });
+    } catch (err) {
+      console.warn("Auto-populating PortfolioProjects failed:", err);
+      projects = mapResumeProjectsToPortfolioProjects(
+        resume.projects,
+        portfolio.userId,
+        portfolio._id
+      );
+    }
+  }
 
   return {
     portfolio,
@@ -194,6 +302,18 @@ const buildPublicPayload = (portfolio, resume, projects) => {
     portfolioObject,
     resumeObject
   );
+
+  let finalProjects = projects;
+  if (
+    (!finalProjects || finalProjects.length === 0) &&
+    resumeObject?.projects?.length > 0
+  ) {
+    finalProjects = mapResumeProjectsToPortfolioProjects(
+      resumeObject.projects,
+      portfolioObject.userId,
+      portfolioObject._id
+    );
+  }
 
   return {
     portfolio: {
@@ -228,12 +348,18 @@ const buildPublicPayload = (portfolio, resume, projects) => {
       },
     },
     resume: portfolioResume,
-    projects,
+    projects: finalProjects,
   };
 };
 
 const usePortfolioArrayOrResume = (portfolioValue, resumeValue) => {
-  return Array.isArray(portfolioValue) ? portfolioValue : resumeValue || [];
+  if (Array.isArray(portfolioValue) && portfolioValue.length > 0) {
+    return portfolioValue;
+  }
+  if (Array.isArray(resumeValue) && resumeValue.length > 0) {
+    return resumeValue;
+  }
+  return portfolioValue || resumeValue || [];
 };
 
 const buildPortfolioResumeSnapshot = (portfolio, resume) => {
@@ -257,6 +383,13 @@ const buildPortfolioResumeSnapshot = (portfolio, resume) => {
       portfolioObject?.education,
       resumeObject?.education
     ),
+    projects: (resumeObject?.projects || []).map((p) => ({
+      name: p.name || p.title || "Project",
+      description: p.description || p.shortDescription || "",
+      technologies: p.technologies || [],
+      link: p.link || p.liveUrl || p.githubUrl || p.github || "",
+      bullets: p.bullets || p.highlights || [],
+    })),
     certifications: usePortfolioArrayOrResume(
       portfolioObject?.certifications,
       resumeObject?.certifications
@@ -474,23 +607,11 @@ export const createPortfolioFromResume = async (req, res) => {
     });
 
     const copiedProjects = await PortfolioProject.insertMany(
-      (resume.projects || []).map((project, index) => ({
+      mapResumeProjectsToPortfolioProjects(
+        resume.projects || [],
         userId,
-        portfolioId: portfolio._id,
-        resumeProjectId: project._id?.toString() || "",
-        title: project.name || `Project ${index + 1}`,
-        shortDescription: project.description || "",
-        longDescription:
-          project.bullets?.join("\n") || project.description || "",
-        technologies: project.technologies || [],
-        links: {
-          live: isValidUrl(project.link) ? project.link : "",
-        },
-        highlights: project.bullets || [],
-        featured: index < 3,
-        order: index,
-        visible: true,
-      })),
+        portfolio._id
+      ),
       {ordered: true}
     );
 
@@ -992,9 +1113,7 @@ export const getPublicPortfolio = async (req, res) => {
         ? Resume.findOne({
             _id: portfolio.resumeId,
             userId: portfolio.userId,
-          }).select(
-            "name summary skills experience education certifications achievements customSections"
-          )
+          })
         : null,
       PortfolioProject.find({
         portfolioId: portfolio._id,
@@ -1473,3 +1592,82 @@ export const deletePortfolioImage = async (req, res) => {
     });
   }
 };
+
+export const syncPortfolioWithResume = async (req, res) => {
+  try {
+    const userId = getUserId(req);
+    const portfolio = await getOwnedPortfolio(req.params.id, userId);
+
+    if (!portfolio) {
+      return res.status(404).json({ error: "Portfolio not found" });
+    }
+
+    if (!portfolio.resumeId) {
+      return res
+        .status(400)
+        .json({ error: "No source resume linked to this portfolio" });
+    }
+
+    const resume = await Resume.findOne({ _id: portfolio.resumeId, userId });
+    if (!resume) {
+      return res.status(404).json({ error: "Linked resume not found" });
+    }
+
+    const professionalTitle = getFirstProfessionalTitle(resume);
+
+    portfolio.title = portfolio.title || `${resume.name}'s Portfolio`;
+    portfolio.tagline = resume.summary || portfolio.tagline || "";
+    portfolio.professionalTitle =
+      portfolio.professionalTitle || professionalTitle;
+    portfolio.about = resume.summary || portfolio.about || "";
+    portfolio.location = resume.contact?.location || portfolio.location || "";
+    if (!portfolio.contact?.email && resume.contact?.email) {
+      portfolio.contact.email = resume.contact.email;
+    }
+    if (!portfolio.contact?.phone && resume.contact?.phone) {
+      portfolio.contact.phone = resume.contact.phone;
+    }
+
+    if (!portfolio.socialLinks || portfolio.socialLinks.length === 0) {
+      portfolio.socialLinks = getSocialLinksFromResume(resume);
+    }
+
+    portfolio.skills = resume.skills || [];
+    portfolio.experience = resume.experience || [];
+    portfolio.education = resume.education || [];
+    portfolio.certifications = resume.certifications || [];
+    portfolio.achievements = resume.achievements || [];
+    portfolio.customSections = resume.customSections || [];
+
+    await portfolio.save();
+
+    // Re-sync PortfolioProjects if existing are empty or if we want to add any missing
+    if (resume.projects && resume.projects.length > 0) {
+      const existingProjects = await PortfolioProject.find({
+        portfolioId: portfolio._id,
+        userId,
+      });
+
+      if (existingProjects.length === 0) {
+        const projectPayloads = mapResumeProjectsToPortfolioProjects(
+          resume.projects,
+          userId,
+          portfolio._id
+        );
+        await PortfolioProject.insertMany(projectPayloads, { ordered: true });
+      }
+    }
+
+    const payload = await getPortfolioWithProjects(portfolio);
+    res.json({
+      message: "Portfolio successfully synced with source resume",
+      ...payload,
+    });
+  } catch (error) {
+    console.error("Sync portfolio with resume error:", error);
+    res.status(500).json({
+      error: error.message || "Failed to sync portfolio with resume",
+    });
+  }
+};
+

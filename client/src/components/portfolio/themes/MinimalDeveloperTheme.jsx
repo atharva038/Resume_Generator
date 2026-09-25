@@ -105,28 +105,34 @@ export default function MinimalDeveloperTheme({ data = {}, isDarkMode = false, a
           </h2>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {skills.map((group, index) => (
             <motion.div
               key={`${group.category}-${index}`}
               whileHover={{ y: -3 }}
               transition={{ duration: 0.15 }}
-              className="rounded-2xl border border-gray-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 p-6 shadow-sm hover:border-gray-400 dark:hover:border-zinc-600 transition-all flex flex-col justify-between"
+              className="rounded-2xl border border-gray-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 p-5 shadow-sm hover:border-gray-400 dark:hover:border-zinc-600 transition-all flex flex-col justify-between"
             >
               <div>
-                <div className="flex items-center gap-2 mb-4 pb-3 border-b border-gray-100 dark:border-zinc-800">
-                  <Terminal className="w-4 h-4 text-[var(--pt-accent,#10b981)]" />
-                  <h3 className="font-bold text-sm sm:text-base text-gray-900 dark:text-white font-mono">
-                    {group.category || "General"}
-                  </h3>
+                <div className="flex items-center justify-between gap-2 mb-3 pb-2.5 border-b border-gray-100 dark:border-zinc-800">
+                  <div className="flex items-center gap-2">
+                    <Terminal className="w-4 h-4 text-[var(--pt-accent,#10b981)]" />
+                    <h3 className="font-bold text-xs sm:text-sm text-gray-900 dark:text-white font-mono">
+                      {group.category || "General"}
+                    </h3>
+                  </div>
+                  <span className="text-[10px] font-mono text-gray-400">
+                    {group.items?.length || 0}
+                  </span>
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
                   {(group.items || []).map((skill) => (
                     <span
                       key={skill}
-                      className="px-3 py-1.5 rounded-lg text-xs font-mono font-semibold bg-gray-100 dark:bg-zinc-800/80 text-gray-800 dark:text-zinc-200 border border-gray-200/60 dark:border-white/5"
+                      className="px-2.5 py-1 rounded-lg text-xs font-mono font-semibold bg-gray-100 dark:bg-zinc-800/80 text-gray-800 dark:text-zinc-200 border border-gray-200/60 dark:border-white/5 truncate flex items-center"
+                      title={skill}
                     >
-                      {skill}
+                      <span className="truncate">{skill}</span>
                     </span>
                   ))}
                 </div>
@@ -422,8 +428,8 @@ export default function MinimalDeveloperTheme({ data = {}, isDarkMode = false, a
       {/* Hero Section */}
       <section id="hero" className="border-b border-gray-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 pt-16 pb-20 sm:pt-24 sm:pb-28">
         <div className="mx-auto max-w-6xl px-5 sm:px-8">
-          <div className="grid lg:grid-cols-[1fr_320px] xl:grid-cols-[1fr_360px] gap-8 lg:gap-12 items-stretch">
-            <div className="space-y-6 flex flex-col justify-center">
+          <div className="grid lg:grid-cols-[1fr_260px] xl:grid-cols-[1fr_280px] gap-8 lg:gap-10 items-stretch">
+            <div className="space-y-6 flex flex-col justify-between">
               {/* Status Badge */}
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-xs font-mono font-bold w-fit">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -482,11 +488,11 @@ export default function MinimalDeveloperTheme({ data = {}, isDarkMode = false, a
 
             {/* Profile Avatar Frame if available */}
             {profileImg && (
-              <div className="w-full max-w-xs sm:max-w-sm lg:max-w-none h-64 sm:h-80 lg:h-full min-h-[280px] rounded-3xl overflow-hidden border-2 border-gray-200 dark:border-zinc-700 shadow-2xl bg-gray-100 dark:bg-zinc-900 shrink-0 self-stretch">
+              <div className="w-full max-w-[260px] sm:max-w-[280px] lg:max-w-none h-full min-h-[300px] rounded-3xl overflow-hidden border-2 border-gray-200 dark:border-zinc-700 shadow-2xl bg-gray-100 dark:bg-zinc-900 shrink-0 self-stretch relative">
                 <img
                   src={profileImg}
                   alt={profile.name}
-                  className="w-full h-full object-cover"
+                  className="absolute inset-0 w-full h-full object-cover"
                 />
               </div>
             )}

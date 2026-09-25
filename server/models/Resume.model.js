@@ -17,15 +17,15 @@ const resumeSchema = new mongoose.Schema(
     },
     name: {
       type: String,
-      required: true,
+      default: "Untitled Resume",
     },
     contact: {
-      phone: String,
-      email: String,
-      linkedin: String,
-      github: String,
-      portfolio: String,
-      location: String,
+      phone: { type: String, default: "" },
+      email: { type: String, default: "" },
+      linkedin: { type: String, default: "" },
+      github: { type: String, default: "" },
+      portfolio: { type: String, default: "" },
+      location: { type: String, default: "" },
     },
     summary: {
       type: String,
@@ -41,40 +41,56 @@ const resumeSchema = new mongoose.Schema(
       {
         company: String,
         title: String,
+        position: String,
+        role: String,
         location: String,
         startDate: String,
         endDate: String,
         current: Boolean,
+        description: String,
+        summary: String,
         bullets: [String],
       },
     ],
     education: [
       {
         institution: String,
+        school: String,
         degree: String,
         field: String,
+        major: String,
         location: String,
         startDate: String,
         endDate: String,
+        year: String,
         gpa: String,
+        grade: String,
+        description: String,
         bullets: [String],
       },
     ],
     projects: [
       {
         name: String,
+        title: String,
         description: String,
+        summary: String,
         technologies: [String],
         link: String,
+        projectUrl: String,
+        liveUrl: String,
         github: String,
         githubUrl: String,
-        liveUrl: String,
+        repoUrl: String,
+        websiteUrl: String,
+        highlights: [String],
         bullets: [String],
       },
     ],
     certifications: [
       {
         name: String,
+        title: String,
         issuer: String,
         date: String,
         credentialId: String,
@@ -92,6 +108,18 @@ const resumeSchema = new mongoose.Schema(
         items: [String],
       },
     ],
+    sectionOrder: {
+      type: [String],
+      default: undefined,
+    },
+    sectionTitles: {
+      type: mongoose.Schema.Types.Mixed,
+      default: undefined,
+    },
+    targetJobRole: {
+      type: String,
+      default: "",
+    },
     rawText: {
       type: String,
       default: "",
@@ -103,6 +131,10 @@ const resumeSchema = new mongoose.Schema(
     colorTheme: {
       type: String,
       default: null, // Will use template's default if not specified
+    },
+    selectedTheme: {
+      type: String,
+      default: null,
     },
     // Subscription tracking for access control
     subscriptionInfo: {
@@ -128,6 +160,7 @@ const resumeSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    strict: false,
   }
 );
 

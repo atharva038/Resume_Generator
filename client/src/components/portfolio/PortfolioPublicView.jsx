@@ -26,6 +26,24 @@ const PortfolioPublicView = ({
   resumeDownloadUrl,
 }) => {
   const sections = portfolio?.sections || {};
+  const activeSkills =
+    (Array.isArray(portfolio?.skills) && portfolio.skills.length > 0)
+      ? portfolio.skills
+      : resume?.skills || [];
+  const activeExperience =
+    (Array.isArray(portfolio?.experience) && portfolio.experience.length > 0)
+      ? portfolio.experience
+      : resume?.experience || [];
+  const activeEducation =
+    (Array.isArray(portfolio?.education) && portfolio.education.length > 0)
+      ? portfolio.education
+      : resume?.education || [];
+  const activeProjects =
+    (Array.isArray(projects) && projects.length > 0)
+      ? projects
+      : (Array.isArray(portfolio?.projects) && portfolio.projects.length > 0)
+      ? portfolio.projects
+      : resume?.projects || [];
 
   return (
     <main className="min-h-screen bg-white text-gray-950">
@@ -106,25 +124,25 @@ const PortfolioPublicView = ({
           </section>
         )}
 
-        {sections.showSkills !== false && hasItems(resume?.skills) && (
+        {sections.showSkills !== false && hasItems(activeSkills) && (
           <section>
             <h2 className="text-2xl font-black mb-6">Skills</h2>
             <div className="grid gap-4 md:grid-cols-2">
-              {resume.skills.map((group, index) => (
+              {activeSkills.map((group, index) => (
                 <div
-                  key={`${group.category}-${index}`}
+                  key={`${group.category || "skill"}-${index}`}
                   className="border border-gray-200 rounded-lg p-5"
                 >
                   <h3 className="font-bold mb-3">
                     {group.category || "Skills"}
                   </h3>
                   <div className="flex flex-wrap gap-2">
-                    {(group.items || []).map((skill) => (
+                    {(group.items || (Array.isArray(group) ? group : [group])).map((skill, sIdx) => (
                       <span
-                        key={skill}
+                        key={`${skill}-${sIdx}`}
                         className="px-3 py-1 rounded-full bg-gray-100 text-sm"
                       >
-                        {skill}
+                        {typeof skill === "string" ? skill : skill?.name || String(skill)}
                       </span>
                     ))}
                   </div>
@@ -134,19 +152,19 @@ const PortfolioPublicView = ({
           </section>
         )}
 
-        {sections.showProjects !== false && hasItems(projects) && (
+        {sections.showProjects !== false && hasItems(activeProjects) && (
           <section>
             <h2 className="text-2xl font-black mb-6">Projects</h2>
             <div className="grid gap-5 md:grid-cols-2">
-              {projects.map((project) => (
+              {activeProjects.map((project, idx) => (
                 <article
-                  key={project._id}
+                  key={project._id || project.id || idx}
                   className="border border-gray-200 rounded-lg p-5"
                 >
-                  <h3 className="text-xl font-bold">{project.title}</h3>
-                  {project.shortDescription && (
+                  <h3 className="text-xl font-bold">{project.title || project.name}</h3>
+                  {(project.shortDescription || project.description) && (
                     <p className="text-gray-700 mt-3 leading-7">
-                      {project.shortDescription}
+                      {project.shortDescription || project.description}
                     </p>
                   )}
                   {hasItems(project.technologies) && (
@@ -162,9 +180,9 @@ const PortfolioPublicView = ({
                     </div>
                   )}
                   <div className="flex flex-wrap gap-3 mt-5">
-                    {project.links?.live && (
+                    {(project.links?.live || project.liveUrl) && (
                       <a
-                        href={project.links.live}
+                        href={project.links?.live || project.liveUrl}
                         target="_blank"
                         rel="noreferrer"
                         onClick={onProjectClick}
@@ -173,9 +191,9 @@ const PortfolioPublicView = ({
                         Live <ExternalLink className="w-4 h-4" />
                       </a>
                     )}
-                    {project.links?.github && (
+                    {(project.links?.github || project.githubUrl) && (
                       <a
-                        href={project.links.github}
+                        href={project.links?.github || project.githubUrl}
                         target="_blank"
                         rel="noreferrer"
                         onClick={onProjectClick}
@@ -191,11 +209,11 @@ const PortfolioPublicView = ({
           </section>
         )}
 
-        {sections.showExperience !== false && hasItems(resume?.experience) && (
+        {sections.showExperience !== false && hasItems(activeExperience) && (
           <section>
             <h2 className="text-2xl font-black mb-6">Experience</h2>
             <div className="space-y-5">
-              {resume.experience.map((item, index) => (
+              {activeExperience.map((item, index) => (
                 <article
                   key={`${item.company}-${index}`}
                   className="border-l-2 border-gray-900 pl-5"
@@ -217,11 +235,11 @@ const PortfolioPublicView = ({
           </section>
         )}
 
-        {sections.showEducation !== false && hasItems(resume?.education) && (
+        {sections.showEducation !== false && hasItems(activeEducation) && (
           <section>
             <h2 className="text-2xl font-black mb-6">Education</h2>
             <div className="grid gap-4 md:grid-cols-2">
-              {resume.education.map((item, index) => (
+              {activeEducation.map((item, index) => (
                 <article
                   key={`${item.institution}-${index}`}
                   className="border border-gray-200 rounded-lg p-5"

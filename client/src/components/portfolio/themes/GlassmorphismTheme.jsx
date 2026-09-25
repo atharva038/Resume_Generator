@@ -416,8 +416,8 @@ export default function GlassmorphismTheme({
 
               {/* Profile Image (Photo Mode) OR Glass Code Terminal (No-Photo Mode) */}
               {profile.profileImage ? (
-                <div className="w-full max-w-xs sm:max-w-sm lg:w-80 xl:w-96 flex flex-col justify-between gap-4 self-stretch shrink-0">
-                  <div className="relative group w-full flex-1 min-h-[260px] sm:min-h-[300px] rounded-3xl overflow-hidden border-2 border-white/60 dark:border-white/15 shadow-2xl backdrop-blur-md">
+                <div className="w-full max-w-[260px] sm:max-w-[280px] lg:w-64 xl:w-72 flex flex-col justify-between gap-3 self-stretch shrink-0">
+                  <div className="relative group w-full flex-1 rounded-3xl overflow-hidden border-2 border-white/60 dark:border-white/15 shadow-2xl backdrop-blur-md">
                     {/* Glowing halo behind avatar */}
                     <div
                       className="absolute -inset-2 rounded-3xl opacity-30 blur-xl transition-all duration-500 group-hover:opacity-60"
@@ -435,38 +435,39 @@ export default function GlassmorphismTheme({
 
                   {/* Quick Glass Stats Card */}
                   {(totalProjects > 0 || totalSkills > 0 || totalRoles > 0) && (
-                    <div className="grid grid-cols-3 gap-2 w-full p-2.5 rounded-2xl bg-white/70 dark:bg-slate-900/60 border border-white/60 dark:border-white/10 backdrop-blur-md shadow-sm text-center">
+                    <div className="grid grid-cols-3 gap-1.5 w-full p-2 rounded-2xl bg-white/70 dark:bg-slate-900/60 border border-white/60 dark:border-white/10 backdrop-blur-md shadow-sm text-center">
                       {totalProjects > 0 && (
-                        <div className="p-1.5">
-                          <span className="block text-lg font-black text-slate-900 dark:text-white">
+                        <div className="p-1">
+                          <span className="block text-base font-black text-slate-900 dark:text-white">
                             {totalProjects}+
                           </span>
-                          <span className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                          <span className="block text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                             Projects
                           </span>
                         </div>
                       )}
                       {totalSkills > 0 && (
-                        <div className="p-1.5 border-x border-slate-200/60 dark:border-white/10">
-                          <span className="block text-lg font-black text-slate-900 dark:text-white">
+                        <div className="p-1 border-x border-slate-200/60 dark:border-white/10">
+                          <span className="block text-base font-black text-slate-900 dark:text-white">
                             {totalSkills}+
                           </span>
-                          <span className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                          <span className="block text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                             Skills
                           </span>
                         </div>
                       )}
                       {totalRoles > 0 && (
-                        <div className="p-1.5">
-                          <span className="block text-lg font-black text-slate-900 dark:text-white">
+                        <div className="p-1">
+                          <span className="block text-base font-black text-slate-900 dark:text-white">
                             {totalRoles}
                           </span>
-                          <span className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                          <span className="block text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                             Roles
                           </span>
                         </div>
                       )}
                     </div>
+                  )}
                 </div>
               ) : (
                 /* No-Photo Mode: Frosted Code Terminal & Metric Bento */
@@ -584,7 +585,7 @@ export default function GlassmorphismTheme({
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               {skills.map((group, idx) => {
                 const categoryTitle =
                   typeof group === "string" ? "Core Technologies" : group.category || "Skillset";
@@ -596,28 +597,29 @@ export default function GlassmorphismTheme({
                     : [];
 
                 return (
-                  <GlassTiltCard key={`${categoryTitle}-${idx}`} className="p-6 space-y-4">
-                    <div className="flex items-center justify-between border-b border-slate-200/60 dark:border-white/10 pb-3">
-                      <h3 className="font-black text-base text-slate-900 dark:text-white flex items-center gap-2">
-                        <Terminal className="w-4 h-4 text-[var(--pt-accent)]" />
-                        {categoryTitle}
+                  <GlassTiltCard key={`${categoryTitle}-${idx}`} className="p-5 space-y-3.5">
+                    <div className="flex items-center justify-between border-b border-slate-200/60 dark:border-white/10 pb-2.5">
+                      <h3 className="font-black text-xs sm:text-sm text-slate-900 dark:text-white flex items-center gap-2 truncate">
+                        <Terminal className="w-4 h-4 text-[var(--pt-accent)] shrink-0" />
+                        <span className="truncate">{categoryTitle}</span>
                       </h3>
-                      <span className="text-xs font-bold text-slate-400">
+                      <span className="text-[10px] font-bold text-slate-400 shrink-0">
                         {skillItems.length} items
                       </span>
                     </div>
 
-                    <div className="flex flex-wrap gap-2 pt-1">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 pt-0.5">
                       {skillItems.map((skill) => (
                         <span
                           key={skill}
-                          className="pt-glass-shimmer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-white/70 dark:bg-white/5 text-slate-800 dark:text-slate-200 border border-white/80 dark:border-white/10 backdrop-blur-md shadow-2xs hover:border-[var(--pt-accent)] hover:text-[var(--pt-accent)] transition-all cursor-default"
+                          className="pt-glass-shimmer inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-bold bg-white/70 dark:bg-white/5 text-slate-800 dark:text-slate-200 border border-white/80 dark:border-white/10 backdrop-blur-md shadow-2xs hover:border-[var(--pt-accent)] hover:text-[var(--pt-accent)] transition-all cursor-default truncate"
+                          title={skill}
                         >
                           <span
-                            className="w-1.5 h-1.5 rounded-full"
+                            className="w-1.5 h-1.5 rounded-full shrink-0"
                             style={{ backgroundColor: currentAccent }}
                           />
-                          {skill}
+                          <span className="truncate">{skill}</span>
                         </span>
                       ))}
                     </div>

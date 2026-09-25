@@ -360,18 +360,34 @@ export const saveResume = async (req, res) => {
   try {
     // After checkSubscription middleware, req.user is the full User document
     const userId = req.user._id || req.user.userId;
-    const resumeData = req.body;
+    const resumeData = { ...req.body };
 
-    if (!resumeData.name) {
-      return res.status(400).json({error: "Resume name is required"});
+    // Strip client-side _id if null/empty or passed during new save
+    delete resumeData._id;
+    delete resumeData.id;
+
+    // Fallback for name if missing or empty
+    if (
+      !resumeData.name ||
+      typeof resumeData.name !== "string" ||
+      !resumeData.name.trim()
+    ) {
+      resumeData.name = req.user?.name || "Untitled Resume";
+    } else {
+      resumeData.name = resumeData.name.trim();
     }
 
     // Map 'title' to 'resumeTitle' if provided, otherwise use default
     if (resumeData.title) {
       resumeData.resumeTitle = resumeData.title;
       delete resumeData.title;
-    } else if (!resumeData.resumeTitle) {
+    } else if (!resumeData.resumeTitle || !resumeData.resumeTitle.trim()) {
       resumeData.resumeTitle = "Untitled Resume";
+    }
+
+    // Ensure templateId defaults to classic if missing
+    if (!resumeData.templateId) {
+      resumeData.templateId = "classic";
     }
 
     // Get user's subscription info for linking
@@ -452,7 +468,7 @@ export const updateResume = async (req, res) => {
   try {
     const userId = req.user._id || req.user.userId;
     const {id} = req.params;
-    const resumeData = req.body;
+    const resumeData = { ...req.body };
 
     // Find resume and verify ownership
     const resume = await Resume.findOne({_id: id, userId});
@@ -467,6 +483,13 @@ export const updateResume = async (req, res) => {
       delete resumeData.title;
     }
 
+    // Name fallback
+    if (resumeData.name !== undefined) {
+      if (typeof resumeData.name === "string" && resumeData.name.trim()) {
+        resume.name = resumeData.name.trim();
+      }
+    }
+
     // Update resume fields - special handling for nested contact object
     if (resumeData.contact !== undefined) {
       resume.contact = {...resume.contact, ...resumeData.contact};
@@ -479,14 +502,38 @@ export const updateResume = async (req, res) => {
       resume.markModified("skills");
     }
 
+    // Explicitly markModified for all section arrays
+    const arraySections = [
+      "experience",
+      "education",
+      "projects",
+      "certifications",
+      "achievements",
+      "customSections",
+      "sectionOrder",
+    ];
+    arraySections.forEach((sec) => {
+      if (resumeData[sec] !== undefined) {
+        resume[sec] = resumeData[sec];
+        resume.markModified(sec);
+      }
+    });
+
     // Update other fields
     Object.keys(resumeData).forEach((key) => {
-      if (key !== "contact" && key !== "skills") {
+      if (
+        key !== "contact" &&
+        key !== "skills" &&
+        key !== "_id" &&
+        key !== "userId" &&
+        !arraySections.includes(key)
+      ) {
         resume[key] = resumeData[key];
       }
     });
 
     await resume.save();
+    console.log(`💾 Resume updated in database: ID ${resume._id}`);
 
     // Return the full resume object
     res.json(resume);
