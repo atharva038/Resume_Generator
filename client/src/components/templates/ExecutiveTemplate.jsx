@@ -1,5 +1,9 @@
 import { forwardRef, useRef, useEffect, useMemo } from "react";
-import { isDescriptionDuplicatedInBullets, cleanBulletText } from "./templateUtils";
+import {
+  isDescriptionDuplicatedInBullets,
+  cleanBulletText,
+  formatEducationDegreeAndField,
+} from "./templateUtils";
 
 /**
  * ExecutiveTemplate — "The Wall Street / Ivy League" Flagship Archetype (v2)
@@ -671,7 +675,7 @@ const ExecutiveTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }, re
                             lineHeight: 1.2,
                           }}
                         >
-                          {edu.degree}{edu.field && ` in ${edu.field}`}
+                          {formatEducationDegreeAndField(edu)}
                           {edu.gpa && (
                             <span
                               style={{

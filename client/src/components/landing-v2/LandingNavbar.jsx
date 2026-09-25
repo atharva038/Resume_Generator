@@ -87,6 +87,7 @@ export default function LandingNavbar() {
             {[
               { label: "Templates", to: "/templates" },
               { label: "ATS Scanner", to: "/ats-analyzer" },
+              { label: "Careers", to: "/careers", badge: "Hiring" },
               { label: "Pricing", to: "/pricing" },
             ].map((item) => (
               <Link
@@ -218,6 +219,7 @@ export default function LandingNavbar() {
               {[
                 { label: "Resume Templates", to: "/templates" },
                 { label: "ATS Scanner Diagnostics", to: "/ats-analyzer" },
+                { label: "Careers (We're Hiring)", to: "/careers" },
                 { label: "Pricing & Plans", to: "/pricing" },
               ].map((item) => (
                 <Link

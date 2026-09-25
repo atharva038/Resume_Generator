@@ -299,56 +299,87 @@
   </url>
 
   <!-- ====================================================================== -->
-  <!-- 4. CORE REVENUE & AI PRODUCT TOOLS                                     -->
+  <!-- 4. DEVELOPER & PROFESSIONAL PORTFOLIO BUILDER (Priority 0.95)          -->
   <!-- ====================================================================== -->
   <url>
-    <loc>https://www.smartnshine.app/ats-analyzer</loc>
-    <lastmod>2026-08-29</lastmod>
+    <loc>https://www.smartnshine.app/tech-portfolio</loc>
+    <lastmod>2026-09-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+    <image:image>
+      <image:loc>https://www.smartnshine.app/social-preview.png</image:loc>
+      <image:title>Free 3D Interactive Developer Portfolio Builder - GitHub Synced</image:title>
+      <image:caption>Generate a dark-mode interactive tech portfolio from your GitHub repositories and projects in 60 seconds.</image:caption>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://www.smartnshine.app/smartnshine-portfolio</loc>
+    <lastmod>2026-09-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.90</priority>
     <image:image>
       <image:loc>https://www.smartnshine.app/social-preview.png</image:loc>
-      <image:title>Free ATS Resume Checker &amp; Compatibility Analyzer</image:title>
+      <image:title>SmartNShine Executive Personal Brand Portfolio Template</image:title>
     </image:image>
   </url>
 
   <url>
-    <loc>https://www.smartnshine.app/job-search</loc>
-    <lastmod>2026-08-29</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-
-  <url>
-    <loc>https://www.smartnshine.app/smart-job-match</loc>
-    <lastmod>2026-08-29</lastmod>
+    <loc>https://www.smartnshine.app/magazine-portfolio</loc>
+    <lastmod>2026-09-23</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-
-  <url>
-    <loc>https://www.smartnshine.app/ai-interview</loc>
-    <lastmod>2026-08-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
+    <priority>0.90</priority>
     <image:image>
       <image:loc>https://www.smartnshine.app/social-preview.png</image:loc>
-      <image:title>AI Mock Interview Preparation &amp; Voice Coaching</image:title>
+      <image:title>Editorial Magazine Portfolio Template for Creatives &amp; Writers</image:title>
     </image:image>
+  </url>
+
+  <!-- ====================================================================== -->
+  <!-- 5. CORE REVENUE & AI PRODUCT TOOLS                                     -->
+  <!-- ====================================================================== -->
+  <url>
+    <loc>https://www.smartnshine.app/ats-analyzer</loc>
+    <lastmod>2026-09-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+    <image:image>
+      <image:loc>https://www.smartnshine.app/social-preview.png</image:loc>
+      <image:title>Free ATS Resume Checker &amp; Compatibility Analyzer</image:title>
+      <image:caption>Scan your resume against any job description for instant keyword gaps and ATS score breakdown.</image:caption>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://www.smartnshine.app/interview/preview</loc>
+    <lastmod>2026-09-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://www.smartnshine.app/social-preview.png</image:loc>
+      <image:title>AI Voice Mock Interview Simulator &amp; Technical Question Practice</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://www.smartnshine.app/careers</loc>
+    <lastmod>2026-09-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
   </url>
 
   <url>
     <loc>https://www.smartnshine.app/pricing</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-09-23</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.80</priority>
+    <priority>0.85</priority>
   </url>
 
   <url>
     <loc>https://www.smartnshine.app/contact</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-09-23</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.60</priority>
+    <priority>0.70</priority>
   </url>
 
   <!-- ====================================================================== -->

@@ -55,6 +55,94 @@ export const normalizeSkillsHelper = (skills) => {
 };
 
 /**
+ * Normalizes resume achievements to ensure a flat array of strings (ATS bullet points)
+ */
+export const normalizeAchievementsHelper = (rawAchievements) => {
+  if (!rawAchievements) return [];
+
+  // If string, try to JSON parse or split by newlines
+  if (typeof rawAchievements === "string") {
+    const trimmed = rawAchievements.trim();
+    if (!trimmed) return [];
+    if (trimmed.startsWith("[") || trimmed.startsWith("{")) {
+      try {
+        const parsed = JSON.parse(trimmed);
+        return normalizeAchievementsHelper(parsed);
+      } catch {
+        return trimmed
+          .split("\n")
+          .map((line) => line.replace(/^[-*•\d.)\s]+/, "").trim())
+          .filter(Boolean);
+      }
+    }
+    return trimmed
+      .split("\n")
+      .map((line) => line.replace(/^[-*•\d.)\s]+/, "").trim())
+      .filter(Boolean);
+  }
+
+  // If array
+  if (Array.isArray(rawAchievements)) {
+    const flattened = [];
+    for (const item of rawAchievements) {
+      if (!item) continue;
+      if (typeof item === "string") {
+        const t = item.trim();
+        if (t.startsWith("{") || t.startsWith("[")) {
+          try {
+            const parsed = JSON.parse(t);
+            flattened.push(...normalizeAchievementsHelper(parsed));
+            continue;
+          } catch {}
+        }
+        if (t) flattened.push(t);
+      } else if (typeof item === "object") {
+        flattened.push(...normalizeAchievementsHelper(item));
+      }
+    }
+    return flattened;
+  }
+
+  // If object (e.g., categorized dictionary from AI: { 'Technical Achievements': [...], ... })
+  if (typeof rawAchievements === "object") {
+    const items = [];
+    if (Array.isArray(rawAchievements.achievements)) {
+      items.push(...normalizeAchievementsHelper(rawAchievements.achievements));
+    } else if (Array.isArray(rawAchievements.items)) {
+      items.push(...normalizeAchievementsHelper(rawAchievements.items));
+    } else if (
+      typeof rawAchievements.text === "string" ||
+      typeof rawAchievements.title === "string" ||
+      typeof rawAchievements.description === "string"
+    ) {
+      const val =
+        rawAchievements.description ||
+        rawAchievements.title ||
+        rawAchievements.text;
+      if (val) items.push(String(val).trim());
+    } else {
+      // Category map
+      for (const value of Object.values(rawAchievements)) {
+        if (Array.isArray(value)) {
+          for (const subItem of value) {
+            if (typeof subItem === "string" && subItem.trim()) {
+              items.push(subItem.trim());
+            } else if (typeof subItem === "object" && subItem) {
+              items.push(...normalizeAchievementsHelper(subItem));
+            }
+          }
+        } else if (typeof value === "string" && value.trim()) {
+          items.push(value.trim());
+        }
+      }
+    }
+    return items.filter(Boolean);
+  }
+
+  return [];
+};
+
+/**
  * Upload and parse resume file
  * POST /api/resume/upload
  */
@@ -429,6 +517,9 @@ export const saveResume = async (req, res) => {
     if (cleanResumeData.skills !== undefined) {
       cleanResumeData.skills = normalizeSkillsHelper(cleanResumeData.skills);
     }
+    if (cleanResumeData.achievements !== undefined) {
+      cleanResumeData.achievements = normalizeAchievementsHelper(cleanResumeData.achievements);
+    }
 
     const resume = new Resume({
       ...cleanResumeData,
@@ -468,14 +559,14 @@ export const updateResume = async (req, res) => {
   try {
     const userId = req.user._id || req.user.userId;
     const {id} = req.params;
-    const resumeData = { ...req.body };
+    const resumeData = {...req.body};
 
-    // Find resume and verify ownership
-    const resume = await Resume.findOne({_id: id, userId});
-
-    if (!resume) {
-      return res.status(404).json({error: "Resume not found"});
-    }
+    // Strip immutable / version fields that cause VersionError during concurrent autosaves
+    delete resumeData._id;
+    delete resumeData.__v;
+    delete resumeData.userId;
+    delete resumeData.createdAt;
+    delete resumeData.updatedAt;
 
     // Map 'title' to 'resumeTitle' if provided
     if (resumeData.title) {
@@ -483,60 +574,32 @@ export const updateResume = async (req, res) => {
       delete resumeData.title;
     }
 
-    // Name fallback
-    if (resumeData.name !== undefined) {
-      if (typeof resumeData.name === "string" && resumeData.name.trim()) {
-        resume.name = resumeData.name.trim();
-      }
-    }
+    // Prepare atomic update fields
+    const updateFields = {...resumeData};
 
-    // Update resume fields - special handling for nested contact object
-    if (resumeData.contact !== undefined) {
-      resume.contact = {...resume.contact, ...resumeData.contact};
-      resume.markModified("contact");
-    }
-
-    // Update skills with explicit normalization and markModified
+    // Normalize skills if provided
     if (resumeData.skills !== undefined) {
-      resume.skills = normalizeSkillsHelper(resumeData.skills);
-      resume.markModified("skills");
+      updateFields.skills = normalizeSkillsHelper(resumeData.skills);
     }
 
-    // Explicitly markModified for all section arrays
-    const arraySections = [
-      "experience",
-      "education",
-      "projects",
-      "certifications",
-      "achievements",
-      "customSections",
-      "sectionOrder",
-    ];
-    arraySections.forEach((sec) => {
-      if (resumeData[sec] !== undefined) {
-        resume[sec] = resumeData[sec];
-        resume.markModified(sec);
-      }
-    });
+    // Normalize achievements if provided to guarantee clean flat string array
+    if (resumeData.achievements !== undefined) {
+      updateFields.achievements = normalizeAchievementsHelper(resumeData.achievements);
+    }
 
-    // Update other fields
-    Object.keys(resumeData).forEach((key) => {
-      if (
-        key !== "contact" &&
-        key !== "skills" &&
-        key !== "_id" &&
-        key !== "userId" &&
-        !arraySections.includes(key)
-      ) {
-        resume[key] = resumeData[key];
-      }
-    });
+    // Execute atomic update without optimistic concurrency lock collisions
+    const updatedResume = await Resume.findOneAndUpdate(
+      {_id: id, userId},
+      {$set: updateFields},
+      {new: true, runValidators: true}
+    );
 
-    await resume.save();
-    console.log(`💾 Resume updated in database: ID ${resume._id}`);
+    if (!updatedResume) {
+      return res.status(404).json({error: "Resume not found"});
+    }
 
-    // Return the full resume object
-    res.json(resume);
+    // Return the updated resume object
+    res.json(updatedResume);
   } catch (error) {
     console.error("Update resume error:", error);
     res.status(500).json({
@@ -748,9 +811,13 @@ export const segregateAchievements = async (req, res) => {
       },
     });
 
+    // Flatten achievements into string[] for direct consumption in templates & editor
+    const flatAchievements = normalizeAchievementsHelper(segregatedAchievements);
+
     res.json({
       message: "Achievements segregated successfully",
-      achievements: segregatedAchievements,
+      achievements: flatAchievements,
+      categorized: segregatedAchievements,
     });
   } catch (error) {
     console.error("Segregate achievements error:", error);

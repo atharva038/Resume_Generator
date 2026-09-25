@@ -1,5 +1,5 @@
 import { forwardRef, useRef, useEffect, useMemo } from "react";
-import { isDescriptionDuplicatedInBullets } from "./templateUtils";
+import { isDescriptionDuplicatedInBullets, formatEducationDegreeAndField } from "./templateUtils";
 import {
   Mail,
   Phone,
@@ -741,8 +741,7 @@ const MinimalTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }, ref)
                           color: selectedTheme.text,
                         }}
                       >
-                        {edu.degree}
-                        {edu.field && ` in ${edu.field}`}
+                        {formatEducationDegreeAndField(edu)}
                       </span>
                       {dateStr && (
                         <span
