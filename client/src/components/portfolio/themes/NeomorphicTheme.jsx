@@ -393,7 +393,7 @@ export default function NeomorphicTheme({
           ========================================================================= */}
       <section id="hero" className="py-12 sm:py-20 lg:py-24 relative overflow-hidden">
         <div className="neo-container">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
             {/* Left Column: Editorial Statement & Tactile Panel */}
             <div className="lg:col-span-7 flex flex-col items-start">
               {/* Main Headline */}
@@ -489,18 +489,19 @@ export default function NeomorphicTheme({
             </div>
 
             {/* Right Column: Physical Raised Profile Module */}
-            <div className="lg:col-span-5 flex justify-center">
-              <div className="neo-raised p-5 sm:p-6 rounded-[2.5rem] w-full max-w-md relative group">
+            <div className="lg:col-span-5 flex justify-center lg:justify-end lg:pt-1">
+              <div className="neo-raised p-4 sm:p-5 rounded-[2.5rem] w-full max-w-md h-fit relative group">
                 {/* Sunken Inset Viewport Frame */}
-                <div className="neo-inset-deep p-3 sm:p-4 rounded-[2rem] aspect-[4/5] overflow-hidden relative">
+                <div className="neo-inset-deep p-3 sm:p-4 rounded-[2rem] aspect-[4/5] overflow-hidden relative w-full">
                   {profileImage ? (
                     <img
                       src={profileImage}
                       alt={name}
-                      className="w-full h-full object-cover rounded-[1.5rem] transition-transform duration-500 group-hover:scale-105"
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                      className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
                     />
                   ) : (
-                    <div className="w-full h-full rounded-[1.5rem] bg-[var(--neo-surface)] flex flex-col items-center justify-center p-6 text-center">
+                    <div className="absolute inset-0 w-full h-full rounded-[1.5rem] bg-[var(--neo-surface)] flex flex-col items-center justify-center p-6 text-center">
                       <div className="w-20 h-20 rounded-2xl neo-inset-sm flex items-center justify-center neo-accent-gold text-2xl font-bold mb-4">
                         {initials}
                       </div>
@@ -849,7 +850,7 @@ export default function NeomorphicTheme({
                     </div>
 
                     {/* Interactive Keys */}
-                    <div className="flex flex-wrap gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                       {categoryGroup.items?.map((skill, sIdx) => {
                         const isPressed = pressedSkill === `${idx}-${sIdx}`;
                         return (
@@ -859,13 +860,13 @@ export default function NeomorphicTheme({
                               setPressedSkill(`${idx}-${sIdx}`);
                               setTimeout(() => setPressedSkill(null), 350);
                             }}
-                            className={`neo-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold tracking-wide text-[var(--neo-text-primary)] transition-all ${
+                            className={`neo-btn px-3 py-2 rounded-xl text-xs font-semibold tracking-wide text-[var(--neo-text-primary)] transition-all flex items-center justify-between ${
                               isPressed ? "active" : ""
                             }`}
                           >
-                            <span className="flex items-center gap-2">
-                              <span className="w-1.5 h-1.5 rounded-full bg-[var(--neo-gold)]" />
-                              {skill}
+                            <span className="flex items-center gap-2 truncate">
+                              <span className="w-1.5 h-1.5 rounded-full bg-[var(--neo-gold)] shrink-0" />
+                              <span className="truncate">{skill}</span>
                             </span>
                           </button>
                         );

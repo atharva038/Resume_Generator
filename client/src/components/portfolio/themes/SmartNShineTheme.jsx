@@ -1214,23 +1214,26 @@ export default function SmartNShineTheme({
               </div>
 
               {/* Categorized Columns with Thin Dividers */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                 {categorizedSkills.map((group, gIdx) => (
-                  <div key={gIdx} className="space-y-6">
-                    <div className="pb-3 border-b border-[var(--sns-border-gold)]">
+                  <div key={gIdx} className="space-y-4 p-5 rounded-2xl bg-[var(--sns-bg-subtle)] border border-[var(--sns-border)]">
+                    <div className="flex items-center justify-between pb-2 border-b border-[var(--sns-border-gold)]">
                       <span className="sns-meta text-xs text-[var(--sns-gold)] font-semibold">
                         {group.category}
                       </span>
+                      <span className="text-[10px] font-mono text-[var(--sns-text-muted)]">
+                        {group.items?.length || 0} SKILLS
+                      </span>
                     </div>
 
-                    <ul className="space-y-3.5">
+                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-2">
                       {group.items.map((skill, sIdx) => (
                         <li
                           key={sIdx}
-                          className="sns-serif text-lg sm:text-xl text-[var(--sns-text-primary)] hover:text-[var(--sns-gold)] hover:translate-x-1 transition-all duration-200 cursor-default flex items-center justify-between border-b border-[var(--sns-border)] pb-2"
+                          className="sns-serif text-sm sm:text-base text-[var(--sns-text-primary)] hover:text-[var(--sns-gold)] hover:translate-x-0.5 transition-all duration-200 cursor-default flex items-center justify-between border-b border-[var(--sns-border)] pb-1.5 gap-1"
                         >
-                          <span>{skill}</span>
-                          <span className="text-[10px] font-mono text-[var(--sns-text-muted)] opacity-50 font-sans">
+                          <span className="truncate">{skill}</span>
+                          <span className="text-[9px] font-mono text-[var(--sns-text-muted)] opacity-50 shrink-0">
                             {sIdx + 1 < 10 ? `0${sIdx + 1}` : `${sIdx + 1}`}
                           </span>
                         </li>

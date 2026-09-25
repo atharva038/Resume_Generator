@@ -344,7 +344,7 @@ const ImpactProTemplate = forwardRef((props, ref) => {
       if (!element) return;
 
       const currentHeight = element.scrollHeight;
-      const maxHeight = 1056; // 11in at 96dpi (matches template minHeight)
+      const maxHeight = 1123; // A4 standard 297mm @ 96dpi (matches template minHeight)
 
       const percentage = Math.round((currentHeight / maxHeight) * 100);
       const isOverflowing = currentHeight > maxHeight;

@@ -1,6 +1,4 @@
 import React, { useEffect } from "react";
-import Lenis from "lenis";
-import "lenis/dist/lenis.css";
 import SEO from "../components/common/SEO";
 import LandingNavbar from "../components/landing-v2/LandingNavbar";
 import EvilChartsLandingMatrix from "../components/landing-v2/EvilChartsLandingMatrix";
@@ -17,31 +15,11 @@ import FinalCTABanner from "../components/landing-v2/FinalCTABanner";
 import Footer from "../components/layout/Footer";
 
 export default function LandingPage() {
-  // Lenis Smooth Scroll initialized exclusively for the Landing Page
+  // Smooth scroll configuration for the Landing Page
   useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: "vertical",
-      gestureOrientation: "vertical",
-      smoothWheel: true,
-      wheelMultiplier: 1.0,
-      touchMultiplier: 1.5,
-      infinite: false,
-    });
-
-    let animationFrameId;
-
-    function raf(time) {
-      lenis.raf(time);
-      animationFrameId = requestAnimationFrame(raf);
-    }
-
-    animationFrameId = requestAnimationFrame(raf);
-
+    document.documentElement.style.scrollBehavior = "smooth";
     return () => {
-      cancelAnimationFrame(animationFrameId);
-      lenis.destroy();
+      document.documentElement.style.scrollBehavior = "auto";
     };
   }, []);
 

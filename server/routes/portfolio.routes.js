@@ -28,6 +28,7 @@ import {
   trackProjectClick,
   trackPublicView,
   trackResumeDownload,
+  syncPortfolioWithResume,
   unpublishPortfolio,
   updatePortfolio,
   updatePortfolioProject,
@@ -82,6 +83,12 @@ router.post(
 router.get("/", authenticateToken, checkSubscription, getPortfolios);
 router.get("/:id", authenticateToken, checkSubscription, getPortfolioById);
 router.put("/:id", authenticateToken, checkSubscription, updatePortfolio);
+router.post(
+  "/:id/sync-resume",
+  authenticateToken,
+  checkSubscription,
+  syncPortfolioWithResume
+);
 router.delete("/:id", authenticateToken, checkSubscription, deletePortfolio);
 router.post(
   "/:id/publish",

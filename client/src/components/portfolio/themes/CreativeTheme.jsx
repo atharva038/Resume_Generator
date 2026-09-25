@@ -175,24 +175,30 @@ export default function CreativeTheme({ data = {}, isDarkMode = false, accentCol
           </h2>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {skills.map((group, index) => (
             <div
               key={`${group.category}-${index}`}
-              className="rounded-3xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 p-7 shadow-sm flex flex-col justify-between"
+              className="rounded-3xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 p-5 shadow-sm flex flex-col justify-between"
             >
               <div>
-                <h3 className="font-black text-lg text-gray-950 dark:text-white mb-4 pb-2 border-b border-gray-100 dark:border-zinc-800 flex items-center gap-2">
-                  <Palette className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                  <span>{group.category || "Disciplines"}</span>
-                </h3>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex items-center justify-between gap-2 mb-3 pb-2 border-b border-gray-100 dark:border-zinc-800">
+                  <h3 className="font-black text-sm sm:text-base text-gray-950 dark:text-white flex items-center gap-2 truncate">
+                    <Palette className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0" />
+                    <span className="truncate">{group.category || "Disciplines"}</span>
+                  </h3>
+                  <span className="text-[10px] font-bold text-gray-400">
+                    {group.items?.length || 0}
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
                   {(group.items || []).map((skill) => (
                     <span
                       key={skill}
-                      className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/20"
+                      className="px-2.5 py-1 rounded-xl text-xs font-bold bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/20 truncate flex items-center"
+                      title={skill}
                     >
-                      {skill}
+                      <span className="truncate">{skill}</span>
                     </span>
                   ))}
                 </div>
@@ -417,10 +423,10 @@ export default function CreativeTheme({ data = {}, isDarkMode = false, accentCol
         <div className="pointer-events-none absolute -top-40 right-0 w-[500px] h-[500px] rounded-full bg-purple-500/10 blur-[120px]" />
 
         <div className="mx-auto max-w-6xl px-5 sm:px-8 relative z-10">
-          <div className="grid lg:grid-cols-[1fr_auto] gap-12 items-center">
-            <div className="space-y-6">
+          <div className="grid lg:grid-cols-[1fr_260px] xl:grid-cols-[1fr_280px] gap-8 lg:gap-10 items-stretch">
+            <div className="space-y-6 flex flex-col justify-between">
               {/* Creative Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-purple-500/30 bg-purple-500/10 text-purple-700 dark:text-purple-300 text-xs font-bold">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-purple-500/30 bg-purple-500/10 text-purple-700 dark:text-purple-300 text-xs font-bold w-fit">
                 <Wand2 className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
                 <span>Creative Design &amp; Digital Engineering</span>
               </div>
@@ -477,11 +483,11 @@ export default function CreativeTheme({ data = {}, isDarkMode = false, accentCol
 
             {/* Profile Avatar Frame */}
             {profileImg && (
-              <div className="w-40 h-40 sm:w-56 sm:h-56 rounded-3xl overflow-hidden border-2 border-purple-500/30 shadow-2xl bg-white dark:bg-zinc-900 shrink-0">
+              <div className="w-full max-w-[260px] sm:max-w-[280px] lg:max-w-none h-full min-h-[300px] rounded-3xl overflow-hidden border-2 border-purple-500/30 shadow-2xl bg-white dark:bg-zinc-900 shrink-0 self-stretch relative">
                 <img
                   src={profileImg}
                   alt={profile.name}
-                  className="w-full h-full object-cover"
+                  className="absolute inset-0 w-full h-full object-cover"
                 />
               </div>
             )}

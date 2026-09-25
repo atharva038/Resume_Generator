@@ -18,6 +18,8 @@ export default function PortfolioEditorHeader({
   onSave,
   onPreview,
   onShowTemplateSelector,
+  onSyncResume,
+  syncingResume,
   onPublishToggle,
   isPublished,
   publicUrl,
@@ -62,6 +64,20 @@ export default function PortfolioEditorHeader({
       {/* Right action controls */}
       <div className="flex items-center gap-1 xs:gap-1.5 sm:gap-2 shrink-0">
         <DarkModeToggle />
+
+        {/* Sync from Resume Button */}
+        {onSyncResume && (
+          <button
+            type="button"
+            onClick={onSyncResume}
+            disabled={syncingResume}
+            className="inline-flex items-center gap-1.5 px-2 xs:px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-xs font-semibold transition-all active:scale-95 cursor-pointer shadow-2xs disabled:opacity-50"
+            title="Import/sync all data & projects from linked resume"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${syncingResume ? "animate-spin" : ""}`} />
+            <span className="hidden xl:inline">{syncingResume ? "Syncing..." : "Sync Resume"}</span>
+          </button>
+        )}
 
         {/* Template Selector Button */}
         <button

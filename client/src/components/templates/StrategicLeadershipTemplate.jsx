@@ -159,7 +159,7 @@ const StrategicLeadershipTemplate = forwardRef(
     useEffect(() => {
       if (!containerRef.current || !onPageUsageChange) return undefined;
 
-      const maxHeight = 1056;
+      const maxHeight = 1123;
       let rafId;
 
       const measure = () => {

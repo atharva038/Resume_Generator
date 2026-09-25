@@ -197,16 +197,16 @@ export default function KineticSkills({
                     {group.category}
                   </h3>
 
-                  <ul className="space-y-2">
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-1.5">
                     {group.items.map((item, iIdx) => (
                       <li
                         key={iIdx}
-                        className="group flex items-center justify-between text-xs sm:text-sm font-mono text-[var(--kn-text-secondary)] transition-colors hover:text-[var(--kn-text-primary)]"
+                        className="group flex items-center justify-between text-xs sm:text-sm font-mono text-[var(--kn-text-secondary)] transition-colors hover:text-[var(--kn-text-primary)] border-b border-[var(--kn-border)]/50 pb-1"
                       >
-                        <span className="group-hover:translate-x-1 transition-transform duration-200">
+                        <span className="group-hover:translate-x-0.5 transition-transform duration-200 truncate">
                           {item}
                         </span>
-                        <span className="h-1 w-1 rounded-full bg-[var(--kn-border-strong)] group-hover:bg-[var(--kn-accent)] transition-colors" />
+                        <span className="h-1 w-1 rounded-full bg-[var(--kn-border-strong)] group-hover:bg-[var(--kn-accent)] transition-colors shrink-0" />
                       </li>
                     ))}
                   </ul>

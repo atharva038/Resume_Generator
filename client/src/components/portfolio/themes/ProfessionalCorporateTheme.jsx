@@ -158,23 +158,29 @@ export default function ProfessionalCorporateTheme({ data = {}, isDarkMode = fal
           </h2>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {skills.map((group, index) => (
             <div
               key={`${group.category}-${index}`}
-              className="rounded-3xl border border-stone-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 p-6 shadow-sm flex flex-col justify-between"
+              className="rounded-3xl border border-stone-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 p-5 shadow-sm flex flex-col justify-between"
             >
               <div>
-                <h3 className="font-black text-base text-gray-950 dark:text-white mb-4 pb-2 border-b border-stone-100 dark:border-zinc-800">
-                  {group.category || "Domain Area"}
-                </h3>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex items-center justify-between gap-2 mb-3 pb-2 border-b border-stone-100 dark:border-zinc-800">
+                  <h3 className="font-black text-sm sm:text-base text-gray-950 dark:text-white truncate">
+                    {group.category || "Domain Area"}
+                  </h3>
+                  <span className="text-[10px] font-bold text-stone-400">
+                    {group.items?.length || 0}
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
                   {(group.items || []).map((skill) => (
                     <span
                       key={skill}
-                      className="px-3 py-1.5 rounded-xl text-xs font-bold bg-stone-100 dark:bg-zinc-800 text-stone-800 dark:text-stone-200 border border-stone-200/60 dark:border-white/5"
+                      className="px-2.5 py-1 rounded-xl text-xs font-bold bg-stone-100 dark:bg-zinc-800 text-stone-800 dark:text-stone-200 border border-stone-200/60 dark:border-white/5 truncate flex items-center"
+                      title={skill}
                     >
-                      {skill}
+                      <span className="truncate">{skill}</span>
                     </span>
                   ))}
                 </div>
@@ -413,10 +419,10 @@ export default function ProfessionalCorporateTheme({ data = {}, isDarkMode = fal
       {/* Hero Section */}
       <section id="hero" className="border-b border-stone-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 pt-16 pb-20 sm:pt-24 sm:pb-28">
         <div className="mx-auto max-w-6xl px-5 sm:px-8">
-          <div className="grid lg:grid-cols-[1fr_auto] gap-10 items-center">
-            <div className="space-y-6">
+          <div className="grid lg:grid-cols-[1fr_260px] xl:grid-cols-[1fr_280px] gap-8 lg:gap-10 items-stretch">
+            <div className="space-y-6 flex flex-col justify-between">
               {/* Executive Tag */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-stone-300 dark:border-stone-700 bg-stone-100 dark:bg-zinc-800 text-stone-800 dark:text-stone-200 text-xs font-bold">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-stone-300 dark:border-stone-700 bg-stone-100 dark:bg-zinc-800 text-stone-800 dark:text-stone-200 text-xs font-bold w-fit">
                 <Briefcase className="w-3.5 h-3.5 text-stone-600 dark:text-stone-400" />
                 <span>Executive &amp; Professional Leadership</span>
               </div>
@@ -473,11 +479,11 @@ export default function ProfessionalCorporateTheme({ data = {}, isDarkMode = fal
 
             {/* Profile Avatar Frame */}
             {profileImg && (
-              <div className="w-40 h-40 sm:w-56 sm:h-56 rounded-3xl overflow-hidden border-2 border-stone-300 dark:border-stone-700 shadow-2xl bg-stone-100 dark:bg-zinc-900 shrink-0">
+              <div className="w-full max-w-[260px] sm:max-w-[280px] lg:max-w-none h-full min-h-[300px] rounded-3xl overflow-hidden border-2 border-stone-300 dark:border-stone-700 shadow-2xl bg-stone-100 dark:bg-zinc-900 shrink-0 self-stretch relative">
                 <img
                   src={profileImg}
                   alt={profile.name}
-                  className="w-full h-full object-cover"
+                  className="absolute inset-0 w-full h-full object-cover"
                 />
               </div>
             )}

@@ -107,29 +107,30 @@ export default function TechPortfolioTheme({ data = {}, isDarkMode = true, accen
           </h2>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {skills.map((group, index) => (
             <motion.div
               key={`${group.category}-${index}`}
               whileHover={{ y: -3 }}
               transition={{ duration: 0.15 }}
-              className="rounded-3xl border border-cyan-500/20 bg-zinc-950/80 backdrop-blur-md p-6 shadow-sm hover:border-cyan-400 transition-all flex flex-col justify-between"
+              className="rounded-2xl border border-cyan-500/20 bg-zinc-950/80 backdrop-blur-md p-5 shadow-sm hover:border-cyan-400 transition-all flex flex-col justify-between"
             >
               <div>
-                <div className="flex items-center justify-between gap-2 mb-4 pb-3 border-b border-white/10">
-                  <div className="flex items-center gap-2 text-cyan-400 font-mono text-sm font-bold">
-                    <Boxes className="w-4 h-4" />
-                    <span>{group.category || "Domain"}</span>
+                <div className="flex items-center justify-between gap-2 mb-3 pb-2.5 border-b border-white/10">
+                  <div className="flex items-center gap-2 text-cyan-400 font-mono text-xs sm:text-sm font-bold truncate">
+                    <Boxes className="w-4 h-4 shrink-0" />
+                    <span className="truncate">{group.category || "Domain"}</span>
                   </div>
-                  <span className="text-[10px] font-mono text-zinc-500">{group.items?.length || 0} items</span>
+                  <span className="text-[10px] font-mono text-zinc-500 shrink-0">{group.items?.length || 0} items</span>
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
                   {(group.items || []).map((skill) => (
                     <span
                       key={skill}
-                      className="px-3 py-1.5 rounded-xl text-xs font-mono font-bold bg-cyan-950/40 text-cyan-300 border border-cyan-500/30"
+                      className="px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-cyan-950/40 text-cyan-300 border border-cyan-500/30 truncate flex items-center"
+                      title={skill}
                     >
-                      {skill}
+                      <span className="truncate">{skill}</span>
                     </span>
                   ))}
                 </div>
@@ -420,10 +421,10 @@ export default function TechPortfolioTheme({ data = {}, isDarkMode = true, accen
         <div className="pointer-events-none absolute -top-40 right-0 w-[500px] h-[500px] rounded-full bg-cyan-500/10 blur-[120px]" />
 
         <div className="mx-auto max-w-6xl px-5 sm:px-8 relative z-10">
-          <div className="grid lg:grid-cols-[1fr_auto] gap-10 items-center">
-            <div className="space-y-6">
+          <div className="grid lg:grid-cols-[1fr_260px] xl:grid-cols-[1fr_280px] gap-8 lg:gap-10 items-stretch">
+            <div className="space-y-6 flex flex-col justify-between">
               {/* Status Badge */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 text-xs font-mono font-bold">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 text-xs font-mono font-bold w-fit">
                 <Activity className="w-3.5 h-3.5 animate-pulse" />
                 <span>Available for Engineering Roles &amp; Consulting</span>
               </div>
@@ -480,11 +481,11 @@ export default function TechPortfolioTheme({ data = {}, isDarkMode = true, accen
 
             {/* Profile Avatar Frame */}
             {profileImg && (
-              <div className="w-40 h-40 sm:w-56 sm:h-56 rounded-3xl overflow-hidden border-2 border-cyan-400/40 shadow-[0_0_30px_rgba(6,182,212,0.2)] bg-black shrink-0">
+              <div className="w-full max-w-[260px] sm:max-w-[280px] lg:max-w-none h-full min-h-[300px] rounded-3xl overflow-hidden border-2 border-cyan-400/40 shadow-[0_0_30px_rgba(6,182,212,0.2)] bg-black shrink-0 self-stretch relative">
                 <img
                   src={profileImg}
                   alt={profile.name}
-                  className="w-full h-full object-cover"
+                  className="absolute inset-0 w-full h-full object-cover"
                 />
               </div>
             )}

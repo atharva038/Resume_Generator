@@ -165,132 +165,86 @@ export const validateChangePassword = [
  */
 export const validateResumeCreate = [
   body("title")
-    .optional()
+    .optional({ values: "falsy" })
     .trim()
-    .default("Untitled Resume")
-    .isLength({min: 3, max: 200})
-    .withMessage("Title must be between 3 and 200 characters"),
+    .isLength({ min: 1, max: 200 })
+    .withMessage("Title must be between 1 and 200 characters"),
+
+  body("resumeTitle")
+    .optional({ values: "falsy" })
+    .trim()
+    .isLength({ min: 1, max: 200 })
+    .withMessage("Resume title must be between 1 and 200 characters"),
 
   body("templateId")
-    .optional()
-    .isIn([
-      "classic",
-      "modern",
-      "minimal",
-      "professional",
-      "professional-v2",
-      "executive",
-      "tech",
-      "creative",
-      "academic",
-    ])
+    .optional({ values: "falsy" })
+    .isString()
+    .trim()
+    .isLength({ min: 1, max: 100 })
     .withMessage("Invalid template ID"),
 
   body("name")
-    .optional()
+    .optional({ values: "falsy" })
     .trim()
-    .isLength({max: 100})
+    .isLength({ max: 100 })
     .withMessage("Name must not exceed 100 characters"),
 
   body("contact")
-    .optional()
+    .optional({ values: "falsy" })
     .isObject()
     .withMessage("Contact must be an object"),
 
   body("contact.email")
-    .optional()
+    .optional({ values: "falsy" })
     .trim()
-    .isEmail()
-    .withMessage("Invalid email format")
-    .normalizeEmail(),
+    .custom((value) => {
+      if (!value || value.trim() === "") return true;
+      if (!validator.isEmail(value)) {
+        throw new Error("Invalid email format");
+      }
+      return true;
+    }),
 
   body("contact.phone")
-    .optional()
+    .optional({ values: "falsy" })
     .trim()
-    .isLength({max: 20})
-    .withMessage("Phone must not exceed 20 characters"),
+    .isLength({ max: 50 })
+    .withMessage("Phone must not exceed 50 characters"),
 
   body("contact.location")
-    .optional()
+    .optional({ values: "falsy" })
     .trim()
-    .isLength({max: 200})
-    .withMessage("Location must not exceed 200 characters"),
+    .isLength({ max: 300 })
+    .withMessage("Location must not exceed 300 characters"),
 
   body("contact.linkedin")
-    .optional()
+    .optional({ values: "falsy" })
     .trim()
-    .custom((value) => {
-      // If empty, it's fine (optional field)
-      if (!value || value.trim() === "") {
-        return true;
-      }
-      // If has value, must be valid URL with protocol
-      if (!validator.isURL(value, {require_protocol: true})) {
-        throw new Error(
-          "LinkedIn must be a valid URL (e.g., https://linkedin.com/in/yourname)"
-        );
-      }
-      return true;
-    }),
+    .isLength({ max: 500 })
+    .withMessage("LinkedIn URL must not exceed 500 characters"),
 
   body("contact.portfolio")
-    .optional()
+    .optional({ values: "falsy" })
     .trim()
-    .custom((value) => {
-      if (!value || value.trim() === "") {
-        return true;
-      }
-      if (!validator.isURL(value, {require_protocol: true})) {
-        throw new Error(
-          "Portfolio must be a valid URL (e.g., https://yourwebsite.com)"
-        );
-      }
-      return true;
-    }),
+    .isLength({ max: 500 })
+    .withMessage("Portfolio URL must not exceed 500 characters"),
 
   body("contact.github")
-    .optional()
+    .optional({ values: "falsy" })
     .trim()
-    .custom((value) => {
-      if (!value || value.trim() === "") {
-        return true;
-      }
-      if (!validator.isURL(value, {require_protocol: true})) {
-        throw new Error(
-          "GitHub must be a valid URL (e.g., https://github.com/yourusername)"
-        );
-      }
-      return true;
-    }),
+    .isLength({ max: 500 })
+    .withMessage("GitHub URL must not exceed 500 characters"),
 
   body("summary")
-    .optional()
+    .optional({ values: "falsy" })
     .trim()
-    .isLength({max: 2000})
-    .withMessage("Summary must not exceed 2000 characters"),
+    .isLength({ max: 10000 })
+    .withMessage("Summary must not exceed 10000 characters"),
 
   body("experience")
     .optional()
     .isArray()
     .withMessage("Experience must be an array"),
-
-  body("experience.*.company")
-    .optional()
-    .trim()
-    .isLength({max: 200})
-    .withMessage("Company name must not exceed 200 characters"),
-
-  body("experience.*.position")
-    .optional()
-    .trim()
-    .isLength({max: 200})
-    .withMessage("Position must not exceed 200 characters"),
-
-  body("experience.*.description")
-    .optional()
-    .trim()
-    .isLength({max: 5000})
-    .withMessage("Description must not exceed 5000 characters"),
 
   body("education")
     .optional()
@@ -309,27 +263,15 @@ export const validateResumeCreate = [
     .isArray()
     .withMessage("Certifications must be an array"),
 
+  body("achievements")
+    .optional()
+    .isArray()
+    .withMessage("Achievements must be an array"),
+
   body("customSections")
     .optional()
     .isArray()
     .withMessage("Custom sections must be an array"),
-
-  body("customSections.*.id")
-    .optional()
-    .trim()
-    .isLength({max: 100})
-    .withMessage("Custom section ID must not exceed 100 characters"),
-
-  body("customSections.*.title")
-    .optional()
-    .trim()
-    .isLength({max: 200})
-    .withMessage("Custom section title must not exceed 200 characters"),
-
-  body("customSections.*.items")
-    .optional()
-    .isArray()
-    .withMessage("Custom section items must be an array"),
 
   handleValidationErrors,
 ];
@@ -341,131 +283,86 @@ export const validateResumeUpdate = [
   param("id").isMongoId().withMessage("Invalid resume ID"),
 
   body("title")
-    .optional()
+    .optional({ values: "falsy" })
     .trim()
-    .isLength({min: 3, max: 200})
-    .withMessage("Title must be between 3 and 200 characters"),
+    .isLength({ min: 1, max: 200 })
+    .withMessage("Title must be between 1 and 200 characters"),
+
+  body("resumeTitle")
+    .optional({ values: "falsy" })
+    .trim()
+    .isLength({ min: 1, max: 200 })
+    .withMessage("Resume title must be between 1 and 200 characters"),
 
   body("templateId")
-    .optional()
-    .isIn([
-      "classic",
-      "modern",
-      "minimal",
-      "professional",
-      "professional-v2",
-      "executive",
-      "tech",
-      "creative",
-      "academic",
-    ])
+    .optional({ values: "falsy" })
+    .isString()
+    .trim()
+    .isLength({ min: 1, max: 100 })
     .withMessage("Invalid template ID"),
 
   body("name")
-    .optional()
+    .optional({ values: "falsy" })
     .trim()
-    .isLength({max: 100})
+    .isLength({ max: 100 })
     .withMessage("Name must not exceed 100 characters"),
 
   body("contact")
-    .optional()
+    .optional({ values: "falsy" })
     .isObject()
     .withMessage("Contact must be an object"),
 
   body("contact.email")
-    .optional()
+    .optional({ values: "falsy" })
     .trim()
-    .isEmail()
-    .withMessage("Invalid email format")
-    .normalizeEmail(),
+    .custom((value) => {
+      if (!value || value.trim() === "") return true;
+      if (!validator.isEmail(value)) {
+        throw new Error("Invalid email format");
+      }
+      return true;
+    }),
 
   body("contact.phone")
-    .optional()
+    .optional({ values: "falsy" })
     .trim()
-    .isLength({max: 20})
-    .withMessage("Phone must not exceed 20 characters"),
+    .isLength({ max: 50 })
+    .withMessage("Phone must not exceed 50 characters"),
 
   body("contact.location")
-    .optional()
+    .optional({ values: "falsy" })
     .trim()
-    .isLength({max: 200})
-    .withMessage("Location must not exceed 200 characters"),
+    .isLength({ max: 300 })
+    .withMessage("Location must not exceed 300 characters"),
 
   body("contact.linkedin")
-    .optional()
+    .optional({ values: "falsy" })
     .trim()
-    .custom((value) => {
-      // If empty, it's fine (optional field)
-      if (!value || value.trim() === "") {
-        return true;
-      }
-      // If has value, must be valid URL with protocol
-      if (!validator.isURL(value, {require_protocol: true})) {
-        throw new Error(
-          "LinkedIn must be a valid URL (e.g., https://linkedin.com/in/yourname)"
-        );
-      }
-      return true;
-    }),
+    .isLength({ max: 500 })
+    .withMessage("LinkedIn URL must not exceed 500 characters"),
 
   body("contact.portfolio")
-    .optional()
+    .optional({ values: "falsy" })
     .trim()
-    .custom((value) => {
-      if (!value || value.trim() === "") {
-        return true;
-      }
-      if (!validator.isURL(value, {require_protocol: true})) {
-        throw new Error(
-          "Portfolio must be a valid URL (e.g., https://yourwebsite.com)"
-        );
-      }
-      return true;
-    }),
+    .isLength({ max: 500 })
+    .withMessage("Portfolio URL must not exceed 500 characters"),
 
   body("contact.github")
-    .optional()
+    .optional({ values: "falsy" })
     .trim()
-    .custom((value) => {
-      if (!value || value.trim() === "") {
-        return true;
-      }
-      if (!validator.isURL(value, {require_protocol: true})) {
-        throw new Error(
-          "GitHub must be a valid URL (e.g., https://github.com/yourusername)"
-        );
-      }
-      return true;
-    }),
+    .isLength({ max: 500 })
+    .withMessage("GitHub URL must not exceed 500 characters"),
 
   body("summary")
-    .optional()
+    .optional({ values: "falsy" })
     .trim()
-    .isLength({max: 2000})
-    .withMessage("Summary must not exceed 2000 characters"),
+    .isLength({ max: 10000 })
+    .withMessage("Summary must not exceed 10000 characters"),
 
   body("experience")
     .optional()
     .isArray()
     .withMessage("Experience must be an array"),
-
-  body("experience.*.company")
-    .optional()
-    .trim()
-    .isLength({max: 200})
-    .withMessage("Company name must not exceed 200 characters"),
-
-  body("experience.*.position")
-    .optional()
-    .trim()
-    .isLength({max: 200})
-    .withMessage("Position must not exceed 200 characters"),
-
-  body("experience.*.description")
-    .optional()
-    .trim()
-    .isLength({max: 5000})
-    .withMessage("Description must not exceed 5000 characters"),
 
   body("education")
     .optional()
@@ -484,27 +381,15 @@ export const validateResumeUpdate = [
     .isArray()
     .withMessage("Certifications must be an array"),
 
+  body("achievements")
+    .optional()
+    .isArray()
+    .withMessage("Achievements must be an array"),
+
   body("customSections")
     .optional()
     .isArray()
     .withMessage("Custom sections must be an array"),
-
-  body("customSections.*.id")
-    .optional()
-    .trim()
-    .isLength({max: 100})
-    .withMessage("Custom section ID must not exceed 100 characters"),
-
-  body("customSections.*.title")
-    .optional()
-    .trim()
-    .isLength({max: 200})
-    .withMessage("Custom section title must not exceed 200 characters"),
-
-  body("customSections.*.items")
-    .optional()
-    .isArray()
-    .withMessage("Custom section items must be an array"),
 
   handleValidationErrors,
 ];
