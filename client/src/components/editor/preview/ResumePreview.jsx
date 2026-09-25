@@ -42,12 +42,12 @@ const PREVIEW_FONTS = [
   { id: "techMono", label: "Tech Mono" },
 ];
 
-// Template page height in px (11 in @ 96 dpi — matches minHeight across all templates)
-const PAGE_HEIGHT_PX = 1056;
+// Template page height in px (A4 standard: 297mm @ 96 dpi = 1122.52px -> 1123px)
+const PAGE_HEIGHT_PX = 1123;
 // Minimum px of content before allowing a page break (avoids near-empty pages)
 const MIN_CONTENT_PX = 100;
-// Subpixel variance tolerance (avoids false 2nd pages on microscopic 1-2px rounding differences)
-const PAGE_TOLERANCE_PX = 4;
+// Subpixel variance tolerance (avoids false 2nd pages on microscopic rounding differences)
+const PAGE_TOLERANCE_PX = 8;
 
 const WOOD_TEXTURE_DATA_URI =
   "data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='woodGrain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.015 0.32' numOctaves='4' result='noise'/%3E%3CfeColorMatrix type='matrix' values='0.4 0 0 0 0.4 0.3 0 0 0 0.28 0.18 0 0 0 0.16 0 0 0 0.07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23woodGrain)'/%3E%3C/svg%3E";
@@ -85,7 +85,7 @@ const ResumePreview = forwardRef(
       useToggle(false);
     const isMobile = useMediaQuery("(max-width: 1023px)");
     const [numberOfPages, setNumberOfPages] = useState(1);
-    const [measuredHeight, setMeasuredHeight] = useState(1056);
+    const [measuredHeight, setMeasuredHeight] = useState(1123);
     // pageBreaks[i] = template-coordinate y where page i starts (template px, pre-scale)
     const [pageBreaks, setPageBreaks] = useState([0]);
     const [zoomFactor, setZoomFactor] = useState(0.75);
@@ -127,12 +127,12 @@ const ResumePreview = forwardRef(
     const isCompact = activeDensity === "compact";
 
     // Intelligent Multi-Stage Micro-Scale:
-    // Guarded floor of 0.92 strictly prevents text from becoming tiny or illegible.
+    // Guarded floor of 0.85 strictly prevents text from becoming tiny or illegible.
     // Margins (0.22in) and section spacing (52%) handle 90% of the vertical space reduction.
     const autoFitScale = useMemo(() => {
       if (!isCompact) return 1.0;
-      if (measuredHeight <= 1056) return 1.0;
-      return Math.max(0.92, Math.min(1.0, 1045 / measuredHeight));
+      if (measuredHeight <= PAGE_HEIGHT_PX + PAGE_TOLERANCE_PX) return 1.0;
+      return Math.max(0.85, Math.min(1.0, (PAGE_HEIGHT_PX - 8) / measuredHeight));
     }, [isCompact, measuredHeight]);
 
     const mergedResumeData = useMemo(() => ({
@@ -213,8 +213,16 @@ const ResumePreview = forwardRef(
       if (usageInfo.currentHeight > 0) {
         setMeasuredHeight(usageInfo.currentHeight);
 
+        // When in Smart 1-Page mode with auto micro-scaling, the rendered height is compressed by autoFitScale
+        const effectiveScale = isCompact && autoFitScale < 1.0 && (!layoutSettings.fontScale || layoutSettings.fontScale === 100)
+          ? autoFitScale
+          : Number(layoutSettings.fontScale || 100) / 100;
+
+        const effectiveHeight = usageInfo.currentHeight * effectiveScale;
+        const pageLimit = PAGE_HEIGHT_PX;
+
         const fitsOnOnePage =
-          usageInfo.currentHeight <= usageInfo.maxHeight + PAGE_TOLERANCE_PX;
+          effectiveHeight <= pageLimit + PAGE_TOLERANCE_PX;
 
         if (fitsOnOnePage) {
           setNumberOfPages(1);
@@ -223,13 +231,13 @@ const ResumePreview = forwardRef(
           const pages = Math.max(
             2,
             Math.ceil(
-              (usageInfo.currentHeight - PAGE_TOLERANCE_PX) / usageInfo.maxHeight
+              (effectiveHeight - PAGE_TOLERANCE_PX) / pageLimit
             )
           );
           setNumberOfPages(pages);
           setPageBreaks((prev) => {
             if (prev.length === pages) return prev;
-            return Array.from({ length: pages }, (_, i) => i * PAGE_HEIGHT_PX);
+            return Array.from({ length: pages }, (_, i) => i * pageLimit);
           });
         }
       }
@@ -441,9 +449,37 @@ const ResumePreview = forwardRef(
       contentRef: printTemplateRef,
       documentTitle: `${resumeData?.name || "Resume"}_Resume`,
       pageStyle: `
-        @page { size: A4; margin: 0; }
+        @page { size: A4 portrait; margin: 0; }
         @media print {
-          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          *, *::before, *::after {
+            box-sizing: border-box !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 210mm !important;
+            background: #ffffff !important;
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            overflow: visible !important;
+          }
+          .resume-layout-shell {
+            width: 210mm !important;
+            min-height: auto !important;
+            background: #ffffff !important;
+            background-color: #ffffff !important;
+            margin: 0 !important;
+            box-shadow: none !important;
+            border: none !important;
+          }
+          .resume-layout-shell > * {
+            min-height: auto !important;
+          }
+          .no-print {
+            display: none !important;
+          }
         }
       `,
     });
@@ -473,24 +509,36 @@ const ResumePreview = forwardRef(
               <meta name="viewport" content="width=device-width, initial-scale=1" />
               ${styleMarkup}
               <style>
-                @page { size: A4; margin: 0; }
+                @page { size: A4 portrait; margin: 0; }
+                *, *::before, *::after {
+                  box-sizing: border-box !important;
+                  -webkit-print-color-adjust: exact !important;
+                  print-color-adjust: exact !important;
+                }
                 html, body {
-                  margin: 0;
-                  padding: 0;
-                  width: 210mm;
-                  min-height: 297mm;
-                  background: #ffffff;
-                  color: #000000;
-                  -webkit-print-color-adjust: exact;
-                  print-color-adjust: exact;
+                  margin: 0 !important;
+                  padding: 0 !important;
+                  width: 210mm !important;
+                  background: #ffffff !important;
+                  background-color: #ffffff !important;
+                  color: #000000 !important;
+                  overflow: visible !important;
                 }
                 body {
                   display: block;
                 }
-                .resume-preview {
+                .resume-preview,
+                .resume-layout-shell {
+                  width: 210mm !important;
+                  min-height: auto !important;
+                  background: #ffffff !important;
+                  background-color: #ffffff !important;
                   box-shadow: none !important;
                   border: none !important;
                   margin: 0 auto !important;
+                }
+                .resume-layout-shell > * {
+                  min-height: auto !important;
                 }
                 .no-print {
                   display: none !important;
@@ -791,7 +839,7 @@ const ResumePreview = forwardRef(
                         className={isCreative2 ? "" : "bg-white dark:bg-gray-50"}
                         style={{
                           width: "210mm",
-                          minHeight: "11in",
+                          minHeight: "297mm",
                           height: "auto",
                           backgroundColor: creative2CanvasBg || undefined,
                           transform: `scale(${scaleFactor})`,
@@ -846,7 +894,7 @@ const ResumePreview = forwardRef(
         >
           <div
             className="bg-white dark:bg-gray-50 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.55)] rounded-sm border border-black/10 dark:border-white/10 relative overflow-hidden"
-            style={{ width: "210mm", minHeight: "11in", height: "auto" }}
+            style={{ width: "210mm", minHeight: "297mm", height: "auto" }}
           >
             {/* Anti-AI 3-tier SmartNShine security watermark overlay */}
             <ResumeWatermark isMobile={isMobile} />

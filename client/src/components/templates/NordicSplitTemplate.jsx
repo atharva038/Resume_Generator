@@ -62,7 +62,7 @@ const NordicSplitTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }, 
   useEffect(() => {
     if (containerRef.current) {
       const currentHeight = containerRef.current.scrollHeight;
-      const maxHeight = 1056;
+      const maxHeight = 1123;
       const isOverflowing = currentHeight > maxHeight;
       const overflowPercentage = isOverflowing
         ? Math.round(((currentHeight - maxHeight) / maxHeight) * 100)
