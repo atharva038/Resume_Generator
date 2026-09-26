@@ -91,7 +91,7 @@ export const row2Faqs = [
   {
     id: "10",
     q: "How are resumes exported, and is the text selectable?",
-    a: "All exports produce true vector PDFs where text remains crisp, selectable, and fully searchable, ensuring 100% compatibility with enterprise ATS parsers.",
+    a: "All exports produce true vector PDFs where text remains crisp, selectable, and fully searchable, ensuring 95+ compatibility with enterprise ATS parsers.",
     tag: "Vector PDF",
     takeaway: "✓ Machine-readable selectable vector PDF",
     tagColor: "text-violet-600 dark:text-violet-400 bg-violet-500/10 border-violet-500/20",

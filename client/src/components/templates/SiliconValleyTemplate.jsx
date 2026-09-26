@@ -38,7 +38,7 @@ import {
  * - 4 high-end color themes: Stripe Indigo, Cyber Emerald, Midnight Slate, Monochrome Pro
  */
 
-// Helper to highlight quantifiable metrics while keeping text 100% ATS-safe
+// Helper to highlight quantifiable metrics while keeping text 95+ ATS-safe
 const highlightMetrics = (text, primaryColor) => {
   if (!text || typeof text !== "string") return text;
 

@@ -151,7 +151,7 @@ export default function HeroSectionV2() {
         <div className="pt-6 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl mx-auto text-left">
           <div className="p-3.5 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800">
             <div className="text-xs font-bold text-zinc-900 dark:text-white">Standard Headers</div>
-            <div className="text-[11px] text-zinc-500 mt-0.5">100% parsable by ATS</div>
+            <div className="text-[11px] text-zinc-500 mt-0.5">98%+ parsable by ATS</div>
           </div>
           <div className="p-3.5 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800">
             <div className="text-xs font-bold text-zinc-900 dark:text-white">STAR Bullets</div>

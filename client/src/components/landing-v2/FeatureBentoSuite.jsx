@@ -32,7 +32,7 @@ export default function FeatureBentoSuite() {
       score: 98,
       matched: ["TypeScript", "React 19", "Node.js", "PostgreSQL", "Distributed Systems", "Kubernetes", "AWS ECS", "GraphQL"],
       missing: ["Kafka Event Bus"],
-      advice: "Add 1 quantifiable bullet on event streaming or queue architecture to reach 100% Workday match.",
+      advice: "Add 1 quantifiable bullet on event streaming or queue architecture to reach a top 98%+ Workday match.",
     },
     devops: {
       role: "Lead Cloud Systems Architect",
@@ -40,7 +40,7 @@ export default function FeatureBentoSuite() {
       score: 99,
       matched: ["Kubernetes", "Terraform IaC", "AWS Multi-Region", "Prometheus", "Grafana", "Linux Kernel", "Docker", "GitOps"],
       missing: [],
-      advice: "100% ATS match across Taleo and Greenhouse. Ready for direct hiring manager pipeline.",
+      advice: "98%+ ATS match across Taleo and Greenhouse. Ready for direct hiring manager pipeline.",
     },
     ai: {
       role: "AI / Machine Learning Engineer",
@@ -203,7 +203,7 @@ export default function FeatureBentoSuite() {
 
             <div className="pt-6 border-t mt-6 flex items-center justify-between">
               <span className={`text-xs font-mono ${isDarkMode ? "text-zinc-500" : "text-slate-500"}`}>
-                Zero keyword stuffing • 100% semantic NLP
+                Zero keyword stuffing • 95+ semantic NLP match
               </span>
               <Link
                 to="/ats-analyzer"

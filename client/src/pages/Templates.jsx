@@ -203,8 +203,8 @@ const BASE_TEMPLATE_LIST = [
     name: "Stanford / LaTeX Academic Pro",
     component: LatexAcademicTemplate,
     category: "Academic",
-    atsScore: 100,
-    badge: "100% ATS GRADE",
+    atsScore: 99,
+    badge: "98% ATS GRADE",
     description:
       "Mathematical precision with classic academic serif typography, fine hairline rules, and publication metrics.",
     features: ["LaTeX Typography", "Hairline Rules", "Research Metrics", "1-Page Fit"],
@@ -322,7 +322,7 @@ const BASE_TEMPLATE_LIST = [
     category: "Creative",
     atsScore: 94,
     description:
-      "Vibrant modern creative template with dynamic layouts, aesthetic flair, and 100% ATS optimization.",
+      "Vibrant modern creative template with dynamic layouts, aesthetic flair, and 95+ ATS-optimized structure.",
     features: ["Dynamic Layout", "Portfolio Elements", "Visual Appeal"],
     colors: ["#8b5cf6", "#ec4899", "#ffffff"],
   },
@@ -576,9 +576,9 @@ export default function Templates() {
   // Google Rich Snippet FAQs for public page
   const pageFaqs = [
     {
-      question: "Why are SmartNShine resume templates 100% ATS-friendly?",
+      question: "Why do SmartNShine resume templates score 95+ on ATS systems?",
       answer:
-        "Our resume templates use clean HTML5/CSS structured hierarchy, standard font typography, and zero unreadable nested tables, ensuring 100% readability across Taleo, Workday, and Greenhouse ATS scanners.",
+        "Our resume templates use clean HTML5/CSS structured hierarchy, standard font typography, and zero unreadable nested tables, ensuring 95+ scoring and high readability across Taleo, Workday, and Greenhouse ATS scanners.",
     },
     {
       question: "Can I customize colors, fonts, and section ordering?",

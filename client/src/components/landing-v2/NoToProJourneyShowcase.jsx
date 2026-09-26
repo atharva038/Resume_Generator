@@ -68,7 +68,7 @@ export default function NoToProJourneyShowcase() {
 
             <div className="p-3 rounded-lg bg-white dark:bg-[#0c1410] border border-emerald-200/80 dark:border-emerald-900/40 text-zinc-800 dark:text-zinc-200">
               <div className="text-[10px] font-bold text-emerald-600 uppercase mb-1">ATS Optimization Check</div>
-              • 100% clean single-column structure <br />
+              • Clean single-column ATS-validated structure <br />
               • 14/15 required hard tech keywords matched <br />
               • Action verbs mapped to Taleo & Workday scoring criteria
             </div>

@@ -20,7 +20,7 @@ import {
  * - Experience: italic serif company name, bold small-caps role title, tabular dates
  * - Skills: two-column inline layout with small-caps bold category labels
  * - Footer broadsheet closing rule
- * - 100% ATS-compliant semantic structure
+ * - 95+ ATS-compliant semantic structure
  * - Intelligent 1-page auto-density engine
  */
 
