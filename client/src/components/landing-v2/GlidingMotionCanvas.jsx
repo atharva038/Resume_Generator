@@ -296,7 +296,7 @@ const allResumeTemplates = {
   },
   latexAcademic: {
     templateTitle: "Stanford LaTeX Academic",
-    badgeText: "100% Parsing",
+    badgeText: "98% ATS Pass",
     badgeColor: "indigo",
     formatText: "LaTeX Typographic Pro",
     templateSlug: "latex-academic",
@@ -341,7 +341,7 @@ const allResumeTemplates = {
   },
   minimal: {
     templateTitle: "The Swiss Minimalist",
-    badgeText: "100% Parsing",
+    badgeText: "98% ATS Pass",
     badgeColor: "indigo",
     formatText: "Swiss Precision Grid",
     templateSlug: "minimal",
@@ -701,6 +701,23 @@ const PORTFOLIO_FOCUS_TARGETS = [
   { cardId: "pc3-3", slug: "cyberDev" },        // 6: Cyber Dev Terminal (Col 3, index 3)
 ];
 
+// Helper distance calculators (clamped to 0, 1, 2, or 3) to enable pure React.memo optimization
+function getResumeDistance(cardId, activeIndex) {
+  const targetIndex = RESUME_FOCUS_TARGETS.findIndex((t) => t.cardId === cardId);
+  if (targetIndex === -1) return 3;
+  const rawDiff = Math.abs(targetIndex - activeIndex);
+  const d = Math.min(rawDiff, RESUME_FOCUS_TARGETS.length - rawDiff);
+  return d > 2 ? 3 : d;
+}
+
+function getPortfolioDistance(cardId, activeIndex) {
+  const targetIndex = PORTFOLIO_FOCUS_TARGETS.findIndex((t) => t.cardId === cardId);
+  if (targetIndex === -1) return 3;
+  const rawDiff = Math.abs(targetIndex - activeIndex);
+  const d = Math.min(rawDiff, PORTFOLIO_FOCUS_TARGETS.length - rawDiff);
+  return d > 2 ? 3 : d;
+}
+
 // ============================================================================
 // RESUME CARD COMPONENT
 // ============================================================================
@@ -708,7 +725,7 @@ const ScaledResumeCard = React.memo(function ScaledResumeCard({
   item,
   isDarkMode,
   cardId,
-  activeFocusIndex,
+  distance = 3,
   shouldReduceMotion,
   onSelectCard,
 }) {
@@ -745,13 +762,6 @@ const ScaledResumeCard = React.memo(function ScaledResumeCard({
 
   const targetIndex = RESUME_FOCUS_TARGETS.findIndex((t) => t.cardId === cardId);
   const isInCycle = targetIndex !== -1;
-
-  let distance = 99;
-  if (isInCycle) {
-    const rawDiff = Math.abs(targetIndex - activeFocusIndex);
-    distance = Math.min(rawDiff, RESUME_FOCUS_TARGETS.length - rawDiff);
-  }
-
   const isFocused = distance === 0;
 
   let animOpacity = 0.24;
@@ -818,7 +828,7 @@ const ScaledResumeCard = React.memo(function ScaledResumeCard({
         zIndex: isFocused ? 25 : isCardHovered ? 20 : distance === 1 ? 8 : 1,
         willChange: "transform, opacity",
       }}
-      className={`w-[310px] sm:w-[375px] xl:w-[395px] shrink-0 h-[420px] sm:h-[480px] rounded-2xl border p-2.5 sm:p-3.5 flex flex-col justify-between overflow-hidden text-left select-none group/card cursor-pointer transition-[box-shadow,border-color,background-color] duration-300 ${
+      className={`w-[310px] sm:w-[375px] xl:w-[395px] shrink-0 h-[420px] sm:h-[480px] rounded-2xl border p-2.5 sm:p-3.5 flex flex-col justify-between overflow-hidden text-left select-none group/card cursor-pointer transition-[box-shadow,border-color,background-color] duration-200 transform-gpu ${
         isDarkMode
           ? "bg-[#0b1018]/95 hover:border-white/25"
           : "bg-white hover:border-zinc-400"
@@ -873,7 +883,7 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
   item,
   isDarkMode,
   cardId,
-  activeFocusIndex,
+  distance = 3,
   shouldReduceMotion,
   onSelectCard,
 }) {
@@ -893,13 +903,6 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
 
   const targetIndex = PORTFOLIO_FOCUS_TARGETS.findIndex((t) => t.cardId === cardId);
   const isInCycle = targetIndex !== -1;
-
-  let distance = 99;
-  if (isInCycle) {
-    const rawDiff = Math.abs(targetIndex - activeFocusIndex);
-    distance = Math.min(rawDiff, PORTFOLIO_FOCUS_TARGETS.length - rawDiff);
-  }
-
   const isFocused = distance === 0;
 
   let animOpacity = 0.28;
@@ -975,7 +978,7 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
         zIndex: isFocused ? 25 : isCardHovered ? 20 : distance === 1 ? 8 : 1,
         willChange: "transform, opacity",
       }}
-      className={`w-[330px] sm:w-[520px] xl:w-[560px] shrink-0 h-[280px] sm:h-[385px] rounded-2xl border p-2 sm:p-3 flex flex-col justify-between overflow-hidden text-left select-none group/card cursor-pointer transition-[box-shadow,border-color,background-color] duration-300 ${
+      className={`w-[330px] sm:w-[520px] xl:w-[560px] shrink-0 h-[280px] sm:h-[385px] rounded-2xl border p-2 sm:p-3 flex flex-col justify-between overflow-hidden text-left select-none group/card cursor-pointer transition-[box-shadow,border-color,background-color] duration-200 transform-gpu ${
         isDarkMode
           ? "bg-[#080c14]/95 hover:border-white/30"
           : "bg-white hover:border-zinc-400"
@@ -1931,6 +1934,13 @@ export default function GlidingMotionCanvas({ activeMode = "resumes", isDarkMode
   const [resumeColStep, setResumeColStep] = useState(435);
   const [portfolioColStep, setPortfolioColStep] = useState(596);
   const [isVisible, setIsVisible] = useState(true);
+  const [hasLoadedPortfolios, setHasLoadedPortfolios] = useState(!isResumes);
+
+  useEffect(() => {
+    if (!isResumes) {
+      setHasLoadedPortfolios(true);
+    }
+  }, [isResumes]);
 
   const containerRef = useRef(null);
   const shouldReduceMotion = useReducedMotion();
@@ -2070,7 +2080,7 @@ export default function GlidingMotionCanvas({ activeMode = "resumes", isDarkMode
                     cardId={`cA-${idx}`}
                     item={item}
                     isDarkMode={isDarkMode}
-                    activeFocusIndex={activeResumeIndex}
+                    distance={getResumeDistance(`cA-${idx}`, activeResumeIndex)}
                     shouldReduceMotion={shouldReduceMotion}
                     onSelectCard={setActiveResumeIndex}
                   />
@@ -2087,7 +2097,7 @@ export default function GlidingMotionCanvas({ activeMode = "resumes", isDarkMode
                     cardId={`c1-${idx}`}
                     item={item}
                     isDarkMode={isDarkMode}
-                    activeFocusIndex={activeResumeIndex}
+                    distance={getResumeDistance(`c1-${idx}`, activeResumeIndex)}
                     shouldReduceMotion={shouldReduceMotion}
                     onSelectCard={setActiveResumeIndex}
                   />
@@ -2104,7 +2114,7 @@ export default function GlidingMotionCanvas({ activeMode = "resumes", isDarkMode
                     cardId={`c2-${idx}`}
                     item={item}
                     isDarkMode={isDarkMode}
-                    activeFocusIndex={activeResumeIndex}
+                    distance={getResumeDistance(`c2-${idx}`, activeResumeIndex)}
                     shouldReduceMotion={shouldReduceMotion}
                     onSelectCard={setActiveResumeIndex}
                   />
@@ -2121,7 +2131,7 @@ export default function GlidingMotionCanvas({ activeMode = "resumes", isDarkMode
                     cardId={`c3-${idx}`}
                     item={item}
                     isDarkMode={isDarkMode}
-                    activeFocusIndex={activeResumeIndex}
+                    distance={getResumeDistance(`c3-${idx}`, activeResumeIndex)}
                     shouldReduceMotion={shouldReduceMotion}
                     onSelectCard={setActiveResumeIndex}
                   />
@@ -2138,7 +2148,7 @@ export default function GlidingMotionCanvas({ activeMode = "resumes", isDarkMode
                     cardId={`cB-${idx}`}
                     item={item}
                     isDarkMode={isDarkMode}
-                    activeFocusIndex={activeResumeIndex}
+                    distance={getResumeDistance(`cB-${idx}`, activeResumeIndex)}
                     shouldReduceMotion={shouldReduceMotion}
                     onSelectCard={setActiveResumeIndex}
                   />
@@ -2152,105 +2162,107 @@ export default function GlidingMotionCanvas({ activeMode = "resumes", isDarkMode
         {/* STAGE 2: REAL WIDESCREEN WEB PORTFOLIOS (2D Camera Flight) */}
         {/* ========================================================= */}
         <div className="w-1/2 h-full overflow-hidden relative flex items-start justify-center">
-          <motion.div
-            animate={{
-              x: shouldReduceMotion ? 0 : currentPortfolioOffset.x,
-              y: shouldReduceMotion ? 0 : currentPortfolioOffset.y,
-              scale: shouldReduceMotion ? 1 : [1, 0.90, 1],
-            }}
-            transition={{
-              x: { duration: shouldReduceMotion ? 0.1 : 2.2, ease: [0.45, 0, 0.2, 1] },
-              y: { duration: shouldReduceMotion ? 0.1 : 2.2, ease: [0.45, 0, 0.2, 1] },
-              scale: { duration: shouldReduceMotion ? 0.1 : 2.2, times: [0, 0.35, 1], ease: [0.45, 0, 0.2, 1] },
-            }}
-            style={{ transformOrigin: "center center" }}
-            className="flex items-start justify-center gap-5 sm:gap-9 lg:gap-11 px-2 lg:px-6 pt-3 will-change-transform shrink-0"
-          >
-            {/* Portfolio Column A: Far Left Outer Buffer */}
-            <div className="overflow-visible h-full flex flex-col w-[330px] sm:w-[520px] xl:w-[560px] shrink-0 pt-6">
-              <div className="flex flex-col gap-[28px] pb-[28px]">
-                {pColAItems.map((item, idx) => (
-                  <ScaledPortfolioCard
-                    key={`pcA-${idx}`}
-                    cardId={`pcA-${idx}`}
-                    item={item}
-                    isDarkMode={isDarkMode}
-                    activeFocusIndex={activePortfolioIndex}
-                    shouldReduceMotion={shouldReduceMotion}
-                    onSelectCard={setActivePortfolioIndex}
-                  />
-                ))}
+          {hasLoadedPortfolios && (
+            <motion.div
+              animate={{
+                x: shouldReduceMotion ? 0 : currentPortfolioOffset.x,
+                y: shouldReduceMotion ? 0 : currentPortfolioOffset.y,
+                scale: shouldReduceMotion ? 1 : [1, 0.90, 1],
+              }}
+              transition={{
+                x: { duration: shouldReduceMotion ? 0.1 : 2.2, ease: [0.45, 0, 0.2, 1] },
+                y: { duration: shouldReduceMotion ? 0.1 : 2.2, ease: [0.45, 0, 0.2, 1] },
+                scale: { duration: shouldReduceMotion ? 0.1 : 2.2, times: [0, 0.35, 1], ease: [0.45, 0, 0.2, 1] },
+              }}
+              style={{ transformOrigin: "center center" }}
+              className="flex items-start justify-center gap-5 sm:gap-9 lg:gap-11 px-2 lg:px-6 pt-3 will-change-transform shrink-0"
+            >
+              {/* Portfolio Column A: Far Left Outer Buffer */}
+              <div className="overflow-visible h-full flex flex-col w-[330px] sm:w-[520px] xl:w-[560px] shrink-0 pt-6">
+                <div className="flex flex-col gap-[28px] pb-[28px]">
+                  {pColAItems.map((item, idx) => (
+                    <ScaledPortfolioCard
+                      key={`pcA-${idx}`}
+                      cardId={`pcA-${idx}`}
+                      item={item}
+                      isDarkMode={isDarkMode}
+                      distance={getPortfolioDistance(`pcA-${idx}`, activePortfolioIndex)}
+                      shouldReduceMotion={shouldReduceMotion}
+                      onSelectCard={setActivePortfolioIndex}
+                    />
+                  ))}
+                </div>
               </div>
-            </div>
 
-            {/* Portfolio Column 1: Left */}
-            <div className="overflow-visible h-full flex flex-col w-[330px] sm:w-[520px] xl:w-[560px] shrink-0 pt-0">
-              <div className="flex flex-col gap-[28px] pb-[28px]">
-                {pCol1Items.map((item, idx) => (
-                  <ScaledPortfolioCard
-                    key={`pc1-${idx}`}
-                    cardId={`pc1-${idx}`}
-                    item={item}
-                    isDarkMode={isDarkMode}
-                    activeFocusIndex={activePortfolioIndex}
-                    shouldReduceMotion={shouldReduceMotion}
-                    onSelectCard={setActivePortfolioIndex}
-                  />
-                ))}
+              {/* Portfolio Column 1: Left */}
+              <div className="overflow-visible h-full flex flex-col w-[330px] sm:w-[520px] xl:w-[560px] shrink-0 pt-0">
+                <div className="flex flex-col gap-[28px] pb-[28px]">
+                  {pCol1Items.map((item, idx) => (
+                    <ScaledPortfolioCard
+                      key={`pc1-${idx}`}
+                      cardId={`pc1-${idx}`}
+                      item={item}
+                      isDarkMode={isDarkMode}
+                      distance={getPortfolioDistance(`pc1-${idx}`, activePortfolioIndex)}
+                      shouldReduceMotion={shouldReduceMotion}
+                      onSelectCard={setActivePortfolioIndex}
+                    />
+                  ))}
+                </div>
               </div>
-            </div>
 
-            {/* Portfolio Column 2: Center */}
-            <div className="overflow-visible h-full flex flex-col w-[330px] sm:w-[520px] xl:w-[560px] shrink-0 pt-8 sm:pt-10">
-              <div className="flex flex-col gap-[28px] pb-[28px]">
-                {pCol2Items.map((item, idx) => (
-                  <ScaledPortfolioCard
-                    key={`pc2-${idx}`}
-                    cardId={`pc2-${idx}`}
-                    item={item}
-                    isDarkMode={isDarkMode}
-                    activeFocusIndex={activePortfolioIndex}
-                    shouldReduceMotion={shouldReduceMotion}
-                    onSelectCard={setActivePortfolioIndex}
-                  />
-                ))}
+              {/* Portfolio Column 2: Center */}
+              <div className="overflow-visible h-full flex flex-col w-[330px] sm:w-[520px] xl:w-[560px] shrink-0 pt-8 sm:pt-10">
+                <div className="flex flex-col gap-[28px] pb-[28px]">
+                  {pCol2Items.map((item, idx) => (
+                    <ScaledPortfolioCard
+                      key={`pc2-${idx}`}
+                      cardId={`pc2-${idx}`}
+                      item={item}
+                      isDarkMode={isDarkMode}
+                      distance={getPortfolioDistance(`pc2-${idx}`, activePortfolioIndex)}
+                      shouldReduceMotion={shouldReduceMotion}
+                      onSelectCard={setActivePortfolioIndex}
+                    />
+                  ))}
+                </div>
               </div>
-            </div>
 
-            {/* Portfolio Column 3: Right */}
-            <div className="overflow-visible h-full flex flex-col w-[330px] sm:w-[520px] xl:w-[560px] shrink-0 pt-4 sm:pt-6">
-              <div className="flex flex-col gap-[28px] pb-[28px]">
-                {pCol3Items.map((item, idx) => (
-                  <ScaledPortfolioCard
-                    key={`pc3-${idx}`}
-                    cardId={`pc3-${idx}`}
-                    item={item}
-                    isDarkMode={isDarkMode}
-                    activeFocusIndex={activePortfolioIndex}
-                    shouldReduceMotion={shouldReduceMotion}
-                    onSelectCard={setActivePortfolioIndex}
-                  />
-                ))}
+              {/* Portfolio Column 3: Right */}
+              <div className="overflow-visible h-full flex flex-col w-[330px] sm:w-[520px] xl:w-[560px] shrink-0 pt-4 sm:pt-6">
+                <div className="flex flex-col gap-[28px] pb-[28px]">
+                  {pCol3Items.map((item, idx) => (
+                    <ScaledPortfolioCard
+                      key={`pc3-${idx}`}
+                      cardId={`pc3-${idx}`}
+                      item={item}
+                      isDarkMode={isDarkMode}
+                      distance={getPortfolioDistance(`pc3-${idx}`, activePortfolioIndex)}
+                      shouldReduceMotion={shouldReduceMotion}
+                      onSelectCard={setActivePortfolioIndex}
+                    />
+                  ))}
+                </div>
               </div>
-            </div>
 
-            {/* Portfolio Column B: Far Right Outer Buffer */}
-            <div className="overflow-visible h-full flex flex-col w-[330px] sm:w-[520px] xl:w-[560px] shrink-0 pt-10 sm:pt-12">
-              <div className="flex flex-col gap-[28px] pb-[28px]">
-                {pColBItems.map((item, idx) => (
-                  <ScaledPortfolioCard
-                    key={`pcB-${idx}`}
-                    cardId={`pcB-${idx}`}
-                    item={item}
-                    isDarkMode={isDarkMode}
-                    activeFocusIndex={activePortfolioIndex}
-                    shouldReduceMotion={shouldReduceMotion}
-                    onSelectCard={setActivePortfolioIndex}
-                  />
-                ))}
+              {/* Portfolio Column B: Far Right Outer Buffer */}
+              <div className="overflow-visible h-full flex flex-col w-[330px] sm:w-[520px] xl:w-[560px] shrink-0 pt-10 sm:pt-12">
+                <div className="flex flex-col gap-[28px] pb-[28px]">
+                  {pColBItems.map((item, idx) => (
+                    <ScaledPortfolioCard
+                      key={`pcB-${idx}`}
+                      cardId={`pcB-${idx}`}
+                      item={item}
+                      isDarkMode={isDarkMode}
+                      distance={getPortfolioDistance(`pcB-${idx}`, activePortfolioIndex)}
+                      shouldReduceMotion={shouldReduceMotion}
+                      onSelectCard={setActivePortfolioIndex}
+                    />
+                  ))}
+                </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          )}
         </div>
       </div>
     </div>

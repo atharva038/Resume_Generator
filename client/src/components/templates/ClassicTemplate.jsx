@@ -29,7 +29,7 @@ import {
  * - Experience: job title in code-style inline chip, company in normal weight
  * - Bullet points: `▸` terminal arrow prefix instead of disc
  * - Projects: mini "repo card" layout with name in monospace link style + tech chips
- * - 100% ATS-compliant semantic structure (no CSS grid split for ATS safety)
+ * - 95+ ATS-compliant semantic structure (no CSS grid split for ATS safety)
  * - Intelligent 1-page auto-density engine
  */
 

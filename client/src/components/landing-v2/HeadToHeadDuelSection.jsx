@@ -42,7 +42,7 @@ const DUEL_DATA = {
     ],
     smartnshineWins: [
       {
-        title: "100% Machine-Readable LaTeX/HTML",
+        title: "98%+ Machine-Readable LaTeX/HTML",
         desc: "Standardized single-column architecture tested and verified across Workday, Greenhouse, and Lever.",
       },
       {
@@ -334,7 +334,7 @@ export default function HeadToHeadDuelSection() {
                 </div>
 
                 <p className="text-xs sm:text-sm text-blue-600 dark:text-blue-400 font-semibold">
-                  Built from the ground up for 100% ATS parser acceptance & developer portfolios
+                  Built from the ground up for 95+ ATS parser acceptance & developer portfolios
                 </p>
 
                 {/* Proof Guarantee Strip */}

@@ -208,7 +208,7 @@ export default function CareerJourneyTimeline() {
                       <FileText className="w-6 h-6 text-blue-600 dark:text-blue-400 shrink-0" />
                       <div>
                         <div className="text-xs font-bold text-zinc-900 dark:text-zinc-100">resume_v3_draft.pdf</div>
-                        <div className="text-[10px] text-zinc-500">Parsed in 420ms • 100% text integrity</div>
+                        <div className="text-[10px] text-zinc-500">Parsed in 420ms • Full text fidelity</div>
                       </div>
                     </div>
 

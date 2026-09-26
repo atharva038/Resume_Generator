@@ -8,7 +8,7 @@ import {
   useMemo,
 } from "react";
 import { useReactToPrint } from "react-to-print";
-import { Download, Palette, Sliders, Type, Check, Maximize2, ZoomIn, ZoomOut, Sparkles } from "lucide-react";
+import { Palette, Type, Check, Maximize2, ZoomIn, ZoomOut, Sparkles } from "lucide-react";
 import { useToggle, useMediaQuery } from "@/hooks";
 import ClassicTemplate from "@/components/templates/ClassicTemplate";
 import ModernTemplate from "@/components/templates/ModernTemplate";
@@ -615,22 +615,23 @@ const ResumePreview = forwardRef(
         <div className="flex min-w-0 max-w-full flex-col resume-preview items-center w-full min-h-0">
           {/* Sleek Professional Studio Toolbar */}
           <div
-            className="mb-2.5 flex flex-shrink-0 flex-col sm:flex-row sm:items-center justify-between gap-2 no-print w-full sticky top-0 z-30 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md py-1.5 px-2 rounded-xl border border-gray-200/80 dark:border-zinc-800 shadow-xs"
+            className="mb-2.5 flex flex-wrap items-center justify-between gap-2 no-print w-full sticky top-0 z-30 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md py-1.5 px-2 rounded-xl border border-gray-200/80 dark:border-zinc-800 shadow-xs"
             style={{ width: "100%", maxWidth: "100%" }}
           >
             {/* Left: Styling Controls (Palette, Density, Font) */}
-            <div className="flex items-center gap-2 overflow-x-auto py-0.5 no-scrollbar">
+            <div className="flex flex-wrap items-center gap-2 min-w-0">
               {/* Color Themes */}
               <div className="flex items-center gap-1.5 pr-2 border-r border-gray-200 dark:border-zinc-800 shrink-0">
-                <span className="text-[10.5px] font-semibold text-gray-500 dark:text-gray-400 hidden lg:inline">
-                  Theme:
+                <span className="text-[10.5px] font-semibold text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                  <Palette className="w-3 h-3 text-gray-400" />
+                  <span className="hidden md:inline">Theme</span>
                 </span>
                 <div className="flex items-center gap-1">
                   {templateThemes.map((t) => (
                     <button
                       key={t.id}
                       onClick={() => handleThemeChange(t.id)}
-                      title={t.name}
+                      title={`Theme: ${t.name}`}
                       type="button"
                       className={`relative flex h-4.5 w-4.5 items-center justify-center rounded-full transition-all duration-150 cursor-pointer ${
                         activeTheme === t.id
@@ -647,7 +648,7 @@ const ResumePreview = forwardRef(
                 </div>
               </div>
 
-              {/* Density Toggle (Segmented Mini Pills) */}
+              {/* Density / Spacing Toggle (Segmented Mini Pills) */}
               <div className="flex items-center bg-gray-100/90 dark:bg-zinc-900 p-0.5 rounded-lg border border-gray-200/60 dark:border-zinc-800/80 shrink-0">
                 {PREVIEW_DENSITIES.map((d) => {
                   const isSelected = activeDensity === d.id;
@@ -657,6 +658,13 @@ const ResumePreview = forwardRef(
                       key={d.id}
                       onClick={() => handleDensityChange(d.id)}
                       type="button"
+                      title={
+                        isOnePage
+                          ? "Smart 1-Page: Automatically fit resume cleanly onto 1 page"
+                          : d.id === "spacious"
+                          ? "Spacious: Relaxed spacing for shorter resumes"
+                          : "Balanced: Standard ATS-friendly spacing"
+                      }
                       className={`px-2 py-0.5 text-[10.5px] font-semibold rounded-md transition-all flex items-center gap-1 cursor-pointer ${
                         isSelected
                           ? isOnePage
@@ -665,7 +673,8 @@ const ResumePreview = forwardRef(
                           : "text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
                       }`}
                     >
-                      {d.label}
+                      {isOnePage && <Sparkles className="w-2.5 h-2.5" />}
+                      <span>{d.label}</span>
                     </button>
                   );
                 })}
@@ -677,6 +686,7 @@ const ResumePreview = forwardRef(
                 <select
                   value={activeFont}
                   onChange={(e) => handleFontChange(e.target.value)}
+                  title="Font typography style"
                   className="rounded-lg border border-gray-200/80 bg-gray-50/80 px-2 py-0.5 text-[10.5px] font-medium text-gray-700 dark:border-zinc-800 dark:bg-zinc-900 dark:text-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
                 >
                   {PREVIEW_FONTS.map((f) => (
@@ -688,13 +698,20 @@ const ResumePreview = forwardRef(
               </div>
             </div>
 
-            {/* Right: Page Count, Zoom, Fullscreen, Compact Download Button */}
-            <div className="flex items-center justify-between sm:justify-end gap-1.5 shrink-0">
+            {/* Right: Page Count, Zoom, Fullscreen */}
+            <div className="flex items-center justify-end gap-1.5 shrink-0 ml-auto">
               {/* Page Status Indicator */}
-              <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-gray-100/70 dark:bg-zinc-900 border border-gray-200/60 dark:border-zinc-800 text-[10.5px] font-medium">
+              <div
+                className="flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-gray-100/70 dark:bg-zinc-900 border border-gray-200/60 dark:border-zinc-800 text-[10.5px] font-medium"
+                title={
+                  numberOfPages === 1
+                    ? "Ideal 1-Page ATS length"
+                    : `${numberOfPages} pages. Click 'Fit 1P' to auto-fit to 1 page.`
+                }
+              >
                 <span
                   className={`w-1.5 h-1.5 rounded-full ${
-                    numberOfPages === 1 ? "bg-emerald-500" : "bg-amber-500"
+                    numberOfPages === 1 ? "bg-emerald-500 animate-pulse" : "bg-amber-500"
                   }`}
                 />
                 <span className="text-gray-600 dark:text-gray-300 font-semibold">
@@ -704,8 +721,8 @@ const ResumePreview = forwardRef(
                   <button
                     type="button"
                     onClick={() => handleDensityChange("compact")}
-                    className="text-emerald-600 dark:text-emerald-400 hover:underline text-[10px] font-bold ml-0.5 cursor-pointer"
-                    title="Fit into 1 page"
+                    className="text-emerald-600 dark:text-emerald-400 hover:underline text-[10px] font-bold ml-0.5 cursor-pointer bg-emerald-50 dark:bg-emerald-950/40 px-1 py-0.2 rounded"
+                    title="Automatically fit into 1 page"
                   >
                     Fit 1P
                   </button>
@@ -758,17 +775,6 @@ const ResumePreview = forwardRef(
                 className="p-1.5 rounded-lg border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 dark:border-zinc-800 dark:bg-zinc-950 dark:text-gray-300 dark:hover:bg-zinc-900 cursor-pointer shadow-xs transition-colors"
               >
                 <Maximize2 className="h-3.5 w-3.5" />
-              </button>
-
-              {/* Compact Professional Download Button */}
-              <button
-                onClick={onDownload || downloadPDF}
-                type="button"
-                className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 text-xs font-semibold shadow-xs hover:shadow transition-all cursor-pointer"
-                title="Download ATS-Friendly PDF"
-              >
-                <Download className="h-3.5 w-3.5" />
-                <span>Download PDF</span>
               </button>
             </div>
           </div>

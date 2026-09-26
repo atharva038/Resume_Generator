@@ -11,7 +11,7 @@ export default function AtsAnalyzerShowcase() {
       score: 96,
       matched: ["React", "TypeScript", "Node.js", "PostgreSQL", "System Design", "AWS", "Docker"],
       missing: ["GraphQL"],
-      advice: "Inject 1 mention of GraphQL or REST API design into the second project bullet to reach 100% score.",
+      advice: "Inject 1 mention of GraphQL or REST API design into the second project bullet to reach a top 98%+ score.",
     },
     devops: {
       role: "Lead DevOps / SRE Engineer",

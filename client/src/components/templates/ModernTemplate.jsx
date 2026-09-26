@@ -24,7 +24,7 @@ import {
  * - 100% text-based, ATS-compliant semantic structure
  */
 
-// Helper to highlight quantifiable metrics while keeping text 100% ATS-safe
+// Helper to highlight quantifiable metrics while keeping text 95+ ATS-safe
 const highlightMetrics = (text, primaryColor) => {
   if (!text || typeof text !== "string") return text;
 

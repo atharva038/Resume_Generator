@@ -22,7 +22,7 @@ import {
  *
  * Designed for Modern Engineers, Product Architects, Creative Technologists, and Design Leads.
  * Features:
- * - Single-flow semantic HTML that ensures 100% ATS readability
+ * - Single-flow semantic HTML that ensures 95+ ATS readability
  * - Asymmetric 32% sidebar / 68% main-track visual layout
  * - Left rail with clean contact pills, skills matrix tags, education & certifications
  * - Right rail with executive masthead, impact summary, detailed experience, and key projects
