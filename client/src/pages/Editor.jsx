@@ -29,6 +29,7 @@ import {
   ResumeWizard,
   TemplateSelectorModal,
   EditorHeader,
+  ATSRecommendationBanner,
 } from "@/components/editor";
 import SEO from "@/components/common/SEO";
 import { GitHubImportModal } from "@/components/common/modals";
@@ -125,6 +126,16 @@ const Editor = () => {
   const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [forceSectionExpand, setForceSectionExpand] = useState(null);
+  const [atsRecommendation, setAtsRecommendation] = useState(
+    location.state?.atsRecommendation || null
+  );
+  const [highlightedSection, setHighlightedSection] = useState(null);
+
+  useEffect(() => {
+    if (location.state?.atsRecommendation) {
+      setAtsRecommendation(location.state.atsRecommendation);
+    }
+  }, [location.state?.atsRecommendation]);
 
   const atsScore = useMemo(() => {
     if (!resumeData) return null;
@@ -272,8 +283,22 @@ const Editor = () => {
     }
   }, []);
 
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      unblockNavigation();
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+    };
+  }, [unblockNavigation]);
+
   // Load resume data on mount
   useEffect(() => {
+    // Only load data if we are currently on the editor page
+    if (location.pathname !== "/editor") return;
+
+    let isMounted = true;
+
     const loadResumeData = async () => {
       const stateData = location.state?.resumeData;
       const isNewResume = location.state?.isNewResume || false;
@@ -289,6 +314,7 @@ const Editor = () => {
       sessionStorage.removeItem("templatePreSelected");
 
       if (stateData) {
+        if (!isMounted) return;
         if (isNewResume) {
           setIsWizardModeTrue();
           // Only show template selector modal if a template was not already chosen
@@ -316,27 +342,35 @@ const Editor = () => {
       if (savedResumeId && user) {
         try {
           const response = await resumeAPI.getById(savedResumeId);
+          if (!isMounted) return;
           const loadedData = response.data;
           setIsWizardModeFalse();
           initializeResumeData(loadedData);
         } catch (err) {
           logger.error("❌ Error loading resume:", err);
           localStorage.removeItem("currentResumeId");
-          navigate("/upload");
+          if (isMounted && location.pathname === "/editor") {
+            navigate("/upload");
+          }
         }
-      } else {
+      } else if (isMounted && location.pathname === "/editor") {
         navigate("/upload");
       }
     };
 
     const initializeResumeData = (data) => {
+      if (!isMounted) return;
       const normalized = normalizeResumeData(data);
       setResumeData(normalized);
       setOriginalResumeData(JSON.parse(JSON.stringify(normalized)));
     };
 
     loadResumeData();
-  }, [location, navigate, user]);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [location.pathname, location.state, user]);
 
   const resumeAccess = resumeData?.access || {};
   const isPaidActionLocked = Boolean(
@@ -762,6 +796,119 @@ const Editor = () => {
     scrollToSection(firstIncompleteSectionId);
   };
 
+  const handleAutoAddKeywordsToSkills = async (keywordsList) => {
+    if (!keywordsList || !keywordsList.length || !resumeData) return;
+
+    const currentSkills = Array.isArray(resumeData.skills) ? [...resumeData.skills] : [];
+    const cleanKeywords = keywordsList
+      .map((k) => k.trim())
+      .filter((k) => k.length > 0);
+
+    if (!cleanKeywords.length) return;
+
+    let updatedSkills;
+
+    if (
+      currentSkills.length > 0 &&
+      typeof currentSkills[0] === "object" &&
+      currentSkills[0] !== null
+    ) {
+      const firstCat = { ...currentSkills[0] };
+      let existingItems = [];
+      if (Array.isArray(firstCat.items)) {
+        existingItems = [...firstCat.items];
+      } else if (typeof firstCat.items === "string") {
+        existingItems = firstCat.items
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean);
+      }
+
+      const existingLower = new Set(existingItems.map((s) => s.toLowerCase()));
+      const newItems = cleanKeywords.filter((k) => !existingLower.has(k.toLowerCase()));
+
+      if (newItems.length === 0) {
+        toast.success("Keywords are already present in your skills list!", {
+          icon: "ℹ️",
+        });
+        return;
+      }
+
+      firstCat.items = [...existingItems, ...newItems];
+      updatedSkills = [firstCat, ...currentSkills.slice(1)];
+    } else if (currentSkills.length > 0 && typeof currentSkills[0] === "string") {
+      const existingLower = new Set(currentSkills.map((s) => s.toLowerCase()));
+      const newItems = cleanKeywords.filter((k) => !existingLower.has(k.toLowerCase()));
+
+      if (newItems.length === 0) {
+        toast.success("Keywords are already present in your skills list!", {
+          icon: "ℹ️",
+        });
+        return;
+      }
+
+      updatedSkills = [...currentSkills, ...newItems];
+    } else {
+      updatedSkills = [
+        {
+          category: "Technical Skills",
+          items: cleanKeywords,
+        },
+      ];
+    }
+
+    const updatedResumeData = {
+      ...resumeData,
+      skills: updatedSkills,
+    };
+
+    setResumeData(updatedResumeData);
+
+    if (user) {
+      const saveResult = await saveResumeAction({
+        dataToSave: updatedResumeData,
+        showSuccessToast: true,
+        showErrorToast: true,
+        requireAuthRedirect: false,
+      });
+
+      if (saveResult?.ok) {
+        toast.success(
+          `Added ${cleanKeywords.length} keywords to Skills & saved resume! ✨`
+        );
+      }
+    }
+
+    setHighlightedSection("skills");
+    if (isWizardMode) {
+      setIsWizardModeFalse();
+    }
+    setTimeout(() => {
+      scrollToSection("skills");
+    }, 100);
+    setTimeout(() => {
+      setHighlightedSection(null);
+    }, 4000);
+  };
+
+  const handleJumpToSectionFromAts = (targetSection) => {
+    if (isWizardMode) {
+      setIsWizardModeFalse();
+    }
+    setForceSectionExpand(true);
+    setHighlightedSection(targetSection);
+    setTimeout(() => {
+      scrollToSection(targetSection);
+    }, 100);
+    setTimeout(() => {
+      setHighlightedSection(null);
+    }, 4000);
+  };
+
+  const handleBackToATS = () => {
+    navigate("/ats-analyzer");
+  };
+
   const handleGoBack = () => {
     if (hasUnsavedChanges) {
       setShowUnsavedModal(true);
@@ -775,10 +922,14 @@ const Editor = () => {
       navigate("/dashboard");
     } else if (location.state?.fromUpload) {
       navigate("/upload");
-    } else if (window.history.state && window.history.state.idx > 0) {
+    } else if (location.state?.fromATS) {
+      navigate("/ats-analyzer");
+    } else if (location.state?.fromCareerProfile) {
+      navigate("/career-profile");
+    } else if (window.history.length > 1 && window.history.state && window.history.state.idx > 0) {
       navigate(-1);
     } else {
-      navigate("/templates");
+      navigate("/dashboard");
     }
   };
 
@@ -818,6 +969,10 @@ const Editor = () => {
     },
     [availableColorThemes]
   );
+
+  if (location.pathname !== "/editor") {
+    return null;
+  }
 
   if (!resumeData) {
     return (
@@ -923,6 +1078,21 @@ const Editor = () => {
           atsScore={atsScore}
           onOpenAnalysis={() => setIsAnalysisOpen(true)}
         />
+
+        {/* ATS Recommendation Action Banner */}
+        {atsRecommendation && (
+          <ATSRecommendationBanner
+            recommendation={atsRecommendation}
+            onDismiss={() => setAtsRecommendation(null)}
+            onJumpToSection={handleJumpToSectionFromAts}
+            onAutoAddKeywords={handleAutoAddKeywordsToSkills}
+            onSave={guardedHandleSave}
+            onOpenAIAnalysis={() => setIsAnalysisOpen(true)}
+            onBackToATS={handleBackToATS}
+            saving={saving}
+            isWizardMode={isWizardMode}
+          />
+        )}
 
         {isPaidActionLocked && (
           <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-900 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-100">
@@ -1115,7 +1285,11 @@ const Editor = () => {
                   ref={(el) => {
                     if (el) sectionElementRefs.current[sectionId] = el;
                   }}
-                  className={`relative scroll-mt-28 ${
+                  className={`relative scroll-mt-28 transition-all duration-500 ${
+                    highlightedSection === sectionId
+                      ? "ring-4 ring-blue-500/80 dark:ring-blue-400/80 rounded-2xl shadow-xl scale-[1.01] bg-blue-50/10 dark:bg-blue-950/20"
+                      : ""
+                  } ${
                     aiUpdatedSection === sectionId ? "animate-ai-section-added" : ""
                   }`}
                 >

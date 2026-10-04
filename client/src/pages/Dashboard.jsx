@@ -76,6 +76,7 @@ export default function Dashboard() {
       navigate("/editor", {
         state: {
           resumeData: response.data,
+          fromDashboard: true,
         },
       });
     } catch (err) {

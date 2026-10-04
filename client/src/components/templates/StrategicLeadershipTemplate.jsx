@@ -156,22 +156,29 @@ const StrategicLeadershipTemplate = forwardRef(
       return [];
     };
 
+    const lastHeightRef = useRef(0);
+    const onPageUsageChangeRef = useRef(onPageUsageChange);
+    onPageUsageChangeRef.current = onPageUsageChange;
+
     useEffect(() => {
-      if (!containerRef.current || !onPageUsageChange) return undefined;
+      if (!containerRef.current || !onPageUsageChangeRef.current) return undefined;
 
       const maxHeight = 1123;
       let rafId;
 
       const measure = () => {
-        if (!containerRef.current) return;
+        if (!containerRef.current || !onPageUsageChangeRef.current) return;
 
         const currentHeight = containerRef.current.scrollHeight;
+        if (Math.abs(lastHeightRef.current - currentHeight) < 2) return;
+        lastHeightRef.current = currentHeight;
+
         const isOverflowing = currentHeight > maxHeight;
         const overflowPercentage = isOverflowing
           ? Math.round(((currentHeight - maxHeight) / maxHeight) * 100)
           : 0;
 
-        onPageUsageChange({
+        onPageUsageChangeRef.current({
           isOverflowing,
           currentHeight,
           maxHeight,
@@ -198,7 +205,7 @@ const StrategicLeadershipTemplate = forwardRef(
         cancelAnimationFrame(rafId);
         if (observer) observer.disconnect();
       };
-    }, [resumeData, onPageUsageChange, density]);
+    }, [resumeData, density]);
 
     const mainSections = [];
 
@@ -756,7 +763,9 @@ const StrategicLeadershipTemplate = forwardRef(
                       lineHeight: 1.2,
                     }}
                   >
-                    {cert.name}
+                    {typeof cert === "string"
+                      ? cert
+                      : cert.name || cert.title || cert.issuer || "Certification"}
                   </div>
                   {cert.issuer && (
                     <div

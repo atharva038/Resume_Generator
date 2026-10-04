@@ -54,29 +54,33 @@ const highlightMetrics = (text, primaryColor) => {
 
 const ExecutiveTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }, ref) => {
   const containerRef = useRef(null);
+  const lastHeightRef = useRef(0);
+  const onPageUsageChangeRef = useRef(onPageUsageChange);
+  onPageUsageChangeRef.current = onPageUsageChange;
 
   // Page overflow detection
   useEffect(() => {
-    if (containerRef.current) {
+    if (containerRef.current && onPageUsageChangeRef.current) {
       const currentHeight = containerRef.current.scrollHeight;
+      if (Math.abs(lastHeightRef.current - currentHeight) < 2) return;
+      lastHeightRef.current = currentHeight;
+
       const maxHeight = 1123;
       const isOverflowing = currentHeight > maxHeight;
       const overflowPercentage = isOverflowing
         ? Math.round(((currentHeight - maxHeight) / maxHeight) * 100)
         : 0;
 
-      if (onPageUsageChange) {
-        onPageUsageChange({
-          isOverflowing,
-          currentHeight,
-          maxHeight,
-          overflowPercentage,
-          percentage: Math.round((currentHeight / maxHeight) * 100),
-          templateName: "ExecutiveTemplate",
-        });
-      }
+      onPageUsageChangeRef.current({
+        isOverflowing,
+        currentHeight,
+        maxHeight,
+        overflowPercentage,
+        percentage: Math.round((currentHeight / maxHeight) * 100),
+        templateName: "ExecutiveTemplate",
+      });
     }
-  }, [resumeData, onPageUsageChange]);
+  }, [resumeData]);
 
   // ── Color Palettes ──────────────────────────────────────────────────────────
   const colorThemes = {
@@ -904,7 +908,9 @@ const ExecutiveTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }, re
                       >
                         <div>
                           <span style={{ fontWeight: 600, color: selectedTheme.text }}>
-                            {cert.name || cert.title}
+                            {typeof cert === "string"
+                              ? cert
+                              : cert.name || cert.title || cert.issuer || "Certification"}
                           </span>
                           {cert.issuer && (
                             <span style={{ color: selectedTheme.textMuted, fontStyle: "italic" }}>

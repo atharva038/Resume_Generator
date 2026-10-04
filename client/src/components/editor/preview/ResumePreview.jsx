@@ -48,6 +48,7 @@ const PAGE_HEIGHT_PX = 1123;
 const MIN_CONTENT_PX = 100;
 // Subpixel variance tolerance (avoids false 2nd pages on microscopic rounding differences)
 const PAGE_TOLERANCE_PX = 8;
+const NOOP = () => {};
 
 const WOOD_TEXTURE_DATA_URI =
   "data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='woodGrain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.015 0.32' numOctaves='4' result='noise'/%3E%3CfeColorMatrix type='matrix' values='0.4 0 0 0 0.4 0.3 0 0 0 0.28 0.18 0 0 0 0.16 0 0 0 0.07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23woodGrain)'/%3E%3C/svg%3E";
@@ -68,6 +69,12 @@ const CREATIVE2_CANVAS_MAP = {
   monochromePro: "#f9f9f9",
 };
 
+const FONT_MAP = {
+  modernSans: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+  editorialSerif: '"Newsreader", "Playfair Display", Georgia, Cambria, "Times New Roman", Times, serif',
+  techMono: '"JetBrains Mono", "SF Mono", Consolas, "Liberation Mono", Menlo, monospace',
+};
+
 const ResumePreview = forwardRef(
   (
     {
@@ -79,6 +86,7 @@ const ResumePreview = forwardRef(
     },
     ref
   ) => {
+    const layoutSettings = resumeData?.layoutSettings || {};
     const printTemplateRef = useRef();
     const templateRef = useRef(); // page-0 template wrapper — used for DOM section measurement
     const [showFullPreview, , setShowFullPreviewTrue, setShowFullPreviewFalse] =
@@ -209,40 +217,45 @@ const ResumePreview = forwardRef(
       }
     };
 
-    const handlePageUsageChange = (usageInfo) => {
-      if (usageInfo.currentHeight > 0) {
-        setMeasuredHeight(usageInfo.currentHeight);
+    const handlePageUsageChange = useCallback((usageInfo) => {
+      if (!usageInfo || !usageInfo.currentHeight) return;
 
-        // When in Smart 1-Page mode with auto micro-scaling, the rendered height is compressed by autoFitScale
-        const effectiveScale = isCompact && autoFitScale < 1.0 && (!layoutSettings.fontScale || layoutSettings.fontScale === 100)
-          ? autoFitScale
-          : Number(layoutSettings.fontScale || 100) / 100;
-
-        const effectiveHeight = usageInfo.currentHeight * effectiveScale;
-        const pageLimit = PAGE_HEIGHT_PX;
-
-        const fitsOnOnePage =
-          effectiveHeight <= pageLimit + PAGE_TOLERANCE_PX;
-
-        if (fitsOnOnePage) {
-          setNumberOfPages(1);
-          setPageBreaks([0]);
-        } else {
-          const pages = Math.max(
-            2,
-            Math.ceil(
-              (effectiveHeight - PAGE_TOLERANCE_PX) / pageLimit
-            )
-          );
-          setNumberOfPages(pages);
-          setPageBreaks((prev) => {
-            if (prev.length === pages) return prev;
-            return Array.from({ length: pages }, (_, i) => i * pageLimit);
-          });
+      setMeasuredHeight((prevHeight) => {
+        if (Math.abs(prevHeight - usageInfo.currentHeight) < 2) {
+          return prevHeight;
         }
+        return usageInfo.currentHeight;
+      });
+
+      // When in Smart 1-Page mode with auto micro-scaling, the rendered height is compressed by autoFitScale
+      const effectiveScale = isCompact && autoFitScale < 1.0 && (!layoutSettings.fontScale || layoutSettings.fontScale === 100)
+        ? autoFitScale
+        : Number(layoutSettings.fontScale || 100) / 100;
+
+      const effectiveHeight = usageInfo.currentHeight * effectiveScale;
+      const pageLimit = PAGE_HEIGHT_PX;
+
+      const fitsOnOnePage =
+        effectiveHeight <= pageLimit + PAGE_TOLERANCE_PX;
+
+      if (fitsOnOnePage) {
+        setNumberOfPages((prev) => (prev === 1 ? prev : 1));
+        setPageBreaks((prev) => (prev.length === 1 && prev[0] === 0 ? prev : [0]));
+      } else {
+        const pages = Math.max(
+          2,
+          Math.ceil(
+            (effectiveHeight - PAGE_TOLERANCE_PX) / pageLimit
+          )
+        );
+        setNumberOfPages((prev) => (prev === pages ? prev : pages));
+        setPageBreaks((prev) => {
+          if (prev.length === pages) return prev;
+          return Array.from({ length: pages }, (_, i) => i * pageLimit);
+        });
       }
       if (onPageUsageChange) onPageUsageChange(usageInfo);
-    };
+    }, [isCompact, autoFitScale, layoutSettings.fontScale, onPageUsageChange]);
 
     // After the template renders, find <section> elements that straddle a page
     // boundary and compute smart break points so no section is split mid-content.
@@ -385,13 +398,6 @@ const ResumePreview = forwardRef(
 
     const SelectedTemplate = templates[template] || ClassicTemplate;
     const twoPageMode = numberOfPages > 1;
-    const FONT_MAP = {
-      modernSans: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-      editorialSerif: '"Newsreader", "Playfair Display", Georgia, Cambria, "Times New Roman", Times, serif',
-      techMono: '"JetBrains Mono", "SF Mono", Consolas, "Liberation Mono", Menlo, monospace',
-    };
-
-    const layoutSettings = resumeData?.layoutSettings || {};
 
     const activeFontFamily =
       FONT_MAP[activeFont] ||
@@ -868,7 +874,7 @@ const ResumePreview = forwardRef(
                               onPageUsageChange={
                                 pageIndex === 0
                                   ? handlePageUsageChange
-                                  : () => { }
+                                  : NOOP
                               }
                             />
                           </div>
@@ -933,7 +939,7 @@ const ResumePreview = forwardRef(
               resumeData={mergedResumeData}
               twoPageMode={false}
               printMode={template === "professional-v2"}
-              onPageUsageChange={() => { }}
+              onPageUsageChange={NOOP}
             />
           </div>
         </div>

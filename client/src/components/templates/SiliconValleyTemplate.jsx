@@ -70,11 +70,17 @@ const highlightMetrics = (text, primaryColor) => {
 const SiliconValleyTemplate = forwardRef(
   ({ resumeData = {}, onPageUsageChange }, ref) => {
     const containerRef = useRef(null);
+    const lastHeightRef = useRef(0);
+    const onPageUsageChangeRef = useRef(onPageUsageChange);
+    onPageUsageChangeRef.current = onPageUsageChange;
 
     // Page overflow detection (11in @ 96 DPI = 1056px)
     useEffect(() => {
-      if (containerRef.current) {
+      if (containerRef.current && onPageUsageChangeRef.current) {
         const currentHeight = containerRef.current.scrollHeight;
+        if (Math.abs(lastHeightRef.current - currentHeight) < 2) return;
+        lastHeightRef.current = currentHeight;
+
         const maxHeight = 1123;
         const isOverflowing = currentHeight > maxHeight;
         const overflowPercentage = isOverflowing
@@ -90,11 +96,9 @@ const SiliconValleyTemplate = forwardRef(
           templateName: "SiliconValleyTemplate",
         };
 
-        if (onPageUsageChange) {
-          onPageUsageChange(usageInfo);
-        }
+        onPageUsageChangeRef.current(usageInfo);
       }
-    }, [resumeData, onPageUsageChange]);
+    }, [resumeData]);
 
     // Color themes
     const colorThemes = {
@@ -995,7 +999,9 @@ const SiliconValleyTemplate = forwardRef(
                     color: selectedTheme.text,
                   }}
                 >
-                  {cert.name || cert}
+                  {typeof cert === "string"
+                    ? cert
+                    : cert.name || cert.title || cert.issuer || "Certification"}
                 </span>
                 {cert.issuer && (
                   <span

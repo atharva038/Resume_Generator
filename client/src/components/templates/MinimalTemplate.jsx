@@ -54,11 +54,17 @@ const highlightMetrics = (text, primaryColor) => {
 
 const MinimalTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }, ref) => {
   const containerRef = useRef(null);
+  const lastHeightRef = useRef(0);
+  const onPageUsageChangeRef = useRef(onPageUsageChange);
+  onPageUsageChangeRef.current = onPageUsageChange;
 
   // Page overflow detection (11in @ 96 DPI = 1056px)
   useEffect(() => {
-    if (containerRef.current) {
+    if (containerRef.current && onPageUsageChangeRef.current) {
       const currentHeight = containerRef.current.scrollHeight;
+      if (Math.abs(lastHeightRef.current - currentHeight) < 2) return;
+      lastHeightRef.current = currentHeight;
+
       const maxHeight = 1123;
       const isOverflowing = currentHeight > maxHeight;
       const overflowPercentage = isOverflowing
@@ -74,11 +80,9 @@ const MinimalTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }, ref)
         templateName: "MinimalTemplate",
       };
 
-      if (onPageUsageChange) {
-        onPageUsageChange(usageInfo);
-      }
+      onPageUsageChangeRef.current(usageInfo);
     }
-  }, [resumeData, onPageUsageChange]);
+  }, [resumeData]);
 
   // Color Themes - Full support for live toolbar themes + legacy compatibility
   const colorThemes = {
@@ -863,7 +867,9 @@ const MinimalTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }, ref)
                 >
                   <div>
                     <span style={{ fontWeight: 600, color: selectedTheme.text }}>
-                      {cert.name}
+                      {typeof cert === "string"
+                        ? cert
+                        : cert.name || cert.title || cert.issuer || "Certification"}
                     </span>
                     {cert.issuer && (
                       <span style={{ color: selectedTheme.textMuted }}>

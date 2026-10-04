@@ -63,15 +63,39 @@ api.interceptors.response.use(
     // Handle specific error status codes
     handleErrorByStatus(error, {
       401: () => {
-        // Token is invalid or expired - redirect to login
-        console.error("Authentication failed - token may be expired");
+        // Token is invalid or expired - clear auth
+        console.warn("Authentication failed or session expired");
         authStorage.clearAuth();
 
-        // Only redirect if not already on login/register page
-        if (
-          !window.location.pathname.includes("/login") &&
-          !window.location.pathname.includes("/register")
-        ) {
+        const publicPaths = [
+          "/",
+          "/templates",
+          "/pricing",
+          "/contact",
+          "/careers",
+          "/privacy-policy",
+          "/terms",
+          "/terms-and-conditions",
+          "/refund-policy",
+          "/shipping-policy",
+          "/login",
+          "/register",
+          "/forgot-password",
+          "/reset-password",
+          "/rate-limit-exceeded",
+          "/tech-portfolio",
+          "/smartnshine-portfolio",
+          "/magazine-portfolio",
+          "/u/",
+        ];
+
+        const isPublicPath = publicPaths.some((p) =>
+          window.location.pathname === p ||
+          (p !== "/" && window.location.pathname.startsWith(p))
+        );
+
+        // Only force-redirect if on a protected route
+        if (!isPublicPath) {
           toast.error("Session expired. Please login again.");
           window.location.href = "/login";
         }

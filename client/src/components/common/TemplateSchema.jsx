@@ -106,7 +106,8 @@ export default function TemplateSchema({
       "Collection of industry-standard, ATS-compliant resume formats engineered for high recruiter response rates.",
     numberOfItems: templates.length,
     itemListElement: templates.map((tpl, index) => {
-      const imgPath = `${baseUrl}/templates/${(tpl.templateId || tpl.id).replace("-2", "2")}.webp`;
+      const templateIdentifier = String(tpl?.templateId || tpl?.id || "classic");
+      const imgPath = `${baseUrl}/templates/${templateIdentifier.replace("-2", "2")}.webp`;
       return {
         "@type": "ListItem",
         position: index + 1,

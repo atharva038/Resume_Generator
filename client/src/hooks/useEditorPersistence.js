@@ -118,10 +118,14 @@ export const useEditorPersistence = ({
           navigateFn("/dashboard");
         } else if (locationState?.fromUpload) {
           navigateFn("/upload");
-        } else if (window.history.state && window.history.state.idx > 0) {
+        } else if (locationState?.fromATS) {
+          navigateFn("/ats-analyzer");
+        } else if (locationState?.fromCareerProfile) {
+          navigateFn("/career-profile");
+        } else if (window.history.length > 1 && window.history.state && window.history.state.idx > 0) {
           navigateFn(-1);
         } else {
-          navigateFn("/templates");
+          navigateFn("/dashboard");
         }
       } else if (pendingNavigation) {
         navigateFn(pendingNavigation);

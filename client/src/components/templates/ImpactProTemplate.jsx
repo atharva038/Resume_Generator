@@ -334,16 +334,22 @@ const ImpactProTemplate = forwardRef((props, ref) => {
   };
 
   const dynamicStyles = getDynamicStyles();
+  const lastHeightRef = useRef(0);
+  const onPageUsageChangeRef = useRef(onPageUsageChange);
+  onPageUsageChangeRef.current = onPageUsageChange;
 
   // Page tracking for overflow detection
   useEffect(() => {
-    if (!contentRef.current || !onPageUsageChange) return;
+    if (!contentRef.current || !onPageUsageChangeRef.current) return;
 
     const updatePageUsage = () => {
       const element = contentRef.current;
-      if (!element) return;
+      if (!element || !onPageUsageChangeRef.current) return;
 
       const currentHeight = element.scrollHeight;
+      if (Math.abs(lastHeightRef.current - currentHeight) < 2) return;
+      lastHeightRef.current = currentHeight;
+
       const maxHeight = 1123; // A4 standard 297mm @ 96dpi (matches template minHeight)
 
       const percentage = Math.round((currentHeight / maxHeight) * 100);
@@ -352,7 +358,7 @@ const ImpactProTemplate = forwardRef((props, ref) => {
         ? Math.round(((currentHeight - maxHeight) / maxHeight) * 100)
         : 0;
 
-      onPageUsageChange({
+      onPageUsageChangeRef.current({
         isOverflowing,
         currentHeight,
         maxHeight,
@@ -376,7 +382,7 @@ const ImpactProTemplate = forwardRef((props, ref) => {
       clearTimeout(timer);
       resizeObserver.disconnect();
     };
-  }, [resumeData]); // Don't include onPageUsageChange to prevent infinite loops
+  }, [resumeData]);
 
   // Default section order
   const DEFAULT_SECTION_ORDER = [
@@ -971,7 +977,9 @@ const ImpactProTemplate = forwardRef((props, ref) => {
                           color: selectedTheme.text,
                         }}
                       >
-                        {cert.name}
+                        {typeof cert === "string"
+                          ? cert
+                          : cert.name || cert.title || cert.issuer || "Certification"}
                       </div>
                       <div
                         style={{

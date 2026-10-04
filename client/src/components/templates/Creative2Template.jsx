@@ -65,11 +65,17 @@ const highlightMetrics = (text, primaryColor) => {
 
 const Creative2Template = forwardRef(({ resumeData = {}, onPageUsageChange }, ref) => {
   const containerRef = useRef(null);
+  const lastHeightRef = useRef(0);
+  const onPageUsageChangeRef = useRef(onPageUsageChange);
+  onPageUsageChangeRef.current = onPageUsageChange;
 
   // Page overflow detection (11in @ 96 DPI = 1056px)
   useEffect(() => {
-    if (containerRef.current) {
+    if (containerRef.current && onPageUsageChangeRef.current) {
       const currentHeight = containerRef.current.scrollHeight;
+      if (Math.abs(lastHeightRef.current - currentHeight) < 2) return;
+      lastHeightRef.current = currentHeight;
+
       const maxHeight = 1123;
       const isOverflowing = currentHeight > maxHeight;
       const overflowPercentage = isOverflowing
@@ -85,11 +91,9 @@ const Creative2Template = forwardRef(({ resumeData = {}, onPageUsageChange }, re
         templateName: "Studio & Portfolio Designer",
       };
 
-      if (onPageUsageChange) {
-        onPageUsageChange(usageInfo);
-      }
+      onPageUsageChangeRef.current(usageInfo);
     }
-  }, [resumeData, onPageUsageChange]);
+  }, [resumeData]);
 
   // Authentic Handcrafted Wooden Themes (Single Unified Shade, No Split Tones)
   const colorThemes = {
@@ -1308,7 +1312,11 @@ const Creative2Template = forwardRef(({ resumeData = {}, onPageUsageChange }, re
                     }}
                   >
                     <span>
-                      <strong style={{ color: theme.textPrimary }}>{cert.name}</strong>
+                      <strong style={{ color: theme.textPrimary }}>
+                        {typeof cert === "string"
+                          ? cert
+                          : cert.name || cert.title || cert.issuer || "Certification"}
+                      </strong>
                       {cert.issuer && (
                         <span style={{ color: theme.textMuted }}> — {cert.issuer}</span>
                       )}
