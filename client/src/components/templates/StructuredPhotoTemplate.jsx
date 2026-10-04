@@ -57,28 +57,32 @@ const FLEX_RIGHT_SECTIONS = [];
 
 const StructuredPhotoTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
   const containerRef = useRef(null);
+  const lastHeightRef = useRef(0);
+  const onPageUsageChangeRef = useRef(onPageUsageChange);
+  onPageUsageChangeRef.current = onPageUsageChange;
   const data = resumeData || {};
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current || !onPageUsageChangeRef.current) return;
     const currentHeight = containerRef.current.scrollHeight;
+    if (Math.abs(lastHeightRef.current - currentHeight) < 2) return;
+    lastHeightRef.current = currentHeight;
+
     const maxHeight = 1123;
     const isOverflowing = currentHeight > maxHeight;
     const overflowPercentage = isOverflowing
       ? Math.round(((currentHeight - maxHeight) / maxHeight) * 100)
       : 0;
 
-    if (onPageUsageChange) {
-      onPageUsageChange({
-        isOverflowing,
-        currentHeight,
-        maxHeight,
-        overflowPercentage,
-        percentage: Math.round((currentHeight / maxHeight) * 100),
-        templateName: "StructuredPhotoTemplate",
-      });
-    }
-  }, [resumeData, onPageUsageChange]);
+    onPageUsageChangeRef.current({
+      isOverflowing,
+      currentHeight,
+      maxHeight,
+      overflowPercentage,
+      percentage: Math.round((currentHeight / maxHeight) * 100),
+      templateName: "StructuredPhotoTemplate",
+    });
+  }, [resumeData]);
 
   const theme =
     COLOR_THEMES[data?.selectedTheme || data?.colorTheme] || COLOR_THEMES.coral;

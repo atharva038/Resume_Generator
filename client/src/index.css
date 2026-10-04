@@ -430,13 +430,14 @@
   margin-right: auto !important;
 }
 
-.resume-layout-shell[data-contact="left-inline"] header [class*="contact"],
+.resume-layout-shell[data-contact="left-inline"] header [class*="contact-bar"],
+.resume-layout-shell[data-contact="left-inline"] header [class*="contact-container"],
+.resume-layout-shell[data-contact="left-inline"] header [class*="contact-row"],
 .resume-layout-shell[data-contact="left-inline"] header [data-contact-row],
 .resume-layout-shell[data-contact="left-inline"] header .contact-container,
-.resume-layout-shell[data-contact="left-inline"] header div:has(a):not(:has(h1)):not(:has(h2)),
-.resume-layout-shell[data-contact="left-inline"] header div:has(svg):not(:has(h1)):not(:has(h2)),
-.resume-layout-shell[data-contact="left-inline"] header > div:not(:has(h1)):not(:has(h2)),
-.resume-layout-shell[data-contact="left-inline"] header > div:last-child:not(:has(h1)):not(:has(h2)) {
+.resume-layout-shell[data-contact="left-inline"] header > div:not(:has(h1, h2)),
+.resume-layout-shell[data-contact="left-inline"] header > div:last-child:not(:has(h1, h2)),
+.resume-layout-shell[data-contact="left-inline"] header > div:has(h1, h2) > div:not(:has(h1, h2)) {
   display: flex !important;
   flex-direction: row !important;
   flex-wrap: wrap !important;
@@ -449,16 +450,22 @@
   gap: 6px 14px !important;
 }
 
-.resume-layout-shell[data-contact="left-inline"] header [class*="contact"] > *,
+.resume-layout-shell[data-contact="left-inline"] header [class*="contact-bar"] > *,
+.resume-layout-shell[data-contact="left-inline"] header [class*="contact-container"] > *,
+.resume-layout-shell[data-contact="left-inline"] header [class*="contact-row"] > *,
 .resume-layout-shell[data-contact="left-inline"] header [data-contact-row] > *,
 .resume-layout-shell[data-contact="left-inline"] header .contact-container > *,
-.resume-layout-shell[data-contact="left-inline"] header div:has(a):not(:has(h1)):not(:has(h2)) > *,
-.resume-layout-shell[data-contact="left-inline"] header div:has(svg):not(:has(h1)):not(:has(h2)) > *,
-.resume-layout-shell[data-contact="left-inline"] header > div:not(:has(h1)):not(:has(h2)) > * {
+.resume-layout-shell[data-contact="left-inline"] header .contact-item,
+.resume-layout-shell[data-contact="left-inline"] header > div:not(:has(h1, h2)) > *,
+.resume-layout-shell[data-contact="left-inline"] header > div:has(h1, h2) > div:not(:has(h1, h2)) > * {
   display: inline-flex !important;
   flex-direction: row !important;
   align-items: center !important;
   justify-content: flex-start !important;
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  flex: 0 0 auto !important;
   white-space: nowrap !important;
 }
 
@@ -503,13 +510,14 @@
   margin-right: auto !important;
 }
 
-.resume-layout-shell[data-contact="center-inline"] header [class*="contact"],
+.resume-layout-shell[data-contact="center-inline"] header [class*="contact-bar"],
+.resume-layout-shell[data-contact="center-inline"] header [class*="contact-container"],
+.resume-layout-shell[data-contact="center-inline"] header [class*="contact-row"],
 .resume-layout-shell[data-contact="center-inline"] header [data-contact-row],
 .resume-layout-shell[data-contact="center-inline"] header .contact-container,
-.resume-layout-shell[data-contact="center-inline"] header div:has(a):not(:has(h1)):not(:has(h2)),
-.resume-layout-shell[data-contact="center-inline"] header div:has(svg):not(:has(h1)):not(:has(h2)),
-.resume-layout-shell[data-contact="center-inline"] header > div:not(:has(h1)):not(:has(h2)),
-.resume-layout-shell[data-contact="center-inline"] header > div:last-child:not(:has(h1)):not(:has(h2)) {
+.resume-layout-shell[data-contact="center-inline"] header > div:not(:has(h1, h2)),
+.resume-layout-shell[data-contact="center-inline"] header > div:last-child:not(:has(h1, h2)),
+.resume-layout-shell[data-contact="center-inline"] header > div:has(h1, h2) > div:not(:has(h1, h2)) {
   display: flex !important;
   flex-direction: row !important;
   flex-wrap: wrap !important;
@@ -522,16 +530,22 @@
   gap: 6px 14px !important;
 }
 
-.resume-layout-shell[data-contact="center-inline"] header [class*="contact"] > *,
+.resume-layout-shell[data-contact="center-inline"] header [class*="contact-bar"] > *,
+.resume-layout-shell[data-contact="center-inline"] header [class*="contact-container"] > *,
+.resume-layout-shell[data-contact="center-inline"] header [class*="contact-row"] > *,
 .resume-layout-shell[data-contact="center-inline"] header [data-contact-row] > *,
 .resume-layout-shell[data-contact="center-inline"] header .contact-container > *,
-.resume-layout-shell[data-contact="center-inline"] header div:has(a):not(:has(h1)):not(:has(h2)) > *,
-.resume-layout-shell[data-contact="center-inline"] header div:has(svg):not(:has(h1)):not(:has(h2)) > *,
-.resume-layout-shell[data-contact="center-inline"] header > div:not(:has(h1)):not(:has(h2)) > * {
+.resume-layout-shell[data-contact="center-inline"] header .contact-item,
+.resume-layout-shell[data-contact="center-inline"] header > div:not(:has(h1, h2)) > *,
+.resume-layout-shell[data-contact="center-inline"] header > div:has(h1, h2) > div:not(:has(h1, h2)) > * {
   display: inline-flex !important;
   flex-direction: row !important;
   align-items: center !important;
   justify-content: center !important;
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  flex: 0 0 auto !important;
   white-space: nowrap !important;
 }
 
@@ -576,13 +590,14 @@
   margin-right: auto !important;
 }
 
-.resume-layout-shell[data-contact="center-stacked"] header [class*="contact"],
+.resume-layout-shell[data-contact="center-stacked"] header [class*="contact-bar"],
+.resume-layout-shell[data-contact="center-stacked"] header [class*="contact-container"],
+.resume-layout-shell[data-contact="center-stacked"] header [class*="contact-row"],
 .resume-layout-shell[data-contact="center-stacked"] header [data-contact-row],
 .resume-layout-shell[data-contact="center-stacked"] header .contact-container,
-.resume-layout-shell[data-contact="center-stacked"] header div:has(a):not(:has(h1)):not(:has(h2)),
-.resume-layout-shell[data-contact="center-stacked"] header div:has(svg):not(:has(h1)):not(:has(h2)),
-.resume-layout-shell[data-contact="center-stacked"] header > div:not(:has(h1)):not(:has(h2)),
-.resume-layout-shell[data-contact="center-stacked"] header > div:last-child:not(:has(h1)):not(:has(h2)) {
+.resume-layout-shell[data-contact="center-stacked"] header > div:not(:has(h1, h2)),
+.resume-layout-shell[data-contact="center-stacked"] header > div:last-child:not(:has(h1, h2)),
+.resume-layout-shell[data-contact="center-stacked"] header > div:has(h1, h2) > div:not(:has(h1, h2)) {
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
@@ -594,17 +609,22 @@
   margin-right: auto !important;
 }
 
-.resume-layout-shell[data-contact="center-stacked"] header [class*="contact"] > *,
+.resume-layout-shell[data-contact="center-stacked"] header [class*="contact-bar"] > *,
+.resume-layout-shell[data-contact="center-stacked"] header [class*="contact-container"] > *,
+.resume-layout-shell[data-contact="center-stacked"] header [class*="contact-row"] > *,
 .resume-layout-shell[data-contact="center-stacked"] header [data-contact-row] > *,
 .resume-layout-shell[data-contact="center-stacked"] header .contact-container > *,
-.resume-layout-shell[data-contact="center-stacked"] header div:has(a):not(:has(h1)):not(:has(h2)) > *,
-.resume-layout-shell[data-contact="center-stacked"] header div:has(svg):not(:has(h1)):not(:has(h2)) > *,
-.resume-layout-shell[data-contact="center-stacked"] header > div:not(:has(h1)):not(:has(h2)) > * {
+.resume-layout-shell[data-contact="center-stacked"] header .contact-item,
+.resume-layout-shell[data-contact="center-stacked"] header > div:not(:has(h1, h2)) > *,
+.resume-layout-shell[data-contact="center-stacked"] header > div:has(h1, h2) > div:not(:has(h1, h2)) > * {
   display: inline-flex !important;
   flex-direction: row !important;
   align-items: center !important;
   justify-content: center !important;
   text-align: center !important;
+  width: auto !important;
+  min-width: 0 !important;
+  flex: 0 0 auto !important;
 }
 
 .resume-layout-shell[data-contact="center-stacked"] header span[style*="userSelect"],
@@ -741,36 +761,33 @@
 
 .page-transition {
   animation-fill-mode: both;
-  animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity;
 }
 
 .page-transition-enter {
-  animation: pageEnter 0.3s;
+  animation: pageEnter 0.2s ease-out;
 }
 
 .page-transition-exit {
-  animation: pageExit 0.2s;
+  animation: pageExit 0.15s ease-in;
 }
 
 @keyframes pageEnter {
   from {
     opacity: 0;
-    transform: translateY(8px) scale(0.99);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
   }
 }
 
 @keyframes pageExit {
   from {
     opacity: 1;
-    transform: translateY(0) scale(1);
   }
   to {
     opacity: 0;
-    transform: translateY(-8px) scale(0.99);
   }
 }
 

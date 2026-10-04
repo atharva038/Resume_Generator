@@ -563,7 +563,7 @@ export default function Templates() {
     : `Explore top ${selectedCategory.toLowerCase()} ATS resume templates. High recruiter callback rate, clean single & two-column formats, and 1-click PDF download.`;
 
   const dynamicMetaImage = currentTemplate
-    ? `https://www.smartnshine.app/templates/${currentTemplate.id.replace("-2", "2")}.webp`
+    ? `https://www.smartnshine.app/templates/${String(currentTemplate.id || "classic").replace("-2", "2")}.webp`
     : "https://www.smartnshine.app/social-preview.png";
 
   const dynamicImageAlt = currentTemplate

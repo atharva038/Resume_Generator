@@ -39,18 +39,20 @@ export function UniformTemplateThumbnail({
     : resumeData;
 
   return (
-    <div className="absolute inset-0 p-2.5">
+    <div className="absolute inset-0 p-1.5" style={{ contain: "paint layout" }}>
       <div
         ref={frameRef}
         className="relative h-full w-full overflow-hidden rounded-xl border border-gray-200/80 dark:border-zinc-800 bg-white shadow-sm select-none"
+        style={{ contain: "paint layout" }}
       >
         <div
           className="pointer-events-none"
           style={{
-            transform: `scale(${scale})`,
+            transform: `scale(${scale}) translateZ(0)`,
             transformOrigin: "top left",
             width: "210mm",
             minHeight: "297mm",
+            willChange: "transform",
           }}
         >
           {TemplateComponent ? (
@@ -106,14 +108,8 @@ export default function TemplateCard({
     >
       {/* Thumbnail view */}
       <div className="relative h-[380px] bg-slate-50 dark:bg-zinc-950 overflow-hidden">
-        {template.component ? (
-          <UniformTemplateThumbnail
-            TemplateComponent={template.component}
-            resumeData={sampleResumeData}
-            primaryColor={template.colors?.[0]}
-          />
-        ) : imageSrc && !imgError ? (
-          <div className="absolute inset-0 p-2.5">
+        {imageSrc && !imgError ? (
+          <div className="absolute inset-0 p-1.5">
             <div className="relative h-full w-full overflow-hidden rounded-xl border border-gray-200/80 dark:border-zinc-800 bg-white shadow-sm">
               <img
                 src={imageSrc}
@@ -127,6 +123,12 @@ export default function TemplateCard({
               />
             </div>
           </div>
+        ) : template.component ? (
+          <UniformTemplateThumbnail
+            TemplateComponent={template.component}
+            resumeData={sampleResumeData}
+            primaryColor={template.colors?.[0]}
+          />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-xs text-gray-400">
             Preview Loading...

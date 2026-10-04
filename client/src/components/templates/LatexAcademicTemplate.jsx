@@ -59,11 +59,17 @@ const highlightMetrics = (text, primaryColor) => {
 
 const LatexAcademicTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }, ref) => {
   const containerRef = useRef(null);
+  const lastHeightRef = useRef(0);
+  const onPageUsageChangeRef = useRef(onPageUsageChange);
+  onPageUsageChangeRef.current = onPageUsageChange;
 
   // Page overflow detection (11in @ 96 DPI = 1056px)
   useEffect(() => {
-    if (containerRef.current) {
+    if (containerRef.current && onPageUsageChangeRef.current) {
       const currentHeight = containerRef.current.scrollHeight;
+      if (Math.abs(lastHeightRef.current - currentHeight) < 2) return;
+      lastHeightRef.current = currentHeight;
+
       const maxHeight = 1123;
       const isOverflowing = currentHeight > maxHeight;
       const overflowPercentage = isOverflowing
@@ -79,11 +85,9 @@ const LatexAcademicTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }
         templateName: "LatexAcademicTemplate",
       };
 
-      if (onPageUsageChange) {
-        onPageUsageChange(usageInfo);
-      }
+      onPageUsageChangeRef.current(usageInfo);
     }
-  }, [resumeData, onPageUsageChange]);
+  }, [resumeData]);
 
   // Prestigious Academic & LaTeX Palettes
   const colorThemes = {
@@ -855,7 +859,9 @@ const LatexAcademicTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }
                       <span style={{ color: selectedTheme.primary, userSelect: "none" }}>•</span>
                       <span style={{ flex: 1 }}>
                         <strong style={{ color: selectedTheme.text }}>
-                          {cert.name || cert.title || cert}
+                          {typeof cert === "string"
+                            ? cert
+                            : cert.name || cert.title || cert.issuer || "Certification"}
                         </strong>
                         {(cert.issuer || cert.date) && (
                           <span style={{ color: selectedTheme.textMuted }}>

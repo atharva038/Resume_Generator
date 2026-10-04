@@ -828,22 +828,22 @@ const ScaledResumeCard = React.memo(function ScaledResumeCard({
         zIndex: isFocused ? 25 : isCardHovered ? 20 : distance === 1 ? 8 : 1,
         willChange: "transform, opacity",
       }}
-      className={`w-[310px] sm:w-[375px] xl:w-[395px] shrink-0 h-[420px] sm:h-[480px] rounded-2xl border p-2.5 sm:p-3.5 flex flex-col justify-between overflow-hidden text-left select-none group/card cursor-pointer transition-[box-shadow,border-color,background-color] duration-200 transform-gpu ${
+      className={`w-[320px] sm:w-[385px] xl:w-[410px] shrink-0 h-[450px] sm:h-[525px] xl:h-[545px] rounded-xl border p-1 sm:p-1.5 flex flex-col justify-between overflow-hidden text-left select-none group/card cursor-pointer transition-[box-shadow,border-color,background-color] duration-200 transform-gpu ${
         isDarkMode
           ? "bg-[#0b1018]/95 hover:border-white/25"
           : "bg-white hover:border-zinc-400"
       } ${shadowClasses}`}
     >
       <div
-        className={`flex items-center justify-between pb-2 mb-2 border-b text-[11px] sm:text-xs font-mono ${
-          isDarkMode ? "border-white/5 text-zinc-300" : "border-zinc-100 text-zinc-800 font-semibold"
+        className={`flex items-center justify-between px-1.5 py-0.5 mb-0.5 text-[10px] sm:text-[11px] font-mono ${
+          isDarkMode ? "text-zinc-300" : "text-zinc-800 font-semibold"
         }`}
       >
-        <span className="font-bold flex items-center gap-1.5 truncate max-w-[190px]">
+        <span className="font-bold flex items-center gap-1.5 truncate max-w-[200px]">
           <span className={dotColors[badgeColor] || "text-zinc-500"}>⸎</span> {templateTitle}
         </span>
         <span
-          className={`font-bold px-2 py-0.5 rounded-full border text-[9px] sm:text-[10px] whitespace-nowrap ${
+          className={`font-bold px-1.5 py-0.5 rounded-full border text-[8.5px] sm:text-[9.5px] whitespace-nowrap leading-tight ${
             badgeColors[badgeColor] || badgeColors.zinc
           }`}
         >
@@ -851,25 +851,25 @@ const ScaledResumeCard = React.memo(function ScaledResumeCard({
         </span>
       </div>
 
-      <div className="w-full flex-1 overflow-hidden rounded-xl bg-white relative shadow-2xs border border-zinc-200/80">
-        <div className="absolute top-0 left-0 w-[794px] origin-top-left transform scale-[0.38] sm:scale-[0.45] xl:scale-[0.48] pointer-events-none select-none text-zinc-900">
+      <div className="w-full flex-1 overflow-hidden rounded-[7px] bg-white relative shadow-2xs border border-zinc-200/80" style={{ contain: "paint layout" }}>
+        <div className="absolute top-0 left-0 w-[794px] origin-top-left transform scale-[0.43] sm:scale-[0.51] xl:scale-[0.54] pointer-events-none select-none text-zinc-900 will-change-transform">
           <Template resumeData={data} isDarkMode={false} />
         </div>
       </div>
 
       <div
-        className={`pt-2 mt-2 flex items-center justify-between text-xs border-t ${
-          isDarkMode ? "border-white/5 text-zinc-400" : "border-zinc-100 text-zinc-500"
+        className={`px-1.5 pt-1 mt-0.5 flex items-center justify-between text-[10px] sm:text-[11px] ${
+          isDarkMode ? "text-zinc-400" : "text-zinc-500"
         }`}
       >
-        <span className="font-mono truncate max-w-[170px] text-[10px] sm:text-[11px]">{formatText}</span>
+        <span className="font-mono truncate max-w-[180px]">{formatText}</span>
         <Link
           to={`/templates?template=${templateSlug}`}
           onClick={(e) => e.stopPropagation()}
-          className="font-bold flex items-center gap-1 shrink-0 text-xs text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white transition-colors group/link py-1 px-2 rounded-md hover:bg-black/5 dark:hover:bg-white/10"
+          className="font-bold flex items-center gap-1 shrink-0 text-[10.5px] sm:text-xs text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white transition-colors group/link py-0.5 px-1.5 rounded hover:bg-black/5 dark:hover:bg-white/10"
         >
           <span>Use Template</span>
-          <ArrowRight className="w-3.5 h-3.5 group-hover/link:translate-x-0.5 transition-transform" />
+          <ArrowRight className="w-3 h-3 group-hover/link:translate-x-0.5 transition-transform" />
         </Link>
       </div>
     </motion.div>
@@ -1949,10 +1949,10 @@ export default function GlidingMotionCanvas({ activeMode = "resumes", isDarkMode
   useEffect(() => {
     const updateSteps = () => {
       if (typeof window === "undefined") return;
-      // Resumes Step (Enlarged cards: 395px + 40px gap)
-      if (window.innerWidth >= 1280) setResumeColStep(435);
-      else if (window.innerWidth >= 640) setResumeColStep(407);
-      else setResumeColStep(335);
+      // Resumes Step (Enlarged cards: 410px + 40px gap)
+      if (window.innerWidth >= 1280) setResumeColStep(450);
+      else if (window.innerWidth >= 640) setResumeColStep(417);
+      else setResumeColStep(336);
 
       // Portfolios Step (Larger cards: 560px + 36px)
       if (window.innerWidth >= 1280) setPortfolioColStep(596);
@@ -1998,15 +1998,15 @@ export default function GlidingMotionCanvas({ activeMode = "resumes", isDarkMode
   // 2D Camera / Stage Offsets for RESUMES (Full-density buffer, vertically centered)
   const getResumeStageOffset = (index, step) => {
     switch (index) {
-      case 0: return { x: 0, y: -1370 };      // Silicon Valley (Col 2, index 3)
-      case 1: return { x: step, y: -1334 };   // Stanford LaTeX (Col 1, index 3)
-      case 2: return { x: 0, y: -862 };       // Nordic Split (Col 2, index 2)
-      case 3: return { x: -step, y: -1354 };  // Modern (Col 3, index 3)
-      case 4: return { x: 0, y: -1878 };      // Executive (Col 2, index 4)
-      case 5: return { x: step, y: -2350 };   // Classic (Col 1, index 5)
-      case 6: return { x: -step, y: -2370 };  // Tech (Col 3, index 5)
-      case 7: return { x: step, y: -1842 };   // Strategic Leadership (Col 1, index 4)
-      default: return { x: 0, y: -1370 };
+      case 0: return { x: 0, y: -1538 };      // Silicon Valley (Col 2, index 3)
+      case 1: return { x: step, y: -1498 };   // Stanford LaTeX (Col 1, index 3)
+      case 2: return { x: 0, y: -965 };       // Nordic Split (Col 2, index 2)
+      case 3: return { x: -step, y: -1522 };  // Modern (Col 3, index 3)
+      case 4: return { x: 0, y: -2111 };      // Executive (Col 2, index 4)
+      case 5: return { x: step, y: -2644 };   // Classic (Col 1, index 5)
+      case 6: return { x: -step, y: -2668 };  // Tech (Col 3, index 5)
+      case 7: return { x: step, y: -2071 };   // Strategic Leadership (Col 1, index 4)
+      default: return { x: 0, y: -1538 };
     }
   };
 
@@ -2072,7 +2072,7 @@ export default function GlidingMotionCanvas({ activeMode = "resumes", isDarkMode
             className="flex items-start justify-center gap-4 sm:gap-8 lg:gap-10 px-2 lg:px-6 pt-3 will-change-transform shrink-0"
           >
             {/* Column A: Far Left Outer Buffer */}
-            <div className="overflow-visible h-full flex flex-col w-[310px] sm:w-[375px] xl:w-[395px] shrink-0 pt-4">
+            <div className="overflow-visible h-full flex flex-col w-[320px] sm:w-[385px] xl:w-[410px] shrink-0 pt-4">
               <div className="flex flex-col gap-[28px] pb-[28px]">
                 {colAItems.map((item, idx) => (
                   <ScaledResumeCard
@@ -2089,7 +2089,7 @@ export default function GlidingMotionCanvas({ activeMode = "resumes", isDarkMode
             </div>
 
             {/* Column 1: Left */}
-            <div className="overflow-visible h-full flex flex-col w-[310px] sm:w-[375px] xl:w-[395px] shrink-0 pt-0">
+            <div className="overflow-visible h-full flex flex-col w-[320px] sm:w-[385px] xl:w-[410px] shrink-0 pt-0">
               <div className="flex flex-col gap-[28px] pb-[28px]">
                 {col1Items.map((item, idx) => (
                   <ScaledResumeCard
@@ -2106,7 +2106,7 @@ export default function GlidingMotionCanvas({ activeMode = "resumes", isDarkMode
             </div>
 
             {/* Column 2: Center */}
-            <div className="overflow-visible h-full flex flex-col w-[310px] sm:w-[375px] xl:w-[395px] shrink-0 pt-8 sm:pt-10">
+            <div className="overflow-visible h-full flex flex-col w-[320px] sm:w-[385px] xl:w-[410px] shrink-0 pt-8 sm:pt-10">
               <div className="flex flex-col gap-[28px] pb-[28px]">
                 {col2Items.map((item, idx) => (
                   <ScaledResumeCard
@@ -2123,7 +2123,7 @@ export default function GlidingMotionCanvas({ activeMode = "resumes", isDarkMode
             </div>
 
             {/* Column 3: Right */}
-            <div className="overflow-visible h-full flex flex-col w-[310px] sm:w-[375px] xl:w-[395px] shrink-0 pt-4 sm:pt-6">
+            <div className="overflow-visible h-full flex flex-col w-[320px] sm:w-[385px] xl:w-[410px] shrink-0 pt-4 sm:pt-6">
               <div className="flex flex-col gap-[28px] pb-[28px]">
                 {col3Items.map((item, idx) => (
                   <ScaledResumeCard
@@ -2140,7 +2140,7 @@ export default function GlidingMotionCanvas({ activeMode = "resumes", isDarkMode
             </div>
 
             {/* Column B: Far Right Outer Buffer */}
-            <div className="overflow-visible h-full flex flex-col w-[310px] sm:w-[375px] xl:w-[395px] shrink-0 pt-10 sm:pt-12">
+            <div className="overflow-visible h-full flex flex-col w-[320px] sm:w-[385px] xl:w-[410px] shrink-0 pt-10 sm:pt-12">
               <div className="flex flex-col gap-[28px] pb-[28px]">
                 {colBItems.map((item, idx) => (
                   <ScaledResumeCard

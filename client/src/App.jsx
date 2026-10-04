@@ -200,7 +200,7 @@ function App() {
             />
             <Route element={<Layout />}>
               <Route
-                path="dashboard"
+                path="/dashboard"
                 element={
                   <ProtectedRoute>
                     <DashboardOverview />
@@ -208,12 +208,12 @@ function App() {
                 }
               />
               {/* Public High-SEO Routes */}
-              <Route path="templates" element={<Templates />} />
-              <Route path="contact" element={<Contact />} />
+              <Route path="/templates" element={<Templates />} />
+              <Route path="/contact" element={<Contact />} />
 
               {/* Protected Routes - Require Authentication */}
               <Route
-                path="upload"
+                path="/upload"
                 element={
                   <ProtectedRoute>
                     <Upload />
@@ -221,7 +221,7 @@ function App() {
                 }
               />
               <Route
-                path="github-import"
+                path="/github-import"
                 element={
                   <ProtectedRoute>
                     <GitHubImport />
@@ -229,60 +229,60 @@ function App() {
                 }
               />
               <Route
-                path="ats-analyzer"
+                path="/ats-analyzer"
                 element={
                   <ProtectedRoute>
                     <ATSAnalyzer />
                   </ProtectedRoute>
                 }
               />
-            <Route
-              path="my-resumes"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="portfolio"
-              element={
-                <ProtectedRoute>
-                  <PortfolioDashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="portfolio/new"
-              element={
-                <ProtectedRoute>
-                  <PortfolioCreate />
-                </ProtectedRoute>
-              }
-            />
-            {/* Subscription Routes */}
-            <Route path="pricing" element={<Pricing />} />
-            <Route path="privacy-policy" element={<PrivacyPolicy />} />
-            <Route
-              path="terms-and-conditions"
-              element={<TermsAndConditions />}
-            />
-            <Route path="refund-policy" element={<RefundPolicy />} />
-            <Route path="shipping-policy" element={<ShippingPolicy />} />
+              <Route
+                path="/my-resumes"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/portfolio"
+                element={
+                  <ProtectedRoute>
+                    <PortfolioDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/portfolio/new"
+                element={
+                  <ProtectedRoute>
+                    <PortfolioCreate />
+                  </ProtectedRoute>
+                }
+              />
+              {/* Subscription Routes */}
+              <Route path="/pricing" element={<Pricing />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route
+                path="/terms-and-conditions"
+                element={<TermsAndConditions />}
+              />
+              <Route path="/refund-policy" element={<RefundPolicy />} />
+              <Route path="/shipping-policy" element={<ShippingPolicy />} />
 
               {/* Public Auth Routes */}
-              <Route path="login" element={<Login />} />
-              <Route path="register" element={<Register />} />
-              <Route path="forgot-password" element={<ForgotPassword />} />
-              <Route path="reset-password/:token" element={<ResetPassword />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password/:token" element={<ResetPassword />} />
               <Route
-                path="rate-limit-exceeded"
+                path="/rate-limit-exceeded"
                 element={<RateLimitExceeded />}
               />
-              <Route path="auth/callback" element={<AuthCallback />} />
+              <Route path="/auth/callback" element={<AuthCallback />} />
 
               <Route
-                path="payment"
+                path="/payment"
                 element={
                   <ProtectedRoute>
                     <PaymentModal />
@@ -290,24 +290,15 @@ function App() {
                 }
               />
               <Route
-                path="subscription"
+                path="/subscription"
                 element={
                   <ProtectedRoute>
                     <SubscriptionDashboard />
                   </ProtectedRoute>
                 }
               />
-              {/* Temporarily disabled - Advanced Analytics */}
-              {/* <Route
-              path="analytics"
-              element={
-                <ProtectedRoute>
-                  <AdvancedAnalytics />
-                </ProtectedRoute>
-              }
-            /> */}
               <Route
-                path="profile"
+                path="/profile"
                 element={
                   <ProtectedRoute>
                     <Profile />
@@ -317,7 +308,7 @@ function App() {
 
               {/* AI Interview Routes */}
               <Route
-                path="interview"
+                path="/interview"
                 element={
                   <ProtectedRoute>
                     <AIInterview />
@@ -325,11 +316,11 @@ function App() {
                 }
               />
               <Route
-                path="interview/preview"
+                path="/interview/preview"
                 element={<InterviewPreviewPage />}
               />
               <Route
-                path="interview/history"
+                path="/interview/history"
                 element={
                   <ProtectedRoute>
                     <InterviewHistory />
@@ -337,7 +328,7 @@ function App() {
                 }
               />
               <Route
-                path="interview/result/:sessionId"
+                path="/interview/result/:sessionId"
                 element={
                   <ProtectedRoute>
                     <InterviewResult />

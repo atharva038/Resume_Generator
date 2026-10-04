@@ -15,10 +15,16 @@ import {Mail, Phone, MapPin, Linkedin, Github, Globe, ExternalLink} from "lucide
 const GitHubStyleTemplate = forwardRef(
   ({resumeData, onPageUsageChange}, ref) => {
     const containerRef = useRef(null);
+    const lastHeightRef = useRef(0);
+    const onPageUsageChangeRef = useRef(onPageUsageChange);
+    onPageUsageChangeRef.current = onPageUsageChange;
 
     useEffect(() => {
-      if (containerRef.current) {
+      if (containerRef.current && onPageUsageChangeRef.current) {
         const currentHeight = containerRef.current.scrollHeight;
+        if (Math.abs(lastHeightRef.current - currentHeight) < 2) return;
+        lastHeightRef.current = currentHeight;
+
         const maxHeight = 1123;
         const isOverflowing = currentHeight > maxHeight;
         const overflowPercentage = isOverflowing
@@ -34,11 +40,9 @@ const GitHubStyleTemplate = forwardRef(
           templateName: "GitHubStyleTemplate",
         };
 
-        if (onPageUsageChange) {
-          onPageUsageChange(usageInfo);
-        }
+        onPageUsageChangeRef.current(usageInfo);
       }
-    }, [resumeData, onPageUsageChange]);
+    }, [resumeData]);
 
     const colorThemes = {
       metroNavy: {
@@ -632,7 +636,9 @@ const GitHubStyleTemplate = forwardRef(
             {data.certifications.map((cert, index) => (
               <li key={index} style={{marginBottom: "1px", fontSize: compact.bodySize, color: selectedTheme.text}}>
                 <span style={{fontWeight: "700", color: selectedTheme.primary}}>
-                  {cert.name || cert.title || cert}
+                  {typeof cert === "string"
+                    ? cert
+                    : cert.name || cert.title || cert.issuer || "Certification"}
                 </span>
                 {(cert.issuer || cert.date) && (
                   <span style={{color: selectedTheme.textLight}}>

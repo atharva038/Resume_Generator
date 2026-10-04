@@ -57,11 +57,17 @@ const highlightMetrics = (text, primaryColor) => {
 
 const NordicSplitTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }, ref) => {
   const containerRef = useRef(null);
+  const lastHeightRef = useRef(0);
+  const onPageUsageChangeRef = useRef(onPageUsageChange);
+  onPageUsageChangeRef.current = onPageUsageChange;
 
   // Page overflow detection (11in @ 96 DPI = 1056px)
   useEffect(() => {
-    if (containerRef.current) {
+    if (containerRef.current && onPageUsageChangeRef.current) {
       const currentHeight = containerRef.current.scrollHeight;
+      if (Math.abs(lastHeightRef.current - currentHeight) < 2) return;
+      lastHeightRef.current = currentHeight;
+
       const maxHeight = 1123;
       const isOverflowing = currentHeight > maxHeight;
       const overflowPercentage = isOverflowing
@@ -77,11 +83,9 @@ const NordicSplitTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }, 
         templateName: "NordicSplitTemplate",
       };
 
-      if (onPageUsageChange) {
-        onPageUsageChange(usageInfo);
-      }
+      onPageUsageChangeRef.current(usageInfo);
     }
-  }, [resumeData, onPageUsageChange]);
+  }, [resumeData]);
 
   // Curated Nordic Palettes
   const colorThemes = {
@@ -575,7 +579,9 @@ const NordicSplitTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }, 
                 {resumeData.certifications.map((cert, index) => (
                   <div key={index} style={{ fontSize: styles.sidebarTextSize }}>
                     <div style={{ fontWeight: 700, color: selectedTheme.text, lineHeight: 1.25 }}>
-                      {cert.name || cert.title || cert}
+                      {typeof cert === "string"
+                        ? cert
+                        : cert.name || cert.title || cert.issuer || "Certification"}
                     </div>
                     {(cert.issuer || cert.date) && (
                       <div style={{ fontSize: "7.8pt", color: selectedTheme.textMuted }}>
