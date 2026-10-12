@@ -1,4 +1,4 @@
-import { forwardRef, useRef, useEffect, useMemo } from "react";
+import React, { forwardRef, useRef, useEffect, useMemo } from "react";
 import {
   isDescriptionDuplicatedInBullets,
   cleanBulletText,
@@ -52,7 +52,7 @@ const highlightMetrics = (text, primaryColor) => {
         </span>
       );
     }
-    return part;
+    return <React.Fragment key={index}>{part}</React.Fragment>;
   });
 };
 
@@ -507,12 +507,17 @@ const TechTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }, ref) =>
     "customSections",
   ];
 
-  const sectionOrder =
+  const baseOrder =
     resumeData.sectionOrder && resumeData.sectionOrder.length > 0
       ? resumeData.sectionOrder.filter(
           (id) => !["score", "personal", "recommendations"].includes(id)
         )
       : defaultOrder;
+
+  const sectionOrder =
+    resumeData.customSections && resumeData.customSections.length > 0 && !baseOrder.includes("customSections")
+      ? [...baseOrder, "customSections"]
+      : baseOrder;
 
   // Contact items helper
   const contact = resumeData.contact || {};
@@ -1269,44 +1274,152 @@ const TechTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }, ref) =>
                         section.title.replace(/\s+/g, ""),
                         section.title
                       )}
-                      <ul style={{ margin: 0, paddingLeft: 0, listStyle: "none" }}>
-                        {section.items.map((item, itemIdx) => {
-                          const cleaned = cleanBulletText(item);
-                          if (!cleaned) return null;
-                          return (
-                            <li
-                              key={itemIdx}
-                              style={{
-                                display: "flex",
-                                alignItems: "flex-start",
-                                gap: "6px",
-                                fontSize: styles.bodySize,
-                                lineHeight: styles.lineHeight,
-                                color: selectedTheme.text,
-                                marginBottom: styles.bulletMarginBottom,
-                              }}
-                            >
-                              <span
+                      <div style={{ display: "flex", flexDirection: "column", gap: styles.itemMarginBottom }}>
+                        {section.items.map((rawItem, itemIdx) => {
+                          const isStructured = rawItem && typeof rawItem === "object";
+                          const itemTitle = isStructured ? (rawItem.title || rawItem.name || "") : rawItem;
+                          const subtitle = isStructured ? (rawItem.subtitle || rawItem.organization || rawItem.issuer || rawItem.publisher || "") : "";
+                          const date = isStructured ? (rawItem.date || "") : "";
+                          const link = isStructured ? (rawItem.link || rawItem.url || "") : "";
+                          const description = isStructured ? (rawItem.description || "") : "";
+                          const bullets = isStructured && Array.isArray(rawItem.bullets) ? rawItem.bullets.filter(Boolean) : [];
+
+                          if (!isStructured || (!subtitle && !date && !link && bullets.length === 0 && !description)) {
+                            const cleaned = cleanBulletText(typeof itemTitle === "string" ? itemTitle : "");
+                            if (!cleaned) return null;
+                            return (
+                              <div
+                                key={itemIdx}
                                 style={{
-                                  color: selectedTheme.primary,
-                                  fontFamily: '"JetBrains Mono", monospace',
-                                  fontWeight: 700,
-                                  fontSize: "1.05em",
-                                  lineHeight: 1,
-                                  marginTop: "2px",
-                                  flexShrink: 0,
-                                  userSelect: "none",
+                                  display: "flex",
+                                  alignItems: "flex-start",
+                                  gap: "6px",
+                                  fontSize: styles.bodySize,
+                                  lineHeight: styles.lineHeight,
+                                  color: selectedTheme.text,
+                                  marginBottom: styles.bulletMarginBottom,
                                 }}
                               >
-                                ▹
-                              </span>
-                              <span style={{ flex: 1 }}>
-                                {highlightMetrics(cleaned, selectedTheme.primary)}
-                              </span>
-                            </li>
+                                <span
+                                  style={{
+                                    color: selectedTheme.primary,
+                                    fontFamily: '"JetBrains Mono", monospace',
+                                    fontWeight: 700,
+                                    fontSize: "1.05em",
+                                    lineHeight: 1,
+                                    marginTop: "2px",
+                                    flexShrink: 0,
+                                    userSelect: "none",
+                                  }}
+                                >
+                                  ▹
+                                </span>
+                                <span style={{ flex: 1 }}>
+                                  {highlightMetrics(cleaned, selectedTheme.primary)}
+                                </span>
+                              </div>
+                            );
+                          }
+
+                          return (
+                            <div key={itemIdx} style={{ marginBottom: "2px" }}>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  alignItems: "baseline",
+                                  marginBottom: "2px",
+                                  flexWrap: "wrap",
+                                  gap: "4px",
+                                }}
+                              >
+                                <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
+                                  {itemTitle && (
+                                    <span style={{ fontWeight: 700, fontSize: styles.bodySize, color: selectedTheme.text }}>
+                                      {itemTitle}
+                                    </span>
+                                  )}
+                                  {subtitle && (
+                                    <span style={{ fontSize: styles.metaSize, color: selectedTheme.textMuted, fontStyle: "italic" }}>
+                                      // {subtitle}
+                                    </span>
+                                  )}
+                                  {link && (
+                                    <a
+                                      href={link.startsWith("http") ? link : `https://${link}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      style={{
+                                        fontFamily: '"JetBrains Mono", monospace',
+                                        fontSize: styles.metaSize,
+                                        color: selectedTheme.primary,
+                                        textDecoration: "underline",
+                                      }}
+                                    >
+                                      [url]
+                                    </a>
+                                  )}
+                                </div>
+                                {date && (
+                                  <span
+                                    style={{
+                                      fontFamily: '"JetBrains Mono", monospace',
+                                      fontSize: styles.metaSize,
+                                      color: selectedTheme.textMuted,
+                                      whiteSpace: "nowrap",
+                                    }}
+                                  >
+                                    {date}
+                                  </span>
+                                )}
+                              </div>
+
+                              {description && (
+                                <p style={{ fontSize: styles.bodySize, lineHeight: styles.lineHeight, color: selectedTheme.textMuted, margin: "0 0 2px 0" }}>
+                                  {description}
+                                </p>
+                              )}
+
+                              {bullets.length > 0 && (
+                                <div style={{ display: "flex", flexDirection: "column", gap: styles.bulletMarginBottom }}>
+                                  {bullets.map((b, bIdx) => (
+                                    <div
+                                      key={bIdx}
+                                      style={{
+                                        display: "flex",
+                                        alignItems: "flex-start",
+                                        gap: "6px",
+                                        fontSize: styles.bodySize,
+                                        lineHeight: styles.lineHeight,
+                                        color: selectedTheme.text,
+                                        marginBottom: styles.bulletMarginBottom,
+                                      }}
+                                    >
+                                      <span
+                                        style={{
+                                          color: selectedTheme.primary,
+                                          fontFamily: '"JetBrains Mono", monospace',
+                                          fontWeight: 700,
+                                          fontSize: "1.05em",
+                                          lineHeight: 1,
+                                          marginTop: "2px",
+                                          flexShrink: 0,
+                                          userSelect: "none",
+                                        }}
+                                      >
+                                        ▹
+                                      </span>
+                                      <span style={{ flex: 1 }}>
+                                        {highlightMetrics(cleanBulletText(b), selectedTheme.primary)}
+                                      </span>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
                           );
                         })}
-                      </ul>
+                      </div>
                     </section>
                   );
                 })}

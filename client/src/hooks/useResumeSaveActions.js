@@ -87,22 +87,45 @@ export const useResumeSaveActions = ({
             .filter((g) => g && (g.items.length > 0 || g.category));
         }
 
-        const isUpdate = Boolean(cleanResume._id && cleanResume._id.trim && cleanResume._id.trim() !== "");
+        console.log("💾 [SAVE RESUME] Sending to database. Custom sections payload:", cleanResume.customSections);
+        const isUpdate = Boolean(
+          cleanResume._id &&
+            (typeof cleanResume._id !== "string" || cleanResume._id.trim() !== "")
+        );
         if (!isUpdate) {
           delete cleanResume._id;
           delete cleanResume.id;
         }
-
         const response = isUpdate
           ? await resumeAPI.update(cleanResume._id, cleanResume)
           : await resumeAPI.save(cleanResume);
 
         const savedResume = response.data;
+        console.log("✅ [SAVE RESUME] Received from database! Custom sections in MongoDB response:", savedResume?.customSections);
 
         if (savedResume && savedResume._id) {
           setResumeData(savedResume);
           localStorage.setItem("currentResumeId", savedResume._id);
           setOriginalResumeData(JSON.parse(JSON.stringify(savedResume)));
+
+          // Synchronize window.history.state so React Router doesn't hold stale stateData
+          if (window.history?.replaceState) {
+            try {
+              window.history.replaceState(
+                {
+                  ...window.history.state,
+                  usr: {
+                    ...(window.history.state?.usr || {}),
+                    resumeData: savedResume,
+                    isNewResume: false,
+                  },
+                },
+                ""
+              );
+            } catch {
+              // Ignore if serialization fails
+            }
+          }
         }
 
         if (showSuccessToast) {

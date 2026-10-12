@@ -193,14 +193,29 @@ export const CustomSections = ({
         <section key={section.id || `${section.title}-${index}`}>
           <SectionHeading title={section.title || "More"} />
           <div className="grid gap-3 md:grid-cols-2">
-            {(section.items || []).map((item) => (
-              <div
-                key={item}
-                className={`${cardClassName} break-words ${textClassName}`}
-              >
-                {item}
-              </div>
-            ))}
+            {(section.items || []).map((item, itemIdx) => {
+              const isObj = item && typeof item === "object";
+              const title = isObj ? (item.title || item.name || "") : item;
+              const subtitle = isObj ? (item.subtitle || item.organization || item.issuer || item.publisher || "") : "";
+              const date = isObj ? (item.date || "") : "";
+              const desc = isObj ? (item.description || "") : "";
+
+              return (
+                <div
+                  key={isObj ? (item.id || `custom-item-${itemIdx}`) : `${item}-${itemIdx}`}
+                  className={`${cardClassName} break-words ${textClassName}`}
+                >
+                  {title && <div className="font-semibold text-sm">{title}</div>}
+                  {(subtitle || date) && (
+                    <div className="text-xs opacity-75 flex justify-between mt-0.5">
+                      {subtitle && <span>{subtitle}</span>}
+                      {date && <span>{date}</span>}
+                    </div>
+                  )}
+                  {desc && <p className="text-xs mt-1.5 opacity-90">{desc}</p>}
+                </div>
+              );
+            })}
           </div>
         </section>
       ))}

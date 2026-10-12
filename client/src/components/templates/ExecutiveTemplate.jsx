@@ -1,4 +1,4 @@
-import { forwardRef, useRef, useEffect, useMemo } from "react";
+import React, { forwardRef, useRef, useEffect, useMemo } from "react";
 import {
   isDescriptionDuplicatedInBullets,
   cleanBulletText,
@@ -48,7 +48,7 @@ const highlightMetrics = (text, primaryColor) => {
         </span>
       );
     }
-    return part;
+    return <React.Fragment key={index}>{part}</React.Fragment>;
   });
 };
 
@@ -288,10 +288,14 @@ const ExecutiveTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }, re
 
   // ── Section Order ─────────────────────────────────────────────────────────
   const defaultOrder = ["summary", "experience", "education", "skills", "projects", "certifications", "achievements", "publications", "customSections"];
-  const sectionOrder =
+  const baseOrder =
     resumeData.sectionOrder?.length > 0
       ? resumeData.sectionOrder.filter((id) => !["score", "personal", "recommendations"].includes(id))
       : defaultOrder;
+  const sectionOrder =
+    resumeData.customSections && resumeData.customSections.length > 0 && !baseOrder.includes("customSections")
+      ? [...baseOrder, "customSections"]
+      : baseOrder;
 
   // ── Contact data ──────────────────────────────────────────────────────────
   const contact = resumeData.contact || {};
@@ -995,24 +999,101 @@ const ExecutiveTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }, re
                 <section key={`custom-${cIdx}`} style={{ marginBottom: styles.sectionMarginBottom }}>
                   {renderSectionHeader(custom.title || "Additional Information")}
                   {custom.items?.length > 0 ? (
-                    <ul style={{ listStyleType: "disc", margin: "2px 0 0 0", paddingLeft: "15px" }}>
-                      {custom.items.map((item, iIdx) => (
-                        <li
-                          key={iIdx}
-                          style={{
-                            fontSize: styles.bodySize,
-                            lineHeight: styles.lineHeight,
-                            color: selectedTheme.text,
-                            marginBottom: styles.bulletMarginBottom,
-                          }}
-                        >
-                          {highlightMetrics(
-                            typeof item === "string" ? item : item.content || item.name,
-                            selectedTheme.primary
-                          )}
-                        </li>
-                      ))}
-                    </ul>
+                    <div style={{ display: "flex", flexDirection: "column", gap: styles.itemMarginBottom }}>
+                      {custom.items.map((rawItem, iIdx) => {
+                        const isStructured = rawItem && typeof rawItem === "object";
+                        const itemTitle = isStructured ? (rawItem.title || rawItem.name || "") : rawItem;
+                        const subtitle = isStructured ? (rawItem.subtitle || rawItem.organization || rawItem.issuer || rawItem.publisher || "") : "";
+                        const date = isStructured ? (rawItem.date || "") : "";
+                        const link = isStructured ? (rawItem.link || rawItem.url || "") : "";
+                        const description = isStructured ? (rawItem.description || "") : "";
+                        const bullets = isStructured && Array.isArray(rawItem.bullets) ? rawItem.bullets.filter(Boolean) : [];
+
+                        if (!isStructured || (!subtitle && !date && !link && bullets.length === 0 && !description)) {
+                          return (
+                            <ul key={iIdx} style={{ listStyleType: "disc", margin: "2px 0 0 0", paddingLeft: "15px" }}>
+                              <li
+                                style={{
+                                  fontSize: styles.bodySize,
+                                  lineHeight: styles.lineHeight,
+                                  color: selectedTheme.text,
+                                  marginBottom: styles.bulletMarginBottom,
+                                }}
+                              >
+                                {highlightMetrics(typeof itemTitle === "string" ? itemTitle : "", selectedTheme.primary)}
+                              </li>
+                            </ul>
+                          );
+                        }
+
+                        return (
+                          <div key={iIdx} style={{ marginBottom: "2px" }}>
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "baseline",
+                                marginBottom: "2px",
+                                flexWrap: "wrap",
+                                gap: "4px",
+                              }}
+                            >
+                              <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
+                                {itemTitle && (
+                                  <span style={{ fontWeight: 700, fontSize: styles.bodySize, color: selectedTheme.text }}>
+                                    {itemTitle}
+                                  </span>
+                                )}
+                                {subtitle && (
+                                  <span style={{ fontSize: styles.metaSize, color: selectedTheme.textMuted, fontStyle: "italic" }}>
+                                    · {subtitle}
+                                  </span>
+                                )}
+                                {link && (
+                                  <a
+                                    href={link.startsWith("http") ? link : `https://${link}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{ fontSize: styles.metaSize, color: selectedTheme.primary, textDecoration: "underline" }}
+                                  >
+                                    [link]
+                                  </a>
+                                )}
+                              </div>
+                              {date && (
+                                <span style={{ fontSize: styles.metaSize, color: selectedTheme.textMuted, fontVariantNumeric: "tabular-nums" }}>
+                                  {date}
+                                </span>
+                              )}
+                            </div>
+
+                            {description && (
+                              <p style={{ fontSize: styles.bodySize, lineHeight: styles.lineHeight, color: selectedTheme.textLight, margin: "0 0 2px 0" }}>
+                                {description}
+                              </p>
+                            )}
+
+                            {bullets.length > 0 && (
+                              <ul style={{ listStyleType: "disc", margin: "2px 0 0 0", paddingLeft: "15px" }}>
+                                {bullets.map((b, bIdx) => (
+                                  <li
+                                    key={bIdx}
+                                    style={{
+                                      fontSize: styles.bodySize,
+                                      lineHeight: styles.lineHeight,
+                                      color: selectedTheme.text,
+                                      marginBottom: styles.bulletMarginBottom,
+                                    }}
+                                  >
+                                    {highlightMetrics(cleanBulletText(b), selectedTheme.primary)}
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
                   ) : (
                     <p style={{ fontSize: styles.bodySize, lineHeight: styles.lineHeight, margin: 0 }}>
                       {custom.content}

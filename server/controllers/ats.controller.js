@@ -236,7 +236,18 @@ function convertResumeDataToText(resumeData) {
         if (section.content) text += `${section.content}\n`;
         if (section.items && Array.isArray(section.items)) {
           section.items.forEach((item) => {
-            text += `• ${typeof item === "string" ? item : item.name || item.title || JSON.stringify(item)}\n`;
+            if (typeof item === "string") {
+              text += `• ${item}\n`;
+            } else if (item && typeof item === "object") {
+              const parts = [item.title || item.name, item.subtitle || item.issuer || item.organization, item.date].filter(Boolean);
+              if (parts.length > 0) text += `• ${parts.join(" | ")}\n`;
+              if (item.description) text += `  ${item.description}\n`;
+              if (Array.isArray(item.bullets)) {
+                item.bullets.forEach((b) => {
+                  if (b) text += `  - ${b}\n`;
+                });
+              }
+            }
           });
         }
         text += "\n";

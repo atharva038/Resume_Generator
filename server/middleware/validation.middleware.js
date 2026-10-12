@@ -273,6 +273,25 @@ export const validateResumeCreate = [
     .isArray()
     .withMessage("Custom sections must be an array"),
 
+  body("customSections.*.id")
+    .optional()
+    .trim()
+    .isLength({max: 100})
+    .withMessage("Custom section ID must not exceed 100 characters"),
+
+  body("customSections.*.title")
+    .optional()
+    .trim()
+    .isLength({max: 200})
+    .withMessage("Custom section title must not exceed 200 characters"),
+
+  body("customSections.*.items")
+    .optional()
+    .isArray()
+    .withMessage("Custom section items must be an array"),
+
+  body("customSections.*.content")
+    .optional(),
   handleValidationErrors,
 ];
 
@@ -391,6 +410,25 @@ export const validateResumeUpdate = [
     .isArray()
     .withMessage("Custom sections must be an array"),
 
+  body("customSections.*.id")
+    .optional()
+    .trim()
+    .isLength({max: 100})
+    .withMessage("Custom section ID must not exceed 100 characters"),
+
+  body("customSections.*.title")
+    .optional()
+    .trim()
+    .isLength({max: 200})
+    .withMessage("Custom section title must not exceed 200 characters"),
+
+  body("customSections.*.items")
+    .optional()
+    .isArray()
+    .withMessage("Custom section items must be an array"),
+
+  body("customSections.*.content")
+    .optional(),
   handleValidationErrors,
 ];
 

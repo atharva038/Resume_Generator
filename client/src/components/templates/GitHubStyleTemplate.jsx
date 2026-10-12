@@ -188,12 +188,17 @@ const GitHubStyleTemplate = forwardRef(
       "customSections",
     ];
 
-    const sectionOrder =
+    const baseOrder =
       resumeData.sectionOrder && resumeData.sectionOrder.length > 0
         ? resumeData.sectionOrder.filter(
             (id) => !["score", "personal", "recommendations"].includes(id)
           )
         : DEFAULT_SECTION_ORDER;
+
+    const sectionOrder =
+      resumeData.customSections && resumeData.customSections.length > 0 && !baseOrder.includes("customSections")
+        ? [...baseOrder, "customSections"]
+        : baseOrder;
 
     const getSectionTitle = (sectionId) => {
       const customTitles = resumeData.sectionTitles || {};
@@ -702,13 +707,73 @@ const GitHubStyleTemplate = forwardRef(
               </p>
             )}
             {section.items?.length > 0 && (
-              <ul style={{margin: "3px 0 0", paddingLeft: "18px"}}>
-                {section.items.map((item, itemIndex) => (
-                  <li key={itemIndex} style={{fontSize: compact.bodySize, color: selectedTheme.text}}>
-                    {item}
-                  </li>
-                ))}
-              </ul>
+              <div style={{marginTop: "3px", display: "flex", flexDirection: "column", gap: "2px"}}>
+                {section.items.map((rawItem, itemIndex) => {
+                  const isStructured = rawItem && typeof rawItem === "object";
+                  const itemTitle = isStructured ? (rawItem.title || rawItem.name || "") : rawItem;
+                  const subtitle = isStructured ? (rawItem.subtitle || rawItem.organization || rawItem.issuer || rawItem.publisher || "") : "";
+                  const date = isStructured ? (rawItem.date || "") : "";
+                  const link = isStructured ? (rawItem.link || rawItem.url || "") : "";
+                  const description = isStructured ? (rawItem.description || "") : "";
+                  const bullets = isStructured && Array.isArray(rawItem.bullets) ? rawItem.bullets.filter(Boolean) : [];
+
+                  if (!isStructured || (!subtitle && !date && !link && bullets.length === 0 && !description)) {
+                    return (
+                      <ul key={itemIndex} style={{margin: 0, paddingLeft: "18px"}}>
+                        <li style={{fontSize: compact.bodySize, color: selectedTheme.text}}>
+                          {typeof itemTitle === "string" ? itemTitle : ""}
+                        </li>
+                      </ul>
+                    );
+                  }
+
+                  return (
+                    <div key={itemIndex} style={{marginBottom: "2px"}}>
+                      <div style={{display: "flex", justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: "4px"}}>
+                        <div>
+                          <span style={{fontWeight: "700", fontSize: compact.bodySize, color: selectedTheme.text}}>
+                            {itemTitle}
+                          </span>
+                          {subtitle && (
+                            <span style={{fontSize: compact.bodySize, color: selectedTheme.textMuted, fontStyle: "italic", marginLeft: "6px"}}>
+                              · {subtitle}
+                            </span>
+                          )}
+                          {link && (
+                            <a
+                              href={link.startsWith("http") ? link : `https://${link}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{fontSize: compact.bodySize, color: selectedTheme.primary, marginLeft: "6px", textDecoration: "underline"}}
+                            >
+                              [link]
+                            </a>
+                          )}
+                        </div>
+                        {date && (
+                          <span style={{fontSize: compact.bodySize, color: selectedTheme.textMuted}}>
+                            {date}
+                          </span>
+                        )}
+                      </div>
+                      {description && (
+                        <p style={{margin: "1px 0 0", fontSize: compact.bodySize, color: selectedTheme.text}}>
+                          {description}
+                        </p>
+                      )}
+                      {bullets.length > 0 && (
+                        <ul style={{margin: "2px 0 0", paddingLeft: "18px"}}>
+                          {bullets.map((b, bIdx) => (
+                            <li key={bIdx} style={{fontSize: compact.bodySize, color: selectedTheme.text}}>
+                              {b}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             )}
           </div>
         ));

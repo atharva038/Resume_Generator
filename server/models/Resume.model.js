@@ -105,7 +105,8 @@ const resumeSchema = new mongoose.Schema(
       {
         id: String,
         title: String,
-        items: [String],
+        content: String,
+        items: [mongoose.Schema.Types.Mixed],
       },
     ],
     sectionOrder: {
