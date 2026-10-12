@@ -13,6 +13,15 @@ import {
   Sparkles,
   Trophy,
   X,
+  ChevronDown,
+  ChevronUp,
+  Trash2,
+  ExternalLink,
+  Calendar,
+  ArrowUp,
+  ArrowDown,
+  Layers,
+  BookOpen,
 } from "lucide-react";
 import {handleDateChange, isValidDate, getDateValidationMessage} from "@/utils/dateValidation";
 import AIBulletRewritePill from "./AIBulletRewritePill";
@@ -1180,12 +1189,12 @@ export const AchievementsSection = ({resumeData, updateField}) => {
 export const CustomSectionsManager = ({resumeData, updateField}) => {
   const customSections = resumeData.customSections || [];
 
-  const addCustomSection = () => {
+  const addCustomSection = (suggestedTitle = "") => {
     updateField("customSections", [
       ...customSections,
       {
         id: Date.now().toString(),
-        title: "",
+        title: typeof suggestedTitle === "string" ? suggestedTitle : "",
         items: [],
       },
     ]);
@@ -1197,6 +1206,7 @@ export const CustomSectionsManager = ({resumeData, updateField}) => {
       ...updated[index],
       [field]: value,
     };
+    console.log(`📝 [EDITOR] Custom section updated [${field}]:`, updated[index]);
     updateField("customSections", updated);
   };
 
@@ -1205,27 +1215,64 @@ export const CustomSectionsManager = ({resumeData, updateField}) => {
     updateField("customSections", updated);
   };
 
+  const moveCustomSection = (fromIndex, toIndex) => {
+    if (toIndex < 0 || toIndex >= customSections.length) return;
+    const updated = [...customSections];
+    const [moved] = updated.splice(fromIndex, 1);
+    updated.splice(toIndex, 0, moved);
+    updateField("customSections", updated);
+  };
+
+  const suggestions = [
+    "Publications & Research",
+    "Volunteer Experience",
+    "Certifications & Licenses",
+    "Honors & Awards",
+    "Leadership & Activities",
+    "Patents",
+    "Speaking Engagements",
+  ];
+
   return (
     <>
       <div className="flex justify-between items-center mb-4">
-        <h2 className="section-title mb-0">Custom Sections</h2>
+        <div>
+          <h2 className="section-title mb-0">Custom Sections</h2>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+            Add publications, research papers, volunteer work, awards, or custom entries
+          </p>
+        </div>
         <button
-          onClick={addCustomSection}
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+          onClick={() => addCustomSection()}
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors flex items-center gap-1.5 text-sm"
         >
-          + Add Custom Section
+          <Plus className="w-4 h-4" />
+          Add Section
         </button>
       </div>
 
       {customSections.length === 0 ? (
         <div className="text-center py-8 px-4 bg-gray-50 dark:bg-black rounded-lg border-2 border-dashed border-gray-300 dark:border-zinc-800">
-          <p className="text-gray-500 dark:text-gray-400 mb-2">
+          <BookOpen className="w-8 h-8 mx-auto mb-2 text-gray-400 dark:text-gray-600" />
+          <p className="text-gray-700 dark:text-gray-300 font-medium mb-1">
             No custom sections yet
           </p>
-          <p className="text-sm text-gray-400 dark:text-gray-500">
-            Add custom sections like Publications, Volunteer Work, Languages,
-            etc.
+          <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm mx-auto mb-4">
+            Add sections for Research Papers, Publications, Volunteer Experience, Awards, or Licenses.
           </p>
+          <div className="flex flex-wrap justify-center gap-2 max-w-md mx-auto">
+            {suggestions.map((title) => (
+              <button
+                key={title}
+                type="button"
+                onClick={() => addCustomSection(title)}
+                className="text-xs px-2.5 py-1.5 rounded-full border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-gray-700 dark:text-gray-300 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center gap-1"
+              >
+                <Plus className="w-3 h-3" />
+                {title}
+              </button>
+            ))}
+          </div>
         </div>
       ) : (
         <div className="space-y-4">
@@ -1236,6 +1283,9 @@ export const CustomSectionsManager = ({resumeData, updateField}) => {
               index={index}
               onUpdate={updateCustomSection}
               onRemove={removeCustomSection}
+              onMoveUp={index > 0 ? () => moveCustomSection(index, index - 1) : null}
+              onMoveDown={index < customSections.length - 1 ? () => moveCustomSection(index, index + 1) : null}
+              resumeData={resumeData}
             />
           ))}
         </div>
@@ -1244,233 +1294,564 @@ export const CustomSectionsManager = ({resumeData, updateField}) => {
   );
 };
 
-const CustomSectionItem = ({section, index, onUpdate, onRemove}) => {
+const normalizeCustomItem = (rawItem, idx = 0) => {
+  if (typeof rawItem === "string") {
+    return {
+      id: `item-${Date.now()}-${idx}`,
+      title: rawItem,
+      subtitle: "",
+      date: "",
+      link: "",
+      description: "",
+      bullets: [],
+    };
+  }
+  return {
+    id: rawItem?.id || `item-${Date.now()}-${idx}`,
+    title: rawItem?.title || rawItem?.name || "",
+    subtitle: rawItem?.subtitle || rawItem?.organization || rawItem?.issuer || rawItem?.publisher || "",
+    date: rawItem?.date || "",
+    link: rawItem?.link || rawItem?.url || "",
+    description: rawItem?.description || "",
+    bullets: Array.isArray(rawItem?.bullets)
+      ? rawItem.bullets
+      : rawItem?.bullets
+      ? [String(rawItem.bullets)]
+      : [],
+  };
+};
+
+const CustomSectionItem = ({
+  section,
+  index,
+  onUpdate,
+  onRemove,
+  onMoveUp,
+  onMoveDown,
+  resumeData,
+}) => {
   const [contentInput, setContentInput] = useState("");
   const [isLoading, toggleLoading, setIsLoadingTrue, setIsLoadingFalse] =
     useToggle(false);
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [isExpanded, setIsExpanded] = useState(true);
+  const [showAiAssist, setShowAiAssist] = useState(false);
 
-  // Initialize input from existing data
-  const initializeInput = () => {
-    if (section.items && section.items.length > 0) {
-      return section.items.join("\n");
-    }
-    return "";
+  // Normalize all items to structured format
+  const rawItems = Array.isArray(section.items) ? section.items : [];
+  const items = rawItems.map((item, i) => normalizeCustomItem(item, i));
+
+  const saveItems = (updatedItems) => {
+    onUpdate(index, "items", updatedItems);
   };
 
   // Handle AI processing
   const handleProcess = async () => {
     if (!contentInput.trim()) {
-      setError("Please enter some content first");
+      setError("Please enter some content to format");
       return;
     }
 
     if (!section.title.trim()) {
-      setError("Please enter a section title first");
+      setError("Please enter a section title first (e.g., Research Papers)");
       return;
     }
 
     setIsLoadingTrue();
     setError("");
+    setSuccessMessage("");
 
     try {
+      const resumeId = resumeData?._id || resumeData?.id;
       const response = await resumeAPI.processCustomSection(
         contentInput,
         section.title,
-        resumeData._id
+        resumeId
       );
 
-      if (response.data && response.data.content) {
-        onUpdate(index, "items", response.data.content);
+      const rawContent = response.data?.items || response.data?.content;
+      let newParsedItems = [];
+
+      if (Array.isArray(rawContent)) {
+        newParsedItems = rawContent.map((it, i) => normalizeCustomItem(it, Date.now() + i));
+      } else if (rawContent && typeof rawContent === "object") {
+        newParsedItems = [normalizeCustomItem(rawContent, Date.now())];
+      } else if (typeof rawContent === "string") {
+        newParsedItems = rawContent
+          .split("\n")
+          .filter(Boolean)
+          .map((line, i) => ({
+            id: `item-${Date.now()}-${i}`,
+            title: line.replace(/^[•\-\*]\s*/, ""),
+            subtitle: "",
+            date: "",
+            link: "",
+            description: "",
+            bullets: [],
+          }));
+      }
+
+      if (newParsedItems.length > 0) {
+        saveItems([...items, ...newParsedItems]);
         setContentInput("");
         setError("");
+        setSuccessMessage(`Added ${newParsedItems.length} structured entries!`);
+        setShowAiAssist(false);
+        setTimeout(() => setSuccessMessage(""), 4000);
       } else {
-        setError("Failed to process content");
+        setError("Failed to extract structured entries. Try rephrasing or add manually.");
       }
     } catch (err) {
       console.error("Processing error:", err);
       setError(
         err.response?.data?.error ||
-          "Failed to process content. Please try again."
+          err.response?.data?.message ||
+          "Failed to process content with AI. Please try again or add manually."
       );
     } finally {
       setIsLoadingFalse();
     }
   };
 
-  const updateItem = (itemIndex, value) => {
-    const updated = [...section.items];
-    updated[itemIndex] = value;
-    onUpdate(index, "items", updated);
+  // Manual Item Management (Without AI)
+  const addManualItem = () => {
+    const newItem = {
+      id: `item-${Date.now()}`,
+      title: "",
+      subtitle: "",
+      date: "",
+      link: "",
+      description: "",
+      bullets: [""],
+    };
+    saveItems([...items, newItem]);
+  };
+
+  const updateItemField = (itemIndex, field, value) => {
+    const updated = [...items];
+    updated[itemIndex] = {
+      ...updated[itemIndex],
+      [field]: value,
+    };
+    saveItems(updated);
   };
 
   const removeItem = (itemIndex) => {
-    const updated = section.items.filter((_, i) => i !== itemIndex);
-    onUpdate(index, "items", updated);
+    const updated = items.filter((_, i) => i !== itemIndex);
+    saveItems(updated);
   };
 
-  const addItem = () => {
-    onUpdate(index, "items", [...section.items, ""]);
+  const moveItem = (itemIndex, direction) => {
+    const targetIndex = itemIndex + direction;
+    if (targetIndex < 0 || targetIndex >= items.length) return;
+    const updated = [...items];
+    const [moved] = updated.splice(itemIndex, 1);
+    updated.splice(targetIndex, 0, moved);
+    saveItems(updated);
+  };
+
+  const addBullet = (itemIndex) => {
+    const updated = [...items];
+    const item = updated[itemIndex];
+    updated[itemIndex] = {
+      ...item,
+      bullets: [...(item.bullets || []), ""],
+    };
+    saveItems(updated);
+  };
+
+  const updateBullet = (itemIndex, bulletIndex, value) => {
+    const updated = [...items];
+    const item = updated[itemIndex];
+    const updatedBullets = [...(item.bullets || [])];
+    updatedBullets[bulletIndex] = value;
+    updated[itemIndex] = {
+      ...item,
+      bullets: updatedBullets,
+    };
+    saveItems(updated);
+  };
+
+  const removeBullet = (itemIndex, bulletIndex) => {
+    const updated = [...items];
+    const item = updated[itemIndex];
+    updated[itemIndex] = {
+      ...item,
+      bullets: (item.bullets || []).filter((_, bIdx) => bIdx !== bulletIndex),
+    };
+    saveItems(updated);
   };
 
   return (
-    <div className="p-4 border border-gray-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-black">
+    <div className="p-4 border border-gray-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-black shadow-xs">
       {/* Header */}
       <div className="flex items-center gap-2 mb-3">
         <button
+          type="button"
           onClick={() => setIsExpanded(!isExpanded)}
-          className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 p-1"
+          title={isExpanded ? "Collapse section" : "Expand section"}
         >
-          <svg
-            className={`w-5 h-5 transition-transform ${
-              isExpanded ? "rotate-90" : ""
-            }`}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
+          {isExpanded ? (
+            <ChevronDown className="w-5 h-5" />
+          ) : (
+            <ChevronUp className="w-5 h-5 -rotate-90" />
+          )}
         </button>
+
         <input
           type="text"
-          value={section.title}
+          value={section.title || ""}
           onChange={(e) => onUpdate(index, "title", e.target.value)}
-          placeholder="Section Title (e.g., Publications, Languages, Volunteer Work)"
-          className="input-field flex-1 font-semibold"
+          placeholder="Section Title (e.g. Research Papers, Publications, Volunteer Work)"
+          className="input-field flex-1 font-semibold text-base"
         />
+
+        {/* Section reordering */}
+        {onMoveUp && (
+          <button
+            type="button"
+            onClick={onMoveUp}
+            className="p-1.5 text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded"
+            title="Move section up"
+          >
+            <ArrowUp className="w-4 h-4" />
+          </button>
+        )}
+        {onMoveDown && (
+          <button
+            type="button"
+            onClick={onMoveDown}
+            className="p-1.5 text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded"
+            title="Move section down"
+          >
+            <ArrowDown className="w-4 h-4" />
+          </button>
+        )}
+
         <button
+          type="button"
           onClick={() => onRemove(index)}
-          className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 px-3 py-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
-          title="Remove section"
+          className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 p-1.5 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+          title="Remove custom section"
         >
-          ✕
+          <Trash2 className="w-4 h-4" />
         </button>
       </div>
 
-      {/* Content */}
       {isExpanded && (
-        <div className="space-y-3 ml-7">
-          <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
-            <Sparkles className="w-3.5 h-3.5 text-blue-500" />
-            <span>AI-Powered Formatting</span>
+        <div className="space-y-4 pt-1">
+          {/* Action Toolbar */}
+          <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-gray-100 dark:border-zinc-800">
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={addManualItem}
+                className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-xs font-medium transition-colors flex items-center gap-1.5 shadow-xs"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                Add Entry (Without AI)
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowAiAssist(!showAiAssist)}
+                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors flex items-center gap-1.5 border ${
+                  showAiAssist
+                    ? "bg-purple-50 dark:bg-purple-900/20 border-purple-300 dark:border-purple-700 text-purple-700 dark:text-purple-300"
+                    : "bg-white dark:bg-zinc-900 border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800"
+                }`}
+              >
+                <Sparkles className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                {showAiAssist ? "Close AI Assistant" : "Format with AI"}
+              </button>
+            </div>
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              {items.length} {items.length === 1 ? "entry" : "entries"}
+            </span>
           </div>
 
-          {/* Input textarea */}
-          <div>
-            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-              Enter content (paragraph or mixed format)
-            </label>
-            <textarea
-              value={contentInput || initializeInput()}
-              onChange={(e) => setContentInput(e.target.value)}
-              placeholder="e.g., Fluent in English and Spanish. Conversational in French. Published 5 papers in top AI journals. Active volunteer at local food bank for 3 years."
-              className="input-field min-h-[100px] resize-y"
-              rows={4}
-            />
-            <p className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 mt-1">
-              <Lightbulb className="w-3.5 h-3.5 text-blue-500 inline shrink-0" />
-              <span>Write naturally and AI will format into professional bullet points</span>
-            </p>
-          </div>
-
-          {/* Process button */}
-          <button
-            onClick={handleProcess}
-            disabled={
-              isLoading || !contentInput.trim() || !section.title.trim()
-            }
-            className={`w-full py-2.5 px-4 rounded-lg font-semibold transition-all text-sm border cursor-pointer ${
-              isLoading || !contentInput.trim() || !section.title.trim()
-                ? "bg-gray-200 dark:bg-zinc-800 border-gray-300 dark:border-zinc-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
-                : "bg-zinc-900 hover:bg-black text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 border-zinc-800 dark:border-zinc-200 shadow-sm hover:shadow"
-            }`}
-          >
-            {isLoading ? (
-              <span className="flex items-center justify-center gap-2">
-                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                    fill="none"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
-                </svg>
-                Formatting...
-              </span>
-            ) : (
-              <span className="flex items-center justify-center gap-2">
-                <Sparkles className="w-4 h-4" />
-                <span>Format with AI</span>
-              </span>
-            )}
-          </button>
-
-          {/* Error message */}
-          {error && (
-            <div className="p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded text-red-600 dark:text-red-400 text-xs flex items-center gap-1.5">
-              <AlertTriangle className="w-3.5 h-3.5 text-red-500 shrink-0" />
-              <span>{error}</span>
+          {/* Success Banner */}
+          {successMessage && (
+            <div className="p-2.5 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg text-green-700 dark:text-green-300 text-xs flex items-center gap-2">
+              <Sparkles className="w-3.5 h-3.5 shrink-0 text-green-600" />
+              <span>{successMessage}</span>
             </div>
           )}
 
-          {/* Display formatted items */}
-          {section.items && section.items.length > 0 && (
-            <div className="mt-3 space-y-2">
-              <div className="flex justify-between items-center">
-                <div className="text-xs font-medium text-gray-700 dark:text-gray-300">
-                  Formatted Items ({section.items.length})
+          {/* AI-Powered Formatting Panel */}
+          {showAiAssist && (
+            <div className="p-3.5 border border-purple-200 dark:border-purple-900/40 rounded-lg bg-purple-50/40 dark:bg-purple-950/20 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-purple-900 dark:text-purple-200">
+                  <Sparkles className="w-3.5 h-3.5 text-purple-600" />
+                  <span>AI Structured Extractor & Formatter</span>
                 </div>
                 <button
-                  onClick={addItem}
-                  className="text-xs text-primary-600 hover:text-primary-700 dark:text-primary-400 font-medium"
+                  type="button"
+                  onClick={() => setShowAiAssist(false)}
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xs"
                 >
-                  + Add Item
+                  ✕
                 </button>
               </div>
 
-              {section.items.map((item, itemIndex) => (
-                <div
-                  key={`${section.id}-item-${itemIndex}`}
-                  className="group relative flex gap-2 items-center"
+              <div>
+                <label className="block text-xs font-medium mb-1.5 text-gray-700 dark:text-gray-300">
+                  Paste notes, paper citations, or rough text (e.g. DOI, journal, role, dates):
+                </label>
+                <textarea
+                  value={contentInput}
+                  onChange={(e) => setContentInput(e.target.value)}
+                  placeholder={`e.g., Published "Deep Learning in Brain MRI" at IEEE TMI 2024. Authored with Dr. Smith. Reached 98.2% Dice score. Link: https://doi.org/10.1109/...\nAlso presented "Vision Transformers" at CVPR 2023 workshop.`}
+                  className="input-field min-h-[90px] resize-y text-xs"
+                  rows={3}
+                />
+                <p className="flex items-center gap-1 text-[11px] text-gray-500 dark:text-gray-400 mt-1">
+                  <Lightbulb className="w-3 h-3 text-purple-500 inline shrink-0" />
+                  <span>
+                    AI will automatically extract Title, Publisher/Organization, Date, Links, and bullet points.
+                  </span>
+                </p>
+              </div>
+
+              {error && (
+                <div className="p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded text-red-600 dark:text-red-400 text-xs flex items-center gap-1.5">
+                  <AlertTriangle className="w-3.5 h-3.5 text-red-500 shrink-0" />
+                  <span>{error}</span>
+                </div>
+              )}
+
+              <button
+                type="button"
+                onClick={handleProcess}
+                disabled={isLoading || !contentInput.trim() || !section.title?.trim()}
+                className={`w-full py-2 px-3 rounded-lg font-medium text-xs border transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                  isLoading || !contentInput.trim() || !section.title?.trim()
+                    ? "bg-gray-200 dark:bg-zinc-800 border-gray-300 dark:border-zinc-700 text-gray-400 cursor-not-allowed"
+                    : "bg-purple-600 hover:bg-purple-700 text-white border-purple-600 shadow-xs"
+                }`}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Extracting & Structuring with AI...</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>Extract & Format Entries</span>
+                  </>
+                )}
+              </button>
+            </div>
+          )}
+
+          {/* Structured Entries List */}
+          {items.length === 0 ? (
+            <div className="text-center py-6 px-4 border border-dashed border-gray-200 dark:border-zinc-800 rounded-lg">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                No entries added to &ldquo;{section.title || "Custom Section"}&rdquo; yet.
+              </p>
+              <div className="flex items-center justify-center gap-2">
+                <button
+                  type="button"
+                  onClick={addManualItem}
+                  className="text-xs px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 rounded-md font-medium hover:bg-blue-100 transition-colors"
                 >
-                  <input
-                    type="text"
-                    value={item}
-                    onChange={(e) => updateItem(itemIndex, e.target.value)}
-                    placeholder="Enter item"
-                    className="input-field flex-1 text-sm pr-28"
-                  />
-                  <div className="absolute right-10 top-1/2 -translate-y-1/2 flex items-center">
-                    <AIBulletRewritePill
-                      text={item}
-                      onApply={(newText) => updateItem(itemIndex, newText)}
-                      sectionType="custom"
-                      context={{ title: section.title }}
-                      size="xs"
+                  + Add First Entry Manually
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowAiAssist(true)}
+                  className="text-xs px-3 py-1.5 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800 rounded-md font-medium hover:bg-purple-100 transition-colors flex items-center gap-1"
+                >
+                  <Sparkles className="w-3 h-3" />
+                  Format with AI
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {items.map((item, itemIdx) => (
+                <div
+                  key={item.id || `custom-entry-${itemIdx}`}
+                  className="p-3.5 border border-gray-200 dark:border-zinc-800 rounded-lg bg-gray-50/50 dark:bg-zinc-900/50 space-y-2.5 transition-all"
+                >
+                  {/* Item Header / Controls */}
+                  <div className="flex items-center justify-between gap-2 pb-1.5 border-b border-gray-200/60 dark:border-zinc-800">
+                    <span className="text-xs font-semibold text-gray-700 dark:text-gray-300 truncate">
+                      {item.title || `Entry #${itemIdx + 1}`}
+                    </span>
+                    <div className="flex items-center gap-1">
+                      {itemIdx > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => moveItem(itemIdx, -1)}
+                          className="p-1 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                          title="Move up"
+                        >
+                          <ArrowUp className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                      {itemIdx < items.length - 1 && (
+                        <button
+                          type="button"
+                          onClick={() => moveItem(itemIdx, 1)}
+                          className="p-1 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                          title="Move down"
+                        >
+                          <ArrowDown className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => removeItem(itemIdx)}
+                        className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
+                        title="Remove entry"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Primary Fields: Title & Subtitle */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div>
+                      <label className="block text-[11px] font-medium text-gray-600 dark:text-gray-400 mb-0.5">
+                        Title / Role / Paper / Award *
+                      </label>
+                      <input
+                        type="text"
+                        value={item.title || ""}
+                        onChange={(e) => updateItemField(itemIdx, "title", e.target.value)}
+                        placeholder="e.g. Graph Neural Networks for Drug Discovery"
+                        className="input-field text-xs"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-medium text-gray-600 dark:text-gray-400 mb-0.5">
+                        Publisher / Journal / Organization
+                      </label>
+                      <input
+                        type="text"
+                        value={item.subtitle || ""}
+                        onChange={(e) => updateItemField(itemIdx, "subtitle", e.target.value)}
+                        placeholder="e.g. Nature Machine Intelligence / IEEE / Red Cross"
+                        className="input-field text-xs"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Secondary Fields: Date & Link */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div>
+                      <label className="block text-[11px] font-medium text-gray-600 dark:text-gray-400 mb-0.5">
+                        Date / Period
+                      </label>
+                      <input
+                        type="text"
+                        value={item.date || ""}
+                        onChange={(e) =>
+                          handleDateChange(
+                            e.target.value,
+                            item.date,
+                            (val) => updateItemField(itemIdx, "date", val)
+                          )
+                        }
+                        placeholder="e.g. May 2024 or 2022 - 2024"
+                        className={`input-field text-xs ${
+                          !isValidDate(item.date) && item.date ? "border-red-500" : ""
+                        }`}
+                      />
+                      {!isValidDate(item.date) && item.date && (
+                        <p className="text-[10px] text-red-500 mt-0.5">
+                          {getDateValidationMessage(item.date)}
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-medium text-gray-600 dark:text-gray-400 mb-0.5">
+                        Link / URL / DOI (Optional)
+                      </label>
+                      <input
+                        type="text"
+                        value={item.link || ""}
+                        onChange={(e) => updateItemField(itemIdx, "link", e.target.value)}
+                        placeholder="e.g. https://doi.org/10.1038/... or paper URL"
+                        className="input-field text-xs"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Description / Summary Field */}
+                  <div>
+                    <label className="block text-[11px] font-medium text-gray-600 dark:text-gray-400 mb-0.5">
+                      Overview / Description (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={item.description || ""}
+                      onChange={(e) => updateItemField(itemIdx, "description", e.target.value)}
+                      placeholder="Brief 1-sentence abstract or description"
+                      className="input-field text-xs"
                     />
                   </div>
-                  <button
-                    onClick={() => removeItem(itemIndex)}
-                    className="text-red-600 hover:text-red-700 dark:text-red-400 px-2 py-1.5 hover:bg-red-50 dark:hover:bg-red-900/20 rounded text-sm shrink-0"
-                    title="Remove item"
-                  >
-                    ✕
-                  </button>
+
+                  {/* Bullet Points */}
+                  <div className="space-y-1.5 pt-1">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[11px] font-medium text-gray-600 dark:text-gray-400">
+                        Bullet Points (Optional)
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => addBullet(itemIdx)}
+                        className="text-[11px] text-primary-600 hover:text-primary-700 dark:text-primary-400 font-medium flex items-center gap-1"
+                      >
+                        <Plus className="w-3 h-3" />
+                        Add Bullet
+                      </button>
+                    </div>
+
+                    {(item.bullets || []).map((bullet, bulletIdx) => (
+                      <div
+                        key={`bullet-${bulletIdx}`}
+                        className="group relative flex gap-1.5 items-center"
+                      >
+                        <span className="text-gray-400 text-xs shrink-0">•</span>
+                        <input
+                          type="text"
+                          value={bullet || ""}
+                          onChange={(e) => updateBullet(itemIdx, bulletIdx, e.target.value)}
+                          placeholder="e.g. Achieved 98.2% accuracy on benchmark dataset..."
+                          className="input-field flex-1 text-xs pr-24 py-1.5"
+                        />
+                        <div className="absolute right-8 top-1/2 -translate-y-1/2 flex items-center">
+                          <AIBulletRewritePill
+                            text={bullet}
+                            onApply={(newText) => updateBullet(itemIdx, bulletIdx, newText)}
+                            sectionType="custom"
+                            context={{
+                              title: section.title,
+                              itemTitle: item.title,
+                              subtitle: item.subtitle,
+                            }}
+                            resumeData={resumeData}
+                            size="xs"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeBullet(itemIdx, bulletIdx)}
+                          className="text-red-500 hover:text-red-700 p-1 text-xs shrink-0"
+                          title="Remove bullet"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ))}
             </div>
@@ -1480,3 +1861,4 @@ const CustomSectionItem = ({section, index, onUpdate, onRemove}) => {
     </div>
   );
 };
+

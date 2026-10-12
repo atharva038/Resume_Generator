@@ -389,14 +389,20 @@ const ImpactProTemplate = forwardRef((props, ref) => {
     "achievements",
     "languages",
     "volunteer",
+    "customSections",
   ];
 
-  const sectionOrder =
+  const baseOrder =
     resumeData.sectionOrder && resumeData.sectionOrder.length > 0
       ? resumeData.sectionOrder.filter(
           (id) => !["score", "personal", "recommendations"].includes(id)
         )
       : DEFAULT_SECTION_ORDER;
+
+  const sectionOrder =
+    resumeData.customSections && resumeData.customSections.length > 0 && !baseOrder.includes("customSections")
+      ? [...baseOrder, "customSections"]
+      : baseOrder;
 
   // Render section helper function
   const renderSection = (sectionId) => {
@@ -1204,6 +1210,195 @@ const ImpactProTemplate = forwardRef((props, ref) => {
           </div>
         </section>
       ),
+
+      customSections: resumeData.customSections &&
+        resumeData.customSections.length > 0 && (
+          <section
+            key="customSections"
+            style={{ marginBottom: dynamicStyles.sectionMarginBottom }}
+          >
+            {resumeData.customSections.map((sec, sIdx) => {
+              const items = Array.isArray(sec.items) ? sec.items : [];
+              return (
+                <div key={sIdx} style={{ marginBottom: dynamicStyles.sectionMarginBottom }}>
+                  <div
+                    style={{
+                      display: "inline-block",
+                      backgroundColor: selectedTheme.primary,
+                      color: "#ffffff",
+                      fontSize: dynamicStyles.sectionHeadingSize,
+                      fontWeight: "bold",
+                      marginBottom: dynamicStyles.sectionHeadingMarginBottom,
+                      padding: `${dynamicStyles.sectionHeadingPaddingV} ${dynamicStyles.sectionHeadingPaddingH}`,
+                      textTransform: "uppercase",
+                      letterSpacing: "1px",
+                    }}
+                  >
+                    {sec.title || "Additional Information"}
+                  </div>
+                  {sec.content && (
+                    <p
+                      style={{
+                        fontSize: dynamicStyles.summarySize,
+                        lineHeight: dynamicStyles.summaryLineHeight,
+                        color: selectedTheme.textLight,
+                        margin: "0 0 6px 0",
+                      }}
+                    >
+                      {sec.content}
+                    </p>
+                  )}
+                  {items.length > 0 && (
+                    <div style={{ display: "flex", flexDirection: "column", gap: dynamicStyles.itemMarginBottom }}>
+                      {items.map((rawItem, iIdx) => {
+                        const isStructured = rawItem && typeof rawItem === "object";
+                        const itemTitle = isStructured ? (rawItem.title || rawItem.name || "") : rawItem;
+                        const subtitle = isStructured ? (rawItem.subtitle || rawItem.organization || rawItem.issuer || rawItem.publisher || "") : "";
+                        const date = isStructured ? (rawItem.date || "") : "";
+                        const link = isStructured ? (rawItem.link || rawItem.url || "") : "";
+                        const description = isStructured ? (rawItem.description || "") : "";
+                        const bullets = isStructured && Array.isArray(rawItem.bullets) ? rawItem.bullets.filter(Boolean) : [];
+
+                        if (!isStructured || (!subtitle && !date && !link && bullets.length === 0 && !description)) {
+                          return (
+                            <ul
+                              key={iIdx}
+                              style={{
+                                marginTop: "2px",
+                                marginBottom: "0",
+                                paddingLeft: "0",
+                                listStyleType: "none",
+                              }}
+                            >
+                              <li
+                                style={{
+                                  fontSize: dynamicStyles.itemTitleSize,
+                                  lineHeight: "1.5",
+                                  color: selectedTheme.textLight,
+                                  marginLeft: "18px",
+                                  listStyleType: "disc",
+                                  listStylePosition: "outside",
+                                  display: "list-item",
+                                }}
+                              >
+                                {typeof itemTitle === "string" ? itemTitle : ""}
+                              </li>
+                            </ul>
+                          );
+                        }
+
+                        return (
+                          <div key={iIdx} style={{ marginBottom: "4px" }}>
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "baseline",
+                                flexWrap: "wrap",
+                                gap: "6px",
+                              }}
+                            >
+                              <div style={{ display: "flex", alignItems: "baseline", gap: "8px", flexWrap: "wrap" }}>
+                                {itemTitle && (
+                                  <span
+                                    style={{
+                                      fontSize: dynamicStyles.itemTitleSize,
+                                      fontWeight: "700",
+                                      color: selectedTheme.text,
+                                    }}
+                                  >
+                                    {itemTitle}
+                                  </span>
+                                )}
+                                {subtitle && (
+                                  <span
+                                    style={{
+                                      fontSize: dynamicStyles.certificationIssuerSize,
+                                      color: selectedTheme.primary,
+                                      fontWeight: "600",
+                                    }}
+                                  >
+                                    · {subtitle}
+                                  </span>
+                                )}
+                                {link && (
+                                  <a
+                                    href={link.startsWith("http") ? link : `https://${link}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{
+                                      fontSize: dynamicStyles.projectLinkSize,
+                                      color: selectedTheme.linkColor || selectedTheme.primary,
+                                      textDecoration: "underline",
+                                    }}
+                                  >
+                                    [link]
+                                  </a>
+                                )}
+                              </div>
+                              {date && (
+                                <span
+                                  style={{
+                                    fontSize: dynamicStyles.experienceDateSize,
+                                    color: selectedTheme.textMuted,
+                                    fontWeight: "500",
+                                    whiteSpace: "nowrap",
+                                  }}
+                                >
+                                  {date}
+                                </span>
+                              )}
+                            </div>
+                            {description && (
+                              <p
+                                style={{
+                                  fontSize: dynamicStyles.projectBulletSize,
+                                  lineHeight: dynamicStyles.projectBulletLineHeight,
+                                  color: selectedTheme.textLight,
+                                  margin: "2px 0 3px 0",
+                                }}
+                              >
+                                {description}
+                              </p>
+                            )}
+                            {bullets.length > 0 && (
+                              <ul
+                                style={{
+                                  marginTop: "2px",
+                                  marginBottom: "0",
+                                  paddingLeft: "0",
+                                  listStyleType: "none",
+                                }}
+                              >
+                                {bullets.map((b, bIdx) => (
+                                  <li
+                                    key={bIdx}
+                                    style={{
+                                      fontSize: dynamicStyles.projectBulletSize,
+                                      lineHeight: dynamicStyles.projectBulletLineHeight,
+                                      color: selectedTheme.textLight,
+                                      marginBottom: dynamicStyles.projectBulletMarginBottom,
+                                      marginLeft: "18px",
+                                      listStyleType: "disc",
+                                      listStylePosition: "outside",
+                                      display: "list-item",
+                                    }}
+                                  >
+                                    {b}
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </section>
+        ),
     };
 
     return sections[sectionId];

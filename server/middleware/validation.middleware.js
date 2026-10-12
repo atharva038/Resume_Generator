@@ -331,6 +331,9 @@ export const validateResumeCreate = [
     .isArray()
     .withMessage("Custom section items must be an array"),
 
+  body("customSections.*.content")
+    .optional(),
+
   handleValidationErrors,
 ];
 
@@ -505,6 +508,9 @@ export const validateResumeUpdate = [
     .optional()
     .isArray()
     .withMessage("Custom section items must be an array"),
+
+  body("customSections.*.content")
+    .optional(),
 
   handleValidationErrors,
 ];

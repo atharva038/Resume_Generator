@@ -288,6 +288,35 @@ const Editor = () => {
       }
       sessionStorage.removeItem("templatePreSelected");
 
+      const resumeIdToFetch = stateData?._id || localStorage.getItem("currentResumeId");
+
+      // Case 1: The resume already exists in the database (has an _id or saved in localStorage).
+      // ALWAYS fetch the latest saved version from MongoDB so that reloads/updates never show stale data!
+      if (resumeIdToFetch && user) {
+        try {
+          console.log(`📥 [EDITOR LOAD] Fetching latest resume from MongoDB (ID: ${resumeIdToFetch})...`);
+          const response = await resumeAPI.getById(resumeIdToFetch);
+          const loadedData = response.data;
+          console.log("✅ [EDITOR LOAD] MongoDB resume fetched successfully! Custom sections:", loadedData?.customSections);
+
+          setIsWizardModeFalse();
+          initializeResumeData(loadedData);
+          localStorage.setItem("currentResumeId", loadedData._id);
+          return;
+        } catch (err) {
+          console.error("❌ Error loading resume from database, trying fallback:", err);
+          if (stateData) {
+            console.log("ℹ️ Using stateData as fallback");
+            initializeResumeData(stateData);
+            return;
+          }
+          localStorage.removeItem("currentResumeId");
+          navigate("/upload");
+          return;
+        }
+      }
+
+      // Case 2: Brand new unsaved resume draft without an _id yet
       if (stateData) {
         if (isNewResume) {
           setIsWizardModeTrue();
@@ -304,29 +333,10 @@ const Editor = () => {
         }
 
         initializeResumeData(stateData);
-
-        if (stateData._id) {
-          localStorage.setItem("currentResumeId", stateData._id);
-        }
         return;
       }
 
-      const savedResumeId = localStorage.getItem("currentResumeId");
-
-      if (savedResumeId && user) {
-        try {
-          const response = await resumeAPI.getById(savedResumeId);
-          const loadedData = response.data;
-          setIsWizardModeFalse();
-          initializeResumeData(loadedData);
-        } catch (err) {
-          logger.error("❌ Error loading resume:", err);
-          localStorage.removeItem("currentResumeId");
-          navigate("/upload");
-        }
-      } else {
-        navigate("/upload");
-      }
+      navigate("/upload");
     };
 
     const initializeResumeData = (data) => {

@@ -525,6 +525,19 @@ export const saveResume = async (req, res) => {
     });
     console.log(`📊 Updated resume creation count for user ${userId}`);
 
+    console.log(`\n================== [NEW RESUME SAVED TO DB] ==================`);
+    console.log(`🆔 Created Resume ID: ${resume._id} | User ID: ${userId}`);
+    if (resume.customSections && resume.customSections.length > 0) {
+      console.log(`📁 Saved customSections count: ${resume.customSections.length}`);
+      resume.customSections.forEach((sec, idx) => {
+        console.log(`  ✅ Section [${idx + 1}]: "${sec.title}" | Items in DB: ${sec.items?.length || 0}`);
+        console.log(`     DB Item Data:`, JSON.stringify(sec.items, null, 2));
+      });
+    } else {
+      console.log(`  ℹ️ No custom sections in created resume`);
+    }
+    console.log(`==============================================================\n`);
+
     // Return the full resume object
     res.status(201).json(resume);
   } catch (error) {
@@ -558,6 +571,26 @@ export const updateResume = async (req, res) => {
       delete resumeData.title;
     }
 
+    console.log(`\n================== [RESUME UPDATE REQUEST] ==================`);
+    console.log(`🆔 Resume ID: ${id} | User ID: ${userId}`);
+    if (resumeData.customSections !== undefined) {
+      console.log(`📁 Incoming customSections count: ${resumeData.customSections?.length || 0}`);
+      if (Array.isArray(resumeData.customSections) && resumeData.customSections.length > 0) {
+        resumeData.customSections.forEach((sec, idx) => {
+          console.log(`  🔹 [${idx + 1}] Title: "${sec.title || 'Untitled'}" (ID: ${sec.id || 'none'})`);
+          console.log(`      Items count: ${sec.items?.length || 0}`);
+          if (Array.isArray(sec.items) && sec.items.length > 0) {
+            sec.items.forEach((it, iIdx) => {
+              const itTitle = typeof it === "object" ? it?.title || it?.name : it;
+              console.log(`      ↳ Item ${iIdx + 1}: "${itTitle}" | Subtitle: "${it?.subtitle || ''}" | Date: "${it?.date || ''}" | Bullets: ${it?.bullets?.length || 0}`);
+            });
+          }
+        });
+      }
+    } else {
+      console.log(`⚠️ customSections was not included in update payload`);
+    }
+
     // Prepare atomic update fields
     const updateFields = {...resumeData};
 
@@ -579,8 +612,21 @@ export const updateResume = async (req, res) => {
     );
 
     if (!updatedResume) {
+      console.error(`❌ [DB SAVE FAILED] Resume ${id} not found for user ${userId}`);
       return res.status(404).json({error: "Resume not found"});
     }
+
+    console.log(`✅ [DB SAVE SUCCESS] Successfully saved to MongoDB database!`);
+    if (updatedResume.customSections && updatedResume.customSections.length > 0) {
+      console.log(`💾 Database verified customSections in MongoDB:`);
+      updatedResume.customSections.forEach((sec, idx) => {
+        console.log(`  ✅ Section [${idx + 1}]: "${sec.title}" | Saved Items count: ${sec.items?.length || 0}`);
+        console.log(`     Full Saved Item Data in MongoDB:`, JSON.stringify(sec.items, null, 2));
+      });
+    } else {
+      console.log(`  ℹ️ No customSections present in database document`);
+    }
+    console.log(`============================================================\n`);
 
     // Return the updated resume object
     res.json(updatedResume);
@@ -638,11 +684,27 @@ export const getResumeById = async (req, res) => {
     const resume = await Resume.findOne({_id: id, userId});
 
     if (!resume) {
+      console.warn(`⚠️ [GET RESUME 404] Resume ${id} not found for user ${userId}`);
       return res.status(404).json({error: "Resume not found"});
     }
 
     const resumeObject = resume.toObject();
     resumeObject.access = await getResumeAccess(req.user, resume);
+
+    console.log(`\n================== [RESUME FETCH / GET BY ID] ==================`);
+    console.log(`🆔 Resume ID: ${id} | User: ${userId}`);
+    console.log(`📁 Loaded customSections from DB: count = ${resumeObject.customSections?.length || 0}`);
+    if (resumeObject.customSections?.length > 0) {
+      resumeObject.customSections.forEach((sec, idx) => {
+        console.log(`  🔹 [${idx + 1}] "${sec.title}" | Items in DB: ${sec.items?.length || 0}`);
+        if (sec.items?.length > 0) {
+          sec.items.forEach((it, iIdx) => {
+            console.log(`      ↳ Item ${iIdx + 1}: "${it?.title || it?.name || it}"`);
+          });
+        }
+      });
+    }
+    console.log(`================================================================\n`);
 
     res.json(resumeObject);
   } catch (error) {
@@ -849,7 +911,7 @@ export const processCustomSection = async (req, res) => {
     // Process custom section using OpenAI
     const startTime = Date.now();
     const {data: processedContent, tokenUsage} =
-      await processCustomSectionWithAI(content, title || "Custom Section");
+      await processCustomSectionWithAI(title || "Custom Section", content);
     const responseTime = Date.now() - startTime;
 
     // Track AI usage
@@ -872,6 +934,7 @@ export const processCustomSection = async (req, res) => {
     res.json({
       message: "Custom section processed successfully",
       content: processedContent,
+      items: Array.isArray(processedContent) ? processedContent : [],
     });
   } catch (error) {
     console.error("Process custom section error:", error);

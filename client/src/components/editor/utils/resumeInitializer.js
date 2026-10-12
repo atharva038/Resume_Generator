@@ -108,5 +108,24 @@ export function normalizeResumeData(rawData) {
   if (!Array.isArray(data.customSections)) data.customSections = [];
   if (!data.summary) data.summary = "";
 
+  if (Array.isArray(data.sectionOrder)) {
+    if (!data.sectionOrder.includes("customSections")) {
+      data.sectionOrder = [...data.sectionOrder, "customSections"];
+    }
+  } else {
+    data.sectionOrder = [
+      "layout",
+      "personal",
+      "summary",
+      "skills",
+      "experience",
+      "education",
+      "projects",
+      "certifications",
+      "achievements",
+      "customSections",
+    ];
+  }
+
   return data;
 }

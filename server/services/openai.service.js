@@ -647,17 +647,46 @@ Return a valid JSON object with the categories above as keys and arrays of forma
 export async function processCustomSectionWithAI(
   sectionName,
   content,
-  instructions = "Enhance and format this content professionally"
+  instructions = "Enhance and format this content professionally into structured resume items"
 ) {
   try {
-    const prompt = `Section: ${sectionName}
+    const prompt = `You are a professional ATS resume writer.
+The user wants to format content for a custom resume section named: "${sectionName}".
 
-Instructions: ${instructions}
-
-Content:
+User Input / Notes:
 ${content}
 
-Return the processed content.`;
+Instructions:
+${instructions}
+
+Task:
+Analyze the input and structure it into professional resume entries (e.g. for Research Papers / Publications, Volunteer Work, Leadership, Certifications, Awards, or Projects).
+For each entry, extract or formulate:
+- "title": Main title (e.g., Paper Title, Role, Honor/Award Name, or Entry Name).
+- "subtitle": Secondary metadata (e.g., Journal, Conference, Publisher, Organization, or Issuer).
+- "date": Date or date range (e.g., "May 2024", "2022 - Present", "2023").
+- "link": URL, DOI, or credential link if provided or mentioned, else "".
+- "description": Brief 1-2 sentence overview or abstract if relevant, else "".
+- "bullets": Array of 1-3 strong ATS-friendly bullet points starting with action verbs, highlighting impact or methodology. For concise entries (like awards or publications), 1 high-impact bullet or description is sufficient. If no bullets needed, leave as [].
+
+Return a JSON object in this exact format:
+{
+  "items": [
+    {
+      "title": "Title of paper, role, or entry",
+      "subtitle": "Publisher, journal, or organization",
+      "date": "Date or date range",
+      "link": "URL or DOI",
+      "description": "Brief description",
+      "bullets": [
+        "First bullet point",
+        "Second bullet point"
+      ]
+    }
+  ]
+}
+
+Return only valid JSON.`;
 
     console.log(`🤖 Processing custom section "${sectionName}" with GPT-4o...`);
     const completion = await openai.chat.completions.create({
@@ -666,27 +695,57 @@ Return the processed content.`;
         {
           role: "system",
           content:
-            "You are a professional resume writer. Process content according to instructions.",
+            "You are an expert resume writer and ATS specialist. Extract structured resume entries with title, subtitle, date, link, and bullet points. Return only valid JSON.",
         },
         {role: "user", content: prompt},
       ],
-      temperature: 0.6,
-      max_tokens: 1024,
+      temperature: 0.3,
+      max_tokens: 1500,
+      response_format: {type: "json_object"},
     });
 
     const response = completion.choices[0];
-    const processedContent = response.message.content.trim();
+    const text = response.message.content.trim();
+
+    let items = [];
+    try {
+      const parsed = JSON.parse(text);
+      if (Array.isArray(parsed.items)) {
+        items = parsed.items;
+      } else if (Array.isArray(parsed)) {
+        items = parsed;
+      } else if (parsed && typeof parsed === "object") {
+        items = [parsed];
+      }
+    } catch (parseError) {
+      console.warn("⚠️ JSON parse error on AI response, trying fallback regex:", parseError);
+      const match = text.match(/\{[\s\S]*\}/);
+      if (match) {
+        const parsed = JSON.parse(match[0]);
+        items = parsed.items || [parsed];
+      } else {
+        // Fallback to simple items
+        items = text.split("\n").filter(Boolean).map(line => ({
+          title: line.replace(/^[•\-\*]\s*/, ""),
+          subtitle: "",
+          date: "",
+          link: "",
+          description: "",
+          bullets: [],
+        }));
+      }
+    }
 
     // Extract token usage and calculate cost
     const tokenUsage = extractTokenUsage(completion);
     const cost = calculateCost(tokenUsage);
 
     console.log(
-      `✅ Custom section processed with GPT-4o (Tokens: ${
+      `✅ Custom section processed with GPT-4o: extracted ${items.length} items (Tokens: ${
         tokenUsage.totalTokens
       }, Cost: ₹${cost.amountINR.toFixed(2)})`
     );
-    return {data: processedContent, tokenUsage, cost};
+    return {data: items, tokenUsage, cost};
   } catch (error) {
     console.error("❌ OpenAI custom section processing error:", error.message);
     throw new Error(

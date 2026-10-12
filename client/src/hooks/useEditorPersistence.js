@@ -53,12 +53,32 @@ export const useEditorPersistence = ({
       setAutoSaving(true);
 
       try {
+        console.log("💾 [AUTO-SAVE] Triggering auto-save to MongoDB with customSections:", resumeData?.customSections);
         const response = await resumeAPI.update(resumeData._id, resumeData);
         const savedResume = response.data;
+        console.log("✅ [AUTO-SAVE] MongoDB update successful! customSections in DB:", savedResume?.customSections);
 
         setResumeData(savedResume);
         setOriginalResumeData(JSON.parse(JSON.stringify(savedResume)));
         setHasUnsavedChanges(false);
+
+        if (window.history?.replaceState) {
+          try {
+            window.history.replaceState(
+              {
+                ...window.history.state,
+                usr: {
+                  ...(window.history.state?.usr || {}),
+                  resumeData: savedResume,
+                  isNewResume: false,
+                },
+              },
+              ""
+            );
+          } catch {
+            // Ignore
+          }
+        }
 
         toast.success("Auto-saved", {
           duration: 2000,

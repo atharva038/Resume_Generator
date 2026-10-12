@@ -1,4 +1,4 @@
-import { forwardRef, useRef, useEffect, useMemo } from "react";
+import React, { forwardRef, useRef, useEffect, useMemo } from "react";
 import {
   isDescriptionDuplicatedInBullets,
   cleanBulletText,
@@ -53,7 +53,7 @@ const highlightMetrics = (text, primaryColor) => {
         </span>
       );
     }
-    return part;
+    return <React.Fragment key={index}>{part}</React.Fragment>;
   });
 };
 
@@ -264,12 +264,17 @@ const LatexAcademicTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }
     "customSections",
   ];
 
-  const sectionOrder =
+  const baseOrder =
     resumeData.sectionOrder && resumeData.sectionOrder.length > 0
       ? resumeData.sectionOrder.filter(
           (id) => !["score", "personal", "recommendations"].includes(id)
         )
       : defaultOrder;
+
+  const sectionOrder =
+    resumeData.customSections && resumeData.customSections.length > 0 && !baseOrder.includes("customSections")
+      ? [...baseOrder, "customSections"]
+      : baseOrder;
 
   // Contact items helper
   const contact = resumeData.contact || {};
@@ -911,24 +916,137 @@ const LatexAcademicTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }
                       </p>
                     )}
                     {sec.items?.length > 0 && (
-                      <ul style={{ margin: 0, paddingLeft: 0, listStyle: "none" }}>
-                        {sec.items.map((item, iIdx) => (
-                          <li
-                            key={iIdx}
-                            style={{
-                              display: "flex",
-                              alignItems: "flex-start",
-                              gap: styles.bulletGap,
-                              fontSize: styles.bodySize,
-                              lineHeight: styles.lineHeight,
-                              marginBottom: "2px",
-                            }}
-                          >
-                            <span style={{ color: selectedTheme.primary }}>•</span>
-                            <span style={{ flex: 1 }}>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
+                      <div style={{ display: "flex", flexDirection: "column", gap: styles.itemMarginBottom }}>
+                        {sec.items.map((rawItem, iIdx) => {
+                          const isStructured = rawItem && typeof rawItem === "object";
+                          const itemTitle = isStructured ? (rawItem.title || rawItem.name || "") : rawItem;
+                          const subtitle = isStructured ? (rawItem.subtitle || rawItem.organization || rawItem.issuer || rawItem.publisher || "") : "";
+                          const date = isStructured ? (rawItem.date || "") : "";
+                          const link = isStructured ? (rawItem.link || rawItem.url || "") : "";
+                          const description = isStructured ? (rawItem.description || "") : "";
+                          const bullets = isStructured && Array.isArray(rawItem.bullets) ? rawItem.bullets.filter(Boolean) : [];
+
+                          if (!isStructured || (!subtitle && !date && !link && bullets.length === 0 && !description)) {
+                            return (
+                              <ul key={iIdx} style={{ margin: 0, paddingLeft: 0, listStyle: "none" }}>
+                                <li
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "flex-start",
+                                    gap: styles.bulletGap,
+                                    fontSize: styles.bodySize,
+                                    lineHeight: styles.lineHeight,
+                                    marginBottom: "2px",
+                                  }}
+                                >
+                                  <span style={{ color: selectedTheme.primary }}>•</span>
+                                  <span style={{ flex: 1 }}>{typeof itemTitle === "string" ? itemTitle : ""}</span>
+                                </li>
+                              </ul>
+                            );
+                          }
+
+                          return (
+                            <div key={iIdx} style={{ marginBottom: "2px" }}>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  alignItems: "baseline",
+                                  flexWrap: "wrap",
+                                  gap: "4px",
+                                }}
+                              >
+                                <div>
+                                  {itemTitle && (
+                                    <span
+                                      style={{
+                                        fontWeight: 700,
+                                        fontSize: styles.bodySize,
+                                        color: selectedTheme.text,
+                                      }}
+                                    >
+                                      {itemTitle}
+                                    </span>
+                                  )}
+                                  {subtitle && (
+                                    <span
+                                      style={{
+                                        fontStyle: "italic",
+                                        color: selectedTheme.textLight,
+                                        marginLeft: "5px",
+                                      }}
+                                    >
+                                      — {subtitle}
+                                    </span>
+                                  )}
+                                  {link && (
+                                    <a
+                                      href={link.startsWith("http") ? link : `https://${link}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      style={{
+                                        fontSize: styles.metaSize,
+                                        color: selectedTheme.primary,
+                                        marginLeft: "6px",
+                                        textDecoration: "underline",
+                                      }}
+                                    >
+                                      [link]
+                                    </a>
+                                  )}
+                                </div>
+                                {date && (
+                                  <span
+                                    style={{
+                                      fontSize: styles.metaSize,
+                                      fontStyle: "italic",
+                                      color: selectedTheme.textMuted,
+                                      flexShrink: 0,
+                                    }}
+                                  >
+                                    {date}
+                                  </span>
+                                )}
+                              </div>
+
+                              {description && (
+                                <p
+                                  style={{
+                                    fontSize: styles.bodySize,
+                                    lineHeight: styles.lineHeight,
+                                    color: selectedTheme.textLight,
+                                    margin: "2px 0",
+                                  }}
+                                >
+                                  {description}
+                                </p>
+                              )}
+
+                              {bullets.length > 0 && (
+                                <ul style={{ margin: "2px 0 0 0", paddingLeft: 0, listStyle: "none" }}>
+                                  {bullets.map((b, bIdx) => (
+                                    <li
+                                      key={bIdx}
+                                      style={{
+                                        display: "flex",
+                                        alignItems: "flex-start",
+                                        gap: styles.bulletGap,
+                                        fontSize: styles.bodySize,
+                                        lineHeight: styles.lineHeight,
+                                        marginBottom: "2px",
+                                      }}
+                                    >
+                                      <span style={{ color: selectedTheme.primary }}>•</span>
+                                      <span style={{ flex: 1 }}>{cleanBulletText(b)}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
                     )}
                   </section>
                 ))}

@@ -1,4 +1,4 @@
-import { forwardRef, useRef, useEffect, useMemo } from "react";
+import React, { forwardRef, useRef, useEffect, useMemo } from "react";
 import {
   isDescriptionDuplicatedInBullets,
   cleanBulletText,
@@ -63,7 +63,7 @@ const highlightMetrics = (text, primaryColor) => {
         </span>
       );
     }
-    return part;
+    return <React.Fragment key={index}>{part}</React.Fragment>;
   });
 };
 
@@ -362,12 +362,17 @@ const SiliconValleyTemplate = forwardRef(
       "customSections",
     ];
 
-    const sectionOrder =
+    const baseSectionOrder =
       resumeData.sectionOrder && resumeData.sectionOrder.length > 0
         ? resumeData.sectionOrder.filter(
             (id) => !["score", "personal", "recommendations"].includes(id)
           )
         : DEFAULT_SECTION_ORDER;
+
+    const sectionOrder =
+      resumeData.customSections && resumeData.customSections.length > 0 && !baseSectionOrder.includes("customSections")
+        ? [...baseSectionOrder, "customSections"]
+        : baseSectionOrder;
 
     // Contact info items
     const contact = resumeData.contact || {};
@@ -1056,18 +1061,155 @@ const SiliconValleyTemplate = forwardRef(
           style={{ marginBottom: dynamicStyles.sectionMarginBottom }}
         >
           {resumeData.customSections.map((sec, index) => (
-            <div key={index} style={{ marginBottom: "4px" }}>
-              {renderSectionHeading(sec.title, "custom")}
-              <div
-                style={{
-                  fontFamily: fontBody,
-                  fontSize: dynamicStyles.bodySize,
-                  lineHeight: dynamicStyles.bodyLineHeight,
-                  color: selectedTheme.textLight,
-                }}
-              >
-                {highlightMetrics(sec.content, selectedTheme.primary)}
-              </div>
+            <div key={index} style={{ marginBottom: "6px" }}>
+              {renderSectionHeading(sec.title || "Additional Information", "custom")}
+              {sec.content && (
+                <div
+                  style={{
+                    fontFamily: fontBody,
+                    fontSize: dynamicStyles.bodySize,
+                    lineHeight: dynamicStyles.bodyLineHeight,
+                    color: selectedTheme.textLight,
+                    marginBottom: "4px",
+                  }}
+                >
+                  {highlightMetrics(sec.content, selectedTheme.primary)}
+                </div>
+              )}
+              {sec.items && sec.items.length > 0 && (
+                <div style={{ display: "flex", flexDirection: "column", gap: dynamicStyles.itemMarginBottom }}>
+                  {sec.items.map((rawItem, iIdx) => {
+                    const isStructured = rawItem && typeof rawItem === "object";
+                    const itemTitle = isStructured ? (rawItem.title || rawItem.name || "") : rawItem;
+                    const subtitle = isStructured ? (rawItem.subtitle || rawItem.organization || rawItem.issuer || rawItem.publisher || "") : "";
+                    const date = isStructured ? (rawItem.date || "") : "";
+                    const link = isStructured ? (rawItem.link || rawItem.url || "") : "";
+                    const description = isStructured ? (rawItem.description || "") : "";
+                    const bullets = isStructured && Array.isArray(rawItem.bullets) ? rawItem.bullets.filter(Boolean) : [];
+
+                    if (!isStructured || (!subtitle && !date && !link && bullets.length === 0 && !description)) {
+                      return (
+                        <ul key={iIdx} style={{ margin: 0, paddingLeft: "15px", listStyleType: "disc" }}>
+                          <li
+                            style={{
+                              fontFamily: fontBody,
+                              fontSize: dynamicStyles.bodySize,
+                              lineHeight: dynamicStyles.bodyLineHeight,
+                              color: selectedTheme.textLight,
+                              marginBottom: dynamicStyles.bulletMarginBottom,
+                            }}
+                          >
+                            {highlightMetrics(typeof itemTitle === "string" ? itemTitle : "", selectedTheme.primary)}
+                          </li>
+                        </ul>
+                      );
+                    }
+
+                    return (
+                      <div key={iIdx} style={{ marginBottom: "2px" }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "baseline",
+                            marginBottom: "2px",
+                            flexWrap: "wrap",
+                            gap: "4px",
+                          }}
+                        >
+                          <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
+                            {itemTitle && (
+                              <h3
+                                style={{
+                                  fontFamily: fontHeading,
+                                  fontWeight: 700,
+                                  fontSize: dynamicStyles.bodySize,
+                                  color: selectedTheme.text,
+                                  margin: 0,
+                                }}
+                              >
+                                {itemTitle}
+                              </h3>
+                            )}
+                            {subtitle && (
+                              <span
+                                style={{
+                                  fontFamily: fontBody,
+                                  fontSize: dynamicStyles.metaSize,
+                                  color: selectedTheme.textMuted,
+                                  fontStyle: "italic",
+                                }}
+                              >
+                                · {subtitle}
+                              </span>
+                            )}
+                            {link && (
+                              <a
+                                href={link.startsWith("http") ? link : `https://${link}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                  fontFamily: fontMono,
+                                  fontSize: dynamicStyles.metaSize,
+                                  color: selectedTheme.primary,
+                                  textDecoration: "underline",
+                                }}
+                              >
+                                [link]
+                              </a>
+                            )}
+                          </div>
+                          {date && (
+                            <span
+                              style={{
+                                fontFamily: fontMono,
+                                fontSize: dynamicStyles.metaSize,
+                                color: selectedTheme.textMuted,
+                                whiteSpace: "nowrap",
+                              }}
+                            >
+                              {date}
+                            </span>
+                          )}
+                        </div>
+
+                        {description && (
+                          <p
+                            style={{
+                              fontFamily: fontBody,
+                              fontSize: dynamicStyles.bodySize,
+                              lineHeight: dynamicStyles.bodyLineHeight,
+                              color: selectedTheme.textLight,
+                              margin: "0 0 2px 0",
+                            }}
+                          >
+                            {description}
+                          </p>
+                        )}
+
+                        {bullets.length > 0 && (
+                          <ul style={{ margin: 0, paddingLeft: "15px", listStyleType: "disc" }}>
+                            {bullets.map((b, bIdx) => (
+                              <li
+                                key={bIdx}
+                                style={{
+                                  fontFamily: fontBody,
+                                  fontSize: dynamicStyles.bodySize,
+                                  lineHeight: dynamicStyles.bodyLineHeight,
+                                  color: selectedTheme.textLight,
+                                  marginBottom: dynamicStyles.bulletMarginBottom,
+                                }}
+                              >
+                                {highlightMetrics(cleanBulletText(b), selectedTheme.primary)}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           ))}
         </section>

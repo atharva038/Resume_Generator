@@ -276,13 +276,18 @@ const ProfessionalV2Template = forwardRef(
     };
 
     const sectionOrder = useMemo(() => {
-      if (data.sectionOrder && data.sectionOrder.length > 0) {
-        return data.sectionOrder.filter(
-          (id) => !["score", "personal", "recommendations"].includes(id)
-        );
+      const baseOrder =
+        data.sectionOrder && data.sectionOrder.length > 0
+          ? data.sectionOrder.filter(
+              (id) => !["score", "personal", "recommendations"].includes(id)
+            )
+          : DEFAULT_SECTION_ORDER;
+
+      if (customSectionList.length > 0 && !baseOrder.includes("customSections")) {
+        return [...baseOrder, "customSections"];
       }
-      return DEFAULT_SECTION_ORDER;
-    }, [data.sectionOrder]);
+      return baseOrder;
+    }, [data.sectionOrder, customSectionList]);
 
     // Helper: Get section title
     const getSectionTitle = (sectionId) => {
@@ -393,10 +398,8 @@ const ProfessionalV2Template = forwardRef(
       () =>
         customSectionList
           .map((section) => {
-            const items = Array.isArray(section?.items)
+            const rawItems = Array.isArray(section?.items)
               ? section.items
-                  .map((item) => (typeof item === "string" ? item.trim() : ""))
-                  .filter(Boolean)
               : typeof section?.content === "string"
                 ? section.content
                     .split(/\n|•|\u2022|\-|\*\s+/)
@@ -407,10 +410,11 @@ const ProfessionalV2Template = forwardRef(
             return {
               ...section,
               title: section?.title || "Additional Information",
-              items,
+              content: section?.content || "",
+              items: rawItems,
             };
           })
-          .filter((section) => hasContent(section.items) || hasContent(section.content)),
+          .filter((section) => (section.items && section.items.length > 0) || (section.content && section.content.trim().length > 0)),
       [customSectionList]
     );
 
@@ -693,7 +697,6 @@ const ProfessionalV2Template = forwardRef(
         customSections:
           hasContent(normalizedCustomSections) &&
           normalizedCustomSections.map((section, index) => {
-
             return (
               <section
                 key={`custom-${index}`}
@@ -702,14 +705,86 @@ const ProfessionalV2Template = forwardRef(
               >
                 <h2 className="pv2-section-title">{section.title}</h2>
                 <div className="section-content">
-                  {section.items.length > 0 ? (
-                    <ul className="achievements-list">
-                      {section.items.map((item, itemIndex) => (
-                        <li key={`${index}-item-${itemIndex}`}>{item}</li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p style={{whiteSpace: "pre-wrap"}}>{section.content}</p>
+                  {section.content && (
+                    <p style={{ whiteSpace: "pre-wrap", marginBottom: section.items?.length > 0 ? "8px" : 0 }}>
+                      {section.content}
+                    </p>
+                  )}
+                  {section.items && section.items.length > 0 && (
+                    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                      {section.items.map((rawItem, itemIndex) => {
+                        const isStructured = rawItem && typeof rawItem === "object";
+                        const itemTitle = isStructured ? (rawItem.title || rawItem.name || "") : rawItem;
+                        const subtitle = isStructured ? (rawItem.subtitle || rawItem.organization || rawItem.issuer || rawItem.publisher || "") : "";
+                        const date = isStructured ? (rawItem.date || "") : "";
+                        const link = isStructured ? (rawItem.link || rawItem.url || "") : "";
+                        const description = isStructured ? (rawItem.description || "") : "";
+                        const bullets = isStructured && Array.isArray(rawItem.bullets) ? rawItem.bullets.filter(Boolean) : [];
+
+                        if (!isStructured || (!subtitle && !date && !link && bullets.length === 0 && !description)) {
+                          return (
+                            <ul key={itemIndex} className="achievements-list" style={{ margin: 0 }}>
+                              <li>{typeof itemTitle === "string" ? itemTitle : ""}</li>
+                            </ul>
+                          );
+                        }
+
+                        return (
+                          <div key={itemIndex} style={{ pageBreakInside: "avoid", breakInside: "avoid" }}>
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "baseline",
+                                flexWrap: "wrap",
+                                gap: "6px",
+                                marginBottom: "2px",
+                              }}
+                            >
+                              <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
+                                {itemTitle && (
+                                  <span style={{ fontWeight: 700, color: selectedTheme.text }}>
+                                    {itemTitle}
+                                  </span>
+                                )}
+                                {subtitle && (
+                                  <span style={{ color: selectedTheme.textMuted || "#666", fontStyle: "italic", fontSize: "0.95em" }}>
+                                    · {subtitle}
+                                  </span>
+                                )}
+                                {link && (
+                                  <a
+                                    href={link.startsWith("http") ? link : `https://${link}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{ color: selectedTheme.primary, textDecoration: "underline", fontSize: "0.9em" }}
+                                  >
+                                    [link]
+                                  </a>
+                                )}
+                              </div>
+                              {date && (
+                                <span style={{ color: selectedTheme.textMuted || "#666", fontWeight: 500, fontSize: "0.9em", whiteSpace: "nowrap" }}>
+                                  {date}
+                                </span>
+                              )}
+                            </div>
+                            {description && (
+                              <p style={{ margin: "2px 0 4px 0", color: selectedTheme.textLight || "#444" }}>
+                                {description}
+                              </p>
+                            )}
+                            {bullets.length > 0 && (
+                              <ul className="achievements-list" style={{ marginTop: "2px", marginBottom: 0 }}>
+                                {bullets.map((b, bIdx) => (
+                                  <li key={bIdx}>{b}</li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
                   )}
                 </div>
               </section>

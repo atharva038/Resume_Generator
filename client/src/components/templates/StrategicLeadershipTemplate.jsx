@@ -485,37 +485,175 @@ const StrategicLeadershipTemplate = forwardRef(
 
     if (resumeData?.customSections?.length) {
       mainSections.push(
-        ...resumeData.customSections.map((section, index) => (
-          <section
-            key={`custom-${index}`}
-            style={{marginBottom: stylePack.sectionGap, breakInside: "avoid"}}
-          >
-            <h2
-              style={{
-                fontSize: stylePack.headingFont,
-                fontWeight: "700",
-                color: selectedTheme.primary,
-                marginBottom: "6px",
-                textTransform: "uppercase",
-                letterSpacing: "0.4px",
-                borderLeft: `3px solid ${selectedTheme.primary}`,
-                paddingLeft: "7px",
-              }}
+        ...resumeData.customSections.map((section, index) => {
+          const items = Array.isArray(section.items) ? section.items : [];
+          return (
+            <section
+              key={`custom-${index}`}
+              style={{ marginBottom: stylePack.sectionGap, breakInside: "avoid" }}
             >
-              {section.title}
-            </h2>
-            <div
-              style={{
-                fontSize: stylePack.bodyFont,
-                color: selectedTheme.text,
-                lineHeight: stylePack.lineHeight,
-                whiteSpace: "pre-wrap",
-              }}
-            >
-              {section.content}
-            </div>
-          </section>
-        ))
+              <h2
+                style={{
+                  fontSize: stylePack.headingFont,
+                  fontWeight: "700",
+                  color: selectedTheme.primary,
+                  marginBottom: "6px",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.4px",
+                  borderLeft: `3px solid ${selectedTheme.primary}`,
+                  paddingLeft: "7px",
+                }}
+              >
+                {section.title || "Additional Information"}
+              </h2>
+              {section.content && (
+                <div
+                  style={{
+                    fontSize: stylePack.bodyFont,
+                    color: selectedTheme.text,
+                    lineHeight: stylePack.lineHeight,
+                    whiteSpace: "pre-wrap",
+                    marginBottom: items.length > 0 ? "6px" : 0,
+                  }}
+                >
+                  {section.content}
+                </div>
+              )}
+              {items.length > 0 && (
+                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                  {items.map((rawItem, iIdx) => {
+                    const isStructured = rawItem && typeof rawItem === "object";
+                    const itemTitle = isStructured ? (rawItem.title || rawItem.name || "") : rawItem;
+                    const subtitle = isStructured ? (rawItem.subtitle || rawItem.organization || rawItem.issuer || rawItem.publisher || "") : "";
+                    const date = isStructured ? (rawItem.date || "") : "";
+                    const link = isStructured ? (rawItem.link || rawItem.url || "") : "";
+                    const description = isStructured ? (rawItem.description || "") : "";
+                    const bullets = isStructured && Array.isArray(rawItem.bullets) ? rawItem.bullets.filter(Boolean) : [];
+
+                    if (!isStructured || (!subtitle && !date && !link && bullets.length === 0 && !description)) {
+                      return (
+                        <div
+                          key={iIdx}
+                          style={{
+                            fontSize: stylePack.bodyFont,
+                            color: selectedTheme.text,
+                            lineHeight: stylePack.lineHeight,
+                            paddingLeft: "12px",
+                            position: "relative",
+                          }}
+                        >
+                          <span style={{ position: "absolute", left: 0, color: selectedTheme.primary }}>•</span>
+                          {typeof itemTitle === "string" ? itemTitle : ""}
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <div key={iIdx} style={{ breakInside: "avoid" }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "baseline",
+                            flexWrap: "wrap",
+                            gap: "6px",
+                            marginBottom: "2px",
+                          }}
+                        >
+                          <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
+                            {itemTitle && (
+                              <span
+                                style={{
+                                  fontSize: stylePack.bodyFont,
+                                  fontWeight: "700",
+                                  color: selectedTheme.text,
+                                }}
+                              >
+                                {itemTitle}
+                              </span>
+                            )}
+                            {subtitle && (
+                              <span
+                                style={{
+                                  fontSize: stylePack.bodyFont,
+                                  color: selectedTheme.muted,
+                                  fontStyle: "italic",
+                                }}
+                              >
+                                · {subtitle}
+                              </span>
+                            )}
+                            {link && (
+                              <a
+                                href={link.startsWith("http") ? link : `https://${link}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                  fontSize: stylePack.bodyFont,
+                                  color: selectedTheme.primary,
+                                  textDecoration: "underline",
+                                }}
+                              >
+                                [link]
+                              </a>
+                            )}
+                          </div>
+                          {date && (
+                            <span
+                              style={{
+                                fontSize: stylePack.bodyFont,
+                                color: selectedTheme.muted,
+                                fontWeight: "600",
+                                whiteSpace: "nowrap",
+                              }}
+                            >
+                              {date}
+                            </span>
+                          )}
+                        </div>
+                        {description && (
+                          <div
+                            style={{
+                              fontSize: stylePack.bodyFont,
+                              color: selectedTheme.text,
+                              lineHeight: stylePack.lineHeight,
+                              margin: "2px 0 4px 0",
+                            }}
+                          >
+                            {description}
+                          </div>
+                        )}
+                        {bullets.length > 0 && (
+                          <ul
+                            style={{
+                              margin: 0,
+                              paddingLeft: "16px",
+                              listStyleType: "disc",
+                            }}
+                          >
+                            {bullets.map((b, bIdx) => (
+                              <li
+                                key={bIdx}
+                                style={{
+                                  fontSize: stylePack.bodyFont,
+                                  color: selectedTheme.text,
+                                  lineHeight: stylePack.lineHeight,
+                                  marginBottom: "2px",
+                                }}
+                              >
+                                {b}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </section>
+          );
+        })
       );
     }
 

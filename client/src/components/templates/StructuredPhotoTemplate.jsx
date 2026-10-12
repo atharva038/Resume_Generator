@@ -52,7 +52,7 @@ const COLOR_THEMES = {
 
 const FIXED_LEFT_SECTIONS = ["experience", "projects"];
 const FIXED_RIGHT_SECTIONS = ["hardSkills", "softSkills"];
-const FLEX_LEFT_SECTIONS = ["education", "achievements"];
+const FLEX_LEFT_SECTIONS = ["education", "achievements", "customSections"];
 const FLEX_RIGHT_SECTIONS = [];
 
 const StructuredPhotoTemplate = forwardRef(({resumeData, onPageUsageChange}, ref) => {
@@ -407,6 +407,9 @@ const StructuredPhotoTemplate = forwardRef(({resumeData, onPageUsageChange}, ref
     if (sectionId === "softSkills") {
       return allSoftSkillItems.length > 0;
     }
+    if (sectionId === "customSections") {
+      return Array.isArray(data.customSections) && data.customSections.length > 0;
+    }
     return false;
   }
 
@@ -438,6 +441,12 @@ const StructuredPhotoTemplate = forwardRef(({resumeData, onPageUsageChange}, ref
     }
     if (sectionId === "softSkills") {
       return 60 + allSoftSkillItems.length * 12;
+    }
+    if (sectionId === "customSections") {
+      return (data.customSections || []).reduce(
+        (sum, sec) => sum + 40 + (sec?.items?.length || 1) * 25,
+        0
+      );
     }
     return 0;
   }
@@ -522,6 +531,97 @@ const StructuredPhotoTemplate = forwardRef(({resumeData, onPageUsageChange}, ref
           <h2 style={sectionTitleStyle}>Soft Skills</h2>
           {chips}
         </section>
+      );
+    }
+
+    if (sectionId === "customSections" && data.customSections?.length > 0) {
+      return (
+        <div key="customSections">
+          {data.customSections.map((sec, sIdx) => {
+            const items = Array.isArray(sec.items) ? sec.items : [];
+            return (
+              <section key={sIdx} style={{ marginBottom: sectionGap }}>
+                <h2 style={sectionTitleStyle}>{sec.title || "Additional Information"}</h2>
+                {sec.content && (
+                  <p style={{ margin: "0 0 6px 0", fontSize: "11.5px", color: theme.text, lineHeight: 1.4 }}>
+                    {sec.content}
+                  </p>
+                )}
+                {items.length > 0 && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                    {items.map((rawItem, iIdx) => {
+                      const isStructured = rawItem && typeof rawItem === "object";
+                      const itemTitle = isStructured ? (rawItem.title || rawItem.name || "") : rawItem;
+                      const subtitle = isStructured ? (rawItem.subtitle || rawItem.organization || rawItem.issuer || rawItem.publisher || "") : "";
+                      const date = isStructured ? (rawItem.date || "") : "";
+                      const link = isStructured ? (rawItem.link || rawItem.url || "") : "";
+                      const description = isStructured ? (rawItem.description || "") : "";
+                      const bullets = isStructured && Array.isArray(rawItem.bullets) ? rawItem.bullets.filter(Boolean) : [];
+
+                      if (!isStructured || (!subtitle && !date && !link && bullets.length === 0 && !description)) {
+                        return (
+                          <ul key={iIdx} style={{ margin: "2px 0 0 0", paddingLeft: "16px", listStyleType: "disc" }}>
+                            <li style={{ fontSize: "11.5px", color: theme.text, lineHeight: 1.4 }}>
+                              {typeof itemTitle === "string" ? itemTitle : ""}
+                            </li>
+                          </ul>
+                        );
+                      }
+
+                      return (
+                        <div key={iIdx} style={{ marginBottom: "3px" }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: "4px" }}>
+                            <div style={{ display: "flex", alignItems: "baseline", gap: "6px", flexWrap: "wrap" }}>
+                              {itemTitle && (
+                                <span style={{ fontWeight: 700, fontSize: "11.5px", color: theme.primary }}>
+                                  {itemTitle}
+                                </span>
+                              )}
+                              {subtitle && (
+                                <span style={{ fontSize: "11px", color: theme.accent, fontStyle: "italic" }}>
+                                  · {subtitle}
+                                </span>
+                              )}
+                              {link && (
+                                <a
+                                  href={link.startsWith("http") ? link : `https://${link}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  style={{ fontSize: "10.5px", color: theme.primary, textDecoration: "underline" }}
+                                >
+                                  [link]
+                                </a>
+                              )}
+                            </div>
+                            {date && (
+                              <span style={{ fontSize: "10.5px", color: theme.textMuted || "#666", whiteSpace: "nowrap" }}>
+                                {date}
+                              </span>
+                            )}
+                          </div>
+                          {description && (
+                            <p style={{ margin: "1px 0 2px 0", fontSize: "11px", color: theme.text, lineHeight: 1.35 }}>
+                              {description}
+                            </p>
+                          )}
+                          {bullets.length > 0 && (
+                            <ul style={{ margin: "1px 0 0 0", paddingLeft: "16px", listStyleType: "disc" }}>
+                              {bullets.map((b, bIdx) => (
+                                <li key={bIdx} style={{ fontSize: "11px", color: theme.text, lineHeight: 1.35, marginBottom: "1px" }}>
+                                  {b}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </section>
+            );
+          })}
+        </div>
       );
     }
 
