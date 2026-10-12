@@ -105,13 +105,35 @@ const ResumeLayoutControls = ({ resumeData = {}, template = "classic", updateFie
     update("fontFamily", fontFam);
   };
 
-  const marginValue = (value) => Number.parseFloat(value) || 0.35;
+  const marginValue = (value) => {
+    if (value === undefined || value === null || value === "") return 0.35;
+    const parsed = Number.parseFloat(value);
+    return Number.isFinite(parsed) ? parsed : 0.35;
+  };
 
-  const updateMargin = (field, value) =>
-    update(
-      field,
-      `${Math.min(0.8, Math.max(0.2, Number(value))).toFixed(2)}in`
-    );
+  const updateMargin = (field, value) => {
+    const num = Number.parseFloat(value);
+    const clamped = Number.isFinite(num)
+      ? Math.min(1.2, Math.max(0, num))
+      : 0.35;
+    update(field, `${clamped.toFixed(2)}in`);
+  };
+
+  const updateTextSize = (value) => {
+    const num = Number.parseInt(value, 10);
+    const clamped = Number.isFinite(num)
+      ? Math.min(150, Math.max(50, num))
+      : 100;
+    update("fontScale", clamped);
+  };
+
+  const updateSectionSpacing = (value) => {
+    const num = Number.parseInt(value, 10);
+    const clamped = Number.isFinite(num)
+      ? Math.min(200, Math.max(0, num))
+      : 100;
+    update("sectionSpacing", clamped);
+  };
 
   const contactOptions = [
     ["left-inline", "Left aligned"],
@@ -253,34 +275,56 @@ const ResumeLayoutControls = ({ resumeData = {}, template = "classic", updateFie
 
         {showAdvanced && (
           <div className="mt-2.5 grid min-w-0 grid-cols-1 gap-2.5 sm:grid-cols-2">
-            <label className="text-xs font-medium text-gray-700 dark:text-gray-300">
-              Text size{" "}
-              <span className="float-right tabular-nums font-semibold text-gray-900 dark:text-gray-100">
-                {settings.fontScale}%
-              </span>
-              <input
-                type="range"
-                min="90"
-                max="110"
-                step="1"
-                value={settings.fontScale}
-                onChange={(e) => update("fontScale", Number(e.target.value))}
-                className="mt-1.5 h-1.5 w-full cursor-pointer accent-blue-600 dark:accent-blue-400"
-              />
-            </label>
-
-            <label className="text-xs font-medium text-gray-700 dark:text-gray-300">
-              Section spacing{" "}
-              <span className="float-right tabular-nums font-semibold text-gray-900 dark:text-gray-100">
-                {settings.sectionSpacing}%
+            <label className="min-w-0 text-xs font-medium text-gray-700 dark:text-gray-300">
+              <span className="flex min-w-0 items-center justify-between gap-1.5">
+                <span className="truncate">Text size</span>
+                <span className="flex shrink-0 items-center gap-1 text-[11px] font-semibold text-gray-500 dark:text-gray-400">
+                  <input
+                    type="number"
+                    min="50"
+                    max="150"
+                    step="1"
+                    value={settings.fontScale ?? 100}
+                    onChange={(e) => updateTextSize(e.target.value)}
+                    className="h-6 w-14 rounded border border-gray-200 dark:border-zinc-700 bg-white px-1 text-right text-xs text-gray-900 outline-none focus:border-blue-500 dark:bg-zinc-900 dark:text-gray-100"
+                  />{" "}
+                  %
+                </span>
               </span>
               <input
                 type="range"
                 min="50"
-                max="140"
-                step="5"
-                value={settings.sectionSpacing}
-                onChange={(e) => update("sectionSpacing", Number(e.target.value))}
+                max="150"
+                step="1"
+                value={settings.fontScale ?? 100}
+                onChange={(e) => updateTextSize(e.target.value)}
+                className="mt-1.5 h-1.5 w-full cursor-pointer accent-blue-600 dark:accent-blue-400"
+              />
+            </label>
+
+            <label className="min-w-0 text-xs font-medium text-gray-700 dark:text-gray-300">
+              <span className="flex min-w-0 items-center justify-between gap-1.5">
+                <span className="truncate">Section spacing</span>
+                <span className="flex shrink-0 items-center gap-1 text-[11px] font-semibold text-gray-500 dark:text-gray-400">
+                  <input
+                    type="number"
+                    min="0"
+                    max="200"
+                    step="1"
+                    value={settings.sectionSpacing ?? 100}
+                    onChange={(e) => updateSectionSpacing(e.target.value)}
+                    className="h-6 w-14 rounded border border-gray-200 dark:border-zinc-700 bg-white px-1 text-right text-xs text-gray-900 outline-none focus:border-blue-500 dark:bg-zinc-900 dark:text-gray-100"
+                  />{" "}
+                  %
+                </span>
+              </span>
+              <input
+                type="range"
+                min="0"
+                max="200"
+                step="1"
+                value={settings.sectionSpacing ?? 100}
+                onChange={(e) => updateSectionSpacing(e.target.value)}
                 className="mt-1.5 h-1.5 w-full cursor-pointer accent-blue-600 dark:accent-blue-400"
               />
             </label>
@@ -314,21 +358,21 @@ const ResumeLayoutControls = ({ resumeData = {}, template = "classic", updateFie
                   <span className="flex shrink-0 items-center gap-1 text-[11px] font-semibold text-gray-500 dark:text-gray-400">
                     <input
                       type="number"
-                      min="0.20"
-                      max="0.80"
-                      step="0.02"
+                      min="0.00"
+                      max="1.20"
+                      step="0.01"
                       value={marginValue(settings[field])}
                       onChange={(e) => updateMargin(field, e.target.value)}
-                      className="h-6 w-12 rounded border border-gray-200 dark:border-zinc-700 bg-white px-1 text-right text-xs text-gray-900 outline-none dark:bg-zinc-900 dark:text-gray-100"
+                      className="h-6 w-14 rounded border border-gray-200 dark:border-zinc-700 bg-white px-1 text-right text-xs text-gray-900 outline-none focus:border-blue-500 dark:bg-zinc-900 dark:text-gray-100"
                     />{" "}
                     in
                   </span>
                 </span>
                 <input
                   type="range"
-                  min="0.20"
-                  max="0.80"
-                  step="0.02"
+                  min="0.00"
+                  max="1.20"
+                  step="0.01"
                   value={marginValue(settings[field])}
                   onChange={(e) => updateMargin(field, e.target.value)}
                   className="mt-1.5 h-1.5 w-full cursor-pointer accent-blue-600 dark:accent-blue-400"

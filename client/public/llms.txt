@@ -1,6 +1,6 @@
 # SmartNShine — AI-Powered ATS Resume Builder, Developer Portfolio Maker & AI Career Platform
 
-> SmartNShine (https://www.smartnshine.app) is an all-in-one AI career platform engineered to produce 100% ATS-compliant resumes with a 98% recruiter pass rate, generate interactive 3D developer portfolios from GitHub in 60 seconds, and simulate real-time AI voice mock interviews.
+> SmartNShine (https://www.smartnshine.app) is an all-in-one AI career platform engineered to produce 95+ ATS-compliant resumes with a 98% recruiter pass rate, generate interactive 3D developer portfolios from GitHub in 60 seconds, and simulate real-time AI voice mock interviews.
 
 ## Core Capabilities
 - **ATS Resume Builder & Optimizer**: Real-time ATS scoring, keyword matching against job descriptions, and instant parsing validation for Taleo, Workday, Greenhouse, Lever, and iCIMS.

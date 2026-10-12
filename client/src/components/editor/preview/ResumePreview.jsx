@@ -8,7 +8,7 @@ import {
   useMemo,
 } from "react";
 import { useReactToPrint } from "react-to-print";
-import { Download, Palette, Sliders, Type, Check, Maximize2, ZoomIn, ZoomOut, Sparkles } from "lucide-react";
+import { Palette, Type, Check, Maximize2, ZoomIn, ZoomOut, Sparkles } from "lucide-react";
 import { useToggle, useMediaQuery } from "@/hooks";
 import ClassicTemplate from "@/components/templates/ClassicTemplate";
 import ModernTemplate from "@/components/templates/ModernTemplate";
@@ -42,12 +42,13 @@ const PREVIEW_FONTS = [
   { id: "techMono", label: "Tech Mono" },
 ];
 
-// Template page height in px (11 in @ 96 dpi — matches minHeight across all templates)
-const PAGE_HEIGHT_PX = 1056;
+// Template page height in px (A4 standard: 297mm @ 96 dpi = 1122.52px -> 1123px)
+const PAGE_HEIGHT_PX = 1123;
 // Minimum px of content before allowing a page break (avoids near-empty pages)
 const MIN_CONTENT_PX = 100;
-// Subpixel variance tolerance (avoids false 2nd pages on microscopic 1-2px rounding differences)
-const PAGE_TOLERANCE_PX = 4;
+// Subpixel variance tolerance (avoids false 2nd pages on microscopic rounding differences)
+const PAGE_TOLERANCE_PX = 8;
+const NOOP = () => {};
 
 const WOOD_TEXTURE_DATA_URI =
   "data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='woodGrain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.015 0.32' numOctaves='4' result='noise'/%3E%3CfeColorMatrix type='matrix' values='0.4 0 0 0 0.4 0.3 0 0 0 0.28 0.18 0 0 0 0.16 0 0 0 0.07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23woodGrain)'/%3E%3C/svg%3E";
@@ -68,6 +69,12 @@ const CREATIVE2_CANVAS_MAP = {
   monochromePro: "#f9f9f9",
 };
 
+const FONT_MAP = {
+  modernSans: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+  editorialSerif: '"Newsreader", "Playfair Display", Georgia, Cambria, "Times New Roman", Times, serif',
+  techMono: '"JetBrains Mono", "SF Mono", Consolas, "Liberation Mono", Menlo, monospace',
+};
+
 const ResumePreview = forwardRef(
   (
     {
@@ -79,13 +86,14 @@ const ResumePreview = forwardRef(
     },
     ref
   ) => {
+    const layoutSettings = resumeData?.layoutSettings || {};
     const printTemplateRef = useRef();
     const templateRef = useRef(); // page-0 template wrapper — used for DOM section measurement
     const [showFullPreview, , setShowFullPreviewTrue, setShowFullPreviewFalse] =
       useToggle(false);
     const isMobile = useMediaQuery("(max-width: 1023px)");
     const [numberOfPages, setNumberOfPages] = useState(1);
-    const [measuredHeight, setMeasuredHeight] = useState(1056);
+    const [measuredHeight, setMeasuredHeight] = useState(1123);
     // pageBreaks[i] = template-coordinate y where page i starts (template px, pre-scale)
     const [pageBreaks, setPageBreaks] = useState([0]);
     const [zoomFactor, setZoomFactor] = useState(0.75);
@@ -127,12 +135,12 @@ const ResumePreview = forwardRef(
     const isCompact = activeDensity === "compact";
 
     // Intelligent Multi-Stage Micro-Scale:
-    // Guarded floor of 0.92 strictly prevents text from becoming tiny or illegible.
+    // Guarded floor of 0.85 strictly prevents text from becoming tiny or illegible.
     // Margins (0.22in) and section spacing (52%) handle 90% of the vertical space reduction.
     const autoFitScale = useMemo(() => {
       if (!isCompact) return 1.0;
-      if (measuredHeight <= 1056) return 1.0;
-      return Math.max(0.92, Math.min(1.0, 1045 / measuredHeight));
+      if (measuredHeight <= PAGE_HEIGHT_PX + PAGE_TOLERANCE_PX) return 1.0;
+      return Math.max(0.85, Math.min(1.0, (PAGE_HEIGHT_PX - 8) / measuredHeight));
     }, [isCompact, measuredHeight]);
 
     const mergedResumeData = useMemo(() => ({
@@ -209,32 +217,45 @@ const ResumePreview = forwardRef(
       }
     };
 
-    const handlePageUsageChange = (usageInfo) => {
-      if (usageInfo.currentHeight > 0) {
-        setMeasuredHeight(usageInfo.currentHeight);
+    const handlePageUsageChange = useCallback((usageInfo) => {
+      if (!usageInfo || !usageInfo.currentHeight) return;
 
-        const fitsOnOnePage =
-          usageInfo.currentHeight <= usageInfo.maxHeight + PAGE_TOLERANCE_PX;
-
-        if (fitsOnOnePage) {
-          setNumberOfPages(1);
-          setPageBreaks([0]);
-        } else {
-          const pages = Math.max(
-            2,
-            Math.ceil(
-              (usageInfo.currentHeight - PAGE_TOLERANCE_PX) / usageInfo.maxHeight
-            )
-          );
-          setNumberOfPages(pages);
-          setPageBreaks((prev) => {
-            if (prev.length === pages) return prev;
-            return Array.from({ length: pages }, (_, i) => i * PAGE_HEIGHT_PX);
-          });
+      setMeasuredHeight((prevHeight) => {
+        if (Math.abs(prevHeight - usageInfo.currentHeight) < 2) {
+          return prevHeight;
         }
+        return usageInfo.currentHeight;
+      });
+
+      // When in Smart 1-Page mode with auto micro-scaling, the rendered height is compressed by autoFitScale
+      const effectiveScale = isCompact && autoFitScale < 1.0 && (!layoutSettings.fontScale || layoutSettings.fontScale === 100)
+        ? autoFitScale
+        : Number(layoutSettings.fontScale || 100) / 100;
+
+      const effectiveHeight = usageInfo.currentHeight * effectiveScale;
+      const pageLimit = PAGE_HEIGHT_PX;
+
+      const fitsOnOnePage =
+        effectiveHeight <= pageLimit + PAGE_TOLERANCE_PX;
+
+      if (fitsOnOnePage) {
+        setNumberOfPages((prev) => (prev === 1 ? prev : 1));
+        setPageBreaks((prev) => (prev.length === 1 && prev[0] === 0 ? prev : [0]));
+      } else {
+        const pages = Math.max(
+          2,
+          Math.ceil(
+            (effectiveHeight - PAGE_TOLERANCE_PX) / pageLimit
+          )
+        );
+        setNumberOfPages((prev) => (prev === pages ? prev : pages));
+        setPageBreaks((prev) => {
+          if (prev.length === pages) return prev;
+          return Array.from({ length: pages }, (_, i) => i * pageLimit);
+        });
       }
       if (onPageUsageChange) onPageUsageChange(usageInfo);
-    };
+    }, [isCompact, autoFitScale, layoutSettings.fontScale, onPageUsageChange]);
 
     // After the template renders, find <section> elements that straddle a page
     // boundary and compute smart break points so no section is split mid-content.
@@ -377,13 +398,6 @@ const ResumePreview = forwardRef(
 
     const SelectedTemplate = templates[template] || ClassicTemplate;
     const twoPageMode = numberOfPages > 1;
-    const FONT_MAP = {
-      modernSans: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-      editorialSerif: '"Newsreader", "Playfair Display", Georgia, Cambria, "Times New Roman", Times, serif',
-      techMono: '"JetBrains Mono", "SF Mono", Consolas, "Liberation Mono", Menlo, monospace',
-    };
-
-    const layoutSettings = resumeData?.layoutSettings || {};
 
     const activeFontFamily =
       FONT_MAP[activeFont] ||
@@ -441,9 +455,37 @@ const ResumePreview = forwardRef(
       contentRef: printTemplateRef,
       documentTitle: `${resumeData?.name || "Resume"}_Resume`,
       pageStyle: `
-        @page { size: A4; margin: 0; }
+        @page { size: A4 portrait; margin: 0; }
         @media print {
-          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          *, *::before, *::after {
+            box-sizing: border-box !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 210mm !important;
+            background: #ffffff !important;
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            overflow: visible !important;
+          }
+          .resume-layout-shell {
+            width: 210mm !important;
+            min-height: auto !important;
+            background: #ffffff !important;
+            background-color: #ffffff !important;
+            margin: 0 !important;
+            box-shadow: none !important;
+            border: none !important;
+          }
+          .resume-layout-shell > * {
+            min-height: auto !important;
+          }
+          .no-print {
+            display: none !important;
+          }
         }
       `,
     });
@@ -473,24 +515,36 @@ const ResumePreview = forwardRef(
               <meta name="viewport" content="width=device-width, initial-scale=1" />
               ${styleMarkup}
               <style>
-                @page { size: A4; margin: 0; }
+                @page { size: A4 portrait; margin: 0; }
+                *, *::before, *::after {
+                  box-sizing: border-box !important;
+                  -webkit-print-color-adjust: exact !important;
+                  print-color-adjust: exact !important;
+                }
                 html, body {
-                  margin: 0;
-                  padding: 0;
-                  width: 210mm;
-                  min-height: 297mm;
-                  background: #ffffff;
-                  color: #000000;
-                  -webkit-print-color-adjust: exact;
-                  print-color-adjust: exact;
+                  margin: 0 !important;
+                  padding: 0 !important;
+                  width: 210mm !important;
+                  background: #ffffff !important;
+                  background-color: #ffffff !important;
+                  color: #000000 !important;
+                  overflow: visible !important;
                 }
                 body {
                   display: block;
                 }
-                .resume-preview {
+                .resume-preview,
+                .resume-layout-shell {
+                  width: 210mm !important;
+                  min-height: auto !important;
+                  background: #ffffff !important;
+                  background-color: #ffffff !important;
                   box-shadow: none !important;
                   border: none !important;
                   margin: 0 auto !important;
+                }
+                .resume-layout-shell > * {
+                  min-height: auto !important;
                 }
                 .no-print {
                   display: none !important;
@@ -567,22 +621,23 @@ const ResumePreview = forwardRef(
         <div className="flex min-w-0 max-w-full flex-col resume-preview items-center w-full min-h-0">
           {/* Sleek Professional Studio Toolbar */}
           <div
-            className="mb-2.5 flex flex-shrink-0 flex-col sm:flex-row sm:items-center justify-between gap-2 no-print w-full sticky top-0 z-30 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md py-1.5 px-2 rounded-xl border border-gray-200/80 dark:border-zinc-800 shadow-xs"
+            className="mb-2.5 flex flex-wrap items-center justify-between gap-2 no-print w-full sticky top-0 z-30 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md py-1.5 px-2 rounded-xl border border-gray-200/80 dark:border-zinc-800 shadow-xs"
             style={{ width: "100%", maxWidth: "100%" }}
           >
             {/* Left: Styling Controls (Palette, Density, Font) */}
-            <div className="flex items-center gap-2 overflow-x-auto py-0.5 no-scrollbar">
+            <div className="flex flex-wrap items-center gap-2 min-w-0">
               {/* Color Themes */}
               <div className="flex items-center gap-1.5 pr-2 border-r border-gray-200 dark:border-zinc-800 shrink-0">
-                <span className="text-[10.5px] font-semibold text-gray-500 dark:text-gray-400 hidden lg:inline">
-                  Theme:
+                <span className="text-[10.5px] font-semibold text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                  <Palette className="w-3 h-3 text-gray-400" />
+                  <span className="hidden md:inline">Theme</span>
                 </span>
                 <div className="flex items-center gap-1">
                   {templateThemes.map((t) => (
                     <button
                       key={t.id}
                       onClick={() => handleThemeChange(t.id)}
-                      title={t.name}
+                      title={`Theme: ${t.name}`}
                       type="button"
                       className={`relative flex h-4.5 w-4.5 items-center justify-center rounded-full transition-all duration-150 cursor-pointer ${
                         activeTheme === t.id
@@ -599,7 +654,7 @@ const ResumePreview = forwardRef(
                 </div>
               </div>
 
-              {/* Density Toggle (Segmented Mini Pills) */}
+              {/* Density / Spacing Toggle (Segmented Mini Pills) */}
               <div className="flex items-center bg-gray-100/90 dark:bg-zinc-900 p-0.5 rounded-lg border border-gray-200/60 dark:border-zinc-800/80 shrink-0">
                 {PREVIEW_DENSITIES.map((d) => {
                   const isSelected = activeDensity === d.id;
@@ -609,6 +664,13 @@ const ResumePreview = forwardRef(
                       key={d.id}
                       onClick={() => handleDensityChange(d.id)}
                       type="button"
+                      title={
+                        isOnePage
+                          ? "Smart 1-Page: Automatically fit resume cleanly onto 1 page"
+                          : d.id === "spacious"
+                          ? "Spacious: Relaxed spacing for shorter resumes"
+                          : "Balanced: Standard ATS-friendly spacing"
+                      }
                       className={`px-2 py-0.5 text-[10.5px] font-semibold rounded-md transition-all flex items-center gap-1 cursor-pointer ${
                         isSelected
                           ? isOnePage
@@ -617,7 +679,8 @@ const ResumePreview = forwardRef(
                           : "text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
                       }`}
                     >
-                      {d.label}
+                      {isOnePage && <Sparkles className="w-2.5 h-2.5" />}
+                      <span>{d.label}</span>
                     </button>
                   );
                 })}
@@ -629,6 +692,7 @@ const ResumePreview = forwardRef(
                 <select
                   value={activeFont}
                   onChange={(e) => handleFontChange(e.target.value)}
+                  title="Font typography style"
                   className="rounded-lg border border-gray-200/80 bg-gray-50/80 px-2 py-0.5 text-[10.5px] font-medium text-gray-700 dark:border-zinc-800 dark:bg-zinc-900 dark:text-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
                 >
                   {PREVIEW_FONTS.map((f) => (
@@ -640,13 +704,20 @@ const ResumePreview = forwardRef(
               </div>
             </div>
 
-            {/* Right: Page Count, Zoom, Fullscreen, Compact Download Button */}
-            <div className="flex items-center justify-between sm:justify-end gap-1.5 shrink-0">
+            {/* Right: Page Count, Zoom, Fullscreen */}
+            <div className="flex items-center justify-end gap-1.5 shrink-0 ml-auto">
               {/* Page Status Indicator */}
-              <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-gray-100/70 dark:bg-zinc-900 border border-gray-200/60 dark:border-zinc-800 text-[10.5px] font-medium">
+              <div
+                className="flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-gray-100/70 dark:bg-zinc-900 border border-gray-200/60 dark:border-zinc-800 text-[10.5px] font-medium"
+                title={
+                  numberOfPages === 1
+                    ? "Ideal 1-Page ATS length"
+                    : `${numberOfPages} pages. Click 'Fit 1P' to auto-fit to 1 page.`
+                }
+              >
                 <span
                   className={`w-1.5 h-1.5 rounded-full ${
-                    numberOfPages === 1 ? "bg-emerald-500" : "bg-amber-500"
+                    numberOfPages === 1 ? "bg-emerald-500 animate-pulse" : "bg-amber-500"
                   }`}
                 />
                 <span className="text-gray-600 dark:text-gray-300 font-semibold">
@@ -656,8 +727,8 @@ const ResumePreview = forwardRef(
                   <button
                     type="button"
                     onClick={() => handleDensityChange("compact")}
-                    className="text-emerald-600 dark:text-emerald-400 hover:underline text-[10px] font-bold ml-0.5 cursor-pointer"
-                    title="Fit into 1 page"
+                    className="text-emerald-600 dark:text-emerald-400 hover:underline text-[10px] font-bold ml-0.5 cursor-pointer bg-emerald-50 dark:bg-emerald-950/40 px-1 py-0.2 rounded"
+                    title="Automatically fit into 1 page"
                   >
                     Fit 1P
                   </button>
@@ -710,17 +781,6 @@ const ResumePreview = forwardRef(
                 className="p-1.5 rounded-lg border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 dark:border-zinc-800 dark:bg-zinc-950 dark:text-gray-300 dark:hover:bg-zinc-900 cursor-pointer shadow-xs transition-colors"
               >
                 <Maximize2 className="h-3.5 w-3.5" />
-              </button>
-
-              {/* Compact Professional Download Button */}
-              <button
-                onClick={onDownload || downloadPDF}
-                type="button"
-                className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 text-xs font-semibold shadow-xs hover:shadow transition-all cursor-pointer"
-                title="Download ATS-Friendly PDF"
-              >
-                <Download className="h-3.5 w-3.5" />
-                <span>Download PDF</span>
               </button>
             </div>
           </div>
@@ -791,7 +851,7 @@ const ResumePreview = forwardRef(
                         className={isCreative2 ? "" : "bg-white dark:bg-gray-50"}
                         style={{
                           width: "210mm",
-                          minHeight: "11in",
+                          minHeight: "297mm",
                           height: "auto",
                           backgroundColor: creative2CanvasBg || undefined,
                           transform: `scale(${scaleFactor})`,
@@ -814,7 +874,7 @@ const ResumePreview = forwardRef(
                               onPageUsageChange={
                                 pageIndex === 0
                                   ? handlePageUsageChange
-                                  : () => { }
+                                  : NOOP
                               }
                             />
                           </div>
@@ -846,7 +906,7 @@ const ResumePreview = forwardRef(
         >
           <div
             className="bg-white dark:bg-gray-50 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.55)] rounded-sm border border-black/10 dark:border-white/10 relative overflow-hidden"
-            style={{ width: "210mm", minHeight: "11in", height: "auto" }}
+            style={{ width: "210mm", minHeight: "297mm", height: "auto" }}
           >
             {/* Anti-AI 3-tier SmartNShine security watermark overlay */}
             <ResumeWatermark isMobile={isMobile} />
@@ -879,7 +939,7 @@ const ResumePreview = forwardRef(
               resumeData={mergedResumeData}
               twoPageMode={false}
               printMode={template === "professional-v2"}
-              onPageUsageChange={() => { }}
+              onPageUsageChange={NOOP}
             />
           </div>
         </div>

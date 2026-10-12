@@ -33,7 +33,7 @@ const INSPECTOR_FEATURES = [
       scoreLabel: "Parsing Fidelity Score",
       metrics: [
         { label: "Layout Structure", val: "Single-Column Semantic", status: "pass" },
-        { label: "Header Extraction", val: "100% Recognized", status: "pass" },
+        { label: "Header Extraction", val: "99% Recognized", status: "pass" },
         { label: "Fonts & Bounding Boxes", val: "Zero Hidden Frames", status: "pass" },
         { label: "Canva / Graphic Output", val: "Failed (Layer Collision)", status: "fail" },
       ],

@@ -421,8 +421,8 @@ export default function TemplateManagement() {
             ? tpl.seo.faqItems
             : [
                 {
-                  question: `Why is the ${tpl.name} template 100% ATS compliant?`,
-                  answer: `This template uses clean single-column structure and standard semantic section markers to ensure 100% readability across Workday, Taleo, and Greenhouse ATS algorithms.`,
+                  question: `Why does the ${tpl.name} template achieve a 95+ ATS score?`,
+                  answer: `This template uses clean single-column structure and standard semantic section markers to ensure 95+ parser scoring and seamless readability across Workday, Taleo, and Greenhouse ATS algorithms.`,
                 },
                 {
                   question: `Can I customize colors and sections in ${tpl.name}?`,

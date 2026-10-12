@@ -398,12 +398,18 @@ const Professional2Template = forwardRef((props, ref) => {
   };
 
   const dynamicStyles = getDynamicStyles();
+  const lastHeightRef = useRef(0);
+  const onPageUsageChangeRef = useRef(onPageUsageChange);
+  onPageUsageChangeRef.current = onPageUsageChange;
 
   // Page tracking for overflow detection
   useEffect(() => {
-    if (contentRef.current) {
+    if (contentRef.current && onPageUsageChangeRef.current) {
       const currentHeight = contentRef.current.scrollHeight;
-      const maxHeight = 1056; // 11in at 96dpi (matches template minHeight)
+      if (Math.abs(lastHeightRef.current - currentHeight) < 2) return;
+      lastHeightRef.current = currentHeight;
+
+      const maxHeight = 1123; // A4 standard 297mm @ 96dpi (matches template minHeight)
       const isOverflowing = currentHeight > maxHeight;
       const overflowPercentage = isOverflowing
         ? Math.round(((currentHeight - maxHeight) / maxHeight) * 100)
@@ -419,19 +425,20 @@ const Professional2Template = forwardRef((props, ref) => {
       };
 
       // Pass data to parent component if callback provided
-      if (onPageUsageChange) {
-        onPageUsageChange(usageInfo);
-      }
+      onPageUsageChangeRef.current(usageInfo);
 
       // Update pages array for internal tracking
       const numPages = Math.ceil(currentHeight / maxHeight);
-      const pageArray = [];
-      for (let i = 1; i <= numPages; i++) {
-        pageArray.push(i);
-      }
-      setPages(pageArray);
+      setPages((prev) => {
+        if (prev.length === numPages) return prev;
+        const pageArray = [];
+        for (let i = 1; i <= numPages; i++) {
+          pageArray.push(i);
+        }
+        return pageArray;
+      });
     }
-  }, [resumeData]); // Don't include dynamicStyles (derived from resumeData) or onPageUsageChange to prevent infinite loops
+  }, [resumeData]);
 
   // Section titles with custom labels
   const getSectionTitle = (sectionKey) => {
@@ -985,7 +992,7 @@ const Professional2Template = forwardRef((props, ref) => {
                       color: selectedTheme.primary,
                     }}
                   >
-                    {certName}
+                    {certName || (typeof cert === "string" ? cert : cert?.name || cert?.title || cert?.issuer || "Certification")}
                   </div>
                   {certDate && (
                     <div

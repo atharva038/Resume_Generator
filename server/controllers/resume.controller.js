@@ -448,18 +448,34 @@ export const saveResume = async (req, res) => {
   try {
     // After checkSubscription middleware, req.user is the full User document
     const userId = req.user._id || req.user.userId;
-    const resumeData = req.body;
+    const resumeData = { ...req.body };
 
-    if (!resumeData.name) {
-      return res.status(400).json({error: "Resume name is required"});
+    // Strip client-side _id if null/empty or passed during new save
+    delete resumeData._id;
+    delete resumeData.id;
+
+    // Fallback for name if missing or empty
+    if (
+      !resumeData.name ||
+      typeof resumeData.name !== "string" ||
+      !resumeData.name.trim()
+    ) {
+      resumeData.name = req.user?.name || "Untitled Resume";
+    } else {
+      resumeData.name = resumeData.name.trim();
     }
 
     // Map 'title' to 'resumeTitle' if provided, otherwise use default
     if (resumeData.title) {
       resumeData.resumeTitle = resumeData.title;
       delete resumeData.title;
-    } else if (!resumeData.resumeTitle) {
+    } else if (!resumeData.resumeTitle || !resumeData.resumeTitle.trim()) {
       resumeData.resumeTitle = "Untitled Resume";
+    }
+
+    // Ensure templateId defaults to classic if missing
+    if (!resumeData.templateId) {
+      resumeData.templateId = "classic";
     }
 
     // Get user's subscription info for linking

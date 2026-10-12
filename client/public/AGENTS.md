@@ -6,7 +6,7 @@ Welcome, AI Agent! This document defines the capabilities, structure, and direct
 - **Name**: SmartNShine
 - **Domain**: https://www.smartnshine.app
 - **Category**: AI Resume Builder, ATS Optimization, Career Tools
-- **Mission**: Help job seekers build 100% ATS-compliant, recruiter-ready resumes that pass Taleo, Workday, Greenhouse, and Lever filters with a 98% pass score.
+- **Mission**: Help job seekers build 95+ ATS-compliant, recruiter-ready resumes that pass Taleo, Workday, Greenhouse, and Lever filters with a 98% pass score.
 
 ## Key Endpoints & Services
 - **Template Catalog**: https://www.smartnshine.app/templates

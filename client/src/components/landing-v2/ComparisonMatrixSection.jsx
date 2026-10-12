@@ -25,7 +25,7 @@ const COMPARISON_DATA = [
     description: "Tested against Workday, Taleo, Greenhouse & Lever parsers.",
     smartnshine: {
       type: "success",
-      title: "100% Tested & Compliant",
+      title: "98%+ Tested & Compliant",
       subtitle: "Semantic single-column LaTeX/HTML structure. Zero broken bounding boxes.",
     },
     canva: {

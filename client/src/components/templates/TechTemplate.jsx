@@ -58,12 +58,18 @@ const highlightMetrics = (text, primaryColor) => {
 
 const TechTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }, ref) => {
   const containerRef = useRef(null);
+  const lastHeightRef = useRef(0);
+  const onPageUsageChangeRef = useRef(onPageUsageChange);
+  onPageUsageChangeRef.current = onPageUsageChange;
 
   // Page overflow detection (11in @ 96 DPI = 1056px)
   useEffect(() => {
-    if (containerRef.current) {
+    if (containerRef.current && onPageUsageChangeRef.current) {
       const currentHeight = containerRef.current.scrollHeight;
-      const maxHeight = 1056;
+      if (Math.abs(lastHeightRef.current - currentHeight) < 2) return;
+      lastHeightRef.current = currentHeight;
+
+      const maxHeight = 1123;
       const isOverflowing = currentHeight > maxHeight;
       const overflowPercentage = isOverflowing
         ? Math.round(((currentHeight - maxHeight) / maxHeight) * 100)
@@ -78,11 +84,9 @@ const TechTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }, ref) =>
         templateName: "TechTemplate",
       };
 
-      if (onPageUsageChange) {
-        onPageUsageChange(usageInfo);
-      }
+      onPageUsageChangeRef.current(usageInfo);
     }
-  }, [resumeData, onPageUsageChange]);
+  }, [resumeData]);
 
   // Refined modern developer palettes (Clean, high-contrast, professional)
   const colorThemes = {
@@ -1185,7 +1189,9 @@ const TechTemplate = forwardRef(({ resumeData = {}, onPageUsageChange }, ref) =>
                     >
                       <div>
                         <span style={{ fontWeight: 600, color: selectedTheme.text }}>
-                          {cert.name || cert}
+                          {typeof cert === "string"
+                            ? cert
+                            : cert.name || cert.title || cert.issuer || "Certification"}
                         </span>
                         {cert.issuer && (
                           <span style={{ color: selectedTheme.textMuted, fontSize: styles.metaSize, marginLeft: "4px" }}>

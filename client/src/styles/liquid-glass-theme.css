@@ -243,14 +243,16 @@
   box-sizing: border-box;
 }
 
+.spatial-lens img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block;
+}
+
 /* Fluid responsive safeguards */
 .liquid-glass-theme * {
   box-sizing: border-box;
-}
-
-.liquid-glass-theme img {
-  max-width: 100%;
-  height: auto;
 }
 
 @media (max-width: 640px) {

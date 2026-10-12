@@ -38,7 +38,7 @@ import {
  * - 4 high-end color themes: Stripe Indigo, Cyber Emerald, Midnight Slate, Monochrome Pro
  */
 
-// Helper to highlight quantifiable metrics while keeping text 100% ATS-safe
+// Helper to highlight quantifiable metrics while keeping text 95+ ATS-safe
 const highlightMetrics = (text, primaryColor) => {
   if (!text || typeof text !== "string") return text;
 
@@ -70,12 +70,18 @@ const highlightMetrics = (text, primaryColor) => {
 const SiliconValleyTemplate = forwardRef(
   ({ resumeData = {}, onPageUsageChange }, ref) => {
     const containerRef = useRef(null);
+    const lastHeightRef = useRef(0);
+    const onPageUsageChangeRef = useRef(onPageUsageChange);
+    onPageUsageChangeRef.current = onPageUsageChange;
 
     // Page overflow detection (11in @ 96 DPI = 1056px)
     useEffect(() => {
-      if (containerRef.current) {
+      if (containerRef.current && onPageUsageChangeRef.current) {
         const currentHeight = containerRef.current.scrollHeight;
-        const maxHeight = 1056;
+        if (Math.abs(lastHeightRef.current - currentHeight) < 2) return;
+        lastHeightRef.current = currentHeight;
+
+        const maxHeight = 1123;
         const isOverflowing = currentHeight > maxHeight;
         const overflowPercentage = isOverflowing
           ? Math.round(((currentHeight - maxHeight) / maxHeight) * 100)
@@ -90,11 +96,9 @@ const SiliconValleyTemplate = forwardRef(
           templateName: "SiliconValleyTemplate",
         };
 
-        if (onPageUsageChange) {
-          onPageUsageChange(usageInfo);
-        }
+        onPageUsageChangeRef.current(usageInfo);
       }
-    }, [resumeData, onPageUsageChange]);
+    }, [resumeData]);
 
     // Color themes
     const colorThemes = {
@@ -1000,7 +1004,9 @@ const SiliconValleyTemplate = forwardRef(
                     color: selectedTheme.text,
                   }}
                 >
-                  {cert.name || cert}
+                  {typeof cert === "string"
+                    ? cert
+                    : cert.name || cert.title || cert.issuer || "Certification"}
                 </span>
                 {cert.issuer && (
                   <span
@@ -1226,7 +1232,7 @@ const SiliconValleyTemplate = forwardRef(
         id="resume-container"
         style={{
           width: "210mm",
-          minHeight: "1056px",
+          minHeight: "297mm",
           boxSizing: "border-box",
           padding: dynamicStyles.pagePadding,
           backgroundColor: "#ffffff",

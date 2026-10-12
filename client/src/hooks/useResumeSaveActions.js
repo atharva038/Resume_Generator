@@ -44,11 +44,25 @@ export const useResumeSaveActions = ({
       try {
         // Sanitize skills to ensure valid format
         const cleanResume = { ...targetResume };
+        
+        // Provide safe defaults for name and title
+        if (!cleanResume.name || typeof cleanResume.name !== "string" || !cleanResume.name.trim()) {
+          cleanResume.name = user?.name || "Untitled Resume";
+        } else {
+          cleanResume.name = cleanResume.name.trim();
+        }
+
+        if (!cleanResume.resumeTitle || typeof cleanResume.resumeTitle !== "string" || !cleanResume.resumeTitle.trim()) {
+          cleanResume.resumeTitle = cleanResume.title?.trim() || "Untitled Resume";
+        } else {
+          cleanResume.resumeTitle = cleanResume.resumeTitle.trim();
+        }
+
         if (Array.isArray(cleanResume.skills)) {
           cleanResume.skills = cleanResume.skills
             .map((group) => {
               if (typeof group === "string") {
-                return { category: "Technical Skills", items: [group] };
+                return { category: "Technical Skills", items: [group.trim()].filter(Boolean) };
               }
               if (group && typeof group === "object") {
                 const category = (group.category || group.name || "Technical Skills").trim();
@@ -74,7 +88,14 @@ export const useResumeSaveActions = ({
         }
 
         console.log("💾 [SAVE RESUME] Sending to database. Custom sections payload:", cleanResume.customSections);
-        const isUpdate = Boolean(cleanResume._id);
+        const isUpdate = Boolean(
+          cleanResume._id &&
+            (typeof cleanResume._id !== "string" || cleanResume._id.trim() !== "")
+        );
+        if (!isUpdate) {
+          delete cleanResume._id;
+          delete cleanResume.id;
+        }
         const response = isUpdate
           ? await resumeAPI.update(cleanResume._id, cleanResume)
           : await resumeAPI.save(cleanResume);

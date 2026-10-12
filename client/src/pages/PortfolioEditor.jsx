@@ -145,7 +145,9 @@ const getProjectUpdatePayload = (project) => ({
 });
 
 const getExistingOrFallback = (existing, fallback) => {
-  return Array.isArray(existing) ? existing : fallback || [];
+  if (Array.isArray(existing) && existing.length > 0) return existing;
+  if (Array.isArray(fallback) && fallback.length > 0) return fallback;
+  return existing || fallback || [];
 };
 
 const linesToArray = (value) => {
@@ -275,6 +277,7 @@ export default function PortfolioEditor() {
   const [newProject, setNewProject] = useState(blankProject);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [syncingResume, setSyncingResume] = useState(false);
   const [aiAction, setAiAction] = useState("");
   const [copiedLink, setCopiedLink] = useState(false);
   const [showProfileUrlInput, setShowProfileUrlInput] = useState(false);
@@ -395,6 +398,91 @@ export default function PortfolioEditor() {
         ),
       };
 
+      const finalProjects =
+        Array.isArray(response.data.projects) && response.data.projects.length > 0
+          ? response.data.projects
+          : Array.isArray(resumeSnapshot.projects) &&
+            resumeSnapshot.projects.length > 0
+          ? resumeSnapshot.projects.map((p, idx) => ({
+              _id: `temp-${idx}`,
+              title: p.name || p.title || `Project ${idx + 1}`,
+              shortDescription: p.description || p.shortDescription || "",
+              longDescription:
+                p.longDescription ||
+                (Array.isArray(p.bullets) ? p.bullets.join("\n") : p.description || ""),
+              technologies: p.technologies || [],
+              links: {
+                live: p.link || p.liveUrl || "",
+                github: p.github || p.githubUrl || "",
+                caseStudy: "",
+                video: "",
+              },
+              highlights: p.bullets || p.highlights || [],
+              featured: idx < 3,
+              visible: true,
+            }))
+          : [];
+
+      setPortfolio(portfolioData);
+      setProjects(finalProjects);
+      setForm(hydratedPortfolio);
+      setSavedSnapshot(
+        getEditorSnapshot({
+          form: hydratedPortfolio,
+          projects: finalProjects,
+        })
+      );
+    } catch (error) {
+      toast.error("Failed to load portfolio");
+      console.error(error);
+      navigate("/portfolio");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSyncResume = async () => {
+    if (
+      !confirm(
+        "Sync all skills, projects, and work history from your linked resume? This will refresh your portfolio content."
+      )
+    )
+      return;
+    setSyncingResume(true);
+    const toastId = toast.loading("Syncing latest resume data...");
+    try {
+      const response = await portfolioAPI.syncFromResume(id);
+      const portfolioData = response.data.portfolio;
+      const resumeSnapshot = response.data.resume || {};
+      const hydratedPortfolio = {
+        ...portfolioData,
+        sectionOrder: normalizeSectionOrder(portfolioData.sectionOrder),
+        skills: getExistingOrFallback(
+          portfolioData.skills,
+          resumeSnapshot.skills
+        ),
+        experience: getExistingOrFallback(
+          portfolioData.experience,
+          resumeSnapshot.experience
+        ),
+        education: getExistingOrFallback(
+          portfolioData.education,
+          resumeSnapshot.education
+        ),
+        certifications: getExistingOrFallback(
+          portfolioData.certifications,
+          resumeSnapshot.certifications
+        ),
+        achievements: getExistingOrFallback(
+          portfolioData.achievements,
+          resumeSnapshot.achievements
+        ),
+        customSections: getExistingOrFallback(
+          portfolioData.customSections,
+          resumeSnapshot.customSections
+        ),
+      };
+
       setPortfolio(portfolioData);
       setProjects(response.data.projects || []);
       setForm(hydratedPortfolio);
@@ -404,12 +492,17 @@ export default function PortfolioEditor() {
           projects: response.data.projects || [],
         })
       );
+      toast.success("Portfolio successfully synced with your resume!", {
+        id: toastId,
+      });
     } catch (error) {
-      toast.error("Failed to load portfolio");
-      console.error(error);
-      navigate("/portfolio");
+      console.error("Failed to sync resume:", error);
+      toast.error(
+        error.response?.data?.error || "Failed to sync with resume",
+        { id: toastId }
+      );
     } finally {
-      setLoading(false);
+      setSyncingResume(false);
     }
   };
 
@@ -955,6 +1048,8 @@ const EDITOR_NAV_ITEMS = [
         onSave={() => handleSave()}
         onPreview={handlePreview}
         onShowTemplateSelector={() => setShowTemplateSelector(true)}
+        onSyncResume={handleSyncResume}
+        syncingResume={syncingResume}
         onPublishToggle={handlePublishToggle}
         isPublished={isPublished}
         publicUrl={publicUrl}

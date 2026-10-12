@@ -65,35 +65,29 @@ export default function EvilChartsLandingMatrix() {
 
   return (
     <section
-      onMouseMove={handleMouseMove}
       className={`relative w-full font-scoutie overflow-hidden selection:bg-amber-500 selection:text-black transition-colors duration-300 ${
         isDarkMode ? "bg-black text-zinc-100" : "bg-[#fbfbfa] text-zinc-900"
       }`}
     >
-      {/* 1. Micro Film-Grade Noise Texture Overlay (Tactile Luxury Surface) */}
-      <div
-        className="absolute inset-0 pointer-events-none z-40 opacity-[0.03] mix-blend-overlay"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-        }}
-      />
-
-      {/* 2. Ambient Atmosphere Glows (Warm Gold Radiant Depth like the Doorway Beam) */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+      {/* Ambient Atmosphere Glows (Warm Gold Radiant Depth) */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0" style={{ transform: "translateZ(0)" }}>
         <div
-          className={`absolute top-[-10%] left-[-5%] w-[650px] h-[650px] rounded-full blur-[140px] opacity-40 transition-colors duration-500 ${
+          className={`absolute top-[-10%] left-[-5%] w-[650px] h-[650px] rounded-full blur-[120px] opacity-35 transition-colors duration-500 ${
             isDarkMode ? "bg-amber-500/15" : "bg-amber-400/20"
           }`}
+          style={{ willChange: "transform", transform: "translateZ(0)" }}
         />
         <div
-          className={`absolute bottom-[-10%] right-[10%] w-[650px] h-[650px] rounded-full blur-[140px] opacity-35 transition-colors duration-500 ${
+          className={`absolute bottom-[-10%] right-[10%] w-[650px] h-[650px] rounded-full blur-[120px] opacity-30 transition-colors duration-500 ${
             isDarkMode ? "bg-yellow-600/10" : "bg-amber-300/25"
           }`}
+          style={{ willChange: "transform", transform: "translateZ(0)" }}
         />
         <div
-          className={`absolute top-[40%] right-[35%] w-[500px] h-[500px] rounded-full blur-[120px] opacity-25 transition-colors duration-500 ${
+          className={`absolute top-[40%] right-[35%] w-[500px] h-[500px] rounded-full blur-[100px] opacity-20 transition-colors duration-500 ${
             isDarkMode ? "bg-amber-600/10" : "bg-yellow-200/40"
           }`}
+          style={{ willChange: "transform", transform: "translateZ(0)" }}
         />
       </div>
 
@@ -175,6 +169,7 @@ export default function EvilChartsLandingMatrix() {
           {/* Interactive Specular Light Shader Headline */}
           <h1
             ref={headlineRef}
+            onMouseMove={handleMouseMove}
             className={`text-2xl sm:text-4xl xl:text-[40px] font-normal tracking-tight leading-[1.18] ${
               isDarkMode ? "text-white" : "text-slate-900"
             }`}

@@ -286,7 +286,7 @@ export default function PainPointsBentoSection() {
                             </span>
                           </div>
                           <p className="text-slate-700 dark:text-zinc-300 text-xs font-sans font-light">
-                            ✓ 100% of candidate details, employment dates, quantified bullets, and skills extracted
+                            ✓ All key candidate details, employment dates, quantified bullets, and skills extracted
                             without parsing errors.
                           </p>
                         </motion.div>

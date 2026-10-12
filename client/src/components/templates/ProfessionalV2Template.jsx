@@ -181,12 +181,18 @@ const DEFAULT_SECTION_TITLES = {
 const ProfessionalV2Template = forwardRef(
   ({resumeData, onPageUsageChange, printMode = false}, ref) => {
     const containerRef = useRef(null);
+    const lastHeightRef = useRef(0);
+    const onPageUsageChangeRef = useRef(onPageUsageChange);
+    onPageUsageChangeRef.current = onPageUsageChange;
 
     // Detect page overflow whenever resumeData changes
     useEffect(() => {
-      if (containerRef.current) {
+      if (containerRef.current && onPageUsageChangeRef.current) {
         const currentHeight = containerRef.current.scrollHeight;
-        const maxHeight = 1056; // 11in at 96dpi (matches template minHeight)
+        if (Math.abs(lastHeightRef.current - currentHeight) < 2) return;
+        lastHeightRef.current = currentHeight;
+
+        const maxHeight = 1123; // A4 standard 297mm @ 96dpi (matches template minHeight)
         const isOverflowing = currentHeight > maxHeight;
         const overflowPercentage = isOverflowing
           ? Math.round(((currentHeight - maxHeight) / maxHeight) * 100)
@@ -201,10 +207,7 @@ const ProfessionalV2Template = forwardRef(
           templateName: "ProfessionalV2Template",
         };
 
-        // Pass data to parent component if callback provided
-        if (onPageUsageChange) {
-          onPageUsageChange(usageInfo);
-        }
+        onPageUsageChangeRef.current(usageInfo);
       }
     }, [resumeData]);
 

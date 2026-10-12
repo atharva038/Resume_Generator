@@ -126,13 +126,28 @@ export default function ATSAnalyzer() {
   };
 
   const handleEditRecommendation = (recommendation) => {
-    if (!selectedResume) {
-      toast.error("Select a saved resume first to edit these recommendations.");
-      return;
+    let targetResumeId = selectedResume;
+
+    if (!targetResumeId && userResumes && userResumes.length > 0) {
+      targetResumeId = userResumes[0]._id;
     }
 
-    localStorage.setItem("currentResumeId", selectedResume);
-    navigate("/editor", { state: { atsRecommendation: recommendation } });
+    if (targetResumeId) {
+      localStorage.setItem("currentResumeId", targetResumeId);
+    }
+
+    toast.success("Opening Resume Editor with recommendation...", {
+      icon: "🎯",
+      duration: 2000,
+    });
+
+    navigate("/editor", {
+      state: {
+        atsRecommendation: recommendation,
+        fromATS: true,
+        jobDescription: jobDescription,
+      },
+    });
   };
 
   const [showInputs, setShowInputs] = useState(false);

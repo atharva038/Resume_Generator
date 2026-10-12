@@ -14,6 +14,9 @@
     max-width: 100%;
     overflow-x: hidden;
     overflow-x: clip;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
   body {
@@ -226,14 +229,14 @@
    templates and when the resume is printed. */
 .resume-layout-shell {
   width: 210mm;
-  min-height: 11in;
+  min-height: 297mm;
   background: #fff;
 }
 
 .resume-layout-shell > * {
   box-sizing: border-box !important;
   width: calc(210mm / var(--resume-layout-scale, 1)) !important;
-  min-height: calc(11in / var(--resume-layout-scale, 1)) !important;
+  min-height: calc(297mm / var(--resume-layout-scale, 1)) !important;
   padding: var(--resume-layout-top, 0.35in) var(--resume-layout-side, 0.45in) var(--resume-layout-bottom, 0.35in) !important;
   zoom: var(--resume-layout-scale, 1);
 }
@@ -325,26 +328,26 @@
 
 .resume-layout-shell[data-density="compact"] ul {
   padding-left: 0.95rem !important;
-  margin-top: 1.5px !important;
-  margin-bottom: 2px !important;
+  margin-top: calc(1.5px * var(--resume-layout-spacing, 1)) !important;
+  margin-bottom: calc(2px * var(--resume-layout-spacing, 1)) !important;
 }
 
 .resume-layout-shell[data-density="compact"] li,
 .resume-layout-shell[data-density="compact"] p {
   line-height: 1.25 !important;
-  margin-bottom: 1.5px !important;
+  margin-bottom: calc(1.5px * var(--resume-layout-spacing, 1)) !important;
 }
 
 .resume-layout-shell[data-density="medium"] li,
 .resume-layout-shell[data-density="medium"] p {
   line-height: 1.38 !important;
-  margin-bottom: 3px !important;
+  margin-bottom: calc(3px * var(--resume-layout-spacing, 1)) !important;
 }
 
 .resume-layout-shell[data-density="spacious"] li,
 .resume-layout-shell[data-density="spacious"] p {
   line-height: 1.55 !important;
-  margin-bottom: 6px !important;
+  margin-bottom: calc(6px * var(--resume-layout-spacing, 1)) !important;
 }
 
 /* Section headings margin and padding */
@@ -358,14 +361,14 @@
 
 .resume-layout-shell[data-density="compact"] section > h2,
 .resume-layout-shell[data-density="compact"] section > h3 {
-  margin-bottom: 3px !important;
-  padding-bottom: 1.5px !important;
+  margin-bottom: calc(3px * var(--resume-layout-spacing, 1)) !important;
+  padding-bottom: calc(1.5px * var(--resume-layout-spacing, 1)) !important;
 }
 
 .resume-layout-shell[data-density="spacious"] section > h2,
 .resume-layout-shell[data-density="spacious"] section > h3 {
-  margin-bottom: 8px !important;
-  padding-bottom: 4px !important;
+  margin-bottom: calc(8px * var(--resume-layout-spacing, 1)) !important;
+  padding-bottom: calc(4px * var(--resume-layout-spacing, 1)) !important;
 }
 
 /* Header & Contact block spacing */
@@ -377,51 +380,258 @@
 
 .resume-layout-shell[data-density="compact"] header,
 .resume-layout-shell[data-density="compact"] [data-header] {
-  margin-bottom: 5px !important;
-  padding-bottom: 3px !important;
+  margin-bottom: calc(5px * var(--resume-layout-spacing, 1)) !important;
+  padding-bottom: calc(3px * var(--resume-layout-spacing, 1)) !important;
 }
 
 .resume-layout-shell[data-density="spacious"] header,
 .resume-layout-shell[data-density="spacious"] [data-header] {
-  margin-bottom: 18px !important;
-  padding-bottom: 10px !important;
+  margin-bottom: calc(18px * var(--resume-layout-spacing, 1)) !important;
+  padding-bottom: calc(10px * var(--resume-layout-spacing, 1)) !important;
 }
 
 /* Contact Alignment & Stacking across all templates */
-.resume-layout-shell[data-contact="left-inline"] header .contact-container,
-.resume-layout-shell[data-contact="left-inline"] header [data-contact-row],
-.resume-layout-shell[data-contact="left-inline"] header [class*="contact"] {
+/* 1. Left aligned */
+.resume-layout-shell[data-contact="left-inline"] header,
+.resume-layout-shell[data-contact="left-inline"] [data-header],
+.resume-layout-shell[data-contact="left-inline"] .resume-header {
+  text-align: left !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+  border-left: none !important;
+  border-right: none !important;
+}
+
+.resume-layout-shell[data-contact="left-inline"] header > div:has(h1, h2),
+.resume-layout-shell[data-contact="left-inline"] header > div:first-child:not(:has(a, svg)),
+.resume-layout-shell[data-contact="left-inline"] header > div[style*="justify-content: space-between"],
+.resume-layout-shell[data-contact="left-inline"] header > div[style*="justify-content:space-between"] {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
   justify-content: flex-start !important;
   text-align: left !important;
+  width: 100% !important;
 }
 
-.resume-layout-shell[data-contact="center-inline"] header .contact-container,
-.resume-layout-shell[data-contact="center-inline"] header [data-contact-row],
-.resume-layout-shell[data-contact="center-inline"] header [class*="contact"] {
-  justify-content: center !important;
+.resume-layout-shell[data-contact="left-inline"] header h1,
+.resume-layout-shell[data-contact="left-inline"] header h2,
+.resume-layout-shell[data-contact="left-inline"] header div:has(> h1),
+.resume-layout-shell[data-contact="left-inline"] header div:has(> h2),
+.resume-layout-shell[data-contact="left-inline"] header div:has(h1),
+.resume-layout-shell[data-contact="left-inline"] header div:has(h2) {
+  display: flex !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  text-align: left !important;
+  margin-left: 0 !important;
+  margin-right: auto !important;
+}
+
+.resume-layout-shell[data-contact="left-inline"] header [class*="contact-bar"],
+.resume-layout-shell[data-contact="left-inline"] header [class*="contact-container"],
+.resume-layout-shell[data-contact="left-inline"] header [class*="contact-row"],
+.resume-layout-shell[data-contact="left-inline"] header [data-contact-row],
+.resume-layout-shell[data-contact="left-inline"] header .contact-container,
+.resume-layout-shell[data-contact="left-inline"] header > div:not(:has(h1, h2)),
+.resume-layout-shell[data-contact="left-inline"] header > div:last-child:not(:has(h1, h2)),
+.resume-layout-shell[data-contact="left-inline"] header > div:has(h1, h2) > div:not(:has(h1, h2)) {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+  text-align: left !important;
+  width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: auto !important;
+  gap: 6px 14px !important;
+}
+
+.resume-layout-shell[data-contact="left-inline"] header [class*="contact-bar"] > *,
+.resume-layout-shell[data-contact="left-inline"] header [class*="contact-container"] > *,
+.resume-layout-shell[data-contact="left-inline"] header [class*="contact-row"] > *,
+.resume-layout-shell[data-contact="left-inline"] header [data-contact-row] > *,
+.resume-layout-shell[data-contact="left-inline"] header .contact-container > *,
+.resume-layout-shell[data-contact="left-inline"] header .contact-item,
+.resume-layout-shell[data-contact="left-inline"] header > div:not(:has(h1, h2)) > *,
+.resume-layout-shell[data-contact="left-inline"] header > div:has(h1, h2) > div:not(:has(h1, h2)) > * {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  flex: 0 0 auto !important;
+  white-space: nowrap !important;
+}
+
+/* 2. Centered inline */
+.resume-layout-shell[data-contact="center-inline"] header,
+.resume-layout-shell[data-contact="center-inline"] [data-header],
+.resume-layout-shell[data-contact="center-inline"] .resume-header {
   text-align: center !important;
-}
-
-.resume-layout-shell[data-contact="center-stacked"] header .contact-container,
-.resume-layout-shell[data-contact="center-stacked"] header [data-contact-row],
-.resume-layout-shell[data-contact="center-stacked"] header [class*="contact"] {
+  display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
   justify-content: center !important;
+  border-left: none !important;
+  border-right: none !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
 
-@media print {
-  html,
-  body,
-  #root {
-    overflow: visible !important;
-  }
-
-  .resume-layout-shell {
-    width: 210mm !important;
-    min-height: 297mm !important;
-  }
+.resume-layout-shell[data-contact="center-inline"] header > div:has(h1, h2),
+.resume-layout-shell[data-contact="center-inline"] header > div:first-child:not(:has(a, svg)),
+.resume-layout-shell[data-contact="center-inline"] header > div[style*="justify-content: space-between"],
+.resume-layout-shell[data-contact="center-inline"] header > div[style*="justify-content:space-between"] {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  width: 100% !important;
 }
+
+.resume-layout-shell[data-contact="center-inline"] header h1,
+.resume-layout-shell[data-contact="center-inline"] header h2,
+.resume-layout-shell[data-contact="center-inline"] header div:has(> h1),
+.resume-layout-shell[data-contact="center-inline"] header div:has(> h2),
+.resume-layout-shell[data-contact="center-inline"] header div:has(h1),
+.resume-layout-shell[data-contact="center-inline"] header div:has(h2) {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  text-align: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.resume-layout-shell[data-contact="center-inline"] header [class*="contact-bar"],
+.resume-layout-shell[data-contact="center-inline"] header [class*="contact-container"],
+.resume-layout-shell[data-contact="center-inline"] header [class*="contact-row"],
+.resume-layout-shell[data-contact="center-inline"] header [data-contact-row],
+.resume-layout-shell[data-contact="center-inline"] header .contact-container,
+.resume-layout-shell[data-contact="center-inline"] header > div:not(:has(h1, h2)),
+.resume-layout-shell[data-contact="center-inline"] header > div:last-child:not(:has(h1, h2)),
+.resume-layout-shell[data-contact="center-inline"] header > div:has(h1, h2) > div:not(:has(h1, h2)) {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  align-items: center !important;
+  text-align: center !important;
+  width: 100% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  gap: 6px 14px !important;
+}
+
+.resume-layout-shell[data-contact="center-inline"] header [class*="contact-bar"] > *,
+.resume-layout-shell[data-contact="center-inline"] header [class*="contact-container"] > *,
+.resume-layout-shell[data-contact="center-inline"] header [class*="contact-row"] > *,
+.resume-layout-shell[data-contact="center-inline"] header [data-contact-row] > *,
+.resume-layout-shell[data-contact="center-inline"] header .contact-container > *,
+.resume-layout-shell[data-contact="center-inline"] header .contact-item,
+.resume-layout-shell[data-contact="center-inline"] header > div:not(:has(h1, h2)) > *,
+.resume-layout-shell[data-contact="center-inline"] header > div:has(h1, h2) > div:not(:has(h1, h2)) > * {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  flex: 0 0 auto !important;
+  white-space: nowrap !important;
+}
+
+/* 3. Centered stacked */
+.resume-layout-shell[data-contact="center-stacked"] header,
+.resume-layout-shell[data-contact="center-stacked"] [data-header],
+.resume-layout-shell[data-contact="center-stacked"] .resume-header {
+  text-align: center !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-left: none !important;
+  border-right: none !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.resume-layout-shell[data-contact="center-stacked"] header > div:has(h1, h2),
+.resume-layout-shell[data-contact="center-stacked"] header > div:first-child:not(:has(a, svg)),
+.resume-layout-shell[data-contact="center-stacked"] header > div[style*="justify-content: space-between"],
+.resume-layout-shell[data-contact="center-stacked"] header > div[style*="justify-content:space-between"] {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  width: 100% !important;
+}
+
+.resume-layout-shell[data-contact="center-stacked"] header h1,
+.resume-layout-shell[data-contact="center-stacked"] header h2,
+.resume-layout-shell[data-contact="center-stacked"] header div:has(> h1),
+.resume-layout-shell[data-contact="center-stacked"] header div:has(> h2),
+.resume-layout-shell[data-contact="center-stacked"] header div:has(h1),
+.resume-layout-shell[data-contact="center-stacked"] header div:has(h2) {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  text-align: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.resume-layout-shell[data-contact="center-stacked"] header [class*="contact-bar"],
+.resume-layout-shell[data-contact="center-stacked"] header [class*="contact-container"],
+.resume-layout-shell[data-contact="center-stacked"] header [class*="contact-row"],
+.resume-layout-shell[data-contact="center-stacked"] header [data-contact-row],
+.resume-layout-shell[data-contact="center-stacked"] header .contact-container,
+.resume-layout-shell[data-contact="center-stacked"] header > div:not(:has(h1, h2)),
+.resume-layout-shell[data-contact="center-stacked"] header > div:last-child:not(:has(h1, h2)),
+.resume-layout-shell[data-contact="center-stacked"] header > div:has(h1, h2) > div:not(:has(h1, h2)) {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  width: 100% !important;
+  gap: 3px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.resume-layout-shell[data-contact="center-stacked"] header [class*="contact-bar"] > *,
+.resume-layout-shell[data-contact="center-stacked"] header [class*="contact-container"] > *,
+.resume-layout-shell[data-contact="center-stacked"] header [class*="contact-row"] > *,
+.resume-layout-shell[data-contact="center-stacked"] header [data-contact-row] > *,
+.resume-layout-shell[data-contact="center-stacked"] header .contact-container > *,
+.resume-layout-shell[data-contact="center-stacked"] header .contact-item,
+.resume-layout-shell[data-contact="center-stacked"] header > div:not(:has(h1, h2)) > *,
+.resume-layout-shell[data-contact="center-stacked"] header > div:has(h1, h2) > div:not(:has(h1, h2)) > * {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  width: auto !important;
+  min-width: 0 !important;
+  flex: 0 0 auto !important;
+}
+
+.resume-layout-shell[data-contact="center-stacked"] header span[style*="userSelect"],
+.resume-layout-shell[data-contact="center-stacked"] header span[style*="user-select"] {
+  display: none !important;
+}
+
 
 @keyframes aiAddedFloat {
   0% { opacity: 0; transform: translate(-50%, 14px) scale(0.92); }
@@ -461,8 +671,24 @@
 
 /* Print styles for ATS-friendly PDF */
 @media print {
-  body {
-    @apply bg-white;
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  html,
+  body,
+  #root {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 210mm !important;
+    overflow: visible !important;
   }
 
   body.printing-resume-template > *:not(#mobile-resume-print-root) {
@@ -472,18 +698,25 @@
   #mobile-resume-print-root {
     display: block !important;
     width: 210mm !important;
-    min-height: 297mm !important;
+    min-height: auto !important;
     margin: 0 !important;
     padding: 0 !important;
     background: #ffffff !important;
     color: #000000 !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
   }
 
-  #mobile-resume-print-root .resume-preview {
+  .resume-layout-shell {
     width: 210mm !important;
-    min-height: 297mm !important;
+    min-height: auto !important;
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  .resume-layout-shell > * {
+    min-height: auto !important;
   }
 
   .no-print {
@@ -528,36 +761,33 @@
 
 .page-transition {
   animation-fill-mode: both;
-  animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity;
 }
 
 .page-transition-enter {
-  animation: pageEnter 0.3s;
+  animation: pageEnter 0.2s ease-out;
 }
 
 .page-transition-exit {
-  animation: pageExit 0.2s;
+  animation: pageExit 0.15s ease-in;
 }
 
 @keyframes pageEnter {
   from {
     opacity: 0;
-    transform: translateY(8px) scale(0.99);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
   }
 }
 
 @keyframes pageExit {
   from {
     opacity: 1;
-    transform: translateY(0) scale(1);
   }
   to {
     opacity: 0;
-    transform: translateY(-8px) scale(0.99);
   }
 }
 

@@ -1398,7 +1398,7 @@ export default function RetroFuturisticTheme({
                   </div>
 
                   {/* Skills Segment Bars */}
-                  <div className="space-y-3 font-mono text-xs">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 font-mono text-xs">
                     {group.items.map((skill, sIdx) => {
                       // Decorative pseudo-bars
                       const meterLevels = [
@@ -1413,13 +1413,13 @@ export default function RetroFuturisticTheme({
                       return (
                         <div
                           key={sIdx}
-                          className="p-2 bg-[var(--rf-bg-inset)] border border-[var(--rf-border-subtle)] rounded flex flex-col sm:flex-row sm:items-center justify-between gap-1 hover:border-[var(--rf-border-primary)] transition-colors"
+                          className="p-2 bg-[var(--rf-bg-inset)] border border-[var(--rf-border-subtle)] rounded flex flex-col justify-between gap-1 hover:border-[var(--rf-accent-primary)] transition-colors"
                         >
-                          <div className="flex items-center gap-2">
-                            <span className="rf-led rf-led-green" />
-                            <span className="text-[var(--rf-text-primary)] font-semibold">{skill}</span>
+                          <div className="flex items-center gap-1.5">
+                            <span className="rf-led rf-led-green shrink-0" />
+                            <span className="text-[var(--rf-text-primary)] font-semibold truncate">{skill}</span>
                           </div>
-                          <span className="text-[var(--rf-accent-primary)] text-[11px] tracking-wider">
+                          <span className="text-[var(--rf-accent-primary)] text-[10px] tracking-wider font-mono">
                             {level}
                           </span>
                         </div>
