@@ -868,6 +868,7 @@ const ScaledResumeCard = React.memo(function ScaledResumeCard({
         <span className="font-mono truncate max-w-[180px]">{formatText}</span>
         <Link
           to={`/templates?template=${templateSlug}`}
+          aria-label={`Use ${item?.title || "resume"} template`}
           onClick={(e) => e.stopPropagation()}
           className="font-bold flex items-center gap-1 shrink-0 text-[10.5px] sm:text-xs text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white transition-colors group/link py-0.5 px-1.5 rounded hover:bg-black/5 dark:hover:bg-white/10"
         >
@@ -1992,6 +1993,7 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
         <div className="flex items-center gap-1.5">
           <Link
             to="/portfolio/create"
+            aria-label={`Launch ${title} portfolio theme`}
             onClick={(e) => e.stopPropagation()}
             className="font-bold flex items-center gap-1 shrink-0 text-[10px] text-zinc-900 dark:text-zinc-100 hover:text-blue-500 dark:hover:text-blue-400 transition-colors group/link py-1 px-2 rounded-md hover:bg-black/5 dark:hover:bg-white/10"
           >
