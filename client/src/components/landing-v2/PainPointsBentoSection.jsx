@@ -18,14 +18,24 @@ import { useDarkMode } from "../../context/DarkModeContext";
 // Magnetic Card with cursor physics, 3D tilt, and smooth return spring
 function MagneticCard({ children, className = "", style = {} }) {
   const cardRef = useRef(null);
+  const rectRef = useRef(null);
   const rafRef = useRef(null);
+
+  const handleMouseEnter = () => {
+    if (cardRef.current) {
+      rectRef.current = cardRef.current.getBoundingClientRect();
+    }
+  };
 
   const handleMouseMove = (e) => {
     if (!cardRef.current) return;
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     rafRef.current = requestAnimationFrame(() => {
       if (!cardRef.current) return;
-      const rect = cardRef.current.getBoundingClientRect();
+      if (!rectRef.current) {
+        rectRef.current = cardRef.current.getBoundingClientRect();
+      }
+      const rect = rectRef.current;
       const x = e.clientX - rect.left - rect.width / 2;
       const y = e.clientY - rect.top - rect.height / 2;
 
@@ -40,6 +50,7 @@ function MagneticCard({ children, className = "", style = {} }) {
 
   const handleMouseLeave = () => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rectRef.current = null;
     if (cardRef.current) {
       cardRef.current.style.transform =
         "perspective(1000px) rotateX(0deg) rotateY(0deg) translate3d(0, 0, 0) scale3d(1, 1, 1)";
@@ -49,6 +60,7 @@ function MagneticCard({ children, className = "", style = {} }) {
   return (
     <div
       ref={cardRef}
+      onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{
@@ -144,9 +156,9 @@ export default function PainPointsBentoSection() {
         {/* ================= STICKY SOLID PLAYFUL PLAYGROUND DECK ================= */}
         <div className="relative pb-16 space-y-8">
           {/* ================= CARD 1: ATS PARSER TRAP (SOLID CORAL / ROSE THEME) ================= */}
-          <div style={{ top: "100px", zIndex: 10 }} className="sticky transition-all duration-300">
+          <div style={{ top: "100px", zIndex: 10 }} className="sticky">
             <MagneticCard
-              className={`rounded-[32px] border p-8 sm:p-9 shadow-2xl transition-all duration-300 ${
+              className={`rounded-[32px] border p-8 sm:p-9 shadow-2xl transition-colors duration-300 ${
                 isDarkMode
                   ? "bg-[#1c0e14] border-rose-900/50 shadow-black/80"
                   : "bg-[#fff1f2] border-rose-200/80 shadow-rose-200/40"
@@ -306,9 +318,9 @@ export default function PainPointsBentoSection() {
           </div>
 
           {/* ================= CARD 2: SNEAKY AUTO-BILL (SOLID HONEY / AMBER THEME) ================= */}
-          <div style={{ top: "125px", zIndex: 11 }} className="sticky transition-all duration-300">
+          <div style={{ top: "125px", zIndex: 11 }} className="sticky">
             <MagneticCard
-              className={`rounded-[32px] border p-8 sm:p-9 shadow-2xl transition-all duration-300 ${
+              className={`rounded-[32px] border p-8 sm:p-9 shadow-2xl transition-colors duration-300 ${
                 isDarkMode
                   ? "bg-[#1f1508] border-amber-900/50 shadow-black/80"
                   : "bg-[#fffbeb] border-amber-200/80 shadow-amber-200/40"
@@ -468,9 +480,9 @@ export default function PainPointsBentoSection() {
           </div>
 
           {/* ================= CARD 3: LIVE PORTFOLIO THEME SWITCHER (SOLID SKY / CYAN THEME) ================= */}
-          <div style={{ top: "150px", zIndex: 12 }} className="sticky transition-all duration-300">
+          <div style={{ top: "150px", zIndex: 12 }} className="sticky">
             <MagneticCard
-              className={`rounded-[32px] border p-8 sm:p-9 shadow-2xl transition-all duration-300 ${
+              className={`rounded-[32px] border p-8 sm:p-9 shadow-2xl transition-colors duration-300 ${
                 isDarkMode
                   ? "bg-[#091a27] border-sky-900/50 shadow-black/80"
                   : "bg-[#f0f9ff] border-sky-200/80 shadow-sky-200/40"
@@ -608,9 +620,9 @@ export default function PainPointsBentoSection() {
           </div>
 
           {/* ================= CARD 4: LIVE AI STAR BULLET REWRITER (SOLID ROYAL PURPLE THEME) ================= */}
-          <div style={{ top: "175px", zIndex: 13 }} className="sticky transition-all duration-300">
+          <div style={{ top: "175px", zIndex: 13 }} className="sticky">
             <MagneticCard
-              className={`rounded-[32px] border p-8 sm:p-9 shadow-2xl transition-all duration-300 ${
+              className={`rounded-[32px] border p-8 sm:p-9 shadow-2xl transition-colors duration-300 ${
                 isDarkMode
                   ? "bg-[#170e24] border-purple-900/50 shadow-black/80"
                   : "bg-[#f8f4ff] border-purple-200/80 shadow-purple-200/40"

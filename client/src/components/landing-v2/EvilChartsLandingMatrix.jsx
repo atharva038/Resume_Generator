@@ -42,13 +42,29 @@ export default function EvilChartsLandingMatrix() {
     }
   }, [isDarkMode]);
 
-  // Hardware-accelerated mouse tracking without triggering React component re-renders
+  const headlineRectRef = useRef(null);
+
+  // Cache headline bounding rect on resize to avoid forced reflow during mousemove
+  useEffect(() => {
+    const updateRect = () => {
+      if (headlineRef.current) {
+        headlineRectRef.current = headlineRef.current.getBoundingClientRect();
+      }
+    };
+    window.addEventListener("resize", updateRect, { passive: true });
+    return () => window.removeEventListener("resize", updateRect);
+  }, []);
+
+  // Hardware-accelerated mouse tracking without triggering forced reflow
   const handleMouseMove = (e) => {
     if (!specularSpanRef.current || !headlineRef.current) return;
     if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current);
     rafIdRef.current = requestAnimationFrame(() => {
       if (!headlineRef.current || !specularSpanRef.current) return;
-      const rect = headlineRef.current.getBoundingClientRect();
+      if (!headlineRectRef.current) {
+        headlineRectRef.current = headlineRef.current.getBoundingClientRect();
+      }
+      const rect = headlineRectRef.current;
       const x = Math.round(e.clientX - rect.left);
       const y = Math.round(e.clientY - rect.top);
       specularSpanRef.current.style.backgroundImage = isDarkMode
@@ -75,19 +91,19 @@ export default function EvilChartsLandingMatrix() {
           className={`absolute top-[-10%] left-[-5%] w-[650px] h-[650px] rounded-full blur-[120px] opacity-35 transition-colors duration-500 ${
             isDarkMode ? "bg-amber-500/15" : "bg-amber-400/20"
           }`}
-          style={{ willChange: "transform", transform: "translateZ(0)" }}
+          style={{ transform: "translateZ(0)" }}
         />
         <div
           className={`absolute bottom-[-10%] right-[10%] w-[650px] h-[650px] rounded-full blur-[120px] opacity-30 transition-colors duration-500 ${
             isDarkMode ? "bg-yellow-600/10" : "bg-amber-300/25"
           }`}
-          style={{ willChange: "transform", transform: "translateZ(0)" }}
+          style={{ transform: "translateZ(0)" }}
         />
         <div
           className={`absolute top-[40%] right-[35%] w-[500px] h-[500px] rounded-full blur-[100px] opacity-20 transition-colors duration-500 ${
             isDarkMode ? "bg-amber-600/10" : "bg-yellow-200/40"
           }`}
-          style={{ willChange: "transform", transform: "translateZ(0)" }}
+          style={{ transform: "translateZ(0)" }}
         />
       </div>
 

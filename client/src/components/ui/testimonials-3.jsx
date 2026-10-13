@@ -87,13 +87,13 @@ export function TestimonialCard({ testimonial, index, className, ...props }) {
 
   return (
     <motion.figure
-      initial={{ opacity: 0, y: 55, scale: 0.94, filter: "blur(10px)" }}
-      whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-      viewport={{ once: true, amount: 0.15 }}
-      transition={{ duration: 0.7, delay: index * 0.14, ease: [0.16, 1, 0.3, 1] }}
+      initial={{ opacity: 0, y: 40, scale: 0.95 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, margin: "0px 0px -40px 0px" }}
+      transition={{ duration: 0.65, delay: index * 0.12, ease: [0.16, 1, 0.3, 1] }}
       whileHover={{ y: -6, transition: { duration: 0.25 } }}
       className={cn(
-        "group relative flex flex-col justify-between gap-6 p-7 sm:p-8 shadow-xs bg-white dark:bg-zinc-900/80 rounded-3xl border border-gray-200/90 dark:border-white/10 transition-all duration-300 hover:shadow-2xl hover:border-blue-500/40",
+        "group relative flex flex-col justify-between gap-6 p-7 sm:p-8 shadow-xs bg-white dark:bg-zinc-900/80 rounded-3xl border border-gray-200/90 dark:border-white/10 transition-colors duration-300 hover:shadow-2xl hover:border-blue-500/40",
         "md:translate-y-[calc(1.5rem*var(--t-card-index))]",
         className
       )}

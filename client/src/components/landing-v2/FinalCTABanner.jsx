@@ -31,11 +31,11 @@ export default function FinalCTABanner() {
       <div className="max-w-4xl mx-auto relative z-10">
         {/* Luxury Obsidian Gold Hero Showcase Card */}
         <motion.div
-          initial={{ opacity: 0, y: 55, scale: 0.94, filter: "blur(10px)" }}
-          whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          className={`relative overflow-hidden rounded-3xl sm:rounded-[36px] p-8 sm:p-14 lg:p-16 backdrop-blur-2xl border transition-all duration-300 text-center space-y-8 sm:space-y-10 ${
+          initial={{ opacity: 0, y: 40, scale: 0.95 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: true, margin: "0px 0px -40px 0px" }}
+          transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+          className={`relative overflow-hidden rounded-3xl sm:rounded-[36px] p-8 sm:p-14 lg:p-16 backdrop-blur-2xl border transition-colors duration-300 text-center space-y-8 sm:space-y-10 ${
             isDarkMode
               ? "bg-gradient-to-b from-zinc-950/95 via-[#09090c]/95 to-black/95 border-amber-500/25 shadow-[0_20px_80px_-15px_rgba(245,158,11,0.18)] ring-1 ring-amber-500/10"
               : "bg-gradient-to-b from-white/95 via-amber-50/30 to-white/95 border-amber-200/80 shadow-2xl shadow-amber-900/10 ring-1 ring-amber-900/5"
@@ -81,8 +81,8 @@ export default function FinalCTABanner() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto pt-2">
             {/* 1. AI-Powered */}
             <motion.div
-              initial={{ opacity: 0, y: 35, filter: "blur(8px)" }}
-              whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              initial={{ opacity: 0, y: 35 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
               whileHover={{ y: -4, transition: { duration: 0.2 } }}
@@ -113,8 +113,8 @@ export default function FinalCTABanner() {
 
             {/* 2. ATS Optimized */}
             <motion.div
-              initial={{ opacity: 0, y: 35, filter: "blur(8px)" }}
-              whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              initial={{ opacity: 0, y: 35 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.6, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
               whileHover={{ y: -4, transition: { duration: 0.2 } }}
@@ -145,8 +145,8 @@ export default function FinalCTABanner() {
 
             {/* 3. Career Driven */}
             <motion.div
-              initial={{ opacity: 0, y: 35, filter: "blur(8px)" }}
-              whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              initial={{ opacity: 0, y: 35 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.6, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
               whileHover={{ y: -4, transition: { duration: 0.2 } }}

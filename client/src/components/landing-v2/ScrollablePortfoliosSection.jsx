@@ -158,9 +158,9 @@ export default function ScrollablePortfoliosSection() {
                 key={portfolio.id}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.15 }}
+                viewport={{ once: true, margin: "0px 0px -40px 0px" }}
                 transition={{ duration: 0.6, delay: idx * 0.05, ease: [0.16, 1, 0.3, 1] }}
-                className={`group rounded-2xl sm:rounded-[32px] border overflow-hidden transition-all duration-300 shadow-xl hover:shadow-2xl text-left ${
+                className={`group rounded-2xl sm:rounded-[32px] border overflow-hidden transition-colors duration-300 shadow-xl hover:shadow-2xl text-left ${
                   isDarkMode
                     ? "bg-[#11121d] border-zinc-800 shadow-black/80 hover:border-blue-500/40"
                     : "bg-white border-slate-200 shadow-slate-200/90 hover:border-blue-300"
@@ -201,12 +201,18 @@ export default function ScrollablePortfoliosSection() {
 
                 {/* Vertical Scrollable Canvas Viewport */}
                 <div className="relative h-[260px] sm:h-[380px] md:h-[460px] w-full overflow-y-auto overflow-x-hidden bg-slate-100 dark:bg-zinc-950 scroll-smooth">
-                  <img
-                    src={portfolio.image}
-                    alt={`${portfolio.title} Deployed Preview`}
-                    className="w-full object-cover object-top transition-transform duration-700"
-                    loading="lazy"
-                  />
+                  <picture>
+                    <source srcSet={portfolio.image.replace(/\.png$/, ".webp")} type="image/webp" />
+                    <img
+                      src={portfolio.image}
+                      alt={`${portfolio.title} Deployed Preview`}
+                      width="720"
+                      height="460"
+                      className="w-full object-cover object-top transition-transform duration-700"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </picture>
 
                   {/* Top floating badge */}
                   <div className="sticky top-2.5 left-2.5 z-10 p-2 sm:p-3 pointer-events-none">
@@ -254,6 +260,7 @@ export default function ScrollablePortfoliosSection() {
 
                     <Link
                       to="/portfolio/create"
+                      aria-label={`Deploy ${portfolio.title} portfolio theme`}
                       className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-mono text-[11px] sm:text-xs font-medium shadow-md shadow-blue-500/20 transition-all hover:scale-105 active:scale-95"
                     >
                       <span>Deploy</span>
