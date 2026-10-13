@@ -1364,21 +1364,62 @@ export default function SmartNShineTheme({
 
                   {Array.isArray(sec.items) && sec.items.length > 0 && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {sec.items.map((item, itemIdx) => (
-                        <div
-                          key={itemIdx}
-                          className="p-6 rounded-xs border border-[var(--sns-border)] bg-[var(--sns-bg-subtle)] space-y-2"
-                        >
-                          <h4 className="sns-serif text-xl text-[var(--sns-text-primary)]">
-                            {typeof item === "string" ? item : item.title || item.name}
-                          </h4>
-                          {typeof item === "object" && item.description && (
-                            <p className="text-xs text-[var(--sns-text-secondary)] font-light leading-relaxed">
-                              {item.description}
-                            </p>
-                          )}
-                        </div>
-                      ))}
+                      {sec.items.map((item, itemIdx) => {
+                        const isObj = item && typeof item === "object";
+                        const title = isObj ? item.title || item.name || "" : (typeof item === "string" ? item : "");
+                        const subtitle = isObj ? item.subtitle || item.organization || item.issuer || item.publisher || "" : "";
+                        const date = isObj ? item.date || "" : "";
+                        const link = isObj ? item.link || item.url || "" : "";
+                        const desc = isObj ? item.description || "" : "";
+                        const bullets = isObj && Array.isArray(item.bullets) ? item.bullets.filter(Boolean) : [];
+
+                        return (
+                          <div
+                            key={isObj ? item.id || itemIdx : itemIdx}
+                            className="p-6 rounded-xs border border-[var(--sns-border)] bg-[var(--sns-bg-subtle)] space-y-2"
+                          >
+                            <div className="flex justify-between items-baseline gap-2 flex-wrap">
+                              {title && (
+                                <h4 className="sns-serif text-xl text-[var(--sns-text-primary)]">
+                                  {title}
+                                </h4>
+                              )}
+                              {date && (
+                                <span className="text-xs text-[var(--sns-text-muted)] font-mono">
+                                  {date}
+                                </span>
+                              )}
+                            </div>
+                            {subtitle && (
+                              <p className="text-xs text-[var(--sns-text-secondary)] font-medium">
+                                {subtitle}
+                              </p>
+                            )}
+                            {link && (
+                              <a
+                                href={link.startsWith("http") ? link : `https://${link}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-xs text-[var(--sns-primary)] underline block"
+                              >
+                                View Link →
+                              </a>
+                            )}
+                            {desc && (
+                              <p className="text-xs text-[var(--sns-text-secondary)] font-light leading-relaxed">
+                                {desc}
+                              </p>
+                            )}
+                            {bullets.length > 0 && (
+                              <ul className="list-disc pl-4 text-xs text-[var(--sns-text-secondary)] space-y-1">
+                                {bullets.map((b, bIdx) => (
+                                  <li key={bIdx}>{typeof b === "string" ? b : b?.text || String(b)}</li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
                 </div>

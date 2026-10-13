@@ -992,13 +992,63 @@ export default function GlassmorphismTheme({
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {(sec.items || []).map((item, iIdx) => (
-                    <GlassTiltCard key={iIdx} className="p-5">
-                      <p className="text-sm text-slate-700 dark:text-slate-300">
-                        {item}
-                      </p>
-                    </GlassTiltCard>
-                  ))}
+                  {(sec.items || []).map((item, iIdx) => {
+                    const isObj = item && typeof item === "object";
+                    const title = isObj ? item.title || item.name || "" : (typeof item === "string" ? item : "");
+                    const subtitle = isObj ? item.subtitle || item.organization || item.issuer || item.publisher || "" : "";
+                    const date = isObj ? item.date || "" : "";
+                    const link = isObj ? item.link || item.url || "" : "";
+                    const desc = isObj ? item.description || "" : "";
+                    const bullets = isObj && Array.isArray(item.bullets) ? item.bullets.filter(Boolean) : [];
+
+                    return (
+                      <GlassTiltCard key={isObj ? item.id || iIdx : iIdx} className="p-5">
+                        <div className="space-y-1.5">
+                          <div className="flex justify-between items-baseline gap-2 flex-wrap">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              {title && (
+                                <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
+                                  {title}
+                                </h4>
+                              )}
+                              {subtitle && (
+                                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                                  · {subtitle}
+                                </span>
+                              )}
+                              {link && (
+                                <a
+                                  href={link.startsWith("http") ? link : `https://${link}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-xs text-blue-500 hover:underline"
+                                >
+                                  [link]
+                                </a>
+                              )}
+                            </div>
+                            {date && (
+                              <span className="text-xs text-slate-400 dark:text-slate-500 font-mono">
+                                {date}
+                              </span>
+                            )}
+                          </div>
+                          {desc && (
+                            <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                              {desc}
+                            </p>
+                          )}
+                          {bullets.length > 0 && (
+                            <ul className="list-disc pl-4 text-xs sm:text-sm text-slate-700 dark:text-slate-300 space-y-0.5">
+                              {bullets.map((b, bIdx) => (
+                                <li key={bIdx}>{typeof b === "string" ? b : b?.text || String(b)}</li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      </GlassTiltCard>
+                    );
+                  })}
                 </div>
               </section>
             ))}

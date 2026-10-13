@@ -82,9 +82,38 @@ export function normalizeResumeData(rawData) {
       })
       .filter((g) => g && (g.items.length > 0 || g.category));
   }
-  if (!Array.isArray(data.experience)) data.experience = [];
+  if (!Array.isArray(data.experience)) {
+    data.experience = [];
+  } else {
+    data.experience = data.experience.map((exp) => {
+      if (!exp || typeof exp !== "object") return exp;
+      const hasBullets =
+        Array.isArray(exp.bullets) &&
+        exp.bullets.some((b) => Boolean(typeof b === "string" ? b.trim() : b));
+      if (hasBullets && exp.description) {
+        return { ...exp, description: "" };
+      }
+      return exp;
+    });
+  }
+
   if (!Array.isArray(data.education)) data.education = [];
-  if (!Array.isArray(data.projects)) data.projects = [];
+
+  if (!Array.isArray(data.projects)) {
+    data.projects = [];
+  } else {
+    data.projects = data.projects.map((proj) => {
+      if (!proj || typeof proj !== "object") return proj;
+      const hasBullets =
+        Array.isArray(proj.bullets) &&
+        proj.bullets.some((b) => Boolean(typeof b === "string" ? b.trim() : b));
+      if (hasBullets && proj.description) {
+        return { ...proj, description: "" };
+      }
+      return proj;
+    });
+  }
+
   if (!Array.isArray(data.certifications)) data.certifications = [];
 
   if (!Array.isArray(data.achievements)) {
