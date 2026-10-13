@@ -195,24 +195,45 @@ export const CustomSections = ({
           <div className="grid gap-3 md:grid-cols-2">
             {(section.items || []).map((item, itemIdx) => {
               const isObj = item && typeof item === "object";
-              const title = isObj ? (item.title || item.name || "") : item;
+              const title = isObj ? (item.title || item.name || "") : (typeof item === "string" ? item : "");
               const subtitle = isObj ? (item.subtitle || item.organization || item.issuer || item.publisher || "") : "";
               const date = isObj ? (item.date || "") : "";
+              const link = isObj ? (item.link || item.url || "") : "";
               const desc = isObj ? (item.description || "") : "";
+              const bullets = isObj && Array.isArray(item.bullets) ? item.bullets.filter(Boolean) : [];
 
               return (
                 <div
                   key={isObj ? (item.id || `custom-item-${itemIdx}`) : `${item}-${itemIdx}`}
                   className={`${cardClassName} break-words ${textClassName}`}
                 >
-                  {title && <div className="font-semibold text-sm">{title}</div>}
-                  {(subtitle || date) && (
-                    <div className="text-xs opacity-75 flex justify-between mt-0.5">
-                      {subtitle && <span>{subtitle}</span>}
-                      {date && <span>{date}</span>}
+                  <div className="flex justify-between items-baseline gap-2 flex-wrap">
+                    {title && <div className="font-semibold text-sm">{title}</div>}
+                    {date && <span className="text-xs opacity-75 font-mono">{date}</span>}
+                  </div>
+                  {subtitle && (
+                    <div className="text-xs opacity-75 mt-0.5">
+                      {subtitle}
                     </div>
                   )}
-                  {desc && <p className="text-xs mt-1.5 opacity-90">{desc}</p>}
+                  {link && (
+                    <a
+                      href={link.startsWith("http") ? link : `https://${link}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-blue-500 hover:underline block mt-0.5"
+                    >
+                      [link]
+                    </a>
+                  )}
+                  {desc && <p className="text-xs mt-1.5 opacity-90 leading-relaxed">{desc}</p>}
+                  {bullets.length > 0 && (
+                    <ul className="list-disc pl-4 text-xs mt-1.5 opacity-90 space-y-0.5">
+                      {bullets.map((b, bIdx) => (
+                        <li key={bIdx}>{typeof b === "string" ? b : b?.text || String(b)}</li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               );
             })}

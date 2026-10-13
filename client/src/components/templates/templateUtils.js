@@ -39,48 +39,18 @@ export const isDescriptionDuplicatedInBullets = (description, bullets) => {
     return false;
   }
 
-  const cleanDesc = (typeof description === "string" ? description : "")
-    .replace(/\s+/g, " ")
-    .trim()
-    .toLowerCase();
-
-  if (!cleanDesc) return false;
-
   const bulletTexts = bullets
     .map((b) => (typeof b === "string" ? b : b?.text || b?.content || ""))
-    .filter(Boolean);
+    .filter((t) => Boolean(t && t.trim()));
 
-  if (bulletTexts.length === 0) return false;
+  // When bullet points exist, they are the primary structured accomplishments.
+  // Displaying an un-editable, parsed description paragraph above the bullets creates
+  // phantom lines that don't match the editor form and pushes resumes onto extra pages.
+  if (bulletTexts.length > 0) {
+    return true;
+  }
 
-  const joinedBullets = bulletTexts
-    .join(" ")
-    .replace(/\s+/g, " ")
-    .trim()
-    .toLowerCase();
-
-  // Exact match with joined bullets
-  if (cleanDesc === joinedBullets) return true;
-
-  // Normalized comparisons: remove punctuation to compare semantic content
-  const stripPunct = (str) =>
-    str.replace(/[^a-z0-9\s]/g, "").replace(/\s+/g, " ").trim();
-  const punctFreeDesc = stripPunct(cleanDesc);
-  const punctFreeJoined = stripPunct(joinedBullets);
-
-  if (punctFreeDesc === punctFreeJoined) return true;
-
-  // If any non-trivial bullet (>= 15 chars) is substantially contained in description or vice versa
-  return bulletTexts.some((b) => {
-    const cleanB = b.replace(/\s+/g, " ").trim().toLowerCase();
-    const punctFreeB = stripPunct(cleanB);
-    if (punctFreeB.length < 15) return false;
-    return (
-      cleanDesc.includes(cleanB) ||
-      cleanB.includes(cleanDesc) ||
-      punctFreeDesc.includes(punctFreeB) ||
-      punctFreeB.includes(punctFreeDesc)
-    );
-  });
+  return false;
 };
 
 /**

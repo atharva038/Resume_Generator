@@ -2210,7 +2210,16 @@ const EDITOR_NAV_ITEMS = [
                         Items (1 per line)
                       </label>
                       <textarea
-                        value={(item.items || []).join("\n")}
+                        value={(item.items || [])
+                          .map((it) => {
+                            if (typeof it === "string") return it;
+                            if (it && typeof it === "object") {
+                              const parts = [it.title || it.name, it.subtitle, it.description].filter(Boolean);
+                              return parts.join(" - ") || it.title || it.name || "";
+                            }
+                            return "";
+                          })
+                          .join("\n")}
                         onChange={(e) => updatePortfolioArrayItem("customSections", index, { items: linesToArray(e.target.value) })}
                         rows={4}
                         className="w-full p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-zinc-900 text-sm sm:text-base leading-relaxed"
