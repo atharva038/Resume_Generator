@@ -72,12 +72,12 @@ export default function HowItWorksSection() {
             return (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 50, scale: 0.94 }}
+                initial={{ opacity: 0, y: 40, scale: 0.95 }}
                 whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                viewport={{ once: true, amount: 0.15 }}
-                transition={{ duration: 0.7, delay: i * 0.16, ease: [0.16, 1, 0.3, 1] }}
+                viewport={{ once: true, margin: "0px 0px -40px 0px" }}
+                transition={{ duration: 0.65, delay: i * 0.14, ease: [0.16, 1, 0.3, 1] }}
                 whileHover={{ y: -8, transition: { duration: 0.25 } }}
-                className={"relative rounded-[32px] border p-8 sm:p-9 flex flex-col justify-between gap-8 shadow-xl transition-all duration-300 " + step.glow + " " + (isDarkMode ? "bg-[#0f0f1a]/90 border-zinc-800/80 backdrop-blur-xl" : "bg-slate-50/70 border-slate-200/80 backdrop-blur-xl")}
+                className={"relative rounded-[32px] border p-8 sm:p-9 flex flex-col justify-between gap-8 shadow-xl transition-colors duration-300 hover:shadow-2xl " + step.glow + " " + (isDarkMode ? "bg-[#0f0f1a]/90 border-zinc-800/80 backdrop-blur-xl" : "bg-slate-50/70 border-slate-200/80 backdrop-blur-xl")}
               >
                 {/* Number Watermark */}
                 <span className={"absolute top-4 right-6 text-8xl font-thin select-none pointer-events-none leading-none tracking-tighter " + step.numberColor}>{step.number}</span>

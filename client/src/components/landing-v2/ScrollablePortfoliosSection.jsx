@@ -158,9 +158,9 @@ export default function ScrollablePortfoliosSection() {
                 key={portfolio.id}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.15 }}
+                viewport={{ once: true, margin: "0px 0px -40px 0px" }}
                 transition={{ duration: 0.6, delay: idx * 0.05, ease: [0.16, 1, 0.3, 1] }}
-                className={`group rounded-2xl sm:rounded-[32px] border overflow-hidden transition-all duration-300 shadow-xl hover:shadow-2xl text-left ${
+                className={`group rounded-2xl sm:rounded-[32px] border overflow-hidden transition-colors duration-300 shadow-xl hover:shadow-2xl text-left ${
                   isDarkMode
                     ? "bg-[#11121d] border-zinc-800 shadow-black/80 hover:border-blue-500/40"
                     : "bg-white border-slate-200 shadow-slate-200/90 hover:border-blue-300"

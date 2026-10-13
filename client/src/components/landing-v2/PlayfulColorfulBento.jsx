@@ -138,10 +138,10 @@ export default function PlayfulColorfulBento() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
           {/* Card 1: Lavender / Turn rough experience into offer-winning bullets (5 Cols) */}
           <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.95 }}
+            initial={{ opacity: 0, y: 35, scale: 0.96 }}
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            viewport={{ once: true, amount: 0.15 }}
-            transition={{ duration: 0.7, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
+            viewport={{ once: true, margin: "0px 0px -40px 0px" }}
+            transition={{ duration: 0.65, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
             className="lg:col-span-5 h-full flex"
           >
             <MagneticCard className={`w-full rounded-[32px] border p-8 sm:p-9 flex flex-col justify-between cursor-pointer hover:shadow-2xl text-left ${
@@ -250,10 +250,10 @@ export default function PlayfulColorfulBento() {
 
           {/* Card 2: Sky Blue / Tailor resume to any Job Description (7 Cols) */}
           <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.95 }}
+            initial={{ opacity: 0, y: 35, scale: 0.96 }}
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            viewport={{ once: true, amount: 0.15 }}
-            transition={{ duration: 0.7, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+            viewport={{ once: true, margin: "0px 0px -40px 0px" }}
+            transition={{ duration: 0.65, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
             className="lg:col-span-7 h-full flex"
           >
             <MagneticCard className={`w-full rounded-[32px] border p-8 sm:p-9 flex flex-col justify-between cursor-pointer hover:shadow-2xl text-left ${
@@ -387,10 +387,10 @@ export default function PlayfulColorfulBento() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
           {/* Card 3: Orange / Career Q&A Studio */}
           <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.95 }}
+            initial={{ opacity: 0, y: 35, scale: 0.96 }}
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            viewport={{ once: true, amount: 0.15 }}
-            transition={{ duration: 0.7, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
+            viewport={{ once: true, margin: "0px 0px -40px 0px" }}
+            transition={{ duration: 0.65, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
             className="h-full flex"
           >
             <MagneticCard className={`w-full rounded-[32px] border p-8 flex flex-col justify-between cursor-pointer hover:shadow-2xl text-left ${
@@ -450,10 +450,10 @@ export default function PlayfulColorfulBento() {
 
           {/* Card 4: Mint Green / Engineered to Pass ATS */}
           <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.95 }}
+            initial={{ opacity: 0, y: 35, scale: 0.96 }}
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            viewport={{ once: true, amount: 0.15 }}
-            transition={{ duration: 0.7, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+            viewport={{ once: true, margin: "0px 0px -40px 0px" }}
+            transition={{ duration: 0.65, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
             className="h-full flex"
           >
             <MagneticCard className={`w-full rounded-[32px] border p-8 flex flex-col justify-between cursor-pointer hover:shadow-2xl text-left ${
@@ -518,10 +518,10 @@ export default function PlayfulColorfulBento() {
 
           {/* Card 5: Lilac / One Master Profile */}
           <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.95 }}
+            initial={{ opacity: 0, y: 35, scale: 0.96 }}
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            viewport={{ once: true, amount: 0.15 }}
-            transition={{ duration: 0.7, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            viewport={{ once: true, margin: "0px 0px -40px 0px" }}
+            transition={{ duration: 0.65, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
             className="h-full flex"
           >
             <MagneticCard className={`w-full rounded-[32px] border p-8 flex flex-col justify-between cursor-pointer hover:shadow-2xl text-left ${
@@ -588,10 +588,10 @@ export default function PlayfulColorfulBento() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
           {/* Card 6: Cyan / Deploy live portfolios & export vector PDFs (8 Cols) */}
           <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.95 }}
+            initial={{ opacity: 0, y: 35, scale: 0.96 }}
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            viewport={{ once: true, amount: 0.15 }}
-            transition={{ duration: 0.7, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
+            viewport={{ once: true, margin: "0px 0px -40px 0px" }}
+            transition={{ duration: 0.65, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
             className="lg:col-span-8 h-full flex"
           >
             <MagneticCard className={`w-full rounded-[32px] border p-8 sm:p-9 flex flex-col md:flex-row items-center justify-between gap-8 cursor-pointer hover:shadow-2xl text-left ${
@@ -712,10 +712,10 @@ export default function PlayfulColorfulBento() {
 
           {/* Card 7: Lime Sage / Apply with Total Career Confidence (4 Cols) */}
           <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.95 }}
+            initial={{ opacity: 0, y: 35, scale: 0.96 }}
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            viewport={{ once: true, amount: 0.15 }}
-            transition={{ duration: 0.7, delay: 0.18, ease: [0.16, 1, 0.3, 1] }}
+            viewport={{ once: true, margin: "0px 0px -40px 0px" }}
+            transition={{ duration: 0.65, delay: 0.14, ease: [0.16, 1, 0.3, 1] }}
             className="lg:col-span-4 h-full flex"
           >
             <MagneticCard className={`w-full rounded-[32px] border p-8 sm:p-9 flex flex-col justify-between cursor-pointer hover:shadow-2xl text-left ${
