@@ -48,3 +48,10 @@ coverage/
 .cache
 .temp
 .tmp
+
+# Performance test artifacts (screenshots, videos, reports)
+perf-baseline/*.png
+perf-baseline/*.webm
+perf-baseline/**/*.png
+perf-baseline/**/*.webm
+perf-baseline/**/*.html
