@@ -38,8 +38,8 @@ export default function LandingNavbar() {
               : "max-w-2xl sm:max-w-3xl rounded-2xl sm:rounded-3xl bg-white/95 border border-black/10 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.15)] backdrop-blur-3xl"
             : isScrolled
             ? isDarkMode
-              ? "max-w-2xl sm:max-w-3xl lg:max-w-5xl xl:max-w-6xl rounded-full bg-black/80 border border-white/[0.14] shadow-[0_20px_50px_-10px_rgba(0,0,0,0.7),inset_0_1px_1.5px_0_rgba(255,255,255,0.22)] backdrop-blur-2xl backdrop-saturate-150"
-              : "max-w-2xl sm:max-w-3xl lg:max-w-5xl xl:max-w-6xl rounded-full bg-white/85 border border-black/[0.09] shadow-[0_20px_50px_-10px_rgba(0,0,0,0.08),inset_0_1.5px_2px_0_rgba(255,255,255,0.95)] backdrop-blur-2xl backdrop-saturate-150"
+              ? "max-w-2xl sm:max-w-3xl lg:max-w-4xl rounded-full bg-black/80 border border-white/[0.14] shadow-[0_20px_50px_-10px_rgba(0,0,0,0.7),inset_0_1px_1.5px_0_rgba(255,255,255,0.22)] backdrop-blur-2xl backdrop-saturate-150"
+              : "max-w-2xl sm:max-w-3xl lg:max-w-4xl rounded-full bg-white/85 border border-black/[0.09] shadow-[0_20px_50px_-10px_rgba(0,0,0,0.08),inset_0_1.5px_2px_0_rgba(255,255,255,0.95)] backdrop-blur-2xl backdrop-saturate-150"
             : isDarkMode
             ? "max-w-6xl xl:max-w-7xl rounded-full bg-black/20 sm:bg-transparent border border-white/5 sm:border-transparent shadow-none backdrop-blur-xs sm:backdrop-blur-none"
             : "max-w-6xl xl:max-w-7xl rounded-full bg-white/30 sm:bg-transparent border border-black/5 sm:border-transparent shadow-none backdrop-blur-xs sm:backdrop-blur-none"
@@ -53,22 +53,22 @@ export default function LandingNavbar() {
         <div
           className={`flex items-center justify-between transition-all duration-300 relative z-10 ${
             isScrolled
-              ? "px-4 sm:px-6 lg:px-7 h-12 sm:h-14 py-1"
+              ? "px-4 sm:px-6 h-12 sm:h-14 py-1"
               : "px-4 sm:px-8 h-14 sm:h-[72px] py-1.5 sm:py-2"
           }`}
         >
           {/* Brand Logo & Title */}
-          <Link to="/" className="flex items-center gap-2 sm:gap-3 group shrink-0">
+          <Link to="/" className="flex items-center gap-2 sm:gap-2.5 group shrink-0">
             <Logo
               className={`object-contain group-hover:scale-105 transition-all duration-200 ${
-                isScrolled ? "w-6 h-6 sm:w-8 sm:h-8" : "w-7 h-7 sm:w-9 sm:h-9"
+                isScrolled ? "w-6 h-6 sm:w-7 sm:h-7" : "w-7 h-7 sm:w-9 sm:h-9"
               }`}
               alt="SmartNShine Logo"
             />
             <span
               className={`font-light tracking-tight text-zinc-950 dark:text-white leading-none transition-all duration-200 ${
                 isScrolled
-                  ? "text-sm sm:text-lg"
+                  ? "text-sm sm:text-base"
                   : "text-base sm:text-xl lg:text-2xl"
               }`}
             >
@@ -80,7 +80,7 @@ export default function LandingNavbar() {
           <nav
             className={`hidden lg:flex items-center transition-all duration-300 shrink-0 ${
               isScrolled
-                ? "gap-1 xl:gap-2"
+                ? "gap-1 xl:gap-1.5"
                 : "gap-4 lg:gap-6 xl:gap-10"
             }`}
           >
@@ -95,7 +95,7 @@ export default function LandingNavbar() {
                 to={item.to}
                 className={`font-light whitespace-nowrap transition-all duration-150 ${
                   isScrolled
-                    ? "px-2.5 xl:px-3.5 py-1.5 rounded-full text-xs xl:text-sm text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white hover:bg-black/[0.04] dark:hover:bg-white/[0.08]"
+                    ? "px-2.5 xl:px-3 py-1.5 rounded-full text-xs xl:text-sm text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white hover:bg-black/[0.04] dark:hover:bg-white/[0.08]"
                     : "text-base xl:text-lg text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white hover:opacity-100 tracking-wide"
                 }`}
               >
@@ -105,7 +105,7 @@ export default function LandingNavbar() {
           </nav>
 
           {/* Right Action Pills (Auth + Clean Theme Toggle) */}
-          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {/* Clean Moon/Sun Toggle */}
             <button
               onClick={toggleDarkMode}
@@ -120,11 +120,11 @@ export default function LandingNavbar() {
             </button>
 
             {/* Desktop Auth Buttons (Visible lg and above) */}
-            <div className="hidden lg:flex items-center gap-1.5 xl:gap-2.5 shrink-0">
+            <div className="hidden lg:flex items-center gap-1.5 xl:gap-2 shrink-0">
               {user ? (
                 <Link
                   to="/dashboard"
-                  className={`inline-flex items-center gap-1.5 xl:gap-2 rounded-full border border-black/[0.1] dark:border-white/15 bg-black/[0.04] dark:bg-white/[0.06] hover:bg-black/[0.08] dark:hover:bg-white/12 text-zinc-900 dark:text-white font-light whitespace-nowrap transition-all shadow-2xs active:scale-95 cursor-pointer ${
+                  className={`inline-flex items-center gap-1.5 rounded-full border border-black/[0.1] dark:border-white/15 bg-black/[0.04] dark:bg-white/[0.06] hover:bg-black/[0.08] dark:hover:bg-white/12 text-zinc-900 dark:text-white font-light whitespace-nowrap transition-all shadow-2xs active:scale-95 cursor-pointer ${
                     isScrolled
                       ? "px-3.5 xl:px-4 py-1.5 text-xs xl:text-sm"
                       : "px-5 sm:px-6 py-2.5 text-sm sm:text-base"
@@ -146,7 +146,7 @@ export default function LandingNavbar() {
 
                   <Link
                     to="/upload"
-                    className={`inline-flex items-center gap-1.5 xl:gap-2 rounded-full border border-black/[0.1] dark:border-white/15 bg-black/[0.04] dark:bg-white/[0.06] hover:bg-black/[0.08] dark:hover:bg-white/12 text-zinc-900 dark:text-white font-light whitespace-nowrap transition-all shadow-2xs active:scale-95 cursor-pointer ${
+                    className={`inline-flex items-center gap-1.5 rounded-full border border-black/[0.1] dark:border-white/15 bg-black/[0.04] dark:bg-white/[0.06] hover:bg-black/[0.08] dark:hover:bg-white/12 text-zinc-900 dark:text-white font-light whitespace-nowrap transition-all shadow-2xs active:scale-95 cursor-pointer ${
                       isScrolled
                         ? "px-3.5 xl:px-4 py-1.5 text-xs xl:text-sm"
                         : "px-5 sm:px-6 py-2.5 text-sm sm:text-base"
