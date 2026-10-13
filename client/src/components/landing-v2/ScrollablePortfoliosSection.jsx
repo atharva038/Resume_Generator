@@ -201,12 +201,18 @@ export default function ScrollablePortfoliosSection() {
 
                 {/* Vertical Scrollable Canvas Viewport */}
                 <div className="relative h-[260px] sm:h-[380px] md:h-[460px] w-full overflow-y-auto overflow-x-hidden bg-slate-100 dark:bg-zinc-950 scroll-smooth">
-                  <img
-                    src={portfolio.image}
-                    alt={`${portfolio.title} Deployed Preview`}
-                    className="w-full object-cover object-top transition-transform duration-700"
-                    loading="lazy"
-                  />
+                  <picture>
+                    <source srcSet={portfolio.image.replace(/\.png$/, ".webp")} type="image/webp" />
+                    <img
+                      src={portfolio.image}
+                      alt={`${portfolio.title} Deployed Preview`}
+                      width="720"
+                      height="460"
+                      className="w-full object-cover object-top transition-transform duration-700"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </picture>
 
                   {/* Top floating badge */}
                   <div className="sticky top-2.5 left-2.5 z-10 p-2 sm:p-3 pointer-events-none">

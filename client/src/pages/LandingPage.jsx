@@ -11,9 +11,7 @@ const PlayfulColorfulBento = lazy(() => import("../components/landing-v2/Playful
 const ScrollablePortfoliosSection = lazy(() => import("../components/landing-v2/ScrollablePortfoliosSection"));
 const HowItWorksSection = lazy(() => import("../components/landing-v2/HowItWorksSection"));
 const ScrollSplitCardsSection = lazy(() => import("../components/landing-v2/ScrollSplitCardsSection"));
-const TestimonialsHomeSection = lazy(() =>
-  import("../components/home").then((mod) => ({ default: mod.TestimonialsHomeSection }))
-);
+const TestimonialsHomeSection = lazy(() => import("../components/home/TestimonialsHomeSection"));
 const PricingSection = lazy(() => import("../components/landing-v2/PricingSection"));
 const FAQSection = lazy(() => import("../components/landing-v2/FAQSection"));
 const FinalCTABanner = lazy(() => import("../components/landing-v2/FinalCTABanner"));

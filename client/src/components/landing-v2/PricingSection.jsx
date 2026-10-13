@@ -214,8 +214,8 @@ export default function PricingSection() {
       <div className="max-w-6xl mx-auto relative z-10 space-y-14">
         {/* Section Header */}
         <motion.div
-          initial={{ opacity: 0, y: 45, scale: 0.95, filter: "blur(10px)" }}
-          whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+          initial={{ opacity: 0, y: 45, scale: 0.95 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="text-center max-w-3xl mx-auto space-y-4"
@@ -275,8 +275,8 @@ export default function PricingSection() {
               return (
                 <motion.div
                   key={key}
-                  initial={{ opacity: 0, y: 55, scale: 0.94, filter: "blur(10px)" }}
-                  whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+                  initial={{ opacity: 0, y: 55, scale: 0.94 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
                   viewport={{ once: true, amount: 0.15 }}
                   transition={{ duration: 0.7, delay: idx * 0.12, ease: [0.16, 1, 0.3, 1] }}
                   whileHover={{ y: -6, transition: { duration: 0.25 } }}

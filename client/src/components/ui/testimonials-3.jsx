@@ -87,8 +87,8 @@ export function TestimonialCard({ testimonial, index, className, ...props }) {
 
   return (
     <motion.figure
-      initial={{ opacity: 0, y: 55, scale: 0.94, filter: "blur(10px)" }}
-      whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+      initial={{ opacity: 0, y: 55, scale: 0.94 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
       viewport={{ once: true, amount: 0.15 }}
       transition={{ duration: 0.7, delay: index * 0.14, ease: [0.16, 1, 0.3, 1] }}
       whileHover={{ y: -6, transition: { duration: 0.25 } }}

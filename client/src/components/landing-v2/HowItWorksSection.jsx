@@ -50,8 +50,8 @@ export default function HowItWorksSection() {
       <div className="max-w-7xl mx-auto relative z-10 space-y-16">
         {/* Section Header */}
         <motion.div
-          initial={{ opacity: 0, y: 35, filter: "blur(8px)" }}
-          whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="text-center max-w-3xl mx-auto space-y-4"
@@ -72,8 +72,8 @@ export default function HowItWorksSection() {
             return (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 50, scale: 0.94, filter: "blur(10px)" }}
-                whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+                initial={{ opacity: 0, y: 50, scale: 0.94 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: true, amount: 0.15 }}
                 transition={{ duration: 0.7, delay: i * 0.16, ease: [0.16, 1, 0.3, 1] }}
                 whileHover={{ y: -8, transition: { duration: 0.25 } }}
@@ -109,8 +109,8 @@ export default function HowItWorksSection() {
 
         {/* CTA Button */}
         <motion.div
-          initial={{ opacity: 0, y: 25, filter: "blur(6px)" }}
-          whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          initial={{ opacity: 0, y: 25 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.6, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
           className="text-center pt-4"

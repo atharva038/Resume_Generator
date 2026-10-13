@@ -9,16 +9,19 @@ const RESUMES = [
     id: 1,
     title: "Modern Minimalist ATS Resume",
     image: "/img/Resume/1.png",
+    webpImage: "/img/Resume/1.webp",
   },
   {
     id: 2,
     title: "Executive Tech Lead ATS Resume",
     image: "/img/Resume/2.png",
+    webpImage: "/img/Resume/2.webp",
   },
   {
     id: 3,
     title: "AI & Systems Architect ATS Resume",
     image: "/img/Resume/3.png",
+    webpImage: "/img/Resume/3.webp",
   },
 ];
 
@@ -104,16 +107,22 @@ function MobileCardsView({ isDarkMode }) {
               transition={{ type: "spring", stiffness: 280, damping: 26 }}
               className="absolute w-[280px] xs:w-[320px] h-[390px] xs:h-[450px] cursor-pointer"
             >
-              <img
-                src={card.image}
-                alt={card.title}
-                className={`w-full h-full object-contain rounded-xl transition-all duration-300 ${
-                  isSelected
-                    ? "drop-shadow-[0_22px_45px_rgba(0,0,0,0.32)] dark:drop-shadow-[0_28px_55px_rgba(0,0,0,0.95)] ring-2 ring-amber-500/40"
-                    : "drop-shadow-[0_14px_28px_rgba(0,0,0,0.2)] dark:drop-shadow-[0_20px_40px_rgba(0,0,0,0.7)] opacity-90"
-                }`}
-                loading="eager"
-              />
+              <picture>
+                <source srcSet={card.webpImage} type="image/webp" />
+                <img
+                  src={card.image}
+                  alt={card.title}
+                  width="320"
+                  height="450"
+                  decoding="async"
+                  className={`w-full h-full object-contain rounded-xl transition-all duration-300 ${
+                    isSelected
+                      ? "drop-shadow-[0_22px_45px_rgba(0,0,0,0.32)] dark:drop-shadow-[0_28px_55px_rgba(0,0,0,0.95)] ring-2 ring-amber-500/40"
+                      : "drop-shadow-[0_14px_28px_rgba(0,0,0,0.2)] dark:drop-shadow-[0_20px_40px_rgba(0,0,0,0.7)] opacity-90"
+                  }`}
+                  loading="lazy"
+                />
+              </picture>
             </motion.div>
           );
         })}
@@ -241,12 +250,18 @@ function DesktopCardsView({ isDarkMode }) {
                   : "shadow-[0_25px_60px_-15px_rgba(0,0,0,0.15)]"
               }`}
             >
-              <img
-                src="/img/portfolios/6.png"
-                alt="Master Web Portfolio Complete View"
-                className="w-full h-full object-cover object-left-top rounded-3xl"
-                loading="eager"
-              />
+              <picture>
+                <source srcSet="/img/portfolios/6.webp" type="image/webp" />
+                <img
+                  src="/img/portfolios/6.png"
+                  alt="Master Web Portfolio Complete View"
+                  width="960"
+                  height="600"
+                  decoding="async"
+                  className="w-full h-full object-cover object-left-top rounded-3xl"
+                  loading="lazy"
+                />
+              </picture>
             </motion.div>
 
             {/* ─── 1. The 3 Cards in Slicing & 3D Stacking Layout ─── */}
@@ -295,12 +310,18 @@ function DesktopCardsView({ isDarkMode }) {
                           left: `${-index * 100}%`,
                         }}
                       >
-                        <img
-                          src="/img/portfolios/6.png"
-                          alt="Master Web Portfolio"
-                          className="w-full h-full object-cover object-left-top"
-                          loading="eager"
-                        />
+                        <picture>
+                          <source srcSet="/img/portfolios/6.webp" type="image/webp" />
+                          <img
+                            src="/img/portfolios/6.png"
+                            alt="Master Web Portfolio"
+                            width="960"
+                            height="600"
+                            decoding="async"
+                            className="w-full h-full object-cover object-left-top"
+                            loading="lazy"
+                          />
+                        </picture>
                       </div>
                     </div>
 
@@ -313,12 +334,18 @@ function DesktopCardsView({ isDarkMode }) {
                       }}
                       className="absolute inset-0 w-full h-full flex items-center justify-center cursor-pointer group"
                     >
-                      <img
-                        src={card.image}
-                        alt={card.title}
-                        className="w-full h-full object-contain rounded-xl sm:rounded-2xl drop-shadow-[0_20px_40px_rgba(0,0,0,0.22)] dark:drop-shadow-[0_28px_55px_rgba(0,0,0,0.85)] transition-transform duration-300 group-hover:scale-[1.02]"
-                        loading="eager"
-                      />
+                      <picture>
+                        <source srcSet={card.webpImage} type="image/webp" />
+                        <img
+                          src={card.image}
+                          alt={card.title}
+                          width="320"
+                          height="450"
+                          decoding="async"
+                          className="w-full h-full object-contain rounded-xl sm:rounded-2xl drop-shadow-[0_20px_40px_rgba(0,0,0,0.22)] dark:drop-shadow-[0_28px_55px_rgba(0,0,0,0.85)] transition-transform duration-300 group-hover:scale-[1.02]"
+                          loading="lazy"
+                        />
+                      </picture>
                     </div>
                   </motion.div>
                 );
@@ -350,10 +377,12 @@ export default function ScrollSplitCardsSection() {
   );
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+    if (typeof window === "undefined") return;
+    const mql = window.matchMedia("(max-width: 767px)");
+    setIsMobile(mql.matches);
+    const handler = (e) => setIsMobile(e.matches);
+    mql.addEventListener("change", handler);
+    return () => mql.removeEventListener("change", handler);
   }, []);
 
   if (isMobile) {

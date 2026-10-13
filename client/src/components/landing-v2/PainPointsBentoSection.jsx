@@ -18,14 +18,24 @@ import { useDarkMode } from "../../context/DarkModeContext";
 // Magnetic Card with cursor physics, 3D tilt, and smooth return spring
 function MagneticCard({ children, className = "", style = {} }) {
   const cardRef = useRef(null);
+  const rectRef = useRef(null);
   const rafRef = useRef(null);
+
+  const handleMouseEnter = () => {
+    if (cardRef.current) {
+      rectRef.current = cardRef.current.getBoundingClientRect();
+    }
+  };
 
   const handleMouseMove = (e) => {
     if (!cardRef.current) return;
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     rafRef.current = requestAnimationFrame(() => {
       if (!cardRef.current) return;
-      const rect = cardRef.current.getBoundingClientRect();
+      if (!rectRef.current) {
+        rectRef.current = cardRef.current.getBoundingClientRect();
+      }
+      const rect = rectRef.current;
       const x = e.clientX - rect.left - rect.width / 2;
       const y = e.clientY - rect.top - rect.height / 2;
 
@@ -40,6 +50,7 @@ function MagneticCard({ children, className = "", style = {} }) {
 
   const handleMouseLeave = () => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rectRef.current = null;
     if (cardRef.current) {
       cardRef.current.style.transform =
         "perspective(1000px) rotateX(0deg) rotateY(0deg) translate3d(0, 0, 0) scale3d(1, 1, 1)";
@@ -49,6 +60,7 @@ function MagneticCard({ children, className = "", style = {} }) {
   return (
     <div
       ref={cardRef}
+      onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{

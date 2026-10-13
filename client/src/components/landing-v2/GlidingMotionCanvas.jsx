@@ -812,7 +812,7 @@ const ScaledResumeCard = React.memo(function ScaledResumeCard({
     : "border-zinc-200/70";
 
   return (
-    <motion.div
+    <div
       onMouseEnter={() => setIsCardHovered(true)}
       onMouseLeave={() => setIsCardHovered(false)}
       onClick={() => {
@@ -820,15 +820,14 @@ const ScaledResumeCard = React.memo(function ScaledResumeCard({
           onSelectCard(targetIndex);
         }
       }}
-      animate={{
-        opacity: targetOpacity,
-        scale: targetScale,
-        y: targetY,
-      }}
-      transition={transitionConfig}
       style={{
         zIndex: isFocused ? 25 : isCardHovered ? 20 : distance === 1 ? 8 : 1,
-        willChange: "transform, opacity",
+        opacity: targetOpacity,
+        transform: `translate3d(0, ${targetY}px, 0) scale(${targetScale})`,
+        transition: shouldReduceMotion
+          ? "transform 0.1s ease, opacity 0.1s ease"
+          : "transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1)",
+        willChange: isFocused || isCardHovered ? "transform, opacity" : "auto",
       }}
       className={`w-[320px] sm:w-[385px] xl:w-[410px] shrink-0 h-[450px] sm:h-[525px] xl:h-[545px] rounded-xl border p-1 sm:p-1.5 flex flex-col justify-between overflow-hidden text-left select-none group/card cursor-pointer transition-[box-shadow,border-color,background-color] duration-200 transform-gpu ${
         isDarkMode
@@ -876,7 +875,7 @@ const ScaledResumeCard = React.memo(function ScaledResumeCard({
           <ArrowRight className="w-3 h-3 group-hover/link:translate-x-0.5 transition-transform" />
         </Link>
       </div>
-    </motion.div>
+    </div>
   );
 });
 
@@ -964,7 +963,7 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
     : "border-zinc-200/70";
 
   return (
-    <motion.div
+    <div
       onMouseEnter={() => setIsCardHovered(true)}
       onMouseLeave={() => setIsCardHovered(false)}
       onClick={() => {
@@ -972,15 +971,14 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
           onSelectCard(targetIndex);
         }
       }}
-      animate={{
-        opacity: targetOpacity,
-        scale: targetScale,
-        y: targetY,
-      }}
-      transition={transitionConfig}
       style={{
         zIndex: isFocused ? 25 : isCardHovered ? 20 : distance === 1 ? 8 : 1,
-        willChange: "transform, opacity",
+        opacity: targetOpacity,
+        transform: `translate3d(0, ${targetY}px, 0) scale(${targetScale})`,
+        transition: shouldReduceMotion
+          ? "transform 0.1s ease, opacity 0.1s ease"
+          : "transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1)",
+        willChange: isFocused || isCardHovered ? "transform, opacity" : "auto",
       }}
       className={`w-[330px] sm:w-[520px] xl:w-[560px] shrink-0 h-[280px] sm:h-[385px] rounded-2xl border p-2 sm:p-3 flex flex-col justify-between overflow-hidden text-left select-none group/card cursor-pointer transition-[box-shadow,border-color,background-color] duration-200 transform-gpu ${
         isDarkMode
@@ -1038,6 +1036,10 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
                   <img
                     src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160&auto=format&fit=crop&q=80"
                     alt="Alex Morgan"
+                    width="32"
+                    height="32"
+                    loading="lazy"
+                    decoding="async"
                     className="w-8 h-8 rounded-full object-cover border border-blue-400/50 shadow-md"
                   />
                   <div>
@@ -1109,6 +1111,10 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
                   <img
                     src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&auto=format&fit=crop&q=80"
                     alt="Spatial Engine"
+                    width="64"
+                    height="64"
+                    loading="lazy"
+                    decoding="async"
                     className="w-16 h-16 rounded-xl object-cover border border-blue-400/30 shrink-0"
                   />
                   <div className="space-y-1">
@@ -1125,6 +1131,10 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
                   <img
                     src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=200&auto=format&fit=crop&q=80"
                     alt="Spatial Canvas"
+                    width="64"
+                    height="64"
+                    loading="lazy"
+                    decoding="async"
                     className="w-16 h-16 rounded-xl object-cover border border-cyan-400/30 shrink-0"
                   />
                   <div className="space-y-1">
@@ -1184,6 +1194,10 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
                   <img
                     src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&auto=format&fit=crop&q=80"
                     alt="Alex Morgan"
+                    width="80"
+                    height="80"
+                    loading="lazy"
+                    decoding="async"
                     className="w-20 h-20 rounded-xl object-cover border-2 border-zinc-700 filter grayscale"
                   />
                 </div>
@@ -1214,6 +1228,10 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
                 <img
                   src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=200&auto=format&fit=crop&q=80"
                   alt="Architectural Blueprint"
+                  width="96"
+                  height="64"
+                  loading="lazy"
+                  decoding="async"
                   className="w-24 h-16 rounded object-cover border border-zinc-700 shrink-0 filter grayscale"
                 />
                 <div className="flex-1 space-y-1">
@@ -1270,6 +1288,10 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
                   <img
                     src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&auto=format&fit=crop&q=80"
                     alt="Alex Vance"
+                    width="80"
+                    height="96"
+                    loading="lazy"
+                    decoding="async"
                     className="w-20 h-24 rounded-xl object-cover border border-amber-400/40 shrink-0 shadow-md"
                   />
                   <div className="space-y-1">
@@ -1287,6 +1309,10 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
                   <img
                     src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=200&auto=format&fit=crop&q=80"
                     alt="Aura Intelligence"
+                    width="56"
+                    height="56"
+                    loading="lazy"
+                    decoding="async"
                     className="w-14 h-14 rounded-lg object-cover border border-amber-400/30 shrink-0"
                   />
                   <div className="space-y-0.5">
@@ -1299,6 +1325,10 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
                   <img
                     src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=200&auto=format&fit=crop&q=80"
                     alt="Raft Consensus"
+                    width="56"
+                    height="56"
+                    loading="lazy"
+                    decoding="async"
                     className="w-14 h-14 rounded-lg object-cover border border-amber-400/30 shrink-0"
                   />
                   <div className="space-y-0.5">
@@ -1347,6 +1377,10 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
                   <img
                     src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&auto=format&fit=crop&q=80"
                     alt="Operator Alex"
+                    width="64"
+                    height="64"
+                    loading="lazy"
+                    decoding="async"
                     className="w-16 h-16 rounded border border-[#00ff66]/60 mx-auto object-cover filter grayscale contrast-125"
                   />
                   <div className="text-[9px] text-[#00ff66] pt-1">OPERATOR_ID: #4092</div>
@@ -1407,6 +1441,10 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
                   <img
                     src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=160&auto=format&fit=crop&q=80"
                     alt="Sophia Chen"
+                    width="28"
+                    height="28"
+                    loading="lazy"
+                    decoding="async"
                     className="w-7 h-7 rounded-full object-cover border border-cyan-400/50 shadow-md"
                   />
                   <span className="font-bold text-white text-sm">Sophia Chen</span>
@@ -1465,6 +1503,10 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
                   <img
                     src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&auto=format&fit=crop&q=80"
                     alt="Aura Spatial Engine"
+                    width="56"
+                    height="56"
+                    loading="lazy"
+                    decoding="async"
                     className="w-14 h-14 rounded-xl object-cover border border-cyan-400/30 shrink-0"
                   />
                   <div className="space-y-0.5">
@@ -1476,6 +1518,10 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
                   <img
                     src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=200&auto=format&fit=crop&q=80"
                     alt="CloudScale Mesh"
+                    width="56"
+                    height="56"
+                    loading="lazy"
+                    decoding="async"
                     className="w-14 h-14 rounded-xl object-cover border border-cyan-400/30 shrink-0"
                   />
                   <div className="space-y-0.5">
@@ -1535,6 +1581,10 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
                     <img
                       src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&auto=format&fit=crop&q=80"
                       alt="Marcus Vance"
+                      width="48"
+                      height="48"
+                      loading="lazy"
+                      decoding="async"
                       className="w-12 h-12 rounded-xl object-cover border border-amber-400/40 shrink-0"
                     />
                     <div className="text-left">
@@ -1606,6 +1656,10 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
                     <img
                       src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=200&auto=format&fit=crop&q=80"
                       alt="Kai Sterling"
+                      width="48"
+                      height="48"
+                      loading="lazy"
+                      decoding="async"
                       className="w-12 h-12 rounded-lg object-cover border border-[#00ff88]/50 shrink-0"
                     />
                     <div className="space-y-0.5">
@@ -1680,6 +1734,10 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
                   <img
                     src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&auto=format&fit=crop&q=80"
                     alt="Elena Rostova"
+                    width="80"
+                    height="80"
+                    loading="lazy"
+                    decoding="async"
                     className="w-20 h-20 rounded-full mx-auto object-cover border border-amber-400/40 shadow-lg"
                   />
                   <div className="text-xs font-serif italic text-amber-100">Elena Rostova</div>
@@ -1693,6 +1751,10 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
                   <img
                     src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=200&auto=format&fit=crop&q=80"
                     alt="Raft Cluster"
+                    width="48"
+                    height="48"
+                    loading="lazy"
+                    decoding="async"
                     className="w-12 h-12 rounded-lg object-cover border border-stone-700 shrink-0"
                   />
                   <div className="space-y-0.5">
@@ -1704,6 +1766,10 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
                   <img
                     src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&auto=format&fit=crop&q=80"
                     alt="Spatial Design"
+                    width="48"
+                    height="48"
+                    loading="lazy"
+                    decoding="async"
                     className="w-12 h-12 rounded-lg object-cover border border-stone-700 shrink-0"
                   />
                   <div className="space-y-0.5">
@@ -1757,6 +1823,10 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
                   <img
                     src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80"
                     alt="Alex Morgan"
+                    width="64"
+                    height="64"
+                    loading="lazy"
+                    decoding="async"
                     className="w-16 h-16 rounded-full mx-auto object-cover border-2 border-cyan-400/50 shadow-lg"
                   />
                   <div className="text-xs font-bold text-cyan-300">Alex Morgan</div>
@@ -1799,6 +1869,10 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
                   <img
                     src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&auto=format&fit=crop&q=80"
                     alt="Devon Ray"
+                    width="64"
+                    height="64"
+                    loading="lazy"
+                    decoding="async"
                     className="w-16 h-16 rounded-full mx-auto object-cover border-2 border-purple-400/50 shadow-lg"
                   />
                   <div className="text-xs font-bold text-purple-300">Devon Ray</div>
@@ -1840,6 +1914,10 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
                   <img
                     src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&auto=format&fit=crop&q=80"
                     alt="David Kumar"
+                    width="56"
+                    height="56"
+                    loading="lazy"
+                    decoding="async"
                     className="w-14 h-14 rounded-full mx-auto object-cover border border-emerald-400/40"
                   />
                   <div className="text-xs font-bold text-white">David Kumar</div>
@@ -1881,6 +1959,10 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
                   <img
                     src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&auto=format&fit=crop&q=80"
                     alt="Alex Morgan"
+                    width="56"
+                    height="56"
+                    loading="lazy"
+                    decoding="async"
                     className="w-14 h-14 rounded-full mx-auto object-cover border border-blue-400/40"
                   />
                   <div className="text-xs font-bold text-white">Alex Morgan</div>
@@ -1918,7 +2000,7 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
           </Link>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 });
 
@@ -1951,6 +2033,7 @@ export default function GlidingMotionCanvas({ activeMode = "resumes", isDarkMode
 
   // Responsive column step calculation
   useEffect(() => {
+    let ticking = false;
     const updateSteps = () => {
       if (typeof window === "undefined") return;
       // Resumes Step (Enlarged cards: 410px + 40px gap)
@@ -1963,9 +2046,20 @@ export default function GlidingMotionCanvas({ activeMode = "resumes", isDarkMode
       else if (window.innerWidth >= 640) setPortfolioColStep(548);
       else setPortfolioColStep(355);
     };
+
+    const handleResize = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          updateSteps();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
     updateSteps();
-    window.addEventListener("resize", updateSteps);
-    return () => window.removeEventListener("resize", updateSteps);
+    window.addEventListener("resize", handleResize, { passive: true });
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   // IntersectionObserver: automatically pause animation timer when canvas is out of viewport
