@@ -5,12 +5,14 @@ import {Layout, AdminLayout} from "./components/layout";
 import {ScrollToTop} from "./components/common";
 import {ProtectedRoute, AdminProtectedRoute, SuperAdminProtectedRoute} from "./components/auth";
 
-// Critical pages - loaded immediately
+// Critical entry page - loaded immediately
 import LandingPage from "./pages/LandingPage";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Dashboard from "./pages/Dashboard";
-import DashboardOverview from "./pages/DashboardOverview";
+
+// Lazy load route components for code splitting
+const Login = lazy(() => import("./pages/Login"));
+const Register = lazy(() => import("./pages/Register"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const DashboardOverview = lazy(() => import("./pages/DashboardOverview"));
 
 // Lazy load non-critical pages for better performance
 const Upload = lazy(() => import("./pages/Upload"));

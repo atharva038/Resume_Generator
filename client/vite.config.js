@@ -38,4 +38,33 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    target: "es2022",
+    cssTarget: "chrome89",
+    minify: "esbuild",
+    chunkSizeWarningLimit: 600,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("node_modules")) {
+            if (id.includes("react-dom") || id.includes("/react/") || id.includes("react-router")) {
+              return "vendor-react";
+            }
+            if (id.includes("framer-motion") || id.includes("motion-dom")) {
+              return "vendor-motion";
+            }
+            if (id.includes("lucide-react")) {
+              return "vendor-lucide";
+            }
+            if (id.includes("axios")) {
+              return "vendor-axios";
+            }
+            if (id.includes("recharts") || id.includes("d3-")) {
+              return "vendor-recharts";
+            }
+          }
+        },
+      },
+    },
+  },
 });

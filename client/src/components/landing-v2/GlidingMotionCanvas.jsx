@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { Link } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
 import {
@@ -29,21 +29,23 @@ import {
   Activity,
   Check
 } from "lucide-react";
-import ClassicTemplate from "../templates/ClassicTemplate";
-import TechTemplate from "../templates/TechTemplate";
-import ModernTemplate from "../templates/ModernTemplate";
-import ImpactProTemplate from "../templates/ImpactProTemplate";
-import MinimalTemplate from "../templates/MinimalTemplate";
-import ExecutiveTemplate from "../templates/ExecutiveTemplate";
-import SiliconValleyTemplate from "../templates/SiliconValleyTemplate";
-import LatexAcademicTemplate from "../templates/LatexAcademicTemplate";
-import NordicSplitTemplate from "../templates/NordicSplitTemplate";
-import GitHubStyleTemplate from "../templates/GitHubStyleTemplate";
-import Creative2Template from "../templates/Creative2Template";
-import StrategicLeadershipTemplate from "../templates/StrategicLeadershipTemplate";
-import Professional2Template from "../templates/Professional2Template";
-import ProfessionalV2Template from "../templates/ProfessionalV2Template";
-import StructuredPhotoTemplate from "../templates/StructuredPhotoTemplate";
+
+// Code-split resume templates into separate chunks loaded on demand
+const ClassicTemplate = lazy(() => import("../templates/ClassicTemplate"));
+const TechTemplate = lazy(() => import("../templates/TechTemplate"));
+const ModernTemplate = lazy(() => import("../templates/ModernTemplate"));
+const ImpactProTemplate = lazy(() => import("../templates/ImpactProTemplate"));
+const MinimalTemplate = lazy(() => import("../templates/MinimalTemplate"));
+const ExecutiveTemplate = lazy(() => import("../templates/ExecutiveTemplate"));
+const SiliconValleyTemplate = lazy(() => import("../templates/SiliconValleyTemplate"));
+const LatexAcademicTemplate = lazy(() => import("../templates/LatexAcademicTemplate"));
+const NordicSplitTemplate = lazy(() => import("../templates/NordicSplitTemplate"));
+const GitHubStyleTemplate = lazy(() => import("../templates/GitHubStyleTemplate"));
+const Creative2Template = lazy(() => import("../templates/Creative2Template"));
+const StrategicLeadershipTemplate = lazy(() => import("../templates/StrategicLeadershipTemplate"));
+const Professional2Template = lazy(() => import("../templates/Professional2Template"));
+const ProfessionalV2Template = lazy(() => import("../templates/ProfessionalV2Template"));
+const StructuredPhotoTemplate = lazy(() => import("../templates/StructuredPhotoTemplate"));
 
 // ============================================================================
 // REAL ATS RESUME DATA
@@ -853,7 +855,9 @@ const ScaledResumeCard = React.memo(function ScaledResumeCard({
 
       <div className="w-full flex-1 overflow-hidden rounded-[7px] bg-white relative shadow-2xs border border-zinc-200/80" style={{ contain: "paint layout" }}>
         <div className="absolute top-0 left-0 w-[794px] origin-top-left transform scale-[0.43] sm:scale-[0.51] xl:scale-[0.54] pointer-events-none select-none text-zinc-900 will-change-transform">
-          <Template resumeData={data} isDarkMode={false} />
+          <Suspense fallback={<div className="w-[794px] h-[1123px] bg-white" />}>
+            <Template resumeData={data} isDarkMode={false} />
+          </Suspense>
         </div>
       </div>
 
