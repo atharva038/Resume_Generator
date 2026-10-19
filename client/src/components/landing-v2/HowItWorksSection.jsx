@@ -50,8 +50,8 @@ export default function HowItWorksSection() {
       <div className="max-w-7xl mx-auto relative z-10 space-y-16">
         {/* Section Header */}
         <motion.div
-          initial={{ opacity: 0, y: 35, filter: "blur(8px)" }}
-          whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="text-center max-w-3xl mx-auto space-y-4"
@@ -72,12 +72,12 @@ export default function HowItWorksSection() {
             return (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 50, scale: 0.94, filter: "blur(10px)" }}
-                whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-                viewport={{ once: true, amount: 0.15 }}
-                transition={{ duration: 0.7, delay: i * 0.16, ease: [0.16, 1, 0.3, 1] }}
+                initial={{ opacity: 0, y: 40, scale: 0.95 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: true, margin: "0px 0px -40px 0px" }}
+                transition={{ duration: 0.65, delay: i * 0.14, ease: [0.16, 1, 0.3, 1] }}
                 whileHover={{ y: -8, transition: { duration: 0.25 } }}
-                className={"relative rounded-[32px] border p-8 sm:p-9 flex flex-col justify-between gap-8 shadow-xl transition-all duration-300 " + step.glow + " " + (isDarkMode ? "bg-[#0f0f1a]/90 border-zinc-800/80 backdrop-blur-xl" : "bg-slate-50/70 border-slate-200/80 backdrop-blur-xl")}
+                className={"relative rounded-[32px] border p-8 sm:p-9 flex flex-col justify-between gap-8 shadow-xl transition-colors duration-300 hover:shadow-2xl " + step.glow + " " + (isDarkMode ? "bg-[#0f0f1a]/90 border-zinc-800/80 backdrop-blur-xl" : "bg-slate-50/70 border-slate-200/80 backdrop-blur-xl")}
               >
                 {/* Number Watermark */}
                 <span className={"absolute top-4 right-6 text-8xl font-thin select-none pointer-events-none leading-none tracking-tighter " + step.numberColor}>{step.number}</span>
@@ -109,8 +109,8 @@ export default function HowItWorksSection() {
 
         {/* CTA Button */}
         <motion.div
-          initial={{ opacity: 0, y: 25, filter: "blur(6px)" }}
-          whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          initial={{ opacity: 0, y: 25 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.6, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
           className="text-center pt-4"

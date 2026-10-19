@@ -356,12 +356,30 @@ export function useInterviewSession({
 
       // Warm-up phase
       if (conversationPhase === CONVERSATION_PHASES.WARM_UP && selectedMode === "live") {
-        const transcribeResponse = await interviewAPI.transcribeAudioOnly(audioFile, {
-          languageCode: selectedLanguage,
-        });
-        if (!transcribeResponse.success) throw new Error(transcribeResponse.error || "Failed to transcribe");
+        let selfIntroText = "";
+        try {
+          const transcribeResponse = await interviewAPI.transcribeAudioOnly(audioFile, {
+            languageCode: selectedLanguage,
+          });
+          if (transcribeResponse?.success && transcribeResponse.data?.text) {
+            selfIntroText = transcribeResponse.data.text.trim();
+          }
+        } catch (transcribeErr) {
+          console.warn("Warm-up audio transcription warning:", transcribeErr.message);
+        }
 
-        const selfIntroText = transcribeResponse.data.text;
+        if (!selfIntroText) {
+          console.log("Warm-up intro had no clear speech. Re-prompting candidate gently...");
+          const reprompt = "I didn't quite catch that. Could you please tell me a little bit about yourself and your background?";
+          setInterviewPhase("asking");
+          await speakAndListen(reprompt, () => {
+            setInterviewPhase("waiting");
+            setTimeout(() => startRecording(true), 500);
+          });
+          setIsSubmitting(false);
+          return;
+        }
+
         setConversationHistory((prev) => [
           ...prev,
           { role: "user", type: "self-introduction", content: selfIntroText, timestamp: Date.now() },

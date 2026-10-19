@@ -452,7 +452,7 @@ export function useInterviewSpeech({
     }
   };
 
-  const generateIntroduction = useCallback((roleOverride) => {
+  const generateIntroduction = useCallback((roleOverride = "") => {
     const role = roleOverride || selectedRole || "your target role";
     const quickIntros = [
       `Hi, welcome! To start, could you give a brief introduction about yourself and your experience in ${role}?`,

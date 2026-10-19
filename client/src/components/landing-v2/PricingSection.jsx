@@ -214,8 +214,8 @@ export default function PricingSection() {
       <div className="max-w-6xl mx-auto relative z-10 space-y-14">
         {/* Section Header */}
         <motion.div
-          initial={{ opacity: 0, y: 45, scale: 0.95, filter: "blur(10px)" }}
-          whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+          initial={{ opacity: 0, y: 45, scale: 0.95 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="text-center max-w-3xl mx-auto space-y-4"
@@ -275,12 +275,12 @@ export default function PricingSection() {
               return (
                 <motion.div
                   key={key}
-                  initial={{ opacity: 0, y: 55, scale: 0.94, filter: "blur(10px)" }}
-                  whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-                  viewport={{ once: true, amount: 0.15 }}
-                  transition={{ duration: 0.7, delay: idx * 0.12, ease: [0.16, 1, 0.3, 1] }}
+                  initial={{ opacity: 0, y: 40, scale: 0.95 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                  viewport={{ once: true, margin: "0px 0px -40px 0px" }}
+                  transition={{ duration: 0.65, delay: idx * 0.1, ease: [0.16, 1, 0.3, 1] }}
                   whileHover={{ y: -6, transition: { duration: 0.25 } }}
-                  className={`relative flex flex-col justify-between rounded-3xl p-7 sm:p-8 backdrop-blur-xl border transition-all duration-300 ${
+                  className={`relative flex flex-col justify-between rounded-3xl p-7 sm:p-8 backdrop-blur-xl border transition-colors duration-300 ${
                     isPro
                       ? "bg-white/85 dark:bg-zinc-900/70 border-indigo-500/50 dark:border-indigo-400/40 shadow-xl shadow-indigo-500/10 dark:shadow-indigo-950/30 md:-translate-y-2 ring-1 ring-indigo-500/20"
                       : isOneTime

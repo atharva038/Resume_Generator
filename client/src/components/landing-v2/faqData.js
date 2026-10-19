@@ -1,0 +1,101 @@
+export const row1Faqs = [
+  {
+    id: "01",
+    q: "What makes SmartNShine ATS-optimized, and which parsers are tested?",
+    a: "Every template is engineered with single-column, parser-compliant hierarchies without complex multi-layer floats or text boxes. Verified on Workday, Greenhouse, Taleo, and Lever.",
+    tag: "ATS Optimization",
+    takeaway: "✓ Tested on Workday, Greenhouse & Taleo",
+    tagColor: "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
+    indicatorColor: "bg-emerald-500",
+  },
+  {
+    id: "02",
+    q: "How does the AI bullet enhancement and STAR rewriter work?",
+    a: "SmartNShine uses state-of-the-art OpenAI GPT-4o to transform raw bullets into quantified STAR achievements with verified action verbs and recruiter-tested impact metrics.",
+    tag: "AI Bullet Engine",
+    takeaway: "✓ OpenAI GPT-4o STAR rewriter",
+    tagColor: "text-purple-600 dark:text-purple-400 bg-purple-500/10 border-purple-500/20",
+    indicatorColor: "bg-purple-500",
+  },
+  {
+    id: "03",
+    q: "What is the One Master Profile, and how does it sync?",
+    a: "Your central career database holding all verified experience, GitHub projects, and skills. Sync updates across multiple role-tailored resumes and portfolios in 1 click.",
+    tag: "Master Profile",
+    takeaway: "✓ 1 Master Profile powers all resumes",
+    tagColor: "text-rose-600 dark:text-rose-400 bg-rose-500/10 border-rose-500/20",
+    indicatorColor: "bg-rose-500",
+  },
+  {
+    id: "04",
+    q: "Can I deploy a live developer portfolio from my resume?",
+    a: "Yes! Instantly deploy a live, responsive portfolio website with custom themes (Glassmorphism, Tech 3D, Minimal) and your own shareable public URL slug.",
+    tag: "Web Portfolio",
+    takeaway: "✓ 1-click live deploy with custom slug",
+    tagColor: "text-cyan-600 dark:text-cyan-400 bg-cyan-500/10 border-cyan-500/20",
+    indicatorColor: "bg-cyan-500",
+  },
+  {
+    id: "05",
+    q: "How does the Career Q&A Studio and interview prep work?",
+    a: "It benchmarks your target role and resume to generate relevant behavioral, situational, and salary negotiation mock prompts with expert calibrated answers.",
+    tag: "Interview Studio",
+    takeaway: "✓ Role-specific mock interview prep",
+    tagColor: "text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 border-indigo-500/20",
+    indicatorColor: "bg-indigo-500",
+  },
+];
+
+export const row2Faqs = [
+  {
+    id: "06",
+    q: "Is SmartNShine free to use, and what is included in the Free plan?",
+    a: "Yes. The free tier gives you 3 ATS-certified templates, 10 AI bullet rewrites per month, basic ATS match score diagnostics, and clean PDF exports with zero card required.",
+    tag: "Free Access",
+    takeaway: "✓ Free tier with no credit card required",
+    tagColor: "text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/20",
+    indicatorColor: "bg-amber-500",
+  },
+  {
+    id: "07",
+    q: "What is the difference between the One-Time Pass and Pro Unlimited?",
+    a: "One-Time Pass (₹9/₹49 flash deal) gives 21 days full access, 150 AI requests, and 1 portfolio without recurring fees. Pro (₹199/mo) unlocks unlimited AI, resumes & Q&A.",
+    tag: "Flexible Plans",
+    takeaway: "✓ ₹9 One-Time Pass or ₹199/mo Pro",
+    tagColor: "text-blue-600 dark:text-blue-400 bg-blue-500/10 border-blue-500/20",
+    indicatorColor: "bg-blue-500",
+  },
+  {
+    id: "08",
+    q: "What payment methods are supported, and can I cancel anytime?",
+    a: "We support UPI, Net Banking, Credit/Debit cards via secure Razorpay. Cancel recurring subscriptions with 1 click anytime directly from your dashboard.",
+    tag: "Payments & Billing",
+    takeaway: "✓ UPI, Cards, Net Banking & 1-click cancel",
+    tagColor: "text-teal-600 dark:text-teal-400 bg-teal-500/10 border-teal-500/20",
+    indicatorColor: "bg-teal-500",
+  },
+  {
+    id: "09",
+    q: "Is my resume data safe, encrypted, and strictly private?",
+    a: "Absolutely. We use bank-grade encryption. Your career data is never shared or sold to third-party recruiters, and you can export or delete your profile anytime.",
+    tag: "Privacy & Security",
+    takeaway: "✓ Bank-grade encryption • 100% private",
+    tagColor: "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
+    indicatorColor: "bg-emerald-500",
+  },
+  {
+    id: "10",
+    q: "How are resumes exported, and is the text selectable?",
+    a: "All exports produce true vector PDFs where text remains crisp, selectable, and fully searchable, ensuring 95+ compatibility with enterprise ATS parsers.",
+    tag: "Vector PDF",
+    takeaway: "✓ Machine-readable selectable vector PDF",
+    tagColor: "text-violet-600 dark:text-violet-400 bg-violet-500/10 border-violet-500/20",
+    indicatorColor: "bg-violet-500",
+  },
+];
+
+// Unified structured array for Schema.org SEO integration
+export const SYSTEM_FAQS = [...row1Faqs, ...row2Faqs].map((item) => ({
+  question: item.q,
+  answer: item.a,
+}));

@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuth } from "@/context/AuthContext";
 import ConfirmationModal from "@/components/common/modals/ConfirmationModal";
@@ -13,6 +14,7 @@ import {
 } from "@/components/interview";
 
 const AIInterview = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const isProduction = import.meta.env.PROD || false;
   const [isExitModalOpen, setIsExitModalOpen] = useState(false);
@@ -77,6 +79,7 @@ const AIInterview = () => {
   const setInterviewPhaseBridgeRef = useRef(null);
   const isMutedRef = useRef(false);
   const isInterviewActiveRef = useRef(false);
+  const interviewPhaseRef = useRef("idle");
 
   // 1. Hook for Speech & TTS
   const speech = useInterviewSpeech({
@@ -98,6 +101,7 @@ const AIInterview = () => {
     selectedMode: "live",
     isInterviewActiveRef,
     interviewPhase: "idle",
+    getInterviewPhase: () => interviewPhaseRef.current,
     setInterviewPhase: (phase) => setInterviewPhaseBridgeRef.current?.(phase),
     isPlayingAudio: speech.isPlayingAudio,
     audioElementRef: speech.audioElementRef,
@@ -129,9 +133,19 @@ const AIInterview = () => {
     isMutedRef,
   });
 
+  // Keep phase ref synchronized with session.interviewPhase
+  useEffect(() => {
+    if (session.interviewPhase) {
+      interviewPhaseRef.current = session.interviewPhase;
+    }
+  }, [session.interviewPhase]);
+
   // Connect bridges
   onVoiceSubmitBridgeRef.current = session.handleVoiceSubmit;
-  setInterviewPhaseBridgeRef.current = session.setInterviewPhase;
+  setInterviewPhaseBridgeRef.current = (phase) => {
+    interviewPhaseRef.current = phase;
+    session.setInterviewPhase(phase);
+  };
 
   // Cleanup on unmount
   useEffect(() => {
@@ -284,10 +298,17 @@ const AIInterview = () => {
         {session.step === "result" && (
           <ResultStep
             result={session.result}
+            elapsedTime={session.elapsedTime}
+            formatTime={formatTime}
+            onNewInterview={() => {
+              session.resetState();
+              session.setStep("setup");
+            }}
             onRetry={() => {
               session.resetState();
               session.setStep("setup");
             }}
+            onViewHistory={() => navigate("/interview/history")}
           />
         )}
       </div>

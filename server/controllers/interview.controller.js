@@ -1233,12 +1233,18 @@ export const submitVoiceAnswer = async (req, res) => {
           transcribedText = await callOpenAIWhisper();
           transcriptionProvider = "openai-whisper";
         } catch (openAiErr) {
-          console.error("❌ OpenAI Whisper fallback also failed:", openAiErr.message);
-          return res.status(503).json({
-            success: false,
-            error: `Voice transcription error: ${sarvamError.message}`,
-            provider: "sarvam",
-          });
+          console.warn("⚠️ OpenAI Whisper fallback failed:", openAiErr.message);
+          try {
+            transcribedText = await callLocalWhisper();
+            transcriptionProvider = "local-whisper";
+          } catch (localErr) {
+            console.error("❌ All STT fallback engines failed:", localErr.message);
+            return res.status(503).json({
+              success: false,
+              error: `Voice transcription error: ${sarvamError.message}`,
+              provider: "sarvam",
+            });
+          }
         }
       }
     } else {
@@ -1280,19 +1286,11 @@ export const submitVoiceAnswer = async (req, res) => {
       }
     }
 
-    if (!transcribedText) {
+    if (!transcribedText || !transcribedText.trim()) {
       return res.status(400).json({
         success: false,
         error:
-          "Failed to transcribe audio. Please check your microphone and speak clearly.",
-      });
-    }
-
-    if (!transcribedText || transcribedText.trim().length < 10) {
-      return res.status(400).json({
-        success: false,
-        error:
-          "Could not understand the audio. Please speak clearly and try again.",
+          "Could not detect speech in the audio. Please speak clearly and try again.",
       });
     }
 
@@ -1307,19 +1305,18 @@ export const submitVoiceAnswer = async (req, res) => {
         .json({success: false, error: "Question not found"});
     }
 
+    // If already answered (e.g. from a retried request or network retry), update the answer
     if (currentQuestion.userAnswer) {
-      return res
-        .status(400)
-        .json({success: false, error: "Question already answered"});
+      console.log(`ℹ️ Question ${questionNumber} was previously answered. Updating with fresh voice transcription.`);
     }
 
-    // Submit the transcribed answer
+    // Submit or update the transcribed answer
     session.submitAnswer(
       parseInt(questionNumber),
       transcribedText.trim(),
       "voice"
     );
-    currentQuestion.transcribedText = transcribedText;
+    currentQuestion.transcribedText = transcribedText.trim();
 
     // Check if interview is complete
     const answeredCount = session.questions.filter(
@@ -1330,63 +1327,80 @@ export const submitVoiceAnswer = async (req, res) => {
     let nextQuestion = null;
 
     if (!isComplete && answeredCount < session.totalQuestions) {
-      // Generate next question
-      const previousQuestions = session.questions.map((q) => q.questionText);
-      const previousAnswers = session.questions.map((q) => q.userAnswer || "");
-
-      const recentScores = session.questions
-        .slice(-3)
-        .map((q) => q.evaluation?.score || 50);
-      const avgRecentScore =
-        recentScores.reduce((a, b) => a + b, 0) / recentScores.length;
-      let currentDifficulty = "medium";
-      if (avgRecentScore >= 80) currentDifficulty = "hard";
-      else if (avgRecentScore <= 40) currentDifficulty = "easy";
-
-      const questionConfig = {
-        interviewType: session.interviewType,
-        role: session.role,
-        experienceLevel: session.experienceLevel,
-        resumeText: session.resumeText,
-        jobDescription: session.jobDescription,
-        targetSkills: session.targetSkills,
-        previousQuestions,
-        previousAnswers,
-        currentDifficulty,
-        questionNumber: session.questions.length + 1,
-      };
-
-      const questionData = await interviewService.generateQuestion(
-        questionConfig,
-        req.user
+      // Check if the next question already exists on the session
+      const existingNextQ = session.questions.find(
+        (q) => q.questionNumber === parseInt(questionNumber) + 1
       );
 
-      session.addQuestion({
-        questionText: questionData.question,
-        questionType: questionData.questionType,
-        category: questionData.category,
-        difficulty: questionData.difficulty,
-      });
+      if (existingNextQ) {
+        nextQuestion = {
+          number: existingNextQ.questionNumber,
+          text: existingNextQ.questionText,
+          type: existingNextQ.questionType,
+          category: existingNextQ.category,
+          audio: null,
+        };
+      } else {
+        // Generate next question
+        const previousQuestions = session.questions.map((q) => q.questionText);
+        const previousAnswers = session.questions.map((q) => q.userAnswer || "");
 
-      nextQuestion = {
-        number: session.questions.length,
-        text: questionData.question,
-        type: questionData.questionType,
-        category: questionData.category,
-        audio: null,
-      };
+        const recentScores = session.questions
+          .slice(-3)
+          .map((q) => q.evaluation?.score || 50);
+        const avgRecentScore =
+          recentScores.reduce((a, b) => a + b, 0) / recentScores.length;
+        let currentDifficulty = "medium";
+        if (avgRecentScore >= 80) currentDifficulty = "hard";
+        else if (avgRecentScore <= 40) currentDifficulty = "easy";
+
+        const questionConfig = {
+          interviewType: session.interviewType,
+          role: session.role,
+          experienceLevel: session.experienceLevel,
+          resumeText: session.resumeText,
+          jobDescription: session.jobDescription,
+          targetSkills: session.targetSkills,
+          previousQuestions,
+          previousAnswers,
+          currentDifficulty,
+          questionNumber: session.questions.length + 1,
+        };
+
+        const questionData = await interviewService.generateQuestion(
+          questionConfig,
+          req.user
+        );
+
+        session.addQuestion({
+          questionText: questionData.question,
+          questionType: questionData.questionType,
+          category: questionData.category,
+          difficulty: questionData.difficulty,
+        });
+
+        nextQuestion = {
+          number: session.questions.length,
+          text: questionData.question,
+          type: questionData.questionType,
+          category: questionData.category,
+          audio: null,
+        };
+      }
     }
 
     await session.save();
+
+    const wordCount = transcribedText.trim().split(/\s+/).filter(Boolean).length;
 
     // Fast response: return immediately to the candidate
     res.json({
       success: true,
       data: {
         transcription: {
-          text: transcribedText,
+          text: transcribedText.trim(),
           duration: null,
-          wordCount: transcribedText.trim().split(/\s+/).filter(Boolean).length,
+          wordCount,
           provider: transcriptionProvider,
           language: transcriptionLanguage,
           languageProbability,

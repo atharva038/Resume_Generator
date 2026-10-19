@@ -41,8 +41,8 @@ const Footer = () => {
 
   return (
     <motion.footer
-      initial={{ opacity: 0, y: 45, filter: "blur(10px)" }}
-      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+      initial={{ opacity: 0, y: 45 }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.1 }}
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
       className="relative w-full border-t border-gray-200/80 dark:border-white/[0.08] bg-white dark:bg-[#070709] transition-all duration-700 no-print overflow-hidden"

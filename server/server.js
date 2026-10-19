@@ -5,8 +5,8 @@ import {fileURLToPath} from "url";
 // Load environment variables immediately before any other module evaluation
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-dotenv.config({path: path.join(__dirname, ".env")});
-dotenv.config(); // fallback to root .env if present
+dotenv.config({path: path.join(__dirname, ".env"), override: true});
+dotenv.config({override: true}); // fallback to root .env if present
 
 import express from "express";
 import cors from "cors";

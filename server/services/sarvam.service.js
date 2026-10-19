@@ -121,7 +121,7 @@ export async function textToSpeech(text, options = {}) {
       amartya: "kabir",
       meera: "pooja",
       arvind: "aditya",
-      rachel: "priya",
+      rachel: "simran",
     };
 
     let rawSpeaker = (options.speaker || options.voice || "shubh").toLowerCase();

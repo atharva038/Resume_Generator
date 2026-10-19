@@ -13,11 +13,18 @@ export default function LandingNavbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          setIsScrolled(window.scrollY > 20);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
+    setIsScrolled(window.scrollY > 20);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -25,8 +32,8 @@ export default function LandingNavbar() {
     <div className="fixed top-2 sm:top-5 inset-x-0 z-50 flex flex-col items-center px-2.5 sm:px-6 lg:px-8 pointer-events-none font-scoutie">
       <motion.header
         layout
-        initial={{ opacity: 0, y: -25, filter: "blur(10px)" }}
-        animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+        initial={{ opacity: 0, y: -25 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{
           layout: { duration: 0.35, ease: [0.16, 1, 0.3, 1] },
           opacity: { duration: 0.6, ease: "easeOut" },
