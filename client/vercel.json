@@ -5,6 +5,38 @@
   "framework": "vite",
   "rewrites": [
     {
+      "source": "/templates",
+      "destination": "/templates.html"
+    },
+    {
+      "source": "/tech-portfolio",
+      "destination": "/tech-portfolio.html"
+    },
+    {
+      "source": "/smartnshine-portfolio",
+      "destination": "/smartnshine-portfolio.html"
+    },
+    {
+      "source": "/magazine-portfolio",
+      "destination": "/magazine-portfolio.html"
+    },
+    {
+      "source": "/ats-analyzer",
+      "destination": "/ats-analyzer.html"
+    },
+    {
+      "source": "/careers",
+      "destination": "/careers.html"
+    },
+    {
+      "source": "/contact",
+      "destination": "/contact.html"
+    },
+    {
+      "source": "/pricing",
+      "destination": "/pricing.html"
+    },
+    {
       "source": "/((?!sitemap\\.xml|robots\\.txt|llms\\.txt|llms-full\\.txt|agents\\.json|AGENTS\\.md|openapi\\.json|\\.well-known/.*|favicon.*|social-preview.*|.*\\..*).*)",
       "destination": "/index.html"
     }
