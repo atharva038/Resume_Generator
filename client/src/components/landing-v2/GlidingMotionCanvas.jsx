@@ -56,9 +56,9 @@ const fullResumeData1 = {
     email: "alex.morgan@techmail.io",
     phone: "+1 (555) 349-2810",
     location: "San Francisco, CA",
-    linkedin: "linkedin.com/in/alexmorgan-eng",
-    github: "github.com/alexmorgan-dev",
-    website: "alexmorgan.dev",
+    linkedin: "https://linkedin.com/in/alexmorgan-eng",
+    github: "https://github.com/alexmorgan-dev",
+    website: "https://alexmorgan.dev",
   },
   summary:
     "High-impact Senior Full Stack Engineer with 6+ years of specialized experience in distributed microservices, React 19 architecture, and ultra-high-throughput PostgreSQL databases. Proven track record of scaling high-availability enterprise applications handling over 10M daily transactions with 99.999% uptime.",
@@ -164,9 +164,9 @@ const fullResumeData2 = {
     email: "david.kumar@cloudscale.net",
     phone: "+1 (555) 892-1049",
     location: "Austin, TX",
-    linkedin: "linkedin.com/in/davidkumar-sre",
-    github: "github.com/davidkumar",
-    website: "davidkumar.io",
+    linkedin: "https://linkedin.com/in/davidkumar-sre",
+    github: "https://github.com/davidkumar",
+    website: "https://davidkumar.io",
   },
   summary:
     "Senior Cloud & DevOps Architect with 5+ years of experience in multi-cloud Kubernetes governance, infrastructure as code (IaC) with Terraform, and enterprise Prometheus/Grafana observability platforms. Specialized in building zero-trust cloud infrastructure and high-resilience GitOps deployment pipelines.",
@@ -267,20 +267,20 @@ const fullResumeData3 = { ...fullResumeData1, selectedTheme: "emerald" };
 const fullResumeData4 = {
   ...fullResumeData1,
   name: "Sarah Chen",
-  contact: { ...fullResumeData1.contact, email: "sarah.chen@leadtech.org", linkedin: "linkedin.com/in/sarahchen-exec" },
+  contact: { ...fullResumeData1.contact, email: "sarah.chen@leadtech.org", linkedin: "https://linkedin.com/in/sarahchen-exec" },
   selectedTheme: "purple",
 };
 const fullResumeData5 = {
   ...fullResumeData1,
   name: "Marcus Vance",
-  contact: { ...fullResumeData1.contact, email: "marcus.vance@enterprise-lead.com", location: "New York, NY", linkedin: "linkedin.com/in/marcusvance-cto" },
+  contact: { ...fullResumeData1.contact, email: "marcus.vance@enterprise-lead.com", location: "New York, NY", linkedin: "https://linkedin.com/in/marcusvance-cto" },
   summary: "Distinguished Enterprise Technology Executive with 14+ years of cross-functional leadership spanning FinTech, distributed cloud scale, and AI enablement. Oversaw engineering organizations of 120+ developers with $80M annual P&L oversight.",
   selectedTheme: "charcoal",
 };
 const fullResumeData6 = {
   ...fullResumeData1,
   name: "Priya Sharma",
-  contact: { ...fullResumeData1.contact, email: "priya.sharma@productlab.dev", location: "Seattle, WA", linkedin: "linkedin.com/in/priyasharma-dev" },
+  contact: { ...fullResumeData1.contact, email: "priya.sharma@productlab.dev", location: "Seattle, WA", linkedin: "https://linkedin.com/in/priyasharma-dev" },
   summary: "Staff Product Frontend Engineer specializing in high-performance browser rendering, accessible design systems, and WebAssembly tooling. Shipped consumer experiences enjoyed by 22M+ monthly active users across mobile and web platforms.",
   selectedTheme: "slate",
 };

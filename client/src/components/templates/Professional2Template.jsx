@@ -1449,7 +1449,11 @@ const Professional2Template = forwardRef((props, ref) => {
                 {resumeData.contact.linkedin && (
                   <span>
                     <a
-                      href={resumeData.contact.linkedin}
+                      href={
+                        resumeData.contact.linkedin.startsWith("http")
+                          ? resumeData.contact.linkedin
+                          : `https://${resumeData.contact.linkedin}`
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
                       style={{ color: selectedTheme.linkColor }}
@@ -1461,7 +1465,11 @@ const Professional2Template = forwardRef((props, ref) => {
                 {resumeData.contact.github && (
                   <span>
                     <a
-                      href={resumeData.contact.github}
+                      href={
+                        resumeData.contact.github.startsWith("http")
+                          ? resumeData.contact.github
+                          : `https://${resumeData.contact.github}`
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
                       style={{ color: selectedTheme.linkColor }}

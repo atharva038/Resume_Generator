@@ -1,4 +1,5 @@
-import {Helmet} from "react-helmet-async";
+import { useEffect } from "react";
+import { Helmet } from "react-helmet-async";
 import PropTypes from "prop-types";
 
 const SEO = ({
@@ -29,6 +30,55 @@ const SEO = ({
     url === "https://www.smartnshine.app"
       ? "https://www.smartnshine.app/"
       : url;
+
+  // Enforce single absolute canonical link and clean duplicate metadata in rendered DOM
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+
+    // 1. Ensure exactly one canonical tag remains, matching current route
+    const canonicals = document.querySelectorAll('link[rel="canonical"]');
+    if (canonicals.length > 1) {
+      canonicals.forEach((el) => {
+        if (el.getAttribute("href") !== normalizedUrl) {
+          el.remove();
+        }
+      });
+      const remainingCanonicals = document.querySelectorAll('link[rel="canonical"]');
+      for (let i = 0; i < remainingCanonicals.length - 1; i++) {
+        remainingCanonicals[i].remove();
+      }
+    }
+
+    // 2. Remove duplicate description meta tags
+    const descriptions = document.querySelectorAll('meta[name="description"]');
+    if (descriptions.length > 1) {
+      for (let i = 0; i < descriptions.length - 1; i++) {
+        descriptions[i].remove();
+      }
+    }
+
+    // 3. Remove duplicate OpenGraph tags
+    const ogProps = ["og:title", "og:description", "og:type", "og:url", "og:image"];
+    ogProps.forEach((prop) => {
+      const tags = document.querySelectorAll(`meta[property="${prop}"]`);
+      if (tags.length > 1) {
+        for (let i = 0; i < tags.length - 1; i++) {
+          tags[i].remove();
+        }
+      }
+    });
+
+    // 4. Remove duplicate Twitter tags
+    const twitterProps = ["twitter:card", "twitter:url", "twitter:title", "twitter:description", "twitter:image"];
+    twitterProps.forEach((prop) => {
+      const tags = document.querySelectorAll(`meta[name="${prop}"]`);
+      if (tags.length > 1) {
+        for (let i = 0; i < tags.length - 1; i++) {
+          tags[i].remove();
+        }
+      }
+    });
+  }, [normalizedUrl, fullTitle, description, image]);
 
   return (
     <Helmet>
