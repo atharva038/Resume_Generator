@@ -1992,7 +1992,7 @@ const ScaledPortfolioCard = React.memo(function ScaledPortfolioCard({
         </span>
         <div className="flex items-center gap-1.5">
           <Link
-            to="/portfolio/create"
+            to="/portfolio/new"
             aria-label={`Launch ${title} portfolio theme`}
             onClick={(e) => e.stopPropagation()}
             className="font-bold flex items-center gap-1 shrink-0 text-[10px] text-zinc-900 dark:text-zinc-100 hover:text-blue-500 dark:hover:text-blue-400 transition-colors group/link py-1 px-2 rounded-md hover:bg-black/5 dark:hover:bg-white/10"

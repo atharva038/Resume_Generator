@@ -291,11 +291,11 @@ const Register = () => {
         {/* Footer Text */}
         <p className="mt-6 text-center text-sm text-gray-500">
           By creating an account, you agree to our{" "}
-          <Link to="/terms" className="text-primary-400 hover:underline">
+          <Link to="/terms-and-conditions" className="text-primary-400 hover:underline">
             Terms
           </Link>{" "}
           and{" "}
-          <Link to="/privacy" className="text-primary-400 hover:underline">
+          <Link to="/privacy-policy" className="text-primary-400 hover:underline">
             Privacy Policy
           </Link>
         </p>

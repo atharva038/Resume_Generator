@@ -300,7 +300,7 @@ export default function FeatureBentoSuite() {
                 Real-time audio + code evaluations
               </span>
               <Link
-                to="/interview/prep"
+                to="/interview/preview"
                 className="inline-flex items-center gap-1 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
               >
                 <span>Start Mock Session</span>
@@ -371,7 +371,7 @@ export default function FeatureBentoSuite() {
                 Zero hosting configuration needed
               </span>
               <Link
-                to="/portfolio/create"
+                to="/portfolio/new"
                 className="inline-flex items-center gap-1 text-xs font-bold text-cyan-600 dark:text-cyan-400 hover:underline"
               >
                 <span>Launch Portfolio</span>
@@ -442,7 +442,7 @@ export default function FeatureBentoSuite() {
                 Find high-match opportunities faster
               </span>
               <Link
-                to="/jobs"
+                to="/job-search"
                 className="inline-flex items-center gap-1 text-xs font-bold text-purple-600 dark:text-purple-400 hover:underline"
               >
                 <span>Explore Smart Match</span>

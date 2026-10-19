@@ -93,7 +93,7 @@ export default function AiInterviewShowcase() {
         <div className="flex items-center justify-between pt-2 border-t border-zinc-100 dark:border-zinc-800/80">
           <span className="text-xs text-zinc-500">Practice full mock interview sessions with instant feedback</span>
           <Link
-            to="/ai-interview"
+            to="/interview/preview"
             className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline"
           >
             <span>Start Free Mock Interview</span>

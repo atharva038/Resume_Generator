@@ -247,14 +247,14 @@ const Login = () => {
         <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-500">
           By logging in, you agree to our{" "}
           <Link
-            to="/terms"
+            to="/terms-and-conditions"
             className="text-primary-600 dark:text-primary-400 hover:underline"
           >
             Terms
           </Link>{" "}
           and{" "}
           <Link
-            to="/privacy"
+            to="/privacy-policy"
             className="text-primary-600 dark:text-primary-400 hover:underline"
           >
             Privacy Policy
