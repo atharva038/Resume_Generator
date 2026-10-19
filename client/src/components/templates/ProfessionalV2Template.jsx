@@ -862,7 +862,7 @@ const ProfessionalV2Template = forwardRef(
                 <div className="contact-item">
                   <Linkedin size={12} className="contact-icon" />
                   <a
-                    href={contactInfo.linkedin}
+                    href={contactInfo.linkedin.startsWith("http") ? contactInfo.linkedin : `https://${contactInfo.linkedin}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -874,7 +874,7 @@ const ProfessionalV2Template = forwardRef(
                 <div className="contact-item">
                   <Github size={12} className="contact-icon" />
                   <a
-                    href={contactInfo.github}
+                    href={contactInfo.github.startsWith("http") ? contactInfo.github : `https://${contactInfo.github}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
