@@ -296,19 +296,14 @@ router.post(
         }
       }
 
-      if (!transcribedText) {
-        return res.status(500).json({
-          success: false,
-          error: "Failed to transcribe audio. Please ensure microphone audio is clear.",
-        });
-      }
+      const cleanedText = (transcribedText || "").trim();
 
       return res.json({
         success: true,
         data: {
-          text: transcribedText.trim(),
+          text: cleanedText,
           provider,
-          wordCount: transcribedText.trim().split(/\s+/).filter(Boolean).length,
+          wordCount: cleanedText ? cleanedText.split(/\s+/).filter(Boolean).length : 0,
         },
       });
     } catch (err) {
@@ -335,7 +330,7 @@ router.get("/tts/voices", authenticateToken, async (req, res) => {
       { id: "amartya", name: "Amartya (Male - Deep Professional)", provider: "sarvam" },
       { id: "meera", name: "Meera (Female - Clear Warm)", provider: "sarvam" },
       { id: "arvind", name: "Arvind (Male - Conversational)", provider: "sarvam" },
-      { id: "rachel", name: "Rachel (Female - Chatterbox Local)", provider: "chatterbox" },
+      { id: "rachel", name: "Rachel (Female - Technical Assessor)", provider: "sarvam" },
     ],
   });
 });

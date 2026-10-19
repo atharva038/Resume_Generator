@@ -12,6 +12,7 @@ export function useInterviewRecording({
   selectedMode,
   isInterviewActiveRef,
   interviewPhase,
+  getInterviewPhase,
   setInterviewPhase,
   isPlayingAudio,
   audioElementRef,
@@ -166,19 +167,44 @@ export function useInterviewRecording({
     const now = Date.now();
     const recordingDuration = now - (recordingStartTimeRef.current || now);
 
+    // Hard safety cap: never exceed 27 seconds to guarantee staying under Sarvam AI 30s limit
+    if (recordingDuration >= 27000) {
+      console.log("⏱️ Max recording duration (27s) reached. Auto-submitting response...");
+      stopRecording();
+      return;
+    }
+
     if (recordingDuration < MIN_RECORDING_DURATION) return;
 
     const isVocalizing = vocalEnergy > VOCAL_SPEECH_THRESHOLD || average > (SILENCE_THRESHOLD + 12);
 
-    if (!isVocalizing) {
-      speechConsecutiveFramesRef.current = 0;
-    } else {
+    if (isVocalizing) {
       speechConsecutiveFramesRef.current += 1;
       if (speechConsecutiveFramesRef.current >= 2) {
         if (!hasUserSpokenRef.current) {
           hasUserSpokenRef.current = true;
+          console.log("🗣️ User speech activity started.");
         }
         silenceStartRef.current = null;
+      }
+    } else {
+      speechConsecutiveFramesRef.current = 0;
+      if (hasUserSpokenRef.current) {
+        // User has spoken and is now silent
+        if (!silenceStartRef.current) {
+          silenceStartRef.current = now;
+        } else if (now - silenceStartRef.current >= SILENCE_DURATION) {
+          console.log(`🎤 Silence detected (${now - silenceStartRef.current}ms). Auto-submitting voice response...`);
+          stopRecording();
+          return;
+        }
+      } else {
+        // User hasn't started speaking yet
+        if (recordingDuration >= EXTENDED_SILENCE_DURATION) {
+          console.log("⏳ Extended silence: user hasn't spoken.");
+          handleExtendedSilence();
+          return;
+        }
       }
     }
   };
@@ -186,8 +212,9 @@ export function useInterviewRecording({
   const startRecording = async (autoStart = false) => {
     if (!isInterviewActiveRef.current) return;
 
-    if (interviewPhase !== "waiting" && !autoStart) {
-      if (interviewPhase === "asking") {
+    const currentPhase = getInterviewPhase ? getInterviewPhase() : interviewPhase;
+    if (currentPhase !== "waiting" && !autoStart) {
+      if (currentPhase === "asking") {
         toast("Please wait for the question to finish", { icon: "⏳" });
       }
       return;
@@ -241,6 +268,7 @@ export function useInterviewRecording({
           clearInterval(silenceCheckIntervalRef.current);
           silenceCheckIntervalRef.current = null;
         }
+        setIsRecording(false);
 
         const blob = new Blob(chunks, { type: mimeType });
         if (selectedMode !== "live") {
@@ -249,7 +277,8 @@ export function useInterviewRecording({
 
         if (blob.size === 0) {
           toast.error("No audio recorded. Please try again.");
-          if (selectedMode === "live" && interviewPhase === "waiting") {
+          const currentPhase = getInterviewPhase ? getInterviewPhase() : interviewPhase;
+          if (selectedMode === "live" && currentPhase === "waiting") {
             setTimeout(() => startRecording(true), 500);
           }
           return;

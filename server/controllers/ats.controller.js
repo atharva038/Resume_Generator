@@ -95,10 +95,17 @@ export const analyzeResume = async (req, res) => {
   } catch (error) {
     console.error("❌ Resume analysis error:", error);
 
-    // AI usage error is already tracked by aiRouter.analyzeJobMatch
+    const isQuota =
+      error.status === 429 ||
+      error.code === "insufficient_quota" ||
+      error.message?.includes("quota") ||
+      error.message?.includes("credit");
+    const statusCode = isQuota ? 429 : (error.status || 500);
 
-    res.status(500).json({
-      error: error.message || "Failed to analyze resume",
+    res.status(statusCode).json({
+      error: isQuota
+        ? "AI service is currently rate-limited or credits need refill. Please try again shortly."
+        : (error.message || "Failed to analyze resume"),
     });
   }
 };
@@ -329,9 +336,18 @@ export const calculateMatchScore = async (req, res) => {
     });
   } catch (error) {
     console.error("❌ Match score calculation error:", error);
-    res.status(500).json({
+    const isQuota =
+      error.status === 429 ||
+      error.code === "insufficient_quota" ||
+      error.message?.includes("quota") ||
+      error.message?.includes("credit");
+    const statusCode = isQuota ? 429 : (error.status || 500);
+
+    res.status(statusCode).json({
       success: false,
-      error: error.message || "Failed to calculate match score",
+      error: isQuota
+        ? "AI service is currently rate-limited or credits need refill. Please try again shortly."
+        : (error.message || "Failed to calculate match score"),
     });
   }
 };

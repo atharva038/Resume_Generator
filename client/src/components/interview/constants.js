@@ -58,9 +58,9 @@ export const INTERVIEWER_VOICES = {
     name: "Rachel",
     gender: "female",
     title: "Technical Assessor",
-    provider: "chatterbox",
-    accent: "Local Microservice",
-    badge: "Local",
+    provider: "sarvam",
+    accent: "Global English",
+    badge: "Specialist",
   },
 };
 
