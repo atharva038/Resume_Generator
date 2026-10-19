@@ -142,7 +142,7 @@ export default function ScrollablePortfoliosSection() {
               </p>
 
               <Link
-                to="/portfolio/create"
+                to="/portfolio/new"
                 className="w-full inline-flex items-center justify-center gap-2 py-2.5 sm:py-3 px-5 rounded-xl font-medium text-xs sm:text-sm text-white bg-blue-600 hover:bg-blue-500 shadow-md shadow-blue-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
               >
                 <span>Launch Your Web Portfolio</span>
@@ -259,7 +259,7 @@ export default function ScrollablePortfoliosSection() {
                     </div>
 
                     <Link
-                      to="/portfolio/create"
+                      to="/portfolio/new"
                       aria-label={`Deploy ${portfolio.title} portfolio theme`}
                       className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-mono text-[11px] sm:text-xs font-medium shadow-md shadow-blue-500/20 transition-all hover:scale-105 active:scale-95"
                     >

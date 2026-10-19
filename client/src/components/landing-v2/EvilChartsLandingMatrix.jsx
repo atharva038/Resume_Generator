@@ -216,7 +216,7 @@ export default function EvilChartsLandingMatrix() {
           {/* Action CTAs with Luxury Black & Gold Shade Styling */}
           <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-2.5 sm:gap-3 pt-1">
             <Link
-              to={activeMode === "resumes" ? "/templates" : "/portfolio/create"}
+              to={activeMode === "resumes" ? "/templates" : "/portfolio/new"}
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 hover:from-amber-300 hover:to-yellow-400 text-black text-sm font-extrabold transition-all shadow-lg shadow-amber-500/25 active:scale-95 cursor-pointer"
             >
               <span>{activeMode === "resumes" ? "Build Your Resume Free" : "Launch Portfolio"}</span>

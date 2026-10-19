@@ -150,6 +150,11 @@ function App() {
             <Route path="/portfolios" element={<Navigate to="/tech-portfolio" replace />} />
             <Route path="/ats-resume-checker" element={<Navigate to="/ats-analyzer" replace />} />
             <Route path="/terms" element={<Navigate to="/terms-and-conditions" replace />} />
+            <Route path="/privacy" element={<Navigate to="/privacy-policy" replace />} />
+            <Route path="/portfolio/create" element={<Navigate to="/portfolio/new" replace />} />
+            <Route path="/ai-interview" element={<Navigate to="/interview/preview" replace />} />
+            <Route path="/interview/prep" element={<Navigate to="/interview/preview" replace />} />
+            <Route path="/jobs" element={<Navigate to="/job-search" replace />} />
             <Route path="/careers" element={<Careers />} />
             <Route path="/careers/apply" element={<CareerApplyPage />} />
             <Route path="/careers/apply/:jobId" element={<CareerApplyPage />} />
@@ -212,6 +217,15 @@ function App() {
               {/* Public High-SEO Routes */}
               <Route path="/templates" element={<Templates />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/job-search" element={<JobSearch />} />
+              <Route
+                path="/smart-job-match"
+                element={
+                  <ProtectedRoute>
+                    <SmartJobMatchPage />
+                  </ProtectedRoute>
+                }
+              />
 
               {/* Protected Routes - Require Authentication */}
               <Route

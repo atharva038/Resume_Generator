@@ -78,7 +78,7 @@ export default function PortfolioGeneratorShowcase() {
         <div className="flex items-center justify-between pt-2 border-t border-zinc-100 dark:border-zinc-800/80">
           <span className="text-xs text-zinc-500">Deploy your custom portfolio website in 30 seconds</span>
           <Link
-            to="/portfolio/create"
+            to="/portfolio/new"
             className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline"
           >
             <span>Create Free Portfolio</span>
