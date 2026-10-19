@@ -1086,7 +1086,7 @@ export async function transcribeAudioWithAI(audioBuffer, options = {}) {
     throw new Error("OpenAI API key not configured");
   }
 
-  return executeWithRetry(async () => {
+  return retryWithBackoff(async () => {
     const filename = options.filename || options.originalname || "audio.webm";
     const mimetype = options.mimetype || options.contentType || "audio/webm";
     const file = await toFile(audioBuffer, filename, {type: mimetype});

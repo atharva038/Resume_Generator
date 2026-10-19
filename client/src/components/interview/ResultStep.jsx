@@ -8,15 +8,25 @@ import {
   RefreshCw,
 } from "lucide-react";
 
+const defaultFormatTime = (seconds) => {
+  if (!seconds || isNaN(seconds)) return "0:00";
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, "0")}`;
+};
+
 // Result Step Component
 export const ResultStep = ({
   result,
   elapsedTime,
   formatTime,
   onNewInterview,
+  onRetry,
   onViewHistory,
 }) => {
   if (!result) return null;
+
+  const safeFormatTime = typeof formatTime === "function" ? formatTime : defaultFormatTime;
 
   const scoreColor =
     result.overallScore >= 70
@@ -102,7 +112,7 @@ export const ResultStep = ({
           {result.grade} - {result.performanceLevel}
         </p>
         <p className="text-gray-500 dark:text-gray-400 mt-2">
-          Duration: {formatTime(elapsedTime)} |{" "}
+          Duration: {safeFormatTime(elapsedTime || result?.duration || 0)} |{" "}
           {result.metrics?.answeredQuestions || 0}/{result.metrics?.totalQuestions || 0}{" "}
           questions answered
         </p>
@@ -218,14 +228,14 @@ export const ResultStep = ({
       {/* Actions */}
       <div className="flex gap-4">
         <button
-          onClick={onNewInterview}
+          onClick={onNewInterview || onRetry}
           className="flex-1 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-semibold rounded-xl flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40"
         >
           <RefreshCw className="w-5 h-5" />
           Practice Again
         </button>
         <button
-          onClick={onViewHistory}
+          onClick={onViewHistory || (() => { window.location.href = "/interview/history"; })}
           className="flex-1 py-4 bg-gray-100/80 hover:bg-gray-200 dark:bg-white/10 dark:hover:bg-white/20 border border-blue-500/30 text-blue-600 dark:text-blue-400 hover:border-blue-500/50 font-semibold rounded-xl flex items-center justify-center gap-2 transition-all"
         >
           <BarChart3 className="w-5 h-5" />
