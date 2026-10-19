@@ -34,6 +34,7 @@ export function useInterviewSession({
   const [selectedRole, setSelectedRole] = useState("");
   const [selectedLevel, setSelectedLevel] = useState("mid");
   const [selectedMode, setSelectedMode] = useState("live");
+  const [selectedLanguage, setSelectedLanguage] = useState("unknown");
   const [selectedResume, setSelectedResume] = useState("");
   const [jobDescription, setJobDescription] = useState("");
   const [interviewDuration, setInterviewDuration] = useState(10);
@@ -216,6 +217,7 @@ export function useInterviewSession({
         interviewDuration: interviewDuration,
         voiceEngineUsed: voiceEngine,
         personaUsed: selectedVoice,
+        interviewLanguage: selectedLanguage,
       });
 
       if (!createRes.success) throw new Error(createRes.error || "Failed to create session");
@@ -356,16 +358,18 @@ export function useInterviewSession({
       if (conversationPhase === CONVERSATION_PHASES.WARM_UP && selectedMode === "live") {
         let selfIntroText = "";
         try {
-          const transcribeResponse = await interviewAPI.transcribeAudioOnly(audioFile);
+          const transcribeResponse = await interviewAPI.transcribeAudioOnly(audioFile, {
+            languageCode: selectedLanguage,
+          });
           if (transcribeResponse?.success && transcribeResponse.data?.text) {
             selfIntroText = transcribeResponse.data.text.trim();
           }
         } catch (transcribeErr) {
-          console.warn("⚠️ Warm-up audio transcription warning:", transcribeErr.message);
+          console.warn("Warm-up audio transcription warning:", transcribeErr.message);
         }
 
         if (!selfIntroText) {
-          console.log("ℹ️ Warm-up intro had no clear speech. Re-prompting candidate gently...");
+          console.log("Warm-up intro had no clear speech. Re-prompting candidate gently...");
           const reprompt = "I didn't quite catch that. Could you please tell me a little bit about yourself and your background?";
           setInterviewPhase("asking");
           await speakAndListen(reprompt, () => {
@@ -430,7 +434,7 @@ export function useInterviewSession({
         currentSession.id,
         audioFile,
         currentQ.number,
-        { voiceEngine }
+        { voiceEngine, languageCode: selectedLanguage }
       );
 
       if (!response.success) throw new Error(response.error || "Failed to process voice answer");
@@ -671,6 +675,8 @@ export function useInterviewSession({
     setSelectedLevel,
     selectedMode,
     setSelectedMode,
+    selectedLanguage,
+    setSelectedLanguage,
     selectedResume,
     setSelectedResume,
     jobDescription,

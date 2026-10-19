@@ -64,6 +64,35 @@ export const INTERVIEWER_VOICES = {
   },
 };
 
+// Languages supported by Sarvam Saaras speech-to-text. Questions remain in
+// English; this setting controls how spoken candidate answers are transcribed.
+export const INTERVIEW_LANGUAGES = [
+  { code: "unknown", name: "Auto-detect (recommended)" },
+  { code: "en-IN", name: "English (India)" },
+  { code: "hi-IN", name: "Hindi" },
+  { code: "bn-IN", name: "Bengali" },
+  { code: "ta-IN", name: "Tamil" },
+  { code: "te-IN", name: "Telugu" },
+  { code: "gu-IN", name: "Gujarati" },
+  { code: "kn-IN", name: "Kannada" },
+  { code: "ml-IN", name: "Malayalam" },
+  { code: "mr-IN", name: "Marathi" },
+  { code: "pa-IN", name: "Punjabi" },
+  { code: "od-IN", name: "Odia" },
+  { code: "as-IN", name: "Assamese" },
+  { code: "ur-IN", name: "Urdu" },
+  { code: "ne-IN", name: "Nepali" },
+  { code: "kok-IN", name: "Konkani" },
+  { code: "ks-IN", name: "Kashmiri" },
+  { code: "sd-IN", name: "Sindhi" },
+  { code: "sa-IN", name: "Sanskrit" },
+  { code: "sat-IN", name: "Santali" },
+  { code: "mni-IN", name: "Manipuri" },
+  { code: "brx-IN", name: "Bodo" },
+  { code: "mai-IN", name: "Maithili" },
+  { code: "doi-IN", name: "Dogri" },
+];
+
 // Interview type icons
 export const TYPE_ICONS = {
   "resume-based": FileText,

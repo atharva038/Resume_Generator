@@ -98,7 +98,7 @@ router.get("/health", async (req, res) => {
         sarvam: {
           available: sarvamAvailable,
           name: "Sarvam AI Cloud",
-          models: { stt: "saaras:v3", tts: "bulbul:v3" },
+          models: { stt: "saaras:v4", tts: "bulbul:v3" },
           description: "Ultra-fast Indian & Global English voices + transcription (Production)",
         },
         whisper: {
@@ -239,18 +239,24 @@ router.post(
 
       let transcribedText = "";
       let provider = "none";
+      let detectedLanguage = "unknown";
+      let languageProbability = null;
 
-      // 1. Try Sarvam AI STT (Saaras v3)
+      // 1. Try Sarvam AI STT (Saaras v4)
       if (sarvamService.isAvailable()) {
         try {
           const sarvamResult = await sarvamService.speechToText(audioFile.buffer, {
             filename: audioFile.originalname || "audio.webm",
             mimetype: audioFile.mimetype || "audio/webm",
-            model: "saaras:v3",
+            model: "saaras:v4",
+            language_code: sarvamService.normalizeSttLanguage(req.body.languageCode),
+            mode: "transcribe",
           });
           if (sarvamResult?.text) {
             transcribedText = sarvamResult.text;
             provider = "sarvam";
+            detectedLanguage = sarvamResult.language;
+            languageProbability = sarvamResult.languageProbability;
           }
         } catch (sarvamErr) {
           console.warn("⚠️ Sarvam STT failed in /api/voice/transcribe:", sarvamErr.message);
@@ -303,6 +309,8 @@ router.post(
         data: {
           text: cleanedText,
           provider,
+          language: detectedLanguage,
+          languageProbability,
           wordCount: cleanedText ? cleanedText.split(/\s+/).filter(Boolean).length : 0,
         },
       });

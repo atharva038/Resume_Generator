@@ -14,10 +14,11 @@ import {
   AlertTriangle,
   User,
   Timer,
+  Languages,
   Sparkles,
   Loader2,
 } from "lucide-react";
-import { INTERVIEWER_VOICES, TYPE_ICONS } from "./constants";
+import { INTERVIEWER_VOICES, INTERVIEW_LANGUAGES, TYPE_ICONS } from "./constants";
 import { InterviewerGraphic } from "./InterviewerGraphic";
 import { useDarkMode } from "../../context/DarkModeContext";
 
@@ -33,6 +34,8 @@ export const SetupStep = ({
   setSelectedLevel,
   selectedMode,
   setSelectedMode,
+  selectedLanguage,
+  setSelectedLanguage,
   selectedResume,
   setSelectedResume,
   jobDescription,
@@ -57,7 +60,7 @@ export const SetupStep = ({
   const { isDarkMode } = useDarkMode();
   const currentInterviewer =
     INTERVIEWER_VOICES[selectedVoice] || INTERVIEWER_VOICES.shubh;
-  const isLocalWhisperAvailable = voiceProviders?.transcription?.available;
+  const isLocalWhisperAvailable = voiceProviders?.whisper?.available;
   const isSarvamAvailable = Boolean(voiceProviders?.sarvam?.available);
   const isCurrentEngineValid =
     voiceEngine === "local"
@@ -281,6 +284,33 @@ export const SetupStep = ({
               </span>
             </button>
           </div>
+
+          {selectedMode === "live" && (
+            <div className="mt-4 p-4 rounded-xl bg-emerald-50/70 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20">
+              <label
+                htmlFor="interview-answer-language"
+                className="text-xs font-bold uppercase tracking-wider text-gray-900 dark:text-white flex items-center gap-2"
+              >
+                <Languages className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                Answer language
+              </label>
+              <select
+                id="interview-answer-language"
+                value={selectedLanguage}
+                onChange={(event) => setSelectedLanguage(event.target.value)}
+                className="mt-2 w-full p-3 border border-emerald-200 dark:border-emerald-500/30 rounded-xl bg-white dark:bg-[#121420] text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              >
+                {INTERVIEW_LANGUAGES.map((language) => (
+                  <option key={language.code} value={language.code}>
+                    {language.name}
+                  </option>
+                ))}
+              </select>
+              <p className="mt-2 text-[11px] text-gray-600 dark:text-gray-400">
+                Sarvam Saaras v4 transcribes Indian accents and code-mixed answers. Interview questions stay in English.
+              </p>
+            </div>
+          )}
 
           {/* Voice Processing Engine Switcher (Always available in dev mode) */}
           {!isProduction && (

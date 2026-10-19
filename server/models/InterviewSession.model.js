@@ -172,6 +172,10 @@ const interviewSessionSchema = new mongoose.Schema(
       enum: ["text", "voice", "mixed", "live"],
       default: "text",
     },
+    interviewLanguage: {
+      type: String,
+      default: "unknown",
+    },
     // Source Data
     resumeId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -251,7 +255,7 @@ const interviewSessionSchema = new mongoose.Schema(
     // Metadata & Environment
     voiceEngineUsed: {
       type: String,
-      enum: ["sarvam", "local", "browser", "auto"],
+      enum: ["sarvam", "local", "browser", "auto", "none"],
       default: "sarvam",
     },
     personaUsed: {

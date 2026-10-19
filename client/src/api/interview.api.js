@@ -80,6 +80,9 @@ export const submitVoiceAnswer = async (
   if (engine) {
     formData.append("voiceEngine", engine);
   }
+  if (typeof options === "object" && options?.languageCode) {
+    formData.append("languageCode", options.languageCode);
+  }
 
   console.log("📤 Submitting voice answer:", {
     sessionId,
@@ -204,9 +207,12 @@ export const checkVoiceAvailability = async () => {
  * @param {File} audioFile - Audio file to transcribe
  * @returns {Promise<Object>} { success, data: { text, language, duration, wordCount } }
  */
-export const transcribeAudioOnly = async (audioFile) => {
+export const transcribeAudioOnly = async (audioFile, options = {}) => {
   const formData = new FormData();
   formData.append("audio", audioFile);
+  if (options.languageCode) {
+    formData.append("languageCode", options.languageCode);
+  }
 
   console.log("📤 Transcribing audio (no evaluation):", audioFile.name, audioFile.size, "bytes");
 

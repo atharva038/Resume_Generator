@@ -95,6 +95,7 @@ export const createSession = async (req, res) => {
       totalQuestions = 10,
       voiceEngineUsed = "sarvam",
       personaUsed = "shubh",
+      interviewLanguage = "unknown",
     } = req.body;
 
     // Validate required fields
@@ -166,6 +167,7 @@ export const createSession = async (req, res) => {
       status: "created",
       voiceEngineUsed: mode === "text" ? "none" : voiceEngineUsed,
       personaUsed: mode === "text" ? "standard" : personaUsed,
+      interviewLanguage: sarvamService.normalizeSttLanguage(interviewLanguage),
       aiModel: selectAIModel(req.user),
       metadata: {
         browserInfo: req.headers["user-agent"],
@@ -1108,6 +1110,8 @@ export const submitVoiceAnswer = async (req, res) => {
     // Transcribe the audio using Sarvam AI (Production) or local Whisper ML service (Local dev)
     let transcribedText = "";
     let transcriptionProvider = "none";
+    let transcriptionLanguage = "unknown";
+    let languageProbability = null;
     const requestedEngine =
       req.body.voiceEngine ||
       req.body.engine ||
@@ -1155,14 +1159,18 @@ export const submitVoiceAnswer = async (req, res) => {
       if (!sarvamService.isAvailable()) {
         throw new Error("Sarvam AI API key is not configured");
       }
-      console.log("🎙️ Using Sarvam AI STT (Saaras v3) for transcription...");
+      console.log("🎙️ Using Sarvam AI STT (Saaras v4) for transcription...");
       const sarvamResult = await sarvamService.speechToText(audioFile.buffer, {
         filename: audioFile.originalname,
         mimetype: audioFile.mimetype,
-        model: "saaras:v3",
+        model: "saaras:v4",
+        language_code: sarvamService.normalizeSttLanguage(
+          req.body.languageCode || session.interviewLanguage
+        ),
+        mode: "transcribe",
       });
       if (sarvamResult?.text) {
-        return sarvamResult.text;
+        return sarvamResult;
       }
       throw new Error("Sarvam AI returned empty transcript");
     };
@@ -1190,7 +1198,10 @@ export const submitVoiceAnswer = async (req, res) => {
         console.warn("⚠️ Local Whisper offline, falling back to cloud STT:", whisperError.message);
         if (sarvamService.isAvailable()) {
           try {
-            transcribedText = await callSarvamSTT();
+            const sarvamResult = await callSarvamSTT();
+            transcribedText = sarvamResult.text;
+            transcriptionLanguage = sarvamResult.language;
+            languageProbability = sarvamResult.languageProbability;
             transcriptionProvider = "sarvam";
           } catch (_) {}
         }
@@ -1210,7 +1221,10 @@ export const submitVoiceAnswer = async (req, res) => {
       }
     } else if (requestedEngine === "sarvam") {
       try {
-        transcribedText = await callSarvamSTT();
+        const sarvamResult = await callSarvamSTT();
+        transcribedText = sarvamResult.text;
+        transcriptionLanguage = sarvamResult.language;
+        languageProbability = sarvamResult.languageProbability;
         transcriptionProvider = "sarvam";
         console.log(`✅ Sarvam AI transcription success (${transcribedText.length} chars)`);
       } catch (sarvamError) {
@@ -1237,7 +1251,10 @@ export const submitVoiceAnswer = async (req, res) => {
       // Auto Mode: Sarvam -> OpenAI Whisper -> Local Whisper
       if (sarvamService.isAvailable()) {
         try {
-          transcribedText = await callSarvamSTT();
+          const sarvamResult = await callSarvamSTT();
+          transcribedText = sarvamResult.text;
+          transcriptionLanguage = sarvamResult.language;
+          languageProbability = sarvamResult.languageProbability;
           transcriptionProvider = "sarvam";
           console.log(`✅ Sarvam AI transcription success (${transcribedText.length} chars)`);
         } catch (sarvamError) {
@@ -1385,6 +1402,8 @@ export const submitVoiceAnswer = async (req, res) => {
           duration: null,
           wordCount,
           provider: transcriptionProvider,
+          language: transcriptionLanguage,
+          languageProbability,
         },
         evaluation: {
           score: 75,

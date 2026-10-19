@@ -61,10 +61,10 @@ export default function LandingPage() {
   return (
     <>
       <SEO
-        title="SmartNShine - #1 ATS Resume Builder & Career Intelligence Platform"
-        description="Build ATS-proof resumes, deploy live developer portfolios, and run keyword gap audits."
-        keywords="ATS resume templates, resume optimizer, developer portfolio generator, ATS score analyzer, Workday ATS scanner"
-        url="https://www.smartnshine.app"
+        title="SmartNShine - #1 ATS Resume Builder, Developer Portfolio Maker & AI Interview Platform"
+        description="Build 98%+ pass rate ATS resumes, generate stunning interactive developer portfolios from GitHub, check real-time ATS scores, and practice AI voice mock interviews. Free templates & instant export."
+        keywords="ATS resume builder, free developer portfolio builder, portfolio maker, ATS score checker, Taleo resume checker, Workday resume format, software engineer portfolio, modern resume templates, AI bullet optimizer, free resume maker PDF, AI mock interview, GitHub portfolio generator"
+        url="https://www.smartnshine.app/"
       />
       <FAQSchema faqs={SYSTEM_FAQS} />
 
