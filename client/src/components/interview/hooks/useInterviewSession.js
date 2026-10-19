@@ -34,6 +34,7 @@ export function useInterviewSession({
   const [selectedRole, setSelectedRole] = useState("");
   const [selectedLevel, setSelectedLevel] = useState("mid");
   const [selectedMode, setSelectedMode] = useState("live");
+  const [selectedLanguage, setSelectedLanguage] = useState("unknown");
   const [selectedResume, setSelectedResume] = useState("");
   const [jobDescription, setJobDescription] = useState("");
   const [interviewDuration, setInterviewDuration] = useState(10);
@@ -216,6 +217,7 @@ export function useInterviewSession({
         interviewDuration: interviewDuration,
         voiceEngineUsed: voiceEngine,
         personaUsed: selectedVoice,
+        interviewLanguage: selectedLanguage,
       });
 
       if (!createRes.success) throw new Error(createRes.error || "Failed to create session");
@@ -240,7 +242,7 @@ export function useInterviewSession({
         setConversationPhase(CONVERSATION_PHASES.INTRODUCTION);
         setInterviewPhase("greeting");
 
-        const introductionText = generateIntroduction();
+        const introductionText = generateIntroduction(selectedRole);
         setConversationHistory([
           {
             role: "ai",
@@ -354,7 +356,9 @@ export function useInterviewSession({
 
       // Warm-up phase
       if (conversationPhase === CONVERSATION_PHASES.WARM_UP && selectedMode === "live") {
-        const transcribeResponse = await interviewAPI.transcribeAudioOnly(audioFile);
+        const transcribeResponse = await interviewAPI.transcribeAudioOnly(audioFile, {
+          languageCode: selectedLanguage,
+        });
         if (!transcribeResponse.success) throw new Error(transcribeResponse.error || "Failed to transcribe");
 
         const selfIntroText = transcribeResponse.data.text;
@@ -412,7 +416,7 @@ export function useInterviewSession({
         currentSession.id,
         audioFile,
         currentQ.number,
-        { voiceEngine }
+        { voiceEngine, languageCode: selectedLanguage }
       );
 
       if (!response.success) throw new Error(response.error || "Failed to process voice answer");
@@ -653,6 +657,8 @@ export function useInterviewSession({
     setSelectedLevel,
     selectedMode,
     setSelectedMode,
+    selectedLanguage,
+    setSelectedLanguage,
     selectedResume,
     setSelectedResume,
     jobDescription,

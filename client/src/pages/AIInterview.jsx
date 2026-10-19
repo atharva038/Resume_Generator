@@ -214,6 +214,8 @@ const AIInterview = () => {
             setSelectedLevel={session.setSelectedLevel}
             selectedMode={session.selectedMode}
             setSelectedMode={session.setSelectedMode}
+            selectedLanguage={session.selectedLanguage}
+            setSelectedLanguage={session.setSelectedLanguage}
             selectedResume={session.selectedResume}
             setSelectedResume={session.setSelectedResume}
             jobDescription={session.jobDescription}

@@ -12,6 +12,17 @@ import { SarvamAIClient } from "sarvamai";
 let clientInstance = null;
 let lastApiKey = null;
 
+export const SUPPORTED_STT_LANGUAGES = new Set([
+  "unknown", "en-IN", "hi-IN", "bn-IN", "ta-IN", "te-IN", "gu-IN",
+  "kn-IN", "ml-IN", "mr-IN", "pa-IN", "od-IN", "as-IN", "ur-IN",
+  "ne-IN", "kok-IN", "ks-IN", "sd-IN", "sa-IN", "sat-IN", "mni-IN",
+  "brx-IN", "mai-IN", "doi-IN",
+]);
+
+export function normalizeSttLanguage(languageCode) {
+  return SUPPORTED_STT_LANGUAGES.has(languageCode) ? languageCode : "unknown";
+}
+
 /**
  * Check if Sarvam AI is configured and available
  * @returns {boolean}
@@ -159,7 +170,7 @@ export async function textToSpeech(text, options = {}) {
  * @param {Object} [options={}] - Options
  * @param {string} [options.filename='audio.webm'] - Audio filename
  * @param {string} [options.mimetype='audio/webm'] - Audio MIME type
- * @param {string} [options.model='saaras:v3'] - STT Model ('saaras:v3' or 'saaras:v4')
+ * @param {string} [options.model='saaras:v4'] - STT model
  * @param {string} [options.language_code] - Optional language code hint
  * @returns {Promise<{text: string, language: string, requestId?: string}>}
  */
@@ -172,7 +183,8 @@ export async function speechToText(audioData, options = {}) {
     const client = getClient();
     const filename = options.filename || options.originalname || "audio.webm";
     const mimetype = options.mimetype || options.contentType || "audio/webm";
-    const model = options.model || "saaras:v3";
+    const model = options.model || "saaras:v4";
+    const languageCode = normalizeSttLanguage(options.language_code);
 
     console.log(
       `🎧 [Sarvam STT] Transcribing audio file '${filename}' (${mimetype}) with ${model}...`
@@ -190,11 +202,9 @@ export async function speechToText(audioData, options = {}) {
     const requestPayload = {
       file: fileObj,
       model: model,
+      mode: options.mode || "transcribe",
+      language_code: languageCode,
     };
-
-    if (options.language_code) {
-      requestPayload.language_code = options.language_code;
-    }
 
     const response = await client.speechToText.transcribe(requestPayload);
 
@@ -208,6 +218,7 @@ export async function speechToText(audioData, options = {}) {
     return {
       text: transcript.trim(),
       language: detectedLanguage,
+      languageProbability: response.language_probability ?? null,
       requestId: response.request_id,
     };
   } catch (error) {
@@ -228,7 +239,7 @@ export async function getHealth() {
     sdk: "sarvamai",
     models: {
       tts: "bulbul:v3",
-      stt: "saaras:v3",
+      stt: "saaras:v4",
     },
     capabilities: [
       "text-to-speech",
