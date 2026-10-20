@@ -1,15 +1,49 @@
-import { useState, useRef, useEffect } from "react";
-import { Target, Eye, ArrowRight, Sparkles } from "lucide-react";
+import { useState, useRef, useEffect, Component } from "react";
+import { Target, Eye, ArrowRight } from "lucide-react";
+import {
+  TEMPLATE_COMPONENTS,
+  TEMPLATE_COLOR_THEMES,
+} from "@/components/editor/templateConfig";
 
-const THUMBNAIL_BASE_WIDTH_PX = 793.7; // 210mm at 96dpi
+const A4_WIDTH_PX = 794; // 210mm at 96dpi
+const A4_HEIGHT_PX = 1123; // 297mm at 96dpi
+
+class ThumbnailErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.warn("Template thumbnail preview error:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        this.props.fallback || (
+          <div className="flex h-full w-full items-center justify-center p-8 text-center text-xs text-gray-400">
+            Preview Unavailable
+          </div>
+        )
+      );
+    }
+    return this.props.children;
+  }
+}
 
 export function UniformTemplateThumbnail({
   TemplateComponent,
   resumeData,
+  themeId,
   primaryColor,
 }) {
   const frameRef = useRef(null);
-  const [scale, setScale] = useState(0.32);
+  const [scale, setScale] = useState(0.35);
 
   useEffect(() => {
     if (!frameRef.current) return;
@@ -17,8 +51,9 @@ export function UniformTemplateThumbnail({
     const updateScale = () => {
       if (!frameRef.current) return;
       const frameWidth = frameRef.current.clientWidth;
-      if (!frameWidth) return;
-      setScale(frameWidth / THUMBNAIL_BASE_WIDTH_PX);
+      if (frameWidth > 0) {
+        setScale(frameWidth / A4_WIDTH_PX);
+      }
     };
 
     updateScale();
@@ -29,12 +64,13 @@ export function UniformTemplateThumbnail({
     return () => observer.disconnect();
   }, []);
 
-  const enrichedData = primaryColor
+  const activeTheme = themeId || primaryColor;
+  const enrichedData = activeTheme
     ? {
         ...resumeData,
-        colorTheme: primaryColor,
-        selectedTheme: primaryColor,
-        themeColor: primaryColor,
+        colorTheme: activeTheme,
+        selectedTheme: activeTheme,
+        themeColor: activeTheme,
       }
     : resumeData;
 
@@ -46,18 +82,21 @@ export function UniformTemplateThumbnail({
         style={{ contain: "paint layout" }}
       >
         <div
-          className="pointer-events-none"
+          className="pointer-events-none select-none origin-top-left"
           style={{
             transform: `scale(${scale}) translateZ(0)`,
             transformOrigin: "top left",
-            width: "210mm",
-            minHeight: "297mm",
+            width: `${A4_WIDTH_PX}px`,
+            minHeight: `${A4_HEIGHT_PX}px`,
             willChange: "transform",
+            backgroundColor: "#ffffff",
           }}
         >
-          {TemplateComponent ? (
-            <TemplateComponent resumeData={enrichedData} />
-          ) : null}
+          <ThumbnailErrorBoundary>
+            {TemplateComponent ? (
+              <TemplateComponent resumeData={enrichedData} />
+            ) : null}
+          </ThumbnailErrorBoundary>
         </div>
       </div>
     </div>
@@ -92,23 +131,56 @@ const TEMPLATE_IMAGE_MAP = {
   "structured-photo": "/templates/structured-photo.webp",
 };
 
+const normalizeTplId = (id) =>
+  (id || "")
+    .toLowerCase()
+    .replace(/[-_\s]/g, "");
+
 export default function TemplateCard({
   template,
   sampleResumeData,
   onOpenPreview,
   onUseTemplate,
 }) {
+  const themes =
+    TEMPLATE_COLOR_THEMES[template.id] ||
+    TEMPLATE_COLOR_THEMES[normalizeTplId(template.id)] ||
+    [];
+
+  const defaultThemeId = themes[0]?.id || template.colors?.[0] || "";
+  const [selectedThemeId, setSelectedThemeId] = useState(defaultThemeId);
+
+  useEffect(() => {
+    const curThemes =
+      TEMPLATE_COLOR_THEMES[template.id] ||
+      TEMPLATE_COLOR_THEMES[normalizeTplId(template.id)] ||
+      [];
+    setSelectedThemeId(curThemes[0]?.id || template.colors?.[0] || "");
+  }, [template.id]);
+
+  const TemplateComponent =
+    template.component ||
+    TEMPLATE_COMPONENTS[template.id] ||
+    TEMPLATE_COMPONENTS[normalizeTplId(template.id)];
+
   const [imgError, setImgError] = useState(false);
   const imageSrc = TEMPLATE_IMAGE_MAP[template.id] || template.thumbnail;
 
   return (
     <div
-      onClick={() => onOpenPreview(template)}
+      onClick={() => onOpenPreview(template, selectedThemeId)}
       className="group relative flex flex-col justify-between bg-white dark:bg-zinc-900/90 rounded-3xl border border-gray-200/90 dark:border-white/[0.08] hover:border-blue-500/50 dark:hover:border-blue-500/50 transition-all duration-200 shadow-sm hover:shadow-xl overflow-hidden cursor-pointer active:scale-[0.99]"
+      style={{ contentVisibility: "auto" }}
     >
-      {/* Thumbnail view */}
+      {/* Thumbnail view — renders the actual live inner template */}
       <div className="relative h-[380px] bg-slate-50 dark:bg-zinc-950 overflow-hidden">
-        {imageSrc && !imgError ? (
+        {TemplateComponent ? (
+          <UniformTemplateThumbnail
+            TemplateComponent={TemplateComponent}
+            resumeData={sampleResumeData}
+            themeId={selectedThemeId}
+          />
+        ) : imageSrc && !imgError ? (
           <div className="absolute inset-0 p-1.5">
             <div className="relative h-full w-full overflow-hidden rounded-xl border border-gray-200/80 dark:border-zinc-800 bg-white shadow-sm">
               <img
@@ -123,12 +195,6 @@ export default function TemplateCard({
               />
             </div>
           </div>
-        ) : template.component ? (
-          <UniformTemplateThumbnail
-            TemplateComponent={template.component}
-            resumeData={sampleResumeData}
-            primaryColor={template.colors?.[0]}
-          />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-xs text-gray-400">
             Preview Loading...
@@ -147,10 +213,14 @@ export default function TemplateCard({
         )}
 
         {/* Hover overlay with Preview Button */}
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-2 z-20">
+        <div className="absolute inset-0 bg-black/45 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-2 z-20">
           <button
             type="button"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white text-gray-900 font-bold text-xs sm:text-sm shadow-xl hover:bg-gray-100 transition-colors"
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpenPreview(template, selectedThemeId);
+            }}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white text-gray-900 font-bold text-xs sm:text-sm shadow-xl hover:bg-gray-100 transition-colors cursor-pointer"
           >
             <Eye className="w-4 h-4" />
             <span>Interactive Preview</span>
@@ -193,8 +263,36 @@ export default function TemplateCard({
           </p>
         </div>
 
-        {/* Color themes swatches preview */}
-        {template.colors && template.colors.length > 0 && (
+        {/* Color themes swatches preview — live updates inner template on click */}
+        {themes.length > 0 ? (
+          <div className="flex items-center gap-1.5 pt-1">
+            <span className="text-[11px] font-semibold text-gray-400 dark:text-zinc-500 mr-1">
+              Themes:
+            </span>
+            {themes.slice(0, 5).map((th) => (
+              <button
+                key={th.id}
+                type="button"
+                title={th.name}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedThemeId(th.id);
+                }}
+                className={`w-4 h-4 rounded-full border transition-all cursor-pointer ${
+                  selectedThemeId === th.id
+                    ? "ring-2 ring-blue-500 ring-offset-1 border-white dark:border-zinc-900 scale-110 shadow-xs"
+                    : "border-gray-300 dark:border-zinc-700 hover:scale-105"
+                }`}
+                style={{ backgroundColor: th.primary }}
+              />
+            ))}
+            {themes.length > 5 && (
+              <span className="text-[10px] text-gray-400 dark:text-zinc-500 font-medium">
+                +{themes.length - 5}
+              </span>
+            )}
+          </div>
+        ) : template.colors && template.colors.length > 0 ? (
           <div className="flex items-center gap-1.5 pt-1">
             <span className="text-[11px] font-semibold text-gray-400 dark:text-zinc-500 mr-1">
               Themes:
@@ -207,7 +305,7 @@ export default function TemplateCard({
               />
             ))}
           </div>
-        )}
+        ) : null}
 
         {/* Quick CTA Button */}
         <div className="pt-2">
@@ -215,7 +313,7 @@ export default function TemplateCard({
             type="button"
             onClick={(e) => {
               e.stopPropagation();
-              onUseTemplate(template.id);
+              onUseTemplate(template.id, selectedThemeId);
             }}
             className="w-full py-2.5 px-4 rounded-xl bg-gray-100 dark:bg-zinc-800 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 text-gray-800 dark:text-zinc-200 text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
           >

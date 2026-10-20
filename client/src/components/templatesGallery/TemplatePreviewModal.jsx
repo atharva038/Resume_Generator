@@ -34,25 +34,27 @@ export default function TemplatePreviewModal({
   const [mobileTab, setMobileTab] = useState("preview");
   const [zoomLevel, setZoomLevel] = useState(1); // multiplier on top of auto-fit
   const [autoScale, setAutoScale] = useState(0.85);
+  const effectiveScale = autoScale * zoomLevel;
 
   const containerRef = useRef(null);
   const paperRef = useRef(null);
 
-  // Auto-calculate scale to fit container width cleanly
+  const [contentHeight, setContentHeight] = useState(A4_HEIGHT_PX);
+
+  // Auto-calculate scale to fit in zoom-out mode: entire A4 page is visible on screen with zero scrolling needed
   const calculateScale = useCallback(() => {
     if (!containerRef.current) return;
-    const availableWidth = containerRef.current.clientWidth - 40; // padding buffer
-    const availableHeight = containerRef.current.clientHeight - 40;
+    const availableWidth = containerRef.current.clientWidth - 32; // padding buffer
+    const availableHeight = containerRef.current.clientHeight - 32;
 
-    if (availableWidth <= 0) return;
+    if (availableWidth <= 0 || availableHeight <= 0) return;
 
-    // Determine scale that fits width nicely
+    // Fit both width AND height so 100% of resume is visible on screen
     const widthScale = availableWidth / A4_WIDTH_PX;
-    const heightScale = availableHeight > 0 ? availableHeight / A4_HEIGHT_PX : widthScale;
+    const heightScale = availableHeight / A4_HEIGHT_PX;
 
-    // Pick comfortable scale between 0.4 and 1.15
-    const fitted = Math.min(widthScale, heightScale > 0.4 ? heightScale : widthScale);
-    const clamped = Math.max(0.42, Math.min(fitted, 1.1));
+    const fitted = Math.min(widthScale, heightScale);
+    const clamped = Math.max(0.35, Math.min(fitted, 0.95));
     setAutoScale(clamped);
   }, []);
 
@@ -71,6 +73,20 @@ export default function TemplatePreviewModal({
     return () => observer.disconnect();
   }, [template, calculateScale]);
 
+  // Keep wrapper height accurately in sync with resume content
+  useEffect(() => {
+    if (!paperRef.current) return;
+    const updateHeight = () => {
+      if (paperRef.current) {
+        setContentHeight(Math.max(A4_HEIGHT_PX, paperRef.current.scrollHeight));
+      }
+    };
+    updateHeight();
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(paperRef.current);
+    return () => observer.disconnect();
+  }, [template, selectedColorTheme]);
+
   // Handle Escape key to close modal
   useEffect(() => {
     if (!template) return;
@@ -87,10 +103,9 @@ export default function TemplatePreviewModal({
   if (!template) return null;
 
   const TemplateComponent = template.component;
-  const effectiveScale = autoScale * zoomLevel;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end lg:items-center justify-center overflow-hidden animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 lg:p-6 overflow-hidden animate-in fade-in duration-200">
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/80 backdrop-blur-md transition-opacity"
@@ -99,16 +114,18 @@ export default function TemplatePreviewModal({
 
       {/*
         Modal shell
-        Mobile  : bottom-sheet, rounded top corners only, 96vh
-        Desktop : centered card, fully rounded, 92vh, max-w-6xl
+        Mobile  : bottom-sheet, rounded top corners only
+        Desktop : centered card, comfortably reduced height & width with clear margins
       */}
       <div className="
         relative z-10 w-full flex flex-col overflow-hidden
         bg-white dark:bg-zinc-950
         border border-gray-200 dark:border-white/10
         shadow-2xl
-        rounded-t-3xl h-[96svh]
-        lg:rounded-3xl lg:max-w-6xl lg:h-[92vh] lg:mx-4
+        rounded-t-3xl sm:rounded-2xl lg:rounded-3xl
+        h-[90svh] sm:h-[84vh] lg:h-[82vh]
+        max-h-[92svh] sm:max-h-[780px] lg:max-h-[820px]
+        max-w-full sm:max-w-3xl lg:max-w-5xl xl:max-w-[1100px]
       ">
         {/* Drag handle pill (mobile only) */}
         <div className="absolute top-2 left-1/2 -translate-x-1/2 w-10 h-1 bg-gray-300 dark:bg-zinc-700 rounded-full lg:hidden pointer-events-none" />
@@ -205,28 +222,37 @@ export default function TemplatePreviewModal({
         {/* ── Body ── */}
         <div className="flex-1 min-h-0 flex flex-col lg:grid lg:grid-cols-12 overflow-hidden">
           {/*
-            LEFT panel — live A4 document canvas
+            LEFT panel — live A4 document canvas (centered in zoom-out mode, smoothly scrollable when zoomed in)
           */}
           <div
             ref={containerRef}
             className={`
-              lg:col-span-8 overflow-y-auto overflow-x-auto
+              lg:col-span-8 h-full min-h-0 max-h-full overflow-auto
+              scrollbar-hide [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden
               bg-zinc-200/70 dark:bg-zinc-900/90
-              p-4 sm:p-6 lg:p-8
-              flex flex-col items-center justify-start
               ${mobileTab === "preview" ? "flex flex-1" : "hidden"} lg:flex lg:flex-none
             `}
+            style={{
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
+            }}
           >
-            {/* Scaled wrapper: keeps real document flow with exact bounding dimensions */}
             <div
-              style={{
-                width: `${A4_WIDTH_PX * effectiveScale}px`,
-                minHeight: `${A4_HEIGHT_PX * effectiveScale}px`,
-                position: "relative",
-                transition: "width 0.15s ease-out, min-height 0.15s ease-out",
-              }}
-              className="my-auto shadow-2xl rounded-sm"
+              className={`
+                min-w-full min-h-full p-4 sm:p-6 w-max h-max flex
+                ${zoomLevel > 1 ? "items-start justify-center" : "items-center justify-center"}
+              `}
             >
+              {/* Scaled wrapper: accurately sized bounding box */}
+              <div
+                style={{
+                  width: `${A4_WIDTH_PX * effectiveScale}px`,
+                  height: `${contentHeight * effectiveScale}px`,
+                  position: "relative",
+                  transition: "width 0.15s ease-out, height 0.15s ease-out",
+                }}
+                className="shadow-2xl rounded-sm shrink-0"
+              >
               <div
                 ref={paperRef}
                 style={{
@@ -234,6 +260,9 @@ export default function TemplatePreviewModal({
                   minHeight: `${A4_HEIGHT_PX}px`,
                   transform: `scale(${effectiveScale})`,
                   transformOrigin: "top left",
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
                   background: "#ffffff",
                 }}
                 className="relative text-black overflow-hidden shadow-2xl bg-white"
@@ -273,18 +302,19 @@ export default function TemplatePreviewModal({
               </div>
             </div>
           </div>
+        </div>
 
           {/*
-            RIGHT panel — info + palette picker + CTA
+            RIGHT panel — info + palette picker + CTA (button permanently visible & pinned)
           */}
           <div className={`
-            lg:col-span-4 flex-col
+            lg:col-span-4 flex flex-col h-full min-h-0 max-h-full overflow-hidden
             border-t lg:border-t-0 lg:border-l border-gray-100 dark:border-white/10
-            ${mobileTab === "info" ? "flex flex-1" : "hidden"} lg:flex lg:flex-none
-            lg:h-full bg-white dark:bg-zinc-950
+            ${mobileTab === "info" ? "flex flex-1" : "hidden"} lg:flex
+            bg-white dark:bg-zinc-950
           `}>
             {/* Scrollable details */}
-            <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 space-y-5">
+            <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden p-4 sm:p-5 space-y-4">
               {/* ATS Score Rating Card */}
               <div className="p-4 rounded-2xl bg-slate-50 dark:bg-zinc-900 border border-gray-200/80 dark:border-white/5 space-y-2">
                 <div className="flex items-center justify-between">

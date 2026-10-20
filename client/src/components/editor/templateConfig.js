@@ -15,6 +15,34 @@ import SiliconValleyTemplate from "@/components/templates/SiliconValleyTemplate"
 import LatexAcademicTemplate from "@/components/templates/LatexAcademicTemplate";
 import NordicSplitTemplate from "@/components/templates/NordicSplitTemplate";
 
+export const TEMPLATE_COMPONENTS = {
+  "silicon-valley": SiliconValleyTemplate,
+  siliconValley: SiliconValleyTemplate,
+  "latex-academic": LatexAcademicTemplate,
+  latexAcademic: LatexAcademicTemplate,
+  "nordic-split": NordicSplitTemplate,
+  nordicSplit: NordicSplitTemplate,
+  executive: ExecutiveTemplate,
+  classic: ClassicTemplate,
+  modern: ModernTemplate,
+  minimal: MinimalTemplate,
+  professional: ProfessionalTemplate,
+  "professional-v2": ProfessionalV2Template,
+  professionalV2: ProfessionalV2Template,
+  "professional-2": Professional2Template,
+  professional2: Professional2Template,
+  tech: TechTemplate,
+  "creative-2": Creative2Template,
+  creative2: Creative2Template,
+  "strategic-leader": StrategicLeadershipTemplate,
+  "strategic-leadership": StrategicLeadershipTemplate,
+  "impact-pro": ImpactProTemplate,
+  "github-style": GitHubStyleTemplate,
+  githubstyle: GitHubStyleTemplate,
+  GitHubStyle: GitHubStyleTemplate,
+  "structured-photo": StructuredPhotoTemplate,
+};
+
 export const TEMPLATES = [
   {
     id: "silicon-valley",
