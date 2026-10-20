@@ -41,6 +41,15 @@ import ProfessionalV2Template from "@/components/templates/ProfessionalV2Templat
 // Rich, comprehensive sample resume data for perfect template previews
 const sampleResumeData = {
   name: "Alex Morgan",
+  title: "Senior Full-Stack Architect & AI Systems Engineer",
+  headline: "Senior Full-Stack Architect & AI Systems Engineer",
+  targetRole: "Senior Full-Stack Architect & AI Systems Engineer",
+  email: "alex.morgan@stanford.edu",
+  phone: "+1 (415) 890-2341",
+  location: "San Francisco, CA",
+  website: "https://alexmorgan.dev",
+  linkedin: "https://linkedin.com/in/alexmorgan",
+  github: "https://github.com/alexmorgan",
   personalInfo: {
     fullName: "Alex Morgan",
     email: "alex.morgan@stanford.edu",
@@ -488,26 +497,31 @@ export default function Templates() {
             t.category?.toLowerCase() === selectedCategory.toLowerCase()
         );
 
-  const handleOpenPreview = (template) => {
+  const handleOpenPreview = (template, initialColorTheme = null) => {
     setActivePreviewTemplate(template);
-    const themes = TEMPLATE_COLOR_THEMES[template.id];
-    if (themes && themes.length > 0) {
+    const themes =
+      TEMPLATE_COLOR_THEMES[template.id] ||
+      TEMPLATE_COLOR_THEMES[normalizeTplId(template.id)];
+    if (initialColorTheme) {
+      setSelectedColorTheme(initialColorTheme);
+    } else if (themes && themes.length > 0) {
       setSelectedColorTheme(themes[0].id);
     } else {
       setSelectedColorTheme(null);
     }
   };
 
-  const handleUseTemplate = (templateId) => {
+  const handleUseTemplate = (templateId, colorTheme = null) => {
     localStorage.setItem("selectedTemplate", templateId);
     sessionStorage.setItem("templatePreSelected", templateId);
-    if (selectedColorTheme) {
-      localStorage.setItem("selectedColorTheme", selectedColorTheme);
+    const themeToSave = colorTheme || selectedColorTheme;
+    if (themeToSave) {
+      localStorage.setItem("selectedColorTheme", themeToSave);
     }
     const blankResumeData = {
       name: "",
-      selectedTheme: selectedColorTheme || undefined,
-      colorTheme: selectedColorTheme || undefined,
+      selectedTheme: themeToSave || undefined,
+      colorTheme: themeToSave || undefined,
       contact: {
         email: "",
         phone: "",

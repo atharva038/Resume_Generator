@@ -11,20 +11,20 @@ import { CAREERS_STATS } from "./careersData";
 
 export default function CareersHero({ totalOpenings = 5, onExploreRoles }) {
   return (
-    <section className="relative pt-28 sm:pt-36 pb-16 sm:pb-24 overflow-hidden">
+    <section className="relative pt-20 sm:pt-28 pb-12 sm:pb-16 overflow-hidden">
       {/* Subtle Background Lighting - Clean & Non-Aggressive */}
       <div className="absolute inset-0 pointer-events-none -z-10 overflow-hidden">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] sm:w-[800px] h-[350px] sm:h-[450px] bg-gradient-to-tr from-blue-500/10 via-indigo-500/10 to-zinc-500/5 blur-[120px] rounded-full opacity-70" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] sm:w-[650px] h-[280px] sm:h-[350px] bg-gradient-to-tr from-blue-500/10 via-indigo-500/10 to-zinc-500/5 blur-[100px] rounded-full opacity-70" />
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_40%,#000_70%,transparent_100%)]" />
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
         {/* Top Minimalist Pill Badge */}
         <motion.div
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs sm:text-sm font-medium backdrop-blur-md mb-6 shadow-2xs"
+          className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs font-medium backdrop-blur-md mb-4 shadow-2xs"
         >
           <span className="flex h-2 w-2 relative">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
@@ -41,7 +41,7 @@ export default function CareersHero({ totalOpenings = 5, onExploreRoles }) {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.08 }}
-          className="text-4xl sm:text-6xl lg:text-7xl font-normal tracking-tight text-zinc-950 dark:text-white max-w-4xl mx-auto leading-[1.12]"
+          className="text-3xl sm:text-5xl lg:text-6xl font-normal tracking-tight text-zinc-950 dark:text-white max-w-4xl mx-auto leading-[1.15]"
         >
           Build from Zero to One:{" "}
           <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-zinc-900 via-zinc-700 to-zinc-800 dark:from-white dark:via-zinc-200 dark:to-zinc-400">
@@ -54,7 +54,7 @@ export default function CareersHero({ totalOpenings = 5, onExploreRoles }) {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.16 }}
-          className="mt-6 text-base sm:text-lg text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto font-light leading-relaxed"
+          className="mt-4 text-sm sm:text-base text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto font-light leading-relaxed"
         >
           We are developer-founders who have built a live, functional AI ATS and portfolio platform. Now, we are assembling our <strong>founding circle in Growth, Marketing, and Business Development</strong> to launch to tens of thousands of job seekers.
         </motion.p>

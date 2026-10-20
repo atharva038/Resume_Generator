@@ -2,6 +2,84 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles, CheckCircle2, ShieldCheck, Eye } from "lucide-react";
+import { UniformTemplateThumbnail } from "@/components/templatesGallery";
+import {
+  TEMPLATE_COMPONENTS,
+  TEMPLATE_COLOR_THEMES,
+} from "@/components/editor/templateConfig";
+
+const showcaseSampleData = {
+  name: "Alex Morgan",
+  title: "Senior Full-Stack Architect & AI Systems Engineer",
+  headline: "Senior Full-Stack Architect & AI Systems Engineer",
+  email: "alex.morgan@stanford.edu",
+  phone: "+1 (415) 890-2341",
+  location: "San Francisco, CA",
+  website: "https://alexmorgan.dev",
+  linkedin: "https://linkedin.com/in/alexmorgan",
+  github: "https://github.com/alexmorgan",
+  personalInfo: {
+    fullName: "Alex Morgan",
+    email: "alex.morgan@stanford.edu",
+    phone: "+1 (415) 890-2341",
+    location: "San Francisco, CA",
+    title: "Senior Full-Stack Architect & AI Systems Engineer",
+    website: "https://alexmorgan.dev",
+    linkedin: "https://linkedin.com/in/alexmorgan",
+    github: "https://github.com/alexmorgan",
+  },
+  contact: {
+    email: "alex.morgan@stanford.edu",
+    phone: "+1 (415) 890-2341",
+    location: "San Francisco, CA",
+    website: "https://alexmorgan.dev",
+    linkedin: "https://linkedin.com/in/alexmorgan",
+    github: "https://github.com/alexmorgan",
+  },
+  summary:
+    "Engineering leader with 7+ years architecting high-scale distributed cloud systems, modern web apps, and enterprise AI workflows. Scaled platform infrastructure to 2M+ active users and reduced p99 latency by 42%.",
+  skills: [
+    {
+      category: "Languages & Frameworks",
+      items: ["TypeScript", "React", "Node.js", "Python", "Go", "Next.js"],
+    },
+    {
+      category: "Cloud & AI",
+      items: ["AWS", "Docker", "Kubernetes", "PostgreSQL", "Redis", "LangChain"],
+    },
+  ],
+  skillsList: ["TypeScript", "React", "Node.js", "Python", "AWS", "Kubernetes", "PostgreSQL", "Docker", "Redis"],
+  experience: [
+    {
+      position: "Lead Cloud Architect",
+      company: "Apex Distributed Labs",
+      location: "San Francisco, CA",
+      startDate: "2021",
+      endDate: "Present",
+      bullets: [
+        "Architected multi-region Kubernetes cluster processing 140M+ daily events with 99.99% service availability",
+        "Engineered real-time semantic caching layer in Redis, slashing database read latency by 58%",
+      ],
+    },
+  ],
+  education: [
+    {
+      degree: "Master of Science in Computer Science",
+      field: "Computer Science",
+      institution: "Stanford University",
+      location: "Stanford, CA",
+      graduationDate: "2018",
+      gpa: "3.94 / 4.0",
+    },
+  ],
+  projects: [
+    {
+      name: "HyperScale Vector Gateway",
+      technologies: ["Rust", "Python", "Docker"],
+      description: "High-performance vector search proxy delivering sub-8ms retrieval over 10M+ embedded document chunks.",
+    },
+  ],
+};
 
 export default function TemplatesGridShowcase() {
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -112,15 +190,23 @@ export default function TemplatesGridShowcase() {
             <div>
               {/* Template Mockup Card */}
               <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 mb-3 group-hover:scale-[1.01] transition-transform">
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="w-full h-full object-cover object-top"
-                  onError={(e) => {
-                    // Fallback to minimal SVG representation if image is missing
-                    e.currentTarget.style.display = "none";
-                  }}
-                />
+                {TEMPLATE_COMPONENTS[item.id] ? (
+                  <UniformTemplateThumbnail
+                    TemplateComponent={TEMPLATE_COMPONENTS[item.id]}
+                    resumeData={showcaseSampleData}
+                    themeId={TEMPLATE_COLOR_THEMES[item.id]?.[0]?.id}
+                  />
+                ) : (
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-full h-full object-cover object-top"
+                    onError={(e) => {
+                      // Fallback to minimal SVG representation if image is missing
+                      e.currentTarget.style.display = "none";
+                    }}
+                  />
+                )}
 
                 {/* Score Pill Overlay */}
                 <div className="absolute top-2.5 right-2.5 inline-flex items-center gap-1 px-2 py-0.5 rounded bg-zinc-900/90 text-white text-[10px] font-mono font-bold backdrop-blur-xs">
